@@ -1,7 +1,9 @@
 package com.capitalone.dashboard.collector;
 
+import com.capitalone.dashboard.model.ChangeOrder;
 import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.HpsmSoapModel;
+import com.capitalone.dashboard.model.Incident;
 import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
@@ -22,13 +24,18 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.*;
 import java.io.*;
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -57,6 +64,43 @@ public class DefaultHpsmClient implements HpsmClient {
     String userName = "";
     String password = "";
 
+    private static final String APP_TYPE = "app";
+	private static final String COMPONENT_TYPE = "component";
+	private static final String ENVIRONMENT_TYPE = "environment";
+
+	private static final String DEFAULT_CHANGE_QUERY_FORMAT = "(date.entered > ''{0}'' and date.entered < ''{1}'') or (close.time > ''{0}'' and close.time < ''{1}'')";
+	private static final String DEFAULT_INCIDENT_QUERY_FORMAT = "(Severity=1 or Severity=2 or Severity=3 or Severity=4) and update.time > ''{0}'' and update.time < ''{1}''";
+
+	private static final String QUERY_DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
+
+	public static final int MILLISECONDS_IN_DAY = 1000 * 60 * 60 * 24;
+
+	private long lastExecuted;
+	private long incidentCount;
+	private long changeCount;
+
+	private enum SoapRequestType {
+		CMDB, CHANGE_ORDER, INCIDENT
+	}
+
+	@Override
+	public void setLastExecuted(long lastExecuted) { this.lastExecuted = lastExecuted; };
+
+	@Override
+	public long getLastExecuted() { return lastExecuted; };
+
+	@Override
+	public long getIncidentCount() { return incidentCount; }
+
+	@Override
+	public void setIncidentCount(long incidentCount) { this.incidentCount = incidentCount; }
+
+	@Override
+	public long getChangeCount() { return changeCount; }
+
+	@Override
+	public void setChangeCount(long changeCount) { this.changeCount = changeCount; }
+
 	@Autowired
 	public DefaultHpsmClient(HpsmSettings hpsmSettings) {
 		this.hpsmSettings = hpsmSettings;
@@ -69,11 +113,41 @@ public class DefaultHpsmClient implements HpsmClient {
 	@Override
 	public List<Cmdb> getApps() {
 
-		List<Cmdb> cmdbList;
-        cmdbList = getAppList();
-        cmdbList.addAll(getComponentList());
+		String limit = hpsmSettings.getCmdbReturnLimit();
+		if(limit != null && !limit.isEmpty()) {
+			LOG.info("NOTE: Collector run limited to " + limit + " results by property file setting.");
+		}
+		List<Cmdb> cmdbList = new ArrayList<>();
+
+		String statusString = hpsmSettings.getAppStatus();
+		String[] statusArray = (statusString == null || statusString.isEmpty()) ? new String[]{null} : statusString.split(",");
+
+		for(int i = 0; i < statusArray.length; i++) {
+			if(statusArray[i] != null) {
+				// this is just for logging what we are doing - it is perfectly valid for this to be null, but will
+				// only run once - additional logging is unnecessary.
+				LOG.info("Retrieving for status: " + statusArray[i]);
+			}
+			cmdbList.addAll(getAppList(statusArray[i]));
+			cmdbList.addAll(getComponentList(statusArray[i]));
+			cmdbList.addAll(getEnvironmentList(statusArray[i]));
+		}
 
 		return cmdbList;
+	}
+
+	@Override
+	public List<ChangeOrder> getChangeOrders() {
+		List<ChangeOrder> changeOrderList;
+		changeOrderList = getChangeOrderList();
+		return changeOrderList;
+	}
+
+	@Override
+	public List<Incident> getIncidents() {
+		List<Incident> incidentList;
+		incidentList = getIncidentList();
+		return incidentList;
 	}
 
 	/**
@@ -81,14 +155,14 @@ public class DefaultHpsmClient implements HpsmClient {
 	 * Returns List<Cmdb> of Apps
 	 * @return List<Cmdb>
 	 */
-	private List<Cmdb> getAppList(){
+	private List<Cmdb> getAppList(String status){
 		List<Cmdb> appList;
 
 		HpsmSoapModel hpsmSoapModel = new HpsmSoapModel();
-        hpsmSoapModel.setConfigurationItemSubType(hpsmSettings.getAppSubType());
+        hpsmSoapModel.setItemSubType(hpsmSettings.getAppSubType());
         hpsmSoapModel.setRequestTypeName(hpsmSettings.getDetailsRequestType());
         hpsmSoapModel.setSoapAction(hpsmSettings.getDetailsSoapAction());
-        hpsmSoapModel.setStatus(hpsmSettings.getAppStatus());
+        hpsmSoapModel.setStatus(status);
 
 		appList = getConfigurationItemList(hpsmSoapModel);
 
@@ -99,20 +173,41 @@ public class DefaultHpsmClient implements HpsmClient {
 	 *
 	 * @return  Returns List<Cmdb> of Components
 	 */
-	private List<Cmdb> getComponentList(){
+	private List<Cmdb> getComponentList(String status){
 		List<Cmdb> componentList;
         HpsmSoapModel hpsmSoapModel = new HpsmSoapModel();
 
-		hpsmSoapModel.setConfigurationItemSubType(hpsmSettings.getCompSubType());
-        hpsmSoapModel.setConfigurationItemType(hpsmSettings.getCompType());
+		hpsmSoapModel.setItemSubType(hpsmSettings.getCompSubType());
+        hpsmSoapModel.setItemType(hpsmSettings.getCompType());
         hpsmSoapModel.setSoapAction(hpsmSettings.getDetailsSoapAction());
         hpsmSoapModel.setRequestTypeName(hpsmSettings.getDetailsRequestType());
-        hpsmSoapModel.setStatus(hpsmSettings.getAppStatus());
+        hpsmSoapModel.setStatus(status);
 
 		componentList = getConfigurationItemList(hpsmSoapModel);
 
         return componentList;
 	}
+
+	/**
+	 *
+	 * Returns List<Cmdb> of Environments
+	 * @return List<Cmdb>
+	 */
+	private List<Cmdb> getEnvironmentList(String status){
+		List<Cmdb> componentList;
+		HpsmSoapModel hpsmSoapModel = new HpsmSoapModel();
+
+		hpsmSoapModel.setItemSubType(hpsmSettings.getEnvSubType());
+		hpsmSoapModel.setItemType(hpsmSettings.getEnvType());
+		hpsmSoapModel.setSoapAction(hpsmSettings.getDetailsSoapAction());
+		hpsmSoapModel.setRequestTypeName(hpsmSettings.getDetailsRequestType());
+		hpsmSoapModel.setStatus(status);
+
+		componentList = getConfigurationItemList(hpsmSoapModel);
+
+		return componentList;
+	}
+
 
 	/**
 	 * Takes hpsmSoapModel with settings set. Makes SOAP call and returns  List <Cmdb> with details
@@ -122,12 +217,9 @@ public class DefaultHpsmClient implements HpsmClient {
 	private List<Cmdb> getConfigurationItemList(HpsmSoapModel hpsmSoapModel){
 		List<Cmdb> configurationItemList;
 
-		String soapString = getDefaultSoapMessage(hpsmSoapModel);
-
-		String response  = makeSoapCall(soapString, hpsmSoapModel);
-
+		String soapString = getCmdbSoapMessage(hpsmSoapModel);
+		String response = makeSoapCall(soapString, hpsmSoapModel);
 		configurationItemList = responseToDetailsList(response);
-
 		return configurationItemList;
 	}
 
@@ -136,7 +228,6 @@ public class DefaultHpsmClient implements HpsmClient {
 	 * @param response
 	 * @return List <Cmdb>
 	 */
-
 	private List <Cmdb> responseToDetailsList(String response) {
         List <Cmdb> returnList = new ArrayList<>();
 		Document doc = responseToDoc(response);
@@ -157,31 +248,130 @@ public class DefaultHpsmClient implements HpsmClient {
                 }
             }
 			cmdb.setValidConfigItem(true);
-            boolean isApp = isTypeApp(cmdb);
-			if(isApp){
-				cmdb.setItemType("app");
-			}else{
-				cmdb.setItemType("component");
-			}
-
+            cmdb.setItemType(getItemType(cmdb));
 
             returnList.add(cmdb);
         }
 		return returnList;
 	}
 
+	private List <ChangeOrder> responseToChangeOrderList(String response) {
+		List <ChangeOrder> returnList = new ArrayList<>();
+		Document doc = responseToDoc(response);
+		NodeList instanceNodeList = doc.getElementsByTagName("instance");
+		for (int i = 0; i < instanceNodeList.getLength(); i++) {
+			NodeList instanceChildNodes = instanceNodeList.item(i).getChildNodes();
+			ChangeOrder change = new ChangeOrder();
+			for (int j = 0; j < instanceChildNodes.getLength(); j++) {
+
+				Node node = instanceChildNodes.item(j);
+				if (node.getNodeType() == Node.ELEMENT_NODE) {
+					Element elem = (Element) node;
+					String tagName = elem.getTagName();
+					if(tagName.equals("header")){
+						NodeList headerNodes = node.getChildNodes();
+						for(int k = 0; k < headerNodes.getLength(); k++) {
+							Node headerNode = headerNodes.item(k);
+							Element headerElem = (Element) headerNode;
+							String headerTagName = headerElem.getTagName();
+							String setMethod = "set" + headerTagName;
+							String name = headerElem.getTextContent();
+
+							callMethod(change, setMethod, new Object[] { name }, String.class);
+
+						}
+					}
+
+				}
+			}
+			change.setValidChangeItem(true);
+
+			returnList.add(change);
+		}
+		return returnList;
+	}
+
+	private List <Incident> responseToIncidentList(String response) {
+		List <Incident> returnList = new ArrayList<>();
+		Document doc = responseToDoc(response);
+		NodeList instanceNodeList = doc.getElementsByTagName("instance");
+		for (int i = 0; i < instanceNodeList.getLength(); i++) {
+			NodeList instanceChildNodes = instanceNodeList.item(i).getChildNodes();
+			Incident incident = new Incident();
+			for (int j = 0; j < instanceChildNodes.getLength(); j++) {
+				Node node = instanceChildNodes.item(j);
+				if (node.getNodeType() == Node.ELEMENT_NODE) {
+					Element elem = (Element) node;
+					String tagName = elem.getTagName();
+					String setMethod = "set" + tagName;
+					String name = elem.getTextContent();
+
+					callMethod(incident, setMethod, new Object[] { name }, String.class);
+
+				}
+			}
+			incident.setValidIncidentItem(true);
+
+			returnList.add(incident);
+		}
+		return returnList;
+	}
+
 	/**
-	 * Checks to see if configuration Item is APP or Component
-	 * @param cmdb
-	 * @return true or false
+	 *
+	 * Returns List<ChangeOrder> of Change Orders
+	 * @return List<ChangeOrder>
 	 */
-	private boolean isTypeApp(Cmdb cmdb) {
+	private List<ChangeOrder> getChangeOrderList(){
+		List<ChangeOrder> changeOrderList;
+
+		HpsmSoapModel hpsmSoapModel = new HpsmSoapModel();
+		hpsmSoapModel.setRequestTypeName(hpsmSettings.getChangeOrderRequestType());
+		hpsmSoapModel.setSoapAction(hpsmSettings.getChangeOrderSoapAction());
+
+		String soapString = getChangeSoapMessage(hpsmSoapModel);
+
+		String response  = makeSoapCall(soapString, hpsmSoapModel);
+
+		changeOrderList = responseToChangeOrderList(response);
+
+		return changeOrderList;
+	}
+
+	/**
+	 *
+	 * Returns List<Incident> of Incidents
+	 * @return List<Incident>
+	 */
+	private List<Incident> getIncidentList(){
+		List<Incident> incidentList;
+
+		HpsmSoapModel hpsmSoapModel = new HpsmSoapModel();
+		hpsmSoapModel.setRequestTypeName(hpsmSettings.getIncidentRequestType());
+		hpsmSoapModel.setSoapAction(hpsmSettings.getIncidentSoapAction());
+
+		String soapString = getIncidentSoapMessage(hpsmSoapModel);
+
+		String response  = makeSoapCall(soapString, hpsmSoapModel);
+
+		incidentList = responseToIncidentList(response);
+
+		return incidentList;
+	}
+
+
+	/**
+	 * Returns the type of the configuration item.
+	 * @param cmdb
+	 * @return the type of the configuration item.
+	 */
+	private String getItemType(Cmdb cmdb) {
+		String itemType = null;
 		String subType = cmdb.getConfigurationItemSubType();
 		String type = cmdb.getConfigurationItemType();
 
 		String hpsmSettingsSubType = hpsmSettings.getAppSubType();
 		String hpsmSettingsType = hpsmSettings.getAppType();
-		boolean isTypeApp = false;
 
 		boolean typeCheck = false;
 		boolean subTypeCheck = false;
@@ -195,19 +385,38 @@ public class DefaultHpsmClient implements HpsmClient {
 
 		if(!typeCheck && subTypeCheck){
 			if(subType != null && subType.equals(hpsmSettings.getAppSubType())){
-				isTypeApp = true;
+				itemType = APP_TYPE;
+			}
+			else if(subType != null && subType.equals(hpsmSettings.getCompSubType())){
+				itemType = COMPONENT_TYPE;
+			}
+			else if(subType != null && subType.equals(hpsmSettings.getEnvSubType())) {
+				itemType = ENVIRONMENT_TYPE;
 			}
 		}else if(typeCheck && !subTypeCheck){
 			if(type != null && type.equals(hpsmSettings.getAppType())){
-				isTypeApp = true;
+				itemType = APP_TYPE;
+			}
+			else if(type != null && type.equals(hpsmSettings.getCompType())){
+				itemType = COMPONENT_TYPE;
+			}
+			else if(type != null && type.equals(hpsmSettings.getEnvType())) {
+				itemType = ENVIRONMENT_TYPE;
 			}
 		}else{
 			if(subType != null && subType.equals(hpsmSettings.getAppSubType()) && type != null && type.equals(hpsmSettings.getAppType())){
-				isTypeApp = true;
+				itemType = APP_TYPE;
 			}
+			else if(subType != null && subType.equals(hpsmSettings.getCompSubType()) && type != null && type.equals(hpsmSettings.getCompType())){
+				itemType = COMPONENT_TYPE;
+			}
+			else if(subType != null && subType.equals(hpsmSettings.getEnvSubType()) && type != null && type.equals(hpsmSettings.getEnvType())){
+				itemType = ENVIRONMENT_TYPE;
+			}
+
 		}
 
-		return isTypeApp;
+		return itemType;
 	}
 
 	/**
@@ -349,85 +558,312 @@ public class DefaultHpsmClient implements HpsmClient {
 
     }
 
-    /**
-     * 	Creates a SOAP message string based on HpsmSoapModel
-     * @return soap message string
-     */
-    private String getDefaultSoapMessage(HpsmSoapModel hpsmSoapModel){
+    private String getCmdbSoapMessage(HpsmSoapModel hpsmSoapModel){
+		String strMsg = "";
+		SOAPMessage soapMsg;
+		String requestTypeName = hpsmSoapModel.getRequestTypeName();
 
-        String strMsg = "";
-        SOAPMessage soapMsg;
-        String status = hpsmSoapModel.getStatus();
-        String itemType = hpsmSoapModel.getConfigurationItemType();
-        String itemSubType = hpsmSoapModel.getConfigurationItemSubType();
-        String item = hpsmSoapModel.getConfigurationItem();
-        String requestTypeName = hpsmSoapModel.getRequestTypeName();
+		try {
+			MessageFactory factory = MessageFactory.newInstance();
 
-        try {
-            MessageFactory factory = MessageFactory.newInstance();
+			soapMsg = factory.createMessage();
 
-            soapMsg = factory.createMessage();
+			SOAPPart part = soapMsg.getSOAPPart();
 
-            SOAPPart part = soapMsg.getSOAPPart();
+			SOAPEnvelope envelope = part.getEnvelope();
+			envelope.addNamespaceDeclaration("ns", "http://schemas.hp.com/SM/7");
+			envelope.addNamespaceDeclaration("com", "http://schemas.hp.com/SM/7/Common");
+			envelope.addNamespaceDeclaration("xm", "http://www.w3.org/2005/05/xmlmime");
 
-            SOAPEnvelope envelope = part.getEnvelope();
-            envelope.addNamespaceDeclaration("ns", "http://schemas.hp.com/SM/7");
-            envelope.addNamespaceDeclaration("com", "http://schemas.hp.com/SM/7/Common");
-            envelope.addNamespaceDeclaration("xm", "http://www.w3.org/2005/05/xmlmime");
+			SOAPBody body = envelope.getBody();
 
-            SOAPBody body = envelope.getBody();
+			SOAPBodyElement requestType = body.addBodyElement(envelope.createName(requestTypeName,"ns", ""));
 
-            SOAPBodyElement requestType = body.addBodyElement(envelope.createName(requestTypeName,"ns", ""));
+			String limit = hpsmSettings.getCmdbReturnLimit();
+			if(limit != null && !limit.isEmpty()) {
+				QName name1 = new QName("count");
+				requestType.addAttribute(name1, limit);
+			}
 
-            SOAPBodyElement modelTag = body.addBodyElement(envelope.createName("model","ns", ""));
+			SOAPBodyElement modelTag = body.addBodyElement(envelope.createName("model","ns", ""));
 
-            SOAPBodyElement keysTag = body.addBodyElement(envelope.createName("keys","ns", ""));
+			SOAPBodyElement keysTag = body.addBodyElement(envelope.createName("keys","ns", ""));
 
-            SOAPBodyElement instanceTag = body.addBodyElement(envelope.createName("instance","ns", ""));
+			// creates instance tag
+			body.addBodyElement(envelope.createName("instance", "ns", ""));
 
-            if(itemType != null && !itemType.isEmpty() ){
-                SOAPBodyElement configItemType= body.addBodyElement(envelope.createName("ConfigurationItemType","ns", ""));
-                configItemType.addTextNode(itemType);
-				keysTag.addChildElement(configItemType);
+			handleCmdbSoapMessage(hpsmSoapModel, envelope, keysTag);
 
-            }
-            if(itemSubType != null && !itemSubType.isEmpty() ){
-                SOAPBodyElement configItemSubType= body.addBodyElement(envelope.createName("ConfigurationItemSubType","ns", ""));
-                configItemSubType.addTextNode(itemSubType);
-				keysTag.addChildElement(configItemSubType);
-            }
-            if(item != null && !item.isEmpty() ){
+			modelTag.addChildElement(keysTag);
 
-                SOAPBodyElement configItem= body.addBodyElement(envelope.createName("ConfigurationItem","ns", ""));
-                configItem.addTextNode(item);
-				keysTag.addChildElement(configItem);
+			requestType.addChildElement(modelTag);
 
-            }
-            if(status != null && !status.isEmpty() ){
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			soapMsg.writeTo(out);
+			strMsg = new String(out.toByteArray());
 
-                SOAPBodyElement configItemStatus= body.addBodyElement(envelope.createName("Status","ns", ""));
-                configItemStatus.addTextNode(status);
-				keysTag.addChildElement(configItemStatus);
+		} catch (SOAPException e) {
+			LOG.error("SOAPException: " + e);
+		} catch (UnsupportedEncodingException e) {
+			LOG.error("UnsupportedEncodingException: " + e);
+		} catch (IOException e) {
+			LOG.error("IOException: " + e);
+		}
 
-            }
+		return strMsg;
+	}
 
-            modelTag.addChildElement(keysTag);
-            modelTag.addChildElement(instanceTag);
-            requestType.addChildElement(modelTag);
+	private String getIncidentSoapMessage(HpsmSoapModel hpsmSoapModel){
+		String strMsg = "";
+		SOAPMessage soapMsg;
+		String requestTypeName = hpsmSoapModel.getRequestTypeName();
 
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            soapMsg.writeTo(out);
-            strMsg = new String(out.toByteArray());
+		try {
+			MessageFactory factory = MessageFactory.newInstance();
 
-        } catch (SOAPException e) {
-            LOG.error("SOAPException: " + e);
-        } catch (UnsupportedEncodingException e) {
-            LOG.error("UnsupportedEncodingException: " + e);
-        } catch (IOException e) {
-            LOG.error("IOException: " + e);
-        }
+			soapMsg = factory.createMessage();
 
-        return strMsg;
-    }
+			SOAPPart part = soapMsg.getSOAPPart();
 
+			SOAPEnvelope envelope = part.getEnvelope();
+			envelope.addNamespaceDeclaration("ns", "http://schemas.hp.com/SM/7");
+			envelope.addNamespaceDeclaration("com", "http://schemas.hp.com/SM/7/Common");
+			envelope.addNamespaceDeclaration("xm", "http://www.w3.org/2005/05/xmlmime");
+
+			SOAPBody body = envelope.getBody();
+
+			SOAPBodyElement requestType = body.addBodyElement(envelope.createName(requestTypeName,"ns", ""));
+
+			String limit = hpsmSettings.getIncidentReturnLimit();
+			if(limit != null && !limit.isEmpty()) {
+				LOG.info("NOTE: Collector run limited to " + limit + " results by property file setting.");
+				QName name1 = new QName("count");
+				requestType.addAttribute(name1, limit);
+			}
+
+			SOAPBodyElement modelTag = body.addBodyElement(envelope.createName("model","ns", ""));
+
+			SOAPBodyElement keysTag = body.addBodyElement(envelope.createName("keys","ns", ""));
+
+			// creates instance tag
+			body.addBodyElement(envelope.createName("instance", "ns", ""));
+
+			handleIncidentSoapMessage(keysTag);
+
+			modelTag.addChildElement(keysTag);
+
+			requestType.addChildElement(modelTag);
+
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			soapMsg.writeTo(out);
+			strMsg = new String(out.toByteArray());
+
+		} catch (SOAPException e) {
+			LOG.error("SOAPException: " + e);
+		} catch (UnsupportedEncodingException e) {
+			LOG.error("UnsupportedEncodingException: " + e);
+		} catch (IOException e) {
+			LOG.error("IOException: " + e);
+		}
+
+		return strMsg;
+	}
+
+	private String getChangeSoapMessage(HpsmSoapModel hpsmSoapModel){
+		String strMsg = "";
+		SOAPMessage soapMsg;
+		String requestTypeName = hpsmSoapModel.getRequestTypeName();
+
+		try {
+			MessageFactory factory = MessageFactory.newInstance();
+
+			soapMsg = factory.createMessage();
+
+			SOAPPart part = soapMsg.getSOAPPart();
+
+			SOAPEnvelope envelope = part.getEnvelope();
+			envelope.addNamespaceDeclaration("ns", "http://schemas.hp.com/SM/7");
+			envelope.addNamespaceDeclaration("com", "http://schemas.hp.com/SM/7/Common");
+			envelope.addNamespaceDeclaration("xm", "http://www.w3.org/2005/05/xmlmime");
+
+			SOAPBody body = envelope.getBody();
+
+			SOAPBodyElement requestType = body.addBodyElement(envelope.createName(requestTypeName,"ns", ""));
+
+			String limit = hpsmSettings.getChangeOrderReturnLimit();
+			if(limit != null && !limit.isEmpty()) {
+				LOG.info("NOTE: Collector run limited to " + limit + " results by property file setting.");
+				QName name1 = new QName("count");
+				requestType.addAttribute(name1, limit);
+			}
+
+			SOAPBodyElement modelTag = body.addBodyElement(envelope.createName("model","ns", ""));
+
+			SOAPBodyElement keysTag = body.addBodyElement(envelope.createName("keys","ns", ""));
+
+			// creates instance tag
+			body.addBodyElement(envelope.createName("instance", "ns", ""));
+
+			handleChangeSoapMessage(keysTag);
+
+			modelTag.addChildElement(keysTag);
+
+			requestType.addChildElement(modelTag);
+
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			soapMsg.writeTo(out);
+			strMsg = new String(out.toByteArray());
+
+		} catch (SOAPException e) {
+			LOG.error("SOAPException: " + e);
+		} catch (UnsupportedEncodingException e) {
+			LOG.error("UnsupportedEncodingException: " + e);
+		} catch (IOException e) {
+			LOG.error("IOException: " + e);
+		}
+
+		return strMsg;
+	}
+
+    private void handleCmdbSoapMessage(HpsmSoapModel hpsmSoapModel, SOAPEnvelope envelope, SOAPBodyElement keysTag) throws SOAPException{
+
+		String itemType = hpsmSoapModel.getItemType();
+		String itemSubType = hpsmSoapModel.getItemSubType();
+		String item = hpsmSoapModel.getItem();
+		String status = hpsmSoapModel.getStatus();
+
+		SOAPBody body = envelope.getBody();
+
+		if (itemType != null && !itemType.isEmpty()) {
+
+			SOAPBodyElement configItemType = body.addBodyElement(envelope.createName("ConfigurationItemType", "ns", ""));
+			configItemType.addTextNode(itemType);
+			keysTag.addChildElement(configItemType);
+
+		}
+		if (itemSubType != null && !itemSubType.isEmpty()) {
+
+			SOAPBodyElement configItemSubType = body.addBodyElement(envelope.createName("ConfigurationItemSubType", "ns", ""));
+			configItemSubType.addTextNode(itemSubType);
+			keysTag.addChildElement(configItemSubType);
+
+		}
+		if (item != null && !item.isEmpty()) {
+
+			SOAPBodyElement configItem = body.addBodyElement(envelope.createName("ConfigurationItem", "ns", ""));
+			configItem.addTextNode(item);
+			keysTag.addChildElement(configItem);
+
+		}
+		if (status != null && !status.isEmpty()) {
+
+			SOAPBodyElement configItemStatus = body.addBodyElement(envelope.createName("Status", "ns", ""));
+			configItemStatus.addTextNode(status);
+			keysTag.addChildElement(configItemStatus);
+
+		}
+	}
+
+
+	private void handleIncidentSoapMessage(SOAPBodyElement keysTag) throws SOAPException{
+
+		QName query = new QName("query");
+
+		// Incidents can be queried based on time.  This code retrieves the incidents since
+		// the last time it was run.  If that time cannot be determined, it counts backwards
+		// the number of days specified in hpsm.properties and retrieves those incidents.
+
+		// Get current date/time
+		Date nowDate = new Date();
+
+		// Get the last time this collector was run
+		Date previousDate = new Date(this.lastExecuted);
+
+		// Convert the above times to milliseconds for comparison
+		long nowMillis = nowDate.getTime();
+		long previousMillis = previousDate.getTime();
+
+		// calculate the difference in days between the two dates by dividing the difference by the number of milliseconds in a day
+		int diffInDays = (int) (Math.abs((nowMillis - previousMillis)) / MILLISECONDS_IN_DAY);
+
+		// get the number of days specified in the hpsm.properties file
+		int incidentDays = hpsmSettings.getIncidentDays();
+
+		// IF there are no incidents in the collection, or the collection does not exist
+		// OR if the times are reversed
+		// OR the number of days since collector last ran is greater than the requested number of days
+		// THEN the last time the collector ran is irrelevant so use the number of days in hpsm.properties
+		if((incidentCount < 1) || (previousMillis > nowMillis) || (diffInDays > incidentDays)){
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(nowDate);
+			cal.add(Calendar.DATE, - incidentDays);
+			previousDate = cal.getTime();
+		}
+
+		SimpleDateFormat dateFormat = new SimpleDateFormat(QUERY_DATE_FORMAT);
+		String now = dateFormat.format(nowDate);
+		String previous = dateFormat.format(previousDate);
+
+		String format = hpsmSettings.getIncidentQuery();
+		if(format == null || format.isEmpty()){
+			format = DEFAULT_INCIDENT_QUERY_FORMAT;
+		}
+
+		Object[] args = new Object[]{ previous, now };
+		String queryString = MessageFormat.format(format, args);
+
+		keysTag.addAttribute(query,  queryString);
+
+	}
+
+	private void handleChangeSoapMessage(SOAPBodyElement keysTag) throws SOAPException{
+
+		QName query = new QName("query");
+
+		// Changes can be queried based on time.  This code retrieves the changes since
+		// the last time it was run.  If that time cannot be determined, it counts backwards
+		// the number of days specified in hpsm.properties and retrieves those changes.
+
+		// Get current date/time
+		Date nowDate = new Date();
+
+		// Get the last time this collector was run
+		Date previousDate = new Date(this.lastExecuted);
+
+		// Convert the above times to milliseconds for comparison
+		long nowMillis = nowDate.getTime();
+		long previousMillis = previousDate.getTime();
+
+		// calculate the difference in days between the two dates by dividing the difference by the number of milliseconds in a day
+		int diffInDays = (int) (Math.abs((nowMillis - previousMillis)) / MILLISECONDS_IN_DAY);
+
+		// get the number of days specified in the hpsm.properties file
+		int changeDays = hpsmSettings.getChangeOrderDays();
+
+		// IF there are no changess in the collection, or the collection does not exist
+		// OR if the times are reversed
+		// OR the number of days since collector last ran is greater than the requested number of days
+		// THEN the last time the collector ran is irrelevant so use the number of days in hpsm.properties
+		if((changeCount < 1) || (previousMillis > nowMillis) || (diffInDays > changeDays)){
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(nowDate);
+			cal.add(Calendar.DATE, - changeDays);
+			previousDate = cal.getTime();
+		}
+
+		SimpleDateFormat dateFormat = new SimpleDateFormat(QUERY_DATE_FORMAT);
+		String now = dateFormat.format(nowDate);
+		String previous = dateFormat.format(previousDate);
+
+		String format = hpsmSettings.getChangeOrderQuery();
+		if(format == null || format.isEmpty()){
+			format = DEFAULT_CHANGE_QUERY_FORMAT;
+		}
+
+		Object[] args = new Object[]{ previous, now };
+		String queryString = MessageFormat.format(format, args);
+
+		keysTag.addAttribute(query,  queryString);
+
+	}
 }

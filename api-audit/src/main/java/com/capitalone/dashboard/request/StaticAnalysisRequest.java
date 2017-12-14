@@ -7,30 +7,19 @@ public class StaticAnalysisRequest extends AuditReviewRequest {
    
     
     @NotNull
-    private String artifactGroup;
+    private String projectName;
 
-    @NotNull
-    private String artifactName;
-
-    @NotNull
+	@NotNull
     private String artifactVersion;
+	
+    
+	public String getProjectName() {
+		return projectName;
+	}
 
-   
-    public String getArtifactGroup() {
-        return artifactGroup;
-    }
-
-    public void setArtifactGroup(String artifactGroup) {
-        this.artifactGroup = artifactGroup;
-    }
-
-    public String getArtifactName() {
-        return artifactName;
-    }
-
-    public void setArtifactName(String artifactName) {
-        this.artifactName = artifactName;
-    }
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
+	}
 
     public String getArtifactVersion() {
         return artifactVersion;
