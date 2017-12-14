@@ -16,7 +16,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.capitalone.dashboard.auth.token.TokenAuthenticationService;
 import com.capitalone.dashboard.config.TestAuthConfig;
 import com.capitalone.dashboard.config.TestConfig;
+import com.capitalone.dashboard.misc.HygieiaException;
 import org.bson.types.ObjectId;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +34,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -82,11 +85,17 @@ public class DefaultAuthenticationTest {
 
     @Test
     public void registerUser() throws Exception {
-        when(authenticationTestRepository.save(isA(Authentication.class))).thenReturn(new Authentication("somebody", "somebody"));
-        when(userInfoRepository.findByUsernameAndAuthType(isA(String.class), isA(AuthType.class))).thenReturn(new UserInfo());
-       mockMvc.perform(post("/registerUser")
-                .contentType(MediaType.APPLICATION_JSON_VALUE).content("{\"username\":\"somebody\",\"password\":\"somebody\"}")
-        ).andExpect(status().isOk());
+
+
+        try {
+            when(authenticationTestRepository.save(isA(Authentication.class))).thenReturn(new Authentication("somebody", "somebody"));
+            when(userInfoRepository.findByUsernameAndAuthType(isA(String.class), isA(AuthType.class))).thenReturn(new UserInfo());
+            mockMvc.perform(post("/registerUser")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE).content("{\"username\":\"somebody\",\"password\":\"somebody\"}")
+            ).andExpect(status().isOk()) .andExpect(status().reason("Bad credentials")).andDo(MockMvcResultHandlers.print());
+        }catch (Exception e){
+            Assert.fail(e.getMessage());
+        }
 
     }
 
