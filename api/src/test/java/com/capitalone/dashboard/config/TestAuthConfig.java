@@ -80,11 +80,6 @@ public class TestAuthConfig {
         return new ApiTokenServiceImpl(apiTokenRepository());
     }
 
-//    @Bean
-//    public AuthenticationService authenticationService() {
-//        return new DefaultAuthenticationServiceImpl(authenticationRepository());
-//    }
-
     @Bean
     public DashboardService dashboardService() {
         return Mockito.mock(DashboardService.class);
