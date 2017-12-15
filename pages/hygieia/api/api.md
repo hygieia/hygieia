@@ -108,6 +108,14 @@ pageSize=[Integer value]
 
 # API token generated for basic authentication to secure APIs.
 key=[api token]
+
+# SSO properties with header values from UI layer
+auth.userEid=[name of the header containing EID]
+auth.userEmail=[name of the header containing user's email]
+auth.userFirstName=[name of the header containing user's first name]
+auth.userLastName=[name of the header containing user's last name]
+auth.userMiddelInitials=[name of the header containing user's middle name]
+auth.userDisplayName=[name of the header containing user's display name]
 ```
 
 All the above values are optional. If you have MongoDB installed with no authorization, you must be able to run the API even without the properties file.

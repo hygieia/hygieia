@@ -89,12 +89,12 @@ entries:
       url: /jenkinssetup.html
       output: web, pdf    
         
-#  - title: Troubleshooting
-#    output: web, pdf
-#    folderitems:
-#    - title: Troubleshoot Instructions
-#      url: /troubleshoot.html
-#      output: web, pdf
+  - title: Troubleshooting
+    output: web, pdf
+    folderitems:
+    - title: FAQs
+      url: /troubleshoot.html
+      output: web, pdf
 
  
 #  - title: WhiteSource
