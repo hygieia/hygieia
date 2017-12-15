@@ -53,7 +53,7 @@ To configure the Hygieia audit API layer, execute the following steps:
 	server.port=8080
 	```
 
-	**Note**: The 'jasypt.encryptor.password' system property is used to decrypt the database password. For more information, refer to [Encrypted Properties](https://github.com/capitalone/Hygieia/blob/gh-pages/pages/hygieia/api/api.md#encrypted-properties)
+	**Note**: The 'jasypt.encryptor.password' system property is used to decrypt the database password. For more information, refer to [Encrypted Properties](../setup.md#encrypted-properties).
 
 ## API Properties File
 
