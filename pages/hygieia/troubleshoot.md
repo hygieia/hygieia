@@ -47,7 +47,7 @@ gulp serve
 To remove unconfigured widgets from a dashboard, execute the following:
 
 1. Signup and login as 'admin' user. For detailed instructions, see [Signup and Login](../product1/signup.md).
-2. Create a custom template by choosing the widgets that appear on the dashboard. For detailed instructions, see [Manage Dashboard Templates](signup.html#manage-dashboard-templates).
+2. Create a custom template by choosing the widgets that appear on the dashboard. For detailed instructions, see [Manage Dashboard Templates](../product1/signup.md#manage-dashboard-templates).
 
 Only the selected widgets are displayed on the dashboard.
 
