@@ -26,10 +26,12 @@
 
                               <div class="list-animate">
                                   <div class="dash-modal-row delete-dashboard-row clearfix"
-                                      ng-repeat="item in ctrl.dashboards | orderBy:'name'">
-                                      <div title="{{item.name}}" class="btn-block">{{item.name |  trunText:30}}
-                                          <dash-trash class="clickable pull-right" ng-click="ctrl.deleteDashboard(item.id)"></dash-trash>
-                                          <dash-edit class="clickable pull-right" ng-click="ctrl.editDashboard(item)"></dash-edit>
+                                      ng-repeat="dashboard in ctrl.dashboards | orderBy:'name'">
+                                      <div title="{{dashboard.name}}" class="btn-block">{{dashboard.name |  trunText:30}}
+                                          <a href delete-confirm title="Are you sure you want to delete?" confirm-action="ctrl.deleteDashboard(dashboard.id)">
+                                              <dash-trash class="clickable pull-right"></dash-trash>
+                                          </a>
+                                          <dash-edit class="clickable pull-right" ng-click="ctrl.editDashboard(dashboard)"></dash-edit>
                                       </div>
                                   </div>
                               </div>
@@ -66,25 +68,20 @@
                             <div class="col-sm-8 col-sm-pull-4">
                                 <div>
                                     <ul class="list-animate list-group text-left">
-                                        <li class="list-group-item" ng-repeat="myitem in ctrl.templates" >
-                                    <span class="pull-right">
-                                         <a href ng-click="ctrl.editTemplate(myitem)">
-                                           <span class="fa fa-lg fa-edit "></span>
-                                       </a>
-                                       <a href ng-click="ctrl.deleteTemplate(myitem)">
-                                           <span class="fa fa-lg fa-trash text-danger"></span>
-                                       </a>
-                                    </span>
-
-                                            <a class="btn-block clickable" ng-click="ctrl.viewTemplateDetails(myitem)">
-                                                <span class="fa fa-lg left-icon" ></span>
-                                                {{ myitem.template }}
-                                            </a>
-                                        </li>
+                                      <li class="list-group-item" ng-repeat="template in ctrl.templates" >
+                                        <span class="pull-right">
+                                        <a href ng-click="ctrl.editTemplate(template)"><span class="fa fa-lg fa-edit"></span></a>
+                                        <a href delete-confirm title="Are you sure you want to delete?" confirm-action="ctrl.deleteTemplate(template)">
+                                          <span class="fa fa-lg fa-trash text-danger"></span>
+                                        </a>
+                                        </span>
+                                        <a class="btn-block clickable" ng-click="ctrl.viewTemplateDetails(template)">
+                                          <span class="fa fa-lg left-icon" ></span>
+                                          {{ template.template }}
+                                        </a>
+                                      </li>
                                     </ul>
                                 </div>
-
-
                             </div>
                         </div>
                     </div>
@@ -166,7 +163,6 @@
 
                                 <div class="row">
                                     <div class="col-xs-15">
-
                                         <div class="btn-block col-xs-15">
                                             <span class="col-xs-3"><h3>Api User</h3></span>
                                             <span class="col-xs-3"><h3>Expiration Date</h3></span>
@@ -177,11 +173,13 @@
                                         <input type="text" class="form-control" id="tokenSearch" placeholder="Filter Api Users" ng-model="tokenSearch">
 
                                         <div class="dash-modal-row delete-dashboard-row clearfix"
-                                             ng-repeat="apitoken in apitokens | filter:{apiUser:tokenSearch} | orderBy:'apiUser'">
+                                            ng-repeat="apitoken in apitokens | filter:{apiUser:tokenSearch} | orderBy:'apiUser'">
                                             <div class="btn-block col-xs-15">
                                                 <span class="col-xs-3">{{apitoken.apiUser}}</span>
                                                 <span>{{::apitoken.expirationDt | date:'MM/dd/yyyy HH:mm:ss'}}</span>
-                                                <dash-trash class="clickable pull-right" ng-click="ctrl.deleteToken(apitoken.id)"></dash-trash>
+                                                <a href delete-confirm title="Are you sure you want to delete?" confirm-action="ctrl.deleteToken(apitoken.id)">
+                                                  <dash-trash class="clickable pull-right"></dash-trash>
+                                                </a>
                                                 <dash-edit class="clickable pull-right" ng-click="ctrl.editToken(apitoken)"></dash-edit>
                                             </div>
                                         </div>
