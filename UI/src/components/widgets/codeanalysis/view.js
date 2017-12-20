@@ -17,6 +17,19 @@
             showLabel: false
         };
 
+        ctrl.minitabs = [
+            { name: "Static Analysis"},
+            { name: "Security Scan"},
+            { name: "Open Source Scan"},
+            { name: "Test Results"}
+
+        ];
+
+        ctrl.miniWidgetView = ctrl.minitabs[0].name;
+        ctrl.miniToggleView = function (index) {
+            ctrl.miniWidgetView = typeof ctrl.minitabs[index] === 'undefined' ? ctrl.minitabs[0].name : ctrl.minitabs[index].name;
+        };
+
         ctrl.showStatusIcon = showStatusIcon;
         ctrl.showDetail = showDetail;
         ctrl.showLibraryPolicyDetails = showLibraryPolicyDetails;
