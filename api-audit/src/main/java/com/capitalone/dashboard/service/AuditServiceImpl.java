@@ -23,6 +23,12 @@ import com.capitalone.dashboard.model.RepoBranch;
 import com.capitalone.dashboard.model.TestResult;
 import com.capitalone.dashboard.model.Review;
 import com.capitalone.dashboard.model.Widget;
+import com.capitalone.dashboard.model.PerfTest;
+import com.capitalone.dashboard.model.PerfIndicators;
+import com.capitalone.dashboard.model.TestCapability;
+import com.capitalone.dashboard.model.TestSuite;
+import com.capitalone.dashboard.model.TestCase;
+import com.capitalone.dashboard.model.TestCaseStep;
 import com.capitalone.dashboard.repository.BuildRepository;
 import com.capitalone.dashboard.repository.CmdbRepository;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
@@ -42,6 +48,7 @@ import com.capitalone.dashboard.response.JobReviewResponse;
 import com.capitalone.dashboard.response.PeerReviewResponse;
 import com.capitalone.dashboard.response.StaticAnalysisResponse;
 import com.capitalone.dashboard.response.TestResultsResponse;
+import com.capitalone.dashboard.response.PerfReviewResponse;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -66,6 +73,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.Collection;
 
 @Component
 public class AuditServiceImpl implements AuditService {
@@ -225,14 +233,14 @@ public class AuditServiceImpl implements AuditService {
 			List<CodeQuality> codeQualityDetails = codeQualityRepository.findByCollectorItemIdOrderByTimestampDesc(codeQualityItem.getCollectorId());
 			StaticAnalysisResponse staticAnalysisResponse = this.getStaticAnalysisResponse(codeQualityDetails);
 			dashboardReviewResponse.setStaticAnalysisResponse(staticAnalysisResponse);
-			
+
 			//Commenting this out until Sonar Collector is updated to pull config changes
 //			if(repoItems != null && !repoItems.isEmpty()){
 //				for (CollectorItem repoItem : repoItems) {
 //					String aRepoItembranch = (String) repoItem.getOptions().get("branch");
 //					String aRepoItemUrl = (String) repoItem.getOptions().get("url");
 //					List<Commit> repoCommits = getCommits(aRepoItemUrl, aRepoItembranch, beginDate, endDate);
-//					
+//
 //					CodeQualityProfileValidationResponse codeQualityProfileValidationResponse = this.qualityProfileAudit(repoCommits,codeQualityDetails,beginDate, endDate);
 //					dashboardReviewResponse.setCodeQualityProfileValidationResponse(codeQualityProfileValidationResponse);
 //				}
@@ -289,17 +297,17 @@ public class AuditServiceImpl implements AuditService {
 
         if (pullRequests != null && jobConfigHists != null) {
             HashSet<String> prAuthorsSet = new HashSet();
-            for(GitRequest pr : pullRequests) {
+            for (GitRequest pr : pullRequests) {
                 prAuthorsSet.add(pr.getUserId());
             }
 
             HashSet<String> configAuthorsSet = new HashSet();
-            for(CollItemCfgHist cfgHist : jobConfigHists) {
+            for (CollItemCfgHist cfgHist : jobConfigHists) {
                 configAuthorsSet.add(cfgHist.getUserID());
             }
 
             Iterator<String> prAuthorsSetIter = prAuthorsSet.iterator();
-            while(prAuthorsSetIter.hasNext()) {
+            while (prAuthorsSetIter.hasNext()) {
                 String prAuthor = prAuthorsSetIter.next();
                 if (configAuthorsSet.contains(prAuthor)) {
                     dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_PR_AUTHOR_EQ_BUILD_AUTHOR);
@@ -309,8 +317,8 @@ public class AuditServiceImpl implements AuditService {
 
             dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_PR_AUTHOR_NE_BUILD_AUTHOR);
         }
-		
-		List<CollectorItem> testItems = this.getCollectorItems(dashboard, "test", CollectorType.Test);
+
+        List<CollectorItem> testItems = this.getCollectorItems(dashboard, "test", CollectorType.Test);
 
 		if (testItems != null && !testItems.isEmpty()) {
 			dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_TEST_CONFIGURED);
@@ -769,7 +777,7 @@ public class AuditServiceImpl implements AuditService {
 
 	/**
 	 * Gets StaticAnalysisResponses for artifact
-	 * 
+	 *
 	 * @param projectName
 	 *            Sonar Project Name
 	 * @param artifactVersion
@@ -791,7 +799,7 @@ public class AuditServiceImpl implements AuditService {
 
 	/**
 	 * Reusable method for constructing the StaticAnalysisResponse object for a
-	 * 
+	 *
 	 * @param codeQualities
 	 *            Code Quality List
 	 * @return StaticAnalysisResponse
@@ -847,21 +855,21 @@ public class AuditServiceImpl implements AuditService {
 	/**
 	 * Retrieves test result execution details for a business application and
 	 * artifact
-	 * 
+	 *
 	 * @param jobUrl
 	 *            Job Url of test execution
 	 * @param beginDt
 	 *            Beginning timestamp boundary
 	 * @param endDt
 	 *            End Timestamp boundry
-	 * @return TestResultsResponse 
+	 * @return TestResultsResponse
 	 * @throws HygieiaException
 	 */
 
 	public TestResultsResponse getTestResultExecutionDetails(String jobUrl,long beginDt, long endDt) throws HygieiaException {
-				
+
 		List<TestResult> testResults = getTestResults(jobUrl,beginDt,endDt);
-		
+
 		if (CollectionUtils.isEmpty(testResults))
 			throw new HygieiaException("Unable to retreive  test result details for : " + jobUrl,
 					HygieiaException.BAD_DATA);
@@ -871,10 +879,10 @@ public class AuditServiceImpl implements AuditService {
 		return testResultsResponse;
 
 	}
-	
+
 	/**
 	 * Reusable method for constructing the StaticAnalysisResponse object for a
-	 * 
+	 *
 	 * @param testResults
 	 *            Test Result List
 	 * @return TestResultsResponse
@@ -883,12 +891,12 @@ public class AuditServiceImpl implements AuditService {
 	private TestResultsResponse regressionTestResultAudit(List<TestResult> testResults) {
 		TestResultsResponse testResultsResponse = new TestResultsResponse();
 		boolean regressionTestSuitePresent = false;
-		
+
 		for(TestResult testResult : testResults){
 			if ("Regression".equalsIgnoreCase(testResult.getType().name())) {
-				
+
 				regressionTestSuitePresent = true;
-				
+
 				if (testResult.getFailureCount() == 0) {
 					testResultsResponse.addAuditStatus(AuditStatus.TEST_RESULT_AUDIT_OK);
 				} else
@@ -896,12 +904,12 @@ public class AuditServiceImpl implements AuditService {
 
 				testResultsResponse.setTestCapabilities(testResult.getTestCapabilities());
 			}
-			
+
 		}
-		
+
 		if (!regressionTestSuitePresent){
 			testResultsResponse.addAuditStatus(AuditStatus.TEST_RESULT_AUDIT_MISSING);
-		}	
+		}
 
 		return testResultsResponse;
 	}
@@ -909,7 +917,7 @@ public class AuditServiceImpl implements AuditService {
 	/**
 	 * Retrieves code quality profile changeset for a given time period and
 	 * determines if change author matches commit author within time period
-	 * 
+	 *
 	 * @param repoUrl
 	 *            SCM repo url
 	 * @param repoBranch
@@ -918,7 +926,7 @@ public class AuditServiceImpl implements AuditService {
 	 *            Sonar Project name
 	 * @param artifactVersion
 	 *            Artifact Version
-	 *            
+	 *
 	 * @return CodeQualityProfileValidationResponse
 	 * @throws HygieiaException
 	 */
@@ -926,26 +934,26 @@ public class AuditServiceImpl implements AuditService {
 	public CodeQualityProfileValidationResponse getQualityGateValidationDetails(String repoUrl,String repoBranch,
 			String projectName, String artifactVersion, long beginDate, long endDate)
 			throws HygieiaException {
-		
+
 		List<Commit> commits = getCommits(repoUrl, repoBranch, beginDate, endDate);
 
 		List<CodeQuality> codeQualities = codeQualityRepository
 				.findByNameAndVersionOrderByTimestampDesc(projectName, artifactVersion);
-		
+
 		CodeQualityProfileValidationResponse codeQualityGateValidationResponse = this.qualityProfileAudit(commits,codeQualities,beginDate,endDate);
 
-		
-		return codeQualityGateValidationResponse; 
-		
+
+		return codeQualityGateValidationResponse;
+
 	}
-	
+
 	private CodeQualityProfileValidationResponse qualityProfileAudit(List<Commit> commits,List<CodeQuality> codeQualities,long beginDate, long endDate){
-		
+
 		Set<String> authors = new HashSet<String>();
 		for (Commit commit : commits) {
 			authors.add(commit.getScmAuthor());
 		}
-		
+
 		CodeQualityProfileValidationResponse codeQualityGateValidationResponse = new CodeQualityProfileValidationResponse();
 		CodeQuality codeQuality = codeQualities.get(0);
 		String url = codeQuality.getUrl();
@@ -983,7 +991,7 @@ public class AuditServiceImpl implements AuditService {
 			codeQualityGateValidationResponse.setQualityGateChangePerformers(qualityProfileChangePerformers);
 		}
 		codeQualityGateValidationResponse.setCommitAuthors(authors);
-		return codeQualityGateValidationResponse;	
+		return codeQualityGateValidationResponse;
 	}
 
 	@Override
@@ -996,11 +1004,93 @@ public class AuditServiceImpl implements AuditService {
         }
         return false;
     }
-	
+
 	private List<TestResult> getTestResults(String jobUrl,long beginDt, long endDt){
 		List<TestResult> testResults = customRepositoryQuery
 				.findByUrlAndTimestampGreaterThanEqualAndTimestampLessThanEqual(jobUrl,beginDt,endDt);
-		
+
 		return testResults;
 	}
+    public PerfReviewResponse getresultsBycomponetAndTime(String businessComp, long from, long to) {
+        Cmdb cmdb = cmdbRepository.findByConfigurationItemIgnoreCase(businessComp); // get CMDB iD
+        Iterable<Dashboard> dashboard = dashboardRepository.findAllByConfigurationItemBusAppObjectId(cmdb.getId()); //get dashboard based on CMDB ID
+        Iterator<Dashboard> dashboardIT = dashboard.iterator();  //Iterate through the dashboards to obtain the collectorIteamID
+        PerfReviewResponse perfReviewResponse = new PerfReviewResponse();
+        while (dashboardIT.hasNext()) {
+            dashboardIT.next();
+            Set<CollectorType> ci = dashboard.iterator().next().getApplication().getComponents().iterator().next().getCollectorItems().keySet();
+            boolean Isperf = dashboard.iterator().next().getApplication().getComponents().iterator().next().getCollectorItems().values().iterator().next().iterator().next().getOptions().containsValue("jmeter");
+            boolean Istest = ci.iterator().next().name().equals(CollectorType.Test.name());
+            if (Istest && Isperf)  //validate if the Test collector exists with jmeter collector Item
+            {
+                ObjectId collectorItemID = dashboard.iterator().next().getApplication().getComponents().iterator().next().getCollectorItems().values().iterator().next().iterator().next().getId();
+                List<TestResult> result = customRepositoryQuery.findByCollectorItemIdAndTimestampGreaterThanEqualAndTimestampLessThanEqual(collectorItemID, from, to);
+                List<PerfTest> testlist = new ArrayList<PerfTest>();
+                //loop through test result object to obtain performance artifacts.
+                for (TestResult testResult : result) { //parse though the results to obtain performance KPI's
+                    Collection<TestCapability> testCapabilityCollection = testResult.getTestCapabilities();
+                    List<TestCapability> testCapabilityList = new ArrayList<>(testCapabilityCollection);
+
+                    for (TestCapability testCapability : testCapabilityList) {
+                        PerfTest test = new PerfTest();
+                        List<PerfIndicators> kpilist = new ArrayList<PerfIndicators>();
+                        Collection<TestSuite> testSuitesCollection = testCapability.getTestSuites();
+                        List<TestSuite> testSuiteList = new ArrayList<>(testSuitesCollection);
+
+                        for (TestSuite testSuite : testSuiteList) {
+                            Collection<TestCase> testCaseCollection = testSuite.getTestCases();
+                            List<TestCase> testCaseList = new ArrayList<>(testCaseCollection);
+
+                            for (TestCase testCase : testCaseList) {
+                                PerfIndicators kpi = new PerfIndicators();
+                                kpi.setStatus(testCase.getStatus().toString());
+                                kpi.setType(testCase.getDescription().toString());
+                                Collection<TestCaseStep> testCaseStepCollection = testCase.getTestSteps();
+                                List<TestCaseStep> testCaseStepList = new ArrayList<>(testCaseStepCollection);
+                                int j = 0;
+                                for (TestCaseStep testCaseStep : testCaseStepList) {
+                                    String value = testCaseStep.getDescription();
+                                    if (j == 0) {
+                                        double targetdouble = Double.parseDouble(value);
+                                        kpi.setTarget(targetdouble);
+                                    } else {
+                                        double achievedouble = Double.parseDouble(value);
+                                        kpi.setAchieved(achievedouble);
+                                    }
+                                    j++;
+                                }
+                                kpilist.add(kpi);
+                            }
+                            //create performance test review object
+                            test.setRunId(testResult.getExecutionId());
+                            test.setStartTime(testResult.getStartTime());
+                            test.setEndTime(testResult.getEndTime());
+                            test.setResultStatus(testResult.getDescription());
+                            test.setPerfIndicators(kpilist);
+                            CollectorItem collectoritem = collectorItemRepository.findOne(collectorItemID);
+                            test.setTestName((String) collectoritem.getOptions().get("jobName"));
+                            test.setTimeStamp(testResult.getTimestamp());
+                            testlist.add(test);
+                        }
+                    }
+                }
+                perfReviewResponse.setResult(testlist);
+                int counter = 0;
+                for (PerfTest list : testlist) {
+                    if (list.getResultStatus().matches("Success")) {
+                        counter++;
+                    }
+                }
+                if (testlist.size() == 0) {
+                    perfReviewResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_MISSING);
+                } else if (counter >= 1) {
+                    perfReviewResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_OK);
+                } else {
+                    perfReviewResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_FAIL);
+                }
+            }
+        }
+        return perfReviewResponse;
+    }
+
 }

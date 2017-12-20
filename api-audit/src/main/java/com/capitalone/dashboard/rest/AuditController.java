@@ -10,12 +10,14 @@ import com.capitalone.dashboard.request.PeerReviewRequest;
 import com.capitalone.dashboard.request.QualityProfileValidationRequest;
 import com.capitalone.dashboard.request.StaticAnalysisRequest;
 import com.capitalone.dashboard.request.TestExecutionValidationRequest;
+import com.capitalone.dashboard.request.PerfReviewRequest;
 import com.capitalone.dashboard.response.CodeQualityProfileValidationResponse;
 import com.capitalone.dashboard.response.DashboardReviewResponse;
 import com.capitalone.dashboard.response.JobReviewResponse;
 import com.capitalone.dashboard.response.PeerReviewResponse;
 import com.capitalone.dashboard.response.StaticAnalysisResponse;
 import com.capitalone.dashboard.response.TestResultsResponse;
+import com.capitalone.dashboard.response.PerfReviewResponse;
 import com.capitalone.dashboard.service.AuditService;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
 import org.slf4j.Logger;
@@ -123,10 +125,10 @@ public class AuditController {
         JobReviewResponse jobReviewResponse = auditService.getBuildJobReviewResponse(request.getJobUrl(), request.getJobName(), request.getBeginDate(), request.getEndDate());
         return ResponseEntity.ok().body(jobReviewResponse);
     }
-    
+
 	/**
 	 * Code Quality Analysis - Has artifact met code quality gate threshold
-	 * 
+	 *
 	 * @param request
 	 * @return
 	 * @throws IOException
@@ -141,11 +143,11 @@ public class AuditController {
 		return ResponseEntity.ok().body(staticAnalysisResponse);
 	}
 
-	
+
 	/**
 	 * Code Quality Profile Validation for a business application - Has the code
 	 * quality profile been changed by a user other than the commit author
-	 * 
+	 *
 	 * @param request
 	 * @return
 	 */
@@ -165,7 +167,7 @@ public class AuditController {
 	/**
 	 * Test Result Validation for a business application - Has the code quality
 	 * profile been changed by a user other than the commit author
-	 * 
+	 *
 	 * @param request
 	 * @return
 	 */
@@ -180,5 +182,16 @@ public class AuditController {
 		return ResponseEntity.ok().body(testResultsResponse);
 	}
 
+	@RequestMapping(value = "/validatePerfResults", method = GET, produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity validatePerfResultExecution(PerfReviewRequest request)
+			throws HygieiaException {
+		try {
+				PerfReviewResponse perfReviewResponse;
+				perfReviewResponse = auditService.getresultsBycomponetAndTime(request.getBusinessComponentName(), request.getRangeFrom(), request.getRangeTo());
+				return ResponseEntity.ok().body(perfReviewResponse);
+		}catch (Exception e){
+			return ResponseEntity.ok().body(request.getBusinessComponentName() + " is not a valid businessComp name or does not exists");
+		}
+	}
 }
 
