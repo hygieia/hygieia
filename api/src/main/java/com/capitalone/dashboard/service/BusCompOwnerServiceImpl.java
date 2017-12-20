@@ -93,10 +93,10 @@ public class BusCompOwnerServiceImpl implements BusCompOwnerService{
         /**
          Defining search parameters
          */
-        Predicate<Cmdb> supportOwnerLn = p -> p.getSupportOwner().toLowerCase().contains(lastName);
-        Predicate<Cmdb> serviceOwnerLn = p -> p.getAppServiceOwner().toLowerCase().contains(lastName);
-        Predicate<Cmdb> developmentOwnerLn = p -> p.getDevelopmentOwner().toLowerCase().contains(lastName);
-        Predicate<Cmdb> businessOwnerLn = p -> p.getBusinessOwner().toLowerCase().contains(lastName);
+        Predicate<Cmdb> supportOwnerLn = p -> p.getSupportOwner() != null ? p.getSupportOwner().toLowerCase().contains(lastName) : false;
+        Predicate<Cmdb> serviceOwnerLn = p -> p.getAppServiceOwner() != null ? p.getAppServiceOwner().toLowerCase().contains(lastName) : false;
+        Predicate<Cmdb> developmentOwnerLn = p -> p.getDevelopmentOwner() != null ? p.getDevelopmentOwner().toLowerCase().contains(lastName) : false;
+        Predicate<Cmdb> businessOwnerLn = p -> p.getBusinessOwner() != null ? p.getBusinessOwner().toLowerCase().contains(lastName) : false;
         /**
          * Combining search parameters into one predicate OR search
          */
