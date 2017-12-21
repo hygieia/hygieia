@@ -24,4 +24,6 @@ public interface CustomRepositoryQuery {
     List<GitRequest> findByScmUrlIgnoreCaseAndScmBranchIgnoreCaseAndMergedAtGreaterThanEqualAndMergedAtLessThanEqual(String scmUrl, String scmBranch, long beginDt, long endDt);
     List<TestResult> findByUrlAndTimestampGreaterThanEqualAndTimestampLessThanEqual(String jobUrl,long beginDt,long endDt);
 
+    List<TestResult> findByCollectorItemIdAndTimestampGreaterThanEqualAndTimestampLessThanEqual(ObjectId collectorItemId, long from, long to);
+
 }

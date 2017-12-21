@@ -6,11 +6,13 @@ import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
 import com.capitalone.dashboard.request.CollectorRequest;
+import com.capitalone.dashboard.request.PerfTestDataCreateRequest;
 import com.capitalone.dashboard.request.TestDataCreateRequest;
 import com.capitalone.dashboard.request.TestResultRequest;
 import com.google.common.collect.Lists;
 import com.mysema.query.BooleanBuilder;
 import org.apache.commons.lang.StringUtils;
+import org.bouncycastle.util.test.Test;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -60,6 +62,8 @@ public class TestResultServiceImpl implements TestResultService {
 
         return new DataResponse<>(null, 0L);
     }
+
+
 
     private void validateAllCollectorItems(TestResultRequest request, Component component, List<TestResult> result) {
         for (CollectorItem item : component.getCollectorItems().get(CollectorType.Test)) {
@@ -181,6 +185,28 @@ public class TestResultServiceImpl implements TestResultService {
 
     }
 
+    public String createPerf(PerfTestDataCreateRequest request) throws HygieiaException {
+        /**
+         * Step 1: create performance Collector if not there
+         * Step 2: create Perfomance Collector item if not there
+         * Step 3: Insert performance test data if new. If existing, update it
+         */
+        Collector collector = createCollector();
+        if (collector == null) {
+            throw new HygieiaException("Failed creating Test collector.", HygieiaException.COLLECTOR_CREATE_ERROR);
+        }
+        CollectorItem collectorItem = createPerfCollectorItem(collector, request);
+        if (collectorItem == null) {
+            throw new HygieiaException("Failed creating Test collector item.", HygieiaException.COLLECTOR_ITEM_CREATE_ERROR);
+        }
+        TestResult testResult = createPerfTest(collectorItem, request);
+        if (testResult == null) {
+            throw new HygieiaException("Failed inserting/updating Test information.", HygieiaException.ERROR_INSERTING_DATA);
+        }
+        return testResult.getId().toString();
+
+    }
+
     private Collector createCollector() {
         CollectorRequest collectorReq = new CollectorRequest();
         collectorReq.setName("JenkinsCucumberTest");
@@ -216,6 +242,26 @@ public class TestResultServiceImpl implements TestResultService {
         return collectorService.createCollectorItemByNiceNameAndJobName(tempCi, request.getTestJobName());
     }
 
+
+    private CollectorItem createPerfCollectorItem(Collector collector, PerfTestDataCreateRequest request) throws HygieiaException {
+        CollectorItem tempCi = new CollectorItem();
+        tempCi.setCollectorId(collector.getId());
+        tempCi.setDescription(request.getPerfTool()+" : "+request.getTestName());
+        tempCi.setPushed(true);
+        tempCi.setLastUpdated(System.currentTimeMillis());
+        Map<String, Object> option = new HashMap<>();
+        option.put("jobName", request.getTestName());
+        option.put("jobUrl", request.getReportUrl());
+        option.put("instanceUrl", request.getPerfTool());
+        tempCi.getOptions().putAll(option);
+        tempCi.setNiceName(request.getPerfTool());
+        if (StringUtils.isEmpty(tempCi.getNiceName())) {
+            return collectorService.createCollectorItem(tempCi);
+        }
+        return collectorService.createCollectorItem(tempCi);
+    }
+
+
     private TestResult createTest(CollectorItem collectorItem, TestDataCreateRequest request) {
         TestResult testResult = testResultRepository.findByCollectorItemIdAndExecutionId(collectorItem.getId(),
                 request.getExecutionId());
@@ -244,4 +290,32 @@ public class TestResultServiceImpl implements TestResultService {
 
         return testResultRepository.save(testResult);
     }
+
+    private TestResult createPerfTest(CollectorItem collectorItem, PerfTestDataCreateRequest request) {
+        TestResult testResult = testResultRepository.findByCollectorItemIdAndExecutionId(collectorItem.getId(),
+                request.getRunId());
+        if (testResult == null) {
+            testResult = new TestResult();
+        }
+        testResult.setTargetAppName(request.getTargetAppName());
+        testResult.setTargetEnvName(request.getTargetEnvName());
+        testResult.setCollectorItemId(collectorItem.getId());
+        testResult.setType(request.getType());
+        testResult.setDescription(request.getDescription());
+        testResult.setDuration(request.getDuration());
+        testResult.setEndTime(request.getEndTime());
+        testResult.setExecutionId(request.getRunId());
+        testResult.setFailureCount(request.getFailureCount());
+        testResult.setSkippedCount(request.getSkippedCount());
+        testResult.setStartTime(request.getStartTime());
+        testResult.setSuccessCount(request.getSuccessCount());
+        testResult.setTimestamp(request.getTimestamp());
+        testResult.setTotalCount(request.getTotalCount());
+        testResult.setUnknownStatusCount(request.getUnknownStatusCount());
+        testResult.setUrl(request.getReportUrl());
+        testResult.getTestCapabilities().addAll(request.getTestCapabilities());
+        testResult.setDescription(request.getDescription());
+        return testResultRepository.save(testResult);
+    }
+
 }
