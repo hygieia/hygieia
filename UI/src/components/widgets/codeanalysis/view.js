@@ -19,9 +19,9 @@
 
         ctrl.minitabs = [
             { name: "Static Analysis"},
-            { name: "Security Scan"},
-            { name: "Open Source Scan"},
-            { name: "Test Results"}
+            { name: "Security"},
+            { name: "OpenSource"},
+            { name: "Tests"}
 
         ];
 
