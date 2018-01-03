@@ -13,7 +13,7 @@
     "report": "serenity run"
   },
   "repository": {
-    "type": "git",
+    "type": "git"
   },
   "keywords": [
     "serenity-js",
