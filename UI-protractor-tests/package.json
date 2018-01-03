@@ -14,14 +14,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.kdc.capitalone.com/emb235/protractor-poc.git"
   },
   "keywords": [
     "serenity-js",
     "protractor",
     "cucumber"
   ],
-  "author": "Varun Mukka <varun.mukka@capitalone.com>",
   "license": "Apache-2.0",
   "devDependencies": {
     "chai": "4.0.2",

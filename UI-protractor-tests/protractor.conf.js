@@ -1,7 +1,7 @@
 
 exports.config = {
 
-    baseUrl: 'https://hygieia-qa.cloud.capitalone.com/',
+    baseUrl: 'http://localhost:3000/#/',
 
     allScriptsTimeout: 110000,
 
