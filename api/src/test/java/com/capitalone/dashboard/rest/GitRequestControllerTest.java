@@ -75,7 +75,6 @@ public class GitRequestControllerTest {
         GitRequest gitRequest = new GitRequest();
         gitRequest.setScmUrl("scmUrl");
         gitRequest.setScmRevisionNumber("revNum");
-        gitRequest.setNumberOfChanges(20);
         gitRequest.setScmAuthor("bob");
         gitRequest.setTimestamp(2);
         return gitRequest;

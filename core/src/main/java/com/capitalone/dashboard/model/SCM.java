@@ -17,6 +17,7 @@ public class SCM {
     protected long scmCommitTimestamp;
     protected long numberOfChanges;
     protected CommitType type;
+    protected String pullNumber;
 
     public SCM(){
 
@@ -128,5 +129,13 @@ public class SCM {
 
     public void setType(CommitType type) {
         this.type = type;
+    }
+
+    public String getPullNumber() {
+        return pullNumber;
+    }
+
+    public void setPullNumber(String pullNumber) {
+        this.pullNumber = pullNumber;
     }
 }
