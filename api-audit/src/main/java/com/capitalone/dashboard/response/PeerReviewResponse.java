@@ -12,7 +12,6 @@ public class PeerReviewResponse extends AuditReviewResponse {
     private List<Commit> directCommits;
     protected String scmUrl;
     protected String scmBranch;
-    protected long lastUpdated;
 
     public GitRequest getPullRequest() {
         return pullRequest;
@@ -60,13 +59,5 @@ public class PeerReviewResponse extends AuditReviewResponse {
 
     public void setScmBranch(String scmBranch) {
         this.scmBranch = scmBranch;
-    }
-
-    public long getLastUpdated() {
-        return lastUpdated;
-    }
-
-    public void setLastUpdated(long lastUpdated) {
-        this.lastUpdated = lastUpdated;
     }
 }

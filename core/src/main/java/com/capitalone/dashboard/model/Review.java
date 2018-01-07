@@ -1,17 +1,11 @@
 package com.capitalone.dashboard.model;
 
 public class Review {
-    private int id;
     private String body;
     private String state;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
+    private String author;
+    private long createdAt;
+    private long updatedAt;
 
     public String getBody() {
         return body;
@@ -27,5 +21,29 @@ public class Review {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public long getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public long getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(long updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
