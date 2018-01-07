@@ -8,6 +8,8 @@ public class PeerReviewRequest extends AuditReviewRequest {
     @NotNull
     private String branch;
 
+    private String scmName;
+
     public String getRepo() {
         return repo;
     }
@@ -22,5 +24,13 @@ public class PeerReviewRequest extends AuditReviewRequest {
 
     public void setBranch(String branch) {
         this.branch = branch;
+    }
+
+    public String getScmName() {
+        return scmName;
+    }
+
+    public void setScmName(String scmName) {
+        this.scmName = scmName;
     }
 }
