@@ -557,7 +557,9 @@ public class DefaultGitHubClient implements GitHubClient {
                 GitHubParsed sourceRepoUrlParsed = new GitHubParsed(str(headObject, "url"));
                 pull.setSourceRepo(!Objects.equals("", sourceRepoUrlParsed.getOrgName()) ? sourceRepoUrlParsed.getOrgName() + "/" + sourceRepoUrlParsed.getRepoName() : sourceRepoUrlParsed.getRepoName());
             }
-            pull.setBaseSha(str((JSONObject) ((JSONObject) node.get("baseRef")).get("target"), "oid"));
+            if (node.get("baseRef") != null) {
+                pull.setBaseSha(str((JSONObject) ((JSONObject) node.get("baseRef")).get("target"), "oid"));
+            }
             pull.setTargetBranch(str(node, "baseRefName"));
             //pull.setTargetRepo(gitHubParsed.getUrl());
             pull.setTargetRepo(!Objects.equals("", gitHubParsed.getOrgName()) ? gitHubParsed.getOrgName() + "/" + gitHubParsed.getRepoName() : gitHubParsed.getRepoName());
@@ -842,7 +844,13 @@ public class DefaultGitHubClient implements GitHubClient {
         JSONObject query = new JSONObject();
         query.put("query", GitHubGraphQLQuery.QUERY_RATE_LIMIT);
 
-        ResponseEntity<String> response = makeRestCallPost(gitHubParsed.getGraphQLUrl(), repo.getUserId(), decryptedPassword, query);
+        ResponseEntity<String> response = null;
+        if (StringUtils.isEmpty(settings.getPersonalAccessToken())) {
+            response = makeRestCallPost(gitHubParsed.getGraphQLUrl(), repo.getUserId(), decryptedPassword, query);
+        } else {
+            response = makeRestCallPost(gitHubParsed.getGraphQLUrl(), "", "", query);
+        }
+
         JSONObject data = (JSONObject) parseAsObject(response).get("data");
 
         JSONArray errors = getArray(parseAsObject(response), "errors");
