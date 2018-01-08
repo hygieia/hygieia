@@ -8,9 +8,9 @@ import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.GitHubRateLimit;
 import com.capitalone.dashboard.model.GitHubRepo;
 import com.capitalone.dashboard.model.GitRequest;
-import com.capitalone.dashboard.repository.BaseCollectorItemRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.GitHubRepoRepository;
@@ -31,19 +31,20 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GitHubCollectorTaskTest {
 
-    @Mock private BaseCollectorItemRepository collectors;
     @Mock private GitHubRepoRepository gitHubRepoRepository;
+    @Mock private GitRequestRepository gitRequestRepository;
     @Mock private GitHubClient gitHubClient;
     @Mock private GitHubSettings gitHubSettings;
     @Mock private ComponentRepository dbComponentRepository;
     @Mock private CommitRepository commitRepository;
-    @Mock private GitRequestRepository gitRequestRepository;
 
     @Mock private GitHubRepo repo1;
     @Mock private GitHubRepo repo2;
@@ -68,13 +69,16 @@ public class GitHubCollectorTaskTest {
 
         when(gitHubRepoRepository.findEnabledGitHubRepos(collector.getId())).thenReturn(getEnabledRepos());
 
+        when(gitRequestRepository.findNonMergedRequestNumberAndLastUpdated(any())).thenReturn(new ArrayList<>());
         when(gitHubSettings.getErrorThreshold()).thenReturn(1);
 
-        when(gitHubClient.getCommits(repo1, true, new ArrayList<>())).thenReturn(getCommits());
+        when(gitHubClient.getRateLimit(repo1)).thenReturn(getOkRateLimit());
+        when(gitHubClient.getCommits()).thenReturn(getCommits());
 
         when(commitRepository.findByCollectorItemIdAndScmRevisionNumber(
                 repo1.getId(), "1")).thenReturn(null);
 
+        when(commitRepository.countCommitsByCollectorItemId(repo1.getId())).thenReturn(1L);
         task.collect(collector);
 
         //verify that orphaned repo is disabled
@@ -107,10 +111,13 @@ public class GitHubCollectorTaskTest {
 
         when(gitHubSettings.getErrorThreshold()).thenReturn(0);
 
-        when(gitHubClient.getCommits(repo1, true, new ArrayList<>())).thenReturn(getCommits());
+        when(gitHubClient.getCommits()).thenReturn(getCommits());
 
         when(commitRepository.findByCollectorItemIdAndScmRevisionNumber(
                 repo1.getId(), "1")).thenReturn(null);
+        when(gitHubClient.getRateLimit(repo1)).thenReturn(getOkRateLimit());
+        when(gitHubClient.getRateLimit(repo2)).thenReturn(getOkRateLimit());
+        when(commitRepository.countCommitsByCollectorItemId(repo1.getId())).thenReturn(1L);
 
         task.collect(collector);
 
@@ -123,7 +130,7 @@ public class GitHubCollectorTaskTest {
         assertEquals(true, repo1.isEnabled());
 
         //verify that save is called once for the commit item
-        Mockito.verify(commitRepository, times(0)).save(commit);
+        Mockito.verify(commitRepository, times(1)).save(commit);
     }
 
     @Test
@@ -143,12 +150,16 @@ public class GitHubCollectorTaskTest {
 
         when(gitHubSettings.getErrorThreshold()).thenReturn(1);
 
-        when(gitHubClient.getCommits(repo1, true, new ArrayList<>())).thenReturn(getCommits());
-        when(gitHubClient.getIssues(repo1, true)).thenReturn(getGitRequests());
+        when(gitHubClient.getCommits()).thenReturn(getCommits());
+        when(gitHubClient.getIssues()).thenReturn(getGitRequests());
 //  Need to correct - Topo - 7/31      when(gitHubClient.getPulls(repo1, "close",true)).thenReturn(getGitRequests());
 
         when(commitRepository.findByCollectorItemIdAndScmRevisionNumber(
                 repo1.getId(), "1")).thenReturn(null);
+
+        when(gitHubClient.getRateLimit(repo1)).thenReturn(getOkRateLimit());
+        when(gitHubClient.getRateLimit(repo2)).thenReturn(getOkRateLimit());
+        when(commitRepository.countCommitsByCollectorItemId(repo1.getId())).thenReturn(1L);
 
         task.collect(collector);
 
@@ -181,11 +192,15 @@ public class GitHubCollectorTaskTest {
 
         when(gitHubSettings.getErrorThreshold()).thenReturn(1);
 
-        when(gitHubClient.getCommits(repo1, true, new ArrayList<>())).thenReturn(getCommits());
+        when(gitHubClient.getCommits()).thenReturn(getCommits());
 
         when(commitRepository.findByCollectorItemIdAndScmRevisionNumber(
                 repo1.getId(), "1")).thenReturn(null);
 
+        when(gitHubClient.getRateLimit(repo1)).thenReturn(getOkRateLimit());
+        when(gitHubClient.getRateLimit(repo2)).thenReturn(getOkRateLimit());
+        when(commitRepository.countCommitsByCollectorItemId(repo1.getId())).thenReturn(1L);
+        
         task.collect(collector);
 
         //verify that orphaned repo is disabled
@@ -197,11 +212,11 @@ public class GitHubCollectorTaskTest {
         assertEquals(true, repo1.isEnabled());
 
         //verify that save is called once for the commit item
-        Mockito.verify(commitRepository, times(0)).save(commit);
+        Mockito.verify(commitRepository, times(1)).save(commit);
     }
 
     private ArrayList<Commit> getCommits() {
-        ArrayList<Commit> commits = new ArrayList<Commit>();
+        ArrayList<Commit> commits = new ArrayList<>();
         commit = new Commit();
         commit.setTimestamp(System.currentTimeMillis());
         commit.setScmUrl("http://testcurrenturl");
@@ -217,7 +232,7 @@ public class GitHubCollectorTaskTest {
         return commits;
     }
     private ArrayList<GitRequest> getGitRequests() {
-        ArrayList<GitRequest> gitRequests = new ArrayList<GitRequest>();
+        ArrayList<GitRequest> gitRequests = new ArrayList<>();
         gitRequest = new GitRequest();
         gitRequest.setTimestamp(System.currentTimeMillis());
         gitRequest.setScmUrl("http://testcurrenturl");
@@ -230,7 +245,7 @@ public class GitHubCollectorTaskTest {
         return gitRequests;
     }
     private List<GitHubRepo> getEnabledRepos() {
-        List<GitHubRepo> gitHubs = new ArrayList<GitHubRepo>();
+        List<GitHubRepo> gitHubs = new ArrayList<>();
         repo1 = new GitHubRepo();
         repo1.setEnabled(true);
         repo1.setId(new ObjectId("1c1ca42a258ad365fbb64ecc"));
@@ -242,7 +257,7 @@ public class GitHubCollectorTaskTest {
     }
 
     private List<GitHubRepo> getEnabledReposWithErrorCount1() {
-        List<GitHubRepo> gitHubs = new ArrayList<GitHubRepo>();
+        List<GitHubRepo> gitHubs = new ArrayList<>();
         repo1 = new GitHubRepo();
         repo1.setEnabled(true);
         repo1.setId(new ObjectId("1c1ca42a258ad365fbb64ecc"));
@@ -256,7 +271,7 @@ public class GitHubCollectorTaskTest {
     }
 
     private ArrayList<GitHubRepo> getGitHubs() {
-        ArrayList<GitHubRepo> gitHubs = new ArrayList<GitHubRepo>();
+        ArrayList<GitHubRepo> gitHubs = new ArrayList<>();
 
         repo1 = new GitHubRepo();
         repo1.setEnabled(true);
@@ -279,7 +294,7 @@ public class GitHubCollectorTaskTest {
     }
 
     private ArrayList<com.capitalone.dashboard.model.Component> components() {
-        ArrayList<com.capitalone.dashboard.model.Component> cArray = new ArrayList<com.capitalone.dashboard.model.Component>();
+        ArrayList<com.capitalone.dashboard.model.Component> cArray = new ArrayList<>();
         com.capitalone.dashboard.model.Component c = new Component();
         c.setId(new ObjectId());
         c.setName("COMPONENT1");
@@ -314,4 +329,17 @@ public class GitHubCollectorTaskTest {
 
         return cArray;
     }
+
+    private GitHubRateLimit getOkRateLimit() {
+        GitHubRateLimit rateLimit = new GitHubRateLimit();
+        rateLimit.setRemaining(100);
+        return rateLimit;
+    }
+
+    private GitHubRateLimit getBadRateLimit() {
+        GitHubRateLimit rateLimit = new GitHubRateLimit();
+        rateLimit.setRemaining(0);
+        return rateLimit;
+    }
+
 }
