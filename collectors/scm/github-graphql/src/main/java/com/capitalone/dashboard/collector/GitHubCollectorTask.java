@@ -157,13 +157,17 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         List<GitHubRepo> enabledRepos = enabledRepos(collector);
         for (GitHubRepo repo : enabledRepos) {
             LOG.info("Starting collection: " + (repoCount + 1) + " of " + enabledRepos.size() + ": " + repo.getRepoUrl() + "/tree/" + repo.getBranch());
+
+            boolean firstRun = ((repo.getLastUpdated() == 0) || ((start - repo.getLastUpdated()) > FOURTEEN_DAYS_MILLISECONDS));
+
             if (repo.checkErrorOrReset(gitHubSettings.getErrorResetWindow(), gitHubSettings.getErrorThreshold())) {
-                if (!checkRateLimit(repo)) {
-                    LOG.error("GraphQL API rate limit reached. Stopping processing");
-                    break;
-                }
-                boolean firstRun = ((repo.getLastUpdated() == 0) || ((start - repo.getLastUpdated()) > FOURTEEN_DAYS_MILLISECONDS));
+
                 try {
+                    if (!isUnderRateLimit(repo)) {
+                        LOG.error("GraphQL API rate limit reached. Stopping processing");
+                        break;
+                    }
+
                     List<GitRequest> allRequests = gitRequestRepository.findNonMergedRequestNumberAndLastUpdated(repo.getId());
 
                     Map<Long, String> existingPRMap = allRequests.stream().filter(r -> Objects.equals(r.getRequestType(), "pull")).collect(
@@ -234,7 +238,9 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         int count = 0;
         Long existingCount = commitRepository.countCommitsByCollectorItemId(repo.getId());
         if (existingCount == 0) {
-            Iterable<Commit> saved = commitRepository.save(gitHubClient.getCommits());
+            List<Commit> newCommits = gitHubClient.getCommits();
+            newCommits.stream().forEach(c -> c.setCollectorItemId(repo.getId()));
+            Iterable<Commit> saved = commitRepository.save(newCommits);
             count = saved != null ? Lists.newArrayList(saved).size() : 0;
         } else {
             for (Commit commit : gitHubClient.getCommits()) {
@@ -274,8 +280,8 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                 commitRepository.save(commit);
                 count++;
             } else {
-                commit.setId(existing.getId());
-                commitRepository.save(commit);
+                existing.setFirstEverCommit(true);
+                commitRepository.save(existing);
             }
         }
         LOG.info("-- Saved First Ever Commit = " + count);
@@ -283,14 +289,9 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
     }
 
 
-    private boolean checkRateLimit(GitHubRepo repo) {
-        try {
-            GitHubRateLimit rateLimit = gitHubClient.getRateLimit(repo);
-            return rateLimit != null && (rateLimit.getRemaining() > gitHubSettings.getRateLimitThreshold());
-        } catch (MalformedURLException | HygieiaException e) {
-            LOG.error(e);
-            return false;
-        }
+    private boolean isUnderRateLimit(GitHubRepo repo) throws MalformedURLException, HygieiaException {
+        GitHubRateLimit rateLimit = gitHubClient.getRateLimit(repo);
+        return rateLimit != null && (rateLimit.getRemaining() > gitHubSettings.getRateLimitThreshold());
     }
 
     private int processPRorIssueList(GitHubRepo repo, List<GitRequest> existingList, String type) {
