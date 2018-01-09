@@ -1,0 +1,1040 @@
+package com.capitalone.dashboard.collector;
+
+import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.CollectionMode;
+import com.capitalone.dashboard.model.Comment;
+import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.CommitStatus;
+import com.capitalone.dashboard.model.CommitType;
+import com.capitalone.dashboard.model.GitHubGraphQLQuery;
+import com.capitalone.dashboard.model.GitHubParsed;
+import com.capitalone.dashboard.model.GitHubRateLimit;
+import com.capitalone.dashboard.model.GitHubRepo;
+import com.capitalone.dashboard.model.GitRequest;
+import com.capitalone.dashboard.model.GitHubPaging;
+import com.capitalone.dashboard.model.Review;
+import com.capitalone.dashboard.util.Encryption;
+import com.capitalone.dashboard.util.EncryptionException;
+import com.capitalone.dashboard.util.Supplier;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTime;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestOperations;
+
+import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Pattern;
+
+/**
+ * GitHubClient implementation that uses SVNKit to fetch information about
+ * Subversion repositories.
+ */
+@Component
+public class DefaultGitHubClient implements GitHubClient {
+    private static final Log LOG = LogFactory.getLog(DefaultGitHubClient.class);
+
+    private final GitHubSettings settings;
+
+    private final RestOperations restOperations;
+
+    private List<Commit> commits;
+    private List<GitRequest> pullRequests;
+    private List<GitRequest> issues;
+    private final List<Pattern> commitExclusionPatterns = new ArrayList<>();
+
+
+    private static final int FIRST_RUN_HISTORY_DEFAULT = 14;
+
+    @Autowired
+    public DefaultGitHubClient(GitHubSettings settings,
+                               Supplier<RestOperations> restOperationsSupplier) {
+        this.settings = settings;
+        this.restOperations = restOperationsSupplier.get();
+
+        if (!CollectionUtils.isEmpty(settings.getNotBuiltCommits())) {
+            settings.getNotBuiltCommits().stream().map(regExStr -> Pattern.compile(regExStr, Pattern.CASE_INSENSITIVE)).forEach(commitExclusionPatterns::add);
+        }
+    }
+
+    private int getFetchCount(boolean firstRun, GitHubRepo repo) {
+        if (firstRun) return 100;
+        long timeDelta = System.currentTimeMillis() - repo.getLastUpdated();
+        return Math.max(5, Math.min(100, Math.round(timeDelta / 60000)));
+    }
+
+    private ResponseEntity<String> getLastPageResponse(GitHubRepo repo) throws RestClientException, MalformedURLException, HygieiaException {
+        String repoUrl = (String) repo.getOptions().get("url");
+        GitHubParsed gitHubParsed = new GitHubParsed(repoUrl);
+        String apiUrl = gitHubParsed.getApiUrl();
+
+        String queryUrl = apiUrl.concat("/commits?sha=" + repo.getBranch()
+                + "&since=1970-01-01T00:00Z");
+        String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
+        ResponseEntity<String> response = makeRestCallGet(queryUrl, repo.getUserId(), decryptedPassword);
+
+        HttpHeaders header = response.getHeaders();
+        List<String> link = header.get("Link");
+
+        if (link == null || link.isEmpty()) {
+            return response;
+        }
+
+        for (String l : link) {
+            if (l.contains("rel=\"next\"")) {
+                String[] parts = l.split(",");
+                if (parts.length > 0) {
+                    response = Arrays.stream(parts).filter(part -> part.contains("rel=\"last\"")).map(part -> part.split(";")[0]).map(lastPageUrl -> lastPageUrl.replaceFirst("<", "")).map(lastPageUrl -> lastPageUrl.replaceFirst(">", "").trim()).findFirst().map(lastPageUrl -> makeRestCallGet(lastPageUrl, repo.getUserId(), decryptedPassword)).orElse(response);
+                }
+            }
+        }
+        return response;
+    }
+
+    public Commit getFirstEverCommit(GitHubRepo repo) throws RestClientException, MalformedURLException, HygieiaException {
+        ResponseEntity<String> response = getLastPageResponse(repo);
+        JSONArray jsonArray = parseAsArray(response);
+        JSONObject jsonObject = (JSONObject) jsonArray.get(jsonArray.size() - 1);
+        String sha = str(jsonObject, "sha");
+        JSONObject commitObject = (JSONObject) jsonObject.get("commit");
+        JSONObject commitAuthorObject = (JSONObject) commitObject.get("author");
+        String message = str(commitObject, "message");
+        String author = str(commitAuthorObject, "name");
+        long timestamp = new DateTime(str(commitAuthorObject, "date"))
+                .getMillis();
+        JSONObject authorObject = (JSONObject) jsonObject.get("author");
+        String authorLogin = "";
+        if (authorObject != null) {
+            authorLogin = str(authorObject, "login");
+        }
+        JSONArray parents = (JSONArray) jsonObject.get("parents");
+        List<String> parentShas = new ArrayList<>();
+        if (parents != null) {
+            for (Object parentObj : parents) {
+                parentShas.add(str((JSONObject) parentObj, "sha"));
+            }
+        }
+
+        Commit commit = new Commit();
+        commit.setTimestamp(System.currentTimeMillis());
+        commit.setScmUrl(repo.getRepoUrl());
+        commit.setScmBranch(repo.getBranch());
+        commit.setScmRevisionNumber(sha);
+        commit.setScmParentRevisionNumbers(parentShas);
+        commit.setScmAuthor(author);
+        commit.setScmAuthorLogin(authorLogin);
+        commit.setScmCommitLog(message);
+        commit.setScmCommitTimestamp(timestamp);
+        commit.setNumberOfChanges(1);
+        commit.setType(getCommitType(message));
+        commit.setFirstEverCommit(true);
+
+        return commit;
+    }
+
+
+    @Override
+    public List<Commit> getCommits() {
+        return commits;
+    }
+
+    @Override
+    public List<GitRequest> getPulls() {
+        return pullRequests;
+    }
+
+    @Override
+    public List<GitRequest> getIssues() {
+        return issues;
+    }
+
+
+    @Override
+    public void fireGraphQL(GitHubRepo repo, boolean firstRun, Map<Long, String> existingPRMap, Map<Long, String> existingIssueMap) throws RestClientException, MalformedURLException, HygieiaException {
+        // format URL
+        String repoUrl = (String) repo.getOptions().get("url");
+        GitHubParsed gitHubParsed = new GitHubParsed(repoUrl);
+        String graphQLurl = gitHubParsed.getGraphQLUrl();
+
+
+        commits = new LinkedList<>();
+        pullRequests = new LinkedList<>();
+        issues = new LinkedList<>();
+
+        long historyTimeStamp = getTimeStampMills(getRunDate(repo, firstRun));
+
+        String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
+        boolean alldone = false;
+
+        GitHubPaging dummyPRPaging = isThereNewPRorIssue(gitHubParsed, repo, decryptedPassword, existingPRMap, "pull", firstRun);
+        GitHubPaging dummyIssuePaging = isThereNewPRorIssue(gitHubParsed, repo, decryptedPassword, existingIssueMap, "issue", firstRun);
+        GitHubPaging dummyCommitPaging = new GitHubPaging();
+        dummyCommitPaging.setLastPage(false);
+
+        JSONObject query = buildQuery(true, firstRun, gitHubParsed, repo, dummyCommitPaging, dummyPRPaging, dummyIssuePaging);
+
+        int loopCount = 1;
+        while (!alldone) {
+            LOG.debug("Executing loop " + loopCount + " for " + gitHubParsed.getOrgName() + "/" + gitHubParsed.getRepoName());
+            ResponseEntity<String> response = makeRestCallPost(graphQLurl, repo.getUserId(), decryptedPassword, query);
+            JSONObject data = (JSONObject) parseAsObject(response).get("data");
+            JSONArray errors = getArray(parseAsObject(response), "errors");
+
+            if (!CollectionUtils.isEmpty(errors)) {
+                throw new HygieiaException("Error in GraphQL query:" + errors.toJSONString(), HygieiaException.JSON_FORMAT_ERROR);
+            }
+            if (data != null) {
+                JSONObject repository = (JSONObject) data.get("repository");
+
+                GitHubPaging pullPaging = processPullRequest((JSONObject) repository.get("pullRequests"), repo, existingPRMap, historyTimeStamp);
+                LOG.debug("--- Processed " + pullPaging.getCurrentCount() + " of total " + pullPaging.getTotalCount() + " pull requests");
+
+                GitHubPaging issuePaging = processIssues((JSONObject) repository.get("issues"), gitHubParsed, existingIssueMap, historyTimeStamp);
+                LOG.debug("--- Processed " + issuePaging.getCurrentCount() + " of total " + issuePaging.getTotalCount() + " issues");
+
+                GitHubPaging commitPaging = processCommits((JSONObject) repository.get("ref"), repo);
+                LOG.debug("--- Processed " + commitPaging.getCurrentCount() + " commits");
+
+                alldone = pullPaging.isLastPage() && commitPaging.isLastPage() && issuePaging.isLastPage();
+
+                query = buildQuery(false, firstRun, gitHubParsed, repo, commitPaging, pullPaging, issuePaging);
+
+                loopCount++;
+            }
+        }
+        connectCommitToPulls();
+        LOG.info("-- Collected " + commits.size() + " Commits, " + pullRequests.size() + " Pull Requests, " + issues.size() + " Issues since " + getRunDate(repo, firstRun));
+    }
+
+    @SuppressWarnings("PMD.NPathComplexity")
+    private GitHubPaging isThereNewPRorIssue(GitHubParsed gitHubParsed, GitHubRepo repo, String decryptedPassword, Map<Long, String> existingMap, String type, boolean firstRun) throws HygieiaException {
+
+        GitHubPaging paging = new GitHubPaging();
+        paging.setLastPage(true);
+
+        if (firstRun) {
+            paging.setLastPage(false);
+            return paging;
+        }
+
+        String queryString = "pull".equalsIgnoreCase(type) ? GitHubGraphQLQuery.QUERY_NEW_PR_CHECK : GitHubGraphQLQuery.QUERY_NEW_ISSUE_CHECK;
+        JSONObject query = new JSONObject();
+        JSONObject variableJSON = new JSONObject();
+        variableJSON.put("owner", gitHubParsed.getOrgName());
+        variableJSON.put("name", gitHubParsed.getRepoName());
+        if ("pull".equalsIgnoreCase(type)) {
+            variableJSON.put("branch", repo.getBranch());
+        }
+        query.put("query", queryString);
+        query.put("variables", variableJSON.toString());
+
+
+        ResponseEntity<String> response = makeRestCallPost(gitHubParsed.getGraphQLUrl(), repo.getUserId(), decryptedPassword, query);
+        JSONObject data = (JSONObject) parseAsObject(response).get("data");
+        JSONArray errors = getArray(parseAsObject(response), "errors");
+
+        if (!CollectionUtils.isEmpty(errors)) {
+            throw new HygieiaException("Error in GraphQL query:" + errors.toJSONString(), HygieiaException.JSON_FORMAT_ERROR);
+        }
+
+        if (data == null) return paging;
+        JSONObject repository = (JSONObject) data.get("repository");
+        JSONObject requestObject = "pull".equalsIgnoreCase(type) ? (JSONObject) repository.get("pullRequests") : (JSONObject) repository.get("issues");
+        if (requestObject == null) return paging;
+
+        JSONArray edges = getArray(requestObject, "edges");
+        if (CollectionUtils.isEmpty(edges)) return paging;
+
+        int index = 0;
+        for (Object o : edges) {
+            JSONObject node = (JSONObject) ((JSONObject) o).get("node");
+            if (node == null) return paging;
+            String updated = str(node, "updatedAt");
+            long updatedTimestamp = getTimeStampMills(updated);
+            String number = str(node, "number");
+            boolean stop =
+                    ((!MapUtils.isEmpty(existingMap) && existingMap.get(updatedTimestamp) != null) && (Objects.equals(existingMap.get(updatedTimestamp), number)));
+            if (stop) {
+                break;
+            }
+            index++;
+        }
+        paging.setLastPage(index == 0);
+        return paging;
+    }
+
+    /**
+     * Normal merge: Match PR's commit sha's with commit list
+     * Squash merge: Match PR's merge sha's with commit list
+     * Rebase merge: Match PR's commit's "message"+"author name"+"date" with commit list
+     * <p>
+     * If match found, set the commit's PR number and possibly set the PR merge type
+     * <p>
+     * For setting type:
+     * If PR commit's SHAs are all found in commit stream, then the commit for the merge sha is a merge commit.
+     * In all other cases it is a new commit
+     */
+
+    private void connectCommitToPulls() {
+        List<Commit> newCommitList = new LinkedList<>();
+
+        //TODO: Need to optimize this method
+        for (Commit commit : commits) {
+            Iterator<GitRequest> pIter = pullRequests.iterator();
+            boolean foundPull = false;
+            while (!foundPull && pIter.hasNext()) {
+                GitRequest pull = pIter.next();
+                if (Objects.equals(pull.getScmRevisionNumber(), commit.getScmRevisionNumber())) {
+                    foundPull = true;
+                    commit.setPullNumber(pull.getNumber());
+                } else {
+                    List<Commit> prCommits = pull.getCommits();
+                    boolean foundCommit = false;
+                    Iterator<Commit> cIter = prCommits.iterator();
+                    while (!foundCommit && cIter.hasNext()) {
+                        Commit loopCommit = cIter.next();
+                        if (Objects.equals(commit.getScmAuthor(), loopCommit.getScmAuthor()) &&
+                                (commit.getScmCommitTimestamp() == loopCommit.getScmCommitTimestamp()) &&
+                                Objects.equals(commit.getScmCommitLog(), loopCommit.getScmCommitLog())) {
+                            foundCommit = true;
+                            foundPull = true;
+                            commit.setPullNumber(pull.getNumber());
+                        }
+                    }
+                }
+            }
+            newCommitList.add(commit);
+        }
+        commits = newCommitList;
+    }
+
+    @SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.NcssMethodCount"})
+    private JSONObject buildQuery(boolean firstTime, boolean firstRun, GitHubParsed gitHubParsed, GitHubRepo repo, GitHubPaging commitPaging, GitHubPaging pullPaging, GitHubPaging issuePaging) {
+        CollectionMode mode = getCollectionMode(firstTime, commitPaging, pullPaging, issuePaging);
+        JSONObject jsonObj = new JSONObject();
+        String query;
+        JSONObject variableJSON = new JSONObject();
+        variableJSON.put("owner", gitHubParsed.getOrgName());
+        variableJSON.put("name", gitHubParsed.getRepoName());
+        variableJSON.put("fetchCount", getFetchCount(firstRun, repo));
+
+
+        LOG.debug("Collection Mode =" + mode.toString());
+        switch (mode) {
+            case FirstTimeAll:
+                query = GitHubGraphQLQuery.QUERY_BASE_ALL_FIRST + GitHubGraphQLQuery.QUERY_PULL_HEADER_FIRST + GitHubGraphQLQuery.QUERY_PULL_MAIN + GitHubGraphQLQuery.QUERY_COMMIT_HEADER_FIRST + GitHubGraphQLQuery.QUERY_COMMIT_MAIN + GitHubGraphQLQuery.QUERY_ISSUES_HEADER_FIRST + GitHubGraphQLQuery.QUERY_ISSUE_MAIN + GitHubGraphQLQuery.QUERY_END;
+                variableJSON.put("since", getRunDate(repo, firstRun));
+                variableJSON.put("branch", repo.getBranch());
+                jsonObj.put("query", query);
+                jsonObj.put("variables", variableJSON.toString());
+                break;
+
+
+            case FirstTimeCommitOnly:
+                query = GitHubGraphQLQuery.QUERY_BASE_ALL_FIRST + GitHubGraphQLQuery.QUERY_COMMIT_HEADER_FIRST + GitHubGraphQLQuery.QUERY_COMMIT_MAIN + GitHubGraphQLQuery.QUERY_END;
+                variableJSON.put("since", getRunDate(repo, firstRun));
+                variableJSON.put("branch", repo.getBranch());
+                jsonObj.put("query", query);
+                jsonObj.put("variables", variableJSON.toString());
+                break;
+
+            case FirstTimeCommitAndIssue:
+                query = GitHubGraphQLQuery.QUERY_BASE_ALL_FIRST + GitHubGraphQLQuery.QUERY_COMMIT_HEADER_FIRST + GitHubGraphQLQuery.QUERY_COMMIT_MAIN + GitHubGraphQLQuery.QUERY_ISSUES_HEADER_FIRST + GitHubGraphQLQuery.QUERY_ISSUE_MAIN + GitHubGraphQLQuery.QUERY_END;
+                variableJSON.put("since", getRunDate(repo, firstRun));
+                variableJSON.put("branch", repo.getBranch());
+                jsonObj.put("query", query);
+                jsonObj.put("variables", variableJSON.toString());
+                break;
+
+            case FirstTimeCommitAndPull:
+                query = GitHubGraphQLQuery.QUERY_BASE_ALL_FIRST + GitHubGraphQLQuery.QUERY_PULL_HEADER_FIRST + GitHubGraphQLQuery.QUERY_PULL_MAIN + GitHubGraphQLQuery.QUERY_COMMIT_HEADER_FIRST + GitHubGraphQLQuery.QUERY_COMMIT_MAIN + GitHubGraphQLQuery.QUERY_END;
+                variableJSON.put("since", getRunDate(repo, firstRun));
+                variableJSON.put("branch", repo.getBranch());
+                jsonObj.put("query", query);
+                jsonObj.put("variables", variableJSON.toString());
+                break;
+
+            case CommitOnly:
+                query = GitHubGraphQLQuery.QUERY_BASE_COMMIT_ONLY_AFTER + GitHubGraphQLQuery.QUERY_COMMIT_HEADER_AFTER + GitHubGraphQLQuery.QUERY_COMMIT_MAIN + GitHubGraphQLQuery.QUERY_END;
+                variableJSON.put("since", getRunDate(repo, firstRun));
+                variableJSON.put("afterCommit", commitPaging.getCursor());
+                variableJSON.put("branch", repo.getBranch());
+
+                jsonObj.put("query", query);
+                jsonObj.put("variables", variableJSON.toString());
+                break;
+
+
+            case PullOnly:
+                query = GitHubGraphQLQuery.QUERY_BASE_PULL_ONLY_AFTER + GitHubGraphQLQuery.QUERY_PULL_HEADER_AFTER + GitHubGraphQLQuery.QUERY_PULL_MAIN + GitHubGraphQLQuery.QUERY_END;
+                variableJSON.put("afterPull", pullPaging.getCursor());
+                variableJSON.put("branch", repo.getBranch());
+                jsonObj.put("query", query);
+                jsonObj.put("variables", variableJSON.toString());
+                break;
+
+
+            case IssueOnly:
+                query = GitHubGraphQLQuery.QUERY_BASE_ISSUE_ONLY_AFTER + GitHubGraphQLQuery.QUERY_ISSUES_HEADER_AFTER + GitHubGraphQLQuery.QUERY_ISSUE_MAIN + GitHubGraphQLQuery.QUERY_END;
+                variableJSON.put("afterIssue", issuePaging.getCursor());
+                jsonObj.put("query", query);
+                jsonObj.put("variables", variableJSON.toString());
+                break;
+
+
+            case CommitAndIssue:
+                query = GitHubGraphQLQuery.QUERY_BASE_COMMIT_AND_ISSUE_AFTER + GitHubGraphQLQuery.QUERY_COMMIT_HEADER_AFTER + GitHubGraphQLQuery.QUERY_COMMIT_MAIN + GitHubGraphQLQuery.QUERY_ISSUES_HEADER_AFTER + GitHubGraphQLQuery.QUERY_ISSUE_MAIN + GitHubGraphQLQuery.QUERY_END;
+                variableJSON.put("afterIssue", issuePaging.getCursor());
+                variableJSON.put("afterCommit", commitPaging.getCursor());
+                variableJSON.put("since", getRunDate(repo, firstRun));
+                variableJSON.put("branch", repo.getBranch());
+
+                jsonObj.put("query", query);
+                jsonObj.put("variables", variableJSON.toString());
+                break;
+
+
+            case CommitAndPull:
+                query = GitHubGraphQLQuery.QUERY_BASE_COMMIT_AND_PULL_AFTER + GitHubGraphQLQuery.QUERY_PULL_HEADER_AFTER + GitHubGraphQLQuery.QUERY_PULL_MAIN + GitHubGraphQLQuery.QUERY_COMMIT_HEADER_AFTER + GitHubGraphQLQuery.QUERY_COMMIT_MAIN + GitHubGraphQLQuery.QUERY_END;
+                variableJSON.put("since", getRunDate(repo, firstRun));
+                variableJSON.put("afterPull", pullPaging.getCursor());
+                variableJSON.put("afterCommit", commitPaging.getCursor());
+                variableJSON.put("branch", repo.getBranch());
+                jsonObj.put("query", query);
+                jsonObj.put("variables", variableJSON.toString());
+                break;
+
+
+            case PullAndIssue:
+                query = GitHubGraphQLQuery.QUERY_BASE_ISSUE_AND_PULL_AFTER + GitHubGraphQLQuery.QUERY_PULL_HEADER_AFTER + GitHubGraphQLQuery.QUERY_PULL_MAIN + GitHubGraphQLQuery.QUERY_ISSUES_HEADER_AFTER + GitHubGraphQLQuery.QUERY_ISSUE_MAIN + GitHubGraphQLQuery.QUERY_END;
+                variableJSON.put("afterPull", pullPaging.getCursor());
+                variableJSON.put("afterIssue", issuePaging.getCursor());
+                variableJSON.put("branch", repo.getBranch());
+                jsonObj.put("query", query);
+                jsonObj.put("variables", variableJSON.toString());
+                break;
+
+
+            case All:
+                query = GitHubGraphQLQuery.QUERY_BASE_ALL_AFTER + GitHubGraphQLQuery.QUERY_COMMIT_HEADER_AFTER + GitHubGraphQLQuery.QUERY_COMMIT_MAIN + GitHubGraphQLQuery.QUERY_PULL_HEADER_AFTER + GitHubGraphQLQuery.QUERY_PULL_MAIN + GitHubGraphQLQuery.QUERY_ISSUES_HEADER_AFTER + GitHubGraphQLQuery.QUERY_ISSUE_MAIN + GitHubGraphQLQuery.QUERY_END;
+                variableJSON.put("since", getRunDate(repo, firstRun));
+                variableJSON.put("afterPull", pullPaging.getCursor());
+                variableJSON.put("afterCommit", commitPaging.getCursor());
+                variableJSON.put("afterIssue", issuePaging.getCursor());
+                variableJSON.put("branch", repo.getBranch());
+                jsonObj.put("query", query);
+                jsonObj.put("variables", variableJSON.toString());
+                break;
+
+
+            case None:
+                jsonObj = null;
+                break;
+
+
+            default:
+                jsonObj = null;
+                break;
+
+        }
+        return jsonObj;
+    }
+
+    @SuppressWarnings({"PMD.NPathComplexity", "PMD.ExcessiveMethodLength", "PMD.AvoidBranchingStatementAsLastInLoop", "PMD.EmptyIfStmt"})
+    private CollectionMode getCollectionMode(boolean firstTime, GitHubPaging commitPaging, GitHubPaging pullPaging, GitHubPaging issuePaging) {
+        if (firstTime) {
+            if (!pullPaging.isLastPage() && !issuePaging.isLastPage()) return CollectionMode.FirstTimeAll;
+            if (pullPaging.isLastPage() && !issuePaging.isLastPage()) return CollectionMode.FirstTimeCommitAndIssue;
+            if (!pullPaging.isLastPage() && issuePaging.isLastPage()) return CollectionMode.FirstTimeCommitAndPull;
+            if (pullPaging.isLastPage() && issuePaging.isLastPage()) return CollectionMode.FirstTimeCommitOnly;
+        }
+
+        if (commitPaging.isLastPage() && pullPaging.isLastPage() && issuePaging.isLastPage())
+            return CollectionMode.None;
+        if (commitPaging.isLastPage() && pullPaging.isLastPage() && !issuePaging.isLastPage())
+            return CollectionMode.IssueOnly;
+        if (commitPaging.isLastPage() && !pullPaging.isLastPage() && !issuePaging.isLastPage())
+            return CollectionMode.PullAndIssue;
+        if (!commitPaging.isLastPage() && pullPaging.isLastPage() && issuePaging.isLastPage())
+            return CollectionMode.CommitOnly;
+        if (!commitPaging.isLastPage() && !pullPaging.isLastPage() && issuePaging.isLastPage())
+            return CollectionMode.CommitAndPull;
+        if (commitPaging.isLastPage() && !pullPaging.isLastPage() && issuePaging.isLastPage())
+            return CollectionMode.PullOnly;
+        if (!commitPaging.isLastPage() && pullPaging.isLastPage() && !issuePaging.isLastPage())
+            return CollectionMode.CommitAndIssue;
+        if (!commitPaging.isLastPage() && !pullPaging.isLastPage() && !issuePaging.isLastPage())
+            return CollectionMode.All;
+        return CollectionMode.None;
+    }
+
+    @SuppressWarnings({"PMD.NPathComplexity"})
+    private GitHubPaging processPullRequest(JSONObject pullObject, GitHubRepo repo, Map<Long, String> prMap, long historyTimeStamp) throws MalformedURLException, HygieiaException {
+        GitHubPaging paging = new GitHubPaging();
+        paging.setLastPage(true);
+        if (pullObject == null) return paging;
+        paging.setTotalCount(asInt(pullObject, "totalCount"));
+        JSONObject pageInfo = (JSONObject) pullObject.get("pageInfo");
+        paging.setCursor(str(pageInfo, "endCursor"));
+        paging.setLastPage(!(Boolean) pageInfo.get("hasNextPage"));
+        JSONArray edges = getArray(pullObject, "edges");
+        if (CollectionUtils.isEmpty(edges)) {
+            return paging;
+        }
+        int localCount = 0;
+        for (Object o : edges) {
+            JSONObject node = (JSONObject) ((JSONObject) o).get("node");
+            if (node == null) break;
+            JSONObject userObject = (JSONObject) node.get("author");
+            String merged = str(node, "mergedAt");
+            String closed = str(node, "closedAt");
+            String updated = str(node, "updatedAt");
+            String created = str(node, "createdAt");
+            long createdTimestamp = getTimeStampMills(created);
+            long mergedTimestamp = getTimeStampMills(merged);
+            long closedTimestamp = getTimeStampMills(closed);
+            long updatedTimestamp = getTimeStampMills(updated);
+            GitHubParsed gitHubParsed = new GitHubParsed(repo.getRepoUrl());
+            GitRequest pull = new GitRequest();
+            //General Info
+            pull.setRequestType("pull");
+            pull.setNumber(str(node, "number"));
+            pull.setUserId(str(userObject, "login"));
+            pull.setScmUrl(repo.getRepoUrl());
+            pull.setScmBranch(repo.getBranch());
+            pull.setOrgName(gitHubParsed.getOrgName());
+            pull.setRepoName(gitHubParsed.getRepoName());
+            pull.setScmCommitLog(str(node, "title"));
+            pull.setTimestamp(createdTimestamp);
+            pull.setCreatedAt(createdTimestamp);
+            pull.setClosedAt(closedTimestamp);
+            pull.setUpdatedAt(updatedTimestamp);
+            //Status
+            pull.setState(str(node, "state").toLowerCase());
+            JSONObject headrefJson = (JSONObject) node.get("headRef");
+            if (headrefJson != null) {
+                JSONObject targetJson = (JSONObject) headrefJson.get("target");
+                pull.setHeadSha(str(targetJson, "oid"));
+            }
+            if (merged != null) {
+                pull.setScmRevisionNumber(str((JSONObject) node.get("mergeCommit"), "oid"));
+                pull.setResolutiontime((mergedTimestamp - createdTimestamp) / (24 * 3600000));
+                pull.setScmCommitTimestamp(mergedTimestamp);
+                pull.setMergedAt(mergedTimestamp);
+                List<Commit> prCommits = getPRCommits((JSONObject) node.get("commits"), pull);
+                pull.setCommits(prCommits);
+                List<Comment> comments = getComments((JSONObject) node.get("comments"));
+                pull.setComments(comments);
+                List<Review> reviews = getReviews((JSONObject) node.get("reviews"));
+                pull.setReviews(reviews);
+            }
+            // commit etc details
+            pull.setSourceBranch(str(node, "headRefName"));
+            if (node.get("headRepository") != null) {
+                JSONObject headObject = (JSONObject) node.get("headRepository");
+                GitHubParsed sourceRepoUrlParsed = new GitHubParsed(str(headObject, "url"));
+                pull.setSourceRepo(!Objects.equals("", sourceRepoUrlParsed.getOrgName()) ? sourceRepoUrlParsed.getOrgName() + "/" + sourceRepoUrlParsed.getRepoName() : sourceRepoUrlParsed.getRepoName());
+            }
+            if (node.get("baseRef") != null) {
+                pull.setBaseSha(str((JSONObject) ((JSONObject) node.get("baseRef")).get("target"), "oid"));
+            }
+            pull.setTargetBranch(str(node, "baseRefName"));
+            //pull.setTargetRepo(gitHubParsed.getUrl());
+            pull.setTargetRepo(!Objects.equals("", gitHubParsed.getOrgName()) ? gitHubParsed.getOrgName() + "/" + gitHubParsed.getRepoName() : gitHubParsed.getRepoName());
+
+            boolean stop = (pull.getUpdatedAt() < historyTimeStamp) ||
+                    ((!MapUtils.isEmpty(prMap) && prMap.get(pull.getUpdatedAt()) != null) && (Objects.equals(prMap.get(pull.getUpdatedAt()), pull.getNumber())));
+            if (stop) {
+                paging.setLastPage(true);
+                LOG.debug("------ Stopping pull request processing. History check is met OR Found matching entry in existing pull requests. Pull Request#" + pull.getNumber());
+                break;
+            } else {
+                //add to the list
+                localCount++;
+                pullRequests.add(pull);
+            }
+        }
+        paging.setCurrentCount(localCount);
+        return paging;
+    }
+
+    private GitHubPaging processCommits(JSONObject refObject, GitHubRepo repo) {
+        GitHubPaging paging = new GitHubPaging();
+        paging.setLastPage(true); //initialize
+
+        if (refObject == null) return paging;
+
+        JSONObject target = (JSONObject) refObject.get("target");
+
+        if (target == null) return paging;
+
+        JSONObject history = (JSONObject) target.get("history");
+
+        JSONObject pageInfo = (JSONObject) history.get("pageInfo");
+
+        paging.setCursor(str(pageInfo, "endCursor"));
+        paging.setLastPage(!(Boolean) pageInfo.get("hasNextPage"));
+
+        JSONArray edges = (JSONArray) history.get("edges");
+
+        if (CollectionUtils.isEmpty(edges)) {
+            return paging;
+        }
+
+        paging.setCurrentCount(edges.size());
+
+        for (Object o : edges) {
+            JSONObject node = (JSONObject) ((JSONObject) o).get("node");
+            JSONObject authorJSON = (JSONObject) node.get("author");
+            JSONObject authorUserJSON = (JSONObject) authorJSON.get("user");
+
+            String sha = str(node, "oid");
+            String message = str(node, "message");
+            String authorName = str(authorJSON, "name");
+            String authorLogin = authorUserJSON == null ? "unknown" : str(authorUserJSON, "login");
+
+            Commit commit = new Commit();
+            commit.setTimestamp(System.currentTimeMillis());
+            commit.setScmUrl(repo.getRepoUrl());
+            commit.setScmBranch(repo.getBranch());
+            commit.setScmRevisionNumber(sha);
+            commit.setScmAuthor(authorName);
+            commit.setScmAuthorLogin(authorLogin);
+            commit.setScmCommitLog(message);
+            commit.setScmCommitTimestamp(getTimeStampMills(str(authorJSON, "date")));
+            commit.setNumberOfChanges(1);
+            commit.setType(getCommitType(message)); //initialize all to new.
+            commits.add(commit);
+        }
+        return paging;
+    }
+
+
+    private GitHubPaging processIssues(JSONObject issueObject, GitHubParsed gitHubParsed, Map<Long, String> issuesMap, long historyTimeStamp) {
+        GitHubPaging paging = new GitHubPaging();
+        paging.setLastPage(true);
+
+        if (issueObject == null) return paging;
+
+        paging.setTotalCount(asInt(issueObject, "totalCount"));
+        JSONObject pageInfo = (JSONObject) issueObject.get("pageInfo");
+        paging.setCursor(str(pageInfo, "endCursor"));
+        paging.setLastPage(!(Boolean) pageInfo.get("hasNextPage"));
+        JSONArray edges = getArray(issueObject, "edges");
+
+        if (CollectionUtils.isEmpty(edges)) {
+            return paging;
+        }
+
+        int localCount = 0;
+        for (Object o : edges) {
+            JSONObject node = (JSONObject) ((JSONObject) o).get("node");
+            if (node == null) break;
+
+            String message = str(node, "title");
+            String number = str(node, "number");
+
+            JSONObject userObject = (JSONObject) node.get("author");
+            String name = str(userObject, "login");
+            String created = str(node, "createdAt");
+            String updated = str(node, "updatedAt");
+            long createdTimestamp = new DateTime(created).getMillis();
+            long updatedTimestamp = new DateTime(updated).getMillis();
+
+            GitRequest issue = new GitRequest();
+            String state = str(node, "state");
+
+            issue.setClosedAt(0);
+            issue.setResolutiontime(0);
+            issue.setMergedAt(0);
+            if (Objects.equals("CLOSED", state)) {
+                //ideally should be checking closedAt field. But it's not yet available in graphQL schema
+                issue.setScmCommitTimestamp(updatedTimestamp);
+                issue.setClosedAt(updatedTimestamp);
+                issue.setMergedAt(updatedTimestamp);
+                issue.setResolutiontime((updatedTimestamp - createdTimestamp) / (24 * 3600000));
+            }
+            issue.setUserId(name);
+            issue.setScmUrl(gitHubParsed.getUrl());
+            issue.setTimestamp(createdTimestamp);
+            issue.setScmRevisionNumber(number);
+            issue.setNumber(number);
+            issue.setScmCommitLog(message);
+            issue.setCreatedAt(createdTimestamp);
+            issue.setUpdatedAt(updatedTimestamp);
+
+            issue.setNumber(number);
+            issue.setRequestType("issue");
+            if (Objects.equals("CLOSED", state)) {
+                issue.setState("closed");
+            } else {
+                issue.setState("open");
+            }
+            issue.setOrgName(gitHubParsed.getOrgName());
+            issue.setRepoName(gitHubParsed.getRepoName());
+
+            boolean stop = (issue.getUpdatedAt() < historyTimeStamp) ||
+                    ((!MapUtils.isEmpty(issuesMap) && issuesMap.get(issue.getUpdatedAt()) != null) && (Objects.equals(issuesMap.get(issue.getUpdatedAt()), issue.getNumber())));
+            if (stop) {
+                paging.setLastPage(true);
+                LOG.debug("------ Stopping issue processing. History check is met OR Found matching entry in existing issues. Issue#" + issue.getNumber());
+                break;
+            } else {
+                //add to the list
+                issues.add(issue);
+                localCount++;
+            }
+        }
+        paging.setCurrentCount(localCount);
+        return paging;
+    }
+
+    private List<Comment> getComments(JSONObject commentsJSON) throws RestClientException {
+
+        List<Comment> comments = new ArrayList<>();
+        if (commentsJSON == null) {
+            return comments;
+        }
+        JSONArray nodes = getArray(commentsJSON, "nodes");
+        if (CollectionUtils.isEmpty(nodes)) {
+            return comments;
+        }
+        for (Object n : nodes) {
+            JSONObject node = (JSONObject) n;
+            Comment comment = new Comment();
+            comment.setBody(str(node, "bodyText"));
+            comment.setUser(str((JSONObject) node.get("author"), "login"));
+            comment.setCreatedAt(getTimeStampMills(str(node, "createdAt")));
+            comment.setUpdatedAt(getTimeStampMills(str(node, "updatedAt")));
+            comment.setStatus(str(node, "state"));
+            comments.add(comment);
+        }
+        return comments;
+    }
+
+
+    private List<Commit> getPRCommits(JSONObject commits, GitRequest pull) {
+        List<Commit> prCommits = new ArrayList<>();
+
+        if (commits == null) {
+            return prCommits;
+        }
+
+        JSONArray nodes = (JSONArray) commits.get("nodes");
+        if (CollectionUtils.isEmpty(nodes)) {
+            return prCommits;
+        }
+
+        for (Object n : nodes) {
+            JSONObject c = (JSONObject) n;
+            JSONObject commit = (JSONObject) c.get("commit");
+            Commit newCommit = new Commit();
+            newCommit.setScmRevisionNumber(str(commit, "oid"));
+            newCommit.setScmCommitLog(str(commit, "message"));
+            JSONObject author = (JSONObject) commit.get("author");
+            newCommit.setScmAuthor(str(author, "name"));
+            newCommit.setScmCommitTimestamp(getTimeStampMills(str(author, "date")));
+
+            if (Objects.equals(newCommit.getScmRevisionNumber(), pull.getHeadSha())) {
+                JSONObject statusObj = (JSONObject) commit.get("status");
+                if (statusObj != null) {
+                    List<CommitStatus> commitStatuses = getCommitStatuses(statusObj);
+                    pull.setCommitStatuses(commitStatuses);
+                }
+            }
+
+            prCommits.add(newCommit);
+        }
+        return prCommits;
+    }
+
+    private List<CommitStatus> getCommitStatuses(JSONObject statusObject) throws RestClientException {
+
+        Map<String, CommitStatus> statuses = new HashMap<>();
+
+        if (statusObject == null) {
+            return new ArrayList<>();
+        }
+
+        JSONArray contexts = (JSONArray) statusObject.get("contexts");
+
+        if (CollectionUtils.isEmpty(contexts)) {
+            return new ArrayList<>();
+        }
+        for (Object ctx : contexts) {
+            String ctxStr = str((JSONObject) ctx, "context");
+            if ((ctxStr != null) && !statuses.containsKey(ctxStr)) {
+                CommitStatus status = new CommitStatus();
+                status.setContext(ctxStr);
+                status.setDescription(str((JSONObject) ctx, "description"));
+                status.setState(str((JSONObject) ctx, "state"));
+                statuses.put(ctxStr, status);
+            }
+        }
+        return new ArrayList<>(statuses.values());
+    }
+
+    private List<Review> getReviews(JSONObject reviewObject) throws RestClientException {
+
+        List<Review> reviews = new ArrayList<>();
+
+        if (reviewObject == null) {
+            return reviews;
+        }
+
+        JSONArray nodes = (JSONArray) reviewObject.get("nodes");
+
+        if (CollectionUtils.isEmpty(nodes)) {
+            return reviews;
+        }
+
+        for (Object n : nodes) {
+            JSONObject node = (JSONObject) n;
+            Review review = new Review();
+            review.setState(str(node, "state"));
+            review.setBody(str(node, "bodyText"));
+            JSONObject authorObj = (JSONObject) node.get("author");
+            review.setAuthor(str(authorObj, "login"));
+            review.setCreatedAt(getTimeStampMills(str(node, "createdAt")));
+            review.setUpdatedAt(getTimeStampMills(str(node, "updatedAt")));
+            reviews.add(review);
+        }
+        return reviews;
+    }
+
+    private CommitType getCommitType(String commitMessage) {
+        if (settings.getNotBuiltCommits() == null) return CommitType.New;
+        if (!CollectionUtils.isEmpty(commitExclusionPatterns)) {
+            for (Pattern pattern : commitExclusionPatterns) {
+                if (pattern.matcher(commitMessage).matches()) {
+                    return CommitType.NotBuilt;
+                }
+            }
+        }
+        return CommitType.New;
+    }
+
+
+    @Override
+    public GitHubRateLimit getRateLimit(GitHubRepo repo) throws MalformedURLException, HygieiaException {
+        GitHubParsed gitHubParsed = new GitHubParsed(repo.getRepoUrl());
+        String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
+        JSONObject query = new JSONObject();
+        query.put("query", GitHubGraphQLQuery.QUERY_RATE_LIMIT);
+
+        ResponseEntity<String> response = null;
+        if (StringUtils.isEmpty(settings.getPersonalAccessToken())) {
+            response = makeRestCallPost(gitHubParsed.getGraphQLUrl(), repo.getUserId(), decryptedPassword, query);
+        } else {
+            response = makeRestCallPost(gitHubParsed.getGraphQLUrl(), "", "", query);
+        }
+
+        JSONObject data = (JSONObject) parseAsObject(response).get("data");
+
+        JSONArray errors = getArray(parseAsObject(response), "errors");
+
+        if (data == null) return null;
+
+        if (!CollectionUtils.isEmpty(errors)) {
+            throw new HygieiaException("Error in GraphQL query:" + errors.toJSONString(), HygieiaException.BAD_DATA);
+        }
+
+        JSONObject rateLimitJSON = (JSONObject) data.get("rateLimit");
+
+        if (rateLimitJSON == null) return null;
+        int limit = asInt(rateLimitJSON, "limit");
+        int remaining = asInt(rateLimitJSON, "remaining");
+        long rateLimitResetAt = getTimeStampMills(str(rateLimitJSON, "resetAt"));
+
+        GitHubRateLimit rateLimit = new GitHubRateLimit();
+        rateLimit.setLimit(limit);
+        rateLimit.setRemaining(remaining);
+        rateLimit.setResetTime(rateLimitResetAt);
+
+        return rateLimit;
+    }
+
+
+    /// Utility Methods
+
+    private int asInt(JSONObject json, String key) {
+        String val = str(json, key);
+        try {
+            if (val != null) {
+                return Integer.parseInt(val);
+            }
+        } catch (NumberFormatException ex) {
+            LOG.error("Invalid number format: " + ex.getMessage());
+        }
+        return 0;
+    }
+
+    private long getTimeStampMills(String dateTime) {
+        return StringUtils.isEmpty(dateTime) ? 0 : new DateTime(dateTime).getMillis();
+    }
+
+
+    /**
+     * Get run date based off of firstRun boolean
+     *
+     * @param repo
+     * @param firstRun
+     * @return
+     */
+    private String getRunDate(GitHubRepo repo, boolean firstRun) {
+        if (firstRun) {
+            int firstRunDaysHistory = settings.getFirstRunHistoryDays();
+            if (firstRunDaysHistory > 0) {
+                return getDate(new DateTime(), firstRunDaysHistory, 0).toString();
+            } else {
+                return getDate(new DateTime(), FIRST_RUN_HISTORY_DEFAULT, 0).toString();
+            }
+        } else {
+            return getDate(new DateTime(repo.getLastUpdated()), 0, 10).toString();
+        }
+    }
+
+    /**
+     * Date utility
+     *
+     * @param dateInstance
+     * @param offsetDays
+     * @param offsetMinutes
+     * @return
+     */
+    private static DateTime getDate(DateTime dateInstance, int offsetDays, int offsetMinutes) {
+        return dateInstance.minusDays(offsetDays).minusMinutes(offsetMinutes);
+    }
+
+
+    private ResponseEntity<String> makeRestCallPost(String url, String userId,
+                                                    String password, JSONObject query) {
+
+        // Basic Auth only.
+        if (!Objects.equals("", userId) && !Objects.equals("", password)) {
+            return restOperations.exchange(url, HttpMethod.POST,
+                    new HttpEntity<Object>(query, createHeaders(userId, password)),
+                    String.class);
+
+        } else if (settings.getPersonalAccessToken() != null && !Objects.equals("", settings.getPersonalAccessToken())) {
+            return restOperations.exchange(url, HttpMethod.POST,
+                    new HttpEntity<Object>(query, createHeaders(settings.getPersonalAccessToken())),
+                    String.class);
+        } else {
+            return restOperations.exchange(url, HttpMethod.POST, new HttpEntity<Object>(query, null),
+                    String.class);
+        }
+
+    }
+
+    private ResponseEntity<String> makeRestCallGet(String url, String userId,
+                                                   String password) {
+        // Basic Auth only.
+        if (!Objects.equals("", userId) && !Objects.equals("", password)) {
+            return restOperations.exchange(url, HttpMethod.GET,
+                    new HttpEntity<>(createHeaders(userId, password)),
+                    String.class);
+
+        } else if (settings.getPersonalAccessToken() != null && !Objects.equals("", settings.getPersonalAccessToken())) {
+            return restOperations.exchange(url, HttpMethod.GET,
+                    new HttpEntity<>(createHeaders(settings.getPersonalAccessToken())),
+                    String.class);
+        } else {
+            return restOperations.exchange(url, HttpMethod.GET, null,
+                    String.class);
+        }
+
+    }
+
+    private HttpHeaders createHeaders(final String userId, final String password) {
+        String auth = userId + ":" + password;
+        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.US_ASCII));
+        String authHeader = "Basic " + new String(encodedAuth);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", authHeader);
+
+        return headers;
+    }
+
+    private HttpHeaders createHeaders(final String token) {
+        String authHeader = "token " + token;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", authHeader);
+        return headers;
+    }
+
+
+    private JSONArray parseAsArray(ResponseEntity<String> response) {
+        try {
+            return (JSONArray) new JSONParser().parse(response.getBody());
+        } catch (ParseException pe) {
+            LOG.error(pe.getMessage());
+        }
+        return new JSONArray();
+    }
+
+    private JSONObject parseAsObject(ResponseEntity<String> response) {
+        try {
+            return (JSONObject) new JSONParser().parse(response.getBody());
+        } catch (ParseException pe) {
+            LOG.error(pe.getMessage());
+        }
+        return new JSONObject();
+    }
+
+    private String str(JSONObject json, String key) {
+        if (json == null) return "";
+        Object value = json.get(key);
+        return (value == null) ? "" : value.toString();
+    }
+
+    private JSONArray getArray(JSONObject json, String key) {
+        if (json == null) return new JSONArray();
+        if (json.get(key) == null) return new JSONArray();
+        return (JSONArray) json.get(key);
+    }
+
+    /**
+     * Decrypt string
+     *
+     * @param string
+     * @param key
+     * @return String
+     */
+    private static String decryptString(String string, String key) {
+        if (!StringUtils.isEmpty(string)) {
+            try {
+                return Encryption.decryptString(
+                        string, key);
+            } catch (EncryptionException e) {
+                LOG.error(e.getMessage());
+            }
+        }
+        return "";
+    }
+
+}

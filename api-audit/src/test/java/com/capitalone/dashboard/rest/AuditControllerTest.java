@@ -7,6 +7,8 @@ import com.capitalone.dashboard.model.Comment;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitRequest;
+import com.capitalone.dashboard.repository.CustomRepositoryQuery;
+import com.capitalone.dashboard.repository.CustomRepositoryQueryImpl;
 import com.capitalone.dashboard.request.JobReviewRequest;
 import com.capitalone.dashboard.request.PeerReviewRequest;
 import com.capitalone.dashboard.request.QualityProfileValidationRequest;
@@ -21,6 +23,9 @@ import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
@@ -49,6 +54,9 @@ public class AuditControllerTest {
     @Autowired
     private AuditService auditService;
 
+    @Mock
+    private CustomRepositoryQuery customRepositoryQuery;
+
     @Before
     public void before() {
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
@@ -59,18 +67,17 @@ public class AuditControllerTest {
         PeerReviewRequest request = new PeerReviewRequest();
         request.setRepo("http://test.git.com/capone/better.git");
         request.setBranch("master");
-        request.setBeginDate(1l);
-        request.setEndDate(2l);
+        request.setBeginDate(1L);
+        request.setEndDate(2L);
 
-        List<GitRequest> gitRequests = new ArrayList<GitRequest>();
+        List<GitRequest> gitRequests = new ArrayList<>();
         GitRequest gitRequest = new GitRequest();
         gitRequest.setScmUrl("scmUrl");
         gitRequest.setScmRevisionNumber("revNum");
-        gitRequest.setNumberOfChanges(20);
         gitRequest.setScmAuthor("bob");
         gitRequest.setTimestamp(2);
         gitRequest.setUserId("bobsid");
-        List<Comment> comments = new ArrayList<Comment>();
+        List<Comment> comments = new ArrayList<>();
         Comment comment = new Comment();
         comment.setBody("Some comment");
         comment.setUser("someuser");
@@ -79,16 +86,9 @@ public class AuditControllerTest {
 
         gitRequest.setBaseSha("acd323e123abc323a123a");
 
-        List<Comment> reviewComments = new ArrayList<Comment>();
-        Comment reviewComment = new Comment();
-        reviewComment.setBody("Some review comment");
-        reviewComment.setUser("anotheruser");
-        reviewComments.add(reviewComment);
-        gitRequest.setReviewComments(reviewComments);
-
         gitRequests.add(gitRequest);
 
-        List<Commit> baseCommits = new ArrayList<Commit>();
+        List<Commit> baseCommits = new ArrayList<>();
         Commit commit = new Commit();
         commit.setId(new ObjectId());
         commit.setType(CommitType.New);
@@ -97,9 +97,6 @@ public class AuditControllerTest {
         
         //when(auditService.getCommitsBySha("acd323e123abc323a123a")).thenReturn(baseCommits);
 
-        when(auditService.getPullRequests("http://test.git.com/capone/better.git", "master", 1l, 2l)).thenReturn(gitRequests);
-        when(auditService.getCommits("http://test.git.com/capone/better.git", "master", 1l, 2l)).thenReturn(new ArrayList());
-
         mockMvc.perform(get("/peerReview" + "?repo=" + request.getRepo()
                 + "&branch=" + request.getBranch()
                 + "&beginDate=" + request.getBeginDate()
@@ -107,22 +104,6 @@ public class AuditControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new Gson().toJson(request))).andExpect(status().isOk());
 
-//        mockMvc.perform(get("/team/" + testTeamId + "?component=" + mockComponentId.toString() ))
-//                .andExpect(status().isOk());
-
-        /*
-    @Test
-    public void getAllUsers() throws Exception {
-    	mockMvc.perform(get("/users").contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(3)))
-        .andExpect(jsonPath("$[0].username", is("one")))
-        .andExpect(jsonPath("$[1].username", is("two")))
-        .andExpect(jsonPath("$[2].username", is("three")));
-
-    	verify(userInfoService).getUsers();
-    }
-         */
     }
     
     @Test
@@ -134,7 +115,7 @@ public class AuditControllerTest {
     	
 
     	
-    	List<StaticAnalysisResponse> responses = new ArrayList<StaticAnalysisResponse>();
+    	List<StaticAnalysisResponse> responses = new ArrayList<>();
     	StaticAnalysisResponse response =  new StaticAnalysisResponse();
     	response.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_OK);
     	responses.add(response);
@@ -155,8 +136,8 @@ public class AuditControllerTest {
     	String branch = "master";
     	String projectName = "com.capitalone.Hygiea:hygieia-api";
     	String artifactVersion = "2.0.5-SNAPSHOT";
-    	long beginDate = 1478136705000l;
-    	long endDate = 1497465958000l; 
+    	long beginDate = 1478136705000L;
+    	long endDate = 1497465958000L;
     	
 
     	
@@ -170,7 +151,7 @@ public class AuditControllerTest {
     	    	
     	//Response contents
     	
-    	List<CodeQualityProfileValidationResponse> responses = new ArrayList<CodeQualityProfileValidationResponse>();
+    	List<CodeQualityProfileValidationResponse> responses = new ArrayList<>();
     	CodeQualityProfileValidationResponse response =  new CodeQualityProfileValidationResponse();
     	response.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_GATE_MISSING);
     	responses.add(response);
@@ -189,7 +170,7 @@ public class AuditControllerTest {
     public void validateTestResultExecution() throws Exception {
     	// Request
     	String jobUrl = "https://jenkins.Hygieia.com";
-    	long beginDate = 1478136705000l;
+    	long beginDate = 1478136705000L;
     	long endDate = 1497465958000l;
     	
     	TestExecutionValidationRequest request = new TestExecutionValidationRequest();
