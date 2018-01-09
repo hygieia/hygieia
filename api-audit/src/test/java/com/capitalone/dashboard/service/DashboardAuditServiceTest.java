@@ -13,9 +13,9 @@ import com.capitalone.dashboard.repository.CodeQualityRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
-import com.capitalone.dashboard.request.PeerReviewRequest;
-import com.capitalone.dashboard.request.StaticAnalysisRequest;
-import com.capitalone.dashboard.response.StaticAnalysisResponse;
+import com.capitalone.dashboard.request.CodeQualityAuditRequest;
+import com.capitalone.dashboard.request.CodeReviewAuditRequest;
+import com.capitalone.dashboard.response.CodeQualityAuditResponse;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,7 +50,7 @@ public class DashboardAuditServiceTest {
 //    public void emptyPeerReview() {
 //        when(settings.getPeerReviewContexts()).thenReturn("foo");
 //        GitRequest gitRequest = new GitRequest();
-//        assertFalse(auditService.computePeerReviewStatus(gitRequest, new PeerReviewResponse()));
+//        assertFalse(auditService.computePeerReviewStatus(gitRequest, new CodeReviewAuditResponse()));
 //    }
 
 //    @Test
@@ -63,12 +63,12 @@ public class DashboardAuditServiceTest {
 //        status.setState("SUCCESS");
 //        commitStatuses.add(status);
 //        gitRequest.setCommitStatuses(commitStatuses);
-//        assertFalse(auditService.computePeerReviewStatus(gitRequest, new PeerReviewResponse()));
+//        assertFalse(auditService.computePeerReviewStatus(gitRequest, new CodeReviewAuditResponse()));
 //        status.setContext("foo");
 //        status.setState(null);
-//        assertFalse(auditService.computePeerReviewStatus(gitRequest, new PeerReviewResponse()));
+//        assertFalse(auditService.computePeerReviewStatus(gitRequest, new CodeReviewAuditResponse()));
 //        status.setState("SUCCESS");
-//        assertTrue(auditService.computePeerReviewStatus(gitRequest, new PeerReviewResponse()));
+//        assertTrue(auditService.computePeerReviewStatus(gitRequest, new CodeReviewAuditResponse()));
 //    }
 //
 //    @Test
@@ -80,22 +80,22 @@ public class DashboardAuditServiceTest {
 //        List<Review> reviews = new ArrayList<>();
 //        reviews.add(review);
 //        gitRequest.setReviews(reviews);
-//        assertFalse(auditService.computePeerReviewStatus(gitRequest, new PeerReviewResponse()));
+//        assertFalse(auditService.computePeerReviewStatus(gitRequest, new CodeReviewAuditResponse()));
 //        review.setState("APPROVED");
-//        assertTrue(auditService.computePeerReviewStatus(gitRequest, new PeerReviewResponse()));
+//        assertTrue(auditService.computePeerReviewStatus(gitRequest, new CodeReviewAuditResponse()));
 //        List<CommitStatus> commitStatuses = new ArrayList<>();
 //        CommitStatus status = new CommitStatus();
 //        commitStatuses.add(status);
 //        gitRequest.setCommitStatuses(commitStatuses);
 //        status.setContext("foo");
 //        status.setState(null);
-//        assertFalse(auditService.computePeerReviewStatus(gitRequest, new PeerReviewResponse()));
+//        assertFalse(auditService.computePeerReviewStatus(gitRequest, new CodeReviewAuditResponse()));
 //    }
 
     @Test
     public void shouldGetPullRequestsForRepoAndBranch() {
 
-        PeerReviewRequest request = new PeerReviewRequest();
+        CodeReviewAuditRequest request = new CodeReviewAuditRequest();
         request.setRepo("http://test.git.com");
         request.setBranch("master");
         request.setBeginDate(1L);
@@ -152,14 +152,14 @@ public class DashboardAuditServiceTest {
     	String artifactVersion = "2.0.5";
     	
     	
-    	StaticAnalysisRequest request = new StaticAnalysisRequest();
+    	CodeQualityAuditRequest request = new CodeQualityAuditRequest();
     	request.setArtifactVersion(artifactVersion);
     	
     	ObjectId collectorItemId = new ObjectId("58b945a890e46b264b95127d");
     	String version = "2.0.5";
     	
-    	List<StaticAnalysisResponse> responses = new ArrayList<>();
-    	StaticAnalysisResponse response = new StaticAnalysisResponse();
+    	List<CodeQualityAuditResponse> responses = new ArrayList<>();
+    	CodeQualityAuditResponse response = new CodeQualityAuditResponse();
     	List<CodeQuality> qualities = new ArrayList<>();
     	CodeQuality quality = new CodeQuality();
     	
@@ -186,8 +186,8 @@ public class DashboardAuditServiceTest {
 
     	
     	
-    	List<StaticAnalysisResponse> responses = new ArrayList<>();
-    	StaticAnalysisResponse response = new StaticAnalysisResponse();
+    	List<CodeQualityAuditResponse> responses = new ArrayList<>();
+    	CodeQualityAuditResponse response = new CodeQualityAuditResponse();
     	List<CodeQuality> qualities = new ArrayList<>();
     	CodeQuality quality = new CodeQuality();
     	

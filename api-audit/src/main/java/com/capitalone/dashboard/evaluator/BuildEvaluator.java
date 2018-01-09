@@ -15,8 +15,8 @@ import com.capitalone.dashboard.repository.BuildRepository;
 import com.capitalone.dashboard.repository.CollItemCfgHistRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.JobRepository;
+import com.capitalone.dashboard.response.BuildAuditResponse;
 import com.capitalone.dashboard.response.GenericAuditResponse;
-import com.capitalone.dashboard.response.JobReviewResponse;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.SetUtils;
@@ -61,7 +61,7 @@ public class BuildEvaluator extends Evaluator {
     }
 
     @Override
-    public List<JobReviewResponse> evaluate(CollectorItem collectorItem, long beginDate, long endDate, Collection<?> data) {
+    public List<BuildAuditResponse> evaluate(CollectorItem collectorItem, long beginDate, long endDate, Collection<?> data) {
         return null;
     }
 
@@ -95,9 +95,9 @@ public class BuildEvaluator extends Evaluator {
         String jobName = (String) buildItem.getOptions().get("jobName");
 
         if (jobUrl != null && jobName != null) {
-            JobReviewResponse jobReviewResponse = this.getBuildJobReviewResponse(jobUrl, jobName, beginDt, endDt);
-            jobConfigHists = jobReviewResponse.getConfigHistory();
-            genericAuditResponse.addResponse(JOB_REVIEW, jobReviewResponse);
+            BuildAuditResponse buildAuditResponse = this.getBuildJobReviewResponse(jobUrl, jobName, beginDt, endDt);
+            jobConfigHists = buildAuditResponse.getConfigHistory();
+            genericAuditResponse.addResponse(JOB_REVIEW, buildAuditResponse);
         }
 
         if (CollectionUtils.isEmpty(repoItems)) {
@@ -144,46 +144,46 @@ public class BuildEvaluator extends Evaluator {
 
 
 
-    public JobReviewResponse getBuildJobReviewResponse(String jobUrl, String jobName, long beginDt, long endDt) {
+    public BuildAuditResponse getBuildJobReviewResponse(String jobUrl, String jobName, long beginDt, long endDt) {
 
-        JobReviewResponse jobReviewResponse = new JobReviewResponse();
+        BuildAuditResponse buildAuditResponse = new BuildAuditResponse();
 
         Collector hudsonCollector = collectorRepository.findByName("Hudson");
         JobCollectorItem collectorItem = jobRepository.findJobByJobUrl(hudsonCollector.getId(), jobUrl, jobName);
 
         if (collectorItem == null) {
-            jobReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_BUILD_NOT_CONFIGURED);
-            return jobReviewResponse;
+            buildAuditResponse.addAuditStatus(AuditStatus.DASHBOARD_BUILD_NOT_CONFIGURED);
+            return buildAuditResponse;
         }
 
         if (!CollectionUtils.isEmpty(collectorItem.getErrors())) {
-            jobReviewResponse.addAuditStatus(AuditStatus.COLLECTOR_ITEM_ERROR);
+            buildAuditResponse.addAuditStatus(AuditStatus.COLLECTOR_ITEM_ERROR);
 
-            jobReviewResponse.setLastUpdated(collectorItem.getLastUpdated());
-            jobReviewResponse.setErrorMessage(collectorItem.getErrors().get(0).getErrorMessage());
-            return jobReviewResponse;
+            buildAuditResponse.setLastUpdated(collectorItem.getLastUpdated());
+            buildAuditResponse.setErrorMessage(collectorItem.getErrors().get(0).getErrorMessage());
+            return buildAuditResponse;
         }
 
         //Segregation of Pipeline Environments
         //Check Prod job URL to validate Prod deploy job in Enterprise Jenkins Prod folder
-        jobReviewResponse.setEnvironment(collectorItem.getEnvironment());
+        buildAuditResponse.setEnvironment(collectorItem.getEnvironment());
 
         //Segregation of access to Pipeline Environments
         //Check Jenkins Job config log to validate pr author is not modifying the Prod Job
         //since beginDate and endDate are the same column and between is excluding the edge values, we need to subtract/add a millisec
-        jobReviewResponse.setConfigHistory(collItemCfgHistRepository.findByCollectorItemIdAndJobAndJobUrlAndTimestampBetweenOrderByTimestampDesc(collectorItem.getId(), jobName, jobUrl, beginDt - 1, endDt + 1));
+        buildAuditResponse.setConfigHistory(collItemCfgHistRepository.findByCollectorItemIdAndJobAndJobUrlAndTimestampBetweenOrderByTimestampDesc(collectorItem.getId(), jobName, jobUrl, beginDt - 1, endDt + 1));
 
-        if ("PROD".equalsIgnoreCase(jobReviewResponse.getEnvironment())) {
+        if ("PROD".equalsIgnoreCase(buildAuditResponse.getEnvironment())) {
             if (jobUrl.toUpperCase(Locale.ENGLISH).contains("NON-PROD")) {
-                jobReviewResponse.addAuditStatus(AuditStatus.BUILD_JOB_IS_NON_PROD);
+                buildAuditResponse.addAuditStatus(AuditStatus.BUILD_JOB_IS_NON_PROD);
             } else {
-                jobReviewResponse.addAuditStatus(AuditStatus.BUILD_JOB_IS_PROD);
+                buildAuditResponse.addAuditStatus(AuditStatus.BUILD_JOB_IS_PROD);
             }
         } else {
-            jobReviewResponse.addAuditStatus(AuditStatus.BUILD_JOB_IS_NON_PROD);
+            buildAuditResponse.addAuditStatus(AuditStatus.BUILD_JOB_IS_NON_PROD);
         }
 
-        return jobReviewResponse;
+        return buildAuditResponse;
     }
 
 }

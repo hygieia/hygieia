@@ -1,11 +1,11 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.evaluator.PeerReviewEvaluator;
+import com.capitalone.dashboard.evaluator.CodeReviewEvaluator;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
-import com.capitalone.dashboard.response.PeerReviewResponse;
+import com.capitalone.dashboard.response.CodeReviewAuditResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,23 +13,23 @@ import org.springframework.stereotype.Component;
 import java.util.Collection;
 
 @Component
-public class PeerReviewAuditServiceImpl implements PeerReviewAuditService {
+public class CodeReviewAuditServiceImpl implements CodeReviewAuditService {
 
 
     private final CollectorRepository collectorRepository;
 
     private final CollectorItemRepository collectorItemRepository;
-    private final PeerReviewEvaluator peerReviewEvaluator;
+    private final CodeReviewEvaluator codeReviewEvaluator;
 
 
-//    private static final Log LOGGER = LogFactory.getLog(PeerReviewAuditServiceImpl.class);
+//    private static final Log LOGGER = LogFactory.getLog(CodeReviewAuditServiceImpl.class);
 
     @Autowired
-    public PeerReviewAuditServiceImpl(CollectorRepository collectorRepository, CollectorItemRepository collectorItemRepository, PeerReviewEvaluator peerReviewEvaluator) {
+    public CodeReviewAuditServiceImpl(CollectorRepository collectorRepository, CollectorItemRepository collectorItemRepository, CodeReviewEvaluator codeReviewEvaluator) {
         this.collectorRepository = collectorRepository;
         this.collectorItemRepository = collectorItemRepository;
 
-        this.peerReviewEvaluator = peerReviewEvaluator;
+        this.codeReviewEvaluator = codeReviewEvaluator;
     }
 
 
@@ -44,13 +44,13 @@ public class PeerReviewAuditServiceImpl implements PeerReviewAuditService {
      * @return
      */
     @Override
-    public Collection<PeerReviewResponse> getPeerReviewResponses(String repoUrl, String repoBranch, String scmName,
-                                                                 long beginDt, long endDt) {
+    public Collection<CodeReviewAuditResponse> getPeerReviewResponses(String repoUrl, String repoBranch, String scmName,
+                                                                      long beginDt, long endDt) {
         Collector githubCollector = collectorRepository.findByName(!StringUtils.isEmpty(scmName) ? scmName : "GitHub");
         CollectorItem collectorItem = collectorItemRepository.findRepoByUrlAndBranch(githubCollector.getId(),
                 repoUrl, repoBranch, true);
 
-        return peerReviewEvaluator.evaluate(collectorItem, beginDt, endDt, null);
+        return codeReviewEvaluator.evaluate(collectorItem, beginDt, endDt, null);
     }
 
 }

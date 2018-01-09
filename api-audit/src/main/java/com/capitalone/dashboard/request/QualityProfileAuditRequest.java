@@ -2,7 +2,7 @@ package com.capitalone.dashboard.request;
 
 import javax.validation.constraints.NotNull;
 
-public class QualityProfileValidationRequest extends StaticAnalysisRequest {
+public class QualityProfileAuditRequest extends CodeQualityAuditRequest {
 
 	@NotNull
     private String repo;

@@ -76,7 +76,7 @@ public class TestResultEvaluator extends Evaluator {
     }
 
     /**
-     * Reusable method for constructing the StaticAnalysisResponse object for a
+     * Reusable method for constructing the CodeQualityAuditResponse object for a
      *
      * @param testResults Test Result List
      * @return TestResultsResponse
@@ -114,11 +114,11 @@ public class TestResultEvaluator extends Evaluator {
                 .findByUrlAndTimestampGreaterThanEqualAndTimestampLessThanEqual(jobUrl, beginDt, endDt);
     }
 
-//    public PerfReviewResponse getresultsBycomponetAndTime(String businessComp, long from, long to) {
+//    public PerformaceTestAuditResponse getresultsBycomponetAndTime(String businessComp, long from, long to) {
 //        Cmdb cmdb = cmdbRepository.findByConfigurationItemIgnoreCase(businessComp); // get CMDB iD
 //        Iterable<Dashboard> dashboard = dashboardRepository.findAllByConfigurationItemBusAppObjectId(cmdb.getId()); //get dashboard based on CMDB ID
 //        Iterator<Dashboard> dashboardIT = dashboard.iterator();  //Iterate through the dashboards to obtain the collectorIteamID
-//        PerfReviewResponse perfReviewResponse = new PerfReviewResponse();
+//        PerformaceTestAuditResponse perfReviewResponse = new PerformaceTestAuditResponse();
 //        while (dashboardIT.hasNext()) {
 //            dashboardIT.next();
 //            Set<CollectorType> ci = dashboard.iterator().next().getApplication().getComponents().iterator().next().getCollectorItems().keySet();

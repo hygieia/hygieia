@@ -2,7 +2,7 @@ package com.capitalone.dashboard.request;
 
 import javax.validation.constraints.NotNull;
 
-public class PeerReviewRequest extends AuditReviewRequest {
+public class CodeReviewAuditRequest extends AuditReviewRequest {
     @NotNull
     private String repo;
     @NotNull

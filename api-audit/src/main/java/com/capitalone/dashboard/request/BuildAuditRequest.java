@@ -2,7 +2,7 @@ package com.capitalone.dashboard.request;
 
 import javax.validation.constraints.NotNull;
 
-public class JobReviewRequest extends AuditReviewRequest {
+public class BuildAuditRequest extends AuditReviewRequest {
     @NotNull
     private String jobUrl;
     @NotNull

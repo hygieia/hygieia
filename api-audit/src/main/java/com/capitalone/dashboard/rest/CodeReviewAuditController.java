@@ -1,8 +1,8 @@
 package com.capitalone.dashboard.rest;
 
-import com.capitalone.dashboard.request.PeerReviewRequest;
-import com.capitalone.dashboard.response.PeerReviewResponse;
-import com.capitalone.dashboard.service.PeerReviewAuditService;
+import com.capitalone.dashboard.request.CodeReviewAuditRequest;
+import com.capitalone.dashboard.response.CodeReviewAuditResponse;
+import com.capitalone.dashboard.service.CodeReviewAuditService;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +16,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
-public class PeerReviewController {
-    private final PeerReviewAuditService peerReviewAuditService;
+public class CodeReviewAuditController {
+    private final CodeReviewAuditService codeReviewAuditService;
 
     @Autowired
-    public PeerReviewController(PeerReviewAuditService peerReviewAuditService) {
+    public CodeReviewAuditController(CodeReviewAuditService codeReviewAuditService) {
 
-        this.peerReviewAuditService = peerReviewAuditService;
+        this.codeReviewAuditService = codeReviewAuditService;
     }
 
 
@@ -36,10 +36,10 @@ public class PeerReviewController {
      * @return
      */
     @RequestMapping(value = "/peerReview", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Iterable<PeerReviewResponse>> peerReview(@Valid PeerReviewRequest request) {
+    public ResponseEntity<Iterable<CodeReviewAuditResponse>> peerReview(@Valid CodeReviewAuditRequest request) {
         GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(request.getRepo());
         String repoUrl = gitHubParsed.getUrl();
-        Collection<PeerReviewResponse> allPeerReviews = peerReviewAuditService.getPeerReviewResponses(repoUrl, request.getBranch(), request.getScmName(), request.getBeginDate(), request.getEndDate());
+        Collection<CodeReviewAuditResponse> allPeerReviews = codeReviewAuditService.getPeerReviewResponses(repoUrl, request.getBranch(), request.getScmName(), request.getBeginDate(), request.getEndDate());
         return ResponseEntity.ok().body(allPeerReviews);
     }
 

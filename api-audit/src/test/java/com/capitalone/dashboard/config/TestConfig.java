@@ -2,8 +2,8 @@ package com.capitalone.dashboard.config;
 
 import com.capitalone.dashboard.service.BuildAuditService;
 import com.capitalone.dashboard.service.CodeQualityAuditService;
+import com.capitalone.dashboard.service.CodeReviewAuditService;
 import com.capitalone.dashboard.service.DashboardAuditService;
-import com.capitalone.dashboard.service.PeerReviewAuditService;
 import com.capitalone.dashboard.service.TestResultAuditService;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
@@ -21,8 +21,8 @@ public class TestConfig {
     }
 
     @Bean
-    public PeerReviewAuditService peerReviewAuditService() {
-        return Mockito.mock(PeerReviewAuditService.class);
+    public CodeReviewAuditService peerReviewAuditService() {
+        return Mockito.mock(CodeReviewAuditService.class);
     }
 
 

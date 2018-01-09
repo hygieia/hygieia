@@ -7,7 +7,7 @@ import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.repository.CustomRepositoryQuery;
-import com.capitalone.dashboard.request.PeerReviewRequest;
+import com.capitalone.dashboard.request.CodeReviewAuditRequest;
 import com.capitalone.dashboard.service.DashboardAuditService;
 import com.google.gson.Gson;
 import org.bson.types.ObjectId;
@@ -52,7 +52,7 @@ public class DashboardAuditControllerTest {
 
     @Test
     public void performPeerReview() throws Exception {
-        PeerReviewRequest request = new PeerReviewRequest();
+        CodeReviewAuditRequest request = new CodeReviewAuditRequest();
         request.setRepo("http://test.git.com/capone/better.git");
         request.setBranch("master");
         request.setBeginDate(1L);
@@ -103,8 +103,8 @@ public class DashboardAuditControllerTest {
 //
 //
 //
-//    	List<StaticAnalysisResponse> responses = new ArrayList<>();
-//    	StaticAnalysisResponse response =  new StaticAnalysisResponse();
+//    	List<CodeQualityAuditResponse> responses = new ArrayList<>();
+//    	CodeQualityAuditResponse response =  new CodeQualityAuditResponse();
 //    	response.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_OK);
 //    	responses.add(response);
 //
@@ -129,7 +129,7 @@ public class DashboardAuditControllerTest {
 //
 //
 //
-//    	QualityProfileValidationRequest request = new QualityProfileValidationRequest();
+//    	QualityProfileAuditRequest request = new QualityProfileAuditRequest();
 //    	request.setRepo(repo);
 //        request.setBranch(branch);
 //    	request.setArtifactVersion(artifactVersion);
@@ -139,8 +139,8 @@ public class DashboardAuditControllerTest {
 //
 //    	//Response contents
 //
-//    	List<CodeQualityProfileValidationResponse> responses = new ArrayList<>();
-//    	CodeQualityProfileValidationResponse response =  new CodeQualityProfileValidationResponse();
+//    	List<QualityProfileAuditResponse> responses = new ArrayList<>();
+//    	QualityProfileAuditResponse response =  new QualityProfileAuditResponse();
 //    	response.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_GATE_MISSING);
 //    	responses.add(response);
 //
@@ -161,7 +161,7 @@ public class DashboardAuditControllerTest {
 //    	long beginDate = 1478136705000L;
 //    	long endDate = 1497465958000l;
 //
-//    	TestExecutionValidationRequest request = new TestExecutionValidationRequest();
+//    	TestResultAuditRequest request = new TestResultAuditRequest();
 //    	request.setBeginDate(beginDate);
 //    	request.setEndDate(endDate);
 //    	request.setJobUrl(jobUrl);

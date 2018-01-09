@@ -5,13 +5,13 @@ import java.util.List;
 public class DashboardReviewResponse extends AuditReviewResponse {
     private String dashboardTitle;
 
-    List<List<PeerReviewResponse>> allPeerReviewResponses;
+    List<List<CodeReviewAuditResponse>> allPeerReviewResponses;
 
-    JobReviewResponse jobReviewResponse;
+    BuildAuditResponse buildAuditResponse;
     
-	StaticAnalysisResponse staticAnalysisResponse;
+	CodeQualityAuditResponse codeQualityAuditResponse;
 	
-	CodeQualityProfileValidationResponse codeQualityProfileValidationResponse;
+	QualityProfileAuditResponse qualityProfileAuditResponse;
 	
 	TestResultsResponse testResultsResponse;
 
@@ -24,38 +24,38 @@ public class DashboardReviewResponse extends AuditReviewResponse {
         this.dashboardTitle = dashboardTitle;
     }
 
-    public List<List<PeerReviewResponse>> getAllPeerReviewResponses() {
+    public List<List<CodeReviewAuditResponse>> getAllPeerReviewResponses() {
         return allPeerReviewResponses;
     }
 
-    public void setAllPeerReviewResponses(List<List<PeerReviewResponse>> allPeerReviewResponses) {
+    public void setAllPeerReviewResponses(List<List<CodeReviewAuditResponse>> allPeerReviewResponses) {
         this.allPeerReviewResponses = allPeerReviewResponses;
     }
 
-    public JobReviewResponse getJobReviewResponse() {
-        return jobReviewResponse;
+    public BuildAuditResponse getBuildAuditResponse() {
+        return buildAuditResponse;
     }
 
-    public void setJobReviewResponse(JobReviewResponse jobReviewResponse) {
-        this.jobReviewResponse = jobReviewResponse;
+    public void setBuildAuditResponse(BuildAuditResponse buildAuditResponse) {
+        this.buildAuditResponse = buildAuditResponse;
     }
     
     
-	public StaticAnalysisResponse getStaticAnalysisResponse() {
-			return staticAnalysisResponse;
+	public CodeQualityAuditResponse getCodeQualityAuditResponse() {
+			return codeQualityAuditResponse;
 	}
 
-	public void setStaticAnalysisResponse(StaticAnalysisResponse staticAnalysisResponse) {
-		this.staticAnalysisResponse = staticAnalysisResponse;
+	public void setCodeQualityAuditResponse(CodeQualityAuditResponse codeQualityAuditResponse) {
+		this.codeQualityAuditResponse = codeQualityAuditResponse;
 	}
 	
-	public CodeQualityProfileValidationResponse getCodeQualityProfileValidationResponse() {
-		return codeQualityProfileValidationResponse;
+	public QualityProfileAuditResponse getQualityProfileAuditResponse() {
+		return qualityProfileAuditResponse;
 	}
 
-	public void setCodeQualityProfileValidationResponse(
-			CodeQualityProfileValidationResponse codeQualityProfileValidationResponse) {
-		this.codeQualityProfileValidationResponse = codeQualityProfileValidationResponse;
+	public void setQualityProfileAuditResponse(
+			QualityProfileAuditResponse qualityProfileAuditResponse) {
+		this.qualityProfileAuditResponse = qualityProfileAuditResponse;
 	}
 	
 	public TestResultsResponse getTestResultsResponse() {

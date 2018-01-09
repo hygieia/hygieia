@@ -1,6 +1,6 @@
 package com.capitalone.dashboard.request;
 
-public class TestExecutionValidationRequest extends AuditReviewRequest {
+public class TestResultAuditRequest extends AuditReviewRequest {
 	
     private String jobUrl;
 

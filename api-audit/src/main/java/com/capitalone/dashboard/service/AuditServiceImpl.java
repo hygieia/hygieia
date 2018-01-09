@@ -42,12 +42,12 @@ import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.repository.JobRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
-import com.capitalone.dashboard.response.CodeQualityProfileValidationResponse;
+import com.capitalone.dashboard.response.BuildAuditResponse;
+import com.capitalone.dashboard.response.CodeQualityAuditResponse;
+import com.capitalone.dashboard.response.CodeReviewAuditResponse;
+import com.capitalone.dashboard.response.PerformaceTestAuditResponse;
+import com.capitalone.dashboard.response.QualityProfileAuditResponse;
 import com.capitalone.dashboard.response.DashboardReviewResponse;
-import com.capitalone.dashboard.response.JobReviewResponse;
-import com.capitalone.dashboard.response.PeerReviewResponse;
-import com.capitalone.dashboard.response.PerfReviewResponse;
-import com.capitalone.dashboard.response.StaticAnalysisResponse;
 import com.capitalone.dashboard.response.TestResultsResponse;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -200,22 +200,22 @@ public class AuditServiceImpl implements AuditService {
         //Code Review Audit
         GenericAuditResponse codeReviewResponse = getCodeReviewAudit(dashboard, beginDate, endDate);
         dashboardReviewResponse.addAllAuditStatus(codeReviewResponse.getAuditStatuses());
-        List<List<PeerReviewResponse>> peerReviewsAudit = (List<List<PeerReviewResponse>>) codeReviewResponse.getResponse(GenericAuditResponse.CODE_REVIEW);
+        List<List<CodeReviewAuditResponse>> peerReviewsAudit = (List<List<CodeReviewAuditResponse>>) codeReviewResponse.getResponse(GenericAuditResponse.CODE_REVIEW);
         dashboardReviewResponse.setAllPeerReviewResponses(peerReviewsAudit);
 
 
         //Get the pull requests list back
-        List<GitRequest> pullRequests = peerReviewsAudit.stream().flatMap(List::stream).map(PeerReviewResponse::getPullRequest).collect(Collectors.toList());
+        List<GitRequest> pullRequests = peerReviewsAudit.stream().flatMap(List::stream).map(CodeReviewAuditResponse::getPullRequest).collect(Collectors.toList());
 
         //Build Audit
         GenericAuditResponse buildGenericAuditResponse = getBuildJobAuditResponse(dashboard, beginDate, endDate, pullRequests);
         dashboardReviewResponse.addAllAuditStatus(buildGenericAuditResponse.getAuditStatuses());
-        dashboardReviewResponse.setJobReviewResponse((JobReviewResponse) buildGenericAuditResponse.getResponse(GenericAuditResponse.JOB_REVIEW));
+        dashboardReviewResponse.setBuildAuditResponse((BuildAuditResponse) buildGenericAuditResponse.getResponse(GenericAuditResponse.JOB_REVIEW));
 
         //Code Quality Audit
         GenericAuditResponse codeQualityGenericAuditResponse = getCodeQualityAuditResponse(dashboard);
         dashboardReviewResponse.addAllAuditStatus(codeQualityGenericAuditResponse.getAuditStatuses());
-        dashboardReviewResponse.setStaticAnalysisResponse((StaticAnalysisResponse) codeQualityGenericAuditResponse.getResponse(GenericAuditResponse.STATIC_CODE_REVIEW));
+        dashboardReviewResponse.setCodeQualityAuditResponse((CodeQualityAuditResponse) codeQualityGenericAuditResponse.getResponse(GenericAuditResponse.STATIC_CODE_REVIEW));
 
         List<CollectorItem> testItems = this.getCollectorItems(dashboard, "test", CollectorType.Test);
 
@@ -247,7 +247,7 @@ public class AuditServiceImpl implements AuditService {
             return genericAuditResponse;
         }
         genericAuditResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_CONFIGURED);
-        List<List<PeerReviewResponse>> allReviews = new ArrayList<>();
+        List<List<CodeReviewAuditResponse>> allReviews = new ArrayList<>();
 
         for (CollectorItem repoItem : repoItems) {
             String scmWidgetbranch = (String) repoItem.getOptions().get("branch");
@@ -255,7 +255,7 @@ public class AuditServiceImpl implements AuditService {
             GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(scmWidgetrepoUrl);
             scmWidgetrepoUrl = gitHubParsed.getUrl();
             if (!StringUtils.isEmpty(scmWidgetbranch) && !StringUtils.isEmpty(scmWidgetrepoUrl)) {
-                List<PeerReviewResponse> reviewResponses = this.getPeerReviewResponses(repoItem, beginDate, endDate);
+                List<CodeReviewAuditResponse> reviewResponses = this.getPeerReviewResponses(repoItem, beginDate, endDate);
                 allReviews.add(reviewResponses);
             }
         }
@@ -276,8 +276,8 @@ public class AuditServiceImpl implements AuditService {
      * @return
      */
     @Override
-    public List<PeerReviewResponse> getPeerReviewResponses(String repoUrl, String repoBranch, String scmName,
-                                                           long beginDt, long endDt) {
+    public List<CodeReviewAuditResponse> getPeerReviewResponses(String repoUrl, String repoBranch, String scmName,
+                                                                long beginDt, long endDt) {
         LOGGER.info("********************* repo " + repoUrl + " branch " + repoBranch
                 + " " + beginDt + " " + endDt);
         Collector githubCollector = collectorRepository.findByName(!StringUtils.isEmpty(scmName) ? scmName : "GitHub");
@@ -298,15 +298,15 @@ public class AuditServiceImpl implements AuditService {
      */
 
     @Override
-    public List<PeerReviewResponse> getPeerReviewResponses(CollectorItem repoItem,
-                                                           long beginDt, long endDt) {
+    public List<CodeReviewAuditResponse> getPeerReviewResponses(CollectorItem repoItem,
+                                                                long beginDt, long endDt) {
 
-        List<PeerReviewResponse> allPeerReviews = new ArrayList<>();
+        List<CodeReviewAuditResponse> allPeerReviews = new ArrayList<>();
 
         if (repoItem == null) {
-            PeerReviewResponse peerReviewResponse = new PeerReviewResponse();
-            peerReviewResponse.addAuditStatus(AuditStatus.REPO_NOT_CONFIGURED);
-            allPeerReviews.add(peerReviewResponse);
+            CodeReviewAuditResponse codeReviewAuditResponse = new CodeReviewAuditResponse();
+            codeReviewAuditResponse.addAuditStatus(AuditStatus.REPO_NOT_CONFIGURED);
+            allPeerReviews.add(codeReviewAuditResponse);
             return allPeerReviews;
         }
 
@@ -314,14 +314,14 @@ public class AuditServiceImpl implements AuditService {
         String scmBranch = (String) repoItem.getOptions().get("branch");
 
         if (!CollectionUtils.isEmpty(repoItem.getErrors())) {
-            PeerReviewResponse noPRsPeerReviewResponse = new PeerReviewResponse();
-            noPRsPeerReviewResponse.addAuditStatus(AuditStatus.COLLECTOR_ITEM_ERROR);
+            CodeReviewAuditResponse noPRsCodeReviewAuditResponse = new CodeReviewAuditResponse();
+            noPRsCodeReviewAuditResponse.addAuditStatus(AuditStatus.COLLECTOR_ITEM_ERROR);
 
-            noPRsPeerReviewResponse.setLastUpdated(repoItem.getLastUpdated());
-            noPRsPeerReviewResponse.setScmBranch(scmBranch);
-            noPRsPeerReviewResponse.setScmUrl(scmUrl);
-            noPRsPeerReviewResponse.setErrorMessage(repoItem.getErrors().get(0).getErrorMessage());
-            allPeerReviews.add(noPRsPeerReviewResponse);
+            noPRsCodeReviewAuditResponse.setLastUpdated(repoItem.getLastUpdated());
+            noPRsCodeReviewAuditResponse.setScmBranch(scmBranch);
+            noPRsCodeReviewAuditResponse.setScmUrl(scmUrl);
+            noPRsCodeReviewAuditResponse.setErrorMessage(repoItem.getErrors().get(0).getErrorMessage());
+            allPeerReviews.add(noPRsCodeReviewAuditResponse);
             return allPeerReviews;
         }
 
@@ -329,14 +329,14 @@ public class AuditServiceImpl implements AuditService {
         List<Commit> commits = customRepositoryQuery.findByScmUrlAndScmBranchAndScmCommitTimestampGreaterThanEqualAndScmCommitTimestampLessThanEqual(scmUrl, scmBranch, beginDt, endDt);
 
         if (CollectionUtils.isEmpty(pullRequests)) {
-            PeerReviewResponse noPRsPeerReviewResponse = new PeerReviewResponse();
-            noPRsPeerReviewResponse.addAuditStatus(AuditStatus.NO_PULL_REQ_FOR_DATE_RANGE);
-            allPeerReviews.add(noPRsPeerReviewResponse);
+            CodeReviewAuditResponse noPRsCodeReviewAuditResponse = new CodeReviewAuditResponse();
+            noPRsCodeReviewAuditResponse.addAuditStatus(AuditStatus.NO_PULL_REQ_FOR_DATE_RANGE);
+            allPeerReviews.add(noPRsCodeReviewAuditResponse);
         }
 
         for (GitRequest pr : pullRequests) {
-            PeerReviewResponse peerReviewResponse = new PeerReviewResponse();
-            peerReviewResponse.setPullRequest(pr);
+            CodeReviewAuditResponse codeReviewAuditResponse = new CodeReviewAuditResponse();
+            codeReviewAuditResponse.setPullRequest(pr);
             String mergeSha = pr.getScmRevisionNumber();
             Optional<Commit> mergeOptionalCommit = commits.stream().filter(c -> Objects.equals(c.getScmRevisionNumber(), mergeSha)).findFirst();
             Commit mergeCommit = mergeOptionalCommit.orElse(null);
@@ -349,40 +349,40 @@ public class AuditServiceImpl implements AuditService {
             commitsRelatedToPr.sort(Comparator.comparing(e -> (e.getScmCommitTimestamp())));
 
             //check for pr author <> pr merger
-            peerReviewResponse.addAuditStatus(pr.getUserId().equalsIgnoreCase(mergeCommit.getScmAuthorLogin()) ? AuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER : AuditStatus.COMMITAUTHOR_NE_MERGECOMMITER);
-            peerReviewResponse.setCommits(commitsRelatedToPr);
+            codeReviewAuditResponse.addAuditStatus(pr.getUserId().equalsIgnoreCase(mergeCommit.getScmAuthorLogin()) ? AuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER : AuditStatus.COMMITAUTHOR_NE_MERGECOMMITER);
+            codeReviewAuditResponse.setCommits(commitsRelatedToPr);
             //check to see if pr was reviewed
-            boolean peerReviewed = computePeerReviewStatus(pr, peerReviewResponse);
+            boolean peerReviewed = computePeerReviewStatus(pr, codeReviewAuditResponse);
 
-            peerReviewResponse.addAuditStatus(peerReviewed ? AuditStatus.PULLREQ_REVIEWED_BY_PEER : AuditStatus.PULLREQ_NOT_PEER_REVIEWED);
+            codeReviewAuditResponse.addAuditStatus(peerReviewed ? AuditStatus.PULLREQ_REVIEWED_BY_PEER : AuditStatus.PULLREQ_NOT_PEER_REVIEWED);
 
             //type of branching strategy
             String sourceRepo = pr.getSourceRepo();
             String targetRepo = pr.getTargetRepo();
-            peerReviewResponse.addAuditStatus(sourceRepo == null ? AuditStatus.GIT_FORK_STRATEGY : sourceRepo.equalsIgnoreCase(targetRepo) ? AuditStatus.GIT_BRANCH_STRATEGY : AuditStatus.GIT_FORK_STRATEGY);
-            allPeerReviews.add(peerReviewResponse);
+            codeReviewAuditResponse.addAuditStatus(sourceRepo == null ? AuditStatus.GIT_FORK_STRATEGY : sourceRepo.equalsIgnoreCase(targetRepo) ? AuditStatus.GIT_BRANCH_STRATEGY : AuditStatus.GIT_FORK_STRATEGY);
+            allPeerReviews.add(codeReviewAuditResponse);
         }
 
         //check any commits not directly tied to pr
-        PeerReviewResponse peerReviewResponse = new PeerReviewResponse();
+        CodeReviewAuditResponse codeReviewAuditResponse = new CodeReviewAuditResponse();
         List<Commit> commitsNotDirectlyTiedToPr = new ArrayList<>();
         commits.forEach(commit -> {
             if (StringUtils.isEmpty(commit.getPullNumber()) && commit.getType() == CommitType.New) {
                 commitsNotDirectlyTiedToPr.add(commit);
-                peerReviewResponse.addAuditStatus(commit.isFirstEverCommit() ? AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : AuditStatus.DIRECT_COMMITS_TO_BASE);
+                codeReviewAuditResponse.addAuditStatus(commit.isFirstEverCommit() ? AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : AuditStatus.DIRECT_COMMITS_TO_BASE);
             }
         });
         if (!commitsNotDirectlyTiedToPr.isEmpty()) {
-            peerReviewResponse.setCommits(commitsNotDirectlyTiedToPr);
-            allPeerReviews.add(peerReviewResponse);
+            codeReviewAuditResponse.setCommits(commitsNotDirectlyTiedToPr);
+            allPeerReviews.add(codeReviewAuditResponse);
         }
 
         //pull requests in date range, but merged prior to 14 days so no commits available in hygieia
         if (!CollectionUtils.isEmpty(pullRequests)) {
             if (allPeerReviews.isEmpty()) {
-                PeerReviewResponse prsButNoCommitsInRangePeerReviewResponse = new PeerReviewResponse();
-                prsButNoCommitsInRangePeerReviewResponse.addAuditStatus(AuditStatus.NO_PULL_REQ_FOR_DATE_RANGE);
-                allPeerReviews.add(prsButNoCommitsInRangePeerReviewResponse);
+                CodeReviewAuditResponse prsButNoCommitsInRangeCodeReviewAuditResponse = new CodeReviewAuditResponse();
+                prsButNoCommitsInRangeCodeReviewAuditResponse.addAuditStatus(AuditStatus.NO_PULL_REQ_FOR_DATE_RANGE);
+                allPeerReviews.add(prsButNoCommitsInRangeCodeReviewAuditResponse);
             }
         }
 
@@ -398,10 +398,10 @@ public class AuditServiceImpl implements AuditService {
      * Calculates the peer review status for a given pull request
      *
      * @param pr                 - pull request
-     * @param peerReviewResponse
+     * @param codeReviewAuditResponse
      * @return
      */
-    boolean computePeerReviewStatus(GitRequest pr, PeerReviewResponse peerReviewResponse) {
+    boolean computePeerReviewStatus(GitRequest pr, CodeReviewAuditResponse codeReviewAuditResponse) {
         List<Review> reviews = pr.getReviews();
 
         List<CommitStatus> statuses = pr.getCommitStatuses();
@@ -419,20 +419,20 @@ public class AuditServiceImpl implements AuditService {
                     String stateString = (status.getState() != null) ? status.getState().toLowerCase() : "unknown";
                     switch (stateString) {
                         case "pending":
-                            peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_PENDING);
+                            codeReviewAuditResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_PENDING);
                             break;
 
                         case "error":
-                            peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_PENDING);
+                            codeReviewAuditResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_PENDING);
                             break;
 
                         case "success":
                             lgtmStateResult = true;
-                            peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_SUCCESS);
+                            codeReviewAuditResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_SUCCESS);
                             break;
 
                         default:
-                            peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_UNKNOWN);
+                            codeReviewAuditResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_UNKNOWN);
                             break;
                     }
                 }
@@ -440,10 +440,10 @@ public class AuditServiceImpl implements AuditService {
 
             if (lgtmAttempted) {
                 //if lgtm self-review, then no peer-review was done unless someone else looked at it
-                if (!CollectionUtils.isEmpty(peerReviewResponse.getAuditStatuses()) &&
-                        peerReviewResponse.getAuditStatuses().contains(AuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER) &&
+                if (!CollectionUtils.isEmpty(codeReviewAuditResponse.getAuditStatuses()) &&
+                        codeReviewAuditResponse.getAuditStatuses().contains(AuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER) &&
                         !isPRLookedAtByPeer(pr)) {
-                    peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_SELF_APPROVAL);
+                    codeReviewAuditResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_SELF_APPROVAL);
                     return false;
                 }
                 return lgtmStateResult;
@@ -455,7 +455,7 @@ public class AuditServiceImpl implements AuditService {
             for (Review review : reviews) {
                 if ("approved".equalsIgnoreCase(review.getState())) {
                     //review done using GitHub Review workflow
-                    peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_GHR);
+                    codeReviewAuditResponse.addAuditStatus(AuditStatus.PEER_REVIEW_GHR);
                     return true;
                 }
             }
@@ -509,9 +509,9 @@ public class AuditServiceImpl implements AuditService {
         String jobName = (String) buildItem.getOptions().get("jobName");
 
         if (jobUrl != null && jobName != null) {
-            JobReviewResponse jobReviewResponse = this.getBuildJobReviewResponse(jobUrl, jobName, beginDt, endDt);
-            jobConfigHists = jobReviewResponse.getConfigHistory();
-            genericAuditResponse.addResponse(GenericAuditResponse.JOB_REVIEW, jobReviewResponse);
+            BuildAuditResponse buildAuditResponse = this.getBuildJobReviewResponse(jobUrl, jobName, beginDt, endDt);
+            jobConfigHists = buildAuditResponse.getConfigHistory();
+            genericAuditResponse.addResponse(GenericAuditResponse.JOB_REVIEW, buildAuditResponse);
         }
 
         if (CollectionUtils.isEmpty(repoItems)) {
@@ -574,8 +574,8 @@ public class AuditServiceImpl implements AuditService {
         genericAuditResponse.addAuditStatus(AuditStatus.DASHBOARD_CODEQUALITY_CONFIGURED);
         CollectorItem codeQualityItem = codeQualityItems.get(0);
         List<CodeQuality> codeQualityDetails = codeQualityRepository.findByCollectorItemIdOrderByTimestampDesc(codeQualityItem.getCollectorId());
-        StaticAnalysisResponse staticAnalysisResponse = this.getStaticAnalysisResponse(codeQualityDetails);
-        genericAuditResponse.addResponse(GenericAuditResponse.STATIC_CODE_REVIEW, staticAnalysisResponse);
+        CodeQualityAuditResponse codeQualityAuditResponse = this.getStaticAnalysisResponse(codeQualityDetails);
+        genericAuditResponse.addResponse(GenericAuditResponse.STATIC_CODE_REVIEW, codeQualityAuditResponse);
         //Commenting this out until Sonar Collector is updated to pull config changes
 //			if(repoItems != null && !repoItems.isEmpty()){
 //				for (CollectorItem repoItem : repoItems) {
@@ -583,54 +583,54 @@ public class AuditServiceImpl implements AuditService {
 //					String aRepoItemUrl = (String) repoItem.getOptions().get("url");
 //					List<Commit> repoCommits = getCommits(aRepoItemUrl, aRepoItembranch, beginDate, endDate);
 //
-//					CodeQualityProfileValidationResponse codeQualityProfileValidationResponse = this.qualityProfileAudit(repoCommits,codeQualityDetails,beginDate, endDate);
-//					genericAuditResponse.setCodeQualityProfileValidationResponse(codeQualityProfileValidationResponse);
+//					QualityProfileAuditResponse codeQualityProfileValidationResponse = this.qualityProfileAudit(repoCommits,codeQualityDetails,beginDate, endDate);
+//					genericAuditResponse.setQualityProfileAuditResponse(codeQualityProfileValidationResponse);
 //				}
 //			}
 
         return genericAuditResponse;
     }
 
-    public JobReviewResponse getBuildJobReviewResponse(String jobUrl, String jobName, long beginDt, long endDt) {
+    public BuildAuditResponse getBuildJobReviewResponse(String jobUrl, String jobName, long beginDt, long endDt) {
 
-        JobReviewResponse jobReviewResponse = new JobReviewResponse();
+        BuildAuditResponse buildAuditResponse = new BuildAuditResponse();
 
         Collector hudsonCollector = collectorRepository.findByName("Hudson");
         JobCollectorItem collectorItem = jobRepository.findJobByJobUrl(hudsonCollector.getId(), jobUrl, jobName);
 
         if (collectorItem == null) {
-            jobReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_BUILD_NOT_CONFIGURED);
-            return jobReviewResponse;
+            buildAuditResponse.addAuditStatus(AuditStatus.DASHBOARD_BUILD_NOT_CONFIGURED);
+            return buildAuditResponse;
         }
 
         if (!CollectionUtils.isEmpty(collectorItem.getErrors())) {
-            jobReviewResponse.addAuditStatus(AuditStatus.COLLECTOR_ITEM_ERROR);
+            buildAuditResponse.addAuditStatus(AuditStatus.COLLECTOR_ITEM_ERROR);
 
-            jobReviewResponse.setLastUpdated(collectorItem.getLastUpdated());
-            jobReviewResponse.setErrorMessage(collectorItem.getErrors().get(0).getErrorMessage());
-            return jobReviewResponse;
+            buildAuditResponse.setLastUpdated(collectorItem.getLastUpdated());
+            buildAuditResponse.setErrorMessage(collectorItem.getErrors().get(0).getErrorMessage());
+            return buildAuditResponse;
         }
 
         //Segregation of Pipeline Environments
         //Check Prod job URL to validate Prod deploy job in Enterprise Jenkins Prod folder
-        jobReviewResponse.setEnvironment(collectorItem.getEnvironment());
+        buildAuditResponse.setEnvironment(collectorItem.getEnvironment());
 
         //Segregation of access to Pipeline Environments
         //Check Jenkins Job config log to validate pr author is not modifying the Prod Job
         //since beginDate and endDate are the same column and between is excluding the edge values, we need to subtract/add a millisec
-        jobReviewResponse.setConfigHistory(collItemCfgHistRepository.findByCollectorItemIdAndJobAndJobUrlAndTimestampBetweenOrderByTimestampDesc(collectorItem.getId(), jobName, jobUrl, beginDt - 1, endDt + 1));
+        buildAuditResponse.setConfigHistory(collItemCfgHistRepository.findByCollectorItemIdAndJobAndJobUrlAndTimestampBetweenOrderByTimestampDesc(collectorItem.getId(), jobName, jobUrl, beginDt - 1, endDt + 1));
 
-        if ("PROD".equalsIgnoreCase(jobReviewResponse.getEnvironment())) {
+        if ("PROD".equalsIgnoreCase(buildAuditResponse.getEnvironment())) {
             if (jobUrl.toUpperCase(Locale.ENGLISH).contains("NON-PROD")) {
-                jobReviewResponse.addAuditStatus(AuditStatus.BUILD_JOB_IS_NON_PROD);
+                buildAuditResponse.addAuditStatus(AuditStatus.BUILD_JOB_IS_NON_PROD);
             } else {
-                jobReviewResponse.addAuditStatus(AuditStatus.BUILD_JOB_IS_PROD);
+                buildAuditResponse.addAuditStatus(AuditStatus.BUILD_JOB_IS_PROD);
             }
         } else {
-            jobReviewResponse.addAuditStatus(AuditStatus.BUILD_JOB_IS_NON_PROD);
+            buildAuditResponse.addAuditStatus(AuditStatus.BUILD_JOB_IS_NON_PROD);
         }
 
-        return jobReviewResponse;
+        return buildAuditResponse;
     }
 
     /**
@@ -638,29 +638,29 @@ public class AuditServiceImpl implements AuditService {
      *
      * @param projectName     Sonar Project Name
      * @param artifactVersion Artifact Version
-     * @return List of StaticAnalysisResponse
+     * @return List of CodeQualityAuditResponse
      * @throws HygieiaException
      */
-    public List<StaticAnalysisResponse> getCodeQualityAudit(String projectName,
-                                                            String artifactVersion) throws HygieiaException {
+    public List<CodeQualityAuditResponse> getCodeQualityAudit(String projectName,
+                                                              String artifactVersion) throws HygieiaException {
         List<CodeQuality> qualities = codeQualityRepository
                 .findByNameAndVersionOrderByTimestampDesc(projectName, artifactVersion);
         if (CollectionUtils.isEmpty(qualities))
             throw new HygieiaException("Empty CodeQuality collection", HygieiaException.BAD_DATA);
-        StaticAnalysisResponse response = getStaticAnalysisResponse(qualities);
+        CodeQualityAuditResponse response = getStaticAnalysisResponse(qualities);
         return Arrays.asList(response);
     }
 
     /**
-     * Reusable method for constructing the StaticAnalysisResponse object for a
+     * Reusable method for constructing the CodeQualityAuditResponse object for a
      *
      * @param codeQualities Code Quality List
-     * @return StaticAnalysisResponse
+     * @return CodeQualityAuditResponse
      * @throws HygieiaException
      */
-    private StaticAnalysisResponse getStaticAnalysisResponse(List<CodeQuality> codeQualities) throws HygieiaException {
+    private CodeQualityAuditResponse getStaticAnalysisResponse(List<CodeQuality> codeQualities) throws HygieiaException {
         if (codeQualities == null)
-            return new StaticAnalysisResponse();
+            return new CodeQualityAuditResponse();
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -668,8 +668,8 @@ public class AuditServiceImpl implements AuditService {
             throw new HygieiaException("Empty CodeQuality collection", HygieiaException.BAD_DATA);
         CodeQuality returnQuality = codeQualities.get(0);
 
-        StaticAnalysisResponse staticAnalysisResponse = new StaticAnalysisResponse();
-        staticAnalysisResponse.setCodeQualityDetails(returnQuality);
+        CodeQualityAuditResponse codeQualityAuditResponse = new CodeQualityAuditResponse();
+        codeQualityAuditResponse.setCodeQualityDetails(returnQuality);
         for (CodeQualityMetric metric : returnQuality.getMetrics()) {
             if (metric.getName().equalsIgnoreCase("quality_gate_details")) {
                 TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
@@ -680,9 +680,9 @@ public class AuditServiceImpl implements AuditService {
                     if (MapUtils.isNotEmpty(values) && values.containsKey("level")) {
                         String level = values.get("level");
                         if (level.equalsIgnoreCase("ok")) {
-                            staticAnalysisResponse.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_OK);
+                            codeQualityAuditResponse.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_OK);
                         } else {
-                            staticAnalysisResponse.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_FAIL);
+                            codeQualityAuditResponse.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_FAIL);
                         }
                     }
                     break;
@@ -693,13 +693,13 @@ public class AuditServiceImpl implements AuditService {
 
             }
         }
-        Set<AuditStatus> auditStatuses = staticAnalysisResponse.getAuditStatuses();
+        Set<AuditStatus> auditStatuses = codeQualityAuditResponse.getAuditStatuses();
         if (!(auditStatuses.contains(AuditStatus.CODE_QUALITY_AUDIT_OK)
                 || auditStatuses.contains(AuditStatus.CODE_QUALITY_AUDIT_FAIL))) {
-            staticAnalysisResponse.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_GATE_MISSING);
+            codeQualityAuditResponse.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_GATE_MISSING);
         }
 
-        return staticAnalysisResponse;
+        return codeQualityAuditResponse;
     }
 
     /**
@@ -726,7 +726,7 @@ public class AuditServiceImpl implements AuditService {
     }
 
     /**
-     * Reusable method for constructing the StaticAnalysisResponse object for a
+     * Reusable method for constructing the CodeQualityAuditResponse object for a
      *
      * @param testResults Test Result List
      * @return TestResultsResponse
@@ -766,12 +766,12 @@ public class AuditServiceImpl implements AuditService {
      * @param repoBranch      SCM repo branch
      * @param projectName     Sonar Project name
      * @param artifactVersion Artifact Version
-     * @return CodeQualityProfileValidationResponse
+     * @return QualityProfileAuditResponse
      * @throws HygieiaException
      */
 
-    public CodeQualityProfileValidationResponse getQualityGateValidationDetails(String repoUrl, String repoBranch,
-                                                                                String projectName, String artifactVersion, long beginDate, long endDate)
+    public QualityProfileAuditResponse getQualityGateValidationDetails(String repoUrl, String repoBranch,
+                                                                       String projectName, String artifactVersion, long beginDate, long endDate)
             throws HygieiaException {
 
         List<Commit> commits = customRepositoryQuery.findByScmUrlAndScmBranchAndScmCommitTimestampGreaterThanEqualAndScmCommitTimestampLessThanEqual(repoUrl, repoBranch, beginDate, endDate);
@@ -783,11 +783,11 @@ public class AuditServiceImpl implements AuditService {
 
     }
 
-    private CodeQualityProfileValidationResponse qualityProfileAudit(List<Commit> commits, List<CodeQuality> codeQualities, long beginDate, long endDate) {
+    private QualityProfileAuditResponse qualityProfileAudit(List<Commit> commits, List<CodeQuality> codeQualities, long beginDate, long endDate) {
 
         Set<String> authors = commits.stream().map(SCM::getScmAuthor).collect(Collectors.toSet());
 
-        CodeQualityProfileValidationResponse codeQualityGateValidationResponse = new CodeQualityProfileValidationResponse();
+        QualityProfileAuditResponse codeQualityGateValidationResponse = new QualityProfileAuditResponse();
         CodeQuality codeQuality = codeQualities.get(0);
         String url = codeQuality.getUrl();
         List<CollItemCfgHist> qualityProfileChanges = collItemCfgHistRepository
@@ -830,11 +830,11 @@ public class AuditServiceImpl implements AuditService {
                 .findByUrlAndTimestampGreaterThanEqualAndTimestampLessThanEqual(jobUrl, beginDt, endDt);
     }
 
-    public PerfReviewResponse getresultsBycomponetAndTime(String businessComp, long from, long to) {
+    public PerformaceTestAuditResponse getresultsBycomponetAndTime(String businessComp, long from, long to) {
         Cmdb cmdb = cmdbRepository.findByConfigurationItemIgnoreCase(businessComp); // get CMDB iD
         Iterable<Dashboard> dashboard = dashboardRepository.findAllByConfigurationItemBusAppObjectId(cmdb.getId()); //get dashboard based on CMDB ID
         Iterator<Dashboard> dashboardIT = dashboard.iterator();  //Iterate through the dashboards to obtain the collectorIteamID
-        PerfReviewResponse perfReviewResponse = new PerfReviewResponse();
+        PerformaceTestAuditResponse performaceTestAuditResponse = new PerformaceTestAuditResponse();
         while (dashboardIT.hasNext()) {
             dashboardIT.next();
             Set<CollectorType> ci = dashboard.iterator().next().getApplication().getComponents().iterator().next().getCollectorItems().keySet();
@@ -893,18 +893,18 @@ public class AuditServiceImpl implements AuditService {
                         }
                     }
                 }
-                perfReviewResponse.setResult(testlist);
+                performaceTestAuditResponse.setResult(testlist);
                 int counter = (int) testlist.stream().filter(list -> list.getResultStatus().matches("Success")).count();
                 if (testlist.size() == 0) {
-                    perfReviewResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_MISSING);
+                    performaceTestAuditResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_MISSING);
                 } else if (counter >= 1) {
-                    perfReviewResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_OK);
+                    performaceTestAuditResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_OK);
                 } else {
-                    perfReviewResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_FAIL);
+                    performaceTestAuditResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_FAIL);
                 }
             }
         }
-        return perfReviewResponse;
+        return performaceTestAuditResponse;
     }
 
     /**

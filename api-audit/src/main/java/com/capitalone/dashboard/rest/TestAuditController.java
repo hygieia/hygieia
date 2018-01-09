@@ -1,9 +1,9 @@
 package com.capitalone.dashboard.rest;
 
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.request.PerfReviewRequest;
-import com.capitalone.dashboard.request.TestExecutionValidationRequest;
-import com.capitalone.dashboard.response.PerfReviewResponse;
+import com.capitalone.dashboard.request.PerformanceTestAuditRequest;
+import com.capitalone.dashboard.request.TestResultAuditRequest;
+import com.capitalone.dashboard.response.PerformaceTestAuditResponse;
 import com.capitalone.dashboard.response.TestResultsResponse;
 import com.capitalone.dashboard.service.TestResultAuditService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ public class TestAuditController {
 	 */
 
 	@RequestMapping(value = "/validateTestResults", method = GET, produces = APPLICATION_JSON_VALUE)
-	public ResponseEntity<TestResultsResponse> validatetestResultExecution(TestExecutionValidationRequest request)
+	public ResponseEntity<TestResultsResponse> validatetestResultExecution(TestResultAuditRequest request)
 			throws HygieiaException {
 
 		TestResultsResponse testResultsResponse;
@@ -43,11 +43,11 @@ public class TestAuditController {
 	}
 
 	@RequestMapping(value = "/validatePerfResults", method = GET, produces = APPLICATION_JSON_VALUE)
-	public ResponseEntity validatePerfResultExecution(PerfReviewRequest request) {
+	public ResponseEntity validatePerfResultExecution(PerformanceTestAuditRequest request) {
 		try {
-				PerfReviewResponse perfReviewResponse;
-				perfReviewResponse = testResultAuditService.getresultsBycomponetAndTime(request.getBusinessComponentName(), request.getRangeFrom(), request.getRangeTo());
-				return ResponseEntity.ok().body(perfReviewResponse);
+				PerformaceTestAuditResponse performaceTestAuditResponse;
+				performaceTestAuditResponse = testResultAuditService.getresultsBycomponetAndTime(request.getBusinessComponentName(), request.getRangeFrom(), request.getRangeTo());
+				return ResponseEntity.ok().body(performaceTestAuditResponse);
 		}catch (Exception e){
 			return ResponseEntity.ok().body(request.getBusinessComponentName() + " is not a valid businessComp name or does not exists");
 		}

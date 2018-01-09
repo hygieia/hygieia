@@ -3,7 +3,7 @@ package com.capitalone.dashboard.response;
 import com.capitalone.dashboard.model.CodeQuality;
 
 
-public class StaticAnalysisResponse extends AuditReviewResponse {
+public class CodeQualityAuditResponse extends AuditReviewResponse {
 	 private CodeQuality codeQualityDetails;
 
     public CodeQuality getCodeQualityDetails() {

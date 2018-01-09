@@ -1,8 +1,8 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.response.JobReviewResponse;
+import com.capitalone.dashboard.response.BuildAuditResponse;
 
 public interface BuildAuditService {
 
-    JobReviewResponse getBuildJobReviewResponse(String jobUrl, String jobName, long beginDt, long endDt);
+    BuildAuditResponse getBuildJobReviewResponse(String jobUrl, String jobName, long beginDt, long endDt);
 }

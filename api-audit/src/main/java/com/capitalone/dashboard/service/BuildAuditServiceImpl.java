@@ -1,6 +1,6 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.response.JobReviewResponse;
+import com.capitalone.dashboard.response.BuildAuditResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +18,7 @@ public class BuildAuditServiceImpl implements BuildAuditService {
 
 
     @Override
-    public JobReviewResponse getBuildJobReviewResponse(String jobUrl, String jobName, long beginDt, long endDt) {
+    public BuildAuditResponse getBuildJobReviewResponse(String jobUrl, String jobName, long beginDt, long endDt) {
         return null;
     }
 }

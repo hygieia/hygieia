@@ -1,6 +1,6 @@
 package com.capitalone.dashboard.request;
 
-public class DashboardReviewRequest extends AuditReviewRequest {
+public class DashboardAuditRequest extends AuditReviewRequest {
     private String title;
     private String type;
 

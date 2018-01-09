@@ -1,10 +1,10 @@
 package com.capitalone.dashboard.rest;
 
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.request.QualityProfileValidationRequest;
-import com.capitalone.dashboard.request.StaticAnalysisRequest;
-import com.capitalone.dashboard.response.CodeQualityProfileValidationResponse;
-import com.capitalone.dashboard.response.StaticAnalysisResponse;
+import com.capitalone.dashboard.request.CodeQualityAuditRequest;
+import com.capitalone.dashboard.request.QualityProfileAuditRequest;
+import com.capitalone.dashboard.response.QualityProfileAuditResponse;
+import com.capitalone.dashboard.response.CodeQualityAuditResponse;
 import com.capitalone.dashboard.service.CodeQualityAuditService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -37,12 +37,12 @@ public class CodeQualityAuditController {
 	 */
 
 	@RequestMapping(value = "/staticCodeAnalysis", method = GET, produces = APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<StaticAnalysisResponse>> staticCodeAnalysis(StaticAnalysisRequest request)
+	public ResponseEntity<List<CodeQualityAuditResponse>> staticCodeAnalysis(CodeQualityAuditRequest request)
 			throws HygieiaException, IOException {
 
-		List<StaticAnalysisResponse> staticAnalysisResponse;
-		staticAnalysisResponse = codeQualityAuditService.getCodeQualityAudit(request.getProjectName(), request.getArtifactVersion());
-		return ResponseEntity.ok().body(staticAnalysisResponse);
+		List<CodeQualityAuditResponse> codeQualityAuditResponse;
+		codeQualityAuditResponse = codeQualityAuditService.getCodeQualityAudit(request.getProjectName(), request.getArtifactVersion());
+		return ResponseEntity.ok().body(codeQualityAuditResponse);
 	}
 
 
@@ -55,10 +55,10 @@ public class CodeQualityAuditController {
 	 */
 
 	@RequestMapping(value = "/codeQualityProfileValidation", method = GET, produces = APPLICATION_JSON_VALUE)
-	public ResponseEntity<CodeQualityProfileValidationResponse> codeQualityGateValidation(QualityProfileValidationRequest request)
+	public ResponseEntity<QualityProfileAuditResponse> codeQualityGateValidation(QualityProfileAuditRequest request)
 			throws HygieiaException {
 
-		CodeQualityProfileValidationResponse codeQualityGateValidationResponse = codeQualityAuditService.getQualityGateValidationDetails(request.getRepo(),request.getBranch(),
+		QualityProfileAuditResponse codeQualityGateValidationResponse = codeQualityAuditService.getQualityGateValidationDetails(request.getRepo(),request.getBranch(),
 				request.getProjectName(), request.getArtifactVersion(),
 				request.getBeginDate(), request.getEndDate());
 

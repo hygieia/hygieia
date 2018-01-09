@@ -2,7 +2,7 @@ package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.evaluator.BuildEvaluator;
 import com.capitalone.dashboard.evaluator.CodeQualityEvaluator;
-import com.capitalone.dashboard.evaluator.PeerReviewEvaluator;
+import com.capitalone.dashboard.evaluator.CodeReviewEvaluator;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuditStatus;
 import com.capitalone.dashboard.model.Cmdb;
@@ -14,11 +14,11 @@ import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.repository.CmdbRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
+import com.capitalone.dashboard.response.CodeReviewAuditResponse;
 import com.capitalone.dashboard.response.DashboardReviewResponse;
 import com.capitalone.dashboard.response.GenericAuditResponse;
-import com.capitalone.dashboard.response.JobReviewResponse;
-import com.capitalone.dashboard.response.PeerReviewResponse;
-import com.capitalone.dashboard.response.StaticAnalysisResponse;
+import com.capitalone.dashboard.response.BuildAuditResponse;
+import com.capitalone.dashboard.response.CodeQualityAuditResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,7 +42,7 @@ public class DashboardAuditServiceImpl implements DashboardAuditService {
     private final ComponentRepository componentRepository;
 
 
-    private final PeerReviewEvaluator peerReviewEvaluator;
+    private final CodeReviewEvaluator codeReviewEvaluator;
     private final CodeQualityEvaluator codeQualityEvaluator;
     private final BuildEvaluator buildEvaluator;
 
@@ -50,11 +50,11 @@ public class DashboardAuditServiceImpl implements DashboardAuditService {
     private static final Log LOGGER = LogFactory.getLog(DashboardAuditServiceImpl.class);
 
     @Autowired
-    public DashboardAuditServiceImpl(DashboardRepository dashboardRepository, CmdbRepository cmdbRepository, ComponentRepository componentRepository, PeerReviewEvaluator peerReviewEvaluator, CodeQualityEvaluator codeQualityEvaluator, BuildEvaluator buildEvaluator) {
+    public DashboardAuditServiceImpl(DashboardRepository dashboardRepository, CmdbRepository cmdbRepository, ComponentRepository componentRepository, CodeReviewEvaluator codeReviewEvaluator, CodeQualityEvaluator codeQualityEvaluator, BuildEvaluator buildEvaluator) {
         this.dashboardRepository = dashboardRepository;
         this.cmdbRepository = cmdbRepository;
         this.componentRepository = componentRepository;
-        this.peerReviewEvaluator = peerReviewEvaluator;
+        this.codeReviewEvaluator = codeReviewEvaluator;
 
         this.codeQualityEvaluator = codeQualityEvaluator;
         this.buildEvaluator = buildEvaluator;
@@ -86,24 +86,24 @@ public class DashboardAuditServiceImpl implements DashboardAuditService {
 
         //Code Review Audit
 
-        GenericAuditResponse codeReviewResponse = peerReviewEvaluator.evaluate(dashboard, beginDate, endDate, null);
+        GenericAuditResponse codeReviewResponse = codeReviewEvaluator.evaluate(dashboard, beginDate, endDate, null);
         dashboardReviewResponse.addAllAuditStatus(codeReviewResponse.getAuditStatuses());
-        List<List<PeerReviewResponse>> peerReviewsAudit = (List<List<PeerReviewResponse>>) codeReviewResponse.getResponse(CODE_REVIEW);
+        List<List<CodeReviewAuditResponse>> peerReviewsAudit = (List<List<CodeReviewAuditResponse>>) codeReviewResponse.getResponse(CODE_REVIEW);
         dashboardReviewResponse.setAllPeerReviewResponses(peerReviewsAudit);
 
 
         //Get the pull requests list back
-        List<GitRequest> pullRequests = peerReviewsAudit.stream().flatMap(List::stream).map(PeerReviewResponse::getPullRequest).collect(Collectors.toList());
+        List<GitRequest> pullRequests = peerReviewsAudit.stream().flatMap(List::stream).map(CodeReviewAuditResponse::getPullRequest).collect(Collectors.toList());
 
         //Build Audit
         GenericAuditResponse buildGenericAuditResponse = buildEvaluator.getBuildJobAuditResponse(dashboard, beginDate, endDate, pullRequests);
         dashboardReviewResponse.addAllAuditStatus(buildGenericAuditResponse.getAuditStatuses());
-        dashboardReviewResponse.setJobReviewResponse((JobReviewResponse) buildGenericAuditResponse.getResponse(JOB_REVIEW));
+        dashboardReviewResponse.setBuildAuditResponse((BuildAuditResponse) buildGenericAuditResponse.getResponse(JOB_REVIEW));
 
         //Code Quality Audit
         GenericAuditResponse codeQualityGenericAuditResponse = codeQualityEvaluator.evaluate(dashboard, 0, 0, null);
         dashboardReviewResponse.addAllAuditStatus(codeQualityGenericAuditResponse.getAuditStatuses());
-        dashboardReviewResponse.setStaticAnalysisResponse((StaticAnalysisResponse) codeQualityGenericAuditResponse.getResponse(STATIC_CODE_REVIEW));
+        dashboardReviewResponse.setCodeQualityAuditResponse((CodeQualityAuditResponse) codeQualityGenericAuditResponse.getResponse(STATIC_CODE_REVIEW));
 
 //        List<CollectorItem> testItems = this.getCollectorItems(dashboard, "test", CollectorType.Test);
 //

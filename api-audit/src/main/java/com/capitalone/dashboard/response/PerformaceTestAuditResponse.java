@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 
-public class PerfReviewResponse {
+public class PerformaceTestAuditResponse {
 
 
     private AuditStatus auditStatuses;

@@ -2,7 +2,7 @@ package com.capitalone.dashboard.response;
 
 import java.util.Set;
 
-public class CodeQualityProfileValidationResponse extends AuditReviewResponse {
+public class QualityProfileAuditResponse extends AuditReviewResponse {
 
 	 private Set<String> commitAuthors;
 	 private Set<String> qualityGateChangePerformers;

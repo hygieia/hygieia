@@ -2,7 +2,7 @@ package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.ApiSettings;
 import com.capitalone.dashboard.evaluator.CodeQualityEvaluator;
-import com.capitalone.dashboard.evaluator.PeerReviewEvaluator;
+import com.capitalone.dashboard.evaluator.CodeReviewEvaluator;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuditStatus;
 import com.capitalone.dashboard.model.Cmdb;
@@ -27,7 +27,7 @@ import com.capitalone.dashboard.repository.CustomRepositoryQuery;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.JobRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
-import com.capitalone.dashboard.response.PerfReviewResponse;
+import com.capitalone.dashboard.response.PerformaceTestAuditResponse;
 import com.capitalone.dashboard.response.TestResultsResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
@@ -57,7 +57,7 @@ public class TestResultAuditServiceImpl implements TestResultAuditService {
     private final CollectorItemRepository collectorItemRepository;
 
     private final TestResultRepository testResultRepository;
-    private final PeerReviewEvaluator peerReviewEvaluator;
+    private final CodeReviewEvaluator codeReviewEvaluator;
     private final CodeQualityEvaluator codeQualityEvaluator;
     private final ApiSettings settings;
 
@@ -74,7 +74,7 @@ public class TestResultAuditServiceImpl implements TestResultAuditService {
             BuildRepository buildRepository,
             CollectorItemRepository collectorItemRepository,
             TestResultRepository testResultRepository,
-            PeerReviewEvaluator peerReviewEvaluator, CodeQualityEvaluator codeQualityEvaluator, ApiSettings settings) {
+            CodeReviewEvaluator codeReviewEvaluator, CodeQualityEvaluator codeQualityEvaluator, ApiSettings settings) {
         this.customRepositoryQuery = customRepositoryQuery;
         this.jobRepository = jobRepository;
         this.collectorRepository = collectorRepository;
@@ -86,7 +86,7 @@ public class TestResultAuditServiceImpl implements TestResultAuditService {
         this.collectorItemRepository = collectorItemRepository;
         this.codeQualityEvaluator = codeQualityEvaluator;
         this.testResultRepository = testResultRepository;
-        this.peerReviewEvaluator = peerReviewEvaluator;
+        this.codeReviewEvaluator = codeReviewEvaluator;
         this.settings = settings;
     }
 
@@ -114,7 +114,7 @@ public class TestResultAuditServiceImpl implements TestResultAuditService {
     }
 
     /**
-     * Reusable method for constructing the StaticAnalysisResponse object for a
+     * Reusable method for constructing the CodeQualityAuditResponse object for a
      *
      * @param testResults Test Result List
      * @return TestResultsResponse
@@ -152,11 +152,11 @@ public class TestResultAuditServiceImpl implements TestResultAuditService {
                 .findByUrlAndTimestampGreaterThanEqualAndTimestampLessThanEqual(jobUrl, beginDt, endDt);
     }
 
-    public PerfReviewResponse getresultsBycomponetAndTime(String businessComp, long from, long to) {
+    public PerformaceTestAuditResponse getresultsBycomponetAndTime(String businessComp, long from, long to) {
         Cmdb cmdb = cmdbRepository.findByConfigurationItemIgnoreCase(businessComp); // get CMDB iD
         Iterable<Dashboard> dashboard = dashboardRepository.findAllByConfigurationItemBusAppObjectId(cmdb.getId()); //get dashboard based on CMDB ID
         Iterator<Dashboard> dashboardIT = dashboard.iterator();  //Iterate through the dashboards to obtain the collectorIteamID
-        PerfReviewResponse perfReviewResponse = new PerfReviewResponse();
+        PerformaceTestAuditResponse performaceTestAuditResponse = new PerformaceTestAuditResponse();
         while (dashboardIT.hasNext()) {
             dashboardIT.next();
             Set<CollectorType> ci = dashboard.iterator().next().getApplication().getComponents().iterator().next().getCollectorItems().keySet();
@@ -215,18 +215,18 @@ public class TestResultAuditServiceImpl implements TestResultAuditService {
                         }
                     }
                 }
-                perfReviewResponse.setResult(testlist);
+                performaceTestAuditResponse.setResult(testlist);
                 int counter = (int) testlist.stream().filter(list -> list.getResultStatus().matches("Success")).count();
                 if (testlist.size() == 0) {
-                    perfReviewResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_MISSING);
+                    performaceTestAuditResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_MISSING);
                 } else if (counter >= 1) {
-                    perfReviewResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_OK);
+                    performaceTestAuditResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_OK);
                 } else {
-                    perfReviewResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_FAIL);
+                    performaceTestAuditResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_FAIL);
                 }
             }
         }
-        return perfReviewResponse;
+        return performaceTestAuditResponse;
     }
 
     /**

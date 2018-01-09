@@ -1,7 +1,7 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.response.CodeQualityProfileValidationResponse;
-import com.capitalone.dashboard.response.StaticAnalysisResponse;
+import com.capitalone.dashboard.response.CodeQualityAuditResponse;
+import com.capitalone.dashboard.response.QualityProfileAuditResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,12 +20,12 @@ public class CodeQualityAuditServiceImpl implements CodeQualityAuditService {
 
 
     @Override
-    public List<StaticAnalysisResponse> getCodeQualityAudit(String projectName, String artifactVersion) {
+    public List<CodeQualityAuditResponse> getCodeQualityAudit(String projectName, String artifactVersion) {
         return null;
     }
 
     @Override
-    public CodeQualityProfileValidationResponse getQualityGateValidationDetails(String repoUrl, String repoBranch, String projectName, String artifactVersion, long beginDate, long endDate) {
+    public QualityProfileAuditResponse getQualityGateValidationDetails(String repoUrl, String repoBranch, String projectName, String artifactVersion, long beginDate, long endDate) {
         return null;
     }
 }

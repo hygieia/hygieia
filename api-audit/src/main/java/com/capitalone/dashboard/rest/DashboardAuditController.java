@@ -1,7 +1,7 @@
 package com.capitalone.dashboard.rest;
 
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.request.DashboardReviewRequest;
+import com.capitalone.dashboard.request.DashboardAuditRequest;
 import com.capitalone.dashboard.response.DashboardReviewResponse;
 import com.capitalone.dashboard.service.DashboardAuditService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ public class DashboardAuditController {
      * @throws HygieiaException
      */
     @RequestMapping(value = "/dashboardReview", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<DashboardReviewResponse> dashboardReview(@Valid DashboardReviewRequest request) throws HygieiaException {
+    public ResponseEntity<DashboardReviewResponse> dashboardReview(@Valid DashboardAuditRequest request) throws HygieiaException {
         DashboardReviewResponse dashboardReviewResponse = dashboardAuditService.getDashboardReviewResponse(request.getTitle(), request.getType(),
                 request.getBusServ(), request.getBusApp(),
                 request.getBeginDate(), request.getEndDate());

@@ -2,7 +2,7 @@ package com.capitalone.dashboard.request;
 
 import javax.validation.constraints.NotNull;
 
-public class PerfReviewRequest {
+public class PerformanceTestAuditRequest {
 
     @NotNull
     private String businessComponentName;

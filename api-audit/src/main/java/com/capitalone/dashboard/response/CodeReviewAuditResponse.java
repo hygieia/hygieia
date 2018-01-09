@@ -5,7 +5,7 @@ import com.capitalone.dashboard.model.GitRequest;
 
 import java.util.List;
 
-public class PeerReviewResponse extends AuditReviewResponse {
+public class CodeReviewAuditResponse extends AuditReviewResponse {
     private GitRequest pullRequest;
     private List<Commit> commits;
     private List<Commit> mergeCommits;

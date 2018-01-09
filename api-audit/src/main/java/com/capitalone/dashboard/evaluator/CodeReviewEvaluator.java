@@ -11,8 +11,8 @@ import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.Review;
 import com.capitalone.dashboard.repository.CustomRepositoryQuery;
+import com.capitalone.dashboard.response.CodeReviewAuditResponse;
 import com.capitalone.dashboard.response.GenericAuditResponse;
-import com.capitalone.dashboard.response.PeerReviewResponse;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
 import com.google.common.collect.Sets;
 import org.apache.commons.collections.CollectionUtils;
@@ -33,12 +33,12 @@ import java.util.stream.Collectors;
 import static com.capitalone.dashboard.response.GenericAuditResponse.CODE_REVIEW;
 
 @Component
-public class PeerReviewEvaluator extends Evaluator {
+public class CodeReviewEvaluator extends Evaluator {
 
     private final CustomRepositoryQuery customRepositoryQuery;
 
     @Autowired
-    public PeerReviewEvaluator(CustomRepositoryQuery customRepositoryQuery) {
+    public CodeReviewEvaluator(CustomRepositoryQuery customRepositoryQuery) {
         this.customRepositoryQuery = customRepositoryQuery;
     }
 
@@ -50,7 +50,7 @@ public class PeerReviewEvaluator extends Evaluator {
 
 
     @Override
-    public Collection<PeerReviewResponse> evaluate(CollectorItem collectorItem, long beginDate, long endDate, Collection<?> dummy) {
+    public Collection<CodeReviewAuditResponse> evaluate(CollectorItem collectorItem, long beginDate, long endDate, Collection<?> dummy) {
         return  getPeerReviewResponses(collectorItem, beginDate, endDate);
     }
 
@@ -71,7 +71,7 @@ public class PeerReviewEvaluator extends Evaluator {
             return genericAuditResponse;
         }
         genericAuditResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_CONFIGURED);
-        List<List<PeerReviewResponse>> allReviews = new ArrayList<>();
+        List<List<CodeReviewAuditResponse>> allReviews = new ArrayList<>();
 
         for (CollectorItem repoItem : repoItems) {
             String scmWidgetbranch = (String) repoItem.getOptions().get("branch");
@@ -79,7 +79,7 @@ public class PeerReviewEvaluator extends Evaluator {
             GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(scmWidgetrepoUrl);
             scmWidgetrepoUrl = gitHubParsed.getUrl();
             if (!StringUtils.isEmpty(scmWidgetbranch) && !StringUtils.isEmpty(scmWidgetrepoUrl)) {
-                List<PeerReviewResponse> reviewResponses = this.getPeerReviewResponses(repoItem, beginDate, endDate);
+                List<CodeReviewAuditResponse> reviewResponses = this.getPeerReviewResponses(repoItem, beginDate, endDate);
                 allReviews.add(reviewResponses);
             }
         }
@@ -88,15 +88,15 @@ public class PeerReviewEvaluator extends Evaluator {
 
     }
 
-    public List<PeerReviewResponse> getPeerReviewResponses(CollectorItem repoItem,
-                                                           long beginDt, long endDt) {
+    public List<CodeReviewAuditResponse> getPeerReviewResponses(CollectorItem repoItem,
+                                                                long beginDt, long endDt) {
 
-        List<PeerReviewResponse> allPeerReviews = new ArrayList<>();
+        List<CodeReviewAuditResponse> allPeerReviews = new ArrayList<>();
 
         if (repoItem == null) {
-            PeerReviewResponse peerReviewResponse = new PeerReviewResponse();
-            peerReviewResponse.addAuditStatus(AuditStatus.REPO_NOT_CONFIGURED);
-            allPeerReviews.add(peerReviewResponse);
+            CodeReviewAuditResponse codeReviewAuditResponse = new CodeReviewAuditResponse();
+            codeReviewAuditResponse.addAuditStatus(AuditStatus.REPO_NOT_CONFIGURED);
+            allPeerReviews.add(codeReviewAuditResponse);
             return allPeerReviews;
         }
 
@@ -104,14 +104,14 @@ public class PeerReviewEvaluator extends Evaluator {
         String scmBranch = (String) repoItem.getOptions().get("branch");
 
         if (!CollectionUtils.isEmpty(repoItem.getErrors())) {
-            PeerReviewResponse noPRsPeerReviewResponse = new PeerReviewResponse();
-            noPRsPeerReviewResponse.addAuditStatus(AuditStatus.COLLECTOR_ITEM_ERROR);
+            CodeReviewAuditResponse noPRsCodeReviewAuditResponse = new CodeReviewAuditResponse();
+            noPRsCodeReviewAuditResponse.addAuditStatus(AuditStatus.COLLECTOR_ITEM_ERROR);
 
-            noPRsPeerReviewResponse.setLastUpdated(repoItem.getLastUpdated());
-            noPRsPeerReviewResponse.setScmBranch(scmBranch);
-            noPRsPeerReviewResponse.setScmUrl(scmUrl);
-            noPRsPeerReviewResponse.setErrorMessage(repoItem.getErrors().get(0).getErrorMessage());
-            allPeerReviews.add(noPRsPeerReviewResponse);
+            noPRsCodeReviewAuditResponse.setLastUpdated(repoItem.getLastUpdated());
+            noPRsCodeReviewAuditResponse.setScmBranch(scmBranch);
+            noPRsCodeReviewAuditResponse.setScmUrl(scmUrl);
+            noPRsCodeReviewAuditResponse.setErrorMessage(repoItem.getErrors().get(0).getErrorMessage());
+            allPeerReviews.add(noPRsCodeReviewAuditResponse);
             return allPeerReviews;
         }
 
@@ -119,9 +119,9 @@ public class PeerReviewEvaluator extends Evaluator {
         List<Commit> commits = customRepositoryQuery.findByScmUrlAndScmBranchAndScmCommitTimestampGreaterThanEqualAndScmCommitTimestampLessThanEqual(scmUrl, scmBranch, beginDt, endDt);
 
         if (CollectionUtils.isEmpty(pullRequests)) {
-            PeerReviewResponse noPRsPeerReviewResponse = new PeerReviewResponse();
-            noPRsPeerReviewResponse.addAuditStatus(AuditStatus.NO_PULL_REQ_FOR_DATE_RANGE);
-            allPeerReviews.add(noPRsPeerReviewResponse);
+            CodeReviewAuditResponse noPRsCodeReviewAuditResponse = new CodeReviewAuditResponse();
+            noPRsCodeReviewAuditResponse.addAuditStatus(AuditStatus.NO_PULL_REQ_FOR_DATE_RANGE);
+            allPeerReviews.add(noPRsCodeReviewAuditResponse);
         }
 
         //            Commit mergeCommit = commitRepository.findByScmRevisionNumberAndScmUrlIgnoreCase(mergeSha, pr.getScmUrl());
@@ -129,8 +129,8 @@ public class PeerReviewEvaluator extends Evaluator {
 //check to see if pr was reviewed
 //type of branching strategy
         pullRequests.forEach(pr -> {
-            PeerReviewResponse peerReviewResponse = new PeerReviewResponse();
-            peerReviewResponse.setPullRequest(pr);
+            CodeReviewAuditResponse codeReviewAuditResponse = new CodeReviewAuditResponse();
+            codeReviewAuditResponse.setPullRequest(pr);
             String mergeSha = pr.getScmRevisionNumber();
             Optional<Commit> mergeOptionalCommit = commits.stream().filter(c -> Objects.equals(c.getScmRevisionNumber(), mergeSha)).findFirst();
             Commit mergeCommit = mergeOptionalCommit.orElse(null);
@@ -139,36 +139,36 @@ public class PeerReviewEvaluator extends Evaluator {
             }
             List<Commit> commitsRelatedToPr = pr.getCommits();
             commitsRelatedToPr.sort(Comparator.comparing(e -> (e.getScmCommitTimestamp())));
-            peerReviewResponse.addAuditStatus(pr.getUserId().equalsIgnoreCase(mergeCommit.getScmAuthorLogin()) ? AuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER : AuditStatus.COMMITAUTHOR_NE_MERGECOMMITER);
-            peerReviewResponse.setCommits(commitsRelatedToPr);
-            boolean peerReviewed = computePeerReviewStatus(pr, peerReviewResponse);
-            peerReviewResponse.addAuditStatus(peerReviewed ? AuditStatus.PULLREQ_REVIEWED_BY_PEER : AuditStatus.PULLREQ_NOT_PEER_REVIEWED);
+            codeReviewAuditResponse.addAuditStatus(pr.getUserId().equalsIgnoreCase(mergeCommit.getScmAuthorLogin()) ? AuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER : AuditStatus.COMMITAUTHOR_NE_MERGECOMMITER);
+            codeReviewAuditResponse.setCommits(commitsRelatedToPr);
+            boolean peerReviewed = computePeerReviewStatus(pr, codeReviewAuditResponse);
+            codeReviewAuditResponse.addAuditStatus(peerReviewed ? AuditStatus.PULLREQ_REVIEWED_BY_PEER : AuditStatus.PULLREQ_NOT_PEER_REVIEWED);
             String sourceRepo = pr.getSourceRepo();
             String targetRepo = pr.getTargetRepo();
-            peerReviewResponse.addAuditStatus(sourceRepo == null ? AuditStatus.GIT_FORK_STRATEGY : sourceRepo.equalsIgnoreCase(targetRepo) ? AuditStatus.GIT_BRANCH_STRATEGY : AuditStatus.GIT_FORK_STRATEGY);
-            allPeerReviews.add(peerReviewResponse);
+            codeReviewAuditResponse.addAuditStatus(sourceRepo == null ? AuditStatus.GIT_FORK_STRATEGY : sourceRepo.equalsIgnoreCase(targetRepo) ? AuditStatus.GIT_BRANCH_STRATEGY : AuditStatus.GIT_FORK_STRATEGY);
+            allPeerReviews.add(codeReviewAuditResponse);
         });
 
         //check any commits not directly tied to pr
-        PeerReviewResponse peerReviewResponse = new PeerReviewResponse();
+        CodeReviewAuditResponse codeReviewAuditResponse = new CodeReviewAuditResponse();
         List<Commit> commitsNotDirectlyTiedToPr = new ArrayList<>();
         commits.forEach(commit -> {
             if (StringUtils.isEmpty(commit.getPullNumber()) && commit.getType() == CommitType.New) {
                 commitsNotDirectlyTiedToPr.add(commit);
-                peerReviewResponse.addAuditStatus(commit.isFirstEverCommit() ? AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : AuditStatus.DIRECT_COMMITS_TO_BASE);
+                codeReviewAuditResponse.addAuditStatus(commit.isFirstEverCommit() ? AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : AuditStatus.DIRECT_COMMITS_TO_BASE);
             }
         });
         if (!commitsNotDirectlyTiedToPr.isEmpty()) {
-            peerReviewResponse.setCommits(commitsNotDirectlyTiedToPr);
-            allPeerReviews.add(peerReviewResponse);
+            codeReviewAuditResponse.setCommits(commitsNotDirectlyTiedToPr);
+            allPeerReviews.add(codeReviewAuditResponse);
         }
 
         //pull requests in date range, but merged prior to 14 days so no commits available in hygieia
         if (!CollectionUtils.isEmpty(pullRequests)) {
             if (allPeerReviews.isEmpty()) {
-                PeerReviewResponse prsButNoCommitsInRangePeerReviewResponse = new PeerReviewResponse();
-                prsButNoCommitsInRangePeerReviewResponse.addAuditStatus(AuditStatus.NO_PULL_REQ_FOR_DATE_RANGE);
-                allPeerReviews.add(prsButNoCommitsInRangePeerReviewResponse);
+                CodeReviewAuditResponse prsButNoCommitsInRangeCodeReviewAuditResponse = new CodeReviewAuditResponse();
+                prsButNoCommitsInRangeCodeReviewAuditResponse.addAuditStatus(AuditStatus.NO_PULL_REQ_FOR_DATE_RANGE);
+                allPeerReviews.add(prsButNoCommitsInRangeCodeReviewAuditResponse);
             }
         }
 
@@ -184,10 +184,10 @@ public class PeerReviewEvaluator extends Evaluator {
      * Calculates the peer review status for a given pull request
      *
      * @param pr                 - pull request
-     * @param peerReviewResponse
+     * @param codeReviewAuditResponse
      * @return
      */
-    boolean computePeerReviewStatus(GitRequest pr, PeerReviewResponse peerReviewResponse) {
+    boolean computePeerReviewStatus(GitRequest pr, CodeReviewAuditResponse codeReviewAuditResponse) {
         List<Review> reviews = pr.getReviews();
 
         List<CommitStatus> statuses = pr.getCommitStatuses();
@@ -205,20 +205,20 @@ public class PeerReviewEvaluator extends Evaluator {
                     String stateString = (status.getState() != null) ? status.getState().toLowerCase() : "unknown";
                     switch (stateString) {
                         case "pending":
-                            peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_PENDING);
+                            codeReviewAuditResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_PENDING);
                             break;
 
                         case "error":
-                            peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_PENDING);
+                            codeReviewAuditResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_PENDING);
                             break;
 
                         case "success":
                             lgtmStateResult = true;
-                            peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_SUCCESS);
+                            codeReviewAuditResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_SUCCESS);
                             break;
 
                         default:
-                            peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_UNKNOWN);
+                            codeReviewAuditResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_UNKNOWN);
                             break;
                     }
                 }
@@ -226,10 +226,10 @@ public class PeerReviewEvaluator extends Evaluator {
 
             if (lgtmAttempted) {
                 //if lgtm self-review, then no peer-review was done unless someone else looked at it
-                if (!CollectionUtils.isEmpty(peerReviewResponse.getAuditStatuses()) &&
-                        peerReviewResponse.getAuditStatuses().contains(AuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER) &&
+                if (!CollectionUtils.isEmpty(codeReviewAuditResponse.getAuditStatuses()) &&
+                        codeReviewAuditResponse.getAuditStatuses().contains(AuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER) &&
                         !isPRLookedAtByPeer(pr)) {
-                    peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_SELF_APPROVAL);
+                    codeReviewAuditResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_SELF_APPROVAL);
                     return false;
                 }
                 return lgtmStateResult;
@@ -241,7 +241,7 @@ public class PeerReviewEvaluator extends Evaluator {
             for (Review review : reviews) {
                 if ("approved".equalsIgnoreCase(review.getState())) {
                     //review done using GitHub Review workflow
-                    peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_GHR);
+                    codeReviewAuditResponse.addAuditStatus(AuditStatus.PEER_REVIEW_GHR);
                     return true;
                 }
             }

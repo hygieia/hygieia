@@ -4,7 +4,7 @@ import com.capitalone.dashboard.model.CollItemCfgHist;
 
 import java.util.List;
 
-public class JobReviewResponse extends AuditReviewResponse {
+public class BuildAuditResponse extends AuditReviewResponse {
     private String environment;
     private List<CollItemCfgHist> configHistory;
 

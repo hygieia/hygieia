@@ -1,7 +1,7 @@
 package com.capitalone.dashboard.rest;
 
-import com.capitalone.dashboard.request.JobReviewRequest;
-import com.capitalone.dashboard.response.JobReviewResponse;
+import com.capitalone.dashboard.request.BuildAuditRequest;
+import com.capitalone.dashboard.response.BuildAuditResponse;
 import com.capitalone.dashboard.service.BuildAuditService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,9 +34,9 @@ public class BuildAuditController {
      * @return
      */
     @RequestMapping(value = "/buildJobReview", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<JobReviewResponse> buildJobReview(@Valid JobReviewRequest request) {
-        JobReviewResponse jobReviewResponse = buildAuditService.getBuildJobReviewResponse(request.getJobUrl(), request.getJobName(), request.getBeginDate(), request.getEndDate());
-        return ResponseEntity.ok().body(jobReviewResponse);
+    public ResponseEntity<BuildAuditResponse> buildJobReview(@Valid BuildAuditRequest request) {
+        BuildAuditResponse buildAuditResponse = buildAuditService.getBuildJobReviewResponse(request.getJobUrl(), request.getJobName(), request.getBeginDate(), request.getEndDate());
+        return ResponseEntity.ok().body(buildAuditResponse);
     }
     
 
