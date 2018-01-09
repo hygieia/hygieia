@@ -259,8 +259,8 @@ public class DefaultGitHubClient implements GitHubClient {
                 pull.setCommentsUrl(commentsUrl);
                 List<Comment> comments = getComments(commentsUrl, repo);
                 pull.setComments(comments);
-                List<Comment> reviewComments = getComments(reviewCommentsUrl, repo);
-                pull.setReviewComments(reviewComments);
+//                List<Comment> reviewComments = getComments(reviewCommentsUrl, repo);
+//                pull.setReviewComments(reviewComments);
                 pull.setReviewCommentsUrl(reviewCommentsUrl);
                 List<CommitStatus> commitStatuses = getCommitStatuses(commitStatusesUrl, repo);
                 pull.setCommitStatuses(commitStatuses);
@@ -494,7 +494,7 @@ public class DefaultGitHubClient implements GitHubClient {
                 Review review = new Review();
                 review.setState(str(jsonObject, "state"));
                 review.setBody(str(jsonObject, "body"));
-                review.setId(asInt(jsonObject, "id"));
+//                review.setId(asInt(jsonObject, "id"));
                 reviews.add(review);
             }
             if (CollectionUtils.isEmpty(jsonArray)) {

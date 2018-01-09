@@ -23,6 +23,8 @@ public interface CommitRepository extends CrudRepository<Commit, ObjectId>, Quer
      */
     Commit findByCollectorItemIdAndScmRevisionNumber(ObjectId collectorItemId, String revisionNumber);
 
+    Long countCommitsByCollectorItemId(ObjectId collectorItemId);
+
     Commit findByScmUrlIgnoreCaseAndScmBranchIgnoreCaseAndScmRevisionNumber (String scmUrl, String scmBranch, String scmRevisionNumber);
 
     List<Commit> findByScmRevisionNumber (String scmUrl);
