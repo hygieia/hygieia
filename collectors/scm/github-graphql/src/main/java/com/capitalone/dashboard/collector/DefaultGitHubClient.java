@@ -746,7 +746,8 @@ public class DefaultGitHubClient implements GitHubClient {
         if (CollectionUtils.isEmpty(nodes)) {
             return prCommits;
         }
-
+        JSONObject  lastCommitStatusObject = null;
+        long lastCommitTime = 0L;
         for (Object n : nodes) {
             JSONObject c = (JSONObject) n;
             JSONObject commit = (JSONObject) c.get("commit");
@@ -756,16 +757,29 @@ public class DefaultGitHubClient implements GitHubClient {
             JSONObject author = (JSONObject) commit.get("author");
             newCommit.setScmAuthor(str(author, "name"));
             newCommit.setScmCommitTimestamp(getTimeStampMills(str(author, "date")));
+            JSONObject statusObj = (JSONObject) commit.get("status");
 
-            if (Objects.equals(newCommit.getScmRevisionNumber(), pull.getHeadSha())) {
-                JSONObject statusObj = (JSONObject) commit.get("status");
-                if (statusObj != null) {
+            if (statusObj != null) {
+                if (lastCommitTime <= newCommit.getScmCommitTimestamp()) {
+                    lastCommitTime = newCommit.getScmCommitTimestamp();
+                    lastCommitStatusObject = statusObj;
+                }
+
+                if (Objects.equals(newCommit.getScmRevisionNumber(), pull.getHeadSha())) {
                     List<CommitStatus> commitStatuses = getCommitStatuses(statusObj);
-                    pull.setCommitStatuses(commitStatuses);
+                    if (!CollectionUtils.isEmpty(commitStatuses)) {
+                        pull.setCommitStatuses(commitStatuses);
+                    }
                 }
             }
-
             prCommits.add(newCommit);
+        }
+
+        if (StringUtils.isEmpty(pull.getHeadSha())) {
+            List<CommitStatus> commitStatuses = getCommitStatuses(lastCommitStatusObject);
+            if (!CollectionUtils.isEmpty(commitStatuses)) {
+                pull.setCommitStatuses(commitStatuses);
+            }
         }
         return prCommits;
     }
