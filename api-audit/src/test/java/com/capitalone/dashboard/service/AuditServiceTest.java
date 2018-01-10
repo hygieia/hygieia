@@ -104,18 +104,17 @@ public class AuditServiceTest {
         PeerReviewRequest request = new PeerReviewRequest();
         request.setRepo("http://test.git.com");
         request.setBranch("master");
-        request.setBeginDate(1l);
-        request.setEndDate(2l);
+        request.setBeginDate(1L);
+        request.setEndDate(2L);
 
-        List<GitRequest> gitRequests = new ArrayList<GitRequest>();
+        List<GitRequest> gitRequests = new ArrayList<>();
         GitRequest gitRequest = new GitRequest();
         gitRequest.setScmUrl("scmUrl");
         gitRequest.setScmRevisionNumber("revNum");
-        gitRequest.setNumberOfChanges(20);
         gitRequest.setScmAuthor("bob");
         gitRequest.setTimestamp(2);
         gitRequest.setUserId("bobsid");
-        List<Comment> comments = new ArrayList<Comment>();
+        List<Comment> comments = new ArrayList<>();
         Comment comment = new Comment();
         comment.setBody("Some comment");
         comment.setUser("someuser");
@@ -124,12 +123,12 @@ public class AuditServiceTest {
 
         gitRequest.setBaseSha("acd323e123abc323a123a");
 
-        List<Comment> reviewComments = new ArrayList<Comment>();
+        List<Comment> reviewComments = new ArrayList<>();
         Comment reviewComment = new Comment();
         reviewComment.setBody("Some review comment");
         reviewComment.setUser("anotheruser");
         reviewComments.add(reviewComment);
-        gitRequest.setReviewComments(reviewComments);
+//        gitRequest.setReviewComments(reviewComments);
 
         gitRequests.add(gitRequest);
 
@@ -141,7 +140,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldGetCommitsBySha() {
-        List<Commit> baseCommits = new ArrayList<Commit>();
+        List<Commit> baseCommits = new ArrayList<>();
         Commit commit = new Commit();
         commit.setId(new ObjectId());
         commit.setType(CommitType.New);
@@ -165,9 +164,9 @@ public class AuditServiceTest {
     	ObjectId collectorItemId = new ObjectId("58b945a890e46b264b95127d");
     	String version = "2.0.5";
     	
-    	List<StaticAnalysisResponse> responses = new ArrayList<StaticAnalysisResponse>();
+    	List<StaticAnalysisResponse> responses = new ArrayList<>();
     	StaticAnalysisResponse response = new StaticAnalysisResponse();
-    	List<CodeQuality> qualities = new ArrayList<CodeQuality>();
+    	List<CodeQuality> qualities = new ArrayList<>();
     	CodeQuality quality = new CodeQuality();
     	
     	quality.setVersion(version);
@@ -193,9 +192,9 @@ public class AuditServiceTest {
 
     	
     	
-    	List<StaticAnalysisResponse> responses = new ArrayList<StaticAnalysisResponse>();
+    	List<StaticAnalysisResponse> responses = new ArrayList<>();
     	StaticAnalysisResponse response = new StaticAnalysisResponse();
-    	List<CodeQuality> qualities = new ArrayList<CodeQuality>();
+    	List<CodeQuality> qualities = new ArrayList<>();
     	CodeQuality quality = new CodeQuality();
     	
     	quality.setVersion(artifactVersion);
@@ -214,12 +213,12 @@ public class AuditServiceTest {
     @Test
     public void shouldGetTestExecutionDetails() {
     	String jobUrl = "https://testurl";
-    	List<TestResult> testResults = new ArrayList<TestResult>();
+    	List<TestResult> testResults = new ArrayList<>();
     	TestResult testResult = new TestResult();
-    	long timestamp = 1478136705000l;
+    	long timestamp = 1478136705000L;
     	long duration = 123456;
-    	long beginDate = 1478136705000l;
-    	long endDate = 1497465958000l;
+    	long beginDate = 1478136705000L;
+    	long endDate = 1497465958000L;
 
     	
     	testResult.setFailureCount(0);

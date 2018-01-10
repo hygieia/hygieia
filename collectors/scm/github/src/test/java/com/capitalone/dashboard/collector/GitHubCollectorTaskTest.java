@@ -223,12 +223,9 @@ public class GitHubCollectorTaskTest {
         gitRequest.setScmUrl("http://testcurrenturl");
         gitRequest.setScmBranch("master");
         gitRequest.setScmRevisionNumber("1");
-        gitRequest.setScmParentRevisionNumbers(Collections.singletonList("2"));
         gitRequest.setScmAuthor("author");
         gitRequest.setScmCommitLog("This is a test commit");
         gitRequest.setScmCommitTimestamp(System.currentTimeMillis());
-        gitRequest.setNumberOfChanges(1);
-        gitRequest.setType(CommitType.New);
         gitRequests.add(gitRequest);
         return gitRequests;
     }

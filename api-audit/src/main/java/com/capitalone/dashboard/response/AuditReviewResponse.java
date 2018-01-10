@@ -10,8 +10,14 @@ public class AuditReviewResponse {
 
     private String errorMessage = "";
 
+    private long lastUpdated;
+
     public void addAuditStatus(AuditStatus status) {
         auditStatuses.add(status);
+    }
+
+    public void addAllAuditStatus(Set<AuditStatus> status) {
+        auditStatuses.addAll(status);
     }
 
     public Set<AuditStatus> getAuditStatuses() {
@@ -24,5 +30,13 @@ public class AuditReviewResponse {
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+
+    public long getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(long lastUpdated) {
+        this.lastUpdated = lastUpdated;
     }
 }

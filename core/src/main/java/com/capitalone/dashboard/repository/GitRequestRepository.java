@@ -19,6 +19,9 @@ public interface GitRequestRepository  extends CrudRepository<GitRequest, Object
     @Query(value="{ 'collectorItemId' : ?0, 'requestType' : ?1}", fields="{ 'number' : 2, 'updatedAt' : 3 }")
     List<GitRequest> findRequestNumberAndLastUpdated(ObjectId collectorItemId, String requestType);
 
+    @Query(value="{ 'collectorItemId' : ?0, 'state' : { $ne : 'merged' }}", fields="{ 'requestType' : 1, 'number' : 2, 'updatedAt' : 3, 'id' : 4}")
+    List<GitRequest> findNonMergedRequestNumberAndLastUpdated(ObjectId collectorItemId);
+
     GitRequest findByCollectorItemIdAndScmRevisionNumber(ObjectId collectorItemId, String revisionNumber);
 
     GitRequest findByCollectorItemIdAndNumberAndRequestType(ObjectId collectorItemId, String number, String requestType);
