@@ -1,8 +1,3 @@
-/**
- * Created by emb235 on 9/19/17.
- */
-
-'use strict';
 
 var logger = new Logger();
 

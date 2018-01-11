@@ -4,7 +4,6 @@ Feature: Standard Login
   I want to ensure that I am able to log in to Hygieia
   In order to interact with my dashboards.
 
-  @issues:TEART-2800
   Scenario: User attempts to log in with invalid credentials
     Given I navigate to the login page
     When I select standard login page
@@ -13,7 +12,6 @@ Feature: Standard Login
     Then I should be on the login page
     And I should see an error for wrong username or password
 
-  @issue:TEART-2800
   Scenario: User attempts to log in with valid credentials
     Given I navigate to the login page
     When I select standard login page

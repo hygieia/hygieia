@@ -6,8 +6,6 @@
   "scripts": {
     "preprotractor": "webdriver-manager update --standalone --versions.chrome=2.33",
     "protractor": "protractor ./protractor.conf.js",
-    "redbluhub": "protractor ./redbluhub.conf.js",
-    "jenkins": "protractor ./jekins.conf.js",
     "test": "npm run protractor --silent",
     "pretest": "serenity update",
     "report": "serenity run"
@@ -31,7 +29,7 @@
     "protractor": "5.2.0",
     "protractor-cucumber-framework": "3.1.2",
     "rimraf": "2.5.4",
-    "serenity-cli": "^0.5.0",
+    "serenity-cli": "^0.7.1",
     "serenity-js": ">= 1.7.0"
   },
   "dependencies": {

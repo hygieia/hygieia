@@ -1,8 +1,3 @@
-/**
- * Created by emb235 on 7/29/17.
- */
-
-"use strict";
 
 class Timeouts {
 

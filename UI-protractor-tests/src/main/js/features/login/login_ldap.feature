@@ -4,7 +4,6 @@
 #  I want to ensure that I am able to log in to Hygieia with LDAP credentials
 #  In order to interact with my dashboards.
 #
-#  @issues:TEART-2800
 #  Scenario: User attempts to login with invalid LDAP credentials
 #    Given I navigate to the login page
 #    When I select ldap login page
@@ -13,7 +12,6 @@
 #    Then I should be on the login page
 #    And I should see an error for wrong username or password
 #
-#  @issue:TEART-2800
 #  Scenario: User attempts to login with valid LDAP credentials
 #    Given I navigate to the login page
 #    When I select ldap login page

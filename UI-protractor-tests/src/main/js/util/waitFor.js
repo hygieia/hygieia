@@ -1,6 +1,3 @@
-/**
- * Created by emb235 on 7/29/17.
- */
 
 const timeout = require('../util/timeouts');
 const log = require('../util/logger');

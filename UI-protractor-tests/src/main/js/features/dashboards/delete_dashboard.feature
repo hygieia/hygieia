@@ -4,7 +4,6 @@ Feature: Delete Dashboard
   I want to ensure that I am able delete a dashboard for my project
   In order to clean up unwanted dashboards.
 
-  @issues:TEART-2801
   Scenario: User deletes a team dashboard
     Given I navigate to home page
     And I should be redirected to the home page
@@ -13,7 +12,6 @@ Feature: Delete Dashboard
     Then the dashboard DummyTeamDashboard should be deleted
     And click on logout
 
-#  @issues:TEART-2801
 #  Scenario: User deletes a product dashboard
 #    Given I am an authorized project stakeholder
 #    And I am on the Hygieia home screen

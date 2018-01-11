@@ -22,10 +22,6 @@ module.exports = function loginSteps() {
         loginPage.clickStandardLogin();
     });
 
-    this.When(/^I select ldap login page$/, () => {
-        loginPage.clickLdapLogin();
-    });
-
     this.When(/^I enter login credentials (.*) and (.*)$/, (invalidUser, invalidPassword) => {
         loginPage.setUsername(invalidUser);
         loginPage.setPassword(invalidPassword);

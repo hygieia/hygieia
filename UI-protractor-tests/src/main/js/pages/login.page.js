@@ -10,9 +10,7 @@ const LoginPage = function() {
     po.loginButton      =   element(by.tagName('button'));
     po.helpBlock        =   element(by.className('help-block'));
     po.standardLoginSection     =   element(by.css('[ng-show="isStandardLogin()"]'));
-    po.ldapLoginSection =   element(by.css('[ng-show="isLdapLogin()"]'));
     po.standardLogin    =   element(by.css('[ng-click="showStandard()"]'));
-    po.ldapLogin        =   element(by.css('[ng-click="showLdap()"]'));
 
 
     po.setUsername = (username) => {
@@ -47,14 +45,6 @@ const LoginPage = function() {
         });
     };
 
-    po.clickLdapLogin = () => {
-        po.ldapLogin.click().then(() => {
-            log.info(`Click on LDAP Login`);
-        }, (err) => {
-            log.error(`Unable to click LDAP Login`);
-        });
-    };
-
     po.isStandardLoginPage = () => {
         return po.standardLoginSection.isDisplayed().then((result) => {
             if (result) {
@@ -66,20 +56,6 @@ const LoginPage = function() {
             }
         }, (err) => {
             log.error(`Unable to locate standard login section. ERROR: ${err}`);
-        });
-    };
-
-    po.isLdapLoginPage = () => {
-        return po.ldapLoginSection.isDisplayed().then((result) => {
-            if (result) {
-                log.info(`LDAP Login Page displayed`);
-                return result;
-            } else {
-                log.info(`LDAP Login Page not displayed`);
-                return result;
-            }
-        }, (err) => {
-            log.error(`Unable to locate ldap login section. ERROR: ${err}`);
         });
     };
 

@@ -4,7 +4,6 @@
 #  I want to ensure that I am able to feature widget for my project
 #  In order to view project metrics.
 #
-#  @issues:TEART-2802
 #  Scenario: User configures a feature widget
 #    Given I login with valid credentials hygieia_test_user and password
 #    And I should be redirected to the home page
@@ -24,7 +23,6 @@
 #    And I click on delete button for FeatureWidgetDashboard
 #    And I confirm delete
 ##
-##  @issues:TEART-2802
 ##  Scenario: Verify all the projects displayed for Project Name field
 ##    Given I am an authorized project stakeholder
 ##    And I am on the Hygieia home screen
@@ -34,7 +32,6 @@
 ##    And I click on the text box for Project Name
 ##    Then all the available projects should be displayed
 ##
-##  @issues:TEART-2802
 ##  Scenario: Verify the search functionality on the text box for Project Name
 ##    Given I am an authorized project stakeholder
 ##    And I am on the Hygieia home screen
@@ -45,7 +42,6 @@
 ##    And I type a search string for Project Name
 ##    Then all the matching projects with the search string should be displayed
 ##
-##  @issues:TEART-2802
 ##  Scenario: User edits the configuration of a feature widget
 ##    Given I am an authorized project stakeholder
 ##    And I am on the Hygieia home screen
@@ -55,7 +51,6 @@
 ##    And I click on Save button
 ##    Then the feature widget should display the changes
 ##
-##  @issues:TEART-2802
 ##  Scenario: User cancels the configuration of a feature widget
 ##    Given I am an authorized project stakeholder
 ##    And I am on the Hygieia home screen
