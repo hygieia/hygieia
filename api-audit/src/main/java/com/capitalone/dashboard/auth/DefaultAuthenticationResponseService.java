@@ -36,9 +36,7 @@ public class DefaultAuthenticationResponseService implements AuthenticationRespo
 
     private Collection<? extends GrantedAuthority> createAuthorities(Collection<UserRole> authorities) {
         Collection<GrantedAuthority> grantedAuthorities = new HashSet<GrantedAuthority>();
-        authorities.forEach(authority -> {
-            grantedAuthorities.add(new SimpleGrantedAuthority(authority.name()));
-        });
+        authorities.forEach(authority -> grantedAuthorities.add(new SimpleGrantedAuthority(authority.name())));
 
         return grantedAuthorities;
     }

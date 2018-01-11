@@ -8,7 +8,6 @@ import java.util.List;
 public class CodeReviewAuditResponse extends AuditReviewResponse {
     private GitRequest pullRequest;
     private List<Commit> commits;
-    private List<Commit> mergeCommits;
     private List<Commit> directCommits;
     protected String scmUrl;
     protected String scmBranch;
@@ -27,14 +26,6 @@ public class CodeReviewAuditResponse extends AuditReviewResponse {
 
     public void setCommits(List<Commit> commits) {
         this.commits = commits;
-    }
-
-    public List<Commit> getMergeCommits() {
-        return mergeCommits;
-    }
-
-    public void setMergeCommits(List<Commit> mergeCommits) {
-        this.mergeCommits = mergeCommits;
     }
 
     public List<Commit> getDirectCommits() {

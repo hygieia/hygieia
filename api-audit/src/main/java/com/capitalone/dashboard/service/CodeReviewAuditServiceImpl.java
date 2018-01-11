@@ -1,6 +1,8 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.evaluator.CodeReviewEvaluator;
+import com.capitalone.dashboard.evaluator.CodeReviewEvaluatorLegacy;
+import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
@@ -19,17 +21,17 @@ public class CodeReviewAuditServiceImpl implements CodeReviewAuditService {
     private final CollectorRepository collectorRepository;
 
     private final CollectorItemRepository collectorItemRepository;
-    private final CodeReviewEvaluator codeReviewEvaluator;
+    private final CodeReviewEvaluatorLegacy codeReviewEvaluatorLegacy;
 
 
 //    private static final Log LOGGER = LogFactory.getLog(CodeReviewAuditServiceImpl.class);
 
     @Autowired
-    public CodeReviewAuditServiceImpl(CollectorRepository collectorRepository, CollectorItemRepository collectorItemRepository, CodeReviewEvaluator codeReviewEvaluator) {
+    public CodeReviewAuditServiceImpl(CollectorRepository collectorRepository, CollectorItemRepository collectorItemRepository, CodeReviewEvaluatorLegacy codeReviewEvaluatorLegacy) {
         this.collectorRepository = collectorRepository;
         this.collectorItemRepository = collectorItemRepository;
 
-        this.codeReviewEvaluator = codeReviewEvaluator;
+        this.codeReviewEvaluatorLegacy = codeReviewEvaluatorLegacy;
     }
 
 
@@ -45,12 +47,12 @@ public class CodeReviewAuditServiceImpl implements CodeReviewAuditService {
      */
     @Override
     public Collection<CodeReviewAuditResponse> getPeerReviewResponses(String repoUrl, String repoBranch, String scmName,
-                                                                      long beginDt, long endDt) {
+                                                                      long beginDt, long endDt) throws AuditException {
         Collector githubCollector = collectorRepository.findByName(!StringUtils.isEmpty(scmName) ? scmName : "GitHub");
         CollectorItem collectorItem = collectorItemRepository.findRepoByUrlAndBranch(githubCollector.getId(),
                 repoUrl, repoBranch, true);
 
-        return codeReviewEvaluator.evaluate(collectorItem, beginDt, endDt, null);
+        return codeReviewEvaluatorLegacy.evaluate(collectorItem, beginDt, endDt, null);
     }
 
 }

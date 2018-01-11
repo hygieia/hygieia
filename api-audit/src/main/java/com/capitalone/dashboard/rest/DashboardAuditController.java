@@ -34,9 +34,9 @@ public class DashboardAuditController {
      */
     @RequestMapping(value = "/dashboardReview", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<DashboardReviewResponse> dashboardReview(@Valid DashboardAuditRequest request) throws HygieiaException {
-        DashboardReviewResponse dashboardReviewResponse = dashboardAuditService.getDashboardReviewResponse(request.getTitle(), request.getType(),
-                request.getBusServ(), request.getBusApp(),
-                request.getBeginDate(), request.getEndDate());
+        DashboardReviewResponse dashboardReviewResponse = dashboardAuditService.getDashboardReviewResponse(request.getDashboardTitle(), request.getDashBoardType(),
+                request.getBusinessService(), request.getBusinessApplication(),
+                request.getBeginDate(), request.getEndDate(), request.getAuditTypes());
 
         return ResponseEntity.ok().body(dashboardReviewResponse);
     }

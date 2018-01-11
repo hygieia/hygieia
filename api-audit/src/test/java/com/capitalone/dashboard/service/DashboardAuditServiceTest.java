@@ -13,7 +13,6 @@ import com.capitalone.dashboard.repository.CodeQualityRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
-import com.capitalone.dashboard.request.CodeQualityAuditRequest;
 import com.capitalone.dashboard.request.CodeReviewAuditRequest;
 import com.capitalone.dashboard.response.CodeQualityAuditResponse;
 import org.bson.types.ObjectId;
@@ -146,37 +145,37 @@ public class DashboardAuditServiceTest {
 
         assertTrue(baseCommits.contains(commit));
     }
-    @Test
-    public void shouldGetgetCodeQualityAuditDetailsforComponentAndVersion() {
-    	String component = "BAPHYGIEIA";
-    	String artifactVersion = "2.0.5";
-    	
-    	
-    	CodeQualityAuditRequest request = new CodeQualityAuditRequest();
-    	request.setArtifactVersion(artifactVersion);
-    	
-    	ObjectId collectorItemId = new ObjectId("58b945a890e46b264b95127d");
-    	String version = "2.0.5";
-    	
-    	List<CodeQualityAuditResponse> responses = new ArrayList<>();
-    	CodeQualityAuditResponse response = new CodeQualityAuditResponse();
-    	List<CodeQuality> qualities = new ArrayList<>();
-    	CodeQuality quality = new CodeQuality();
-    	
-    	quality.setVersion(version);
-    	quality.setUrl("https://sonar.com");
-    	quality.setCollectorItemId(collectorItemId);
-    	quality.setName("sampleProject");
-    	qualities.add(quality);
-    	
-
-    	response.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_OK);
-    	responses.add(response);
-    	
-    	when(codeQualityRepository.findByCollectorItemIdAndVersionOrderByTimestampDesc(collectorItemId, version)).thenReturn(qualities);
-    	assertTrue(qualities.contains(quality));
-    	
-    }
+//    @Test
+//    public void shouldGetgetCodeQualityAuditDetailsforComponentAndVersion() {
+//    	String component = "BAPHYGIEIA";
+//    	String artifactVersion = "2.0.5";
+//
+//
+//    	CodeQualityAuditRequest request = new CodeQualityAuditRequest();
+//    	request.setArtifactVersion(artifactVersion);
+//
+//    	ObjectId collectorItemId = new ObjectId("58b945a890e46b264b95127d");
+//    	String version = "2.0.5";
+//
+//    	List<CodeQualityAuditResponse> responses = new ArrayList<>();
+//    	CodeQualityAuditResponse response = new CodeQualityAuditResponse();
+//    	List<CodeQuality> qualities = new ArrayList<>();
+//    	CodeQuality quality = new CodeQuality();
+//
+//    	quality.setVersion(version);
+//    	quality.setUrl("https://sonar.com");
+//    	quality.setCollectorItemId(collectorItemId);
+//    	quality.setName("sampleProject");
+//    	qualities.add(quality);
+//
+//
+//    	response.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_OK);
+//    	responses.add(response);
+//
+//    	when(codeQualityRepository.findByCollectorItemIdAndVersionOrderByTimestampDesc(collectorItemId, version)).thenReturn(qualities);
+//    	assertTrue(qualities.contains(quality));
+//
+//    }
     
     @Test
     public void shouldGetgetCodeQualityAuditDetailsforArtifactMetatdatan() {

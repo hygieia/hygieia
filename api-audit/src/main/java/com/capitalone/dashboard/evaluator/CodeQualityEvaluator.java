@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.evaluator;
 
 import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.AuditStatus;
 import com.capitalone.dashboard.model.CodeQuality;
 import com.capitalone.dashboard.model.CodeQualityMetric;
@@ -36,7 +37,7 @@ import java.util.stream.Collectors;
 import static com.capitalone.dashboard.response.GenericAuditResponse.STATIC_CODE_REVIEW;
 
 @Component
-public class CodeQualityEvaluator extends Evaluator {
+public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
 
     private final CustomRepositoryQuery customRepositoryQuery;
     private final CodeQualityRepository codeQualityRepository;
@@ -49,17 +50,17 @@ public class CodeQualityEvaluator extends Evaluator {
         this.collItemCfgHistRepository = collItemCfgHistRepository;
     }
 
-    @Override
-    public GenericAuditResponse evaluate(Dashboard dashboard, long beginDate, long endDate, Collection<?> dummy) throws HygieiaException {
-        return  getCodeQualityAuditResponse(dashboard);
 
-    }
 
     @Override
-    public List<CodeQualityAuditResponse> evaluate(CollectorItem collectorItem, long beginDate, long endDate, Collection<?> dummy) {
+    public Collection<CodeQualityAuditResponse> evaluate(Dashboard dashboard, long beginDate, long endDate, Collection<?> data) throws AuditException {
         return null;
     }
 
+    @Override
+    public CodeQualityAuditResponse evaluate(CollectorItem collectorItem, long beginDate, long endDate, Collection<?> data) throws AuditException {
+        return null;
+    }
 
     /**
      * Calculates code quality audit response
@@ -229,7 +230,4 @@ public class CodeQualityEvaluator extends Evaluator {
         codeQualityGateValidationResponse.setCommitAuthors(authors);
         return codeQualityGateValidationResponse;
     }
-
-
-
 }

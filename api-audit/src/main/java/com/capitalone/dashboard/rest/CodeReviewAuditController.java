@@ -1,6 +1,8 @@
 package com.capitalone.dashboard.rest;
 
+import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.request.CodeReviewAuditRequest;
+import com.capitalone.dashboard.request.DashboardAuditRequest;
 import com.capitalone.dashboard.response.CodeReviewAuditResponse;
 import com.capitalone.dashboard.service.CodeReviewAuditService;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
@@ -17,11 +19,11 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
 public class CodeReviewAuditController {
+
     private final CodeReviewAuditService codeReviewAuditService;
 
     @Autowired
     public CodeReviewAuditController(CodeReviewAuditService codeReviewAuditService) {
-
         this.codeReviewAuditService = codeReviewAuditService;
     }
 
@@ -36,7 +38,7 @@ public class CodeReviewAuditController {
      * @return
      */
     @RequestMapping(value = "/peerReview", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Iterable<CodeReviewAuditResponse>> peerReview(@Valid CodeReviewAuditRequest request) {
+    public ResponseEntity<Iterable<CodeReviewAuditResponse>> peerReviewByRepo(@Valid CodeReviewAuditRequest request) throws AuditException {
         GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(request.getRepo());
         String repoUrl = gitHubParsed.getUrl();
         Collection<CodeReviewAuditResponse> allPeerReviews = codeReviewAuditService.getPeerReviewResponses(repoUrl, request.getBranch(), request.getScmName(), request.getBeginDate(), request.getEndDate());

@@ -168,7 +168,7 @@ public class DashboardAuditControllerTest {
 //
 //    	TestResultsResponse response = new TestResultsResponse();
 //
-//    	when(dashboardAuditService.getTestResultExecutionDetails(jobUrl,beginDate,endDate)).thenReturn(response);
+//    	when(dashboardAuditService.getTestResultAudit(jobUrl,beginDate,endDate)).thenReturn(response);
 //
 //    	String requestUrl= "/validateTestResults" + "?jobUrl=" + jobUrl +"&beginDate=" + beginDate + "&endDate=" + endDate;
 //

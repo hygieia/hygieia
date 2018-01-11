@@ -1,44 +1,54 @@
 package com.capitalone.dashboard.request;
 
+import com.capitalone.dashboard.model.AuditType;
+
+import java.util.HashSet;
+import java.util.List;
+
 public class DashboardAuditRequest extends AuditReviewRequest {
-    private String title;
-    private String type;
+    private String dashboardTitle;
+    private String dashBoardType;
+    private String businessService;
+    private String businessApplication;
+    private HashSet<AuditType> auditTypes;
 
-    //asv
-    private String busServ;
-
-    //bap
-    private String busApp;
-
-    public String getTitle() {
-        return title;
+    public String getDashboardTitle() {
+        return dashboardTitle;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setDashboardTitle(String dashboardTitle) {
+        this.dashboardTitle = dashboardTitle;
     }
 
-    public String getType() {
-        return type;
+    public String getDashBoardType() {
+        return dashBoardType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setDashBoardType(String dashBoardType) {
+        this.dashBoardType = dashBoardType;
     }
 
-    public String getBusServ() {
-        return busServ;
+    public String getBusinessService() {
+        return businessService;
     }
 
-    public void setBusServ(String busServ) {
-        this.busServ = busServ;
+    public void setBusinessService(String businessService) {
+        this.businessService = businessService;
     }
 
-    public String getBusApp() {
-        return busApp;
+    public String getBusinessApplication() {
+        return businessApplication;
     }
 
-    public void setBusApp(String busApp) {
-        this.busApp = busApp;
+    public void setBusinessApplication(String businessApplication) {
+        this.businessApplication = businessApplication;
+    }
+
+    public HashSet<AuditType> getAuditTypes() {
+        return auditTypes;
+    }
+
+    public void setAuditTypes(HashSet<AuditType> auditTypes) {
+        this.auditTypes = auditTypes;
     }
 }

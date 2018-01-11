@@ -1,6 +1,6 @@
 package com.capitalone.dashboard.evaluator;
 
-import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.AuditStatus;
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.CollItemCfgHist;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 import static com.capitalone.dashboard.response.GenericAuditResponse.JOB_REVIEW;
 
 @Component
-public class BuildEvaluator extends Evaluator {
+public class BuildEvaluator extends Evaluator<BuildAuditResponse> {
 
     private final BuildRepository buildRepository;
     private final JobRepository jobRepository;
@@ -47,21 +47,14 @@ public class BuildEvaluator extends Evaluator {
         this.collItemCfgHistRepository = collItemCfgHistRepository;
     }
 
+
     @Override
-    public GenericAuditResponse evaluate(Dashboard dashboard, long beginDate, long endDate, Collection<?> pullRequests) throws HygieiaException {
-        if (pullRequests == null) {
-            throw new HygieiaException("Null pull request list. Send empty list at least", HygieiaException.BAD_DATA);
-        }
-        try {
-            List<GitRequest> pulls = (List<GitRequest>) pullRequests;
-            return getBuildJobAuditResponse(dashboard, beginDate, endDate, (List<GitRequest>) pullRequests);
-        } catch (ClassCastException cce) {
-            throw new HygieiaException("Invalid pull request collection object: " + cce.getMessage(), HygieiaException.BAD_DATA);
-        }
+    public Collection<BuildAuditResponse> evaluate(Dashboard dashboard, long beginDate, long endDate, Collection<?> data) throws AuditException {
+        return null;
     }
 
     @Override
-    public List<BuildAuditResponse> evaluate(CollectorItem collectorItem, long beginDate, long endDate, Collection<?> data) {
+    public BuildAuditResponse evaluate(CollectorItem collectorItem, long beginDate, long endDate, Collection<?> data) throws AuditException {
         return null;
     }
 
@@ -185,5 +178,4 @@ public class BuildEvaluator extends Evaluator {
 
         return buildAuditResponse;
     }
-
 }

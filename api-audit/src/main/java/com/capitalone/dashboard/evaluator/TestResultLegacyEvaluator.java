@@ -1,13 +1,13 @@
 package com.capitalone.dashboard.evaluator;
 
 import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.AuditStatus;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.TestResult;
 import com.capitalone.dashboard.repository.CustomRepositoryQuery;
-import com.capitalone.dashboard.response.GenericAuditResponse;
 import com.capitalone.dashboard.response.TestResultsResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,38 +18,35 @@ import java.util.Collection;
 import java.util.List;
 
 @Component
-public class TestResultEvaluator extends Evaluator {
+public class TestResultLegacyEvaluator extends Evaluator<TestResultsResponse> {
 
     private final CustomRepositoryQuery customRepositoryQuery;
 
 
     @Autowired
-    public TestResultEvaluator(CustomRepositoryQuery customRepositoryQuery) {
+    public TestResultLegacyEvaluator(CustomRepositoryQuery customRepositoryQuery) {
         this.customRepositoryQuery = customRepositoryQuery;
     }
 
     @Override
-    public GenericAuditResponse evaluate(Dashboard dashboard, long beginDate, long endDate, Collection<?> dummy) throws HygieiaException {
-        List<CollectorItem> testItems = this.getCollectorItems(dashboard, "test", CollectorType.Test);
-        GenericAuditResponse genericAuditResponse = new GenericAuditResponse();
-        if (!CollectionUtils.isEmpty(testItems)) {
-            genericAuditResponse.addAuditStatus(AuditStatus.DASHBOARD_TEST_CONFIGURED);
-            for (CollectorItem testItem: testItems) {
-                List<TestResultsResponse> responses = evaluate(testItem, beginDate, endDate, null);
-                responses.forEach(r -> genericAuditResponse.addResponse(GenericAuditResponse.FUNCTIONAL_TEST_REVIEW, r));
-            }
-        } else {
-            genericAuditResponse.addAuditStatus(AuditStatus.DASHBOARD_TEST_NOT_CONFIGURED);
+    public Collection<TestResultsResponse> evaluate(Dashboard dashboard, long beginDate, long endDate, Collection<?> dummy) throws AuditException {
+        List<CollectorItem> testItems = getCollectorItems(dashboard, "test", CollectorType.Test);
+        Collection<TestResultsResponse> responses = new ArrayList<>();
+        if (CollectionUtils.isEmpty(testItems)) {
+            throw new AuditException("No tests configured", AuditException.NO_COLLECTOR_ITEM_CONFIGURED);
         }
-        return genericAuditResponse;
 
+        for (CollectorItem testItem : testItems) {
+            TestResultsResponse response = evaluate(testItem, beginDate, endDate, null);
+            responses.add(response);
+        }
+
+        return responses;
     }
 
     @Override
-    public List<TestResultsResponse> evaluate(CollectorItem collectorItem, long beginDate, long endDate, Collection<?> dummy) throws HygieiaException {
-        List<TestResultsResponse> response = new ArrayList<>();
-        response.add(getTestResultExecutionDetails((String) collectorItem.getOptions().get("jobUrl"), beginDate, endDate));
-        return  response;
+    public TestResultsResponse evaluate(CollectorItem collectorItem, long beginDate, long endDate, Collection<?> dummy) throws AuditException {
+        return getTestResultExecutionDetails((String) collectorItem.getOptions().get("jobUrl"), beginDate, endDate);
     }
 
     /**
@@ -63,13 +60,13 @@ public class TestResultEvaluator extends Evaluator {
      * @throws HygieiaException
      */
 
-    private TestResultsResponse getTestResultExecutionDetails(String jobUrl, long beginDt, long endDt) throws HygieiaException {
+    private TestResultsResponse getTestResultExecutionDetails(String jobUrl, long beginDt, long endDt) throws AuditException {
 
         List<TestResult> testResults = getTestResults(jobUrl, beginDt, endDt);
 
         if (CollectionUtils.isEmpty(testResults))
-            throw new HygieiaException("Unable to retreive  test result details for : " + jobUrl,
-                    HygieiaException.BAD_DATA);
+            throw new AuditException("Unable to retreive  test result details for : " + jobUrl,
+                    AuditException.MISSING_DETAILS);
 
         return regressionTestResultAudit(testResults);
 
@@ -114,7 +111,7 @@ public class TestResultEvaluator extends Evaluator {
                 .findByUrlAndTimestampGreaterThanEqualAndTimestampLessThanEqual(jobUrl, beginDt, endDt);
     }
 
-//    public PerformaceTestAuditResponse getresultsBycomponetAndTime(String businessComp, long from, long to) {
+//    public PerformaceTestAuditResponse getPerformanceTestAudit(String businessComp, long from, long to) {
 //        Cmdb cmdb = cmdbRepository.findByConfigurationItemIgnoreCase(businessComp); // get CMDB iD
 //        Iterable<Dashboard> dashboard = dashboardRepository.findAllByConfigurationItemBusAppObjectId(cmdb.getId()); //get dashboard based on CMDB ID
 //        Iterator<Dashboard> dashboardIT = dashboard.iterator();  //Iterate through the dashboards to obtain the collectorIteamID
