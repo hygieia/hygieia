@@ -27,7 +27,7 @@ import javax.annotation.PreDestroy;
  * @param <T> Class that extends Collector
  */
 @Component
-public abstract class CollectorTask<T extends Collector> implements Runnable {
+public abstract class CollectorTask<T extends Collector> implements Runnable, ThrottleRequests {
     private static final Logger LOGGER = LoggerFactory.getLogger(CollectorTask.class);
 
     private final TaskScheduler taskScheduler;
