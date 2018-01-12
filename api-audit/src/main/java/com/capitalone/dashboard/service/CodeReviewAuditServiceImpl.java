@@ -1,7 +1,6 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.evaluator.CodeReviewEvaluatorLegacy;
-import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;

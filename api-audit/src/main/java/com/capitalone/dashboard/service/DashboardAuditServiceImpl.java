@@ -1,7 +1,5 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.evaluator.BuildEvaluator;
-import com.capitalone.dashboard.evaluator.CodeQualityEvaluator;
 import com.capitalone.dashboard.evaluator.CodeReviewEvaluator;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuditException;
@@ -10,19 +8,16 @@ import com.capitalone.dashboard.model.AuditType;
 import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.repository.CmdbRepository;
-import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.response.CodeReviewAuditResponseV2;
 import com.capitalone.dashboard.response.DashboardReviewResponse;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Set;
 
 @Component
 public class DashboardAuditServiceImpl implements DashboardAuditService {
@@ -30,25 +25,16 @@ public class DashboardAuditServiceImpl implements DashboardAuditService {
 
     private final DashboardRepository dashboardRepository;
     private final CmdbRepository cmdbRepository;
-    private final ComponentRepository componentRepository;
-
-
     private final CodeReviewEvaluator codeReviewEvaluator;
-    private final CodeQualityEvaluator codeQualityEvaluator;
-    private final BuildEvaluator buildEvaluator;
 
 
-    private static final Log LOGGER = LogFactory.getLog(DashboardAuditServiceImpl.class);
+//    private static final Log LOGGER = LogFactory.getLog(DashboardAuditServiceImpl.class);
 
     @Autowired
-    public DashboardAuditServiceImpl(DashboardRepository dashboardRepository, CmdbRepository cmdbRepository, ComponentRepository componentRepository, CodeReviewEvaluator codeReviewEvaluator, CodeQualityEvaluator codeQualityEvaluator, BuildEvaluator buildEvaluator) {
+    public DashboardAuditServiceImpl(DashboardRepository dashboardRepository, CmdbRepository cmdbRepository, CodeReviewEvaluator codeReviewEvaluator) {
         this.dashboardRepository = dashboardRepository;
         this.cmdbRepository = cmdbRepository;
-        this.componentRepository = componentRepository;
         this.codeReviewEvaluator = codeReviewEvaluator;
-
-        this.codeQualityEvaluator = codeQualityEvaluator;
-        this.buildEvaluator = buildEvaluator;
     }
 
     /**
@@ -65,7 +51,7 @@ public class DashboardAuditServiceImpl implements DashboardAuditService {
      * @throws HygieiaException
      */
     @Override
-    public DashboardReviewResponse getDashboardReviewResponse(String dashboardTitle, String dashboardType, String businessService, String businessApp, long beginDate, long endDate, HashSet<AuditType> auditTypes) throws HygieiaException {
+    public DashboardReviewResponse getDashboardReviewResponse(String dashboardTitle, String dashboardType, String businessService, String businessApp, long beginDate, long endDate, Set<AuditType> auditTypes) throws HygieiaException {
         Dashboard dashboard = getDashboard(dashboardTitle, dashboardType, businessService, businessApp);
 
         DashboardReviewResponse dashboardReviewResponse = new DashboardReviewResponse();
@@ -96,7 +82,7 @@ public class DashboardAuditServiceImpl implements DashboardAuditService {
                     try {
                         Collection<CodeReviewAuditResponseV2> codeReviewResponses = codeReviewEvaluator.evaluate(dashboard, beginDate, endDate, null);
                         dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_CONFIGURED);
-                        dashboardReviewResponse.setCodeReviewAuditResponse(codeReviewResponses);
+                        dashboardReviewResponse.setCodeReview(codeReviewResponses);
                     } catch (AuditException e) {
                         if (e.getErrorCode() == AuditException.NO_COLLECTOR_ITEM_CONFIGURED) {
                             dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_NOT_CONFIGURED);

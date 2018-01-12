@@ -1,22 +1,19 @@
 package com.capitalone.dashboard.response;
 
 import java.util.Collection;
-import java.util.List;
 
 public class DashboardReviewResponse extends AuditReviewResponse {
     private String dashboardTitle;
     private String businessService;
     private String businessApplication;
 
-    Collection<CodeReviewAuditResponseV2> codeReviewAuditResponse;
+    private Collection<CodeReviewAuditResponseV2> codeReview;
 
-	Collection<BuildAuditResponse> buildAuditResponse;
+	private Collection<BuildAuditResponse> build;
 
-	Collection<CodeQualityAuditResponse> codeQualityAuditResponse;
+	private Collection<CodeQualityAuditResponse> codeQuality;
 
-	Collection<QualityProfileAuditResponse> qualityProfileAuditResponse;
-
-	Collection<TestResultsResponse> testResultsResponse;
+	private Collection<TestResultsResponse> testResult;
 
 	public String getBusinessService() {
 		return businessService;
@@ -42,43 +39,35 @@ public class DashboardReviewResponse extends AuditReviewResponse {
         this.dashboardTitle = dashboardTitle;
     }
 
-	public Collection<CodeReviewAuditResponseV2> getCodeReviewAuditResponse() {
-		return codeReviewAuditResponse;
+	public Collection<CodeReviewAuditResponseV2> getCodeReview() {
+		return codeReview;
 	}
 
-	public void setCodeReviewAuditResponse(Collection<CodeReviewAuditResponseV2> codeReviewAuditResponse) {
-		this.codeReviewAuditResponse = codeReviewAuditResponse;
+	public void setCodeReview(Collection<CodeReviewAuditResponseV2> codeReview) {
+		this.codeReview = codeReview;
 	}
 
-	public Collection<BuildAuditResponse> getBuildAuditResponse() {
-		return buildAuditResponse;
+	public Collection<BuildAuditResponse> getBuild() {
+		return build;
 	}
 
-	public void setBuildAuditResponse(Collection<BuildAuditResponse> buildAuditResponse) {
-		this.buildAuditResponse = buildAuditResponse;
+	public void setBuild(Collection<BuildAuditResponse> build) {
+		this.build = build;
 	}
 
-	public Collection<CodeQualityAuditResponse> getCodeQualityAuditResponse() {
-		return codeQualityAuditResponse;
+	public Collection<CodeQualityAuditResponse> getCodeQuality() {
+		return codeQuality;
 	}
 
-	public void setCodeQualityAuditResponse(Collection<CodeQualityAuditResponse> codeQualityAuditResponse) {
-		this.codeQualityAuditResponse = codeQualityAuditResponse;
+	public void setCodeQuality(Collection<CodeQualityAuditResponse> codeQuality) {
+		this.codeQuality = codeQuality;
 	}
 
-	public Collection<QualityProfileAuditResponse> getQualityProfileAuditResponse() {
-		return qualityProfileAuditResponse;
+	public Collection<TestResultsResponse> getTestResult() {
+		return testResult;
 	}
 
-	public void setQualityProfileAuditResponse(Collection<QualityProfileAuditResponse> qualityProfileAuditResponse) {
-		this.qualityProfileAuditResponse = qualityProfileAuditResponse;
-	}
-
-	public Collection<TestResultsResponse> getTestResultsResponse() {
-		return testResultsResponse;
-	}
-
-	public void setTestResultsResponse(Collection<TestResultsResponse> testResultsResponse) {
-		this.testResultsResponse = testResultsResponse;
+	public void setTestResult(Collection<TestResultsResponse> testResult) {
+		this.testResult = testResult;
 	}
 }

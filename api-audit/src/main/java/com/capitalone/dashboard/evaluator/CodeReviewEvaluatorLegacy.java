@@ -2,20 +2,14 @@ package com.capitalone.dashboard.evaluator;
 
 import com.capitalone.dashboard.ApiSettings;
 import com.capitalone.dashboard.common.CommonCodeReview;
-import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.AuditStatus;
 import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.Comment;
 import com.capitalone.dashboard.model.Commit;
-import com.capitalone.dashboard.model.CommitStatus;
 import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitRequest;
-import com.capitalone.dashboard.model.Review;
 import com.capitalone.dashboard.repository.CustomRepositoryQuery;
 import com.capitalone.dashboard.response.CodeReviewAuditResponse;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
-import com.google.common.collect.Sets;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +18,9 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Component
 public class CodeReviewEvaluatorLegacy extends LegacyEvaluator{
@@ -46,7 +37,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator{
 
 
     @Override
-    public List<CodeReviewAuditResponse> evaluate(CollectorItem collectorItem, long beginDate, long endDate, Collection data) throws AuditException {
+    public List<CodeReviewAuditResponse> evaluate(CollectorItem collectorItem, long beginDate, long endDate, Collection data){
         return getPeerReviewResponses(collectorItem,beginDate,endDate);
     }
 

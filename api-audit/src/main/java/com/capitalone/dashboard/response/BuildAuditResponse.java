@@ -1,12 +1,12 @@
 package com.capitalone.dashboard.response;
 
-import com.capitalone.dashboard.model.CollItemCfgHist;
+import com.capitalone.dashboard.model.CollectorItemConfigHistory;
 
 import java.util.List;
 
 public class BuildAuditResponse extends AuditReviewResponse {
     private String environment;
-    private List<CollItemCfgHist> configHistory;
+    private List<CollectorItemConfigHistory> configHistory;
 
     public String getEnvironment() {
         return environment;
@@ -16,11 +16,11 @@ public class BuildAuditResponse extends AuditReviewResponse {
         this.environment = environment;
     }
 
-    public List<CollItemCfgHist> getConfigHistory() {
+    public List<CollectorItemConfigHistory> getConfigHistory() {
         return configHistory;
     }
 
-    public void setConfigHistory(List<CollItemCfgHist> configHistory) {
+    public void setConfigHistory(List<CollectorItemConfigHistory> configHistory) {
         this.configHistory = configHistory;
     }
 }

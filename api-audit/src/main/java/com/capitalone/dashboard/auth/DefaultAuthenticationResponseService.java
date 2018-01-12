@@ -20,14 +20,12 @@ public class DefaultAuthenticationResponseService implements AuthenticationRespo
 	@Override
 	public void handle(HttpServletResponse response, Authentication authentication) {
 
-		AbstractAuthenticationToken authenticationWithAuthorities = null;
-
-		AuthType authType = (AuthType)authentication.getDetails();
+        AuthType authType = (AuthType)authentication.getDetails();
         if (authType == AuthType.APIKEY) {
             Collection<UserRole> roles = new ArrayList<>();
             roles.add(UserRole.ROLE_API);
 
-            authenticationWithAuthorities = new ApiTokenAuthenticationToken(authentication.getPrincipal(),
+            AbstractAuthenticationToken authenticationWithAuthorities = new ApiTokenAuthenticationToken(authentication.getPrincipal(),
                     authentication.getCredentials(), createAuthorities(roles));
             authenticationWithAuthorities.setDetails(authentication.getDetails());
         }
@@ -35,7 +33,7 @@ public class DefaultAuthenticationResponseService implements AuthenticationRespo
 	}
 
     private Collection<? extends GrantedAuthority> createAuthorities(Collection<UserRole> authorities) {
-        Collection<GrantedAuthority> grantedAuthorities = new HashSet<GrantedAuthority>();
+        Collection<GrantedAuthority> grantedAuthorities = new HashSet<>();
         authorities.forEach(authority -> grantedAuthorities.add(new SimpleGrantedAuthority(authority.name())));
 
         return grantedAuthorities;

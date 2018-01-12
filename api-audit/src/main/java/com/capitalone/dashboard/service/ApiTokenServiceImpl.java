@@ -64,7 +64,7 @@ public class ApiTokenServiceImpl implements ApiTokenService {
         List<ApiToken> apiTokens = apiTokenRepository.findByApiUser(username);
         for(ApiToken apiToken : apiTokens) {
             if (username.equalsIgnoreCase(apiToken.getApiUser())) {
-                if (apiToken != null && apiToken.checkApiKey(password)) {
+                if (apiToken.checkApiKey(password)) {
                     Date sysdate = Calendar.getInstance().getTime();
                     Date expDt = new Date(apiToken.getExpirationDt());
                     if (compareDates(sysdate, expDt) <= 0) {
@@ -105,7 +105,7 @@ public class ApiTokenServiceImpl implements ApiTokenService {
         return apiToken.getId().toString();
     }
     private Collection<? extends GrantedAuthority> createAuthorities(Collection<UserRole> authorities) {
-        Collection<GrantedAuthority> grantedAuthorities = new HashSet<GrantedAuthority>();
+        Collection<GrantedAuthority> grantedAuthorities = new HashSet<>();
         authorities.forEach(authority -> grantedAuthorities.add(new SimpleGrantedAuthority(authority.name())));
 
         return grantedAuthorities;
@@ -126,13 +126,10 @@ public class ApiTokenServiceImpl implements ApiTokenService {
         int retVal = -1;
         try {
             retVal = argA.compareTo(argB);
-            if (retVal == 0) { //if dates are equal.
-                return 0;
-            } else if (retVal < 0) { //if argA is before argument.
-                return -1;
-            } else { //if argA is after argument.
-                return 1;
-            }
+            //if dates are equal.
+            //if argA is before argument.
+            //if argA is after argument.
+            return Integer.compare(retVal, 0);
         } catch (Exception e) {
             LOGGER.warn("Unable to compare dates", e);
         }

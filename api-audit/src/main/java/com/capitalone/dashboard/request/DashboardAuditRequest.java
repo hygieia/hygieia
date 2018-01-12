@@ -2,15 +2,14 @@ package com.capitalone.dashboard.request;
 
 import com.capitalone.dashboard.model.AuditType;
 
-import java.util.HashSet;
-import java.util.List;
+import java.util.Set;
 
 public class DashboardAuditRequest extends AuditReviewRequest {
     private String dashboardTitle;
     private String dashBoardType;
     private String businessService;
     private String businessApplication;
-    private HashSet<AuditType> auditTypes;
+    private Set<AuditType> auditTypes;
 
     public String getDashboardTitle() {
         return dashboardTitle;
@@ -44,11 +43,11 @@ public class DashboardAuditRequest extends AuditReviewRequest {
         this.businessApplication = businessApplication;
     }
 
-    public HashSet<AuditType> getAuditTypes() {
+    public Set<AuditType> getAuditTypes() {
         return auditTypes;
     }
 
-    public void setAuditTypes(HashSet<AuditType> auditTypes) {
+    public void setAuditTypes(Set<AuditType> auditTypes) {
         this.auditTypes = auditTypes;
     }
 }

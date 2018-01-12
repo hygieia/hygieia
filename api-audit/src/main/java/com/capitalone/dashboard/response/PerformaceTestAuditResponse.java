@@ -5,15 +5,13 @@ import com.capitalone.dashboard.model.PerfTest;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumSet;
-import java.util.Set;
 
 public class PerformaceTestAuditResponse {
 
 
     private AuditStatus auditStatuses;
 
-    Collection<PerfTest> result = new ArrayList<>();
+    private Collection<PerfTest> result = new ArrayList<>();
 
     public AuditStatus getAuditStatuses() {
         return auditStatuses;

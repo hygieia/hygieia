@@ -7,7 +7,6 @@ import com.capitalone.dashboard.model.CommitStatus;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.Review;
 import com.capitalone.dashboard.response.AuditReviewResponse;
-import com.capitalone.dashboard.response.CodeReviewAuditResponse;
 import com.google.common.collect.Sets;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,8 +22,8 @@ public class CommonCodeReview {
      * Calculates the peer review status for a given pull request
      *
      * @param pr                      - pull request
-     * @param auditReviewResponse
-     * @return
+     * @param auditReviewResponse - audit review response
+     * @return boolean fail or pass
      */
     public static boolean computePeerReviewStatus(GitRequest pr, ApiSettings settings, AuditReviewResponse auditReviewResponse) {
         List<Review> reviews = pr.getReviews();
@@ -95,7 +94,7 @@ public class CommonCodeReview {
      * @param pr
      * @return true if PR was looked at by at least one peer
      */
-    public static boolean isPRLookedAtByPeer(GitRequest pr) {
+    private static boolean isPRLookedAtByPeer(GitRequest pr) {
         Set<String> commentUsers = pr.getComments() != null ? pr.getComments().stream().map(Comment::getUser).collect(Collectors.toCollection(HashSet::new)) : new HashSet<>();
         Set<String> reviewAuthors = pr.getReviews() != null ? pr.getReviews().stream().map(Review::getAuthor).collect(Collectors.toCollection(HashSet::new)) : new HashSet<>();
         commentUsers.remove(pr.getUserId());

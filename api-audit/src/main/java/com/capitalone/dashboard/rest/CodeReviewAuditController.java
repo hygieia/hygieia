@@ -2,7 +2,6 @@ package com.capitalone.dashboard.rest;
 
 import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.request.CodeReviewAuditRequest;
-import com.capitalone.dashboard.request.DashboardAuditRequest;
 import com.capitalone.dashboard.response.CodeReviewAuditResponse;
 import com.capitalone.dashboard.service.CodeReviewAuditService;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
@@ -34,8 +33,8 @@ public class CodeReviewAuditController {
      * - peer review of a pull request
      * - check whether there are direct commits to base
      *
-     * @param request
-     * @return
+     * @param request caller request
+     * @return response
      */
     @RequestMapping(value = "/peerReview", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Iterable<CodeReviewAuditResponse>> peerReviewByRepo(@Valid CodeReviewAuditRequest request) throws AuditException {

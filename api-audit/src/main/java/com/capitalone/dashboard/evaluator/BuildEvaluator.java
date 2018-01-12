@@ -1,18 +1,17 @@
 package com.capitalone.dashboard.evaluator;
 
-import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.AuditStatus;
 import com.capitalone.dashboard.model.Build;
-import com.capitalone.dashboard.model.CollItemCfgHist;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorItemConfigHistory;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.JobCollectorItem;
 import com.capitalone.dashboard.model.RepoBranch;
 import com.capitalone.dashboard.repository.BuildRepository;
-import com.capitalone.dashboard.repository.CollItemCfgHistRepository;
+import com.capitalone.dashboard.repository.CollItemConfigHistoryRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.JobRepository;
 import com.capitalone.dashboard.response.BuildAuditResponse;
@@ -37,24 +36,24 @@ public class BuildEvaluator extends Evaluator<BuildAuditResponse> {
     private final BuildRepository buildRepository;
     private final JobRepository jobRepository;
     private final CollectorRepository collectorRepository;
-    private final CollItemCfgHistRepository collItemCfgHistRepository;
+    private final CollItemConfigHistoryRepository collItemConfigHistoryRepository;
 
     @Autowired
-    public BuildEvaluator(BuildRepository buildRepository, JobRepository jobRepository, CollectorRepository collectorRepository, CollItemCfgHistRepository collItemCfgHistRepository) {
+    public BuildEvaluator(BuildRepository buildRepository, JobRepository jobRepository, CollectorRepository collectorRepository, CollItemConfigHistoryRepository collItemConfigHistoryRepository) {
         this.buildRepository = buildRepository;
         this.jobRepository = jobRepository;
         this.collectorRepository = collectorRepository;
-        this.collItemCfgHistRepository = collItemCfgHistRepository;
+        this.collItemConfigHistoryRepository = collItemConfigHistoryRepository;
     }
 
 
     @Override
-    public Collection<BuildAuditResponse> evaluate(Dashboard dashboard, long beginDate, long endDate, Collection<?> data) throws AuditException {
+    public Collection<BuildAuditResponse> evaluate(Dashboard dashboard, long beginDate, long endDate, Collection<?> data)  {
         return null;
     }
 
     @Override
-    public BuildAuditResponse evaluate(CollectorItem collectorItem, long beginDate, long endDate, Collection<?> data) throws AuditException {
+    public BuildAuditResponse evaluate(CollectorItem collectorItem, long beginDate, long endDate, Collection<?> data) {
         return null;
     }
 
@@ -73,7 +72,7 @@ public class BuildEvaluator extends Evaluator<BuildAuditResponse> {
         List<CollectorItem> buildItems = this.getCollectorItems(dashboard, "build", CollectorType.Build);
         List<CollectorItem> repoItems = this.getCollectorItems(dashboard, "repo", CollectorType.SCM);
 
-        List<CollItemCfgHist> jobConfigHists = null;
+        List<CollectorItemConfigHistory> jobConfigHists = null;
 
         if (CollectionUtils.isEmpty(buildItems)) {
             genericAuditResponse.addAuditStatus(AuditStatus.DASHBOARD_BUILD_NOT_CONFIGURED);
@@ -128,7 +127,7 @@ public class BuildEvaluator extends Evaluator<BuildAuditResponse> {
         }
         if (!CollectionUtils.isEmpty(pullRequests) && !CollectionUtils.isEmpty(jobConfigHists)) {
             Set<String> prAuthorsSet = pullRequests.stream().map(GitRequest::getUserId).collect(Collectors.toSet());
-            Set<String> configAuthorsSet = jobConfigHists.stream().map(CollItemCfgHist::getUserID).collect(Collectors.toSet());
+            Set<String> configAuthorsSet = jobConfigHists.stream().map(CollectorItemConfigHistory::getUserID).collect(Collectors.toSet());
             genericAuditResponse.addAuditStatus(!SetUtils.intersection(prAuthorsSet, configAuthorsSet).isEmpty() ? AuditStatus.DASHBOARD_REPO_PR_AUTHOR_EQ_BUILD_AUTHOR : AuditStatus.DASHBOARD_REPO_PR_AUTHOR_NE_BUILD_AUTHOR);
         }
 
@@ -137,7 +136,7 @@ public class BuildEvaluator extends Evaluator<BuildAuditResponse> {
 
 
 
-    public BuildAuditResponse getBuildJobReviewResponse(String jobUrl, String jobName, long beginDt, long endDt) {
+    private BuildAuditResponse getBuildJobReviewResponse(String jobUrl, String jobName, long beginDt, long endDt) {
 
         BuildAuditResponse buildAuditResponse = new BuildAuditResponse();
 
@@ -164,7 +163,7 @@ public class BuildEvaluator extends Evaluator<BuildAuditResponse> {
         //Segregation of access to Pipeline Environments
         //Check Jenkins Job config log to validate pr author is not modifying the Prod Job
         //since beginDate and endDate are the same column and between is excluding the edge values, we need to subtract/add a millisec
-        buildAuditResponse.setConfigHistory(collItemCfgHistRepository.findByCollectorItemIdAndJobAndJobUrlAndTimestampBetweenOrderByTimestampDesc(collectorItem.getId(), jobName, jobUrl, beginDt - 1, endDt + 1));
+        buildAuditResponse.setConfigHistory(collItemConfigHistoryRepository.findByCollectorItemIdAndTimestampBetweenOrderByTimestampDesc(collectorItem.getId(), beginDt - 1, endDt + 1));
 
         if ("PROD".equalsIgnoreCase(buildAuditResponse.getEnvironment())) {
             if (jobUrl.toUpperCase(Locale.ENGLISH).contains("NON-PROD")) {

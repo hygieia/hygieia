@@ -9,7 +9,6 @@ import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
-import com.capitalone.dashboard.response.CodeReviewAuditResponse;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,7 +30,7 @@ public abstract class Evaluator<T> {
     public  abstract Collection<T> evaluate(Dashboard dashboard, long beginDate, long endDate, Collection<?> data) throws AuditException;
 
 
-    public abstract T evaluate(CollectorItem collectorItem, long beginDate, long endDate, Collection<?> data) throws AuditException;
+    public abstract T evaluate(CollectorItem collectorItem, long beginDate, long endDate, Collection<?> data) throws AuditException, HygieiaException;
 
     /**
      * @param dashboard

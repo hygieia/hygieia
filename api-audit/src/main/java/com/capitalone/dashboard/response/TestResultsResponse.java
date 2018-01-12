@@ -1,8 +1,8 @@
 package com.capitalone.dashboard.response;
 
-import java.util.Collection;
-
 import com.capitalone.dashboard.model.TestCapability;
+
+import java.util.Collection;
 
 public class TestResultsResponse extends AuditReviewResponse  {
 	

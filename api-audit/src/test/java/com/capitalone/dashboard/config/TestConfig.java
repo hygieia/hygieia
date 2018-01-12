@@ -18,7 +18,7 @@ public class TestConfig {
     }
 
     @Bean
-    public CodeReviewAuditService peerReviewAuditService() {
+    public CodeReviewAuditService codeReviewAuditService() {
         return Mockito.mock(CodeReviewAuditService.class);
     }
 

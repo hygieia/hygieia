@@ -1,22 +1,20 @@
 package com.capitalone.dashboard.evaluator;
 
-import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.AuditStatus;
 import com.capitalone.dashboard.model.CodeQuality;
 import com.capitalone.dashboard.model.CodeQualityMetric;
-import com.capitalone.dashboard.model.CollItemCfgHist;
 import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorItemConfigHistory;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.SCM;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
-import com.capitalone.dashboard.repository.CollItemCfgHistRepository;
+import com.capitalone.dashboard.repository.CollItemConfigHistoryRepository;
 import com.capitalone.dashboard.repository.CustomRepositoryQuery;
 import com.capitalone.dashboard.response.CodeQualityAuditResponse;
-import com.capitalone.dashboard.response.QualityProfileAuditResponse;
-import com.capitalone.dashboard.response.GenericAuditResponse;
+import com.capitalone.dashboard.util.GitHubParsedUrl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections.CollectionUtils;
@@ -25,8 +23,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -34,106 +33,92 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.capitalone.dashboard.response.GenericAuditResponse.STATIC_CODE_REVIEW;
-
 @Component
 public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
 
     private final CustomRepositoryQuery customRepositoryQuery;
     private final CodeQualityRepository codeQualityRepository;
-    private final CollItemCfgHistRepository collItemCfgHistRepository;
+    private final CollItemConfigHistoryRepository collItemConfigHistoryRepository;
 
     @Autowired
-    public CodeQualityEvaluator(CustomRepositoryQuery customRepositoryQuery, CodeQualityRepository codeQualityRepository, CollItemCfgHistRepository collItemCfgHistRepository) {
+    public CodeQualityEvaluator(CustomRepositoryQuery customRepositoryQuery, CodeQualityRepository codeQualityRepository, CollItemConfigHistoryRepository collItemConfigHistoryRepository) {
         this.customRepositoryQuery = customRepositoryQuery;
         this.codeQualityRepository = codeQualityRepository;
-        this.collItemCfgHistRepository = collItemCfgHistRepository;
+        this.collItemConfigHistoryRepository = collItemConfigHistoryRepository;
     }
-
 
 
     @Override
     public Collection<CodeQualityAuditResponse> evaluate(Dashboard dashboard, long beginDate, long endDate, Collection<?> data) throws AuditException {
-        return null;
+        List<CodeQualityAuditResponse> responseV2s = new ArrayList<>();
+        List<CollectorItem> codeanalysisItems = this.getCollectorItems(dashboard, "codeanalysis", CollectorType.CodeQuality);
+        if (CollectionUtils.isEmpty(codeanalysisItems)) {
+            throw new AuditException("No code quality job configured", AuditException.NO_COLLECTOR_ITEM_CONFIGURED);
+        }
+
+        List<CollectorItem> repoItems = this.getCollectorItems(dashboard, "repo", CollectorType.SCM);
+
+        Set<String> codeAuthors = getCodeAuthors(repoItems, beginDate, endDate);
+
+
+        for (CollectorItem codeanalysisItem : codeanalysisItems) {
+            CodeQualityAuditResponse reviewResponse = evaluate(codeanalysisItem, beginDate, endDate, null);
+            List<CollectorItemConfigHistory> configHistories = getProfileChanges(reviewResponse.getCodeQuality(), beginDate, endDate);
+            if (CollectionUtils.isEmpty(configHistories)) {
+                reviewResponse.addAuditStatus(AuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_NO_CHANGE);
+            }
+            List<String> overlap = configHistories.stream().map(CollectorItemConfigHistory::getUserID).filter(codeAuthors::contains).collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(overlap)) {
+                reviewResponse.addAuditStatus(AuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_FAIL);
+            } else {
+                reviewResponse.addAuditStatus(AuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_OK);
+            }
+            responseV2s.add(reviewResponse);
+        }
+        return responseV2s;
+    }
+
+    private Set<String> getCodeAuthors(List<CollectorItem> repoItems, long beginDate, long endDate) {
+        Set<String> authors = new HashSet<>();
+        //making sure we have a goot url?
+        repoItems.forEach(repoItem -> {
+            String scmUrl = (String) repoItem.getOptions().get("url");
+            String scmBranch = (String) repoItem.getOptions().get("branch");
+            GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(scmUrl);
+            String parsedUrl = gitHubParsed.getUrl(); //making sure we have a goot url?
+            List<Commit> commits = customRepositoryQuery.findByScmUrlAndScmBranchAndScmCommitTimestampGreaterThanEqualAndScmCommitTimestampLessThanEqual(parsedUrl, scmBranch, beginDate, endDate);
+            authors.addAll(commits.stream().map(SCM::getScmAuthor).collect(Collectors.toCollection(HashSet::new)));
+        });
+        return authors;
     }
 
     @Override
     public CodeQualityAuditResponse evaluate(CollectorItem collectorItem, long beginDate, long endDate, Collection<?> data) throws AuditException {
-        return null;
+        List<CodeQuality> codeQualityDetails = codeQualityRepository.findByCollectorItemIdOrderByTimestampDesc(collectorItem.getCollectorId());
+        return getStaticAnalysisResponse(codeQualityDetails);
     }
 
-    /**
-     * Calculates code quality audit response
-     *
-     * @param dashboard
-     * @return @GenericAuditResponse for the code quality of a given @Dashboard
-     * @throws HygieiaException
-     */
-    private GenericAuditResponse getCodeQualityAuditResponse(Dashboard dashboard) throws HygieiaException {
-        List<CollectorItem> codeQualityItems = this.getCollectorItems(dashboard, "codeanalysis", CollectorType.CodeQuality);
-        GenericAuditResponse genericAuditResponse = new GenericAuditResponse();
-        if (CollectionUtils.isEmpty(codeQualityItems)) {
-            genericAuditResponse.addAuditStatus(AuditStatus.DASHBOARD_CODEQUALITY_NOT_CONFIGURED);
-            return genericAuditResponse;
-        }
-        genericAuditResponse.addAuditStatus(AuditStatus.DASHBOARD_CODEQUALITY_CONFIGURED);
-        CollectorItem codeQualityItem = codeQualityItems.get(0);
-        List<CodeQuality> codeQualityDetails = codeQualityRepository.findByCollectorItemIdOrderByTimestampDesc(codeQualityItem.getCollectorId());
-        CodeQualityAuditResponse codeQualityAuditResponse = this.getStaticAnalysisResponse(codeQualityDetails);
-        genericAuditResponse.addResponse(STATIC_CODE_REVIEW, codeQualityAuditResponse);
-        //Commenting this out until Sonar Collector is updated to pull config changes
-//			if(repoItems != null && !repoItems.isEmpty()){
-//				for (CollectorItem repoItem : repoItems) {
-//					String aRepoItembranch = (String) repoItem.getOptions().get("branch");
-//					String aRepoItemUrl = (String) repoItem.getOptions().get("url");
-//					List<Commit> repoCommits = getCommits(aRepoItemUrl, aRepoItembranch, beginDate, endDate);
-//
-//					QualityProfileAuditResponse codeQualityProfileValidationResponse = this.qualityProfileAudit(repoCommits,codeQualityDetails,beginDate, endDate);
-//					genericAuditResponse.setQualityProfileAuditResponse(codeQualityProfileValidationResponse);
-//				}
-//			}
-
-        return genericAuditResponse;
-    }
-
-    /**
-     * Gets StaticAnalysisResponses for artifact
-     *
-     * @param projectName     Sonar Project Name
-     * @param artifactVersion Artifact Version
-     * @return List of CodeQualityAuditResponse
-     * @throws HygieiaException
-     */
-    public List<CodeQualityAuditResponse> getCodeQualityAudit(String projectName,
-                                                              String artifactVersion) throws HygieiaException {
-        List<CodeQuality> qualities = codeQualityRepository
-                .findByNameAndVersionOrderByTimestampDesc(projectName, artifactVersion);
-        if (CollectionUtils.isEmpty(qualities))
-            throw new HygieiaException("Empty CodeQuality collection", HygieiaException.BAD_DATA);
-        CodeQualityAuditResponse response = getStaticAnalysisResponse(qualities);
-        return Collections.singletonList(response);
-    }
 
     /**
      * Reusable method for constructing the CodeQualityAuditResponse object for a
      *
      * @param codeQualities Code Quality List
      * @return CodeQualityAuditResponse
-     * @throws HygieiaException
+     * @throws AuditException
      */
-    private CodeQualityAuditResponse getStaticAnalysisResponse(List<CodeQuality> codeQualities) throws HygieiaException {
-        if (codeQualities == null)
-            return new CodeQualityAuditResponse();
-
+    private CodeQualityAuditResponse getStaticAnalysisResponse(List<CodeQuality> codeQualities) throws AuditException {
         ObjectMapper mapper = new ObjectMapper();
 
         if (CollectionUtils.isEmpty(codeQualities))
-            throw new HygieiaException("Empty CodeQuality collection", HygieiaException.BAD_DATA);
-        CodeQuality returnQuality = codeQualities.get(0);
+            throw new AuditException("Empty CodeQuality collection", AuditException.MISSING_DETAILS);
+        //get the latest
+        codeQualities.sort(Comparator.comparingLong(CodeQuality::getTimestamp));
 
+        CodeQuality returnQuality = codeQualities.get(0);
         CodeQualityAuditResponse codeQualityAuditResponse = new CodeQualityAuditResponse();
-        codeQualityAuditResponse.setCodeQualityDetails(returnQuality);
+        codeQualityAuditResponse.setCodeQuality(returnQuality);
         for (CodeQualityMetric metric : returnQuality.getMetrics()) {
+            //TODO: This is sonar specific - need to move this to api settings via properties file
             if (metric.getName().equalsIgnoreCase("quality_gate_details")) {
                 TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
                 };
@@ -142,11 +127,7 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
                     values = mapper.readValue((String) metric.getValue(), typeRef);
                     if (MapUtils.isNotEmpty(values) && values.containsKey("level")) {
                         String level = values.get("level");
-                        if (level.equalsIgnoreCase("ok")) {
-                            codeQualityAuditResponse.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_OK);
-                        } else {
-                            codeQualityAuditResponse.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_FAIL);
-                        }
+                        codeQualityAuditResponse.addAuditStatus(level.equalsIgnoreCase("ok") ? AuditStatus.CODE_QUALITY_AUDIT_OK : AuditStatus.CODE_QUALITY_AUDIT_FAIL);
                     }
                     break;
                 } catch (IOException e) {
@@ -165,69 +146,10 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
         return codeQualityAuditResponse;
     }
 
-    /**
-     * Retrieves code quality profile changeset for a given time period and
-     * determines if change author matches commit author within time period
-     *
-     * @param repoUrl         SCM repo url
-     * @param repoBranch      SCM repo branch
-     * @param projectName     Sonar Project name
-     * @param artifactVersion Artifact Version
-     * @return QualityProfileAuditResponse
-     * @throws HygieiaException
-     */
 
-    public QualityProfileAuditResponse getQualityGateValidationDetails(String repoUrl, String repoBranch,
-                                                                       String projectName, String artifactVersion, long beginDate, long endDate) {
 
-        List<Commit> commits = customRepositoryQuery.findByScmUrlAndScmBranchAndScmCommitTimestampGreaterThanEqualAndScmCommitTimestampLessThanEqual(repoUrl, repoBranch, beginDate, endDate);
-
-        List<CodeQuality> codeQualities = codeQualityRepository
-                .findByNameAndVersionOrderByTimestampDesc(projectName, artifactVersion);
-
-        return this.qualityProfileAudit(commits, codeQualities, beginDate, endDate);
-
-    }
-
-    private QualityProfileAuditResponse qualityProfileAudit(List<Commit> commits, List<CodeQuality> codeQualities, long beginDate, long endDate) {
-
-        Set<String> authors = commits.stream().map(SCM::getScmAuthor).collect(Collectors.toSet());
-
-        QualityProfileAuditResponse codeQualityGateValidationResponse = new QualityProfileAuditResponse();
-        CodeQuality codeQuality = codeQualities.get(0);
-        String url = codeQuality.getUrl();
-        List<CollItemCfgHist> qualityProfileChanges = collItemCfgHistRepository
-                .findByJobUrlAndTimestampBetweenOrderByTimestampDesc(url, beginDate - 1, endDate + 1);
-
-        // If no change has been made to quality profile between the time range,
-        // then return an audit status of no change
-        // Need to differentiate between document not being found and whether
-        // there was no change for the quality profile
-        if (CollectionUtils.isEmpty(qualityProfileChanges)) {
-            codeQualityGateValidationResponse.addAuditStatus(AuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_NO_CHANGE);
-        } else {
-
-            // Iterate over all the change performers and check if they exist
-            // within the authors set
-            Set<String> qualityProfileChangePerformers = new HashSet<>();
-            // TODO Improve this check as it is inefficient
-// If the change performer matches a commit author, then fail
-// the audit
-            qualityProfileChanges.stream().map(CollItemCfgHist::getUserID).forEach(qualityProfileChangePerformer -> {
-                qualityProfileChangePerformers.add(qualityProfileChangePerformer);
-                if (authors.contains(qualityProfileChangePerformer)) {
-                    codeQualityGateValidationResponse.addAuditStatus(AuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_FAIL);
-                }
-            });
-            // If there is no match between change performers and commit
-            // authors, then pass the audit
-            Set<AuditStatus> auditStatuses = codeQualityGateValidationResponse.getAuditStatuses();
-            if (!(auditStatuses.contains(AuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_FAIL))) {
-                codeQualityGateValidationResponse.addAuditStatus(AuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_OK);
-            }
-            codeQualityGateValidationResponse.setQualityGateChangePerformers(qualityProfileChangePerformers);
-        }
-        codeQualityGateValidationResponse.setCommitAuthors(authors);
-        return codeQualityGateValidationResponse;
+    private List<CollectorItemConfigHistory> getProfileChanges(CodeQuality codeQuality, long beginDate, long endDate) {
+        return collItemConfigHistoryRepository
+                .findByCollectorItemIdAndTimestampBetweenOrderByTimestampDesc(codeQuality.getCollectorItemId(), beginDate - 1, endDate + 1);
     }
 }
