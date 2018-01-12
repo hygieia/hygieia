@@ -12,6 +12,7 @@ import com.capitalone.dashboard.model.TestSuiteType;
 
 import com.capitalone.dashboard.util.GitHubParsedUrl;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -39,7 +40,7 @@ public class CustomRepositoryQueryImpl implements CustomRepositoryQuery {
     @Override
     public List<CollectorItem> findCollectorItemsBySubsetOptions(ObjectId id, Map<String, Object> allOptions, Map<String, Object> selectOptions) {
         Criteria c = Criteria.where("collectorId").is(id);
-
+        selectOptions.values().removeIf(d-> d.equals(null) || ((d instanceof String) && StringUtils.isEmpty((String) d)));
         for (Map.Entry<String, Object> e : allOptions.entrySet()) {
             if (selectOptions.containsKey(e.getKey())) {
                 c = getCriteria(selectOptions, c, e);
@@ -84,7 +85,7 @@ public class CustomRepositoryQueryImpl implements CustomRepositoryQuery {
     //TODO: This needs to be re-thought out.
     public List<CollectorItem> findCollectorItemsBySubsetOptionsWithNullCheck(ObjectId id, Map<String, Object> allOptions, Map<String, Object> selectOptions) {
         Criteria c = Criteria.where("collectorId").is(id);
-
+        selectOptions.values().removeIf(d-> d.equals(null) || ((d instanceof String) && StringUtils.isEmpty((String) d)));
         for (Map.Entry<String, Object> e : allOptions.entrySet()) {
             if (selectOptions.containsKey(e.getKey())) {
                 c = getCriteria(selectOptions, c, e);
@@ -210,8 +211,7 @@ public class CustomRepositoryQueryImpl implements CustomRepositoryQuery {
 	private String getGitHubParsedString(Map<String, Object> selectOptions, Map.Entry<String, Object> e) {
         String url = (String)selectOptions.get(e.getKey());
         GitHubParsedUrl gitHubParsedUrl = new GitHubParsedUrl(url);
-        String parsedUrl = gitHubParsedUrl.getUrl();
-        return parsedUrl;
+        return gitHubParsedUrl.getUrl();
     }
 
     private Criteria getCriteria(Map<String, Object> selectOptions, Criteria c, Map.Entry<String, Object> e) {

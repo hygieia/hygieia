@@ -775,7 +775,7 @@ public class DefaultGitHubClient implements GitHubClient {
             prCommits.add(newCommit);
         }
 
-        if (StringUtils.isEmpty(pull.getHeadSha())) {
+        if (StringUtils.isEmpty(pull.getHeadSha()) || CollectionUtils.isEmpty(pull.getCommitStatuses())) {
             List<CommitStatus> commitStatuses = getCommitStatuses(lastCommitStatusObject);
             if (!CollectionUtils.isEmpty(commitStatuses)) {
                 pull.setCommitStatuses(commitStatuses);
