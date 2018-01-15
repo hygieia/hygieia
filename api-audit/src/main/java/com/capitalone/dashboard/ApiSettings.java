@@ -15,6 +15,7 @@ public class ApiSettings {
     @Value("${corsEnabled:false}")
     private boolean corsEnabled;
     private String corsWhitelist;
+    private String peerReviewContexts;
     private boolean logRequest;
     
     public String getKey() {
@@ -39,6 +40,14 @@ public class ApiSettings {
 
     public void setCorsWhitelist(String corsWhitelist) {
         this.corsWhitelist = corsWhitelist;
+    }
+
+    public String getPeerReviewContexts() {
+        return peerReviewContexts;
+    }
+
+    public void setPeerReviewContexts(String peerReviewContexts) {
+        this.peerReviewContexts = peerReviewContexts;
     }
 
     public boolean isLogRequest() {

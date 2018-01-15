@@ -70,7 +70,7 @@ public class GitHubCollectorTaskTest {
 
         when(gitHubSettings.getErrorThreshold()).thenReturn(1);
 
-        when(gitHubClient.getCommits(repo1, true)).thenReturn(getCommits());
+        when(gitHubClient.getCommits(repo1, true, new ArrayList<>())).thenReturn(getCommits());
 
         when(commitRepository.findByCollectorItemIdAndScmRevisionNumber(
                 repo1.getId(), "1")).thenReturn(null);
@@ -107,7 +107,7 @@ public class GitHubCollectorTaskTest {
 
         when(gitHubSettings.getErrorThreshold()).thenReturn(0);
 
-        when(gitHubClient.getCommits(repo1, true)).thenReturn(getCommits());
+        when(gitHubClient.getCommits(repo1, true, new ArrayList<>())).thenReturn(getCommits());
 
         when(commitRepository.findByCollectorItemIdAndScmRevisionNumber(
                 repo1.getId(), "1")).thenReturn(null);
@@ -143,7 +143,7 @@ public class GitHubCollectorTaskTest {
 
         when(gitHubSettings.getErrorThreshold()).thenReturn(1);
 
-        when(gitHubClient.getCommits(repo1, true)).thenReturn(getCommits());
+        when(gitHubClient.getCommits(repo1, true, new ArrayList<>())).thenReturn(getCommits());
         when(gitHubClient.getIssues(repo1, true)).thenReturn(getGitRequests());
 //  Need to correct - Topo - 7/31      when(gitHubClient.getPulls(repo1, "close",true)).thenReturn(getGitRequests());
 
@@ -181,7 +181,7 @@ public class GitHubCollectorTaskTest {
 
         when(gitHubSettings.getErrorThreshold()).thenReturn(1);
 
-        when(gitHubClient.getCommits(repo1, true)).thenReturn(getCommits());
+        when(gitHubClient.getCommits(repo1, true, new ArrayList<>())).thenReturn(getCommits());
 
         when(commitRepository.findByCollectorItemIdAndScmRevisionNumber(
                 repo1.getId(), "1")).thenReturn(null);
@@ -223,12 +223,9 @@ public class GitHubCollectorTaskTest {
         gitRequest.setScmUrl("http://testcurrenturl");
         gitRequest.setScmBranch("master");
         gitRequest.setScmRevisionNumber("1");
-        gitRequest.setScmParentRevisionNumbers(Collections.singletonList("2"));
         gitRequest.setScmAuthor("author");
         gitRequest.setScmCommitLog("This is a test commit");
         gitRequest.setScmCommitTimestamp(System.currentTimeMillis());
-        gitRequest.setNumberOfChanges(1);
-        gitRequest.setType(CommitType.New);
         gitRequests.add(gitRequest);
         return gitRequests;
     }

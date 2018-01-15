@@ -44,10 +44,6 @@
 
         function processLastRequestResponse(lastRequest) {
             // if we already have made a request, just get the delta
-            if (lastRequest) {
-                dateBegins = lastRequest.timestamp;
-            }
-
             pipelineData
                 .commits(dateBegins, nowTimestamp, collectorItemId)
                 .then(function (response) {

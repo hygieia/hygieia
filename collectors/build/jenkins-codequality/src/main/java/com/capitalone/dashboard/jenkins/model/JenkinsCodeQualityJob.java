@@ -8,10 +8,14 @@ public class JenkinsCodeQualityJob extends CollectorItem {
 
     private static final String JOB_NAME = "jobName";
     private static final String JENKINS_SERVER = "jenkinsServer";
+    public static final String INSTANCE_URL = "instanceUrl";
+    public static final String JOB_URL = "jobUrl";
 
     public JenkinsCodeQualityJob(Builder builder) {
         this.getOptions().put(JOB_NAME, builder.jobName);
         this.getOptions().put(JENKINS_SERVER, builder.jenkinsServer);
+        this.getOptions().put(INSTANCE_URL, builder.jenkinsServer);
+        this.getOptions().put(JOB_URL, builder.jobName);
         this.setCollectorId(builder.collectorId);
         this.setNiceName(builder.jobName);
         this.setDescription(builder.description);

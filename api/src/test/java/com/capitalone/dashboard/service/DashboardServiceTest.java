@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.bson.types.ObjectId;
 import org.junit.Test;
@@ -28,6 +30,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import com.capitalone.dashboard.auth.exceptions.UserNotFoundException;
@@ -669,6 +674,25 @@ public class DashboardServiceTest {
 
         verify(dashboardRepository).save(d);
     }
+
+    @Test
+    public void deleteWidget() {
+        ObjectId widgetId = ObjectId.get();
+        ObjectId configItemBusServId = ObjectId.get();
+        ObjectId configItemBusAppId = ObjectId.get();
+        ObjectId compId = ObjectId.get();
+        Dashboard d = makeTeamDashboard("template", "title", "appName", "amit",configItemBusServId, configItemBusAppId);
+        d.getWidgets().add(makeWidget(widgetId, "existing"));
+        Widget expected = makeWidget(widgetId, "updated");
+
+        Component c = new Component();
+        c.setId(compId);
+
+        when(componentRepository.findOne(compId)).thenReturn(c);
+        dashboardService.deleteWidget(d, expected,compId);
+        verify(componentRepository, times(1)).save(any(Component.class));
+    }
+
     
     @Test
     public void updateOwners_empty_owner_set() {
@@ -770,6 +794,23 @@ public class DashboardServiceTest {
         when(dashboardRepository.findOne(id)).thenReturn(myDashboard);
         when(dashboardService.update(myDashboard)).thenReturn(myDashboard);
         assertNotNull(dashboardService.updateDashboardWidgets(id,dashboardRequest));
+    }
+
+
+    @Test
+    public void getDashboardByTitleWithFilter() throws HygieiaException{
+        myDashboard = makeTeamDashboard("template", "title", "appName", "amit",null, null, "comp1", "comp2");
+        Page<Dashboard> pagedDashboards = new PageImpl<Dashboard>(Stream.of(myDashboard).collect(Collectors.toList()));
+        when(dashboardRepository.findAllByTitleContainingIgnoreCase(any(String.class),any(Pageable.class) )).thenReturn(pagedDashboards);
+        assertNotNull(dashboardService.getDashboardByTitleWithFilter("title",null));
+    }
+
+    @Test
+    public void getAllDashboardsByTitleCount() throws HygieiaException{
+        myDashboard = makeTeamDashboard("template", "title", "appName", "amit",null, null, "comp1", "comp2");
+        Page<Dashboard> pagedDashboards = new PageImpl<Dashboard>(Stream.of(myDashboard).collect(Collectors.toList()));
+        when(dashboardRepository.findAllByTitleContainingIgnoreCase(any(String.class))).thenReturn(Stream.of(myDashboard).collect(Collectors.toList()));
+        assertEquals(new Integer(dashboardService.getAllDashboardsByTitleCount("title")),new Integer(1));
     }
 
     private Dashboard makeTeamDashboard(String template, String title, String appName, String owner,ObjectId configItemBusServId,ObjectId configItemBusAppId, String... compNames) {

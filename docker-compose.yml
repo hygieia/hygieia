@@ -344,3 +344,19 @@ hygieia-artifactory-artifact-collector:
 #  - ARTIFACTORY_REPO=prerelease,release
 # Artifactory REST endpoint
 #  - ARTIFACTORY_ENDPOINT=artifactory/
+
+hygieia-appdynamics-collector:
+  image: hygieia-appdynamics-collector:latest
+  container_name: hygieia-appdynamics
+  volumes:
+  - ./logs:/hygieia/logs
+  links:
+  - mongodb:mongo
+  - hygieia-api
+# place any values you want to change in docker-compose.override.yml
+#  environment:
+#  - APPDYNAMICS_INSTANCE_URL=http://appdynamics
+#  - APPDYNAMICS_USERNAME=username
+#  - APPDYNAMICS_PASSWORD=password
+#  - APPDYNAMICS_DASHBOARD_URL=http://appdynamics/controller/#/location=APP_DASHBOARD&timeRange=last_15_minutes.BEFORE_NOW.-1.-1.15&application=%s&dashboardMode=force
+#  - APPDYNAMICS_CRON='-1 * * * * *'

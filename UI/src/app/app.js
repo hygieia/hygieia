@@ -46,7 +46,8 @@ var localStorageSupported = (function () {
         'validation.match',
         'as.sortable',
         'ui.select',
-        'angular-jwt'
+        'angular-jwt',
+        'angularUtils.directives.dirPagination'
     ])
 
         .config(['$httpProvider', 'jwtOptionsProvider',
@@ -92,7 +93,12 @@ var localStorageSupported = (function () {
                 .state('site', {
                     url: '/',
                     controller: 'SiteController as ctrl',
-                    templateUrl: 'app/dashboard/views/site.html'
+                    templateUrl: 'app/dashboard/views/site.html',
+                    resolve: {
+                    	user: function (Session) {
+                    		return Session.updateSession();
+                    	}
+                    }
                 })
 
                 .state('signup', {

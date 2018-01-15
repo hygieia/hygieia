@@ -17,6 +17,6 @@ public class SonarClientSelector {
     }
 
     public SonarClient getSonarClient(Double version) {
-        return ((version == null) || (version < 6.0)) ? sonarClient : sonar6Client;
+        return ((version == null) || (version < 6.3)) ? sonarClient : sonar6Client;
     }
 }

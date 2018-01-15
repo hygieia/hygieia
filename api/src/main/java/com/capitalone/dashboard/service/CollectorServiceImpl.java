@@ -56,7 +56,6 @@ public class CollectorServiceImpl implements CollectorService {
     @Override
     public Page<CollectorItem> collectorItemsByTypeWithFilter(CollectorType collectorType, String descriptionFilter, Pageable pageable) {
         List<Collector> collectors = collectorRepository.findByCollectorType(collectorType);
-
         List<ObjectId> collectorIds = Lists.newArrayList(Iterables.transform(collectors, new ToCollectorId()));
         Page<CollectorItem> collectorItems = null;
         String niceName = "";
@@ -64,11 +63,13 @@ public class CollectorServiceImpl implements CollectorService {
         List<String> l= findJobNameAndNiceName(descriptionFilter);
         if (!l.isEmpty()){
             niceName =  l.get(0).trim();
-            if(l.size()>1)
-            jobName = l.get(1).trim();
+            if(l.size()>1){
+                jobName =  findIndex(descriptionFilter);
+            }
         }
-        if(!niceName.isEmpty()){
+        if(!niceName.isEmpty() && collectorType == CollectorType.Build){
            collectorItems = collectorItemRepository.findByCollectorIdInAndDescriptionContainingAndNiceNameContainingAllIgnoreCase(collectorIds, jobName,niceName, pageable);
+            removeJobUrlAndInstanceUrl(collectorItems);
         }else{
            collectorItems = collectorItemRepository.findByCollectorIdInAndDescriptionContainingIgnoreCase(collectorIds, descriptionFilter, pageable);
         }
@@ -79,11 +80,26 @@ public class CollectorServiceImpl implements CollectorService {
         return collectorItems;
     }
 
+    // method to remove jobUrl and instanceUrl from build collector items.
+    private Page<CollectorItem> removeJobUrlAndInstanceUrl(Page<CollectorItem> collectorItems) {
+        for (CollectorItem cItem : collectorItems) {
+            cItem.getOptions().remove("jobUrl");
+            cItem.getOptions().remove("instanceUrl");
+        }
+        return collectorItems;
+    }
+
     private List<String> findJobNameAndNiceName(String descriptionFilter){
         if(descriptionFilter.contains(":"))
-          return  Stream.of(descriptionFilter.split(":"))
+          return  Stream.of(descriptionFilter.split(":")).map(String::trim)
                             .collect(Collectors.toList());
         return new ArrayList<>();
+    }
+
+
+    private static String findIndex(String descriptionFilter){
+        return descriptionFilter.substring(descriptionFilter.indexOf(":")+1,descriptionFilter.length()).trim();
+
     }
 
     /**
@@ -141,7 +157,6 @@ public class CollectorServiceImpl implements CollectorService {
         if (!CollectionUtils.isEmpty(existing)) {
             item.setId(existing.get(0).getId());   //
         }
-
         return collectorItemRepository.save(item);
     }
 

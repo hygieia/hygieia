@@ -319,7 +319,7 @@ public class FeatureControllerTest {
 				mockV1Collector.getLastExecuted());
 
 		when(featureService.getFeatureEpicEstimates(mockComponentId, testTeamId, testProjectId, Optional.empty(), Optional.empty())).thenReturn(response);
-		mockMvc.perform(get("/feature/" + testTeamId + "?component=" + mockComponentId.toString() + "&projectId=" + testProjectId))
+		mockMvc.perform(get("/feature?component=" + mockComponentId.toString() + "&projectId=" + testProjectId + "&teamId=" + testTeamId))
 				.andExpect(status().isOk());
 	}
 
@@ -336,8 +336,8 @@ public class FeatureControllerTest {
 
 		when(featureService.getFeatureEpicEstimates(mockComponentId, testTeamId, testProjectId, Optional.empty(), Optional.empty())).thenReturn(response);
 		mockMvc.perform(
-				get("/feature/estimates/super/" + testTeamId + "?component="
-						+ mockComponentId.toString() + "&projectId=" + testProjectId)).andExpect(status().isOk());
+				get("/feature/estimates/super?component="
+						+ mockComponentId.toString() + "&projectId=" + testProjectId + "&teamId=" + testTeamId)).andExpect(status().isOk());
 	}
 
 	@Test
@@ -353,8 +353,8 @@ public class FeatureControllerTest {
 
 		when(featureService.getFeatureEpicEstimates(mockComponentId, testTeamId, testProjectId, Optional.empty(), Optional.empty())).thenReturn(response);
 		mockMvc.perform(
-				get("/feature/estimates/super/" + testTeamId + "?component="
-						+ mockComponentId.toString() + "&projectId=" + testProjectId))
+				get("/feature/estimates/super/?component="
+						+ mockComponentId.toString() + "&projectId=" + testProjectId + "&teamId=" + testTeamId))
 				.andExpect(jsonPath("$.result[0].sEpicNumber", is(mockV1Feature.getsEpicNumber())))
 				.andExpect(jsonPath("$.result[0].sEstimate", is(mockV1Feature.getsEstimate())))
 				.andExpect(jsonPath("$.result", hasSize(3)));

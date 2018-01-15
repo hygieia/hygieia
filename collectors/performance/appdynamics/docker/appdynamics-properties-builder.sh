@@ -53,12 +53,15 @@ logging.file=${APPDYNAMICS_LOGFILE:-./logs/appd-collector.log}
 appdynamics.cron=${APPDYNAMICS_CRON:-1 * * * * *}
 
 #Appdynamics server (required)
-appdynamics.instanceUrls=${APPDYNAMICS_INSTANCE_URLS:-http://appdynamics}
+appdynamics.instanceUrl=${APPDYNAMICS_INSTANCE_URL:-http://appdynamics}
 
 #Appdynamics Username (required)
 appdynamics.username=${APPDYNAMICS_USERNAME} # (if multi-tenancy APPD_USERNAME@TENANT)
 
 #Appdynamics Password (required)
 appdynamics.password=${APPDYNAMICS_PASSWORD}
+
+#Appdynamics Dashboard (required)
+appdynamics.dashboardUrl=${APPDYNAMICS_DASHBOARD_URL:-'http://appdynamics/controller/#/location=APP_DASHBOARD&timeRange=last_15_minutes.BEFORE_NOW.-1.-1.15&application=%s&dashboardMode=force'}
 
 EOF

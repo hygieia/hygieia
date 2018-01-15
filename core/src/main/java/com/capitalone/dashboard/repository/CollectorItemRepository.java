@@ -23,4 +23,7 @@ public interface CollectorItemRepository extends BaseCollectorItemRepository<Col
     CollectorItem findByCollectorIdNiceNameAndJobName(ObjectId collectorId, String niceName, String jobName);
     @Query(value="{'options.projectId' : ?2, 'niceName' : ?1, 'collectorId' : ?0}")
     CollectorItem findByCollectorIdNiceNameAndProjectId(ObjectId collectorId, String niceName, String projectId);
+
+    @Query(value="{ 'collectorId' : ?0, options.url : {$regex : '^?1$', $options: 'i'}, options.branch : {$regex : '^?2$', $options: 'i'}, enabled : ?3}")
+    CollectorItem findRepoByUrlAndBranch(ObjectId collectorId, String url, String branch, boolean enabled);
 }

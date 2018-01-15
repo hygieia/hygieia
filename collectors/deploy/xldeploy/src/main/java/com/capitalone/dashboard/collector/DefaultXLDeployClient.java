@@ -243,6 +243,7 @@ public class DefaultXLDeployClient implements XLDeployClient {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", authHeader);
+        headers.set("Accept", "application/xml");
         return headers;
     }
     
