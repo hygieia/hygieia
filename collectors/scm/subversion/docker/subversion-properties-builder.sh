@@ -13,7 +13,7 @@ then
         #for testing locally
         PROP_FILE=application.properties
 else 
-	PROP_FILE=hygieia-subversion-collector.properties
+	PROP_FILE=config/hygieia-subversion-collector.properties
 fi
   
 if [ "$MONGO_PORT" != "" ]; then
