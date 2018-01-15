@@ -13,7 +13,7 @@ then
         #for testing locally
         PROP_FILE=application.properties
 else 
-	PROP_FILE=hygieia-artifactory-artifact-collector.properties
+	PROP_FILE=config/hygieia-artifactory-artifact-collector.properties
 fi
   
 if [ "$MONGO_PORT" != "" ]; then
