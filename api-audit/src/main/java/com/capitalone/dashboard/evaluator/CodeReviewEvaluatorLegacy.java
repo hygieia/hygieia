@@ -2,13 +2,13 @@ package com.capitalone.dashboard.evaluator;
 
 import com.capitalone.dashboard.ApiSettings;
 import com.capitalone.dashboard.common.CommonCodeReview;
-import com.capitalone.dashboard.model.AuditStatus;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.repository.CustomRepositoryQuery;
 import com.capitalone.dashboard.response.CodeReviewAuditResponse;
+import com.capitalone.dashboard.status.CodeReviewAuditStatus;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +21,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import static com.capitalone.dashboard.status.CodeReviewAuditStatus.COLLECTOR_ITEM_ERROR;
 
 @Component
 public class CodeReviewEvaluatorLegacy extends LegacyEvaluator{
@@ -43,14 +45,14 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator{
 
     /**
      * Return an empty response in error situation
-     * @param repoItem
-     * @param scmBranch
-     * @param scmUrl
-     * @return
+     * @param repoItem the repo item
+     * @param scmBranch the scrm branch
+     * @param scmUrl the scm url
+     * @return code review audit response
      */
     private CodeReviewAuditResponse getErrorResponse(CollectorItem repoItem, String scmBranch, String scmUrl) {
         CodeReviewAuditResponse noPRsCodeReviewAuditResponse = new CodeReviewAuditResponse();
-        noPRsCodeReviewAuditResponse.addAuditStatus(AuditStatus.COLLECTOR_ITEM_ERROR);
+        noPRsCodeReviewAuditResponse.addAuditStatus(COLLECTOR_ITEM_ERROR);
 
         noPRsCodeReviewAuditResponse.setLastUpdated(repoItem.getLastUpdated());
         noPRsCodeReviewAuditResponse.setScmBranch(scmBranch);
@@ -66,7 +68,6 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator{
 
         if (repoItem == null) {
             CodeReviewAuditResponse codeReviewAuditResponse = new CodeReviewAuditResponse();
-            codeReviewAuditResponse.addAuditStatus(AuditStatus.REPO_NOT_CONFIGURED);
             allPeerReviews.add(codeReviewAuditResponse);
             return allPeerReviews;
         }
@@ -95,7 +96,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator{
 
         if (CollectionUtils.isEmpty(pullRequests)) {
             CodeReviewAuditResponse noPRsCodeReviewAuditResponse = new CodeReviewAuditResponse();
-            noPRsCodeReviewAuditResponse.addAuditStatus(AuditStatus.NO_PULL_REQ_FOR_DATE_RANGE);
+            noPRsCodeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.NO_PULL_REQ_FOR_DATE_RANGE);
             allPeerReviews.add(noPRsCodeReviewAuditResponse);
         }
 
@@ -114,13 +115,13 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator{
             }
             List<Commit> commitsRelatedToPr = pr.getCommits();
             commitsRelatedToPr.sort(Comparator.comparing(e -> (e.getScmCommitTimestamp())));
-            codeReviewAuditResponse.addAuditStatus(pr.getUserId().equalsIgnoreCase(mergeCommit.getScmAuthorLogin()) ? AuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER : AuditStatus.COMMITAUTHOR_NE_MERGECOMMITER);
+            codeReviewAuditResponse.addAuditStatus(pr.getUserId().equalsIgnoreCase(mergeCommit.getScmAuthorLogin()) ? CodeReviewAuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER : CodeReviewAuditStatus.COMMITAUTHOR_NE_MERGECOMMITER);
             codeReviewAuditResponse.setCommits(commitsRelatedToPr);
             boolean peerReviewed = CommonCodeReview.computePeerReviewStatus(pr, settings, codeReviewAuditResponse);
-            codeReviewAuditResponse.addAuditStatus(peerReviewed ? AuditStatus.PULLREQ_REVIEWED_BY_PEER : AuditStatus.PULLREQ_NOT_PEER_REVIEWED);
+            codeReviewAuditResponse.addAuditStatus(peerReviewed ? CodeReviewAuditStatus.PULLREQ_REVIEWED_BY_PEER : CodeReviewAuditStatus.PULLREQ_NOT_PEER_REVIEWED);
             String sourceRepo = pr.getSourceRepo();
             String targetRepo = pr.getTargetRepo();
-            codeReviewAuditResponse.addAuditStatus(sourceRepo == null ? AuditStatus.GIT_FORK_STRATEGY : sourceRepo.equalsIgnoreCase(targetRepo) ? AuditStatus.GIT_BRANCH_STRATEGY : AuditStatus.GIT_FORK_STRATEGY);
+            codeReviewAuditResponse.addAuditStatus(sourceRepo == null ? CodeReviewAuditStatus.GIT_FORK_STRATEGY : sourceRepo.equalsIgnoreCase(targetRepo) ? CodeReviewAuditStatus.GIT_BRANCH_STRATEGY : CodeReviewAuditStatus.GIT_FORK_STRATEGY);
             allPeerReviews.add(codeReviewAuditResponse);
         });
 
@@ -130,7 +131,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator{
         commits.forEach(commit -> {
             if (StringUtils.isEmpty(commit.getPullNumber()) && commit.getType() == CommitType.New) {
                 commitsNotDirectlyTiedToPr.add(commit);
-                codeReviewAuditResponse.addAuditStatus(commit.isFirstEverCommit() ? AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : AuditStatus.DIRECT_COMMITS_TO_BASE);
+                codeReviewAuditResponse.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
             }
         });
         if (!commitsNotDirectlyTiedToPr.isEmpty()) {
@@ -142,7 +143,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator{
         if (!CollectionUtils.isEmpty(pullRequests)) {
             if (allPeerReviews.isEmpty()) {
                 CodeReviewAuditResponse prsButNoCommitsInRangeCodeReviewAuditResponse = new CodeReviewAuditResponse();
-                prsButNoCommitsInRangeCodeReviewAuditResponse.addAuditStatus(AuditStatus.NO_PULL_REQ_FOR_DATE_RANGE);
+                prsButNoCommitsInRangeCodeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.NO_PULL_REQ_FOR_DATE_RANGE);
                 allPeerReviews.add(prsButNoCommitsInRangeCodeReviewAuditResponse);
             }
         }

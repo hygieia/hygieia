@@ -1,7 +1,6 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.ApiSettings;
-import com.capitalone.dashboard.model.AuditStatus;
 import com.capitalone.dashboard.model.CodeQuality;
 import com.capitalone.dashboard.model.Comment;
 import com.capitalone.dashboard.model.Commit;
@@ -15,6 +14,7 @@ import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
 import com.capitalone.dashboard.request.CodeReviewAuditRequest;
 import com.capitalone.dashboard.response.CodeQualityAuditResponse;
+import com.capitalone.dashboard.status.CodeQualityAuditStatus;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -195,7 +195,7 @@ public class DashboardAuditServiceTest {
     	quality.setName("sampleProject");
     	qualities.add(quality);
     	
-    	response.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_OK);
+    	response.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_AUDIT_OK);
     	responses.add(response);
     	
     	when(codeQualityRepository.findByNameAndVersionOrderByTimestampDesc(artifactGroup+ ":" + artifactName,artifactVersion)).thenReturn(qualities);

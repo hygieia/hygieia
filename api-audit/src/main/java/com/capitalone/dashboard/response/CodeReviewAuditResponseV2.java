@@ -2,13 +2,14 @@ package com.capitalone.dashboard.response;
 
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitRequest;
+import com.capitalone.dashboard.status.CodeReviewAuditStatus;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CodeReviewAuditResponseV2 extends AuditReviewResponse {
+public class CodeReviewAuditResponseV2 extends AuditReviewResponse<CodeReviewAuditStatus> {
 
-    public static class PullRequestAudit extends AuditReviewResponse{
+    public static class PullRequestAudit extends AuditReviewResponse<CodeReviewAuditStatus>{
         GitRequest pullRequest;
 
         public GitRequest getPullRequest() {
@@ -19,8 +20,8 @@ public class CodeReviewAuditResponseV2 extends AuditReviewResponse {
             this.pullRequest = pullRequest;
         }
     }
-    protected String scmUrl;
-    protected String scmBranch;
+    private String scmUrl;
+    private String scmBranch;
     private List<Commit> directCommits = new ArrayList<>();
     private List<PullRequestAudit> pullRequests = new ArrayList<>();
 

@@ -1,8 +1,10 @@
 package com.capitalone.dashboard.response;
 
+import com.capitalone.dashboard.status.DashboardAuditStatus;
+
 import java.util.Collection;
 
-public class DashboardReviewResponse extends AuditReviewResponse {
+public class DashboardReviewResponse extends AuditReviewResponse <DashboardAuditStatus> {
     private String dashboardTitle;
     private String businessService;
     private String businessApplication;
@@ -13,7 +15,9 @@ public class DashboardReviewResponse extends AuditReviewResponse {
 
 	private Collection<CodeQualityAuditResponse> codeQuality;
 
-	private Collection<TestResultsResponse> testResult;
+	private Collection<TestResultsAuditResponse> regresionTestResult;
+
+	private Collection<PerformanceTestAuditResponse> performanceTestResult;
 
 	public String getBusinessService() {
 		return businessService;
@@ -63,11 +67,19 @@ public class DashboardReviewResponse extends AuditReviewResponse {
 		this.codeQuality = codeQuality;
 	}
 
-	public Collection<TestResultsResponse> getTestResult() {
-		return testResult;
+	public Collection<TestResultsAuditResponse> getRegresionTestResult() {
+		return regresionTestResult;
 	}
 
-	public void setTestResult(Collection<TestResultsResponse> testResult) {
-		this.testResult = testResult;
+	public void setRegresionTestResult(Collection<TestResultsAuditResponse> regresionTestResult) {
+		this.regresionTestResult = regresionTestResult;
+	}
+
+	public Collection<PerformanceTestAuditResponse> getPerformanceTestResult() {
+		return performanceTestResult;
+	}
+
+	public void setPerformanceTestResult(Collection<PerformanceTestAuditResponse> performanceTestResult) {
+		this.performanceTestResult = performanceTestResult;
 	}
 }

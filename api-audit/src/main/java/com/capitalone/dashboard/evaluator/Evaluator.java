@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public abstract class Evaluator<T> {
 
@@ -27,18 +28,18 @@ public abstract class Evaluator<T> {
     protected ApiSettings settings;
 
 
-    public  abstract Collection<T> evaluate(Dashboard dashboard, long beginDate, long endDate, Collection<?> data) throws AuditException;
+    public  abstract Collection<T> evaluate(Dashboard dashboard, long beginDate, long endDate, Map<?, ?> data) throws AuditException;
 
 
-    public abstract T evaluate(CollectorItem collectorItem, long beginDate, long endDate, Collection<?> data) throws AuditException, HygieiaException;
+    public abstract T evaluate(CollectorItem collectorItem, long beginDate, long endDate, Map<?, ?> data) throws AuditException, HygieiaException;
 
     /**
-     * @param dashboard
-     * @param widgetName
-     * @param collectorType
+     * @param dashboard the dashboard
+     * @param widgetName the widget name
+     * @param collectorType the collector type
      * @return list of @CollectorItem for a given dashboard, widget name and collector type
      */
-    public List<CollectorItem> getCollectorItems(Dashboard dashboard, String widgetName, CollectorType collectorType) {
+    List<CollectorItem> getCollectorItems(Dashboard dashboard, String widgetName, CollectorType collectorType) {
         List<Widget> widgets = dashboard.getWidgets();
         ObjectId componentId = widgets.stream().filter(widget -> widget.getName().equalsIgnoreCase(widgetName)).findFirst().map(Widget::getComponentId).orElse(null);
 

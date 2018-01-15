@@ -2,15 +2,16 @@ package com.capitalone.dashboard.response;
 
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitRequest;
+import com.capitalone.dashboard.status.CodeReviewAuditStatus;
 
 import java.util.List;
 
-public class CodeReviewAuditResponse extends AuditReviewResponse {
+public class CodeReviewAuditResponse extends AuditReviewResponse<CodeReviewAuditStatus> {
     private GitRequest pullRequest;
     private List<Commit> commits;
     private List<Commit> directCommits;
-    protected String scmUrl;
-    protected String scmBranch;
+    private String scmUrl;
+    private String scmBranch;
 
     public GitRequest getPullRequest() {
         return pullRequest;

@@ -1,10 +1,11 @@
 package com.capitalone.dashboard.response;
 
 import com.capitalone.dashboard.model.CollectorItemConfigHistory;
+import com.capitalone.dashboard.status.BuildAuditStatus;
 
 import java.util.List;
 
-public class BuildAuditResponse extends AuditReviewResponse {
+public class BuildAuditResponse extends AuditReviewResponse<BuildAuditStatus> {
     private String environment;
     private List<CollectorItemConfigHistory> configHistory;
 

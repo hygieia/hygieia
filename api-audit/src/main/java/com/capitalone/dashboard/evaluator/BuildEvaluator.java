@@ -1,180 +1,148 @@
 package com.capitalone.dashboard.evaluator;
 
-import com.capitalone.dashboard.model.AuditStatus;
+import com.capitalone.dashboard.common.CommonCodeReview;
+import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.Build;
-import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorItemConfigHistory;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.GitRequest;
-import com.capitalone.dashboard.model.JobCollectorItem;
 import com.capitalone.dashboard.model.RepoBranch;
 import com.capitalone.dashboard.repository.BuildRepository;
 import com.capitalone.dashboard.repository.CollItemConfigHistoryRepository;
-import com.capitalone.dashboard.repository.CollectorRepository;
-import com.capitalone.dashboard.repository.JobRepository;
+import com.capitalone.dashboard.repository.CustomRepositoryQuery;
 import com.capitalone.dashboard.response.BuildAuditResponse;
-import com.capitalone.dashboard.response.GenericAuditResponse;
+import com.capitalone.dashboard.status.BuildAuditStatus;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections4.SetUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static com.capitalone.dashboard.response.GenericAuditResponse.JOB_REVIEW;
 
 @Component
 public class BuildEvaluator extends Evaluator<BuildAuditResponse> {
 
     private final BuildRepository buildRepository;
-    private final JobRepository jobRepository;
-    private final CollectorRepository collectorRepository;
     private final CollItemConfigHistoryRepository collItemConfigHistoryRepository;
+    private final CustomRepositoryQuery customRepositoryQuery;
 
     @Autowired
-    public BuildEvaluator(BuildRepository buildRepository, JobRepository jobRepository, CollectorRepository collectorRepository, CollItemConfigHistoryRepository collItemConfigHistoryRepository) {
+    public BuildEvaluator(BuildRepository buildRepository, CollItemConfigHistoryRepository collItemConfigHistoryRepository, CustomRepositoryQuery customRepositoryQuery) {
         this.buildRepository = buildRepository;
-        this.jobRepository = jobRepository;
-        this.collectorRepository = collectorRepository;
         this.collItemConfigHistoryRepository = collItemConfigHistoryRepository;
+        this.customRepositoryQuery = customRepositoryQuery;
     }
 
 
     @Override
-    public Collection<BuildAuditResponse> evaluate(Dashboard dashboard, long beginDate, long endDate, Collection<?> data)  {
-        return null;
-    }
-
-    @Override
-    public BuildAuditResponse evaluate(CollectorItem collectorItem, long beginDate, long endDate, Collection<?> data) {
-        return null;
-    }
-
-
-    /**
-     * Calculates Audit Response for a given dashboard
-     *
-     * @param dashboard
-     * @param beginDt
-     * @param endDt
-     * @param pullRequests
-     * @return @GenericAuditResponse for the build job for a given dashboard, begin and end date
-     */
-    public GenericAuditResponse getBuildJobAuditResponse(Dashboard dashboard, long beginDt, long endDt, List<GitRequest> pullRequests) {
-        GenericAuditResponse genericAuditResponse = new GenericAuditResponse();
+    public Collection<BuildAuditResponse> evaluate(Dashboard dashboard, long beginDate, long endDate, Map<?, ?> data) throws AuditException {
         List<CollectorItem> buildItems = this.getCollectorItems(dashboard, "build", CollectorType.Build);
         List<CollectorItem> repoItems = this.getCollectorItems(dashboard, "repo", CollectorType.SCM);
 
-        List<CollectorItemConfigHistory> jobConfigHists = null;
-
         if (CollectionUtils.isEmpty(buildItems)) {
-            genericAuditResponse.addAuditStatus(AuditStatus.DASHBOARD_BUILD_NOT_CONFIGURED);
-            return genericAuditResponse;
+            throw new AuditException("No code repository configured", AuditException.NO_COLLECTOR_ITEM_CONFIGURED);
         }
 
-        genericAuditResponse.addAuditStatus(AuditStatus.DASHBOARD_BUILD_CONFIGURED);
+        Map<String, List<CollectorItem>> repoData = new HashMap<>();
+        repoData.put("repos", repoItems);
+        return buildItems.stream().map(item -> evaluate(item, beginDate, endDate, repoData)).collect(Collectors.toList());
+    }
 
-        CollectorItem buildItem = buildItems.get(0);
+    @Override
+    public BuildAuditResponse evaluate(CollectorItem collectorItem, long beginDate, long endDate, Map<?, ?> data) {
+        List<CollectorItem> repoItems = (List<CollectorItem>) data.get("repos");
+        return getBuildJobAuditResponse(collectorItem, beginDate, endDate, repoItems);
+    }
 
-        String jobUrl = (String) buildItem.getOptions().get("jobUrl");
-        String jobName = (String) buildItem.getOptions().get("jobName");
 
-        if (jobUrl != null && jobName != null) {
-            BuildAuditResponse buildAuditResponse = this.getBuildJobReviewResponse(jobUrl, jobName, beginDt, endDt);
-            jobConfigHists = buildAuditResponse.getConfigHistory();
-            genericAuditResponse.addResponse(JOB_REVIEW, buildAuditResponse);
+    private class ParsedRepo {
+        String url;
+        String branch;
+
+        public ParsedRepo(String url, String branch) {
+            this.url = new GitHubParsedUrl(url).getUrl();
+            this.branch = branch;
         }
 
-        if (CollectionUtils.isEmpty(repoItems)) {
-            genericAuditResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_NOT_CONFIGURED);
-        } else {
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
+
+        public String getBranch() {
+            return branch;
+        }
+
+        public void setBranch(String branch) {
+            this.branch = branch;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ParsedRepo that = (ParsedRepo) o;
+            return Objects.equals(getUrl(), that.getUrl()) &&
+                    Objects.equals(getBranch(), that.getBranch());
+        }
+
+        @Override
+        public int hashCode() {
+
+            return Objects.hash(getUrl(), getBranch());
+        }
+    }
+    /**
+     * Calculates Audit Response for a given dashboard
+     *
+     * @param beginDate
+     * @param endDate
+     * @return BuildAuditResponse for the build job for a given dashboard, begin and end date
+     */
+    private BuildAuditResponse getBuildJobAuditResponse(CollectorItem buildItem, long beginDate, long endDate, List<CollectorItem> repoItems) {
+
+
+        BuildAuditResponse buildAuditResponse = new BuildAuditResponse();
+        List<CollectorItemConfigHistory> jobConfigHists = collItemConfigHistoryRepository.findByCollectorItemIdAndTimestampBetweenOrderByTimestampDesc(buildItem.getId(), beginDate - 1, endDate + 1);
+
+        //Check Jenkins Job config log to validate pr author is not modifying the Prod Job
+        //since beginDate and endDate are the same column and between is excluding the edge values, we need to subtract/add a millisec
+        buildAuditResponse.setConfigHistory(jobConfigHists);
+
+
+        if (!CollectionUtils.isEmpty(repoItems)) {
             Build build = buildRepository.findTop1ByCollectorItemIdOrderByTimestampDesc(buildItem.getId());
             if (build != null) {
                 List<RepoBranch> repoBranches = build.getCodeRepos();
-                if (!CollectionUtils.isEmpty(repoBranches)) {
-                    RepoBranch repoBranch = repoBranches.get(0);
-                    String buildWidgetBranch = repoBranch.getBranch();
-                    String buildWidgetUrl = repoBranch.getUrl();
 
-                    boolean matchFound = false;
-                    for (CollectorItem repoItem : repoItems) {
-                        String aRepoItembranch = (String) repoItem.getOptions().get("branch");
-                        String aRepoItemUrl = (String) repoItem.getOptions().get("url");
-                        GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(aRepoItemUrl);
-                        aRepoItemUrl = gitHubParsed.getUrl();
+                List<ParsedRepo> codeRepos = repoItems.stream().map(r -> new ParsedRepo((String)r.getOptions().get("url"), (String)r.getOptions().get("branch"))).collect(Collectors.toList());
+                List<ParsedRepo> buildRepos = repoBranches.stream().map(b -> new ParsedRepo(b.getUrl(), b.getBranch())).collect(Collectors.toList());
 
-                        if (aRepoItembranch != null && aRepoItemUrl != null
-                                && buildWidgetBranch != null && buildWidgetUrl != null && aRepoItembranch.equalsIgnoreCase(buildWidgetBranch) && aRepoItemUrl.equalsIgnoreCase(buildWidgetUrl)) {
-                            genericAuditResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_BUILD_VALID);
-                            matchFound = true;
-                            break;
-                        }
+                List<ParsedRepo> intersection =  codeRepos.stream().filter(buildRepos::contains).collect(Collectors.toList());
 
-                    }
-                    if (!matchFound) {
-                        genericAuditResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_BUILD_INVALID);
-                    }
-                }
-            }
-
-        }
-        if (!CollectionUtils.isEmpty(pullRequests) && !CollectionUtils.isEmpty(jobConfigHists)) {
-            Set<String> prAuthorsSet = pullRequests.stream().map(GitRequest::getUserId).collect(Collectors.toSet());
-            Set<String> configAuthorsSet = jobConfigHists.stream().map(CollectorItemConfigHistory::getUserID).collect(Collectors.toSet());
-            genericAuditResponse.addAuditStatus(!SetUtils.intersection(prAuthorsSet, configAuthorsSet).isEmpty() ? AuditStatus.DASHBOARD_REPO_PR_AUTHOR_EQ_BUILD_AUTHOR : AuditStatus.DASHBOARD_REPO_PR_AUTHOR_NE_BUILD_AUTHOR);
-        }
-
-        return genericAuditResponse;
-    }
-
-
-
-    private BuildAuditResponse getBuildJobReviewResponse(String jobUrl, String jobName, long beginDt, long endDt) {
-
-        BuildAuditResponse buildAuditResponse = new BuildAuditResponse();
-
-        Collector hudsonCollector = collectorRepository.findByName("Hudson");
-        JobCollectorItem collectorItem = jobRepository.findJobByJobUrl(hudsonCollector.getId(), jobUrl, jobName);
-
-        if (collectorItem == null) {
-            buildAuditResponse.addAuditStatus(AuditStatus.DASHBOARD_BUILD_NOT_CONFIGURED);
-            return buildAuditResponse;
-        }
-
-        if (!CollectionUtils.isEmpty(collectorItem.getErrors())) {
-            buildAuditResponse.addAuditStatus(AuditStatus.COLLECTOR_ITEM_ERROR);
-
-            buildAuditResponse.setLastUpdated(collectorItem.getLastUpdated());
-            buildAuditResponse.setErrorMessage(collectorItem.getErrors().get(0).getErrorMessage());
-            return buildAuditResponse;
-        }
-
-        //Segregation of Pipeline Environments
-        //Check Prod job URL to validate Prod deploy job in Enterprise Jenkins Prod folder
-        buildAuditResponse.setEnvironment(collectorItem.getEnvironment());
-
-        //Segregation of access to Pipeline Environments
-        //Check Jenkins Job config log to validate pr author is not modifying the Prod Job
-        //since beginDate and endDate are the same column and between is excluding the edge values, we need to subtract/add a millisec
-        buildAuditResponse.setConfigHistory(collItemConfigHistoryRepository.findByCollectorItemIdAndTimestampBetweenOrderByTimestampDesc(collectorItem.getId(), beginDt - 1, endDt + 1));
-
-        if ("PROD".equalsIgnoreCase(buildAuditResponse.getEnvironment())) {
-            if (jobUrl.toUpperCase(Locale.ENGLISH).contains("NON-PROD")) {
-                buildAuditResponse.addAuditStatus(AuditStatus.BUILD_JOB_IS_NON_PROD);
+                buildAuditResponse.addAuditStatus(CollectionUtils.isEmpty(intersection) ? BuildAuditStatus.BUILD_REPO_MISMATCH : BuildAuditStatus.BUILD_MATCHES_REPO);
             } else {
-                buildAuditResponse.addAuditStatus(AuditStatus.BUILD_JOB_IS_PROD);
+                buildAuditResponse.addAuditStatus(BuildAuditStatus.NO_BUILD_FOUND);
             }
-        } else {
-            buildAuditResponse.addAuditStatus(AuditStatus.BUILD_JOB_IS_NON_PROD);
         }
-
+        Set<String> codeAuthors = CommonCodeReview.getCodeAuthors(repoItems, beginDate, endDate, customRepositoryQuery);
+        List<String> overlap = jobConfigHists.stream().map(CollectorItemConfigHistory::getUserID).filter(codeAuthors::contains).collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(overlap)) {
+            buildAuditResponse.addAuditStatus(BuildAuditStatus.BUILD_AUTHOR_EQ_REPO_AUTHOR);
+        } else {
+            buildAuditResponse.addAuditStatus(BuildAuditStatus.BUILD_AUTHOR_NE_REPO_AUTHOR);
+        }
         return buildAuditResponse;
     }
+
 }

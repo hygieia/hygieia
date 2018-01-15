@@ -1,6 +1,6 @@
 package com.capitalone.dashboard.rest;
 
-import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.request.DashboardAuditRequest;
 import com.capitalone.dashboard.response.DashboardReviewResponse;
 import com.capitalone.dashboard.service.DashboardAuditService;
@@ -30,10 +30,10 @@ public class DashboardAuditController {
      *     - Check whether repo and build point to same repository
      * @param request incoming request
      * @return response entity
-     * @throws HygieiaException
+     * @throws AuditException audit exception
      */
     @RequestMapping(value = "/dashboardReview", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<DashboardReviewResponse> dashboardReview(@Valid DashboardAuditRequest request) throws HygieiaException {
+    public ResponseEntity<DashboardReviewResponse> dashboardReview(@Valid DashboardAuditRequest request) throws AuditException {
         DashboardReviewResponse dashboardReviewResponse = dashboardAuditService.getDashboardReviewResponse(request.getDashboardTitle(), request.getDashBoardType(),
                 request.getBusinessService(), request.getBusinessApplication(),
                 request.getBeginDate(), request.getEndDate(), request.getAuditTypes());

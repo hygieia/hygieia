@@ -1,26 +1,20 @@
 package com.capitalone.dashboard.response;
 
-import com.capitalone.dashboard.model.AuditStatus;
-
-import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
 
-public class AuditReviewResponse {
-    private Set<AuditStatus> auditStatuses = EnumSet.noneOf(AuditStatus.class);
+public class AuditReviewResponse<T> {
+    private Set<T> auditStatuses = new HashSet<>();
 
-    private String errorMessage = "";
+    private String errorMessage;
 
     private long lastUpdated;
 
-    public void addAuditStatus(AuditStatus status) {
+    public void addAuditStatus(T status) {
         auditStatuses.add(status);
     }
 
-    public void addAllAuditStatus(Set<AuditStatus> status) {
-        auditStatuses.addAll(status);
-    }
-
-    public Set<AuditStatus> getAuditStatuses() {
+    public Set<T> getAuditStatuses() {
         return auditStatuses;
     }
 

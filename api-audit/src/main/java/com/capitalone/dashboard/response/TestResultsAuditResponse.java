@@ -1,10 +1,11 @@
 package com.capitalone.dashboard.response;
 
 import com.capitalone.dashboard.model.TestCapability;
+import com.capitalone.dashboard.status.TestResultAuditStatus;
 
 import java.util.Collection;
 
-public class TestResultsResponse extends AuditReviewResponse  {
+public class TestResultsAuditResponse extends AuditReviewResponse<TestResultAuditStatus>  {
 	
 	 private Collection<TestCapability> testCapabilities;
 	 

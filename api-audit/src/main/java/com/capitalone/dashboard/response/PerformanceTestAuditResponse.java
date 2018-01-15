@@ -1,25 +1,15 @@
 package com.capitalone.dashboard.response;
 
-import com.capitalone.dashboard.model.AuditStatus;
 import com.capitalone.dashboard.model.PerfTest;
+import com.capitalone.dashboard.status.PerformanceTestAuditStatus;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class PerformaceTestAuditResponse {
+public class PerformanceTestAuditResponse extends AuditReviewResponse<PerformanceTestAuditStatus> {
 
-
-    private AuditStatus auditStatuses;
 
     private Collection<PerfTest> result = new ArrayList<>();
-
-    public AuditStatus getAuditStatuses() {
-        return auditStatuses;
-    }
-
-    public void setAuditStatuses(AuditStatus auditStatuses) {
-        this.auditStatuses = auditStatuses;
-    }
 
     public Collection<PerfTest> getResult() {
         return result;

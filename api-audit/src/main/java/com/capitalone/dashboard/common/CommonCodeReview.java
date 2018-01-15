@@ -1,12 +1,17 @@
 package com.capitalone.dashboard.common;
 
 import com.capitalone.dashboard.ApiSettings;
-import com.capitalone.dashboard.model.AuditStatus;
+import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.Comment;
+import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.CommitStatus;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.Review;
+import com.capitalone.dashboard.model.SCM;
+import com.capitalone.dashboard.repository.CustomRepositoryQuery;
 import com.capitalone.dashboard.response.AuditReviewResponse;
+import com.capitalone.dashboard.status.CodeReviewAuditStatus;
+import com.capitalone.dashboard.util.GitHubParsedUrl;
 import com.google.common.collect.Sets;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +30,7 @@ public class CommonCodeReview {
      * @param auditReviewResponse - audit review response
      * @return boolean fail or pass
      */
-    public static boolean computePeerReviewStatus(GitRequest pr, ApiSettings settings, AuditReviewResponse auditReviewResponse) {
+    public static boolean computePeerReviewStatus(GitRequest pr, ApiSettings settings,  AuditReviewResponse auditReviewResponse) {
         List<Review> reviews = pr.getReviews();
 
         List<CommitStatus> statuses = pr.getCommitStatuses();
@@ -43,20 +48,20 @@ public class CommonCodeReview {
                     String stateString = (status.getState() != null) ? status.getState().toLowerCase() : "unknown";
                     switch (stateString) {
                         case "pending":
-                            auditReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_PENDING);
+                            auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_LGTM_PENDING);
                             break;
 
                         case "error":
-                            auditReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_PENDING);
+                            auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_LGTM_PENDING);
                             break;
 
                         case "success":
                             lgtmStateResult = true;
-                            auditReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_SUCCESS);
+                            auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_LGTM_SUCCESS);
                             break;
 
                         default:
-                            auditReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_UNKNOWN);
+                            auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_LGTM_UNKNOWN);
                             break;
                     }
                 }
@@ -65,9 +70,9 @@ public class CommonCodeReview {
             if (lgtmAttempted) {
                 //if lgtm self-review, then no peer-review was done unless someone else looked at it
                 if (!CollectionUtils.isEmpty(auditReviewResponse.getAuditStatuses()) &&
-                        auditReviewResponse.getAuditStatuses().contains(AuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER) &&
+                        auditReviewResponse.getAuditStatuses().contains(CodeReviewAuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER) &&
                         !isPRLookedAtByPeer(pr)) {
-                    auditReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_SELF_APPROVAL);
+                    auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_LGTM_SELF_APPROVAL);
                     return false;
                 }
                 return lgtmStateResult;
@@ -79,7 +84,7 @@ public class CommonCodeReview {
             for (Review review : reviews) {
                 if ("approved".equalsIgnoreCase(review.getState())) {
                     //review done using GitHub Review workflow
-                    auditReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_GHR);
+                    auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_GHR);
                     return true;
                 }
             }
@@ -101,5 +106,19 @@ public class CommonCodeReview {
         reviewAuthors.remove(pr.getUserId());
 
         return !CollectionUtils.isEmpty(pr.getReviews()) || (commentUsers.size() > 0) || (reviewAuthors.size() > 0);
+    }
+
+    public static Set<String> getCodeAuthors(List<CollectorItem> repoItems, long beginDate, long endDate, CustomRepositoryQuery customRepositoryQuery) {
+        Set<String> authors = new HashSet<>();
+        //making sure we have a goot url?
+        repoItems.forEach(repoItem -> {
+            String scmUrl = (String) repoItem.getOptions().get("url");
+            String scmBranch = (String) repoItem.getOptions().get("branch");
+            GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(scmUrl);
+            String parsedUrl = gitHubParsed.getUrl(); //making sure we have a goot url?
+            List<Commit> commits = customRepositoryQuery.findByScmUrlAndScmBranchAndScmCommitTimestampGreaterThanEqualAndScmCommitTimestampLessThanEqual(parsedUrl, scmBranch, beginDate, endDate);
+            authors.addAll(commits.stream().map(SCM::getScmAuthor).collect(Collectors.toCollection(HashSet::new)));
+        });
+        return authors;
     }
 }

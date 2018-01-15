@@ -2,7 +2,6 @@ package com.capitalone.dashboard.evaluator;
 
 import com.capitalone.dashboard.common.CommonCodeReview;
 import com.capitalone.dashboard.model.AuditException;
-import com.capitalone.dashboard.model.AuditStatus;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Commit;
@@ -11,6 +10,7 @@ import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.repository.CustomRepositoryQuery;
 import com.capitalone.dashboard.response.CodeReviewAuditResponseV2;
+import com.capitalone.dashboard.status.CodeReviewAuditStatus;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -28,26 +29,20 @@ import java.util.Optional;
 public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
 
     private final CustomRepositoryQuery customRepositoryQuery;
-    private final CodeReviewEvaluatorLegacy codeReviewEvaluatorLegacy;
 
-     @Autowired
-    public CodeReviewEvaluator(CustomRepositoryQuery customRepositoryQuery, CodeReviewEvaluatorLegacy codeReviewEvaluatorLegacy) {
+    @Autowired
+    public CodeReviewEvaluator(CustomRepositoryQuery customRepositoryQuery) {
         this.customRepositoryQuery = customRepositoryQuery;
-         this.codeReviewEvaluatorLegacy = codeReviewEvaluatorLegacy;
-     }
-
-
+    }
 
 
     @Override
-    public Collection<CodeReviewAuditResponseV2> evaluate(Dashboard dashboard, long beginDate, long endDate, Collection data) throws AuditException {
+    public Collection<CodeReviewAuditResponseV2> evaluate(Dashboard dashboard, long beginDate, long endDate, Map<?, ?> data) throws AuditException {
         List<CodeReviewAuditResponseV2> responseV2s = new ArrayList<>();
         List<CollectorItem> repoItems = this.getCollectorItems(dashboard, "repo", CollectorType.SCM);
         if (CollectionUtils.isEmpty(repoItems)) {
             throw new AuditException("No code repository configured", AuditException.NO_COLLECTOR_ITEM_CONFIGURED);
         }
-
-        Collection<CodeReviewAuditResponseV2> allReviews = new ArrayList<>();
 
         for (CollectorItem repoItem : repoItems) {
             String scmUrl = (String) repoItem.getOptions().get("url");
@@ -65,11 +60,9 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
     }
 
     @Override
-    public CodeReviewAuditResponseV2 evaluate(CollectorItem collectorItem, long beginDate, long endDate, Collection data) throws AuditException {
-        return getPeerReviewResponses(collectorItem,beginDate,endDate);
+    public CodeReviewAuditResponseV2 evaluate(CollectorItem collectorItem, long beginDate, long endDate, Map<?, ?> data) throws AuditException {
+        return getPeerReviewResponses(collectorItem, beginDate, endDate);
     }
-
-
 
 
     /**
@@ -82,7 +75,7 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
      */
     private CodeReviewAuditResponseV2 getErrorResponse(CollectorItem repoItem, String scmBranch, String scmUrl) {
         CodeReviewAuditResponseV2 noPRsCodeReviewAuditResponse = new CodeReviewAuditResponseV2();
-        noPRsCodeReviewAuditResponse.addAuditStatus(AuditStatus.COLLECTOR_ITEM_ERROR);
+        noPRsCodeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.COLLECTOR_ITEM_ERROR);
 
         noPRsCodeReviewAuditResponse.setLastUpdated(repoItem.getLastUpdated());
         noPRsCodeReviewAuditResponse.setScmBranch(scmBranch);
@@ -116,7 +109,7 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
         CodeReviewAuditResponseV2 reviewAuditResponseV2 = new CodeReviewAuditResponseV2();
 
         if (CollectionUtils.isEmpty(pullRequests)) {
-            reviewAuditResponseV2.addAuditStatus(AuditStatus.NO_PULL_REQ_FOR_DATE_RANGE);
+            reviewAuditResponseV2.addAuditStatus(CodeReviewAuditStatus.NO_PULL_REQ_FOR_DATE_RANGE);
         }
 
         reviewAuditResponseV2.setLastUpdated(repoItem.getLastUpdated());
@@ -134,12 +127,12 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
             pullRequestAudit.setPullRequest(pr);
             List<Commit> commitsRelatedToPr = pr.getCommits();
             commitsRelatedToPr.sort(Comparator.comparing(e -> (e.getScmCommitTimestamp())));
-            pullRequestAudit.addAuditStatus(pr.getUserId().equalsIgnoreCase(mergeCommit.getScmAuthorLogin()) ? AuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER : AuditStatus.COMMITAUTHOR_NE_MERGECOMMITER);
+            pullRequestAudit.addAuditStatus(pr.getUserId().equalsIgnoreCase(mergeCommit.getScmAuthorLogin()) ? CodeReviewAuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER : CodeReviewAuditStatus.COMMITAUTHOR_NE_MERGECOMMITER);
             boolean peerReviewed = CommonCodeReview.computePeerReviewStatus(pr, settings, pullRequestAudit);
-            pullRequestAudit.addAuditStatus(peerReviewed ? AuditStatus.PULLREQ_REVIEWED_BY_PEER : AuditStatus.PULLREQ_NOT_PEER_REVIEWED);
+            pullRequestAudit.addAuditStatus(peerReviewed ? CodeReviewAuditStatus.PULLREQ_REVIEWED_BY_PEER : CodeReviewAuditStatus.PULLREQ_NOT_PEER_REVIEWED);
             String sourceRepo = pr.getSourceRepo();
             String targetRepo = pr.getTargetRepo();
-            pullRequestAudit.addAuditStatus(sourceRepo == null ? AuditStatus.GIT_FORK_STRATEGY : sourceRepo.equalsIgnoreCase(targetRepo) ? AuditStatus.GIT_BRANCH_STRATEGY : AuditStatus.GIT_FORK_STRATEGY);
+            pullRequestAudit.addAuditStatus(sourceRepo == null ? CodeReviewAuditStatus.GIT_FORK_STRATEGY : sourceRepo.equalsIgnoreCase(targetRepo) ? CodeReviewAuditStatus.GIT_BRANCH_STRATEGY : CodeReviewAuditStatus.GIT_FORK_STRATEGY);
             reviewAuditResponseV2.addPullRequest(pullRequestAudit);
         });
 
