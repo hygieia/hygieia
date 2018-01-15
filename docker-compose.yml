@@ -10,7 +10,6 @@ hygieia-api:
   volumes:
   - ./logs:/hygieia/logs
   environment:
-    - jasypt.encryptor.password=hygieiasecret
     - SPRING_DATA_MONGODB_DATABASE=dashboard
     - SPRING_DATA_MONGODB_HOST=mongodb
     - SPRING_DATA_MONGODB_PORT=27017
@@ -27,6 +26,20 @@ hygieia-ui:
   links:
   - hygieia-api
 
+hygieia-appdynamics-performance-collector:
+  image: hygieia-appdynamics-performance-collector
+  container_name: hygieia-appdynamics
+  volumes:
+  - ./logs:/hygieia/logs
+  links:
+  - mongodb:mongo
+  - hygieia-api
+# place any values you want to change in docker-compose.override.yml
+#  environment:
+#  - APPDYNAMICS_CRON='0 0/5 * * * *'
+#  - APPDYNAMICS_INSTANCE_URLS=http://appdynamics.com
+#  - APPDYNAMICS_USERNAME=admin
+#  - APPDYNAMICS_PASSWORD=password
 
 hygieia-github-scm-collector:
   image: hygieia-github-scm-collector:latest
