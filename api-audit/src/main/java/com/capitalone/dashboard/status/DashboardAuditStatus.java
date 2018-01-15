@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.status;
 
 public enum DashboardAuditStatus {
+    DASHBOARD_BAD_LOOKUP_DATA,
     DASHBOARD_REPO_NOT_CONFIGURED,
     DASHBOARD_BUILD_CONFIGURED,
     DASHBOARD_BUILD_NOT_CONFIGURED,
