@@ -509,7 +509,6 @@ public class DefaultGitHubClient implements GitHubClient {
         return paging;
     }
 
-    @SuppressWarnings({"PMD.NPathComplexity"})
     private GitHubPaging processCommits(JSONObject refObject, GitHubRepo repo) {
         GitHubPaging paging = new GitHubPaging();
         paging.setLastPage(true); //initialize
@@ -541,14 +540,6 @@ public class DefaultGitHubClient implements GitHubClient {
             JSONObject authorUserJSON = (JSONObject) authorJSON.get("user");
 
             String sha = str(node, "oid");
-            JSONObject parents = (JSONObject) node.get("parents");
-            JSONArray parentNodes = (JSONArray) parents.get("nodes");
-            List<String> parentShas = new ArrayList<>();
-            if (!CollectionUtils.isEmpty(parentNodes)) {
-                for (Object parentObj : parentNodes) {
-                    parentShas.add(str((JSONObject) parentObj, "oid"));
-                }
-            }
             String message = str(node, "message");
             String authorName = str(authorJSON, "name");
             String authorLogin = authorUserJSON == null ? "unknown" : str(authorUserJSON, "login");
@@ -564,10 +555,9 @@ public class DefaultGitHubClient implements GitHubClient {
             commit.setScmCommitTimestamp(getTimeStampMills(str(authorJSON, "date")));
             commit.setNumberOfChanges(1);
             commit.setType(getCommitType(message)); //initialize all to new.
+            List<String> parentShas = getParentShas(node);
             commit.setScmParentRevisionNumbers(parentShas);
-            if (CollectionUtils.isEmpty(parentShas)) {
-                commit.setFirstEverCommit(true);
-            }
+            commit.setFirstEverCommit(CollectionUtils.isEmpty(parentShas));
             commits.add(commit);
         }
         return paging;
@@ -695,21 +685,12 @@ public class DefaultGitHubClient implements GitHubClient {
             JSONObject commit = (JSONObject) c.get("commit");
             Commit newCommit = new Commit();
             newCommit.setScmRevisionNumber(str(commit, "oid"));
-            JSONObject parents = (JSONObject) commit.get("parents");
-            JSONArray parentNodes = (JSONArray) parents.get("nodes");
-            List<String> parentShas = new ArrayList<>();
-            if (!CollectionUtils.isEmpty(parentNodes)) {
-                for (Object parentObj : parentNodes) {
-                    parentShas.add(str((JSONObject) parentObj, "oid"));
-                }
-            }
-            newCommit.setScmParentRevisionNumbers(parentShas);
+            newCommit.setScmParentRevisionNumbers(getParentShas(commit));
             newCommit.setScmCommitLog(str(commit, "message"));
             JSONObject author = (JSONObject) commit.get("author");
             JSONObject authorUserJSON = (JSONObject) author.get("user");
-            String authorLogin = authorUserJSON == null ? "unknown" : str(authorUserJSON, "login");
             newCommit.setScmAuthor(str(author, "name"));
-            newCommit.setScmAuthorLogin(authorLogin);
+            newCommit.setScmAuthorLogin(authorUserJSON == null ? "unknown" : str(authorUserJSON, "login"));
             newCommit.setScmCommitTimestamp(getTimeStampMills(str(author, "date")));
             JSONObject statusObj = (JSONObject) commit.get("status");
 
@@ -955,6 +936,18 @@ public class DefaultGitHubClient implements GitHubClient {
         if (json == null) return new JSONArray();
         if (json.get(key) == null) return new JSONArray();
         return (JSONArray) json.get(key);
+    }
+
+    private List<String> getParentShas(JSONObject commit) {
+        JSONObject parents = (JSONObject) commit.get("parents");
+        JSONArray parentNodes = (JSONArray) parents.get("nodes");
+        List<String> parentShas = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(parentNodes)) {
+            for (Object parentObj : parentNodes) {
+                parentShas.add(str((JSONObject) parentObj, "oid"));
+            }
+        }
+        return parentShas;
     }
 
     /**
