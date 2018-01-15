@@ -39,7 +39,6 @@ import org.springframework.web.client.RestOperations;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -84,76 +83,6 @@ public class DefaultGitHubClient implements GitHubClient {
         long timeDelta = System.currentTimeMillis() - repo.getLastUpdated();
         return Math.max(5, Math.min(100, Math.round(timeDelta / 60000)));
     }
-
-    private ResponseEntity<String> getLastPageResponse(GitHubRepo repo) throws RestClientException, MalformedURLException, HygieiaException {
-        String repoUrl = (String) repo.getOptions().get("url");
-        GitHubParsed gitHubParsed = new GitHubParsed(repoUrl);
-        String apiUrl = gitHubParsed.getApiUrl();
-
-        String queryUrl = apiUrl.concat("/commits?sha=" + repo.getBranch()
-                + "&since=1970-01-01T00:00Z");
-        String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
-        ResponseEntity<String> response = makeRestCallGet(queryUrl, repo.getUserId(), decryptedPassword);
-
-        HttpHeaders header = response.getHeaders();
-        List<String> link = header.get("Link");
-
-        if (link == null || link.isEmpty()) {
-            return response;
-        }
-
-        for (String l : link) {
-            if (l.contains("rel=\"next\"")) {
-                String[] parts = l.split(",");
-                if (parts.length > 0) {
-                    response = Arrays.stream(parts).filter(part -> part.contains("rel=\"last\"")).map(part -> part.split(";")[0]).map(lastPageUrl -> lastPageUrl.replaceFirst("<", "")).map(lastPageUrl -> lastPageUrl.replaceFirst(">", "").trim()).findFirst().map(lastPageUrl -> makeRestCallGet(lastPageUrl, repo.getUserId(), decryptedPassword)).orElse(response);
-                }
-            }
-        }
-        return response;
-    }
-
-    public Commit getFirstEverCommit(GitHubRepo repo) throws RestClientException, MalformedURLException, HygieiaException {
-        ResponseEntity<String> response = getLastPageResponse(repo);
-        JSONArray jsonArray = parseAsArray(response);
-        JSONObject jsonObject = (JSONObject) jsonArray.get(jsonArray.size() - 1);
-        String sha = str(jsonObject, "sha");
-        JSONObject commitObject = (JSONObject) jsonObject.get("commit");
-        JSONObject commitAuthorObject = (JSONObject) commitObject.get("author");
-        String message = str(commitObject, "message");
-        String author = str(commitAuthorObject, "name");
-        long timestamp = new DateTime(str(commitAuthorObject, "date"))
-                .getMillis();
-        JSONObject authorObject = (JSONObject) jsonObject.get("author");
-        String authorLogin = "";
-        if (authorObject != null) {
-            authorLogin = str(authorObject, "login");
-        }
-        JSONArray parents = (JSONArray) jsonObject.get("parents");
-        List<String> parentShas = new ArrayList<>();
-        if (parents != null) {
-            for (Object parentObj : parents) {
-                parentShas.add(str((JSONObject) parentObj, "sha"));
-            }
-        }
-
-        Commit commit = new Commit();
-        commit.setTimestamp(System.currentTimeMillis());
-        commit.setScmUrl(repo.getRepoUrl());
-        commit.setScmBranch(repo.getBranch());
-        commit.setScmRevisionNumber(sha);
-        commit.setScmParentRevisionNumbers(parentShas);
-        commit.setScmAuthor(author);
-        commit.setScmAuthorLogin(authorLogin);
-        commit.setScmCommitLog(message);
-        commit.setScmCommitTimestamp(timestamp);
-        commit.setNumberOfChanges(1);
-        commit.setType(getCommitType(message));
-        commit.setFirstEverCommit(true);
-
-        return commit;
-    }
-
 
     @Override
     public List<Commit> getCommits() {
@@ -580,6 +509,7 @@ public class DefaultGitHubClient implements GitHubClient {
         return paging;
     }
 
+    @SuppressWarnings({"PMD.NPathComplexity"})
     private GitHubPaging processCommits(JSONObject refObject, GitHubRepo repo) {
         GitHubPaging paging = new GitHubPaging();
         paging.setLastPage(true); //initialize
@@ -611,6 +541,14 @@ public class DefaultGitHubClient implements GitHubClient {
             JSONObject authorUserJSON = (JSONObject) authorJSON.get("user");
 
             String sha = str(node, "oid");
+            JSONObject parents = (JSONObject) node.get("parents");
+            JSONArray parentNodes = (JSONArray) parents.get("nodes");
+            List<String> parentShas = new ArrayList<>();
+            if (!CollectionUtils.isEmpty(parentNodes)) {
+                for (Object parentObj : parentNodes) {
+                    parentShas.add(str((JSONObject) parentObj, "oid"));
+                }
+            }
             String message = str(node, "message");
             String authorName = str(authorJSON, "name");
             String authorLogin = authorUserJSON == null ? "unknown" : str(authorUserJSON, "login");
@@ -626,6 +564,10 @@ public class DefaultGitHubClient implements GitHubClient {
             commit.setScmCommitTimestamp(getTimeStampMills(str(authorJSON, "date")));
             commit.setNumberOfChanges(1);
             commit.setType(getCommitType(message)); //initialize all to new.
+            commit.setScmParentRevisionNumbers(parentShas);
+            if (CollectionUtils.isEmpty(parentShas)) {
+                commit.setFirstEverCommit(true);
+            }
             commits.add(commit);
         }
         return paging;
@@ -734,7 +676,7 @@ public class DefaultGitHubClient implements GitHubClient {
         return comments;
     }
 
-
+    @SuppressWarnings({"PMD.NPathComplexity"})
     private List<Commit> getPRCommits(JSONObject commits, GitRequest pull) {
         List<Commit> prCommits = new ArrayList<>();
 
@@ -753,9 +695,21 @@ public class DefaultGitHubClient implements GitHubClient {
             JSONObject commit = (JSONObject) c.get("commit");
             Commit newCommit = new Commit();
             newCommit.setScmRevisionNumber(str(commit, "oid"));
+            JSONObject parents = (JSONObject) commit.get("parents");
+            JSONArray parentNodes = (JSONArray) parents.get("nodes");
+            List<String> parentShas = new ArrayList<>();
+            if (!CollectionUtils.isEmpty(parentNodes)) {
+                for (Object parentObj : parentNodes) {
+                    parentShas.add(str((JSONObject) parentObj, "oid"));
+                }
+            }
+            newCommit.setScmParentRevisionNumbers(parentShas);
             newCommit.setScmCommitLog(str(commit, "message"));
             JSONObject author = (JSONObject) commit.get("author");
+            JSONObject authorUserJSON = (JSONObject) author.get("user");
+            String authorLogin = authorUserJSON == null ? "unknown" : str(authorUserJSON, "login");
             newCommit.setScmAuthor(str(author, "name"));
+            newCommit.setScmAuthorLogin(authorLogin);
             newCommit.setScmCommitTimestamp(getTimeStampMills(str(author, "date")));
             JSONObject statusObj = (JSONObject) commit.get("status");
 
@@ -963,25 +917,6 @@ public class DefaultGitHubClient implements GitHubClient {
 
     }
 
-    private ResponseEntity<String> makeRestCallGet(String url, String userId,
-                                                   String password) {
-        // Basic Auth only.
-        if (!Objects.equals("", userId) && !Objects.equals("", password)) {
-            return restOperations.exchange(url, HttpMethod.GET,
-                    new HttpEntity<>(createHeaders(userId, password)),
-                    String.class);
-
-        } else if (settings.getPersonalAccessToken() != null && !Objects.equals("", settings.getPersonalAccessToken())) {
-            return restOperations.exchange(url, HttpMethod.GET,
-                    new HttpEntity<>(createHeaders(settings.getPersonalAccessToken())),
-                    String.class);
-        } else {
-            return restOperations.exchange(url, HttpMethod.GET, null,
-                    String.class);
-        }
-
-    }
-
     private HttpHeaders createHeaders(final String userId, final String password) {
         String auth = userId + ":" + password;
         byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.US_ASCII));
@@ -999,16 +934,6 @@ public class DefaultGitHubClient implements GitHubClient {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", authHeader);
         return headers;
-    }
-
-
-    private JSONArray parseAsArray(ResponseEntity<String> response) {
-        try {
-            return (JSONArray) new JSONParser().parse(response.getBody());
-        } catch (ParseException pe) {
-            LOG.error(pe.getMessage());
-        }
-        return new JSONArray();
     }
 
     private JSONObject parseAsObject(ResponseEntity<String> response) {
