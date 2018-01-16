@@ -16,6 +16,7 @@ import com.capitalone.dashboard.util.GitHubParsedUrl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -47,18 +48,18 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
             throw new AuditException("No code repository configured", AuditException.NO_COLLECTOR_ITEM_CONFIGURED);
         }
 
-        for (CollectorItem repoItem : repoItems) {
+        //making sure we have a goot url?
+        repoItems.forEach(repoItem -> {
             String scmUrl = (String) repoItem.getOptions().get("url");
             String scmBranch = (String) repoItem.getOptions().get("branch");
             GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(scmUrl);
             String parsedUrl = gitHubParsed.getUrl(); //making sure we have a goot url?
-
             CodeReviewAuditResponseV2 reviewResponse = evaluate(repoItem, beginDate, endDate, null);
-            reviewResponse.setScmUrl(parsedUrl);
-            reviewResponse.setScmBranch(scmBranch);
+            reviewResponse.setUrl(parsedUrl);
+            reviewResponse.setBranch(scmBranch);
             reviewResponse.setLastUpdated(repoItem.getLastUpdated());
             responseV2s.add(reviewResponse);
-        }
+        });
         return responseV2s;
     }
 
@@ -81,8 +82,8 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
         noPRsCodeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.COLLECTOR_ITEM_ERROR);
 
         noPRsCodeReviewAuditResponse.setLastUpdated(repoItem.getLastUpdated());
-        noPRsCodeReviewAuditResponse.setScmBranch(scmBranch);
-        noPRsCodeReviewAuditResponse.setScmUrl(scmUrl);
+        noPRsCodeReviewAuditResponse.setBranch(scmBranch);
+        noPRsCodeReviewAuditResponse.setUrl(scmUrl);
         noPRsCodeReviewAuditResponse.setErrorMessage(repoItem.getErrors() == null ? null : repoItem.getErrors().get(0).getErrorMessage());
         return noPRsCodeReviewAuditResponse;
     }
@@ -109,12 +110,24 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
 
         List<GitRequest> pullRequests = gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(repoItem.getId(), beginDt-1, endDt+1);
         List<Commit> commits = commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(repoItem.getId(), beginDt-1, endDt+1);
+        commits.sort(Comparator.comparing(Commit::getScmCommitTimestamp).reversed());
+        pullRequests.sort(Comparator.comparing(GitRequest::getMergedAt).reversed());
+
         CodeReviewAuditResponseV2 reviewAuditResponseV2 = new CodeReviewAuditResponseV2();
 
         if (CollectionUtils.isEmpty(pullRequests)) {
             reviewAuditResponseV2.addAuditStatus(CodeReviewAuditStatus.NO_PULL_REQ_FOR_DATE_RANGE);
         }
-
+        if (CollectionUtils.isEmpty(commits)) {
+            reviewAuditResponseV2.addAuditStatus(CodeReviewAuditStatus.NO_COMMIT_FOR_DATE_RANGE);
+        }
+        reviewAuditResponseV2.setUrl(parsedUrl);
+        reviewAuditResponseV2.setBranch(scmBranch);
+        reviewAuditResponseV2.setLastCommitTime(CollectionUtils.isEmpty(commits)? 0 : commits.get(0).getScmCommitTimestamp());
+        reviewAuditResponseV2.setLastPRMergeTime(CollectionUtils.isEmpty(pullRequests)? 0 : pullRequests.get(0).getMergedAt());
+        if (reviewAuditResponseV2.getLastCommitTime() > reviewAuditResponseV2.getLastPRMergeTime()) {
+            reviewAuditResponseV2.addAuditStatus(CodeReviewAuditStatus.COMMIT_AFTER_PR_MERGE);
+        }
         reviewAuditResponseV2.setLastUpdated(repoItem.getLastUpdated());
 
         //                reviewAuditResponseV2.addPullRequest(pullRequestAudit);

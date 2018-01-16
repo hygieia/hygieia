@@ -97,7 +97,7 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
         CodeQuality returnQuality = codeQualities.get(0);
         codeQualityAuditResponse.setUrl(returnQuality.getUrl());
         codeQualityAuditResponse.setCodeQuality(returnQuality);
-
+        codeQualityAuditResponse.setLastExecutionTime(returnQuality.getTimestamp());
         for (CodeQualityMetric metric : returnQuality.getMetrics()) {
             //TODO: This is sonar specific - need to move this to api settings via properties file
             if (metric.getName().equalsIgnoreCase("quality_gate_details")) {
@@ -125,11 +125,7 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
         }
         Set<String> codeAuthors = CommonCodeReview.getCodeAuthors(repoItems, beginDate, endDate, commitRepository);
         List<String> overlap = configHistories.stream().map(CollectorItemConfigHistory::getUserID).filter(codeAuthors::contains).collect(Collectors.toList());
-        if (!CollectionUtils.isEmpty(overlap)) {
-            codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_FAIL);
-        } else {
-            codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_OK);
-        }
+        codeQualityAuditResponse.addAuditStatus(!CollectionUtils.isEmpty(overlap) ? CodeQualityAuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_FAIL : CodeQualityAuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_OK);
 
         return codeQualityAuditResponse;
     }

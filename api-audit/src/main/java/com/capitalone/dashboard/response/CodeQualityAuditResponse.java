@@ -12,6 +12,7 @@ import java.util.Set;
 
 public class CodeQualityAuditResponse extends AuditReviewResponse<CodeQualityAuditStatus> {
     private String url;
+    private long lastExecutionTime;
     private CodeQuality codeQuality;
     private Set<String> codeAuthors = new HashSet<>();
     private List<CollectorItemConfigHistory> configChanges = new ArrayList<>();
@@ -46,5 +47,13 @@ public class CodeQualityAuditResponse extends AuditReviewResponse<CodeQualityAud
 
     public void setConfigChanges(List<CollectorItemConfigHistory> configChanges) {
         this.configChanges = configChanges;
+    }
+
+    public long getLastExecutionTime() {
+        return lastExecutionTime;
+    }
+
+    public void setLastExecutionTime(long lastExecutionTime) {
+        this.lastExecutionTime = lastExecutionTime;
     }
 }

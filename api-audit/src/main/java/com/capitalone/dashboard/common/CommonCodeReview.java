@@ -116,7 +116,7 @@ public class CommonCodeReview {
             String scmBranch = (String) repoItem.getOptions().get("branch");
             GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(scmUrl);
             String parsedUrl = gitHubParsed.getUrl(); //making sure we have a goot url?
-            List<Commit> commits = commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(repoItem.getId(), beginDate, endDate);
+            List<Commit> commits = commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(repoItem.getId(), beginDate-1, endDate+1);
             authors.addAll(commits.stream().map(SCM::getScmAuthor).collect(Collectors.toCollection(HashSet::new)));
         });
         return authors;

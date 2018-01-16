@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -62,10 +63,14 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
             return testResultsAuditResponse;
         }
 
-        testResults.stream().filter(testResult -> TestSuiteType.Regression.toString().equalsIgnoreCase(testResult.getType().name())).forEach(testResult -> {
-            testResultsAuditResponse.addAuditStatus((testResult.getFailureCount() == 0) ? TestResultAuditStatus.TEST_RESULT_AUDIT_OK : TestResultAuditStatus.TEST_RESULT_AUDIT_FAIL);
-            testResultsAuditResponse.setTestCapabilities(testResult.getTestCapabilities());
-        });
+        for (TestResult testResult : testResults) {
+            if (TestSuiteType.Regression.toString().equalsIgnoreCase(testResult.getType().name())) {
+                testResultsAuditResponse.addAuditStatus((testResult.getFailureCount() == 0) ? TestResultAuditStatus.TEST_RESULT_AUDIT_OK : TestResultAuditStatus.TEST_RESULT_AUDIT_FAIL);
+                testResultsAuditResponse.setTestCapabilities(testResult.getTestCapabilities());
+                testResultsAuditResponse.setLastExecutionTime(testResult.getStartTime());
+                break;
+            }
+        }
 
         if (CollectionUtils.isEmpty(testResultsAuditResponse.getTestCapabilities())) {
             testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_MISSING);

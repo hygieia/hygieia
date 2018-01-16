@@ -6,7 +6,9 @@ import com.capitalone.dashboard.status.BuildAuditStatus;
 import java.util.List;
 
 public class BuildAuditResponse extends AuditReviewResponse<BuildAuditStatus> {
+    private String url;
     private String environment;
+    private long lastBuildTime;
     private List<CollectorItemConfigHistory> configHistory;
 
     public String getEnvironment() {
@@ -23,5 +25,21 @@ public class BuildAuditResponse extends AuditReviewResponse<BuildAuditStatus> {
 
     public void setConfigHistory(List<CollectorItemConfigHistory> configHistory) {
         this.configHistory = configHistory;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public long getLastBuildTime() {
+        return lastBuildTime;
+    }
+
+    public void setLastBuildTime(long lastBuildTime) {
+        this.lastBuildTime = lastBuildTime;
     }
 }

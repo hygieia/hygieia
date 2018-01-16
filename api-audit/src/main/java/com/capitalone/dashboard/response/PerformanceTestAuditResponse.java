@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class PerformanceTestAuditResponse extends AuditReviewResponse<PerformanceTestAuditStatus> {
-
+    private String url;
+    private long lastExecutionTime;
 
     private Collection<PerfTest> result = new ArrayList<>();
 
@@ -19,7 +20,19 @@ public class PerformanceTestAuditResponse extends AuditReviewResponse<Performanc
         this.result = result;
     }
 
+    public String getUrl() {
+        return url;
+    }
 
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
+    public long getLastExecutionTime() {
+        return lastExecutionTime;
+    }
 
+    public void setLastExecutionTime(long lastExecutionTime) {
+        this.lastExecutionTime = lastExecutionTime;
+    }
 }

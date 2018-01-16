@@ -20,8 +20,10 @@ public class CodeReviewAuditResponseV2 extends AuditReviewResponse<CodeReviewAud
             this.pullRequest = pullRequest;
         }
     }
-    private String scmUrl;
-    private String scmBranch;
+    private String url;
+    private String branch;
+    private long lastCommitTime;
+    private long lastPRMergeTime;
     private List<Commit> directCommits = new ArrayList<>();
     private List<PullRequestAudit> pullRequests = new ArrayList<>();
 
@@ -42,20 +44,20 @@ public class CodeReviewAuditResponseV2 extends AuditReviewResponse<CodeReviewAud
         this.directCommits = directCommits;
     }
 
-    public String getScmUrl() {
-        return scmUrl;
+    public String getUrl() {
+        return url;
     }
 
-    public void setScmUrl(String scmUrl) {
-        this.scmUrl = scmUrl;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
-    public String getScmBranch() {
-        return scmBranch;
+    public String getBranch() {
+        return branch;
     }
 
-    public void setScmBranch(String scmBranch) {
-        this.scmBranch = scmBranch;
+    public void setBranch(String branch) {
+        this.branch = branch;
     }
 
     public void addPullRequest (PullRequestAudit pull) {
@@ -66,4 +68,19 @@ public class CodeReviewAuditResponseV2 extends AuditReviewResponse<CodeReviewAud
         directCommits.add(commit);
     }
 
+    public long getLastCommitTime() {
+        return lastCommitTime;
+    }
+
+    public void setLastCommitTime(long lastCommitTime) {
+        this.lastCommitTime = lastCommitTime;
+    }
+
+    public long getLastPRMergeTime() {
+        return lastPRMergeTime;
+    }
+
+    public void setLastPRMergeTime(long lastPRMergeTime) {
+        this.lastPRMergeTime = lastPRMergeTime;
+    }
 }

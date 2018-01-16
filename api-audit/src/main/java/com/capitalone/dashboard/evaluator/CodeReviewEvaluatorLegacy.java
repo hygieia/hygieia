@@ -103,7 +103,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
             allPeerReviews.add(noPRsCodeReviewAuditResponse);
         }
 
-        //            Commit mergeCommit = commitRepository.findByScmRevisionNumberAndScmUrlIgnoreCase(mergeSha, pr.getScmUrl());
+        //            Commit mergeCommit = commitRepository.findByScmRevisionNumberAndScmUrlIgnoreCase(mergeSha, pr.getUrl());
 //check for pr author <> pr merger
 //check to see if pr was reviewed
 //type of branching strategy
