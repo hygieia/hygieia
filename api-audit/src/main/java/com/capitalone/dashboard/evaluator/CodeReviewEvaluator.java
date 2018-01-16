@@ -8,7 +8,8 @@ import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.GitRequest;
-import com.capitalone.dashboard.repository.CustomRepositoryQuery;
+import com.capitalone.dashboard.repository.CommitRepository;
+import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.response.CodeReviewAuditResponseV2;
 import com.capitalone.dashboard.status.CodeReviewAuditStatus;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
@@ -28,11 +29,13 @@ import java.util.Optional;
 @Component
 public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
 
-    private final CustomRepositoryQuery customRepositoryQuery;
+    private final CommitRepository commitRepository;
+    private final GitRequestRepository gitRequestRepository;
 
     @Autowired
-    public CodeReviewEvaluator(CustomRepositoryQuery customRepositoryQuery) {
-        this.customRepositoryQuery = customRepositoryQuery;
+    public CodeReviewEvaluator(CommitRepository commitRepository, GitRequestRepository gitRequestRepository) {
+        this.commitRepository = commitRepository;
+        this.gitRequestRepository = gitRequestRepository;
     }
 
 
@@ -60,7 +63,7 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
     }
 
     @Override
-    public CodeReviewAuditResponseV2 evaluate(CollectorItem collectorItem, long beginDate, long endDate, Map<?, ?> data) throws AuditException {
+    public CodeReviewAuditResponseV2 evaluate(CollectorItem collectorItem, long beginDate, long endDate, Map<?, ?> data) {
         return getPeerReviewResponses(collectorItem, beginDate, endDate);
     }
 
@@ -84,8 +87,8 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
         return noPRsCodeReviewAuditResponse;
     }
 
-    public CodeReviewAuditResponseV2 getPeerReviewResponses(CollectorItem repoItem,
-                                                            long beginDt, long endDt) {
+    private CodeReviewAuditResponseV2 getPeerReviewResponses(CollectorItem repoItem,
+                                                             long beginDt, long endDt) {
 
 
         String scmUrl = (String) repoItem.getOptions().get("url");
@@ -104,8 +107,8 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
 
         }
 
-        List<GitRequest> pullRequests = customRepositoryQuery.findByScmUrlIgnoreCaseAndScmBranchIgnoreCaseAndMergedAtGreaterThanEqualAndMergedAtLessThanEqual(scmUrl, scmBranch, beginDt, endDt);
-        List<Commit> commits = customRepositoryQuery.findByScmUrlAndScmBranchAndScmCommitTimestampGreaterThanEqualAndScmCommitTimestampLessThanEqual(scmUrl, scmBranch, beginDt, endDt);
+        List<GitRequest> pullRequests = gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(repoItem.getId(), beginDt-1, endDt+1);
+        List<Commit> commits = commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(repoItem.getId(), beginDt-1, endDt+1);
         CodeReviewAuditResponseV2 reviewAuditResponseV2 = new CodeReviewAuditResponseV2();
 
         if (CollectionUtils.isEmpty(pullRequests)) {

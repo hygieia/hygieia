@@ -8,7 +8,7 @@ import com.capitalone.dashboard.model.CommitStatus;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.Review;
 import com.capitalone.dashboard.model.SCM;
-import com.capitalone.dashboard.repository.CustomRepositoryQuery;
+import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.response.AuditReviewResponse;
 import com.capitalone.dashboard.status.CodeReviewAuditStatus;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
@@ -108,7 +108,7 @@ public class CommonCodeReview {
         return !CollectionUtils.isEmpty(pr.getReviews()) || (commentUsers.size() > 0) || (reviewAuthors.size() > 0);
     }
 
-    public static Set<String> getCodeAuthors(List<CollectorItem> repoItems, long beginDate, long endDate, CustomRepositoryQuery customRepositoryQuery) {
+    public static Set<String> getCodeAuthors(List<CollectorItem> repoItems, long beginDate, long endDate, CommitRepository commitRepository) {
         Set<String> authors = new HashSet<>();
         //making sure we have a goot url?
         repoItems.forEach(repoItem -> {
@@ -116,7 +116,7 @@ public class CommonCodeReview {
             String scmBranch = (String) repoItem.getOptions().get("branch");
             GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(scmUrl);
             String parsedUrl = gitHubParsed.getUrl(); //making sure we have a goot url?
-            List<Commit> commits = customRepositoryQuery.findByScmUrlAndScmBranchAndScmCommitTimestampGreaterThanEqualAndScmCommitTimestampLessThanEqual(parsedUrl, scmBranch, beginDate, endDate);
+            List<Commit> commits = commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(repoItem.getId(), beginDate, endDate);
             authors.addAll(commits.stream().map(SCM::getScmAuthor).collect(Collectors.toCollection(HashSet::new)));
         });
         return authors;

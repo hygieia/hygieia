@@ -6,7 +6,8 @@ import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitRequest;
-import com.capitalone.dashboard.repository.CustomRepositoryQuery;
+import com.capitalone.dashboard.repository.CommitRepository;
+import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.response.CodeReviewAuditResponse;
 import com.capitalone.dashboard.status.CodeReviewAuditStatus;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
@@ -25,29 +26,32 @@ import java.util.Optional;
 import static com.capitalone.dashboard.status.CodeReviewAuditStatus.COLLECTOR_ITEM_ERROR;
 
 @Component
-public class CodeReviewEvaluatorLegacy extends LegacyEvaluator{
+public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
 
-    private final CustomRepositoryQuery customRepositoryQuery;
+//    private final CustomRepositoryQuery customRepositoryQuery;
+    private final CommitRepository commitRepository;
+    private final GitRequestRepository gitRequestRepository;
     protected final ApiSettings settings;
 
     @Autowired
-    public CodeReviewEvaluatorLegacy(CustomRepositoryQuery customRepositoryQuery, ApiSettings settings) {
-        this.customRepositoryQuery = customRepositoryQuery;
+    public CodeReviewEvaluatorLegacy(CommitRepository commitRepository, GitRequestRepository gitRequestRepository, ApiSettings settings) {
+        this.commitRepository = commitRepository;
+        this.gitRequestRepository = gitRequestRepository;
         this.settings = settings;
     }
 
 
-
     @Override
-    public List<CodeReviewAuditResponse> evaluate(CollectorItem collectorItem, long beginDate, long endDate, Collection data){
-        return getPeerReviewResponses(collectorItem,beginDate,endDate);
+    public List<CodeReviewAuditResponse> evaluate(CollectorItem collectorItem, long beginDate, long endDate, Collection data) {
+        return getPeerReviewResponses(collectorItem, beginDate, endDate);
     }
 
     /**
      * Return an empty response in error situation
-     * @param repoItem the repo item
+     *
+     * @param repoItem  the repo item
      * @param scmBranch the scrm branch
-     * @param scmUrl the scm url
+     * @param scmUrl    the scm url
      * @return code review audit response
      */
     private CodeReviewAuditResponse getErrorResponse(CollectorItem repoItem, String scmBranch, String scmUrl) {
@@ -62,7 +66,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator{
     }
 
     private List<CodeReviewAuditResponse> getPeerReviewResponses(CollectorItem repoItem,
-                                                                long beginDt, long endDt) {
+                                                                 long beginDt, long endDt) {
 
         List<CodeReviewAuditResponse> allPeerReviews = new ArrayList<>();
 
@@ -91,9 +95,8 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator{
             return allPeerReviews;
         }
 
-        List<GitRequest> pullRequests = customRepositoryQuery.findByScmUrlIgnoreCaseAndScmBranchIgnoreCaseAndMergedAtGreaterThanEqualAndMergedAtLessThanEqual(scmUrl, scmBranch, beginDt, endDt);
-        List<Commit> commits = customRepositoryQuery.findByScmUrlAndScmBranchAndScmCommitTimestampGreaterThanEqualAndScmCommitTimestampLessThanEqual(scmUrl, scmBranch, beginDt, endDt);
-
+        List<GitRequest> pullRequests = gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(repoItem.getId(), beginDt-1, endDt+1);
+        List<Commit> commits = commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(repoItem.getId(), beginDt-1, endDt+1);
         if (CollectionUtils.isEmpty(pullRequests)) {
             CodeReviewAuditResponse noPRsCodeReviewAuditResponse = new CodeReviewAuditResponse();
             noPRsCodeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.NO_PULL_REQ_FOR_DATE_RANGE);
@@ -155,7 +158,6 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator{
         });
         return allPeerReviews;
     }
-
 
 
 }

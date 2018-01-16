@@ -12,7 +12,7 @@ import com.capitalone.dashboard.model.TestCaseStep;
 import com.capitalone.dashboard.model.TestResult;
 import com.capitalone.dashboard.model.TestSuite;
 import com.capitalone.dashboard.model.TestSuiteType;
-import com.capitalone.dashboard.repository.CustomRepositoryQuery;
+import com.capitalone.dashboard.repository.TestResultRepository;
 import com.capitalone.dashboard.response.PerformanceTestAuditResponse;
 import com.capitalone.dashboard.response.TestResultsAuditResponse;
 import com.capitalone.dashboard.status.PerformanceTestAuditStatus;
@@ -29,12 +29,13 @@ import java.util.stream.Collectors;
 @Component
 public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAuditResponse> {
 
-    private final CustomRepositoryQuery customRepositoryQuery;
+    private final TestResultRepository testResultRepository;
 
 
     @Autowired
-    public PerformanceTestResultEvaluator(CustomRepositoryQuery customRepositoryQuery) {
-        this.customRepositoryQuery = customRepositoryQuery;
+    public PerformanceTestResultEvaluator(TestResultRepository testResultRepository) {
+
+        this.testResultRepository = testResultRepository;
     }
 
     @Override
@@ -54,10 +55,10 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
     }
 
 
-    public PerformanceTestAuditResponse getPerformanceTestAudit(CollectorItem perfItem, long beginDate, long endDate) {
+    private PerformanceTestAuditResponse getPerformanceTestAudit(CollectorItem perfItem, long beginDate, long endDate) {
 
         PerformanceTestAuditResponse perfReviewResponse = new PerformanceTestAuditResponse();
-        List<TestResult> testResults = customRepositoryQuery.findByCollectorItemIdAndTimestampGreaterThanEqualAndTimestampLessThanEqual(perfItem.getId(), beginDate, endDate);
+        List<TestResult> testResults = testResultRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(perfItem.getId(), beginDate-1, endDate+1);
         List<PerfTest> testlist = new ArrayList<>();
 
         for (TestResult testResult : testResults) {

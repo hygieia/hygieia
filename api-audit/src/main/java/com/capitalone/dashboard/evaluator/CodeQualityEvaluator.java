@@ -10,8 +10,7 @@ import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
 import com.capitalone.dashboard.repository.CollItemConfigHistoryRepository;
-import com.capitalone.dashboard.repository.CustomRepositoryQuery;
-import com.capitalone.dashboard.response.BuildAuditResponse;
+import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.response.CodeQualityAuditResponse;
 import com.capitalone.dashboard.status.CodeQualityAuditStatus;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -25,7 +24,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,15 +33,15 @@ import java.util.stream.Collectors;
 @Component
 public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
 
-    private final CustomRepositoryQuery customRepositoryQuery;
     private final CodeQualityRepository codeQualityRepository;
+    private final CommitRepository commitRepository;
     private final CollItemConfigHistoryRepository collItemConfigHistoryRepository;
 
 
     @Autowired
-    public CodeQualityEvaluator(CustomRepositoryQuery customRepositoryQuery, CodeQualityRepository codeQualityRepository, CollItemConfigHistoryRepository collItemConfigHistoryRepository) {
-        this.customRepositoryQuery = customRepositoryQuery;
+    public CodeQualityEvaluator(CodeQualityRepository codeQualityRepository, CommitRepository commitRepository, CollItemConfigHistoryRepository collItemConfigHistoryRepository) {
         this.codeQualityRepository = codeQualityRepository;
+        this.commitRepository = commitRepository;
         this.collItemConfigHistoryRepository = collItemConfigHistoryRepository;
     }
 
@@ -85,10 +83,9 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
      * Reusable method for constructing the CodeQualityAuditResponse object for a
      *
      * @return CodeQualityAuditResponse
-     * @throws AuditException
      */
     private CodeQualityAuditResponse getStaticAnalysisResponse(CollectorItem collectorItem, List<CollectorItem> repoItems, long beginDate, long endDate) {
-        List<CodeQuality> codeQualities = codeQualityRepository.findByCollectorItemIdOrderByTimestampDesc(collectorItem.getCollectorId());
+        List<CodeQuality> codeQualities = codeQualityRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(collectorItem.getCollectorId(), beginDate-1, endDate+1);
         ObjectMapper mapper = new ObjectMapper();
         CodeQualityAuditResponse codeQualityAuditResponse = new CodeQualityAuditResponse();
 
@@ -96,9 +93,6 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
             codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_DETAIL_MISSING);
             return codeQualityAuditResponse;
         }
-
-        //get the latest
-        codeQualities.sort(Comparator.comparingLong(CodeQuality::getTimestamp));
 
         CodeQuality returnQuality = codeQualities.get(0);
         codeQualityAuditResponse.setUrl(returnQuality.getUrl());
@@ -129,7 +123,7 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
         if (CollectionUtils.isEmpty(configHistories)) {
             codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_NO_CHANGE);
         }
-        Set<String> codeAuthors = CommonCodeReview.getCodeAuthors(repoItems, beginDate, endDate, customRepositoryQuery);
+        Set<String> codeAuthors = CommonCodeReview.getCodeAuthors(repoItems, beginDate, endDate, commitRepository);
         List<String> overlap = configHistories.stream().map(CollectorItemConfigHistory::getUserID).filter(codeAuthors::contains).collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(overlap)) {
             codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_FAIL);
@@ -143,6 +137,6 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
 
     private List<CollectorItemConfigHistory> getProfileChanges(CodeQuality codeQuality, long beginDate, long endDate) {
         return collItemConfigHistoryRepository
-                .findByCollectorItemIdAndTimestampBetweenOrderByTimestampDesc(codeQuality.getCollectorItemId(), beginDate - 1, endDate + 1);
+                .findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(codeQuality.getCollectorItemId(), beginDate - 1, endDate + 1);
     }
 }

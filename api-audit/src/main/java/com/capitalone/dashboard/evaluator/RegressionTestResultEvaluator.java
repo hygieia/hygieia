@@ -6,7 +6,7 @@ import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.TestResult;
 import com.capitalone.dashboard.model.TestSuiteType;
-import com.capitalone.dashboard.repository.CustomRepositoryQuery;
+import com.capitalone.dashboard.repository.TestResultRepository;
 import com.capitalone.dashboard.response.TestResultsAuditResponse;
 import com.capitalone.dashboard.status.TestResultAuditStatus;
 import org.apache.commons.collections.CollectionUtils;
@@ -22,12 +22,12 @@ import java.util.stream.Collectors;
 @Component
 public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditResponse> {
 
-    private final CustomRepositoryQuery customRepositoryQuery;
+    private final TestResultRepository testResultRepository;
 
 
     @Autowired
-    public RegressionTestResultEvaluator(CustomRepositoryQuery customRepositoryQuery) {
-        this.customRepositoryQuery = customRepositoryQuery;
+    public RegressionTestResultEvaluator(TestResultRepository testResultRepository) {
+        this.testResultRepository = testResultRepository;
     }
 
     @Override
@@ -52,8 +52,8 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
      * Thrown by Object mapper method
      */
     private TestResultsAuditResponse getRegressionTestResultAudit(CollectorItem testItem, long beginDate, long endDate) {
-        List<TestResult> testResults = customRepositoryQuery
-                .findByCollectorItemIdAndTimestampGreaterThanEqualAndTimestampLessThanEqual(testItem.getId(), beginDate, endDate);
+        List<TestResult> testResults = testResultRepository
+                .findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(testItem.getId(), beginDate-1, endDate+1);
 
         TestResultsAuditResponse testResultsAuditResponse = new TestResultsAuditResponse();
 

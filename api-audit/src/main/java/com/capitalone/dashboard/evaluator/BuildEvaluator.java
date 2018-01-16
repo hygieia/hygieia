@@ -10,7 +10,7 @@ import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.RepoBranch;
 import com.capitalone.dashboard.repository.BuildRepository;
 import com.capitalone.dashboard.repository.CollItemConfigHistoryRepository;
-import com.capitalone.dashboard.repository.CustomRepositoryQuery;
+import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.response.BuildAuditResponse;
 import com.capitalone.dashboard.status.BuildAuditStatus;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
@@ -31,13 +31,13 @@ public class BuildEvaluator extends Evaluator<BuildAuditResponse> {
 
     private final BuildRepository buildRepository;
     private final CollItemConfigHistoryRepository collItemConfigHistoryRepository;
-    private final CustomRepositoryQuery customRepositoryQuery;
+    private final CommitRepository commitRepository;
 
     @Autowired
-    public BuildEvaluator(BuildRepository buildRepository, CollItemConfigHistoryRepository collItemConfigHistoryRepository, CustomRepositoryQuery customRepositoryQuery) {
+    public BuildEvaluator(BuildRepository buildRepository, CollItemConfigHistoryRepository collItemConfigHistoryRepository, CommitRepository commitRepository) {
         this.buildRepository = buildRepository;
         this.collItemConfigHistoryRepository = collItemConfigHistoryRepository;
-        this.customRepositoryQuery = customRepositoryQuery;
+        this.commitRepository = commitRepository;
     }
 
 
@@ -66,7 +66,7 @@ public class BuildEvaluator extends Evaluator<BuildAuditResponse> {
         String url;
         String branch;
 
-        public ParsedRepo(String url, String branch) {
+        ParsedRepo(String url, String branch) {
             this.url = new GitHubParsedUrl(url).getUrl();
             this.branch = branch;
         }
@@ -79,7 +79,7 @@ public class BuildEvaluator extends Evaluator<BuildAuditResponse> {
             this.url = url;
         }
 
-        public String getBranch() {
+        String getBranch() {
             return branch;
         }
 
@@ -113,7 +113,7 @@ public class BuildEvaluator extends Evaluator<BuildAuditResponse> {
 
 
         BuildAuditResponse buildAuditResponse = new BuildAuditResponse();
-        List<CollectorItemConfigHistory> jobConfigHists = collItemConfigHistoryRepository.findByCollectorItemIdAndTimestampBetweenOrderByTimestampDesc(buildItem.getId(), beginDate - 1, endDate + 1);
+        List<CollectorItemConfigHistory> jobConfigHists = collItemConfigHistoryRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(buildItem.getId(), beginDate - 1, endDate + 1);
 
         //Check Jenkins Job config log to validate pr author is not modifying the Prod Job
         //since beginDate and endDate are the same column and between is excluding the edge values, we need to subtract/add a millisec
@@ -135,13 +135,9 @@ public class BuildEvaluator extends Evaluator<BuildAuditResponse> {
                 buildAuditResponse.addAuditStatus(BuildAuditStatus.NO_BUILD_FOUND);
             }
         }
-        Set<String> codeAuthors = CommonCodeReview.getCodeAuthors(repoItems, beginDate, endDate, customRepositoryQuery);
+        Set<String> codeAuthors = CommonCodeReview.getCodeAuthors(repoItems, beginDate, endDate, commitRepository);
         List<String> overlap = jobConfigHists.stream().map(CollectorItemConfigHistory::getUserID).filter(codeAuthors::contains).collect(Collectors.toList());
-        if (!CollectionUtils.isEmpty(overlap)) {
-            buildAuditResponse.addAuditStatus(BuildAuditStatus.BUILD_AUTHOR_EQ_REPO_AUTHOR);
-        } else {
-            buildAuditResponse.addAuditStatus(BuildAuditStatus.BUILD_AUTHOR_NE_REPO_AUTHOR);
-        }
+        buildAuditResponse.addAuditStatus(!CollectionUtils.isEmpty(overlap) ? BuildAuditStatus.BUILD_AUTHOR_EQ_REPO_AUTHOR : BuildAuditStatus.BUILD_AUTHOR_NE_REPO_AUTHOR);
         return buildAuditResponse;
     }
 

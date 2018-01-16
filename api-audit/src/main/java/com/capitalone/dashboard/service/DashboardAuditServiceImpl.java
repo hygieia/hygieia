@@ -1,7 +1,6 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.evaluator.Evaluator;
-import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.AuditType;
 import com.capitalone.dashboard.model.Cmdb;
@@ -75,7 +74,7 @@ public class DashboardAuditServiceImpl implements DashboardAuditService {
             auditTypes.remove(AuditType.ALL);
         }
 
-        for (AuditType auditType : auditTypes) {
+        auditTypes.forEach(auditType -> {
             Evaluator evaluator = auditModel.evaluatorMap().get(auditType);
             try {
                 Collection<AuditReviewResponse> auditResponse = evaluator.evaluate(dashboard, beginDate, endDate, null);
@@ -86,7 +85,7 @@ public class DashboardAuditServiceImpl implements DashboardAuditService {
                     dashboardReviewResponse.addAuditStatus(auditModel.errorStatusMap().get(auditType));
                 }
             }
-        }
+        });
         return dashboardReviewResponse;
     }
 
