@@ -58,7 +58,8 @@ var localStorageSupported = (function () {
                 jwtOptionsProvider.config({
                     tokenGetter: ['tokenService', function (tokenService) {
                         return tokenService.getToken();
-                    }]
+                    }],
+                    whiteListedDomains: ['api']
                 });
                 $httpProvider.interceptors.push('jwtInterceptor');
                 $httpProvider.interceptors.push('authInterceptor');
