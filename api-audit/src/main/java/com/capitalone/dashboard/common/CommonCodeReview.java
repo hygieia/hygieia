@@ -30,7 +30,7 @@ public class CommonCodeReview {
      * @param auditReviewResponse - audit review response
      * @return boolean fail or pass
      */
-    public static boolean computePeerReviewStatus(GitRequest pr, ApiSettings settings,  AuditReviewResponse auditReviewResponse) {
+    public static boolean computePeerReviewStatus(GitRequest pr, ApiSettings settings,  AuditReviewResponse<CodeReviewAuditStatus> auditReviewResponse) {
         List<Review> reviews = pr.getReviews();
 
         List<CommitStatus> statuses = pr.getCommitStatuses();

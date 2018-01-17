@@ -3,6 +3,7 @@ package com.capitalone.dashboard.model;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Document(collection="collitem_cfghist")
@@ -13,7 +14,7 @@ public class CollectorItemConfigHistory extends BaseModel {
     private ConfigHistOperationType operation;
     private String userName;
     private String userID;
-    private Map<String, Object> changeMap;
+    private Map<String, Object> changeMap = new HashMap<>();
 
     public ObjectId getCollectorItemId() {
         return collectorItemId;

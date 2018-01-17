@@ -6,6 +6,7 @@ import com.capitalone.dashboard.model.AuditType;
 import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardAuditModel;
+import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.repository.CmdbRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.response.AuditReviewResponse;
@@ -54,7 +55,9 @@ public class DashboardAuditServiceImpl implements DashboardAuditService {
      */
     @SuppressWarnings("PMD.NPathComplexity")
     @Override
-    public DashboardReviewResponse getDashboardReviewResponse(String dashboardTitle, String dashboardType, String businessService, String businessApp, long beginDate, long endDate, Set<AuditType> auditTypes) throws AuditException {
+    public DashboardReviewResponse getDashboardReviewResponse(String dashboardTitle, DashboardType dashboardType, String businessService, String businessApp, long beginDate, long endDate, Set<AuditType> auditTypes) throws AuditException {
+
+        validateParameters(dashboardTitle,dashboardType, businessService, businessApp, beginDate, endDate);
 
         DashboardReviewResponse dashboardReviewResponse = new DashboardReviewResponse();
 
@@ -89,6 +92,20 @@ public class DashboardAuditServiceImpl implements DashboardAuditService {
         return dashboardReviewResponse;
     }
 
+    private void validateParameters(String dashboardTitle, DashboardType dashboardType, String businessService, String businessApp, long beginDate, long endDate) throws AuditException{
+
+        if (beginDate <= 0 || endDate <=0 || (beginDate >= endDate)) {
+            throw new AuditException("Invalid date range", AuditException.BAD_INPUT_DATA);
+        }
+
+        boolean byTitle = !StringUtils.isEmpty(dashboardTitle) && (dashboardType != null);
+        boolean byBusiness = !StringUtils.isEmpty(businessService) && !StringUtils.isEmpty(businessApp);
+
+        if (!byTitle && !byBusiness) {
+            throw new AuditException("Invalid parameters. Valid query must have a title OR non-null business service and non-null business application", AuditException.BAD_INPUT_DATA);
+        }
+    }
+
 
     /**
      * Finds the dashboard
@@ -100,9 +117,9 @@ public class DashboardAuditServiceImpl implements DashboardAuditService {
      * @return the @Dashboard for a given title, type, business service and app
      * @throws AuditException
      */
-    private Dashboard getDashboard(String title, String type, String busServ, String busApp) throws
+    private Dashboard getDashboard(String title, DashboardType type, String busServ, String busApp) throws
             AuditException {
-        if (!StringUtils.isEmpty(title) && !StringUtils.isEmpty(type)) {
+        if (!StringUtils.isEmpty(title) && (type != null)) {
             return dashboardRepository.findByTitleAndType(title, type);
 
         } else if (!StringUtils.isEmpty(busServ) && !StringUtils.isEmpty(busApp)) {

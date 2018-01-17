@@ -5,26 +5,18 @@ import com.capitalone.dashboard.model.AuditType;
 import java.util.Set;
 
 public class DashboardAuditRequest extends AuditReviewRequest {
-    private String dashboardTitle;
-    private String dashBoardType;
+    private String title;
     private String businessService;
     private String businessApplication;
-    private Set<AuditType> auditTypes;
+    private Set<AuditType> auditType;
 
-    public String getDashboardTitle() {
-        return dashboardTitle;
+
+    public String getTitle() {
+        return title;
     }
 
-    public void setDashboardTitle(String dashboardTitle) {
-        this.dashboardTitle = dashboardTitle;
-    }
-
-    public String getDashBoardType() {
-        return dashBoardType;
-    }
-
-    public void setDashBoardType(String dashBoardType) {
-        this.dashBoardType = dashBoardType;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getBusinessService() {
@@ -43,11 +35,11 @@ public class DashboardAuditRequest extends AuditReviewRequest {
         this.businessApplication = businessApplication;
     }
 
-    public Set<AuditType> getAuditTypes() {
-        return auditTypes;
+    public Set<AuditType> getAuditType() {
+        return auditType;
     }
 
-    public void setAuditTypes(Set<AuditType> auditTypes) {
-        this.auditTypes = auditTypes;
+    public void setAuditType(Set<AuditType> auditType) {
+        this.auditType = auditType;
     }
 }

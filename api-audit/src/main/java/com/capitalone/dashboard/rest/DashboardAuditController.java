@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.rest;
 
 import com.capitalone.dashboard.model.AuditException;
+import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.request.DashboardAuditRequest;
 import com.capitalone.dashboard.response.DashboardReviewResponse;
 import com.capitalone.dashboard.service.DashboardAuditService;
@@ -34,9 +35,9 @@ public class DashboardAuditController {
      */
     @RequestMapping(value = "/dashboardReview", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<DashboardReviewResponse> dashboardReview(@Valid DashboardAuditRequest request) throws AuditException {
-        DashboardReviewResponse dashboardReviewResponse = dashboardAuditService.getDashboardReviewResponse(request.getDashboardTitle(), request.getDashBoardType(),
+        DashboardReviewResponse dashboardReviewResponse = dashboardAuditService.getDashboardReviewResponse(request.getTitle(), DashboardType.Team,
                 request.getBusinessService(), request.getBusinessApplication(),
-                request.getBeginDate(), request.getEndDate(), request.getAuditTypes());
+                request.getBeginDate(), request.getEndDate(), request.getAuditType());
 
         return ResponseEntity.ok().body(dashboardReviewResponse);
     }
