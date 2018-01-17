@@ -3,8 +3,7 @@ FROM docker.io/openjdk:8-jre
 
 MAINTAINER Hygieia@capitalone.com
 
-RUN \
-  mkdir /hygieia
+RUN mkdir /hygieia /hygieia/config
 
 COPY *.jar /hygieia/
 COPY xldeploy-properties-builder.sh /hygieia/
@@ -14,5 +13,5 @@ WORKDIR /hygieia
 VOLUME ["/hygieia/logs"]
 
 CMD ./xldeploy-properties-builder.sh && \
-  java -jar xldeploy-deployment-collector*.jar --spring.config.location=/hygieia/hygieia-xldeploy-deployment-collector.properties
+  java -jar xldeploy-deployment-collector*.jar --spring.config.location=/hygieia/config/hygieia-xldeploy-deployment-collector.properties
 

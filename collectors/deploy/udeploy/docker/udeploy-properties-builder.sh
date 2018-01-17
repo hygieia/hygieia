@@ -13,7 +13,7 @@ then
         #for testing locally
         PROP_FILE=application.properties
 else 
-	PROP_FILE=hygieia-udeploy-deployment-collector.properties
+	PROP_FILE=config/hygieia-udeploy-deployment-collector.properties
 fi
   
 if [ "$MONGO_PORT" != "" ]; then

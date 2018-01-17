@@ -19,7 +19,7 @@
   <repositories>
     <repository>
       <id>atlassian-public</id>
-      <url>https://m2proxy.atlassian.com/repository/public</url>
+      <url>https://maven.atlassian.com/repository/public</url>
       <snapshots>
         <enabled>true</enabled>
         <updatePolicy>daily</updatePolicy>
@@ -35,7 +35,7 @@
   <pluginRepositories>
     <pluginRepository>
       <id>atlassian-public</id>
-      <url>https://m2proxy.atlassian.com/repository/public</url>
+      <url>https://maven.atlassian.com/repository/public</url>
       <releases>
         <enabled>true</enabled>
         <checksumPolicy>warn</checksumPolicy>
