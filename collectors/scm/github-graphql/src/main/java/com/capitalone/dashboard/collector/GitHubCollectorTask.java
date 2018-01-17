@@ -204,11 +204,11 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                     repo.getErrors().add(error);
                 } catch (RestClientException | MalformedURLException ex) {
                     LOG.error("Error fetching commits for:" + repo.getRepoUrl(), ex);
-                    CollectionError error = new CollectionError(CollectionError.UNKNOWN_HOST, repo.getRepoUrl());
+                    CollectionError error = new CollectionError(CollectionError.UNKNOWN_HOST, ex.getMessage());
                     repo.getErrors().add(error);
                 } catch (HygieiaException he) {
                     LOG.error("Error fetching commits for:" + repo.getRepoUrl(), he);
-                    CollectionError error = new CollectionError(he.getErrorCode() + " " + he.getMessage(), repo.getRepoUrl());
+                    CollectionError error = new CollectionError(String.valueOf(he.getErrorCode()), he.getMessage());
                     repo.getErrors().add(error);
                 }
                 gitHubRepoRepository.save(repo);

@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.service;
 
+import com.capitalone.dashboard.ApiSettings;
 import com.capitalone.dashboard.evaluator.Evaluator;
 import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.AuditType;
@@ -28,16 +29,18 @@ public class DashboardAuditServiceImpl implements DashboardAuditService {
     private final DashboardRepository dashboardRepository;
     private final CmdbRepository cmdbRepository;
     private final DashboardAuditModel auditModel;
+    private final ApiSettings apiSettings;
 
 
 //    private static final Log LOGGER = LogFactory.getLog(DashboardAuditServiceImpl.class);
 
     @Autowired
-    public DashboardAuditServiceImpl(DashboardRepository dashboardRepository, CmdbRepository cmdbRepository, DashboardAuditModel auditModel) {
+    public DashboardAuditServiceImpl(DashboardRepository dashboardRepository, CmdbRepository cmdbRepository, DashboardAuditModel auditModel, ApiSettings apiSettings) {
 
         this.dashboardRepository = dashboardRepository;
         this.cmdbRepository = cmdbRepository;
         this.auditModel = auditModel;
+        this.apiSettings = apiSettings;
     }
 
     /**
@@ -98,6 +101,9 @@ public class DashboardAuditServiceImpl implements DashboardAuditService {
             throw new AuditException("Invalid date range", AuditException.BAD_INPUT_DATA);
         }
 
+        if ((endDate - beginDate) > 24*60*60*1000*apiSettings.getMaxDaysRangeForQuery()) {
+            throw new AuditException("Invalid date range. Maximum " + apiSettings.getMaxDaysRangeForQuery() + " days of data allowed.", AuditException.BAD_INPUT_DATA);
+        }
         boolean byTitle = !StringUtils.isEmpty(dashboardTitle) && (dashboardType != null);
         boolean byBusiness = !StringUtils.isEmpty(businessService) && !StringUtils.isEmpty(businessApp);
 
