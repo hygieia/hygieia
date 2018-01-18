@@ -1,233 +1,129 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.ApiSettings;
-import com.capitalone.dashboard.model.CodeQuality;
-import com.capitalone.dashboard.model.Comment;
+import com.capitalone.dashboard.common.TestUtils;
+import com.capitalone.dashboard.config.FongoConfig;
+import com.capitalone.dashboard.config.TestConfig;
+import com.capitalone.dashboard.model.AuditException;
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Commit;
-import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitRequest;
-import com.capitalone.dashboard.model.TestResult;
-import com.capitalone.dashboard.model.TestSuiteType;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
+import com.capitalone.dashboard.repository.CollectorItemRepository;
+import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
-import com.capitalone.dashboard.request.CodeReviewAuditRequest;
-import com.capitalone.dashboard.response.CodeQualityAuditResponse;
-import com.capitalone.dashboard.status.CodeQualityAuditStatus;
+import com.capitalone.dashboard.response.CodeReviewAuditResponse;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.github.fakemongo.junit.FongoRule;
+import com.google.common.io.Resources;
+import com.google.gson.Gson;
+import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.ArrayList;
+import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {TestConfig.class, FongoConfig.class})
+@DirtiesContext
+
 public class DashboardAuditServiceTest {
 
-    @Mock
+    @Autowired
+    private DashboardRepository dashboardRepository;
+    @Autowired
+    private ComponentRepository componentRepository;
+    @Autowired
+    private CollectorRepository collectorRepository;
+    @Autowired
+    private CollectorItemRepository collectorItemRepository;
+
+    @Autowired
     private GitRequestRepository gitRequestRepository;
-    @Mock
+    @Autowired
     private CommitRepository commitRepository;
-    @Mock
-    private CodeQualityRepository codeQualityRepository;
-    @Mock
-    private TestResultRepository testResultRepository;
-    @Mock
-    private ApiSettings settings;
 
-    @InjectMocks
-    private DashboardAuditServiceImpl auditService;
 
-//    @Test
-//    public void emptyPeerReview() {
-//        when(settings.getPeerReviewContexts()).thenReturn("foo");
-//        GitRequest gitRequest = new GitRequest();
-//        assertFalse(auditService.computePeerReviewStatus(gitRequest, new CodeReviewAuditResponse()));
-//    }
+    public class CustomObjectMapper extends ObjectMapper {
 
-//    @Test
-//    public void peerReviewWithCommitStatus() {
-//        when(settings.getPeerReviewContexts()).thenReturn("foo");
-//        GitRequest gitRequest = new GitRequest();
-//        List<CommitStatus> commitStatuses = new ArrayList<>();
-//        CommitStatus status = new CommitStatus();
-//        status.setContext("bar");
-//        status.setState("SUCCESS");
-//        commitStatuses.add(status);
-//        gitRequest.setCommitStatuses(commitStatuses);
-//        assertFalse(auditService.computePeerReviewStatus(gitRequest, new CodeReviewAuditResponse()));
-//        status.setContext("foo");
-//        status.setState(null);
-//        assertFalse(auditService.computePeerReviewStatus(gitRequest, new CodeReviewAuditResponse()));
-//        status.setState("SUCCESS");
-//        assertTrue(auditService.computePeerReviewStatus(gitRequest, new CodeReviewAuditResponse()));
-//    }
-//
-//    @Test
-//    public void peerReviewWithReviews() {
-//        when(settings.getPeerReviewContexts()).thenReturn("foo");
-//        GitRequest gitRequest = new GitRequest();
-//        Review review = new Review();
-//        review.setState("PENDING");
-//        List<Review> reviews = new ArrayList<>();
-//        reviews.add(review);
-//        gitRequest.setReviews(reviews);
-//        assertFalse(auditService.computePeerReviewStatus(gitRequest, new CodeReviewAuditResponse()));
-//        review.setState("APPROVED");
-//        assertTrue(auditService.computePeerReviewStatus(gitRequest, new CodeReviewAuditResponse()));
-//        List<CommitStatus> commitStatuses = new ArrayList<>();
-//        CommitStatus status = new CommitStatus();
-//        commitStatuses.add(status);
-//        gitRequest.setCommitStatuses(commitStatuses);
-//        status.setContext("foo");
-//        status.setState(null);
-//        assertFalse(auditService.computePeerReviewStatus(gitRequest, new CodeReviewAuditResponse()));
-//    }
+        public CustomObjectMapper() {
+            SimpleModule module = new SimpleModule("ObjectIdModule");
+            this.registerModule(module);
+        }
+    }
 
-    @Test
-    public void shouldGetPullRequestsForRepoAndBranch() {
+    @Rule
+    public FongoRule fongoRule = new FongoRule();
 
-        CodeReviewAuditRequest request = new CodeReviewAuditRequest();
-        request.setRepo("http://test.git.com");
-        request.setBranch("master");
-        request.setBeginDate(1L);
-        request.setEndDate(2L);
+    @Autowired
+    private CodeReviewAuditService codeReviewAuditService;
 
-        List<GitRequest> gitRequests = new ArrayList<>();
-        GitRequest gitRequest = new GitRequest();
-        gitRequest.setScmUrl("scmUrl");
-        gitRequest.setScmRevisionNumber("revNum");
-        gitRequest.setScmAuthor("bob");
-        gitRequest.setTimestamp(2);
-        gitRequest.setUserId("bobsid");
-        List<Comment> comments = new ArrayList<>();
-        Comment comment = new Comment();
-        comment.setBody("Some comment");
-        comment.setUser("someuser");
-        comments.add(comment);
-        gitRequest.setComments(comments);
 
-        gitRequest.setBaseSha("acd323e123abc323a123a");
-
-        List<Comment> reviewComments = new ArrayList<>();
-        Comment reviewComment = new Comment();
-        reviewComment.setBody("Some review comment");
-        reviewComment.setUser("anotheruser");
-        reviewComments.add(reviewComment);
-//        gitRequest.setReviewComments(reviewComments);
-
-        gitRequests.add(gitRequest);
-
-        when(gitRequestRepository.findByScmUrlIgnoreCaseAndScmBranchIgnoreCaseAndCreatedAtGreaterThanEqualAndMergedAtLessThanEqual(
-                request.getRepo(), request.getBranch(), request.getBeginDate(), request.getEndDate())).thenReturn(gitRequests);
-        assertTrue(gitRequests.contains(gitRequest));
+    @Before
+    public void loadStuff() throws IOException, AuditException {
+        TestUtils.loadDashBoard(dashboardRepository);
+        TestUtils.loadComponent(componentRepository);
+        TestUtils.loadCollectorItems(collectorItemRepository);
+        TestUtils.loadCommits(commitRepository);
+        TestUtils.loadCollector(collectorRepository);
+        TestUtils.loadPullRequests(gitRequestRepository);
 
     }
 
     @Test
-    public void shouldGetCommitsBySha() {
-        List<Commit> baseCommits = new ArrayList<>();
-        Commit commit = new Commit();
-        commit.setId(new ObjectId());
-        commit.setType(CommitType.New);
-        commit.setScmCommitLog("some commit log");
-        commit.setScmRevisionNumber("acd323e123abc323a123a");
-        baseCommits.add(commit);
-
-        when(commitRepository.findByScmRevisionNumber("acd323e123abc323a123a")).thenReturn(baseCommits);
-
-        assertTrue(baseCommits.contains(commit));
+    public void runTests() throws AuditException, IOException {
+        for (CollectorItem item : collectorItemRepository.findAll()) {
+            Collector collector = collectorRepository.findOne(item.getCollectorId());
+            if ((collector != null) && (collector.getCollectorType() == CollectorType.SCM)) {
+                String url = (String) item.getOptions().get("url");
+                String branch = (String) item.getOptions().get("branch");
+                List<CodeReviewAuditResponse> actual = (List<CodeReviewAuditResponse>) codeReviewAuditService.getPeerReviewResponses(url, branch, "GitHub", 0L, 1513106560000L);
+                List<CodeReviewAuditResponse> expected = (List<CodeReviewAuditResponse>) getExpected(url);
+                assertThat(actual.size()).isEqualByComparingTo(expected.size());
+                for (int i = 0; i < actual.size(); i++) {
+                    CodeReviewAuditResponse lhs = actual.get(i);
+                    CodeReviewAuditResponse rhs = expected.get(i);
+                    List<Commit> lhsCommit = lhs.getCommits();
+                    List<Commit> rhsCommit = rhs.getCommits();
+                    GitRequest lhsPR = lhs.getPullRequest();
+                    GitRequest rhsPR = rhs.getPullRequest();
+                    assertThat(lhs).isEqualToComparingOnlyGivenFields(rhs, "scmUrl", "scmBranch", "auditStatuses");
+                    boolean bothNull = (lhsPR == null) && (rhsPR == null);
+                    //TODO: Manually add more assertions.
+                    if (bothNull) {
+                        continue;
+                    }
+                    assertThat(lhsPR).isEqualToComparingOnlyGivenFields(rhsPR, "number");
+                }
+            }
+        }
     }
-//    @Test
-//    public void shouldGetgetCodeQualityAuditDetailsforComponentAndVersion() {
-//    	String component = "BAPHYGIEIA";
-//    	String artifactVersion = "2.0.5";
-//
-//
-//    	CodeQualityAuditRequest request = new CodeQualityAuditRequest();
-//    	request.setArtifactVersion(artifactVersion);
-//
-//    	ObjectId collectorItemId = new ObjectId("58b945a890e46b264b95127d");
-//    	String version = "2.0.5";
-//
-//    	List<CodeQualityAuditResponse> responses = new ArrayList<>();
-//    	CodeQualityAuditResponse response = new CodeQualityAuditResponse();
-//    	List<CodeQuality> qualities = new ArrayList<>();
-//    	CodeQuality quality = new CodeQuality();
-//
-//    	quality.setVersion(version);
-//    	quality.setUrl("https://sonar.com");
-//    	quality.setCollectorItemId(collectorItemId);
-//    	quality.setName("sampleProject");
-//    	qualities.add(quality);
-//
-//
-//    	response.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_OK);
-//    	responses.add(response);
-//
-//    	when(codeQualityRepository.findByCollectorItemIdAndVersionOrderByTimestampDesc(collectorItemId, version)).thenReturn(qualities);
-//    	assertTrue(qualities.contains(quality));
-//
-//    }
-    
-    @Test
-    public void shouldGetgetCodeQualityAuditDetailsforArtifactMetatdatan() {
-    	String artifactGroup = "com.capitalone.Hygieia";
-    	String artifactName = "audit-api";
-    	String artifactVersion = "2.0.5";
 
-    	
-    	
-    	List<CodeQualityAuditResponse> responses = new ArrayList<>();
-    	CodeQualityAuditResponse response = new CodeQualityAuditResponse();
-    	List<CodeQuality> qualities = new ArrayList<>();
-    	CodeQuality quality = new CodeQuality();
-    	
-    	quality.setVersion(artifactVersion);
-    	quality.setUrl("https://sonar.com");
-    	quality.setName("sampleProject");
-    	qualities.add(quality);
-    	
-    	response.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_AUDIT_OK);
-    	responses.add(response);
-    	
-    	when(codeQualityRepository.findByNameAndVersionOrderByTimestampDesc(artifactGroup+ ":" + artifactName,artifactVersion)).thenReturn(qualities);
-    	assertTrue(qualities.contains(quality));
-    	
+    private Collection<CodeReviewAuditResponse> getExpected(String url) throws IOException {
+        String filename = "./expected/" + url.substring(url.lastIndexOf("/") + 1) + ".json";
+        CustomObjectMapper objectMapper = new CustomObjectMapper();
+        String json = IOUtils.toString(Resources.getResource(filename));
+        return objectMapper.readValue(json, new TypeReference<List<CodeReviewAuditResponse>>() {
+        });
     }
-    
-    @Test
-    public void shouldGetTestExecutionDetails() {
-    	String jobUrl = "https://testurl";
-    	List<TestResult> testResults = new ArrayList<>();
-    	TestResult testResult = new TestResult();
-    	long timestamp = 1478136705000L;
-    	long duration = 123456;
-    	long beginDate = 1478136705000L;
-    	long endDate = 1497465958000L;
 
-    	
-    	testResult.setFailureCount(0);
-    	testResult.setSuccessCount(0);
-    	testResult.setType(TestSuiteType.Functional);
-    	testResult.setUrl(jobUrl);
-    	testResult.setTimestamp(timestamp);
-    	testResult.setDuration(duration);
-    	
-    	testResults.add(testResult);
-    	
-    	when(testResultRepository.findByUrlAndTimestampGreaterThanEqualAndTimestampLessThanEqual(jobUrl,beginDate,endDate)).thenReturn(testResults);
-
-    	assertTrue(testResults.contains(testResult));
-    	
-    	
-    }
-    
 }

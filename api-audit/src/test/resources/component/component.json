@@ -1,0 +1,38 @@
+{
+  "name": "TestAudit",
+  "collectorItems": {
+    "SCM": [
+      {
+        "enabled": true,
+        "errors": [],
+        "pushed": false,
+        "collectorId": {
+          "timestamp": 1514425811,
+          "machineIdentifier": 1084966,
+          "processIdentifier": 27772,
+          "counter": 16289003
+        },
+        "lastUpdated": 0,
+        "options": {
+          "password": "",
+          "scm": "Github",
+          "branch": "master",
+          "userID": "",
+          "url": "https://mygithub.com/one/two"
+        },
+        "id": {
+          "timestamp": 1515646073,
+          "machineIdentifier": 4693261,
+          "processIdentifier": 6916,
+          "counter": 3010191
+        }
+      }
+    ]
+  },
+  "id": {
+    "timestamp": 1515645665,
+    "machineIdentifier": 4693261,
+    "processIdentifier": 6916,
+    "counter": 3010182
+  }
+}
