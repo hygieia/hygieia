@@ -160,7 +160,11 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
                 for (Object entry : array) {
                     JSONObject jsonEntry = (JSONObject) entry;
                     String metricPath = getString(jsonEntry, "metricPath");
-                    JSONObject mObj = (JSONObject) getJsonArray(jsonEntry, "metricValues").get(0);
+                    JSONArray metricValues =  getJsonArray(jsonEntry, "metricValues");
+                    if (metricValues.size() == 0){
+                        continue;
+                    }
+                    JSONObject mObj = (JSONObject) metricValues.get(0);
                     Long metricValue = getLong(mObj, "value");
 
                     PerformanceMetric metric = new PerformanceMetric();
