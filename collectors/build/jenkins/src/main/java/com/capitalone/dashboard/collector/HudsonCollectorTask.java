@@ -3,14 +3,14 @@ package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.BaseModel;
 import com.capitalone.dashboard.model.Build;
-import com.capitalone.dashboard.model.CollItemCfgHist;
 import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorItemConfigHistory;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.HudsonCollector;
 import com.capitalone.dashboard.model.HudsonJob;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.BuildRepository;
-import com.capitalone.dashboard.repository.CollItemCfgHistRepository;
+import com.capitalone.dashboard.repository.CollItemConfigHistoryRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.HudsonCollectorRepository;
 import com.capitalone.dashboard.repository.HudsonJobRepository;
@@ -24,10 +24,12 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestClientException;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 
@@ -42,7 +44,7 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
     private final HudsonCollectorRepository hudsonCollectorRepository;
     private final HudsonJobRepository hudsonJobRepository;
     private final BuildRepository buildRepository;
-    private final CollItemCfgHistRepository configRepository;
+    private final CollItemConfigHistoryRepository configRepository;
     private final HudsonClient hudsonClient;
     private final HudsonSettings hudsonSettings;
     private final ComponentRepository dbComponentRepository;
@@ -51,7 +53,7 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
     public HudsonCollectorTask(TaskScheduler taskScheduler,
                                HudsonCollectorRepository hudsonCollectorRepository,
                                HudsonJobRepository hudsonJobRepository,
-                               BuildRepository buildRepository, CollItemCfgHistRepository configRepository, HudsonClient hudsonClient,
+                               BuildRepository buildRepository, CollItemConfigHistoryRepository configRepository, HudsonClient hudsonClient,
                                HudsonSettings hudsonSettings,
                                ComponentRepository dbComponentRepository) {
         super(taskScheduler, "Hudson");
@@ -170,7 +172,7 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
             }
 
             //if the collector id of the collector item for the job in the repo does not match with the collector ID, delete it.
-            if (!job.getCollectorId().equals(collector.getId())) {
+            if (!Objects.equals(job.getCollectorId(), collector.getId())) {
                 deleteJobList.add(job);
             }
 
@@ -208,7 +210,7 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
 
             ArrayList<BaseModel> builds = Lists.newArrayList(nullSafe(buildsSet));
 
-            builds.sort((BaseModel b1, BaseModel b2) -> Integer.valueOf(((Build)b1).getNumber()) - Integer.valueOf(((Build)b2).getNumber()));
+            builds.sort(Comparator.comparingInt(b -> Integer.valueOf(((Build) b).getNumber())));
             for (BaseModel buildSummary : builds) {
                 if (isNewBuild(job, (Build)buildSummary)) {
                     Build build = hudsonClient.getBuildDetails(((Build)buildSummary)
@@ -241,12 +243,12 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
 
             ArrayList<BaseModel> configs = Lists.newArrayList(nullSafe(configsSet));
 
-            configs.sort((BaseModel b1, BaseModel b2) -> new Date(((CollItemCfgHist)b1).getTimestamp()).compareTo(new Date(((CollItemCfgHist)b2).getTimestamp())));
+            configs.sort(Comparator.comparing(b -> new Date(((CollectorItemConfigHistory) b).getTimestamp())));
 
             for (BaseModel config : configs) {
-                if (config != null && isNewConfig(job, (CollItemCfgHist)config)) {
-                    ((CollItemCfgHist)config).setCollectorItemId(job.getId());
-                    configRepository.save((CollItemCfgHist)config);
+                if (config != null && isNewConfig(job, (CollectorItemConfigHistory)config)) {
+                    ((CollectorItemConfigHistory)config).setCollectorItemId(job.getId());
+                    configRepository.save((CollectorItemConfigHistory)config);
                     count++;
                 }
             }
@@ -255,7 +257,7 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
     }
 
     private Set<BaseModel> nullSafe(Set<BaseModel> builds) {
-        return builds == null ? new HashSet<BaseModel>() : builds;
+        return builds == null ? new HashSet<>() : builds;
     }
 
     /**
@@ -351,8 +353,7 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
                 build.getNumber()) == null;
     }
 
-    private boolean isNewConfig(HudsonJob job, CollItemCfgHist config) {
-        return configRepository.findByCollectorItemIdAndJobAndTimestamp(job.getId(),
-                config.getJob(), config.getTimestamp()) == null;
+    private boolean isNewConfig(HudsonJob job, CollectorItemConfigHistory config) {
+        return configRepository.findByCollectorItemIdAndTimestamp(job.getId(),config.getTimestamp()) == null;
     }
 }

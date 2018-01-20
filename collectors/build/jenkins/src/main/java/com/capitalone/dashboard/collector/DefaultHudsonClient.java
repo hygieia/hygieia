@@ -3,9 +3,9 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.model.BaseModel;
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.BuildStatus;
-import com.capitalone.dashboard.model.CollItemCfgHist;
 import com.capitalone.dashboard.model.ConfigHistOperationType;
 import com.capitalone.dashboard.model.HudsonJob;
+import com.capitalone.dashboard.model.HudsonJobConfig;
 import com.capitalone.dashboard.model.RepoBranch;
 import com.capitalone.dashboard.model.SCM;
 import com.capitalone.dashboard.util.Supplier;
@@ -37,15 +37,18 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 
 /**
@@ -119,7 +122,7 @@ public class DefaultHudsonClient implements HudsonClient {
         	LOG.info("Fetching jobs " + i + "/" + jobsCount + " pageSize " + settings.getPageSize() + "...");
         	
 	        try {
-                String url = joinURL(instanceUrl, API_SUFFIX + buildJobQueryString() + URLEncoder.encode("{" + i + "," + (i + pageSize) + "}", "UTF-8"));
+                String url = joinURL(instanceUrl, new String[]{API_SUFFIX + buildJobQueryString() + URLEncoder.encode("{" + i + "," + (i + pageSize) + "}", "UTF-8")});
 	            ResponseEntity<String> responseEntity = makeRestCall(url);
 	            if (responseEntity == null) {
 	            	break;
@@ -154,8 +157,6 @@ public class DefaultHudsonClient implements HudsonClient {
 	        } catch (RestClientException rce) {
 	            LOG.error("client exception loading jobs details", rce);
 	            throw rce;
-	        } catch (MalformedURLException mfe) {
-	            LOG.error("malformed url for loading jobs details", mfe);
 	        } catch (UnsupportedEncodingException uee) {
 	        	LOG.error("unsupported encoding for loading jobs details", uee);
 			} catch (URISyntaxException e1) {
@@ -167,14 +168,14 @@ public class DefaultHudsonClient implements HudsonClient {
         return result;
     }
 
-    public String buildJobQueryString () {
+    private String buildJobQueryString() {
         StringBuilder query = new StringBuilder(JOB_QUERY);
         int depth = settings.getFolderDepth();
-        for (int i = 1; i < depth; i++) {
-            query.insert((query.length()-i), ",");
-            query.insert((query.length()-i), JOB_QUERY.substring(0,JOB_QUERY.length()-1));
-            query.insert((query.length()-i), "]");
-        }
+        IntStream.range(1, depth).forEach(i -> {
+            query.insert((query.length() - i), ",");
+            query.insert((query.length() - i), JOB_QUERY.substring(0, JOB_QUERY.length() - 1));
+            query.insert((query.length() - i), "]");
+        });
         return query.toString();
     }
     
@@ -188,7 +189,7 @@ public class DefaultHudsonClient implements HudsonClient {
     	int result = 0;
     	
     	try {
-            String url = joinURL(instanceUrl, JOBS_URL_SUFFIX);
+            String url = joinURL(instanceUrl, new String[]{JOBS_URL_SUFFIX});
             ResponseEntity<String> responseEntity = makeRestCall(url);
             if (responseEntity == null) {
             	return result;
@@ -208,8 +209,6 @@ public class DefaultHudsonClient implements HudsonClient {
         } catch (RestClientException rce) {
             LOG.error("client exception loading jobs", rce);
             throw rce;
-        } catch (MalformedURLException mfe) {
-            LOG.error("malformed url for loading jobs", mfe);
         } catch (URISyntaxException e1) {
         	LOG.error("wrong syntax url for loading jobs", e1);
 		}
@@ -272,14 +271,14 @@ public class DefaultHudsonClient implements HudsonClient {
                 for (Object config : jsonConfigs) {
                     JSONObject jsonConfig = (JSONObject) config;
 
-                    CollItemCfgHist hudsonConfig = new CollItemCfgHist();
-                    hudsonConfig.setJob(getString(jsonConfig, "currentName"));
+                    HudsonJobConfig hudsonConfig = new HudsonJobConfig();
+                    hudsonConfig.setCurrentJobName(getString(jsonConfig, "currentName"));
                     hudsonConfig.setTimestamp(timestamp(jsonConfig, "date"));
                     hudsonConfig.setHasConfig((getBoolean(jsonConfig, "hasConfig")));
-                    hudsonConfig.setJob(getString(jsonConfig, "job"));
-                    hudsonConfig.setOldName(getString(jsonConfig, "oldName"));
+                    hudsonConfig.setJobUrl(getString(jsonConfig, "job"));
+                    hudsonConfig.setOldJobName(getString(jsonConfig, "oldName"));
                     hudsonConfig.setOperation(ConfigHistOperationType.fromString(getString(jsonConfig, "operation")));
-                    hudsonConfig.setUser(getString(jsonConfig, "user"));
+                    hudsonConfig.setUserName(getString(jsonConfig, "user"));
                     hudsonConfig.setUserID(getString(jsonConfig, "userID"));
                     hudsonConfig.setJobUrl(jobURL);
 
@@ -310,7 +309,7 @@ public class DefaultHudsonClient implements HudsonClient {
     public Build getBuildDetails(String buildUrl, String instanceUrl) {
         try {
             String newUrl = rebuildJobUrl(buildUrl, instanceUrl);
-            String url = joinURL(newUrl, BUILD_DETAILS_URL_SUFFIX);
+            String url = joinURL(newUrl, new String[]{BUILD_DETAILS_URL_SUFFIX});
             ResponseEntity<String> result = makeRestCall(url);
             String resultJSON = result.getBody();
             if (StringUtils.isEmpty(resultJSON)) {
@@ -465,7 +464,7 @@ public class DefaultHudsonClient implements HudsonClient {
                 	lastBuiltRevision = (JSONObject) jsonAction.get("lastBuiltRevision");
                 }
                 if (lastBuiltRevision != null) {
-                	branches = getJsonArray ((JSONObject) lastBuiltRevision, "branch");
+                	branches = getJsonArray (lastBuiltRevision, "branch");
                 }
                 // As of git plugin 3.0.0, when multiple repos are configured in the git plugin itself instead of MultiSCM plugin, 
             	// they are stored unordered in a HashSet. So it's buggy and we cannot associate the correct branch information.
@@ -610,7 +609,7 @@ public class DefaultHudsonClient implements HudsonClient {
     }
     
     @SuppressWarnings("PMD")
-    protected ResponseEntity<String> makeRestCall(String sUrl) throws MalformedURLException, URISyntaxException {
+    protected ResponseEntity<String> makeRestCall(String sUrl) throws URISyntaxException {
         LOG.debug("Enter makeRestCall " + sUrl);
         URI thisuri = URI.create(sUrl);
         String userInfo = thisuri.getUserInfo();
@@ -626,7 +625,7 @@ public class DefaultHudsonClient implements HudsonClient {
 	        		if ((servers.get(i) != null)) {
 	        			String domain1 = getDomain(sUrl);
 	        			String domain2 = getDomain(servers.get(i));
-	        			if (StringUtils.isNotEmpty(domain1) && StringUtils.isNotEmpty(domain2) && domain1.equals(domain2)
+	        			if (StringUtils.isNotEmpty(domain1) && StringUtils.isNotEmpty(domain2) && Objects.equals(domain1, domain2)
 	        					&& getPort(sUrl) == getPort(servers.get(i))) {
 	                		exactMatchFound = true;	
 	        			}
@@ -660,8 +659,7 @@ public class DefaultHudsonClient implements HudsonClient {
     
     private String getDomain(String url) throws URISyntaxException {
         URI uri = new URI(url);
-        String domain = uri.getHost();
-        return domain;
+        return uri.getHost();
     }
     
     private int getPort(String url) throws URISyntaxException {
@@ -681,9 +679,7 @@ public class DefaultHudsonClient implements HudsonClient {
 
     protected String getLog(String buildUrl) {
         try {
-            return makeRestCall(joinURL(buildUrl, "consoleText")).getBody();
-        } catch (MalformedURLException mfe) {
-            LOG.error("malformed url for build log", mfe);
+            return makeRestCall(joinURL(buildUrl, new String[]{"consoleText"})).getBody();
         } catch (URISyntaxException e) {
         	LOG.error("wrong syntax url for build log", e);
 		}
@@ -692,15 +688,14 @@ public class DefaultHudsonClient implements HudsonClient {
     }
 
     // join a base url to another path or paths - this will handle trailing or non-trailing /'s
-    public static String joinURL(String base, String... paths) throws MalformedURLException {
+    public static String joinURL(String base, String[] paths) {
         StringBuilder result = new StringBuilder(base);
-        for (String path : paths) {
-            String p = path.replaceFirst("^(\\/)+", "");
+        Arrays.stream(paths).map(path -> path.replaceFirst("^(\\/)+", "")).forEach(p -> {
             if (result.lastIndexOf("/") != result.length() - 1) {
                 result.append('/');
             }
             result.append(p);
-        }
+        });
         return result.toString();
     }
 }
