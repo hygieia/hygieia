@@ -1,0 +1,190 @@
+{
+    "data": {
+        "repository": {
+            "pullRequests": {
+                "totalCount": 1,
+                "pageInfo": {
+                    "endCursor": "Y3Vyc29yOnYyOpK5MjAxNy0xMS0xN1QxNjozNzo1OS0wNTowMM4ADKK+",
+                    "hasNextPage": false
+                },
+                "edges": [
+                    {
+                        "cursor": "Y3Vyc29yOnYyOpK5MjAxNy0xMS0xN1QxNjozNzo1OS0wNTowMM4ADKK+",
+                        "node": {
+                            "number": 1,
+                            "mergeable": "UNKNOWN",
+                            "state": "MERGED",
+                            "createdAt": "2017-11-17T21:37:53Z",
+                            "updatedAt": "2017-11-17T21:37:59Z",
+                            "mergedAt": "2017-11-17T21:37:59Z",
+                            "baseRef": {
+                                "target": {
+                                    "oid": "f0ba1758050c55c8bb13fd2e71df2a850ceb00a2"
+                                }
+                            },
+                            "baseRefName": "master",
+                            "title": "merging commit to dev into master",
+                            "mergeCommit": {
+                                "oid": "f0ba1758050c55c8bb13fd2e71df2a850ceb00a2"
+                            },
+                            "headRepository": {
+                                "name": "2-unreviewed-merge",
+                                "url": "https://mygithub.com/compliance-scenario/2-unreviewed-merge"
+                            },
+                            "headRef": {
+                                "target": {
+                                    "oid": "b7e2a7b6610d044a560ffa450789728a5ff24206"
+                                }
+                            },
+                            "headRefName": "dev",
+                            "author": {
+                                "login": "ghone",
+                                "resourcePath": "/ghone"
+                            },
+                            "commits": {
+                                "totalCount": 1,
+                                "nodes": [
+                                    {
+                                        "commit": {
+                                            "oid": "b7e2a7b6610d044a560ffa450789728a5ff24206",
+                                            "parents": {
+                                                "nodes": [
+                                                    {
+                                                        "oid": "3913c72e49a7247c617607d5da2089be6a85dc6a"
+                                                    }
+                                                ]
+                                            },
+                                            "committedDate": "2017-11-17T21:37:14Z",
+                                            "message": "a commit to dev",
+                                            "status": null,
+                                            "author": {
+                                                "name": "Author, One",
+                                                "date": "2017-11-17T13:37:14-08:00",
+                                                "user": {
+                                                    "login": "ghone"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "comments": {
+                                "totalCount": 0,
+                                "nodes": []
+                            },
+                            "reviews": {
+                                "totalCount": 0,
+                                "nodes": []
+                            }
+                        }
+                    }
+                ]
+            },
+            "ref": {
+                "target": {
+                    "history": {
+                        "pageInfo": {
+                            "endCursor": "f0ba1758050c55c8bb13fd2e71df2a850ceb00a2 2",
+                            "hasNextPage": false
+                        },
+                        "edges": [
+                            {
+                                "cursor": "f0ba1758050c55c8bb13fd2e71df2a850ceb00a2 0",
+                                "node": {
+                                    "oid": "f0ba1758050c55c8bb13fd2e71df2a850ceb00a2",
+                                    "parents": {
+                                        "nodes": [
+                                            {
+                                                "oid": "3913c72e49a7247c617607d5da2089be6a85dc6a"
+                                            },
+                                            {
+                                                "oid": "b7e2a7b6610d044a560ffa450789728a5ff24206"
+                                            }
+                                        ]
+                                    },
+                                    "message": "Merge pull request #1 from compliance-scenario/dev\n\nmerging commit to dev into master",
+                                    "committer": {
+                                        "user": null,
+                                        "name": "GitHub Enterprise",
+                                        "date": "2017-11-17T13:37:58-08:00"
+                                    },
+                                    "author": {
+                                        "name": "Author, One",
+                                        "user": {
+                                            "login": "ghone"
+                                        },
+                                        "email": "Author.One@mycompany.com",
+                                        "date": "2017-11-17T13:37:58-08:00"
+                                    },
+                                    "status": null
+                                }
+                            },
+                            {
+                                "cursor": "f0ba1758050c55c8bb13fd2e71df2a850ceb00a2 1",
+                                "node": {
+                                    "oid": "b7e2a7b6610d044a560ffa450789728a5ff24206",
+                                    "parents": {
+                                        "nodes": [
+                                            {
+                                                "oid": "3913c72e49a7247c617607d5da2089be6a85dc6a"
+                                            }
+                                        ]
+                                    },
+                                    "message": "a commit to dev",
+                                    "committer": {
+                                        "user": null,
+                                        "name": "GitHub Enterprise",
+                                        "date": "2017-11-17T13:37:14-08:00"
+                                    },
+                                    "author": {
+                                        "name": "Author, One",
+                                        "user": {
+                                            "login": "ghone"
+                                        },
+                                        "email": "Author.One@mycompany.com",
+                                        "date": "2017-11-17T13:37:14-08:00"
+                                    },
+                                    "status": null
+                                }
+                            },
+                            {
+                                "cursor": "f0ba1758050c55c8bb13fd2e71df2a850ceb00a2 2",
+                                "node": {
+                                    "oid": "3913c72e49a7247c617607d5da2089be6a85dc6a",
+                                    "parents": {
+                                        "nodes": []
+                                    },
+                                    "message": "Initial commit",
+                                    "committer": {
+                                        "user": {
+                                            "login": "ghone"
+                                        },
+                                        "name": "Author, One",
+                                        "date": "2017-11-17T13:35:55-08:00"
+                                    },
+                                    "author": {
+                                        "name": "Author, One",
+                                        "user": {
+                                            "login": "ghone"
+                                        },
+                                        "email": "Author.One@mycompany.com",
+                                        "date": "2017-11-17T13:35:55-08:00"
+                                    },
+                                    "status": null
+                                }
+                            }
+                        ]
+                    }
+                }
+            },
+            "issues": {
+                "totalCount": 0,
+                "pageInfo": {
+                    "endCursor": null,
+                    "hasNextPage": false
+                },
+                "edges": []
+            }
+        }
+    }
+}

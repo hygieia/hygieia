@@ -3,16 +3,16 @@
         <div class="widget-detail-heading">
             <div class="row">
                 <div class="col-md-3 build-desc">
-                    <span class="build-number">Run# {{testDetails.testResult.executionId}}</span>
+                    <span class="build-number">Run# {{testDetails.regresionTestResult.executionId}}</span>
                 </div>
                 <div class="col-md-3 build-time">
-                    <span>{{testDetails.testResult.endTime | date:'MMM d, HH:mm:ss'}}</span>
+                    <span>{{testDetails.regresionTestResult.endTime | date:'MMM d, HH:mm:ss'}}</span>
                 </div>
                 <div class="col-md-3 build-duration">
                     <span>Duration: {{testDetails.duration | duration}}</span>
                 </div>
                 <div class="col-md-3 view-in-tool">
-                    <a ng-href="{{::testDetails.testResult.url}}" target="_blank">
+                    <a ng-href="{{::testDetails.regresionTestResult.url}}" target="_blank">
                         View Test Job <span class="fa fa-angle-right"></span>
                     </a>
                 </div>
@@ -23,7 +23,7 @@
         <div class="widget-detail-body">
             <table class="table">
                 <div class="dash-row">
-                    <tbody ng-repeat="capability in testDetails.testResult.testCapabilities" ng-class-odd="'alt'">
+                    <tbody ng-repeat="capability in testDetails.regresionTestResult.testCapabilities" ng-class-odd="'alt'">
                     <tr id="capability.description" class="clickableRow"
                         ng-click="(capability.testSuites.length > 0) ? showCapabilityDetail(capability): null">
                         <td class="pull-left" ng-class="{'widget-font-bold' : (activeCapability==capability.description)}">

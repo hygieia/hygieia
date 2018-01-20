@@ -150,9 +150,9 @@ public class CollectorServiceImpl implements CollectorService {
     // This is to handle scenarios where the option contains user credentials etc. We do not want to create a new collector item -
     // just update the new credentials.
     @Override
-    public CollectorItem createCollectorItemSelectOptions(CollectorItem item, Map<String, Object> allOptions, Map<String, Object> selectOptions) {
+    public CollectorItem createCollectorItemSelectOptions(CollectorItem item, Map<String, Object> allOptions, Map<String, Object> uniqueOptions) {
         List<CollectorItem> existing = customRepositoryQuery.findCollectorItemsBySubsetOptions(
-                item.getCollectorId(), allOptions, selectOptions);
+                item.getCollectorId(), allOptions, uniqueOptions);
 
         if (!CollectionUtils.isEmpty(existing)) {
             item.setId(existing.get(0).getId());   //
