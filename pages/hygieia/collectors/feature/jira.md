@@ -191,36 +191,9 @@ Verify the JIRA collector configuration for the custom fields is setup correctly
 - Connect to the Mongo database using a tool such as RoboMongo and check that the 'feature' or 'team' collection (table) has data.
 - Check the JIRA URL to see if you are getting any team data in response. Example JIRA URL: https://your-jira-base-url/rest/agile/1.0/board?startAt=0.
 - When you run your JIRA collector, check if there are any exceptions in the log.
-- Before running the JIRA collector, make sure you have the following properties configured in your properties file:
+- Before running the JIRA collector, refer to the [Sample Application Properties](#sample-application-properties-file) file for a listing of the jira collector properties. If your JIRA instance uses Boards as Teams (instead of the Teams plugin), then set ```feature.jiraBoardAsTeam``` property to ```true```.
 
-```properties
-feature.pageSize=100
-# Adjust these values as per your needs
-feature.deltaStartDate=2016-03-01T00:00:00.000000
-feature.masterStartDate=2016-03-01T00:00:00.000000
-feature.deltaCollectorItemStartDate=2016-03-01T00:00:00.000000
-# Chron schedule: S M D M Y [Day of the Week]
-feature.cron=0 * * * * *
-# ST Query File Details - Required
-feature.queryFolder=jiraapi-queries
-feature.storyQuery=story
-feature.epicQuery=epic
-# JIRA URL, put in your values
-feature.jiraProxyUrl=
-feature.jiraProxyPort=
-# Put in your values
-feature.jiraBaseUrl=
-feature.jiraQueryEndpoint=rest/api/2/
-# For basic authentication, requires username:password as string in base64
-# This command will make this for you: echo -n username:password | base64
-feature.jiraCredentials=
-feature.jiraIssueTypeNames=Story
-feature.jiraSprintDataFieldName=customfield_10007
-feature.jiraEpicIdFieldName=customfield_10003
-feature.jiraStoryPointsFieldName=customfield_10004
-feature.jiraTeamFieldName=customfield_11248
-feature.jiraBoardAsTeam=true
-```
+
 #### My JIRA widget shows all 0's for estimates
 
 Verify your JIRA collector configuration. Verify that the JIRA collector is pulling in data by observing the logs. Connect to the mongo database using a tool such as RoboMongo and check that the 'feature' collection has data. Check that features associated to an active sprint have the sEstimate (sEstimateTime for hours) field populated.
