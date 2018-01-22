@@ -10,7 +10,7 @@ Configure the JIRA Collector to display and monitor information (related to feat
 
 Hygieia uses Spring Boot to package the collector as an executable JAR file with dependencies.
 
-### Setup Instructions
+## Setup Instructions
 
 To configure the JIRA Collector, execute the following steps:
 
@@ -169,9 +169,9 @@ feature.jiraTeamFieldName=
 feature.jiraBoardAsTeam=false
 ```
 
-#### Troubleshooting
+## Troubleshooting
 
-##### The JIRA collector log does not pull data in for XXXX
+#### The JIRA collector log does not pull data in for XXXX
 
 Verify the JIRA collector configuration for the custom fields is setup correctly. Hit the rest API outlined in the sample application properties above to see what data is being pulled in. A healthy log will look something like this:
 ```
@@ -185,7 +185,7 @@ Verify the JIRA collector configuration for the custom fields is setup correctly
 2016-09-01 07:27:03,752 INFO c.c.d.collector.CollectorTask - Finished 4s
 ```
 
-##### My JIRA widget dropdown does not show any teams.
+#### My JIRA widget dropdown does not show any teams.
 
 - Verify your API container is configured to hit the correct database.
 - Connect to the Mongo database using a tool such as RoboMongo and check that the 'feature' or 'team' collection (table) has data.
@@ -221,23 +221,23 @@ feature.jiraStoryPointsFieldName=customfield_10004
 feature.jiraTeamFieldName=customfield_11248
 feature.jiraBoardAsTeam=true
 ```
-##### My JIRA widget shows all 0's for estimates
+#### My JIRA widget shows all 0's for estimates
 
 Verify your JIRA collector configuration. Verify that the JIRA collector is pulling in data by observing the logs. Connect to the mongo database using a tool such as RoboMongo and check that the 'feature' collection has data. Check that features associated to an active sprint have the sEstimate (sEstimateTime for hours) field populated.
 
-##### My JIRA widget only shows Kanban sprints
+#### My JIRA widget only shows Kanban sprints
 
 To show scrum sprints, there must exist stories with sprints attached to them that are active and have a recent start date. You can verify that this information is being pulled by either hitting the rest API or checking the mongo database in the feature collection.
 
-##### ERROR c.c.d.client.DefaultJiraClient - No result was available from JIRA unexpectedly - defaulting to blank response. The reason for this fault is the following:RestClientException{statusCode=Optional.of(403), errorCollections=[]}
+#### ERROR c.c.d.client.DefaultJiraClient - No result was available from JIRA unexpectedly - defaulting to blank response. The reason for this fault is the following:RestClientException{statusCode=Optional.of(403), errorCollections=[]}
 
 This may happen if you have had too many failed login attempts and a CAPTCHA guard has been triggered. Try logging in to JIRA with a browser successfully to remove the CAPTCHA guard. Verify that the JIRA credentials are correct.
 
-##### My issue is not listed or has not been resolved
+#### My issue is not listed or has not been resolved
 
 Search active and closed issues on GitHub for 'jira'. Chances are your configuration is wrong and someone else has struggled through fixing it in another issue. Please refrain from commenting on closed issues. Github link: https://github.com/capitalone/Hygieia/issues?q=jira
 
-##### In the JIRA widget, the data for features in Done and WIP status exceeds the actual number in the project (where Sprint Type is ‘Kanban’).
+#### In the JIRA widget, the data for features in Done and WIP status exceeds the actual number in the project (where Sprint Type is ‘Kanban’).
 
 For a Kanban board, the API pulls all the issues that match the following criteria:
 
