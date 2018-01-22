@@ -32,4 +32,6 @@ public interface CodeQualityRepository extends CrudRepository<CodeQuality, Objec
     List<CodeQuality> findByNameAndVersion(String name,String version);
 
     List<CodeQuality> findByNameAndVersionOrderByTimestampDesc(String name,String version);
+
+    List<CodeQuality> findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(ObjectId collectorItemId, long beginDate, long endDate);
 }

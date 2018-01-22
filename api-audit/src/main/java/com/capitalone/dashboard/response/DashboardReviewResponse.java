@@ -1,20 +1,35 @@
 package com.capitalone.dashboard.response;
 
-import java.util.List;
+import com.capitalone.dashboard.model.AuditType;
+import com.capitalone.dashboard.status.DashboardAuditStatus;
 
-public class DashboardReviewResponse extends AuditReviewResponse {
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+public class DashboardReviewResponse extends AuditReviewResponse <DashboardAuditStatus> {
     private String dashboardTitle;
+    private String businessService;
+    private String businessApplication;
 
-    List<List<PeerReviewResponse>> allPeerReviewResponses;
+    private Map<AuditType, Collection<AuditReviewResponse>> review = new HashMap<>();
 
-    JobReviewResponse jobReviewResponse;
-    
-	StaticAnalysisResponse staticAnalysisResponse;
-	
-	CodeQualityProfileValidationResponse codeQualityProfileValidationResponse;
-	
-	TestResultsResponse testResultsResponse;
 
+	public String getBusinessService() {
+		return businessService;
+	}
+
+	public void setBusinessService(String businessService) {
+		this.businessService = businessService;
+	}
+
+	public String getBusinessApplication() {
+		return businessApplication;
+	}
+
+	public void setBusinessApplication(String businessApplication) {
+		this.businessApplication = businessApplication;
+	}
 
 	public String getDashboardTitle() {
         return dashboardTitle;
@@ -24,47 +39,20 @@ public class DashboardReviewResponse extends AuditReviewResponse {
         this.dashboardTitle = dashboardTitle;
     }
 
-    public List<List<PeerReviewResponse>> getAllPeerReviewResponses() {
-        return allPeerReviewResponses;
-    }
-
-    public void setAllPeerReviewResponses(List<List<PeerReviewResponse>> allPeerReviewResponses) {
-        this.allPeerReviewResponses = allPeerReviewResponses;
-    }
-
-    public JobReviewResponse getJobReviewResponse() {
-        return jobReviewResponse;
-    }
-
-    public void setJobReviewResponse(JobReviewResponse jobReviewResponse) {
-        this.jobReviewResponse = jobReviewResponse;
-    }
-    
-    
-	public StaticAnalysisResponse getStaticAnalysisResponse() {
-			return staticAnalysisResponse;
+	public Map<AuditType, Collection<AuditReviewResponse>> getReview() {
+		return review;
 	}
 
-	public void setStaticAnalysisResponse(StaticAnalysisResponse staticAnalysisResponse) {
-		this.staticAnalysisResponse = staticAnalysisResponse;
-	}
-	
-	public CodeQualityProfileValidationResponse getCodeQualityProfileValidationResponse() {
-		return codeQualityProfileValidationResponse;
+
+	public void addReview(AuditType type, Collection<AuditReviewResponse> audit) {
+		if (review.get(type) != null) {
+			review.get(type).addAll(audit);
+		} else {
+			review.put(type, audit);
+		}
 	}
 
-	public void setCodeQualityProfileValidationResponse(
-			CodeQualityProfileValidationResponse codeQualityProfileValidationResponse) {
-		this.codeQualityProfileValidationResponse = codeQualityProfileValidationResponse;
+	public void setReview(Map<AuditType, Collection<AuditReviewResponse>> review) {
+		this.review = review;
 	}
-	
-	public TestResultsResponse getTestResultsResponse() {
-		return testResultsResponse;
-	}
-
-	public void setTestResultsResponse(TestResultsResponse testResultsResponse) {
-		this.testResultsResponse = testResultsResponse;
-	}
-
-	
 }

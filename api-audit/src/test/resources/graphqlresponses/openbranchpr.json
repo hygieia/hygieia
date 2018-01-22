@@ -1,0 +1,233 @@
+{
+    "data": {
+        "repository": {
+            "pullRequests": {
+                "totalCount": 1,
+                "pageInfo": {
+                    "endCursor": "Y3Vyc29yOnYyOpK5MjAxNy0xMi0xMlQxMzozNDowNC0wNTowMM4ADTpN",
+                    "hasNextPage": false
+                },
+                "edges": [
+                    {
+                        "cursor": "Y3Vyc29yOnYyOpK5MjAxNy0xMi0xMlQxMzozNDowNC0wNTowMM4ADTpN",
+                        "node": {
+                            "number": 1,
+                            "mergeable": "MERGEABLE",
+                            "state": "OPEN",
+                            "createdAt": "2017-12-12T18:34:04Z",
+                            "updatedAt": "2017-12-12T18:34:04Z",
+                            "mergedAt": null,
+                            "baseRef": {
+                                "target": {
+                                    "oid": "ea0a0eb5000ecf21a067ce4fa7a1f1d3881b4efa"
+                                }
+                            },
+                            "baseRefName": "master",
+                            "title": "Dev",
+                            "mergeCommit": null,
+                            "headRepository": {
+                                "name": "OpenBranchPr",
+                                "url": "https://mygithub.com/Devopscode/OpenBranchPr"
+                            },
+                            "headRef": {
+                                "target": {
+                                    "oid": "45c702bc167e8316ff06f407e58c9d2c45cbf16b"
+                                }
+                            },
+                            "headRefName": "dev",
+                            "author": {
+                                "login": "ghtwo",
+                                "resourcePath": "/ghtwo"
+                            },
+                            "commits": {
+                                "totalCount": 2,
+                                "nodes": [
+                                    {
+                                        "commit": {
+                                            "oid": "c65ee02012f12c3819d0961faab942406fe40e33",
+                                            "parents": {
+                                                "nodes": [
+                                                    {
+                                                        "oid": "cf17e1bfb82f815023b28e002aef85f54058ad11"
+                                                    }
+                                                ]
+                                            },
+                                            "committedDate": "2017-12-12T18:33:43Z",
+                                            "message": "Third branch commit",
+                                            "status": null,
+                                            "author": {
+                                                "name": "Author, Two",
+                                                "date": "2017-12-12T13:33:43-05:00",
+                                                "user": {
+                                                    "login": "ghtwo"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "commit": {
+                                            "oid": "45c702bc167e8316ff06f407e58c9d2c45cbf16b",
+                                            "parents": {
+                                                "nodes": [
+                                                    {
+                                                        "oid": "c65ee02012f12c3819d0961faab942406fe40e33"
+                                                    }
+                                                ]
+                                            },
+                                            "committedDate": "2017-12-12T18:33:54Z",
+                                            "message": "Fourth branch commit",
+                                            "status": null,
+                                            "author": {
+                                                "name": "Author, Two",
+                                                "date": "2017-12-12T13:33:54-05:00",
+                                                "user": {
+                                                    "login": "ghtwo"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "comments": {
+                                "totalCount": 0,
+                                "nodes": []
+                            },
+                            "reviews": {
+                                "totalCount": 0,
+                                "nodes": []
+                            }
+                        }
+                    }
+                ]
+            },
+            "ref": {
+                "target": {
+                    "history": {
+                        "pageInfo": {
+                            "endCursor": "ea0a0eb5000ecf21a067ce4fa7a1f1d3881b4efa 3",
+                            "hasNextPage": false
+                        },
+                        "edges": [
+                            {
+                                "cursor": "ea0a0eb5000ecf21a067ce4fa7a1f1d3881b4efa 0",
+                                "node": {
+                                    "oid": "ea0a0eb5000ecf21a067ce4fa7a1f1d3881b4efa",
+                                    "parents": {
+                                        "nodes": [
+                                            {
+                                                "oid": "be949ac4862f52e262b5b54f87b5499b3632d33b"
+                                            }
+                                        ]
+                                    },
+                                    "message": "Sixth direct commit",
+                                    "committer": {
+                                        "user": null,
+                                        "name": "GitHub Enterprise",
+                                        "date": "2017-12-12T13:34:45-05:00"
+                                    },
+                                    "author": {
+                                        "name": "Author, Two",
+                                        "user": {
+                                            "login": "ghtwo"
+                                        },
+                                        "email": "Author.Two@mycompany.com",
+                                        "date": "2017-12-12T13:34:45-05:00"
+                                    },
+                                    "status": null
+                                }
+                            },
+                            {
+                                "cursor": "ea0a0eb5000ecf21a067ce4fa7a1f1d3881b4efa 1",
+                                "node": {
+                                    "oid": "be949ac4862f52e262b5b54f87b5499b3632d33b",
+                                    "parents": {
+                                        "nodes": [
+                                            {
+                                                "oid": "cf17e1bfb82f815023b28e002aef85f54058ad11"
+                                            }
+                                        ]
+                                    },
+                                    "message": "Fifth direct commit",
+                                    "committer": {
+                                        "user": null,
+                                        "name": "GitHub Enterprise",
+                                        "date": "2017-12-12T13:34:31-05:00"
+                                    },
+                                    "author": {
+                                        "name": "Author, Two",
+                                        "user": {
+                                            "login": "ghtwo"
+                                        },
+                                        "email": "Author.Two@mycompany.com",
+                                        "date": "2017-12-12T13:34:31-05:00"
+                                    },
+                                    "status": null
+                                }
+                            },
+                            {
+                                "cursor": "ea0a0eb5000ecf21a067ce4fa7a1f1d3881b4efa 2",
+                                "node": {
+                                    "oid": "cf17e1bfb82f815023b28e002aef85f54058ad11",
+                                    "parents": {
+                                        "nodes": [
+                                            {
+                                                "oid": "721977d6d036d30f481937483d43a705d45fb49d"
+                                            }
+                                        ]
+                                    },
+                                    "message": "Second direct commit",
+                                    "committer": {
+                                        "user": null,
+                                        "name": "GitHub Enterprise",
+                                        "date": "2017-12-12T13:33:05-05:00"
+                                    },
+                                    "author": {
+                                        "name": "Author, Two",
+                                        "user": {
+                                            "login": "ghtwo"
+                                        },
+                                        "email": "Author.Two@mycompany.com",
+                                        "date": "2017-12-12T13:33:05-05:00"
+                                    },
+                                    "status": null
+                                }
+                            },
+                            {
+                                "cursor": "ea0a0eb5000ecf21a067ce4fa7a1f1d3881b4efa 3",
+                                "node": {
+                                    "oid": "721977d6d036d30f481937483d43a705d45fb49d",
+                                    "parents": {
+                                        "nodes": []
+                                    },
+                                    "message": "First direct commit",
+                                    "committer": {
+                                        "user": null,
+                                        "name": "GitHub Enterprise",
+                                        "date": "2017-12-12T13:32:51-05:00"
+                                    },
+                                    "author": {
+                                        "name": "Author, Two",
+                                        "user": {
+                                            "login": "ghtwo"
+                                        },
+                                        "email": "Author.Two@mycompany.com",
+                                        "date": "2017-12-12T13:32:51-05:00"
+                                    },
+                                    "status": null
+                                }
+                            }
+                        ]
+                    }
+                }
+            },
+            "issues": {
+                "totalCount": 0,
+                "pageInfo": {
+                    "endCursor": null,
+                    "hasNextPage": false
+                },
+                "edges": []
+            }
+        }
+    }
+}

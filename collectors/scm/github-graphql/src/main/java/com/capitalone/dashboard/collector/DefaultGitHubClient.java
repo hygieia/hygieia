@@ -685,7 +685,6 @@ public class DefaultGitHubClient implements GitHubClient {
             JSONObject commit = (JSONObject) c.get("commit");
             Commit newCommit = new Commit();
             newCommit.setScmRevisionNumber(str(commit, "oid"));
-            newCommit.setScmParentRevisionNumbers(getParentShas(commit));
             newCommit.setScmCommitLog(str(commit, "message"));
             JSONObject author = (JSONObject) commit.get("author");
             JSONObject authorUserJSON = (JSONObject) author.get("user");
