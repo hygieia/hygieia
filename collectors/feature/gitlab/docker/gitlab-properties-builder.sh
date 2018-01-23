@@ -13,7 +13,7 @@ then
         #for testing locally
         PROP_FILE=application.properties
 else 
-	PROP_FILE=hygieia-gitlab-feature-collector.properties
+	PROP_FILE=config/hygieia-gitlab-feature-collector.properties
 fi
   
 if [ "$MONGO_PORT" != "" ]; then

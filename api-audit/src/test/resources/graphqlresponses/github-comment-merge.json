@@ -1,0 +1,201 @@
+{
+    "data": {
+        "repository": {
+            "pullRequests": {
+                "totalCount": 1,
+                "pageInfo": {
+                    "endCursor": "Y3Vyc29yOnYyOpK5MjAxNy0xMS0yMFQxMDowODo0Mi0wNTowMM4ADKLi",
+                    "hasNextPage": false
+                },
+                "edges": [
+                    {
+                        "cursor": "Y3Vyc29yOnYyOpK5MjAxNy0xMS0yMFQxMDowODo0Mi0wNTowMM4ADKLi",
+                        "node": {
+                            "number": 1,
+                            "mergeable": "UNKNOWN",
+                            "state": "MERGED",
+                            "createdAt": "2017-11-17T21:44:34Z",
+                            "updatedAt": "2017-11-20T15:08:42Z",
+                            "mergedAt": "2017-11-20T15:08:42Z",
+                            "baseRef": {
+                                "target": {
+                                    "oid": "70cd0959030cfbe1bf41259f4db9708997393504"
+                                }
+                            },
+                            "baseRefName": "master",
+                            "title": "merging a commit to dev into master with only a github comment review (no approval)",
+                            "mergeCommit": {
+                                "oid": "70cd0959030cfbe1bf41259f4db9708997393504"
+                            },
+                            "headRepository": {
+                                "name": "3-github-comment-merge",
+                                "url": "https://mygithub.com/compliance-scenario/3-github-comment-merge"
+                            },
+                            "headRef": {
+                                "target": {
+                                    "oid": "8ac97dd222290b4c31d9c119ca7e42b632802068"
+                                }
+                            },
+                            "headRefName": "dev",
+                            "author": {
+                                "login": "ghone",
+                                "resourcePath": "/ghone"
+                            },
+                            "commits": {
+                                "totalCount": 1,
+                                "nodes": [
+                                    {
+                                        "commit": {
+                                            "oid": "8ac97dd222290b4c31d9c119ca7e42b632802068",
+                                            "parents": {
+                                                "nodes": [
+                                                    {
+                                                        "oid": "91dc75834718320ae7ee14a6455d0402ad066026"
+                                                    }
+                                                ]
+                                            },
+                                            "committedDate": "2017-11-17T21:40:40Z",
+                                            "message": "a commit to dev",
+                                            "status": null,
+                                            "author": {
+                                                "name": "Author, One",
+                                                "date": "2017-11-17T13:40:40-08:00",
+                                                "user": {
+                                                    "login": "ghone"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "comments": {
+                                "totalCount": 0,
+                                "nodes": []
+                            },
+                            "reviews": {
+                                "totalCount": 1,
+                                "nodes": [
+                                    {
+                                        "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NDAwMjQ1",
+                                        "bodyText": "some random comment",
+                                        "state": "COMMENTED",
+                                        "author": {
+                                            "login": "ghtwo"
+                                        },
+                                        "createdAt": "2017-11-20T15:08:06Z",
+                                        "updatedAt": "2017-11-20T15:08:06Z"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ]
+            },
+            "ref": {
+                "target": {
+                    "history": {
+                        "pageInfo": {
+                            "endCursor": "70cd0959030cfbe1bf41259f4db9708997393504 2",
+                            "hasNextPage": false
+                        },
+                        "edges": [
+                            {
+                                "cursor": "70cd0959030cfbe1bf41259f4db9708997393504 0",
+                                "node": {
+                                    "oid": "70cd0959030cfbe1bf41259f4db9708997393504",
+                                    "parents": {
+                                        "nodes": [
+                                            {
+                                                "oid": "91dc75834718320ae7ee14a6455d0402ad066026"
+                                            },
+                                            {
+                                                "oid": "8ac97dd222290b4c31d9c119ca7e42b632802068"
+                                            }
+                                        ]
+                                    },
+                                    "message": "Merge pull request #1 from compliance-scenario/dev\n\nmerging a commit to dev into master with only a github comment review (no approval)",
+                                    "committer": {
+                                        "user": null,
+                                        "name": "GitHub Enterprise",
+                                        "date": "2017-11-20T07:08:41-08:00"
+                                    },
+                                    "author": {
+                                        "name": "Author, One",
+                                        "user": {
+                                            "login": "ghone"
+                                        },
+                                        "email": "Author.One@mycompany.com",
+                                        "date": "2017-11-20T07:08:41-08:00"
+                                    },
+                                    "status": null
+                                }
+                            },
+                            {
+                                "cursor": "70cd0959030cfbe1bf41259f4db9708997393504 1",
+                                "node": {
+                                    "oid": "8ac97dd222290b4c31d9c119ca7e42b632802068",
+                                    "parents": {
+                                        "nodes": [
+                                            {
+                                                "oid": "91dc75834718320ae7ee14a6455d0402ad066026"
+                                            }
+                                        ]
+                                    },
+                                    "message": "a commit to dev",
+                                    "committer": {
+                                        "user": null,
+                                        "name": "GitHub Enterprise",
+                                        "date": "2017-11-17T13:40:40-08:00"
+                                    },
+                                    "author": {
+                                        "name": "Author, One",
+                                        "user": {
+                                            "login": "ghone"
+                                        },
+                                        "email": "Author.One@mycompany.com",
+                                        "date": "2017-11-17T13:40:40-08:00"
+                                    },
+                                    "status": null
+                                }
+                            },
+                            {
+                                "cursor": "70cd0959030cfbe1bf41259f4db9708997393504 2",
+                                "node": {
+                                    "oid": "91dc75834718320ae7ee14a6455d0402ad066026",
+                                    "parents": {
+                                        "nodes": []
+                                    },
+                                    "message": "Initial commit",
+                                    "committer": {
+                                        "user": {
+                                            "login": "ghone"
+                                        },
+                                        "name": "Author, One",
+                                        "date": "2017-11-17T13:39:39-08:00"
+                                    },
+                                    "author": {
+                                        "name": "Author, One",
+                                        "user": {
+                                            "login": "ghone"
+                                        },
+                                        "email": "Author.One@mycompany.com",
+                                        "date": "2017-11-17T13:39:39-08:00"
+                                    },
+                                    "status": null
+                                }
+                            }
+                        ]
+                    }
+                }
+            },
+            "issues": {
+                "totalCount": 0,
+                "pageInfo": {
+                    "endCursor": null,
+                    "hasNextPage": false
+                },
+                "edges": []
+            }
+        }
+    }
+}

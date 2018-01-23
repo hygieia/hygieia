@@ -1,0 +1,60 @@
+{
+    "data": {
+        "repository": {
+            "pullRequests": {
+                "totalCount": 0,
+                "pageInfo": {
+                    "endCursor": null,
+                    "hasNextPage": false
+                },
+                "edges": []
+            },
+            "ref": {
+                "target": {
+                    "history": {
+                        "pageInfo": {
+                            "endCursor": "d7f70564ca44d551edd7f99a4835e4e8f828e799 0",
+                            "hasNextPage": false
+                        },
+                        "edges": [
+                            {
+                                "cursor": "d7f70564ca44d551edd7f99a4835e4e8f828e799 0",
+                                "node": {
+                                    "oid": "d7f70564ca44d551edd7f99a4835e4e8f828e799",
+                                    "parents": {
+                                        "nodes": []
+                                    },
+                                    "message": "Initial commit",
+                                    "committer": {
+                                        "user": {
+                                            "login": "ghone"
+                                        },
+                                        "name": "Author, One",
+                                        "date": "2017-11-17T13:33:30-08:00"
+                                    },
+                                    "author": {
+                                        "name": "Author, One",
+                                        "user": {
+                                            "login": "ghone"
+                                        },
+                                        "email": "Author.One@mycompany.com",
+                                        "date": "2017-11-17T13:33:30-08:00"
+                                    },
+                                    "status": null
+                                }
+                            }
+                        ]
+                    }
+                }
+            },
+            "issues": {
+                "totalCount": 0,
+                "pageInfo": {
+                    "endCursor": null,
+                    "hasNextPage": false
+                },
+                "edges": []
+            }
+        }
+    }
+}

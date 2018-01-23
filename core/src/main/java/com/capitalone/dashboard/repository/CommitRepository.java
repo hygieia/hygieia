@@ -23,6 +23,8 @@ public interface CommitRepository extends CrudRepository<Commit, ObjectId>, Quer
      */
     Commit findByCollectorItemIdAndScmRevisionNumber(ObjectId collectorItemId, String revisionNumber);
 
+    Long countCommitsByCollectorItemId(ObjectId collectorItemId);
+
     Commit findByScmUrlIgnoreCaseAndScmBranchIgnoreCaseAndScmRevisionNumber (String scmUrl, String scmBranch, String scmRevisionNumber);
 
     List<Commit> findByScmRevisionNumber (String scmUrl);
@@ -33,5 +35,9 @@ public interface CommitRepository extends CrudRepository<Commit, ObjectId>, Quer
 
     @Query(value="{ 'collectorItemId': ?0, 'scmCommitTimestamp': { $gt: ?1 }}")
     List<Commit> findByCollectorItemIdAndScmCommitTimestamp(ObjectId collectorItemid, Long scmCommitTimestampThreshold);
+
+    List<Commit> findByScmUrlIgnoreCaseAndScmBranchIgnoreCaseAndScmCommitTimestampIsBetween(String scmUrl, String scmBranch, long beginDate, long endDate);
+
+    List<Commit> findByCollectorItemIdAndScmCommitTimestampIsBetween(ObjectId collectorItemId, long beginDate, long endDate);
 
 }
