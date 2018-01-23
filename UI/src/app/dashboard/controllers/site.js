@@ -308,7 +308,7 @@
             });
         }
 
-        function pageChangeHandler(pageNumber){
+        function pageChangeHandler(pageNumber){ 
             if(ctrl.searchFilter==""){
                 dashboardData.searchByPage({"search": '', "size": $scope.pageSize, "page": pageNumber-1}).then(processDashboardResponse, processDashboardError);
             }else{
