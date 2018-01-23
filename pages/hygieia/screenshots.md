@@ -14,16 +14,16 @@ Screenshots of various Hygieia dashboard views:
 
 **Pipeline View:**
 
-![PipelineView](http://www.capitalone.github.io/Hygieia/media/images/Screenshots/pipeline_view.png)
+![PipelineView](http://capitalone.github.io/Hygieia/media/images/Screenshots/pipeline_view.png)
 
 **Product View:**
 
-![ProductView](http://www.capitalone.github.io/Hygieia/media/images/Screenshots/hygieia-product-dashboard.png)
+![ProductView](http://capitalone.github.io/Hygieia/media/images/Screenshots/hygieia-product-dashboard.png)
 
 **Cloud - Overview:**
 
-![CloudOverview](http://www.capitalone.github.io/Hygieia/media/images/Screenshots/Cloud-Overview.png)
+![CloudOverview](http://capitalone.github.io/Hygieia/media/images/Screenshots/Cloud-Overview.png)
 
 **Cloud - Detail View:**
 
-![DetailView](http://www.capitalone.github.io/Hygieia/media/images/Screenshots/Cloud-Detail.png)
+![DetailView](http://capitalone.github.io/Hygieia/media/images/Screenshots/Cloud-Detail.png)
