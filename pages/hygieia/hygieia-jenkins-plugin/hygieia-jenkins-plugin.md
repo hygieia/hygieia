@@ -59,15 +59,15 @@ To install the plugin in Jenkins:
 
 5. In Jenkins pipeline syntax page, Hygieia publish steps are displayed:
 
-![Image](http://www.capitalone.io/Hygieia/media/images/jenkins2.0-steplist.png)
+![Image](http://capitalone.github.io/Hygieia/media/images/jenkins2.0-steplist.png)
 
 6. Select a step (for example, Hygieia Deploy Step), fill in the required information and click 'Generate Pipeline Script'. Copy the generated script to the pipeline script:
 
-![Image](http://www.capitalone.io/Hygieia/media/images/jenkins2.0-hygieia-deploy-step.png)
+![Image](http://capitalone.github.io/Hygieia/media/images/jenkins2.0-hygieia-deploy-step.png)
 
 7. The following screenshot shows a simple pipeline script with Maven build, Hygieia artifact, and deploy publishing.
 
-![Image](http://www.capitalone.io/Hygieia/media/images/jenkins2.0-pipeline-deploy-publish.png)
+![Image](http://www.capitalone.github.io/Hygieia/media/images/jenkins2.0-pipeline-deploy-publish.png)
 
 ### Jenkins (Versions Prior to 2.0)
 
@@ -81,12 +81,12 @@ To install the plugin in Jenkins:
    In the Jenkins toolbar, navigate to Manage Jenkins > Configure System. 
    In the Jenkins URL, Enter the Hygieia API URL, `http://localhost:8080/api`.
 
-![Image](http://www.capitalone.io/Hygieia/media/images/jenkins-global.png)
+![Image](http://capitalone.github.io/Hygieia/media/images/jenkins-global.png)
 
 5. For a build job, add the Post build action 'Hygieia Publisher'. 
 6. Select the data to be sent to Hygieia. Currently, 'Build', 'Artifact Info', 'Sonar Analysis', 'Deployment', and 'Cucumber Test Results' can be published.
 
-![Image](http://www.capitalone.io/Hygieia/media/images/jenkins-job-config.png)
+![Image](http://capitalone.github.io/Hygieia/media/images/jenkins-job-config.png)
 
 ### Troubleshooting Instructions
 

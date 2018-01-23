@@ -13,7 +13,7 @@ permalink: dashboard_administration.html
 To change the settings for your dashboard:
 
 1.	Go to All Dashboards tab in the main console. 
-2.	Under My Dashboards, select the dashboard you want to edit/make changes to, and then click Settings icon ( ) to the right of the dashboard. The Administer Your Dashboard screen is invoked. 
+2.	Under My Dashboards, select the dashboard you want to edit/make changes to, and then click Settings icon to the right of the dashboard. The Administer Your Dashboard screen is invoked. 
 In this screen, you can make specific changes to the dashboard in the following tabs:
   -	Dashboard Title Tab: To change or edit the existing title, enter the new title, and then click Save.
   -	Business Service/Application Tab: In the Business Service field, select a top-level name that supports a business function.

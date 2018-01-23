@@ -85,4 +85,4 @@ For details on configuring the product dashboard, see [Product View](product_vie
 
 **Screenshots:**
 
-![Image](http://www.capitalone.io/Hygieia/media/images/h2-select-dashboard.png)
+![Image](http://capitalone.github.io/Hygieia/media/images/h2-select-dashboard.png)

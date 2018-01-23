@@ -60,4 +60,4 @@ export JAVA_OPTS="$JAVA_OPTS -Dhttp.proxyHost=your.proxy.domain.name -Dhttp.prox
 export MAVEN_OPTS="$MAVEN_OPTS -Dhttp.proxyHost=your.proxy.domain.name -Dhttp.proxyPort=8080 -Dhttp.proxyUser=companyId999 -Dhttp.proxyPassword=yourPassword"
 ```
 In addition, update the property file for each collector/API configuration with their specific proxy setting property.
-For information on setting the application properties file, refer to the sample [API Properties](https://github.com/capitalone/Hygieia/blob/gh-pages/pages/hygieia/api/api.md#api-properties-file) file.
+For information on setting the application properties file, refer to the sample [API Properties](api/api.md#api-properties-file) file.

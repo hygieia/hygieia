@@ -161,13 +161,13 @@ Once the UI is successfully connected, the following screenshots show the API co
 
 **Login page with API layer successfully connected**
 
-![Image](http://www.capitalone.io/Hygieia/media/images/apiup.png)
+![Image](http://capitalone.github.io/Hygieia/media/images/apiup.png)
 
 **API layer connection unsuccessful**
 
-![Image](http://www.capitalone.io/Hygieia/media/images/apidown.png)
+![Image](http://capitalone.github.io/Hygieia/media/images/apidown.png)
 
 **Signup page to create admin user**
 
-![Image](http://www.capitalone.io/Hygieia/media/images/adminuser.png)
+![Image](http://capitalone.github.io/Hygieia/media/images/adminuser.png)
 

@@ -23,24 +23,24 @@ The product dashboard displays averages and trends calculated over a 90-day peri
 
 Commit Stage:
 
-![Image](http://www.capitalone.io/Hygieia/media/images/h2-commit-stage.png)
+![Image](http://capitalone.github.io/Hygieia/media/images/h2-commit-stage.png)
 
 Build Stage:
 
-![Image](http://www.capitalone.io/Hygieia/media/images/h2-build-stage.png)
+![Image](http://capitalone.github.io/Hygieia/media/images/h2-build-stage.png)
 
 Commit Details at every stage:
 
-![Image](http://www.capitalone.io/Hygieia/media/images/h2-commit-details-stage.png)
+![Image](http://capitalone.github.io/Hygieia/media/images/h2-commit-details-stage.png)
 
 Deployment Stage:
 
-![Image](http://www.capitalone.io/Hygieia/media/images/h2-deploy-stages.png)
+![Image](http://capitalone.github.io/Hygieia/media/images/h2-deploy-stages.png)
 
 Production Stage:
 
-![Image](http://www.capitalone.io/Hygieia/media/images/h2-prod-stage.png)
+![Image](http://capitalone.github.io/Hygieia/media/images/h2-prod-stage.png)
 
 Pipeline Health Details:
 
-![Image](http://www.capitalone.io/Hygieia/media/images/h2-health-details.png)
+![Image](http://capitalone.github.io/Hygieia/media/images/h2-health-details.png)
