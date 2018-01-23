@@ -41,13 +41,13 @@
 
 <tbody>
 <tr>
-<td><a href="http://www.capitalone.io/Hygieia/getting_started.html"><img src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/ReadmeIcons/About.png" alt="About Icon" height="145" width="280"/></a></td>
+<td><a href="http://capitalone.github.io/Hygieia/getting_started.html"><img src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/ReadmeIcons/About.png" alt="About Icon" height="145" width="280"/></a></td>
 <td><a href="https://www.youtube.com/watch?v=SoNTA78j0tc"><img src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/ReadmeIcons/Video.png" alt="Video Icon" align="center" height="145" width="280"/></td>
-<td><a href="http://www.capitalone.io/Hygieia/architecture.html"><img src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/ReadmeIcons/Architecture.png" alt="Architecture Icon" align="center" height="145" width="280"/></a></td>
+<td><a href="http://capitalone.github.io/Hygieia/architecture.html"><img src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/ReadmeIcons/Architecture.png" alt="Architecture Icon" align="center" height="145" width="280"/></a></td>
 </tr>
 <tr>
-<td><a href="http://www.capitalone.io/Hygieia/framework.html"><img src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/ReadmeIcons/Framework.png" alt="Framework Icon" align="center" height="145" width="280"/></td>
-<td><a href="http://www.capitalone.io/Hygieia/setup.html"><img src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/ReadmeIcons/Installation.png" alt="Install Icon" align="center" height="145" width="280"/></a></td>
+<td><a href="http://capitalone.github.io/Hygieia/framework.html"><img src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/ReadmeIcons/Framework.png" alt="Framework Icon" align="center" height="145" width="280"/></td>
+<td><a href="http://capitalone.github.io/Hygieia/setup.html"><img src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/ReadmeIcons/Installation.png" alt="Install Icon" align="center" height="145" width="280"/></a></td>
 <td><a href="https://github.com/capitalone/Hygieia/graphs/contributors"><img src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/ReadmeIcons/TopContributors.png" alt="Contributors Icon" align="center" height="145" width="280"/></a></td>
 </tr>
 </tbody>
