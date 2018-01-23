@@ -8,7 +8,7 @@ permalink: architecture.html
 ---
 The following diagram gives an overview of Hygieia's Architecture:
 
-![Architecture](http://www.capitalone.io/Hygieia/media/images/architecture.png)
+![Architecture](http://capitalone.github.io/Hygieia/media/images/architecture.png)
 
 | Layer | Description |
 |-------|-------------|

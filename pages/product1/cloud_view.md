@@ -26,8 +26,8 @@ Overview - This view gives a graphical representation for the given account numb
 
 **Cloud - Overview:**
 
-![CloudOverview](http://www.capitalone.io/Hygieia/media/images/Screenshots/Cloud-Overview.png)
+![CloudOverview](http://capitalone.github.io/Hygieia/media/images/Screenshots/Cloud-Overview.png)
 
 **Cloud - Detail View:**
 
-![DetailView](http://www.capitalone.io/Hygieia/media/images/Screenshots/Cloud-Detail.png)
+![DetailView](http://capitalone.github.io/Hygieia/media/images/Screenshots/Cloud-Detail.png)

@@ -12,6 +12,6 @@ We welcome Your interest in Capital One’s Open Source Projects (the “Project
 
 This project adheres to the [Open Code of Conduct][code-of-conduct]. By participating, you are expected to honor this code.
 
-[code-of-conduct]: http://www.capitalone.io/codeofconduct/
+[code-of-conduct]: http://capitalone.github.io/codeofconduct/
 
  
