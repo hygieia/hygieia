@@ -836,14 +836,21 @@
     "timestamp" : 1516734459000,
     "resolutiontime" : 0,
     "userId" : "ghone",
-    "comments" : [],
-    "reviews" : [
+    "comments": [
       {
-        "body" : "LGTM",
-        "state" : "APPROVED",
-        "author" : "ghtwo",
-        "createdAt" : 1516734737000,
-        "updatedAt" : 1516734737000
+        "user": "ghtwo",
+        "createdAt": 1511190526000,
+        "updatedAt": 1511190526000,
+        "body": "LGTM",
+        "status": ""
+      }
+    ],
+    "reviews": [],
+    "commitStatuses": [
+      {
+        "state": "SUCCESS",
+        "context": "approvals/lgtmeow",
+        "description": "approved by ghtwo"
       }
     ],
     "headSha" : "263cabbeb0d00023c3fb6e46c1b9654b56a29ec0",
@@ -851,7 +858,6 @@
     "requestType" : "pull",
     "commits" : [
       {
-        "id" : null,
         "timestamp" : 0,
         "firstEverCommit" : false,
         "scmRevisionNumber" : "60fef0c4c4b1a0b8dcba7a8d88c54348f75ef5d6",
@@ -862,7 +868,6 @@
         "numberOfChanges" : 0
       },
       {
-        "id" : null,
         "timestamp" : 0,
         "firstEverCommit" : false,
         "scmRevisionNumber" : "8331321b9552b2ca3f612b2642c178635d9fa08c",
@@ -873,7 +878,6 @@
         "numberOfChanges" : 0
       },
       {
-        "id" : null,
         "timestamp" : 0,
         "firstEverCommit" : false,
         "scmRevisionNumber" : "263cabbeb0d00023c3fb6e46c1b9654b56a29ec0",
