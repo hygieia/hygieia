@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.common.TestUtils;
+import com.capitalone.dashboard.config.CustomObjectMapper;
 import com.capitalone.dashboard.config.FongoConfig;
 import com.capitalone.dashboard.config.TestConfig;
 import com.capitalone.dashboard.model.AuditException;
@@ -19,8 +20,6 @@ import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
 import com.capitalone.dashboard.response.CodeReviewAuditResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.github.fakemongo.junit.FongoRule;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
@@ -61,15 +60,6 @@ public class DashboardAuditServiceTest {
     private GitRequestRepository gitRequestRepository;
     @Autowired
     private CommitRepository commitRepository;
-
-
-    public class CustomObjectMapper extends ObjectMapper {
-
-        public CustomObjectMapper() {
-            SimpleModule module = new SimpleModule("ObjectIdModule");
-            this.registerModule(module);
-        }
-    }
 
     @Rule
     public FongoRule fongoRule = new FongoRule();
