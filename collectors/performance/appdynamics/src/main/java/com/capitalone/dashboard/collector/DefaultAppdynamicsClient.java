@@ -3,6 +3,8 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.model.AppdynamicsApplication;
 import com.capitalone.dashboard.model.PerformanceMetric;
 import com.capitalone.dashboard.util.Supplier;
+import com.mysema.query.util.CollectionUtils;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -161,7 +163,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
                     JSONObject jsonEntry = (JSONObject) entry;
                     String metricPath = getString(jsonEntry, "metricPath");
                     JSONArray metricValues =  getJsonArray(jsonEntry, "metricValues");
-                    if (metricValues.size() == 0){
+                    if (CollectionUtils.isEmpty(metricValues)){
                         continue;
                     }
                     JSONObject mObj = (JSONObject) metricValues.get(0);
