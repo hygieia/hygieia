@@ -3,7 +3,6 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.model.AppdynamicsApplication;
 import com.capitalone.dashboard.model.PerformanceMetric;
 import com.capitalone.dashboard.util.Supplier;
-import com.mysema.query.util.CollectionUtils;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
