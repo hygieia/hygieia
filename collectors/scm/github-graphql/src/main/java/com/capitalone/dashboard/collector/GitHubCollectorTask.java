@@ -168,7 +168,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                         break;
                     }
 
-                    List<GitRequest> allRequests = gitRequestRepository.findNonMergedRequestNumberAndLastUpdated(repo.getId());
+                    List<GitRequest> allRequests = gitRequestRepository.findRequestNumberAndLastUpdated(repo.getId());
 
                     Map<Long, String> existingPRMap = allRequests.stream().filter(r -> Objects.equals(r.getRequestType(), "pull")).collect(
                             Collectors.toMap(GitRequest::getUpdatedAt, GitRequest::getNumber,

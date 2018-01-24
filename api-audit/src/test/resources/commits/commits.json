@@ -1400,5 +1400,98 @@
     "scmCommitTimestamp": 1513103571000,
     "numberOfChanges": 1,
     "type": "New"
+  },
+  {
+    "id" : "5a678cfcb5d5dc509425d00a",
+    "collectorItemId" : "5a678a032b7af20c95e7b146",
+    "timestamp" : 1516735740805,
+    "firstEverCommit" : false,
+    "scmUrl" : "https://mygithub.com/Devopscode/MultipleAuthors",
+    "scmBranch" : "master",
+    "scmRevisionNumber" : "6375888315f3233e50a56aa6650227dfee7bdd9f",
+    "scmCommitLog" : "Merge pull request #1 from Devopscode/dev\n\nMerge TestFile into master from dev",
+    "scmAuthor" : "Author, Two",
+    "scmAuthorLogin" : "ghtwo",
+    "scmParentRevisionNumbers" : [
+      "6edd4881233c9ed723fc8da84a67502080f266e2",
+      "263cabbeb0d00023c3fb6e46c1b9654b56a29ec0"
+    ],
+    "scmCommitTimestamp" : 1516734772000,
+    "numberOfChanges" : 1,
+    "type" : "New",
+    "pullNumber" : "1"
+  },
+  {
+    "id" : "5a678cfcb5d5dc509425d00b",
+    "collectorItemId" : "5a678a032b7af20c95e7b146",
+    "timestamp" : 1516735740805,
+    "firstEverCommit" : false,
+    "scmUrl" : "https://mygithub.com/Devopscode/MultipleAuthors",
+    "scmBranch" : "master",
+    "scmRevisionNumber" : "263cabbeb0d00023c3fb6e46c1b9654b56a29ec0",
+    "scmCommitLog" : "Create testadd",
+    "scmAuthor" : "Author, Two",
+    "scmAuthorLogin" : "ghtwo",
+    "scmParentRevisionNumbers" : [
+      "8331321b9552b2ca3f612b2642c178635d9fa08c"
+    ],
+    "scmCommitTimestamp" : 1516734591000,
+    "numberOfChanges" : 1,
+    "type" : "New",
+    "pullNumber" : "1"
+  },
+  {
+    "id" : "5a678cfcb5d5dc509425d00c",
+    "collectorItemId" : "5a678a032b7af20c95e7b146",
+    "timestamp" : 1516735740805,
+    "firstEverCommit" : false,
+    "scmUrl" : "https://mygithub.com/Devopscode/MultipleAuthors",
+    "scmBranch" : "master",
+    "scmRevisionNumber" : "8331321b9552b2ca3f612b2642c178635d9fa08c",
+    "scmCommitLog" : "Update TestFile",
+    "scmAuthor" : "Author, One",
+    "scmAuthorLogin" : "ghone",
+    "scmParentRevisionNumbers" : [
+      "60fef0c4c4b1a0b8dcba7a8d88c54348f75ef5d6"
+    ],
+    "scmCommitTimestamp" : 1516734422000,
+    "numberOfChanges" : 1,
+    "type" : "New",
+    "pullNumber" : "1"
+  },
+  {
+    "id" : "5a678cfcb5d5dc509425d00d",
+    "collectorItemId" : "5a678a032b7af20c95e7b146",
+    "timestamp" : 1516735740805,
+    "firstEverCommit" : false,
+    "scmUrl" : "https://mygithub.com/Devopscode/MultipleAuthors",
+    "scmBranch" : "master",
+    "scmRevisionNumber" : "60fef0c4c4b1a0b8dcba7a8d88c54348f75ef5d6",
+    "scmCommitLog" : "Create TestFile",
+    "scmAuthor" : "Author, One",
+    "scmAuthorLogin" : "ghone",
+    "scmParentRevisionNumbers" : [
+      "6edd4881233c9ed723fc8da84a67502080f266e2"
+    ],
+    "scmCommitTimestamp" : 1516734408000,
+    "numberOfChanges" : 1,
+    "type" : "New",
+    "pullNumber" : "1"
+  },
+  {
+    "id" : "5a678cfcb5d5dc509425d00e",
+    "collectorItemId" : "5a678a032b7af20c95e7b146",
+    "timestamp" : 1516735740805,
+    "firstEverCommit" : true,
+    "scmUrl" : "https://mygithub.com/Devopscode/MultipleAuthors",
+    "scmBranch" : "master",
+    "scmRevisionNumber" : "6edd4881233c9ed723fc8da84a67502080f266e2",
+    "scmCommitLog" : "Create README.md",
+    "scmAuthor" : "Author, One",
+    "scmAuthorLogin" : "ghone",
+    "scmParentRevisionNumbers" : [],
+    "scmCommitTimestamp" : 1516734325000,
+    "numberOfChanges" : 1,
+    "type" : "New"
   }
 ]
