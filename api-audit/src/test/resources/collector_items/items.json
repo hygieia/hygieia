@@ -340,5 +340,20 @@
       "processIdentifier": 27521,
       "counter": 12817311
     }
+  },
+  {
+  "id" : "5a678a032b7af20c95e7b146",
+  "enabled" : true,
+  "errors" : [],
+  "pushed" : false,
+  "collectorId" : "56ca15297fab7c68bfdb420c",
+  "lastUpdated" : 1516735761179,
+  "options" : {
+    "password" : "",
+    "scm" : "Github",
+    "branch" : "master",
+    "userID" : "",
+    "url" : "https://mygithub.com/Devopscode/MultipleAuthors"
   }
+}
 ]

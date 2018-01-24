@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.common.TestUtils;
+import com.capitalone.dashboard.config.CustomObjectMapper;
 import com.capitalone.dashboard.config.FongoConfig;
 import com.capitalone.dashboard.config.TestConfig;
 import com.capitalone.dashboard.model.AuditException;
@@ -19,8 +20,6 @@ import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
 import com.capitalone.dashboard.response.CodeReviewAuditResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.github.fakemongo.junit.FongoRule;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
@@ -38,6 +37,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -62,15 +62,6 @@ public class DashboardAuditServiceTest {
     @Autowired
     private CommitRepository commitRepository;
 
-
-    public class CustomObjectMapper extends ObjectMapper {
-
-        public CustomObjectMapper() {
-            SimpleModule module = new SimpleModule("ObjectIdModule");
-            this.registerModule(module);
-        }
-    }
-
     @Rule
     public FongoRule fongoRule = new FongoRule();
 
@@ -79,7 +70,7 @@ public class DashboardAuditServiceTest {
 
 
     @Before
-    public void loadStuff() throws IOException, AuditException {
+    public void loadStuff() throws IOException {
         TestUtils.loadDashBoard(dashboardRepository);
         TestUtils.loadComponent(componentRepository);
         TestUtils.loadCollectorItems(collectorItemRepository);
@@ -96,10 +87,11 @@ public class DashboardAuditServiceTest {
             if ((collector != null) && (collector.getCollectorType() == CollectorType.SCM)) {
                 String url = (String) item.getOptions().get("url");
                 String branch = (String) item.getOptions().get("branch");
-                List<CodeReviewAuditResponse> actual = (List<CodeReviewAuditResponse>) codeReviewAuditService.getPeerReviewResponses(url, branch, "GitHub", 0L, 1513106560000L);
+                List<CodeReviewAuditResponse> actual = (List<CodeReviewAuditResponse>) codeReviewAuditService.getPeerReviewResponses(url, branch, "GitHub", 0L, System.currentTimeMillis());
                 List<CodeReviewAuditResponse> expected = (List<CodeReviewAuditResponse>) getExpected(url);
                 assertThat(actual.size()).isEqualByComparingTo(expected.size());
-                for (int i = 0; i < actual.size(); i++) {
+                //TODO: Manually add more assertions.
+                IntStream.range(0, actual.size()).forEach(i -> {
                     CodeReviewAuditResponse lhs = actual.get(i);
                     CodeReviewAuditResponse rhs = expected.get(i);
                     List<Commit> lhsCommit = lhs.getCommits();
@@ -108,12 +100,11 @@ public class DashboardAuditServiceTest {
                     GitRequest rhsPR = rhs.getPullRequest();
                     assertThat(lhs).isEqualToComparingOnlyGivenFields(rhs, "scmUrl", "scmBranch", "auditStatuses");
                     boolean bothNull = (lhsPR == null) && (rhsPR == null);
-                    //TODO: Manually add more assertions.
                     if (bothNull) {
-                        continue;
+                        return;
                     }
                     assertThat(lhsPR).isEqualToComparingOnlyGivenFields(rhsPR, "number");
-                }
+                });
             }
         }
     }

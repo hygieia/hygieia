@@ -811,5 +811,82 @@
         "numberOfChanges": 0
       }
     ]
+  },
+  {
+    "id" : "5a678cfcb5d5dc509425d00f",
+    "scmUrl" : "https://mygithub.com/Devopscode/MultipleAuthors",
+    "scmBranch" : "master",
+    "scmRevisionNumber" : "6375888315f3233e50a56aa6650227dfee7bdd9f",
+    "scmCommitLog" : "Merge TestFile into master from dev",
+    "scmCommitTimestamp" : 1516734773000,
+    "numberOfChanges" : 0,
+    "orgName" : "Devopscode",
+    "repoName" : "MultipleAuthors",
+    "sourceRepo" : "Devopscode/MultipleAuthors",
+    "sourceBranch" : "dev",
+    "targetRepo" : "Devopscode/MultipleAuthors",
+    "targetBranch" : "master",
+    "number" : "1",
+    "collectorItemId" : "5a678a032b7af20c95e7b146",
+    "updatedAt" : 1516734773000,
+    "createdAt" : 1516734459000,
+    "closedAt" : 0,
+    "state" : "merged",
+    "mergedAt" : 1516734773000,
+    "timestamp" : 1516734459000,
+    "resolutiontime" : 0,
+    "userId" : "ghone",
+    "comments": [
+      {
+        "user": "ghtwo",
+        "createdAt": 1511190526000,
+        "updatedAt": 1511190526000,
+        "body": "LGTM",
+        "status": ""
+      }
+    ],
+    "reviews": [],
+    "commitStatuses": [
+      {
+        "state": "SUCCESS",
+        "context": "approvals/lgtmeow",
+        "description": "approved by ghtwo"
+      }
+    ],
+    "headSha" : "263cabbeb0d00023c3fb6e46c1b9654b56a29ec0",
+    "baseSha" : "6375888315f3233e50a56aa6650227dfee7bdd9f",
+    "requestType" : "pull",
+    "commits" : [
+      {
+        "timestamp" : 0,
+        "firstEverCommit" : false,
+        "scmRevisionNumber" : "60fef0c4c4b1a0b8dcba7a8d88c54348f75ef5d6",
+        "scmCommitLog" : "Create TestFile",
+        "scmAuthor" : "Author, One",
+        "scmAuthorLogin" : "ghone",
+        "scmCommitTimestamp" : 1516734408000,
+        "numberOfChanges" : 0
+      },
+      {
+        "timestamp" : 0,
+        "firstEverCommit" : false,
+        "scmRevisionNumber" : "8331321b9552b2ca3f612b2642c178635d9fa08c",
+        "scmCommitLog" : "Update TestFile",
+        "scmAuthor" : "Author, One",
+        "scmAuthorLogin" : "ghone",
+        "scmCommitTimestamp" : 1516734422000,
+        "numberOfChanges" : 0
+      },
+      {
+        "timestamp" : 0,
+        "firstEverCommit" : false,
+        "scmRevisionNumber" : "263cabbeb0d00023c3fb6e46c1b9654b56a29ec0",
+        "scmCommitLog" : "Create testadd",
+        "scmAuthor" : "Author, Two",
+        "scmAuthorLogin" : "ghtwo",
+        "scmCommitTimestamp" : 1516734591000,
+        "numberOfChanges" : 0
+      }
+    ]
   }
 ]
