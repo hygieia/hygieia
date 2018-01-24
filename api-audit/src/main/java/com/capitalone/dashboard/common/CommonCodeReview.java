@@ -70,7 +70,6 @@ public class CommonCodeReview {
             if (lgtmAttempted) {
                 //if lgtm self-review, then no peer-review was done unless someone else looked at it
                 if (!CollectionUtils.isEmpty(auditReviewResponse.getAuditStatuses()) &&
-                        auditReviewResponse.getAuditStatuses().contains(CodeReviewAuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER) &&
                         !isPRLookedAtByPeer(pr)) {
                     auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_LGTM_SELF_APPROVAL);
                     return false;
@@ -102,10 +101,15 @@ public class CommonCodeReview {
     private static boolean isPRLookedAtByPeer(GitRequest pr) {
         Set<String> commentUsers = pr.getComments() != null ? pr.getComments().stream().map(Comment::getUser).collect(Collectors.toCollection(HashSet::new)) : new HashSet<>();
         Set<String> reviewAuthors = pr.getReviews() != null ? pr.getReviews().stream().map(Review::getAuthor).collect(Collectors.toCollection(HashSet::new)) : new HashSet<>();
-        commentUsers.remove(pr.getUserId());
-        reviewAuthors.remove(pr.getUserId());
 
-        return !CollectionUtils.isEmpty(pr.getReviews()) || (commentUsers.size() > 0) || (reviewAuthors.size() > 0);
+        Set<String> prCommitAuthors = pr.getCommits() != null ? pr.getCommits().stream().map(Commit::getScmAuthorLogin).collect(Collectors.toCollection(HashSet::new)) : new HashSet<>();
+        prCommitAuthors.add(pr.getUserId());
+        prCommitAuthors.remove("unknown");
+
+        commentUsers.removeAll(prCommitAuthors);
+        reviewAuthors.removeAll(prCommitAuthors);
+
+        return (commentUsers.size() > 0) || (reviewAuthors.size() > 0);
     }
 
     public static Set<String> getCodeAuthors(List<CollectorItem> repoItems, long beginDate, long endDate, CommitRepository commitRepository) {
