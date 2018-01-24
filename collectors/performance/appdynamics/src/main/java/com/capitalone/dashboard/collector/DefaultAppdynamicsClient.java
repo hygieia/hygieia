@@ -163,7 +163,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
                     JSONObject jsonEntry = (JSONObject) entry;
                     String metricPath = getString(jsonEntry, "metricPath");
                     JSONArray metricValues =  getJsonArray(jsonEntry, "metricValues");
-                    if (CollectionUtils.isEmpty(metricValues)){
+                    if (metricValues.isEmpty()){
                         continue;
                     }
                     JSONObject mObj = (JSONObject) metricValues.get(0);
