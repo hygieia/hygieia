@@ -3,6 +3,7 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.model.AppdynamicsApplication;
 import com.capitalone.dashboard.model.PerformanceMetric;
 import com.capitalone.dashboard.util.Supplier;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -160,7 +161,11 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
                 for (Object entry : array) {
                     JSONObject jsonEntry = (JSONObject) entry;
                     String metricPath = getString(jsonEntry, "metricPath");
-                    JSONObject mObj = (JSONObject) getJsonArray(jsonEntry, "metricValues").get(0);
+                    JSONArray metricValues =  getJsonArray(jsonEntry, "metricValues");
+                    if (metricValues.isEmpty()){
+                        continue;
+                    }
+                    JSONObject mObj = (JSONObject) metricValues.get(0);
                     Long metricValue = getLong(mObj, "value");
 
                     PerformanceMetric metric = new PerformanceMetric();
