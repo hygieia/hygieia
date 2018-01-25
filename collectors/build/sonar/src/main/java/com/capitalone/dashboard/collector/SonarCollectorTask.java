@@ -1,26 +1,36 @@
 package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.CodeQuality;
+import com.capitalone.dashboard.model.CollectorItemConfigHistory;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.ConfigHistOperationType;
 import com.capitalone.dashboard.model.SonarCollector;
 import com.capitalone.dashboard.model.SonarProject;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.SonarCollectorRepository;
+import com.capitalone.dashboard.repository.SonarProfileRepostory;
 import com.capitalone.dashboard.repository.SonarProjectRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Component
@@ -31,6 +41,7 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
     private final SonarCollectorRepository sonarCollectorRepository;
     private final SonarProjectRepository sonarProjectRepository;
     private final CodeQualityRepository codeQualityRepository;
+    private final SonarProfileRepostory sonarProfileRepostory;
     private final SonarClientSelector sonarClientSelector;
     private final SonarSettings sonarSettings;
     private final ComponentRepository dbComponentRepository;
@@ -40,6 +51,7 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
                               SonarCollectorRepository sonarCollectorRepository,
                               SonarProjectRepository sonarProjectRepository,
                               CodeQualityRepository codeQualityRepository,
+                              SonarProfileRepostory sonarProfileRepostory,
                               SonarSettings sonarSettings,
                               SonarClientSelector sonarClientSelector,
                               ComponentRepository dbComponentRepository) {
@@ -47,6 +59,7 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
         this.sonarCollectorRepository = sonarCollectorRepository;
         this.sonarProjectRepository = sonarProjectRepository;
         this.codeQualityRepository = codeQualityRepository;
+        this.sonarProfileRepostory = sonarProfileRepostory;
         this.sonarSettings = sonarSettings;
         this.sonarClientSelector = sonarClientSelector;
         this.dbComponentRepository = dbComponentRepository;
@@ -96,13 +109,18 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
                 addNewProjects(projects, existingProjects, collector);
 
                 refreshData(enabledProjects(collector, instanceUrl), sonarClient,metrics);
+                
+                try {
+					fetchQualityProfileConfigChanges(collector,instanceUrl,sonarClient);
+				} catch (org.json.simple.parser.ParseException e) {
+					LOG.error(e);
+				}
 
                 log("Finished", start);
             }
         }
         deleteUnwantedJobs(latestProjects, existingProjects, collector);
     }
-
 
 	/**
 	 * Clean up unused sonar collector items
@@ -176,7 +194,59 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
         }
         log("Updated", start, count);
     }
+    
+    @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts")
+    private void fetchQualityProfileConfigChanges(SonarCollector collector,String instanceUrl,SonarClient sonarClient) throws org.json.simple.parser.ParseException{
+    	JSONArray qualityProfiles = sonarClient.getQualityProfiles(instanceUrl);   
+    	JSONArray sonarProfileConfigurationChanges = new JSONArray();
+        
+    	for (Object qualityProfile : qualityProfiles ) {      	
+    		JSONObject qualityProfileJson = (JSONObject) qualityProfile;
+    		String qualityProfileKey = (String)qualityProfileJson.get("key");
 
+    		List<String> sonarProjects = sonarClient.retrieveProfileAndProjectAssociation(instanceUrl,qualityProfileKey);
+    		if (sonarProjects != null){
+    			sonarProfileConfigurationChanges = sonarClient.getQualityProfileConfigurationChanges(instanceUrl,qualityProfileKey);
+    			addNewConfigurationChanges(collector,sonarProfileConfigurationChanges);
+    		}
+    	}
+    }
+    
+    private void addNewConfigurationChanges(SonarCollector collector,JSONArray sonarProfileConfigurationChanges){
+    	ArrayList<CollectorItemConfigHistory> profileConfigChanges = new ArrayList();
+    	
+    	for (Object configChange : sonarProfileConfigurationChanges) {		
+    		JSONObject configChangeJson = (JSONObject) configChange;
+    		CollectorItemConfigHistory profileConfigChange = new CollectorItemConfigHistory();
+    		Map<String,Object> changeMap = new HashMap<String,Object>();
+    		
+    		profileConfigChange.setCollectorItemId(collector.getId());
+    		profileConfigChange.setUserName((String) configChangeJson.get("authorName"));
+    		profileConfigChange.setUserID((String) configChangeJson.get("authorLogin") );
+    		changeMap.put("event", configChangeJson);
+   
+    		profileConfigChange.setChangeMap(changeMap);
+    		
+    		ConfigHistOperationType operation = determineConfigChangeOperationType((String)configChangeJson.get("action"));
+    		profileConfigChange.setOperation(operation);
+    		
+				
+    		long timestamp = convertToTimestamp((String) configChangeJson.get("date"));
+    		profileConfigChange.setTimestamp(timestamp);
+    		
+//    		profileConfigChanges.add(profileConfigChange);
+    		if (isNewConfig(collector.getId(),(String) configChangeJson.get("authorLogin"),operation,timestamp)) {
+    			profileConfigChanges.add(profileConfigChange);
+    		}
+    	}
+    	sonarProfileRepostory.save(profileConfigChanges);
+    }
+    
+    private Boolean isNewConfig(ObjectId collectorId,String authorLogin,ConfigHistOperationType operation,long timestamp) {
+    	List<CollectorItemConfigHistory> storedConfigs = sonarProfileRepostory.findProfileConfigChanges(collectorId, authorLogin,operation,timestamp);
+    	return storedConfigs.isEmpty();
+    }
+    
     private List<SonarProject> enabledProjects(SonarCollector collector, String instanceUrl) {
         return sonarProjectRepository.findEnabledProjects(collector.getId(), instanceUrl);
     }
@@ -211,4 +281,27 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
         return codeQualityRepository.findByCollectorItemIdAndTimestamp(
                 project.getId(), codeQuality.getTimestamp()) == null;
     }
+    
+    private long convertToTimestamp(String date) {
+    	
+    	DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
+    	DateTime dt = formatter.parseDateTime(date);
+    	long d = new DateTime(dt).getMillis();
+    	
+    	return d;	
+    }
+    
+    private ConfigHistOperationType determineConfigChangeOperationType(String changeAction){
+    	switch (changeAction) {
+		
+	    	case "DEACTIVATED":
+	    		return ConfigHistOperationType.DELETED;
+	    		
+	    	case "ACTIVATED":
+	    		return ConfigHistOperationType.CREATED;
+	    	default:
+	    		return ConfigHistOperationType.CHANGED;
+    	}	
+    }
+
 }

@@ -1,17 +1,25 @@
 package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.ConfigHistOperationType;
 import com.capitalone.dashboard.model.SonarCollector;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.SonarCollectorRepository;
+import com.capitalone.dashboard.repository.SonarProfileRepostory;
 import com.capitalone.dashboard.repository.SonarProjectRepository;
 import org.bson.types.ObjectId;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.OngoingStubbing;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,6 +36,8 @@ public class SonarCollectorTaskTest {
     @Mock private SonarCollectorRepository sonarCollectorRepository;
     @Mock private SonarProjectRepository sonarProjectRepository;
     @Mock private CodeQualityRepository codeQualityRepository;
+    @Mock private SonarProfileRepostory sonarProfileRepostory;
+ 
 
     @Mock private SonarSettings sonarSettings;
     @Mock private ComponentRepository dbComponentRepository;
@@ -42,6 +52,36 @@ public class SonarCollectorTaskTest {
     private static final Double VERSION43 = 4.3;
     private static final Double VERSION54 = 5.4;
     private static final Double VERSION63 = 6.3;
+    private static final String QUALITYPROFILE = "cs-default-donotmodify-89073";
+    private JSONArray qualityProfiles = new JSONArray();
+    private JSONArray profileConfigurationChanges = new JSONArray();                                                           
+    private JSONObject qualityProfile = new JSONObject();
+    private JSONObject profileConfigurationChange = new JSONObject();
+    ConfigHistOperationType operation = ConfigHistOperationType.CHANGED;
+    
+    @Before
+    public void setup() throws ParseException{
+    	qualityProfile.put("key", QUALITYPROFILE);
+    	qualityProfile.put("name", "Default-DoNotModify");
+    	qualityProfiles.add(qualityProfile);
+    	
+    	profileConfigurationChange.put("authorName", "foo");
+    	profileConfigurationChange.put("authorLogin", "bar");
+    	profileConfigurationChange.put("date", "2017-10-05T13:57:40+0000");
+    	profileConfigurationChange.put("action", "DEACTIVATED");
+    	profileConfigurationChanges.add(profileConfigurationChange);
+    	
+    	Mockito.doReturn(qualityProfiles).when(defaultSonarClient).getQualityProfiles(SERVER1);
+    	
+    	Mockito.doReturn(profileConfigurationChanges).when(defaultSonarClient).getQualityProfileConfigurationChanges(SERVER1, QUALITYPROFILE);                                                 
+
+    	Mockito.doReturn(qualityProfiles).when(defaultSonar6Client).getQualityProfiles(SERVER1);
+    	Mockito.doReturn(qualityProfiles).when(defaultSonar6Client).getQualityProfiles(SERVER2);
+
+    	Mockito.doReturn(profileConfigurationChanges).when(defaultSonar6Client).getQualityProfileConfigurationChanges(SERVER1, QUALITYPROFILE);                                                 
+    	Mockito.doReturn(profileConfigurationChanges).when(defaultSonar6Client).getQualityProfileConfigurationChanges(SERVER2, QUALITYPROFILE);
+    	
+    }
 
     @Test
     public void collectEmpty() throws Exception {
@@ -52,10 +92,13 @@ public class SonarCollectorTaskTest {
 
     @Test
     public void collectOneServer43() throws Exception {
-        when(dbComponentRepository.findAll()).thenReturn(components());
+    	when(dbComponentRepository.findAll()).thenReturn(components());
         when(sonarClientSelector.getSonarClient(VERSION43)).thenReturn(defaultSonarClient);
         task.collect(collectorWithOneServer(VERSION43));
         verify(sonarClientSelector).getSonarClient(VERSION43);
+        verify(defaultSonarClient).getQualityProfiles(SERVER1);
+        verify(defaultSonarClient).retrieveProfileAndProjectAssociation(SERVER1, QUALITYPROFILE);
+        verify(defaultSonarClient).getQualityProfileConfigurationChanges(SERVER1, QUALITYPROFILE);
     }
 
     @Test
@@ -64,6 +107,9 @@ public class SonarCollectorTaskTest {
         when(sonarClientSelector.getSonarClient(VERSION54)).thenReturn(defaultSonar6Client);
         task.collect(collectorWithOneServer(VERSION54));
         verify(sonarClientSelector).getSonarClient(VERSION54);
+        verify(defaultSonar6Client).getQualityProfiles(SERVER1);
+        verify(defaultSonar6Client).retrieveProfileAndProjectAssociation(SERVER1, QUALITYPROFILE);
+        verify(defaultSonar6Client).getQualityProfileConfigurationChanges(SERVER1, QUALITYPROFILE);
     }
 
 
@@ -73,6 +119,9 @@ public class SonarCollectorTaskTest {
         when(sonarClientSelector.getSonarClient(VERSION63)).thenReturn(defaultSonar6Client);
         task.collect(collectorWithOneServer(VERSION63));
         verify(sonarClientSelector).getSonarClient(VERSION63);
+        verify(defaultSonar6Client).getQualityProfiles(SERVER1);
+        verify(defaultSonar6Client).retrieveProfileAndProjectAssociation(SERVER1, QUALITYPROFILE);
+        verify(defaultSonar6Client).getQualityProfileConfigurationChanges(SERVER1, QUALITYPROFILE);
     }
 
 
@@ -84,6 +133,14 @@ public class SonarCollectorTaskTest {
         task.collect(collectorWithOnTwoServers(VERSION43, VERSION54));
         verify(sonarClientSelector).getSonarClient(VERSION43);
         verify(sonarClientSelector).getSonarClient(VERSION54);
+        
+        verify(defaultSonar6Client).getQualityProfiles(SERVER2);
+        verify(defaultSonar6Client).retrieveProfileAndProjectAssociation(SERVER2, QUALITYPROFILE);
+        verify(defaultSonar6Client).getQualityProfileConfigurationChanges(SERVER2, QUALITYPROFILE);
+        
+        verify(defaultSonarClient).getQualityProfiles(SERVER1);
+        verify(defaultSonarClient).retrieveProfileAndProjectAssociation(SERVER1, QUALITYPROFILE);
+        verify(defaultSonarClient).getQualityProfileConfigurationChanges(SERVER1, QUALITYPROFILE);
     }
 
     private ArrayList<com.capitalone.dashboard.model.Component> components() {
