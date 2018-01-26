@@ -18,7 +18,7 @@
                   <div class="widget-modal-heading">
                       Rename/Delete Dashboard
                   </div>
-                  <div class="widget-modal-body">
+                  <!-- div class="widget-modal-body">
                       <div class="row">
                           <div class="col-xs-push-2 col-xs-8">
                               <div class="text-center" ng-hide="ctrl.dashboards">Loading Dashboards...</div>
@@ -40,6 +40,37 @@
                               </div>
                           </div>
                       </div>
+                  </div -->
+
+                  <div class="gap">
+                      <div class="text-center" ng-hide="ctrl.dashboards">Loading Dashboards...</div>
+                      <div class="text-center" ng-show="ctrl.dashboards && !filteredDashboards.length">
+                          No results
+                      </div>
+
+                      <ul class="list-animate list-group text-left">
+                          <li  title="{{item.name}}"class="list-group-item clickable" ng-click="ctrl.open(item.id)"
+                               dir-paginate="item in filteredDashboards = (ctrl.dashboards | filter:q | itemsPerPage: ctrl.pageSize() | orderBy: 'name')"
+                               current-page="currentPage"
+                               total-items= ctrl.totalItems()
+                               pagination-id="adminDashboard">
+
+                              <div title="{{item.name}}" class="btn-block">{{item.name |  trunText:30}}
+                                  <a href delete-confirm title="Are you sure you want to delete?"
+                                     confirm-action="ctrl.deleteDashboard(item.id)">
+                                      <dash-trash class="clickable pull-right"></dash-trash>
+                                  </a>
+                                  <dash-edit class="clickable pull-right" ng-click="ctrl.editDashboard(item)"></dash-edit>
+                              </div>
+                          </li>
+                      </ul>
+                      <dir-pagination-controls
+                        max-size="8"
+                        boundary-links="true"
+                        direction-links="true"
+                        on-page-change="ctrl.pageChangeHandler(newPageNumber)"
+                        pagination-id="adminDashboard">
+                      </dir-pagination-controls >
                   </div>
               </div>
             </div>

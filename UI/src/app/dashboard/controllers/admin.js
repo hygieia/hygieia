@@ -9,8 +9,8 @@
         .controller('AdminController', AdminController);
 
 
-    AdminController.$inject = ['$scope', 'dashboardData', '$location', '$uibModal', 'userService', 'authService', 'userData', 'dashboardService', 'templateMangerData'];
-    function AdminController($scope, dashboardData, $location, $uibModal, userService, authService, userData, dashboardService, templateMangerData) {
+    AdminController.$inject = ['$scope', 'dashboardData', '$location', '$uibModal', 'userService', 'authService', 'userData', 'dashboardService', 'templateMangerData', 'paginationWrapperService'];
+    function AdminController($scope, dashboardData, $location, $uibModal, userService, authService, userData, dashboardService, templateMangerData, paginationWrapperService) {
         var ctrl = this;
         if (userService.isAuthenticated() && userService.isAdmin()) {
             $location.path('/admin');
@@ -35,6 +35,11 @@
         ctrl.editTemplate = editTemplate;
         ctrl.deleteToken = deleteToken;
         ctrl.editToken = editToken;
+
+        ctrl.pageChangeHandler = pageChangeHandler;
+        ctrl.totalItems = totalItems;
+        ctrl.currentPage = currentPage;
+        ctrl.pageSize = pageSize;
 
         $scope.tab = "dashboards";
 
@@ -76,6 +81,24 @@
         userData.apitokens().then(processTokenResponse);
         templateMangerData.getAllTemplates().then(processTemplateResponse);
 
+        function pageChangeHandler(pageNumber) {
+            paginationWrapperService.pageChangeHandler(pageNumber)
+                .then(function() {
+                    ctrl.dashboards = paginationWrapperService.getDashboards();
+                });
+        }
+
+        function totalItems() {
+            return paginationWrapperService.getTotalItems();
+        }
+
+        function currentPage() {
+            return paginationWrapperService.getCurrentPage();
+        }
+
+        function pageSize() {
+            return paginationWrapperService.getPageSize();
+        }
 
         //implementation of logout
         function logout() {
@@ -99,6 +122,7 @@
             dashboardData.delete(id).then(function () {
                 _.remove(ctrl.dashboards, {id: id});
             });
+            paginationWrapperService.calculateTotalItems();
         }
 
         function editDashboard(item) {
@@ -121,10 +145,9 @@
                 userData.apitokens().then(processTokenResponse);
                 templateMangerData.getAllTemplates().then(processTemplateResponse);
             });
-
         }
-        function editToken(item)
-        {
+
+        function editToken(item) {
             console.log("Edit token in Admin");
 
             var mymodalInstance=$uibModal.open({
@@ -141,13 +164,14 @@
             mymodalInstance.result.then(function() {
                 userData.apitokens().then(processTokenResponse);
             });
-
         }
+
         function deleteToken(id) {
             userData.deleteToken(id).then(function() {
                 _.remove( $scope.apitokens , {id: id});
             });
         }
+
         function generateToken() {
             console.log("Generate token in Admin");
 
@@ -161,22 +185,10 @@
             mymodalInstance.result.then(function (condition) {
                 window.location.reload(false);
             });
-
         }
 
         function processResponse(data) {
-            ctrl.dashboards = [];
-            for (var x = 0; x < data.length; x++) {
-                ctrl.dashboards.push({
-                    id: data[x].id,
-                    name: dashboardService.getDashboardTitle(data[x]),
-                    type: data[x].type,
-                    validServiceName: data[x].validServiceName,
-                    validAppName: data[x].validAppName,
-                    configurationItemBusServName: data[x].configurationItemBusServName,
-                    configurationItemBusAppName: data[x].configurationItemBusAppName,
-                });
-            }
+            ctrl.dashboards = paginationWrapperService.processDashboardResponse(data);
         }
 
         function processUserResponse(response) {
@@ -316,6 +328,5 @@
                 }
             );
         }
-
     }
 })();

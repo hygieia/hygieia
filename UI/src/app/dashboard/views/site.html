@@ -63,7 +63,11 @@
                             </div>
 
                                     <ul class="list-animate list-group text-left">
-                                        <li class="list-group-item" dir-paginate="myitem in mydashboards = (ctrl.mydash | filter:q | itemsPerPage: pageSize | orderBy: 'name')" current-page="currentPageMyDash" total-items= ctrl.totalItemsMyDash pagination-id="myDashboard">
+                                        <li class="list-group-item"
+                                            dir-paginate="myitem in mydashboards = (ctrl.mydash | filter:q | itemsPerPage: ctrl.getPageSize() | orderBy: 'name')"
+                                            current-page="currentPageMyDash"
+                                            total-items= ctrl.getTotalItemsMyDash()
+                                            pagination-id="myDashboard">
                                         <span class="pull-right">
 
 
@@ -85,8 +89,13 @@
                                         </li>
                                     </ul>
 
-                                    <dir-pagination-controls max-size="8" boundary-links="true"
-                                                             direction-links="true" on-page-change="ctrl.pageChangeHandlerForMyDash(newPageNumber)" pagination-id="myDashboard"></dir-pagination-controls>
+                                    <dir-pagination-controls
+                                            max-size="8"
+                                            boundary-links="true"
+                                            direction-links="true"
+                                            on-page-change="ctrl.pageChangeHandlerForMyDash(newPageNumber)"
+                                            pagination-id="myDashboard">
+                                    </dir-pagination-controls>
                             </div>
                         </div>
 
@@ -100,7 +109,10 @@
 
                             <ul class="list-animate list-group text-left">
                                 <li  title="{{item.name}}"class="list-group-item clickable" ng-click="ctrl.open(item.id)"
-                                     dir-paginate="item in filteredDashboards = (ctrl.dashboards | filter:q | itemsPerPage: pageSize | orderBy: 'name')" current-page="currentPage" total-items= ctrl.totalItems pagination-id="allDashboard">
+                                     dir-paginate="item in filteredDashboards = (ctrl.dashboards | filter:q | itemsPerPage: ctrl.getPageSize() | orderBy: 'name')"
+                                     current-page="currentPage"
+                                     total-items= ctrl.getTotalItems()
+                                     pagination-id="allDashboard">
                                     <span class="fa fa-lg left-icon" ng-class="{'fa-cubes' : item.isProduct}"></span>
 
                                     <span class="fa fa-angle-right list-group-item-right"></span>
@@ -108,8 +120,14 @@
                                 <span class="word-overflow-wrap">{{item.name}}</span>
                                 </li>
                             </ul>
-                            <dir-pagination-controls max-size="8" boundary-links="true"
-                                                     direction-links="true" on-page-change="ctrl.pageChangeHandler(newPageNumber)" pagination-id="allDashboard"></dir-pagination-controls >
+                            <dir-pagination-controls
+                                    max-size="8"
+                                    boundary-links="true"
+                                    direction-links="true"
+                                    on-page-change="ctrl.pageChangeHandler(newPageNumber)"
+                                    pagination-id="allDashboard">
+                            </dir-pagination-controls >
+
                         </div>
                     </div>
                 </div>
