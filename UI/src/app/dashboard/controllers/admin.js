@@ -67,13 +67,11 @@
             ctrl.theme = localStorage.getItem('theme');
         }
 
-
         // ctrl.dashboards = []; don't default since it's used to determine loading
 
         // public methods
         ctrl.deleteDashboard = deleteDashboard;
         ctrl.applyTheme = applyTheme;
-
 
         // request dashboards
         dashboardData.search().then(processResponse);
