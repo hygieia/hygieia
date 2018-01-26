@@ -25,15 +25,25 @@
 
                               <div class="list-animate">
                                   <div class="dash-modal-row delete-dashboard-row clearfix"
-                                      ng-repeat="dashboard in ctrl.dashboards | orderBy:'name'">
-                                      <div title="{{dashboard.name}}" class="btn-block">{{dashboard.name |  trunText:30}}
-                                          <a href delete-confirm title="Are you sure you want to delete?" confirm-action="ctrl.deleteDashboard(dashboard.id)">
+                                       dir-paginate="item in filteredDashboards = (ctrl.dashboards | filter:q | itemsPerPage: ctrl.pageSize() | orderBy: 'name')"
+                                       current-page="currentPage"
+                                       total-items= ctrl.totalItems()
+                                       pagination-id="adminDashboard">
+                                      <div title="{{item.name}}" class="btn-block">{{item.name |  trunText:30}}
+                                          <a href delete-confirm title="Are you sure you want to delete?" confirm-action="ctrl.deleteDashboard(item.id)">
                                               <dash-trash class="clickable pull-right"></dash-trash>
                                           </a>
-                                          <dash-edit class="clickable pull-right" ng-click="ctrl.editDashboard(dashboard)"></dash-edit>
+                                          <dash-edit class="clickable pull-right" ng-click="ctrl.editDashboard(item)"></dash-edit>
                                       </div>
                                   </div>
                               </div>
+                              <dir-pagination-controls
+                                      max-size="8"
+                                      boundary-links="true"
+                                      direction-links="true"
+                                      on-page-change="ctrl.pageChangeHandler(newPageNumber)"
+                                      pagination-id="adminDashboard">
+                              </dir-pagination-controls >
 
                               <div class="text-center" ng-show="ctrl.dashboards && !ctrl.dashboards.length">
                                   No results
