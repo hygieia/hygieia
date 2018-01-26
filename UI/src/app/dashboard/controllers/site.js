@@ -152,28 +152,6 @@
         }
 
         function processDashboardFilterResponse(data) {
-            ctrl.dashboards = [];
-            var dashboards = [];
-            for (var x = 0; x < data.length; x++) {
-                var board = {
-                    id: data[x].id,
-                    name: dashboardService.getDashboardTitle(data[x]),
-                    isProduct: data[x].type && data[x].type.toLowerCase() === DashboardType.PRODUCT.toLowerCase()
-                };
-                if(board.isProduct) {
-                    //console.log(board);
-                }
-                dashboards.push(board);
-            }
-            ctrl.dashboards = dashboards;
-            if(ctrl.searchFilter==""){
-                dashboardData.count().then(function (data) {
-                    ctrl.totalItems = data;
-                });
-            }
-        }
-
-        function processDashboardFilterResponse(data) {
             ctrl.dashboards = paginationWrapperService.processDashboardFilterResponse(data);
         }
 
