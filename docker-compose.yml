@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   db:
     image: mongo:latest
@@ -11,8 +11,6 @@ services:
     build: db
     depends_on:
       - db
-    links:
-      - db:db
 
   api:
     image: hygieia-api
@@ -22,16 +20,55 @@ services:
       - "8080:8080"
     volumes:
       - ./logs:/hygieia/logs
-    links:
-      - db:db
 
-  hygieia-ui:
+  ui:
     image: hygieia-ui
     depends_on:
       - api
     ports:
       - "3000:80"
-    links:
-      - api:api
+
+  appdynamics-performance-collector:
+    image: hygieia-appdynamics-performance-collector
+
+  appdynamics-collector:
+    image: hygieia-appdynamics-collector:latest
+
+  artifactory-artifact-collector:
+    image: hygieia-artifactory-artifact-collector:latest
+
+  bitbucket-collector:
+    image: hygieia-bitbucket-scm-collector:latest
+
+  chat-ops-collector:
+    image: hygieia-chat-ops-collector:latest
+
+  github-collector:
+    image: hygieia-github-scm-collector:latest
+
+  jenkins-build-collector:
+    image: hygieia-jenkins-build-collector:latest
+
+  jenkins-cucumber-test-collector:
+    image: hygieia-jenkins-cucumber-test-collector:latest
+
+  jira-collector:
+    image: hygieia-jira-feature-collector:latest
+
+  sonar-codequality-collector:
+    image: hygieia-sonar-codequality-collector:latest
+
+  subversion-collector:
+    image: hygieia-subversion-scm-collector:latest
+
+  udeploy-collector:
+    image: hygieia-udeploy-collector:latest
+
+  versionone-collector:
+    image: hygieia-versionone-collector:latest
+
+  xldeploy-collector:
+    image: hygieia-xldeploy-collector:latest
+
 volumes:
   db-data:
