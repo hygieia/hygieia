@@ -1,3 +1,6 @@
+# Help: rename the adject docker-compose.override.example.yml file to docker-compose.override.yml
+#       then in the override file uncomment the environment tag for the collectors you want to
+#       run. Then add the environment vars you want to use.
 version: '3'
 services:
   db:
@@ -18,8 +21,6 @@ services:
       - db-setup
     ports:
       - "8080:8080"
-    volumes:
-      - ./logs:/hygieia/logs
 
   ui:
     image: hygieia-ui
@@ -28,47 +29,70 @@ services:
     ports:
       - "3000:80"
 
-  appdynamics-performance-collector:
-    image: hygieia-appdynamics-performance-collector
-
   appdynamics-collector:
-    image: hygieia-appdynamics-collector:latest
+    image: hygieia-appdynamics-collector
+    depends_on:
+      - db-setup
 
   artifactory-artifact-collector:
-    image: hygieia-artifactory-artifact-collector:latest
+    image: hygieia-artifactory-artifact-collector
+    depends_on:
+      - db-setup
 
   bitbucket-collector:
-    image: hygieia-bitbucket-scm-collector:latest
+    image: hygieia-bitbucket-scm-collector
+    depends_on:
+      - db-setup
 
   chat-ops-collector:
-    image: hygieia-chat-ops-collector:latest
+    image: hygieia-chat-ops-collector
+    depends_on:
+      - db-setup
 
   github-collector:
-    image: hygieia-github-scm-collector:latest
+    image: hygieia-github-scm-collector
+    depends_on:
+      - db-setup
 
   jenkins-build-collector:
-    image: hygieia-jenkins-build-collector:latest
+    image: hygieia-jenkins-build-collector
+    depends_on:
+      - db-setup
 
   jenkins-cucumber-test-collector:
-    image: hygieia-jenkins-cucumber-test-collector:latest
+    image: hygieia-jenkins-cucumber-test-collector
+    depends_on:
+      - db-setup
 
   jira-collector:
-    image: hygieia-jira-feature-collector:latest
+    image: hygieia-jira-feature-collector
+    depends_on:
+      - db-setup
 
   sonar-codequality-collector:
-    image: hygieia-sonar-codequality-collector:latest
+    image: hygieia-sonar-codequality-collector
+    depends_on:
+      - db-setup
 
   subversion-collector:
-    image: hygieia-subversion-scm-collector:latest
+    image: hygieia-subversion-scm-collector
+    depends_on:
+      - db-setup
 
   udeploy-collector:
-    image: hygieia-udeploy-collector:latest
+    image: hygieia-udeploy-collector
+    depends_on:
+      - db-setup
 
   versionone-collector:
-    image: hygieia-versionone-collector:latest
+    image: hygieia-versionone-collector
+    depends_on:
+      - db-setup
 
   xldeploy-collector:
-    image: hygieia-xldeploy-collector:latest
+    image: hygieia-xldeploy-collector
+    depends_on:
+      - db-setup
 
 volumes:
   db-data:
