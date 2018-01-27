@@ -16,12 +16,46 @@ import com.google.common.collect.Sets;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class CommonCodeReview {
+
+    private enum CodeActionType {
+        Commit,
+        Review,
+        PRCreate,
+        PRMerge
+    }
+
+
+    private static class CodeAction {
+        private final CodeActionType type;
+        private final long timestamp;
+        private final String actor;
+
+        CodeAction(CodeActionType type, long timestamp, String actor) {
+            this.type = type;
+            this.timestamp = timestamp;
+            this.actor = actor;
+        }
+
+        CodeActionType getType() {
+            return type;
+        }
+
+        long getTimestamp() {
+            return timestamp;
+        }
+
+        String getActor() {
+            return actor;
+        }
+    }
 
     /**
      * Calculates the peer review status for a given pull request
@@ -70,7 +104,7 @@ public class CommonCodeReview {
             if (lgtmAttempted) {
                 //if lgtm self-review, then no peer-review was done unless someone else looked at it
                 if (!CollectionUtils.isEmpty(auditReviewResponse.getAuditStatuses()) &&
-                        !isPRLookedAtByPeer(pr)) {
+                        !isPRReviewedInTimeScale(pr)) {
                     auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_LGTM_SELF_APPROVAL);
                     return false;
                 }
@@ -84,6 +118,11 @@ public class CommonCodeReview {
                 if ("approved".equalsIgnoreCase(review.getState())) {
                     //review done using GitHub Review workflow
                     auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_GHR);
+                    if (!CollectionUtils.isEmpty(auditReviewResponse.getAuditStatuses()) &&
+                            !isPRReviewedInTimeScale(pr)) {
+                        auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_GHR_SELF_APPROVAL);
+                        return false;
+                    }
                     return true;
                 }
             }
@@ -101,6 +140,7 @@ public class CommonCodeReview {
     private static boolean isPRLookedAtByPeer(GitRequest pr) {
         Set<String> commentUsers = pr.getComments() != null ? pr.getComments().stream().map(Comment::getUser).collect(Collectors.toCollection(HashSet::new)) : new HashSet<>();
         Set<String> reviewAuthors = pr.getReviews() != null ? pr.getReviews().stream().map(Review::getAuthor).collect(Collectors.toCollection(HashSet::new)) : new HashSet<>();
+        reviewAuthors.remove("unknown");
 
         Set<String> prCommitAuthors = pr.getCommits() != null ? pr.getCommits().stream().map(Commit::getScmAuthorLogin).collect(Collectors.toCollection(HashSet::new)) : new HashSet<>();
         prCommitAuthors.add(pr.getUserId());
@@ -111,6 +151,38 @@ public class CommonCodeReview {
 
         return (commentUsers.size() > 0) || (reviewAuthors.size() > 0);
     }
+
+
+    private static boolean isPRReviewedInTimeScale(GitRequest pr) {
+        List<CodeAction> codeActionList = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(pr.getCommits())) {
+            codeActionList.addAll(pr.getCommits().stream().map(c -> new CodeAction(CodeActionType.Commit, c.getScmCommitTimestamp(), "unknown".equalsIgnoreCase(c.getScmAuthorLogin())?pr.getUserId():c.getScmAuthorLogin()  )).collect(Collectors.toList()));
+        }
+        if (!CollectionUtils.isEmpty(pr.getReviews())) {
+            codeActionList.addAll(pr.getReviews().stream().map(r -> new CodeAction(CodeActionType.Review, r.getUpdatedAt(), r.getAuthor())).collect(Collectors.toList()));
+        }
+        if (!CollectionUtils.isEmpty(pr.getComments())) {
+            codeActionList.addAll(pr.getComments().stream().map(r -> new CodeAction(CodeActionType.Review, r.getUpdatedAt(), r.getUser())).collect(Collectors.toList()));
+        }
+        codeActionList.add(new CodeAction(CodeActionType.PRMerge, pr.getMergedAt(), "IRRELEVANT"));
+        codeActionList.add(new CodeAction(CodeActionType.PRCreate, pr.getCreatedAt(), pr.getUserId()));
+
+        codeActionList.sort(Comparator.comparing(CodeAction::getTimestamp));
+
+        Set<CodeAction> reviewedList = new HashSet<>();
+        codeActionList.stream().filter(as -> as.getType() == CodeActionType.Review).map(as -> getReviewedActions(codeActionList, as)).forEach(reviewedList::addAll);
+        codeActionList.removeAll(reviewedList);
+        return codeActionList.stream().noneMatch(as -> as.getType() == CodeActionType.Commit);
+    }
+
+
+    private static List<CodeAction> getReviewedActions(List<CodeAction> codeActionList, CodeAction reviewAction) {
+        return codeActionList.stream()
+                .filter(cal -> cal.getTimestamp() < reviewAction.getTimestamp())
+                .filter(cal -> (cal.getType() == CodeActionType.Commit) && !reviewAction.getActor().equalsIgnoreCase(cal.getActor()))
+                .collect(Collectors.toList());
+    }
+
 
     public static Set<String> getCodeAuthors(List<CollectorItem> repoItems, long beginDate, long endDate, CommitRepository commitRepository) {
         Set<String> authors = new HashSet<>();
