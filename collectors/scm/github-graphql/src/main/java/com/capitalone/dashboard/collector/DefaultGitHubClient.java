@@ -456,7 +456,7 @@ public class DefaultGitHubClient implements GitHubClient {
             pull.setOrgName(gitHubParsed.getOrgName());
             pull.setRepoName(gitHubParsed.getRepoName());
             pull.setScmCommitLog(str(node, "title"));
-            pull.setTimestamp(createdTimestamp);
+            pull.setTimestamp(System.currentTimeMillis());
             pull.setCreatedAt(createdTimestamp);
             pull.setClosedAt(closedTimestamp);
             pull.setUpdatedAt(updatedTimestamp);
@@ -610,7 +610,7 @@ public class DefaultGitHubClient implements GitHubClient {
             }
             issue.setUserId(name);
             issue.setScmUrl(gitHubParsed.getUrl());
-            issue.setTimestamp(createdTimestamp);
+            issue.setTimestamp(System.currentTimeMillis());
             issue.setScmRevisionNumber(number);
             issue.setNumber(number);
             issue.setScmCommitLog(message);

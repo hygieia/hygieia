@@ -9,7 +9,7 @@
         ],
         "lastUpdated": 1516735761179,
         "pullRequest": {
-            "scmUrl": "https://mygithub.com/Devopscode/MultipleAuthors",
+            "scmUrl": "https://mygithub.com/Devopscode/MultipleAuthorsLGTM",
             "scmBranch": "master",
             "scmRevisionNumber": "6375888315f3233e50a56aa6650227dfee7bdd9f",
             "scmCommitLog": "Merge TestFile into master from dev",
@@ -17,10 +17,10 @@
             "numberOfChanges": 0,
             "id": "5a678cfcb5d5dc509425d00f",
             "orgName": "Devopscode",
-            "repoName": "MultipleAuthors",
-            "sourceRepo": "Devopscode/MultipleAuthors",
+            "repoName": "MultipleAuthorsLGTM",
+            "sourceRepo": "Devopscode/MultipleAuthorsLGTM",
             "sourceBranch": "dev",
-            "targetRepo": "Devopscode/MultipleAuthors",
+            "targetRepo": "Devopscode/MultipleAuthorsLGTM",
             "targetBranch": "master",
             "number": "1",
             "collectorItemId": "5a678a032b7af20c95e7b146",
@@ -117,7 +117,7 @@
                 "firstEverCommit": false
             }
         ],
-        "scmUrl": "https://mygithub.com/Devopscode/MultipleAuthors",
+        "scmUrl": "https://mygithub.com/Devopscode/MultipleAuthorsLGTM",
         "scmBranch": "master"
     },
     {
@@ -127,7 +127,7 @@
         "lastUpdated": 1516735761179,
         "commits": [
             {
-                "scmUrl": "https://mygithub.com/Devopscode/MultipleAuthors",
+                "scmUrl": "https://mygithub.com/Devopscode/MultipleAuthorsLGTM",
                 "scmBranch": "master",
                 "scmRevisionNumber": "6edd4881233c9ed723fc8da84a67502080f266e2",
                 "scmCommitLog": "Create README.md",
@@ -143,7 +143,7 @@
                 "firstEverCommit": true
             }
         ],
-        "scmUrl": "https://mygithub.com/Devopscode/MultipleAuthors",
+        "scmUrl": "https://mygithub.com/Devopscode/MultipleAuthorsLGTM",
         "scmBranch": "master"
     }
 ]
