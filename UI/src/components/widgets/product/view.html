@@ -1,7 +1,7 @@
 
 <div id="product-dashboard">
 
-    <div class="container-fluid">
+    <div class="container-fluid" ng-show="ctrl.tabs.length > 1">
         <ul class="nav nav-tabs">
             <li class="text-lg auth-modal-tab" ng-repeat="tab in ctrl.tabs" ng-click="ctrl.toggleView($index)"
                 ng-class="tab.name == ctrl.widgetView ? 'active' : ''">
