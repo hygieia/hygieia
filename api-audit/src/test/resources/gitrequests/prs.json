@@ -811,5 +811,236 @@
         "numberOfChanges": 0
       }
     ]
+  },
+  {
+    "id" : "5a678cfcb5d5dc509425d00f",
+    "scmUrl" : "https://mygithub.com/Devopscode/MultipleAuthorsLGTM",
+    "scmBranch" : "master",
+    "scmRevisionNumber" : "6375888315f3233e50a56aa6650227dfee7bdd9f",
+    "scmCommitLog" : "Merge TestFile into master from dev",
+    "scmCommitTimestamp" : 1516734773000,
+    "numberOfChanges" : 0,
+    "orgName" : "Devopscode",
+    "repoName" : "MultipleAuthorsLGTM",
+    "sourceRepo" : "Devopscode/MultipleAuthorsLGTM",
+    "sourceBranch" : "dev",
+    "targetRepo" : "Devopscode/MultipleAuthorsLGTM",
+    "targetBranch" : "master",
+    "number" : "1",
+    "collectorItemId" : "5a678a032b7af20c95e7b146",
+    "updatedAt" : 1516734773000,
+    "createdAt" : 1516734459000,
+    "closedAt" : 0,
+    "state" : "merged",
+    "mergedAt" : 1516734773000,
+    "timestamp" : 1516734459000,
+    "resolutiontime" : 0,
+    "userId" : "ghone",
+    "comments": [
+      {
+        "user": "ghtwo",
+        "createdAt": 1511190526000,
+        "updatedAt": 1511190526000,
+        "body": "LGTM",
+        "status": ""
+      }
+    ],
+    "reviews": [],
+    "commitStatuses": [
+      {
+        "state": "SUCCESS",
+        "context": "approvals/lgtmeow",
+        "description": "approved by ghtwo"
+      }
+    ],
+    "headSha" : "263cabbeb0d00023c3fb6e46c1b9654b56a29ec0",
+    "baseSha" : "6375888315f3233e50a56aa6650227dfee7bdd9f",
+    "requestType" : "pull",
+    "commits" : [
+      {
+        "timestamp" : 0,
+        "firstEverCommit" : false,
+        "scmRevisionNumber" : "60fef0c4c4b1a0b8dcba7a8d88c54348f75ef5d6",
+        "scmCommitLog" : "Create TestFile",
+        "scmAuthor" : "Author, One",
+        "scmAuthorLogin" : "ghone",
+        "scmCommitTimestamp" : 1516734408000,
+        "numberOfChanges" : 0
+      },
+      {
+        "timestamp" : 0,
+        "firstEverCommit" : false,
+        "scmRevisionNumber" : "8331321b9552b2ca3f612b2642c178635d9fa08c",
+        "scmCommitLog" : "Update TestFile",
+        "scmAuthor" : "Author, One",
+        "scmAuthorLogin" : "ghone",
+        "scmCommitTimestamp" : 1516734422000,
+        "numberOfChanges" : 0
+      },
+      {
+        "timestamp" : 0,
+        "firstEverCommit" : false,
+        "scmRevisionNumber" : "263cabbeb0d00023c3fb6e46c1b9654b56a29ec0",
+        "scmCommitLog" : "Create testadd",
+        "scmAuthor" : "Author, Two",
+        "scmAuthorLogin" : "ghtwo",
+        "scmCommitTimestamp" : 1516734591000,
+        "numberOfChanges" : 0
+      }
+    ]
+  },
+  {
+    "id" : "5a6c06b2f5fb7848d2820e57",
+    "scmUrl" : "https://mygithub.com/Devopscode/MultipleAuthorsGHR",
+    "scmBranch" : "master",
+    "scmRevisionNumber" : "b957f24c0506d96042a5bb698d0933184af7bcc3",
+    "scmCommitLog" : "second pr from dev to master",
+    "scmCommitTimestamp" : 1517026496000,
+    "numberOfChanges" : 0,
+    "orgName" : "Devopscode",
+    "repoName" : "MultipleAuthorsGHR",
+    "sourceRepo" : "Devopscode/MultipleAuthorsGHR",
+    "sourceBranch" : "dev",
+    "targetRepo" : "Devopscode/MultipleAuthorsGHR",
+    "targetBranch" : "master",
+    "number" : "2",
+    "collectorItemId" : "5a4e524333ec296b81c3935f",
+    "updatedAt" : 1517026496000,
+    "createdAt" : 1517025951000,
+    "closedAt" : 0,
+    "state" : "merged",
+    "mergedAt" : 1517026496000,
+    "timestamp" : 1517029041962,
+    "resolutiontime" : 0,
+    "userId" : "ghone",
+    "comments" : [
+      {
+        "user" : "ghone",
+        "createdAt" : 1517026436000,
+        "updatedAt" : 1517026436000,
+        "body" : "LGTM whose code ?",
+        "status" : ""
+      }
+    ],
+    "reviews" : [
+      {
+        "body" : "Yes! Approving my own change!",
+        "state" : "APPROVED",
+        "author" : "ghtwo",
+        "createdAt" : 1517026233000,
+        "updatedAt" : 1517026233000
+      }
+    ],
+    "headSha" : "27ceabaca1453809410bb0a40d14a201a5076c5b",
+    "baseSha" : "b957f24c0506d96042a5bb698d0933184af7bcc3",
+    "requestType" : "pull",
+    "commits" : [
+      {
+        "id" : null,
+        "timestamp" : 0,
+        "firstEverCommit" : false,
+        "scmRevisionNumber" : "46c3bc434c935df51a350439d0faae0fd03a5e64",
+        "scmCommitLog" : "Create Anotherfile.txt",
+        "scmAuthor" : "Author One",
+        "scmAuthorLogin" : "ghone",
+        "scmCommitTimestamp" : 1517025913000,
+        "numberOfChanges" : 0
+      },
+      {
+        "id" : null,
+        "timestamp" : 0,
+        "firstEverCommit" : false,
+        "scmRevisionNumber" : "2f98b1cc6cfcf47e2b69a642d73c7e6c8ca1962a",
+        "scmCommitLog" : "Update Anotherfile.txt",
+        "scmAuthor" : "Author One",
+        "scmAuthorLogin" : "ghone",
+        "scmCommitTimestamp" : 1517025926000,
+        "numberOfChanges" : 0
+      },
+      {
+        "id" : null,
+        "timestamp" : 0,
+        "firstEverCommit" : false,
+        "scmRevisionNumber" : "27ceabaca1453809410bb0a40d14a201a5076c5b",
+        "scmCommitLog" : "Update Anotherfile.txt",
+        "scmAuthor" : "Author Two",
+        "scmAuthorLogin" : "ghtwo",
+        "scmCommitTimestamp" : 1517026133000,
+        "numberOfChanges" : 0
+      }
+    ]
+  },
+  {
+    "id" : "5a6c06b2f5fb7848d2820e58",
+    "scmUrl" : "https://mygithub.com/Devopscode/MultipleAuthorsGHR",
+    "scmBranch" : "master",
+    "scmRevisionNumber" : "d24f42ee7c706fefcc7c71e49f39e686f0d87f77",
+    "scmCommitLog" : "pr from dev to master",
+    "scmCommitTimestamp" : 1517025797000,
+    "numberOfChanges" : 0,
+    "orgName" : "Devopscode",
+    "repoName" : "MultipleAuthorsGHR",
+    "sourceRepo" : "Devopscode/MultipleAuthorsGHR",
+    "sourceBranch" : "dev",
+    "targetRepo" : "Devopscode/MultipleAuthorsGHR",
+    "targetBranch" : "master",
+    "number" : "1",
+    "collectorItemId" : "5a4e524333ec296b81c3935f",
+    "updatedAt" : 1517025810000,
+    "createdAt" : 1517025396000,
+    "closedAt" : 0,
+    "state" : "merged",
+    "mergedAt" : 1517025797000,
+    "timestamp" : 1517029041967,
+    "resolutiontime" : 0,
+    "userId" : "ghone",
+    "comments" : [],
+    "reviews" : [
+      {
+        "body" : "Good stuff.",
+        "state" : "APPROVED",
+        "author" : "ghtwo",
+        "createdAt" : 1517025723000,
+        "updatedAt" : 1517025723000
+      }
+    ],
+    "headSha" : "27ceabaca1453809410bb0a40d14a201a5076c5b",
+    "baseSha" : "b957f24c0506d96042a5bb698d0933184af7bcc3",
+    "requestType" : "pull",
+    "commits" : [
+      {
+        "id" : null,
+        "timestamp" : 0,
+        "firstEverCommit" : false,
+        "scmRevisionNumber" : "88b1e10723154f0ff0ae942e5243c225cf95f235",
+        "scmCommitLog" : "Create somefile.txt",
+        "scmAuthor" : "Author One",
+        "scmAuthorLogin" : "ghone",
+        "scmCommitTimestamp" : 1517025349000,
+        "numberOfChanges" : 0
+      },
+      {
+        "id" : null,
+        "timestamp" : 0,
+        "firstEverCommit" : false,
+        "scmRevisionNumber" : "1ffbaeb80b6f90e84d5bd1ceb9d8d256202becb7",
+        "scmCommitLog" : "Update somefile.txt",
+        "scmAuthor" : "Author One",
+        "scmAuthorLogin" : "ghone",
+        "scmCommitTimestamp" : 1517025365000,
+        "numberOfChanges" : 0
+      },
+      {
+        "id" : null,
+        "timestamp" : 0,
+        "firstEverCommit" : false,
+        "scmRevisionNumber" : "d8bb61c9fb5342a6488f2796dcf4ded2e056d6ae",
+        "scmCommitLog" : "Update README.md",
+        "scmAuthor" : "Author Two",
+        "scmAuthorLogin" : "ghtwo",
+        "scmCommitTimestamp" : 1517025629000,
+        "numberOfChanges" : 0
+      }
+    ]
   }
 ]

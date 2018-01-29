@@ -122,6 +122,7 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
         List<CollectorItemConfigHistory> configHistories = getProfileChanges(returnQuality, beginDate, endDate);
         if (CollectionUtils.isEmpty(configHistories)) {
             codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_NO_CHANGE);
+            return codeQualityAuditResponse;
         }
         Set<String> codeAuthors = CommonCodeReview.getCodeAuthors(repoItems, beginDate, endDate, commitRepository);
         List<String> overlap = configHistories.stream().map(CollectorItemConfigHistory::getUserID).filter(codeAuthors::contains).collect(Collectors.toList());

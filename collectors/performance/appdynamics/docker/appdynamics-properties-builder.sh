@@ -53,7 +53,7 @@ logging.file=${APPDYNAMICS_LOGFILE:-./logs/appd-collector.log}
 appdynamics.cron=${APPDYNAMICS_CRON:-1 * * * * *}
 
 #Appdynamics server (required)
-appdynamics.instanceUrl=${APPDYNAMICS_INSTANCE_URL:-http://appdynamics}
+appdynamics.instanceUrls=${APPDYNAMICS_INSTANCE_URL:-http://appdynamics}
 
 #Appdynamics Username (required)
 appdynamics.username=${APPDYNAMICS_USERNAME} # (if multi-tenancy APPD_USERNAME@TENANT)
