@@ -188,9 +188,6 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                     // Get all the commits
                     commitCount += processCommits(repo);
 
-                    // Get first ever commit
-                    commitCount += processFirstEverCommit(firstRun, repo);
-
                     //Get all the Pull Requests
                     pullCount += processPRorIssueList(repo, allRequests.stream().filter(r -> Objects.equals(r.getRequestType(), "pull")).collect(Collectors.toList()), "pull");
                     //Get all the Issues
@@ -207,11 +204,11 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                     repo.getErrors().add(error);
                 } catch (RestClientException | MalformedURLException ex) {
                     LOG.error("Error fetching commits for:" + repo.getRepoUrl(), ex);
-                    CollectionError error = new CollectionError(CollectionError.UNKNOWN_HOST, repo.getRepoUrl());
+                    CollectionError error = new CollectionError(CollectionError.UNKNOWN_HOST, ex.getMessage());
                     repo.getErrors().add(error);
                 } catch (HygieiaException he) {
                     LOG.error("Error fetching commits for:" + repo.getRepoUrl(), he);
-                    CollectionError error = new CollectionError(he.getErrorCode() + " " + he.getMessage(), repo.getRepoUrl());
+                    CollectionError error = new CollectionError(String.valueOf(he.getErrorCode()), he.getMessage());
                     repo.getErrors().add(error);
                 }
                 gitHubRepoRepository.save(repo);
@@ -253,38 +250,6 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
             }
         }
         LOG.info("-- Saved Commits = " + count);
-        return count;
-    }
-
-
-    /**
-     * Process First ever commit
-     *
-     * @param firstRun
-     * @param repo
-     * @return count
-     * @throws MalformedURLException
-     * @throws HygieiaException
-     */
-    private int processFirstEverCommit(boolean firstRun, GitHubRepo repo) throws MalformedURLException, HygieiaException {
-        // Get first ever commit
-        int count = 0;
-        if (firstRun) {
-            Commit commit = gitHubClient.getFirstEverCommit(repo);
-            if (commit == null) return 0;
-            Commit existing = commitRepository.findByCollectorItemIdAndScmRevisionNumber(
-                    repo.getId(), commit.getScmRevisionNumber());
-
-            if (existing == null) {
-                commit.setCollectorItemId(repo.getId());
-                commitRepository.save(commit);
-                count++;
-            } else {
-                existing.setFirstEverCommit(true);
-                commitRepository.save(existing);
-            }
-        }
-        LOG.info("-- Saved First Ever Commit = " + count);
         return count;
     }
 

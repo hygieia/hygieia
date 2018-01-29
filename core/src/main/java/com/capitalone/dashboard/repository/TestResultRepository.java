@@ -26,5 +26,6 @@ public interface TestResultRepository extends CrudRepository<TestResult, ObjectI
     TestResult findByCollectorItemId(ObjectId collectorItemId);
     
     List<TestResult> findByUrlAndTimestampGreaterThanEqualAndTimestampLessThanEqual(String jobUrl,long beginDt,long endDt);
+    List<TestResult> findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(ObjectId collectorItemId, long beginDate, long endDate);
 
 }

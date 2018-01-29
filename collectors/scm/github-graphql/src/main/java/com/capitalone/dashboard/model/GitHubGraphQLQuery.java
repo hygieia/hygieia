@@ -57,6 +57,11 @@ public class GitHubGraphQLQuery {
                     "            cursor\n" +
                     "            node {\n" +
                     "              oid\n" +
+                    "              parents(first:10) {\n" +
+                    "                nodes {\n" +
+                    "                  oid\n" +
+                    "                }\n" +
+                    "              }\n" +
                     "              message\n" +
                     "                committer {\n" +
                     "                  user {\n" +

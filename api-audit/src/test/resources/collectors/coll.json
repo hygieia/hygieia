@@ -1,0 +1,24 @@
+{
+  "name": "GitHub",
+  "collectorType": "SCM",
+  "enabled": true,
+  "online": true,
+  "errors": [],
+  "uniqueFields": {
+    "branch": "",
+    "url": ""
+  },
+  "allFields": {
+    "password": "",
+    "branch": "",
+    "userID": "",
+    "url": ""
+  },
+  "lastExecuted": 1516222026477,
+  "id": {
+    "timestamp": 1456084265,
+    "machineIdentifier": 8366972,
+    "processIdentifier": 26815,
+    "counter": 14369292
+  }
+}

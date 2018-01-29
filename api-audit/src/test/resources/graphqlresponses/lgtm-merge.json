@@ -1,0 +1,273 @@
+{
+    "data": {
+        "repository": {
+            "pullRequests": {
+                "totalCount": 1,
+                "pageInfo": {
+                    "endCursor": "Y3Vyc29yOnYyOpK5MjAxNy0xMS0yMFQxMDowOToxNC0wNTowMM4ADKNL",
+                    "hasNextPage": false
+                },
+                "edges": [
+                    {
+                        "cursor": "Y3Vyc29yOnYyOpK5MjAxNy0xMS0yMFQxMDowOToxNC0wNTowMM4ADKNL",
+                        "node": {
+                            "number": 1,
+                            "mergeable": "UNKNOWN",
+                            "state": "MERGED",
+                            "createdAt": "2017-11-17T22:12:13Z",
+                            "updatedAt": "2017-11-20T15:09:14Z",
+                            "mergedAt": "2017-11-20T15:09:14Z",
+                            "baseRef": {
+                                "target": {
+                                    "oid": "957f1c8453289826c52cdbed266937f1c892718d"
+                                }
+                            },
+                            "baseRefName": "master",
+                            "title": "merging a commit to dev into master after an LGTM peer review",
+                            "mergeCommit": {
+                                "oid": "957f1c8453289826c52cdbed266937f1c892718d"
+                            },
+                            "headRepository": {
+                                "name": "6-lgtm-merge",
+                                "url": "https://mygithub.com/compliance-scenario/6-lgtm-merge"
+                            },
+                            "headRef": {
+                                "target": {
+                                    "oid": "d49647538a83c16c2fbb6ac796f03ce31bba43ae"
+                                }
+                            },
+                            "headRefName": "dev",
+                            "author": {
+                                "login": "ghone",
+                                "resourcePath": "/ghone"
+                            },
+                            "commits": {
+                                "totalCount": 1,
+                                "nodes": [
+                                    {
+                                        "commit": {
+                                            "oid": "d49647538a83c16c2fbb6ac796f03ce31bba43ae",
+                                            "parents": {
+                                                "nodes": [
+                                                    {
+                                                        "oid": "af139cb3f030a26d4201106948b46285413e2b0a"
+                                                    }
+                                                ]
+                                            },
+                                            "committedDate": "2017-11-17T22:10:04Z",
+                                            "message": "a commit to dev",
+                                            "status": {
+                                                "state": "SUCCESS",
+                                                "contexts": [
+                                                    {
+                                                        "state": "SUCCESS",
+                                                        "targetUrl": null,
+                                                        "description": "approved by ghthree",
+                                                        "context": "approvals/lgtmeow"
+                                                    }
+                                                ]
+                                            },
+                                            "author": {
+                                                "name": "Author, One",
+                                                "date": "2017-11-17T14:10:04-08:00",
+                                                "user": {
+                                                    "login": "ghone"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "comments": {
+                                "totalCount": 1,
+                                "nodes": [
+                                    {
+                                        "bodyText": "LGTM",
+                                        "author": {
+                                            "login": "ghtwo"
+                                        },
+                                        "createdAt": "2017-11-20T15:08:46Z",
+                                        "updatedAt": "2017-11-20T15:08:46Z"
+                                    }
+                                ]
+                            },
+                            "reviews": {
+                                "totalCount": 0,
+                                "nodes": []
+                            }
+                        }
+                    }
+                ]
+            },
+            "ref": {
+                "target": {
+                    "history": {
+                        "pageInfo": {
+                            "endCursor": "957f1c8453289826c52cdbed266937f1c892718d 4",
+                            "hasNextPage": false
+                        },
+                        "edges": [
+                            {
+                                "cursor": "957f1c8453289826c52cdbed266937f1c892718d 0",
+                                "node": {
+                                    "oid": "957f1c8453289826c52cdbed266937f1c892718d",
+                                    "parents": {
+                                        "nodes": [
+                                            {
+                                                "oid": "af139cb3f030a26d4201106948b46285413e2b0a"
+                                            },
+                                            {
+                                                "oid": "d49647538a83c16c2fbb6ac796f03ce31bba43ae"
+                                            }
+                                        ]
+                                    },
+                                    "message": "Merge pull request #1 from compliance-scenario/dev\n\nmerging a commit to dev into master after an LGTM peer review",
+                                    "committer": {
+                                        "user": null,
+                                        "name": "GitHub Enterprise",
+                                        "date": "2017-11-20T07:09:12-08:00"
+                                    },
+                                    "author": {
+                                        "name": "Author, One",
+                                        "user": {
+                                            "login": "ghone"
+                                        },
+                                        "email": "Author.One@mycompany.com",
+                                        "date": "2017-11-20T07:09:12-08:00"
+                                    },
+                                    "status": null
+                                }
+                            },
+                            {
+                                "cursor": "957f1c8453289826c52cdbed266937f1c892718d 1",
+                                "node": {
+                                    "oid": "d49647538a83c16c2fbb6ac796f03ce31bba43ae",
+                                    "parents": {
+                                        "nodes": [
+                                            {
+                                                "oid": "af139cb3f030a26d4201106948b46285413e2b0a"
+                                            }
+                                        ]
+                                    },
+                                    "message": "a commit to dev",
+                                    "committer": {
+                                        "user": null,
+                                        "name": "GitHub Enterprise",
+                                        "date": "2017-11-17T14:10:04-08:00"
+                                    },
+                                    "author": {
+                                        "name": "Author, One",
+                                        "user": {
+                                            "login": "ghone"
+                                        },
+                                        "email": "Author.One@mycompany.com",
+                                        "date": "2017-11-17T14:10:04-08:00"
+                                    },
+                                    "status": {
+                                        "state": "SUCCESS",
+                                        "contexts": [
+                                            {
+                                                "id": "MDEzOlN0YXR1c0NvbnRleHQ0MzIwNTc1",
+                                                "description": "approved by ghthree"
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            {
+                                "cursor": "957f1c8453289826c52cdbed266937f1c892718d 2",
+                                "node": {
+                                    "oid": "af139cb3f030a26d4201106948b46285413e2b0a",
+                                    "parents": {
+                                        "nodes": [
+                                            {
+                                                "oid": "a0f88314dab112ddc071d8a0e9088aa9a7132853"
+                                            }
+                                        ]
+                                    },
+                                    "message": "Create MAINTAINERS",
+                                    "committer": {
+                                        "user": null,
+                                        "name": "GitHub Enterprise",
+                                        "date": "2017-11-17T14:07:52-08:00"
+                                    },
+                                    "author": {
+                                        "name": "Author, One",
+                                        "user": {
+                                            "login": "ghone"
+                                        },
+                                        "email": "Author.One@mycompany.com",
+                                        "date": "2017-11-17T14:07:52-08:00"
+                                    },
+                                    "status": null
+                                }
+                            },
+                            {
+                                "cursor": "957f1c8453289826c52cdbed266937f1c892718d 3",
+                                "node": {
+                                    "oid": "a0f88314dab112ddc071d8a0e9088aa9a7132853",
+                                    "parents": {
+                                        "nodes": [
+                                            {
+                                                "oid": "f0f6bbe113df423e83fa1202e7ccafcde79e9460"
+                                            }
+                                        ]
+                                    },
+                                    "message": "Create .lgtmeow",
+                                    "committer": {
+                                        "user": null,
+                                        "name": "GitHub Enterprise",
+                                        "date": "2017-11-17T14:07:18-08:00"
+                                    },
+                                    "author": {
+                                        "name": "Author, One",
+                                        "user": {
+                                            "login": "ghone"
+                                        },
+                                        "email": "Author.One@mycompany.com",
+                                        "date": "2017-11-17T14:07:18-08:00"
+                                    },
+                                    "status": null
+                                }
+                            },
+                            {
+                                "cursor": "957f1c8453289826c52cdbed266937f1c892718d 4",
+                                "node": {
+                                    "oid": "f0f6bbe113df423e83fa1202e7ccafcde79e9460",
+                                    "parents": {
+                                        "nodes": []
+                                    },
+                                    "message": "Initial commit",
+                                    "committer": {
+                                        "user": {
+                                            "login": "ghone"
+                                        },
+                                        "name": "Author, One",
+                                        "date": "2017-11-17T14:06:48-08:00"
+                                    },
+                                    "author": {
+                                        "name": "Author, One",
+                                        "user": {
+                                            "login": "ghone"
+                                        },
+                                        "email": "Author.One@mycompany.com",
+                                        "date": "2017-11-17T14:06:48-08:00"
+                                    },
+                                    "status": null
+                                }
+                            }
+                        ]
+                    }
+                }
+            },
+            "issues": {
+                "totalCount": 0,
+                "pageInfo": {
+                    "endCursor": null,
+                    "hasNextPage": false
+                },
+                "edges": []
+            }
+        }
+    }
+}

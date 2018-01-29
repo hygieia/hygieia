@@ -2,6 +2,7 @@ package com.capitalone.dashboard.repository;
 
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Owner;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
@@ -20,7 +21,7 @@ public interface DashboardRepository extends PagingAndSortingRepository<Dashboar
 	List<Dashboard> findByOwner(String owner);
 	List<Dashboard> findByOwners(Owner owner);
 	List<Dashboard> findByTitle(String title);
-	Dashboard findByTitleAndType(String title, String type);
+	Dashboard findByTitleAndType(String title, DashboardType type);
 
     List<Dashboard> findByApplicationComponentsIn(Collection<Component> components);
 
@@ -44,11 +45,11 @@ public interface DashboardRepository extends PagingAndSortingRepository<Dashboar
 
 	long count();
 
-	Page<Dashboard> findByOwners(Owner owner,Pageable pageable);
+	Page<Dashboard> findByOwners(Owner owner, Pageable pageable);
 
-	List<Dashboard> findByOwnersAndTitleContainingIgnoreCase(Owner owner,String name);
+	List<Dashboard> findByOwnersAndTitleContainingIgnoreCase(Owner owner, String name);
 
-	Page<Dashboard> findByOwnersAndTitleContainingIgnoreCase(Owner owner,String name, Pageable pageable);
+	Page<Dashboard> findByOwnersAndTitleContainingIgnoreCase(Owner owner, String name, Pageable pageable);
 
-
+	Dashboard findDashboardByConfigurationItemBusServNameAndConfigurationItemBusAppName(String configurationItemBusServName, String configurationItemBusAppName);
 }
