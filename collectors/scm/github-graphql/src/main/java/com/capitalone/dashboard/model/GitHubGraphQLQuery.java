@@ -158,7 +158,7 @@ public class GitHubGraphQLQuery {
                     "              }\n" +
                     "            }\n" +
                     "          }\n" +
-                    "          comments(first: 10) {\n" +
+                    "          comments(first: 100) {\n" +
                     "            totalCount\n" +
                     "            nodes {\n" +
                     "              bodyText\n" +
@@ -169,7 +169,7 @@ public class GitHubGraphQLQuery {
                     "              updatedAt \n" +
                     "            }\n" +
                     "          }\n" +
-                    "          reviews(first: 10) {\n" +
+                    "          reviews(first: 100) {\n" +
                     "            totalCount\n" +
                     "            nodes {\n" +
                     "              id\n" +

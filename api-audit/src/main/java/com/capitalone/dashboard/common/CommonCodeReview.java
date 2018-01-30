@@ -15,6 +15,9 @@ import com.capitalone.dashboard.util.GitHubParsedUrl;
 import com.google.common.collect.Sets;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -24,6 +27,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class CommonCodeReview {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommonCodeReview.class);
 
     private enum CodeActionType {
         Commit,
@@ -37,11 +42,13 @@ public class CommonCodeReview {
         private final CodeActionType type;
         private final long timestamp;
         private final String actor;
+        private final String message;
 
-        CodeAction(CodeActionType type, long timestamp, String actor) {
+        CodeAction(CodeActionType type, long timestamp, String actor, String message) {
             this.type = type;
             this.timestamp = timestamp;
             this.actor = actor;
+            this.message = message;
         }
 
         CodeActionType getType() {
@@ -54,6 +61,10 @@ public class CommonCodeReview {
 
         String getActor() {
             return actor;
+        }
+
+        String getMessage() {
+            return message;
         }
     }
 
@@ -156,18 +167,21 @@ public class CommonCodeReview {
     private static boolean isPRReviewedInTimeScale(GitRequest pr) {
         List<CodeAction> codeActionList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(pr.getCommits())) {
-            codeActionList.addAll(pr.getCommits().stream().map(c -> new CodeAction(CodeActionType.Commit, c.getScmCommitTimestamp(), "unknown".equalsIgnoreCase(c.getScmAuthorLogin())?pr.getUserId():c.getScmAuthorLogin()  )).collect(Collectors.toList()));
+            codeActionList.addAll(pr.getCommits().stream().map(c -> new CodeAction(CodeActionType.Commit, c.getScmCommitTimestamp(), "unknown".equalsIgnoreCase(c.getScmAuthorLogin())?pr.getUserId():c.getScmAuthorLogin() , c.getScmCommitLog() )).collect(Collectors.toList()));
         }
         if (!CollectionUtils.isEmpty(pr.getReviews())) {
-            codeActionList.addAll(pr.getReviews().stream().map(r -> new CodeAction(CodeActionType.Review, r.getUpdatedAt(), r.getAuthor())).collect(Collectors.toList()));
+            codeActionList.addAll(pr.getReviews().stream().map(r -> new CodeAction(CodeActionType.Review, r.getUpdatedAt(), r.getAuthor(), r.getBody())).collect(Collectors.toList()));
         }
         if (!CollectionUtils.isEmpty(pr.getComments())) {
-            codeActionList.addAll(pr.getComments().stream().map(r -> new CodeAction(CodeActionType.Review, r.getUpdatedAt(), r.getUser())).collect(Collectors.toList()));
+            codeActionList.addAll(pr.getComments().stream().map(r -> new CodeAction(CodeActionType.Review, r.getUpdatedAt(), r.getUser(), r.getBody())).collect(Collectors.toList()));
         }
-        codeActionList.add(new CodeAction(CodeActionType.PRMerge, pr.getMergedAt(), "IRRELEVANT"));
-        codeActionList.add(new CodeAction(CodeActionType.PRCreate, pr.getCreatedAt(), pr.getUserId()));
+        codeActionList.add(new CodeAction(CodeActionType.PRMerge, pr.getMergedAt(), "IRRELEVANT", "merged"));
+        codeActionList.add(new CodeAction(CodeActionType.PRCreate, pr.getCreatedAt(), pr.getUserId(), "create"));
 
         codeActionList.sort(Comparator.comparing(CodeAction::getTimestamp));
+
+        codeActionList.stream().forEach(c->LOGGER.debug( new DateTime(c.getTimestamp()).toString("yyyy-MM-dd hh:mm:ss.SSa")
+                + " " + c.getType() + " " + c.getActor() + " " + c.getMessage()));
 
         Set<CodeAction> reviewedList = new HashSet<>();
         codeActionList.stream().filter(as -> as.getType() == CodeActionType.Review).map(as -> getReviewedActions(codeActionList, as)).forEach(reviewedList::addAll);
