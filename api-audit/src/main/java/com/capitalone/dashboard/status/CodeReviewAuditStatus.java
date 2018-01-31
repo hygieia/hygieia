@@ -9,6 +9,7 @@ public enum CodeReviewAuditStatus {
     PEER_REVIEW_LGTM_SUCCESS,
 
     PEER_REVIEW_GHR,
+    PEER_REVIEW_GHR_SELF_APPROVAL,
     PEER_REVIEW_REG_COMMENTS,
     PEER_REVIEW_REV_COMMENTS,
     //no pull requests for queried date range
