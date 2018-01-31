@@ -34,7 +34,6 @@
         ctrl.admin = admin;
         ctrl.setType = setType;
         ctrl.filterNotOwnedList = filterNotOwnedList;
-        ctrl.filterDashboards = filterDashboards;
         ctrl.editDashboard = editDashboard;
         ctrl.pageChangeHandler = pageChangeHandler;
         ctrl.pageChangeHandlerForMyDash = pageChangeHandlerForMyDash;
@@ -81,19 +80,6 @@
 
         function setType(type) {
             ctrl.dashboardType = type;
-        }
-
-        function filterDashboards(item) {
-            var matchesSearch = (!ctrl.search || item.name.toLowerCase().indexOf(ctrl.search.toLowerCase()) !== -1);
-            if (ctrl.dashboardType == DashboardType.PRODUCT) {
-                return item.isProduct && matchesSearch;
-            }
-
-            if (ctrl.dashboardType == DashboardType.TEAM) {
-                return !item.isProduct && matchesSearch;
-            }
-
-            return matchesSearch;
         }
 
         function admin() {
