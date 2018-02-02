@@ -1,0 +1,17 @@
+{
+  "id" : "596c435cad53330a63ac5802",
+  "name" : "repo",
+  "componentId" : "596c43483d88f70bf778caed",
+  "options" : {
+    "password" : "",
+    "appUrl" : "https://gecgithub01.walmart.com/devtools/Hygieia",
+    "id" : "repo0",
+    "scm" : {
+      "name" : "GitHub",
+      "value" : "GitHub"
+    },
+    "branch" : "master",
+    "userID" : "",
+    "url" : "https://gecgithub01.walmart.com/devtools/Hygieia"
+  }
+}

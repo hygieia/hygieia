@@ -1,0 +1,158 @@
+@import (reference) '../../../app/css/variables.less';
+@import (reference) '../../../app/css/mixins.less';
+@import (less)  '../../../../bower_components/angular-ui-select/dist/select.css';
+
+#dashboard {
+    .score-view {
+        .table {
+            margin-bottom: 0;
+        }
+
+        .percent {
+                font-size: 50%;
+                display: inline-block;
+                vertical-align: super;
+            }
+
+
+    .ca-coverage {
+        .panel-body {
+            padding-top: .5rem;
+        }
+        .ca-value {
+            .text-lg;
+            text-align: center;
+            margin-top: .5rem;
+        }
+
+        .ct-chart.ct-chart-Alert {
+            .ct-series-a {
+                .ct-donut {
+                    stroke: @dash-status-fail;
+                }
+            }
+        }
+
+        .ct-chart.ct-chart-Warning {
+            .ct-series-a {
+                .ct-donut {
+                    stroke: @dash-status-warn;
+                }
+            }
+        }
+
+        .ct-series-b {
+            .ct-donut {
+                stroke: @dash-widget-section-highlight;
+            }
+        }
+
+        .ca-rating-value {
+            font-size: 5rem;
+            line-height: 5.2rem;
+            text-align: center;
+            margin-top: .5rem;
+        }
+    }
+
+        td {
+            padding: 0 .5rem 0 0;
+            vertical-align: bottom;
+            white-space: nowrap;
+        }
+
+        .environment-name {
+            .text-lg;
+            max-width: 8rem;
+        }
+
+        .deploy-server-count {
+            min-width: 6rem;
+            max-width: 10rem;
+        }
+
+        .server-count {
+            .text-lg;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .servers-up {
+            color: @dash-status-pass;
+        }
+
+        .servers-down {
+            color: @dash-status-fail;
+        }
+
+        .details-title{
+          cursor: pointer;
+        }
+    }
+
+
+}
+
+.score-config {
+
+    hr {
+        margin: 30px 0;
+    }
+
+    hr.slim {
+        margin: 10px 0;
+    }
+
+    .panel-heading {
+        padding: 8px 10px;
+    }
+
+    .panel-body {
+        padding: 10px;
+    }
+
+    .settings-type {
+        .radio-inline {
+            .text-lg;
+        }
+    }
+
+    legend.fieldset-block {
+        width:inherit;
+        padding:0 0.5em;
+        border-bottom:none;
+        font-size: 1.25em;
+        margin-bottom: 0;
+        text-align: left !important;
+    }
+
+    fieldset.fieldset-block {
+        border: 1px groove @dash-modal-divider;
+        padding: 0.5em 1em 1.4em 1em !important;
+        margin: 0 0 1em 0 !important;
+    }
+
+}
+
+.score-detail {
+    .score-desc {
+        .text-2x-bold;
+    }
+
+    .no-changesets {
+        display: inline-block;
+        width: 100%;
+        text-align: center;
+    }
+
+}
+
+.bigstar.ngrateit {
+    .ngrateit-star {
+        background-size: 44px;
+    }
+}
+
+.radio-inline-form {
+    padding-top: 20px;
+}

@@ -1,0 +1,26 @@
+<div class="score-view">
+    <div class="widget ca-coverage">
+        <div class="widget-heading">
+            <div class="row">
+                <div class="col-md-6">Score
+                </div>
+                <div class="col-md-6">
+                    <span class="pull-right details-title" ng-click="scoreView.viewDetails()">View Details <span class="fa fa-angle-right"></span></span>
+                </div>
+            </div>
+        </div>
+        <div class="widget-body">
+            <div class="ca-rating-value text-center">{{scoreView.rateItOptions.value}}</div>
+            <div class="text-center">
+                <ng-rate-it
+                        ng-model="scoreView.rateItOptions.value"
+                        read-only="scoreView.rateItOptions.readOnly"
+                        star-width="scoreView.rateItOptions.starWidth"
+                        star-height="scoreView.rateItOptions.starHeight"
+                        step="scoreView.rateItOptions.step"
+                        class="bigstar">
+                </ng-rate-it>
+            </div>
+        </div>
+    </div>
+</div>

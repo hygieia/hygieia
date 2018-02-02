@@ -25,8 +25,8 @@
         })
         .directive('widget', widgetDirective);
 
-    widgetDirective.$inject = ['$controller', '$http', '$templateCache', '$compile', 'widgetManager', '$uibModal', 'WidgetState', 'DisplayState', '$interval', 'dashboardData','userService'];
-    function widgetDirective($controller, $http, $templateCache, $compile, widgetManager, $uibModal, WidgetState, DisplayState, $interval, dashboardData, userService) {
+    widgetDirective.$inject = ['$controller', '$http', '$templateCache', '$compile', 'widgetManager', '$uibModal', 'WidgetState', 'DisplayState', '$interval', 'dashboardData','userService', 'scoreDataService'];
+    function widgetDirective($controller, $http, $templateCache, $compile, widgetManager, $uibModal, WidgetState, DisplayState, $interval, dashboardData, userService, scoreDataService) {
         return {
             templateUrl: 'app/dashboard/views/widget.html',
             require: '^widgetContainer',
@@ -112,6 +112,7 @@
             $scope.hasPermission = hasPermission;
             $scope.setState = setState;
             $scope.init = init;
+            $scope.getWidgetScore = getWidgetScore;
 
             // method implementations
             function configModal() {
@@ -175,6 +176,10 @@
                             init();
                         });
                 }
+            }
+
+            function getWidgetScore() {
+                return scoreDataService.getScoreByDashboardWidget($scope.dashboard.id, $scope.name);
             }
 
             // redraws the widget which forces it to go through the entire flow

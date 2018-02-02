@@ -1,0 +1,23 @@
+<widget-modal widget-modal-title="Configure Score Widget">
+    <form class="score-config" name="configForm"
+          ng-submit="scoreConfig.submit(configForm.$valid)" novalidate="novalidate">
+        <!--<div class="settings-type">
+            <label class="radio-inline">
+                <input ng-model="scoreConfig.settingsType"  ng-required="true" id="settingsType" value="DEFAULT"
+                        name="settingsType" required="required" type="radio" ng-change="scoreConfig.settingsTypeChange()"/>
+                Default Settings
+            </label>
+            <label class="radio-inline">
+                <input ng-model="scoreConfig.settingsType" ng-required="true" id="settingsType" value="CUSTOM"
+                       name="settingsType" required="required" type="radio" ng-change="scoreConfig.settingsTypeChange()"/>
+                Custom Settings
+            </label>
+        </div>
+        <hr class="slim" />
+        <div ng-if="scoreConfig.isSettingCustom()" ng-include="'components/widgets/score/custom-config.html'"></div>-->
+
+        <div class="button-row row text-center">
+            <button type="submit" class="btn btn-primary btn-wide">Save</button>
+        </div>
+    </form>
+</widget-modal>
