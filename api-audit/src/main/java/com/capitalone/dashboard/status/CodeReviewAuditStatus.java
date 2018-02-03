@@ -20,6 +20,7 @@ public enum CodeReviewAuditStatus {
     //commit author v/s who merged the pr
     COMMITAUTHOR_NE_MERGECOMMITER,
     COMMITAUTHOR_EQ_MERGECOMMITER,
+    MERGECOMMITER_NOT_FOUND,
 
     //peer review of a pull request
     PULLREQ_REVIEWED_BY_PEER,
