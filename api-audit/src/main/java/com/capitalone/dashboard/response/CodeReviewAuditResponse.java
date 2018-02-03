@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.response;
 
+import com.capitalone.dashboard.model.CodeAction;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.status.CodeReviewAuditStatus;
@@ -9,6 +10,7 @@ import java.util.List;
 public class CodeReviewAuditResponse extends AuditReviewResponse<CodeReviewAuditStatus> {
     private GitRequest pullRequest;
     private List<Commit> commits;
+    private List<CodeAction> codeActions;
     private List<Commit> directCommits;
     private String scmUrl;
     private String scmBranch;
@@ -27,6 +29,14 @@ public class CodeReviewAuditResponse extends AuditReviewResponse<CodeReviewAudit
 
     public void setCommits(List<Commit> commits) {
         this.commits = commits;
+    }
+
+    public List<CodeAction> getCodeActions() {
+        return codeActions;
+    }
+
+    public void setCodeActions(List<CodeAction> codeActions) {
+        this.codeActions = codeActions;
     }
 
     public List<Commit> getDirectCommits() {

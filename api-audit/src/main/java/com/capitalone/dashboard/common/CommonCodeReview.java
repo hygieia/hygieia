@@ -1,6 +1,8 @@
 package com.capitalone.dashboard.common;
 
 import com.capitalone.dashboard.ApiSettings;
+import com.capitalone.dashboard.model.CodeAction;
+import com.capitalone.dashboard.model.CodeActionType;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.Comment;
 import com.capitalone.dashboard.model.Commit;
@@ -10,11 +12,16 @@ import com.capitalone.dashboard.model.Review;
 import com.capitalone.dashboard.model.SCM;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.response.AuditReviewResponse;
+import com.capitalone.dashboard.response.CodeReviewAuditResponse;
+import com.capitalone.dashboard.response.CodeReviewAuditResponseV2;
 import com.capitalone.dashboard.status.CodeReviewAuditStatus;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
 import com.google.common.collect.Sets;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -25,37 +32,7 @@ import java.util.stream.Collectors;
 
 public class CommonCodeReview {
 
-    private enum CodeActionType {
-        Commit,
-        Review,
-        PRCreate,
-        PRMerge
-    }
-
-
-    private static class CodeAction {
-        private final CodeActionType type;
-        private final long timestamp;
-        private final String actor;
-
-        CodeAction(CodeActionType type, long timestamp, String actor) {
-            this.type = type;
-            this.timestamp = timestamp;
-            this.actor = actor;
-        }
-
-        CodeActionType getType() {
-            return type;
-        }
-
-        long getTimestamp() {
-            return timestamp;
-        }
-
-        String getActor() {
-            return actor;
-        }
-    }
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommonCodeReview.class);
 
     /**
      * Calculates the peer review status for a given pull request
@@ -104,7 +81,7 @@ public class CommonCodeReview {
             if (lgtmAttempted) {
                 //if lgtm self-review, then no peer-review was done unless someone else looked at it
                 if (!CollectionUtils.isEmpty(auditReviewResponse.getAuditStatuses()) &&
-                        !isPRReviewedInTimeScale(pr)) {
+                        !isPRReviewedInTimeScale(pr, auditReviewResponse)) {
                     auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_LGTM_SELF_APPROVAL);
                     return false;
                 }
@@ -119,7 +96,7 @@ public class CommonCodeReview {
                     //review done using GitHub Review workflow
                     auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_GHR);
                     if (!CollectionUtils.isEmpty(auditReviewResponse.getAuditStatuses()) &&
-                            !isPRReviewedInTimeScale(pr)) {
+                            !isPRReviewedInTimeScale(pr, auditReviewResponse)) {
                         auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_GHR_SELF_APPROVAL);
                         return false;
                     }
@@ -153,21 +130,31 @@ public class CommonCodeReview {
     }
 
 
-    private static boolean isPRReviewedInTimeScale(GitRequest pr) {
+    private static boolean isPRReviewedInTimeScale(GitRequest pr, AuditReviewResponse<CodeReviewAuditStatus> auditReviewResponse) {
         List<CodeAction> codeActionList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(pr.getCommits())) {
-            codeActionList.addAll(pr.getCommits().stream().map(c -> new CodeAction(CodeActionType.Commit, c.getScmCommitTimestamp(), "unknown".equalsIgnoreCase(c.getScmAuthorLogin())?pr.getUserId():c.getScmAuthorLogin()  )).collect(Collectors.toList()));
+            codeActionList.addAll(pr.getCommits().stream().map(c -> new CodeAction(CodeActionType.Commit, c.getScmCommitTimestamp(), "unknown".equalsIgnoreCase(c.getScmAuthorLogin())?pr.getUserId():c.getScmAuthorLogin() , c.getScmCommitLog() )).collect(Collectors.toList()));
         }
         if (!CollectionUtils.isEmpty(pr.getReviews())) {
-            codeActionList.addAll(pr.getReviews().stream().map(r -> new CodeAction(CodeActionType.Review, r.getUpdatedAt(), r.getAuthor())).collect(Collectors.toList()));
+            codeActionList.addAll(pr.getReviews().stream().map(r -> new CodeAction(CodeActionType.Review, r.getUpdatedAt(), r.getAuthor(), r.getBody())).collect(Collectors.toList()));
         }
         if (!CollectionUtils.isEmpty(pr.getComments())) {
-            codeActionList.addAll(pr.getComments().stream().map(r -> new CodeAction(CodeActionType.Review, r.getUpdatedAt(), r.getUser())).collect(Collectors.toList()));
+            codeActionList.addAll(pr.getComments().stream().map(r -> new CodeAction(CodeActionType.Review, r.getUpdatedAt(), r.getUser(), r.getBody())).collect(Collectors.toList()));
         }
-        codeActionList.add(new CodeAction(CodeActionType.PRMerge, pr.getMergedAt(), "IRRELEVANT"));
-        codeActionList.add(new CodeAction(CodeActionType.PRCreate, pr.getCreatedAt(), pr.getUserId()));
+        codeActionList.add(new CodeAction(CodeActionType.PRMerge, pr.getMergedAt(), "IRRELEVANT", "merged"));
+        codeActionList.add(new CodeAction(CodeActionType.PRCreate, pr.getCreatedAt(), pr.getUserId(), "create"));
 
         codeActionList.sort(Comparator.comparing(CodeAction::getTimestamp));
+
+        codeActionList.stream().forEach(c->LOGGER.debug( new DateTime(c.getTimestamp()).toString("yyyy-MM-dd hh:mm:ss.SSa")
+                + " " + c.getType() + " " + c.getActor() + " " + c.getMessage()));
+
+        List<CodeAction> clonedCodeActions = codeActionList.stream().map(item -> new CodeAction(item)).collect(Collectors.toList());
+        if (auditReviewResponse instanceof CodeReviewAuditResponse) {
+            ((CodeReviewAuditResponse)auditReviewResponse).setCodeActions(clonedCodeActions);
+        } else if (auditReviewResponse instanceof CodeReviewAuditResponseV2.PullRequestAudit) {
+            ((CodeReviewAuditResponseV2.PullRequestAudit)auditReviewResponse).setCodeActions(clonedCodeActions);
+        }
 
         Set<CodeAction> reviewedList = new HashSet<>();
         codeActionList.stream().filter(as -> as.getType() == CodeActionType.Review).map(as -> getReviewedActions(codeActionList, as)).forEach(reviewedList::addAll);

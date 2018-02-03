@@ -8,8 +8,10 @@
         .module(HygieiaConfig.module)
         .controller('SiteController', SiteController);
 
-    SiteController.$inject = ['$scope', '$q', '$uibModal', 'dashboardData', '$location', 'DashboardType', 'userService', 'authService','dashboardService', 'user'];
-    function SiteController($scope, $q, $uibModal, dashboardData, $location, DashboardType, userService, authService, dashboardService, user) {
+    SiteController.$inject = ['$scope', '$q', '$uibModal', 'dashboardData', '$location', 'DashboardType', 'userService',
+        'authService','dashboardService','user','paginationWrapperService'];
+    function SiteController($scope, $q, $uibModal, dashboardData, $location, DashboardType, userService,
+                            authService, dashboardService, user, paginationWrapperService) {
         var ctrl = this;
 
         // public variables
@@ -22,13 +24,6 @@
         ctrl.templateUrl = 'app/dashboard/views/navheader.html';
         ctrl.dashboardTypeEnum = DashboardType;
 
-        // pagination variables
-        $scope.currentPage = 0;
-        ctrl.searchFilter="";
-
-        // pagination variables
-        $scope.currentPageMyDash = 0;
-
         // public methods
         ctrl.createDashboard = createDashboard;
         ctrl.deleteDashboard = deleteDashboard;
@@ -39,11 +34,12 @@
         ctrl.admin = admin;
         ctrl.setType = setType;
         ctrl.filterNotOwnedList = filterNotOwnedList;
-        ctrl.filterDashboards = filterDashboards;
         ctrl.editDashboard = editDashboard;
-        ctrl.getInvalidAppOrCompError = getInvalidAppOrCompError;
         ctrl.pageChangeHandler = pageChangeHandler;
         ctrl.pageChangeHandlerForMyDash = pageChangeHandlerForMyDash;
+        ctrl.getTotalItems = getTotalItems;
+        ctrl.getTotalItemsMyDash = getTotalItemsMyDash;
+        ctrl.getPageSize = getPageSize;
         ctrl.filterByTitle = filterByTitle;
 
         if (userService.isAdmin()) {
@@ -61,31 +57,29 @@
 
             ctrl.dashboardTypes = types;
 
-
             dashboardData.getPageSize().then(function (data) {
-                 if(data!=null && data>0){
-                    $scope.pageSize = data;
-                }
                 pullDashboards();
             });
-
         })();
+
+        function getTotalItems() {
+            return paginationWrapperService.getTotalItems();
+        }
+
+        function getTotalItemsMyDash() {
+            return paginationWrapperService.getTotalItemsMyDash();
+        }
+
+        function getCurrentPage() {
+            return paginationWrapperService.getCurrentPage();
+        }
+
+        function getPageSize() {
+            return paginationWrapperService.getPageSize();
+        }
 
         function setType(type) {
             ctrl.dashboardType = type;
-        }
-
-        function filterDashboards(item) {
-            var matchesSearch = (!ctrl.search || item.name.toLowerCase().indexOf(ctrl.search.toLowerCase()) !== -1);
-            if (ctrl.dashboardType == DashboardType.PRODUCT) {
-                return item.isProduct && matchesSearch;
-            }
-
-            if (ctrl.dashboardType == DashboardType.TEAM) {
-                return !item.isProduct && matchesSearch;
-            }
-
-            return matchesSearch;
         }
 
         function admin() {
@@ -140,125 +134,36 @@
         }
 
         function processDashboardResponse(data) {
-            // add dashboards to list
-            ctrl.dashboards = [];
-            var dashboards = [];
-            for (var x = 0; x < data.length; x++) {
-                var board = {
-                    id: data[x].id,
-                    name: dashboardService.getDashboardTitle(data[x]),
-                    isProduct: data[x].type && data[x].type.toLowerCase() === DashboardType.PRODUCT.toLowerCase()
-                };
-
-                if(board.isProduct) {
-                    //console.log(board);
-                }
-                dashboards.push(board);
-            }
-
-            ctrl.dashboards = dashboards;
-            dashboardData.count().then(function (data) {
-                ctrl.totalItems = data;
-            });
+            ctrl.dashboards = paginationWrapperService.processDashboardResponse(data);
         }
 
         function processDashboardFilterResponse(data) {
-            ctrl.dashboards = [];
-            var dashboards = [];
-            for (var x = 0; x < data.length; x++) {
-                var board = {
-                    id: data[x].id,
-                    name: dashboardService.getDashboardTitle(data[x]),
-                    isProduct: data[x].type && data[x].type.toLowerCase() === DashboardType.PRODUCT.toLowerCase()
-                };
-                if(board.isProduct) {
-                    //console.log(board);
-                }
-                dashboards.push(board);
-            }
-            ctrl.dashboards = dashboards;
-            if(ctrl.searchFilter==""){
-                dashboardData.count().then(function (data) {
-                    ctrl.totalItems = data;
-                });
-            }
+            ctrl.dashboards = paginationWrapperService.processDashboardFilterResponse(data);
         }
 
         function processDashboardError(data) {
-            ctrl.dashboards = [];
+            ctrl.dashboards = paginationWrapperService.processDashboardError(data);
         }
 
         function processMyDashboardResponse(mydata) {
-
-            // add dashboards to list
-            ctrl.mydash = [];
-            var dashboards = [];
-            for (var x = 0; x < mydata.length; x++) {
-
-                dashboards.push({
-                    id: mydata[x].id,
-                    name: dashboardService.getDashboardTitle(mydata[x]),
-                    type: mydata[x].type,
-                    isProduct: mydata[x].type && mydata[x].type.toLowerCase() === DashboardType.PRODUCT.toLowerCase(),
-                    validServiceName:  mydata[x].validServiceName,
-                    validAppName: mydata[x].validAppName,
-                    configurationItemBusServName:  mydata[x].configurationItemBusServName,
-                    configurationItemBusAppName:  mydata[x].configurationItemBusAppName,
-                    configurationItemBusServId:  mydata[x].configurationItemBusServObjectId,
-                    configurationItemBusAppId:  mydata[x].configurationItemBusAppObjectId,
-                    showError: ctrl.getInvalidAppOrCompError(mydata[x])
-                });
-            }
-
-            ctrl.mydash = dashboards;
-            dashboardData.myDashboardsCount().then(function (data) {
-                ctrl.totalItemsMyDash = data;
-            });
+            ctrl.mydash = paginationWrapperService.processMyDashboardResponse(mydata);
         }
 
         function processFilterMyDashboardResponse(mydata) {
-
-            // add dashboards to list
-            ctrl.mydash = [];
-            var dashboards = [];
-            for (var x = 0; x < mydata.length; x++) {
-
-                dashboards.push({
-                    id: mydata[x].id,
-                    name: dashboardService.getDashboardTitle(mydata[x]),
-                    type: mydata[x].type,
-                    isProduct: mydata[x].type && mydata[x].type.toLowerCase() === DashboardType.PRODUCT.toLowerCase(),
-                    validServiceName:  mydata[x].validServiceName,
-                    validAppName: mydata[x].validAppName,
-                    configurationItemBusServName:  mydata[x].configurationItemBusServName,
-                    configurationItemBusAppName:  mydata[x].configurationItemBusAppName,
-                    configurationItemBusServId:  mydata[x].configurationItemBusServObjectId,
-                    configurationItemBusAppId:  mydata[x].configurationItemBusAppObjectId,
-                    showError: ctrl.getInvalidAppOrCompError(mydata[x])
-                });
-            }
-
-            ctrl.mydash = dashboards;
-            if(ctrl.searchFilter=="") {
-                dashboardData.myDashboardsCount().then(function (data) {
-                    ctrl.totalItemsMyDash = data;
-                });
-            }
+            ctrl.mydash = paginationWrapperService.processFilterMyDashboardResponse(mydata);
         }
-
 
         function processMyDashboardError(data) {
-            ctrl.mydash = [];
+            ctrl.mydash = paginationWrapperService.processMyDashboardError(data);
         }
-
-
-
 
         function deleteDashboard(item) {
             var id = item.id;
             dashboardData.delete(id).then(function () {
                 _.remove(ctrl.dashboards, {id: id});
                 _.remove(ctrl.mydash, {id: id});
+                paginationWrapperService.calculateTotalItems();
+                paginationWrapperService.calculateTotalItemsMyDash();
             }, function(response) {
                 var msg = 'An error occurred while deleting the dashboard';
 
@@ -285,69 +190,47 @@
             console.log("size after reduction  is:" + uniqueArray.length);
             ctrl.dashboards = uniqueArray;
         }
-        function getInvalidAppOrCompError(data){
-            var showError = false;
 
-            if((data.configurationItemBusServName != undefined && !data.validServiceName) || (data.configurationItemBusAppName != undefined && !data.validAppName)){
-                showError = true;
-            }
-            return showError;
-        }
-        function pullDashboards(){
+        function pullDashboards() {
             // request dashboards
-            dashboardData.searchByPage({"search": '', "size": $scope.pageSize, "page": 0}).then(processDashboardResponse, processDashboardError);
+            dashboardData.searchByPage({"search": '', "size": getPageSize(), "page": 0})
+                .then(processDashboardResponse, processDashboardError);
 
             // request my dashboards
-            dashboardData.searchMyDashboardsByPage({"username": ctrl.username, "size": $scope.pageSize, "page": 0}).then(processMyDashboardResponse, processMyDashboardError);
+            dashboardData.searchMyDashboardsByPage({"username": ctrl.username, "size": getPageSize(), "page": 0})
+                .then(processMyDashboardResponse, processMyDashboardError);
 
-            dashboardData.count().then(function (data) {
-                ctrl.totalItems = data;
-            });
-            dashboardData.myDashboardsCount().then(function (data) {
-               ctrl.totalItemsMyDash = data;
-            });
+            paginationWrapperService.calculateTotalItems()
+                .then (function () {
+                    ctrl.totalItems = paginationWrapperService.getTotalItems();
+                })
+
+            paginationWrapperService.calculateTotalItemsMyDash()
+                .then (function () {
+                    ctrl.totalItemsMyDash = paginationWrapperService.getTotalItemsMyDash();
+                })
         }
 
-        function pageChangeHandler(pageNumber){
-            if(ctrl.searchFilter==""){
-                dashboardData.searchByPage({"search": '', "size": $scope.pageSize, "page": pageNumber-1}).then(processDashboardResponse, processDashboardError);
-            }else{
-                dashboardData.filterByTitle({"search": ctrl.searchFilter, "size": $scope.pageSize, "page": pageNumber-1}).then(processDashboardFilterResponse, processDashboardError);
-            }
-            $scope.currentPage = pageNumber;
-        }
-
-        function pageChangeHandlerForMyDash(pageNumber){
-            if(ctrl.searchFilter==""){
-                dashboardData.searchMyDashboardsByPage({"username": ctrl.username, "size": $scope.pageSize, "page": pageNumber-1}).then(processMyDashboardResponse, processMyDashboardError);
-            }else{
-                dashboardData.filterMyDashboardsByTitle({"search":  ctrl.searchFilter, "size": $scope.pageSize, "page": pageNumber-1}).then(processFilterMyDashboardResponse, processMyDashboardError);
-            }
-            $scope.currentPageMyDash = pageNumber;
-        }
-
-
-        function filterByTitle(title){
-            $scope.currentPage = 0;
-            $scope.currentPageMyDash = 0;
-            ctrl.searchFilter = title;
-            if(title==""){
-                dashboardData.searchByPage({"search": '', "size": $scope.pageSize, "page": 0}).then(processDashboardResponse, processDashboardError);
-                dashboardData.searchMyDashboardsByPage({"username": ctrl.username, "size": $scope.pageSize, "page": 0}).then(processMyDashboardResponse, processMyDashboardError);
-            }else{
-                dashboardData.filterCount(title).then(function (data) {
-                    ctrl.totalItems = data;
+        function pageChangeHandler(pageNumber) {
+            paginationWrapperService.pageChangeHandler(pageNumber)
+                .then(function() {
+                    ctrl.dashboards = paginationWrapperService.getDashboards();
                 });
-                dashboardData.filterByTitle({"search": title, "size": $scope.pageSize, "page": 0}).then(processDashboardFilterResponse, processDashboardError);
+        }
 
-                dashboardData.filterMyDashboardCount(title).then(function (data) {
-                    ctrl.totalItemsMyDash = data;
+        function pageChangeHandlerForMyDash(pageNumber) {
+            paginationWrapperService.pageChangeHandlerForMyDash(pageNumber)
+                .then(function() {
+                    ctrl.mydash = paginationWrapperService.getMyDashboards();
                 });
-                dashboardData.filterMyDashboardsByTitle({"search": title, "size": $scope.pageSize, "page": 0}).then(processFilterMyDashboardResponse, processMyDashboardError);
+        }
 
-            }
+        function filterByTitle (title) {
+            var promises = paginationWrapperService.filterByTitle(title);
+            $q.all(promises).then (function() {
+                ctrl.dashboards = paginationWrapperService.getDashboards();
+                ctrl.mydash = paginationWrapperService.getMyDashboards();
+            });
         }
     }
-
-
 })();
