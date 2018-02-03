@@ -158,6 +158,26 @@ public class GitHubGraphQLQuery {
                     "              }\n" +
                     "            }\n" +
                     "          }\n" +
+                    "          timeline(last: 100) {\n" +
+                    "            edges {\n" +
+                    "              node {\n" +
+                    "                __typename\n" +
+                    "                ... on MergedEvent {\n" +
+                    "                  createdAt\n" +
+                    "                  commit {\n" +
+                    "                    oid\n" +
+                    "                  }\n" +
+                    "                  pullRequest {\n" +
+                    "                    number\n" +
+                    "                  }\n" +
+                    "                  mergeRefName\n" +
+                    "                  actor {\n" +
+                    "                    login\n" +
+                    "                  }\n" +
+                    "                }" +
+                    "              }\n" +
+                    "            }\n" +
+                    "          }\n" +
                     "          comments(first: 100) {\n" +
                     "            totalCount\n" +
                     "            nodes {\n" +
