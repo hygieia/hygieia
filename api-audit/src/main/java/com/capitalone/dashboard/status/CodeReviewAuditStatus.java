@@ -9,6 +9,7 @@ public enum CodeReviewAuditStatus {
     PEER_REVIEW_LGTM_SUCCESS,
 
     PEER_REVIEW_GHR,
+    PEER_REVIEW_GHR_SELF_APPROVAL,
     PEER_REVIEW_REG_COMMENTS,
     PEER_REVIEW_REV_COMMENTS,
     //no pull requests for queried date range
@@ -19,6 +20,7 @@ public enum CodeReviewAuditStatus {
     //commit author v/s who merged the pr
     COMMITAUTHOR_NE_MERGECOMMITER,
     COMMITAUTHOR_EQ_MERGECOMMITER,
+    MERGECOMMITER_NOT_FOUND,
 
     //peer review of a pull request
     PULLREQ_REVIEWED_BY_PEER,
