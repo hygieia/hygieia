@@ -1,12 +1,12 @@
-use dashboard;
+use dashboarddb;
 
-db.createUser({  
-  user: "db",
-  pwd: "dbpass",
+db.createUser({
+  user: "dashboarduser",
+  pwd: "dbpassword",
   "roles": [
     {
       "role": "readWrite",
-      "db": "dashboard"
+      "db": "dashboarddb"
     }
   ]
 });
