@@ -9,30 +9,29 @@ import java.util.Objects;
 public class Incident extends BaseModel {
 
     private ObjectId collectorItemId;
-    private String timestamp;
+    private long timestamp;
     private String incidentItem;
     private String incidentID;
     private String category;
-    private String openTime;
+    private long openTime;
     private String openedBy;
     private String severity;
-    private String updatedTime;
+    private long updatedTime;
     private String primaryAssignmentGroup;
     private String status;
-    private String closedTime;
+    private long closedTime;
     private String closedBy;
     private String closureCode;
     private String affectedItem;
     private String incidentDescription;
-    private boolean validIncidentItem;
 
     public ObjectId getCollectorItemId() { return collectorItemId; }
 
     public void setCollectorItemId(ObjectId collectorItemId) { this.collectorItemId = collectorItemId; }
 
-    public String getTimestamp() { return timestamp; }
+    public long getTimestamp() { return timestamp; }
 
-    public void setTimestamp(String timestamp) { this.timestamp = timestamp; }
+    public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
 
     public String getIncidentItem() { return incidentItem; }
 
@@ -46,9 +45,9 @@ public class Incident extends BaseModel {
 
     public void setCategory(String category) { this.category = category; }
 
-    public String getOpenTime() { return openTime; }
+    public long getOpenTime() { return openTime; }
 
-    public void setOpenTime(String openTime) { this.openTime = openTime; }
+    public void setOpenTime(long openTime) { this.openTime = openTime; }
 
     public String getOpenedBy() { return openedBy; }
 
@@ -58,9 +57,9 @@ public class Incident extends BaseModel {
 
     public void setSeverity(String severity) { this.severity = severity; }
 
-    public String getUpdatedTime() { return updatedTime; }
+    public long getUpdatedTime() { return updatedTime; }
 
-    public void setUpdatedTime(String updatedTime) { this.updatedTime = updatedTime; }
+    public void setUpdatedTime(long updatedTime) { this.updatedTime = updatedTime; }
 
     public String getPrimaryAssignmentGroup() { return primaryAssignmentGroup; }
 
@@ -70,9 +69,9 @@ public class Incident extends BaseModel {
 
     public void setStatus(String status) { this.status = status; }
 
-    public String getClosedTime() { return closedTime; }
+    public long getClosedTime() { return closedTime; }
 
-    public void setClosedTime(String closedTime) { this.closedTime = closedTime; }
+    public void setClosedTime(long closedTime) { this.closedTime = closedTime; }
 
     public String getClosedBy() { return closedBy; }
 
@@ -89,12 +88,6 @@ public class Incident extends BaseModel {
     public String getIncidentDescription() { return incidentDescription; }
 
     public void setIncidentDescription(String incidentDescription) { this.incidentDescription = incidentDescription; }
-
-    public void setValidIncidentItem(boolean validIncidentItem) { this.validIncidentItem = validIncidentItem; }
-
-    public void setValidIncidentItem(String validIncidentItem) { this.validIncidentItem = Boolean.parseBoolean(validIncidentItem); }
-
-    public boolean isValidIncidentItem() { return validIncidentItem; }
 
     @Override
     public boolean equals(Object compareTo){

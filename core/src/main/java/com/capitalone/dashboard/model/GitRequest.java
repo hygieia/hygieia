@@ -15,6 +15,8 @@ public class GitRequest  {
     private String scmUrl;
     private String scmBranch;
     private String scmRevisionNumber;
+    //squash merge commit may be different from pr commit
+    private String scmMergeEventRevisionNumber;
     private String scmCommitLog;
     private long scmCommitTimestamp;
     private String scmAuthor;
@@ -106,6 +108,14 @@ public class GitRequest  {
 
     public void setScmRevisionNumber(String scmRevisionNumber) {
         this.scmRevisionNumber = scmRevisionNumber;
+    }
+
+    public String getScmMergeEventRevisionNumber() {
+        return scmMergeEventRevisionNumber;
+    }
+
+    public void setScmMergeEventRevisionNumber(String scmMergeEventRevisionNumber) {
+        this.scmMergeEventRevisionNumber = scmMergeEventRevisionNumber;
     }
 
     public String getRequestType() {

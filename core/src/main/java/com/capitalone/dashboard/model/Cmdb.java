@@ -5,6 +5,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
 import java.util.Objects;
 
 @Document(collection="cmdb")
@@ -29,6 +30,7 @@ public class Cmdb {
     private String commonName;
     private String itemType;
     private boolean validConfigItem;
+    private List<String> components;
 
     public ObjectId getId() {
         return id;
@@ -182,6 +184,10 @@ public class Cmdb {
     public void setValidConfigItem(boolean validConfigItem) {
         this.validConfigItem = validConfigItem;
     }
+
+    public void setComponents(List<String> components) { this.components = components; }
+
+    public List<String> getComponents(){ return components; }
 
     @Override
     public int hashCode(){
