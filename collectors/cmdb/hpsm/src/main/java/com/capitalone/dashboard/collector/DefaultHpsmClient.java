@@ -284,8 +284,6 @@ public class DefaultHpsmClient implements HpsmClient {
 
 				}
 			}
-			change.setValidChangeItem(true);
-
 			returnList.add(change);
 		}
 		return returnList;
@@ -310,8 +308,6 @@ public class DefaultHpsmClient implements HpsmClient {
 
 				}
 			}
-			incident.setValidIncidentItem(true);
-
 			returnList.add(incident);
 		}
 		return returnList;
