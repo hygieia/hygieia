@@ -1,38 +1,7 @@
 #!/bin/bash
-
-if [ "$SKIP_PROPERTIES_BUILDER" = true ]; then
-  echo "Skipping properties builder"
-  exit 0
-fi
-
-# mongo container provides the HOST/PORT
-# api container provided DB Name, ID & PWD
-
-if [ "$TEST_SCRIPT" != "" ]
-then
-        #for testing locally
-        PROP_FILE=application.properties
-else 
-	PROP_FILE=config/hygieia-github-scm-collector.properties
-fi
-  
-if [ "$MONGO_PORT" != "" ]; then
-	# Sample: MONGO_PORT=tcp://172.17.0.20:27017
-	MONGODB_HOST=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\1;'`
-	MONGODB_PORT=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\2;'`
-else
-	env
-	echo "ERROR: MONGO_PORT not defined"
-	exit 1
-fi
-
-echo "MONGODB_HOST: $MONGODB_HOST"
-echo "MONGODB_PORT: $MONGODB_PORT"
-
-
 cat > $PROP_FILE <<EOF
 #Database Name
-dbname=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_DATABASE:-dashboard}
+dbname=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_DATABASE:-db}
 
 #Database HostName - default is localhost
 dbhost=${MONGODB_HOST:-10.0.1.1}
@@ -66,12 +35,14 @@ github.personalAccessToken=${PERSONAL_ACCESS_TOKEN}
 EOF
 
 echo "
-
 ===========================================
 Properties file created `date`:  $PROP_FILE
 Note: passwords hidden
 ===========================================
-`cat $PROP_FILE |egrep -vi password`
- "
+`cat $PROP_FILE | egrep -vi password`
+===========================================
+END PROPERTIES FILE
+===========================================
+"
 
 exit 0
