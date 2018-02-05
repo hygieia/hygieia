@@ -107,18 +107,25 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
 //check for pr author <> pr merger
 //check to see if pr was reviewed
 //type of branching strategy
-        pullRequests.forEach(pr -> {
+        pullRequests.stream().filter(pr -> "merged".equalsIgnoreCase(pr.getState())).forEach(pr -> {
             CodeReviewAuditResponse codeReviewAuditResponse = new CodeReviewAuditResponse();
             codeReviewAuditResponse.setPullRequest(pr);
             String mergeSha = pr.getScmRevisionNumber();
             Optional<Commit> mergeOptionalCommit = commits.stream().filter(c -> Objects.equals(c.getScmRevisionNumber(), mergeSha)).findFirst();
             Commit mergeCommit = mergeOptionalCommit.orElse(null);
+
             if (mergeCommit == null) {
-                return;
+                mergeOptionalCommit = commits.stream().filter(c -> Objects.equals(c.getScmRevisionNumber(), pr.getScmMergeEventRevisionNumber())).findFirst();
+                mergeCommit = mergeOptionalCommit.orElse(null);
             }
+            
             List<Commit> commitsRelatedToPr = pr.getCommits();
             commitsRelatedToPr.sort(Comparator.comparing(e -> (e.getScmCommitTimestamp())));
-            codeReviewAuditResponse.addAuditStatus(pr.getUserId().equalsIgnoreCase(mergeCommit.getScmAuthorLogin()) ? CodeReviewAuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER : CodeReviewAuditStatus.COMMITAUTHOR_NE_MERGECOMMITER);
+            if (mergeCommit == null) {
+                codeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.MERGECOMMITER_NOT_FOUND);
+            } else {
+                codeReviewAuditResponse.addAuditStatus(pr.getUserId().equalsIgnoreCase(mergeCommit.getScmAuthorLogin()) ? CodeReviewAuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER : CodeReviewAuditStatus.COMMITAUTHOR_NE_MERGECOMMITER);
+            }
             codeReviewAuditResponse.setCommits(commitsRelatedToPr);
             boolean peerReviewed = CommonCodeReview.computePeerReviewStatus(pr, settings, codeReviewAuditResponse);
             codeReviewAuditResponse.addAuditStatus(peerReviewed ? CodeReviewAuditStatus.PULLREQ_REVIEWED_BY_PEER : CodeReviewAuditStatus.PULLREQ_NOT_PEER_REVIEWED);
