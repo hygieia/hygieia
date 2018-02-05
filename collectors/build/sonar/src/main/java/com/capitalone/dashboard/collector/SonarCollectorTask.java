@@ -111,11 +111,11 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
                 refreshData(enabledProjects(collector, instanceUrl), sonarClient,metrics);
                 
                 // Changelog apis do not exist for sonarqube versions under version 5.0
-                if (version > 5.0) {
-                	try {
-                		fetchQualityProfileConfigChanges(collector,instanceUrl,sonarClient);
-                    } catch (Exception e) {
-                    	LOG.error(e);
+                if (version >= 5.0) {
+                  try {
+                     fetchQualityProfileConfigChanges(collector,instanceUrl,sonarClient);
+                   } catch (Exception e) {
+                     LOG.error(e);
                     }
                 }
 
