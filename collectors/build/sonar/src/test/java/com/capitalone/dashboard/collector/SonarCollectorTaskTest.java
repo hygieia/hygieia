@@ -96,9 +96,7 @@ public class SonarCollectorTaskTest {
         when(sonarClientSelector.getSonarClient(VERSION43)).thenReturn(defaultSonarClient);
         task.collect(collectorWithOneServer(VERSION43));
         verify(sonarClientSelector).getSonarClient(VERSION43);
-        verify(defaultSonarClient).getQualityProfiles(SERVER1);
-        verify(defaultSonarClient).retrieveProfileAndProjectAssociation(SERVER1, QUALITYPROFILE);
-        verify(defaultSonarClient).getQualityProfileConfigurationChanges(SERVER1, QUALITYPROFILE);
+
     }
 
     @Test
@@ -138,9 +136,6 @@ public class SonarCollectorTaskTest {
         verify(defaultSonar6Client).retrieveProfileAndProjectAssociation(SERVER2, QUALITYPROFILE);
         verify(defaultSonar6Client).getQualityProfileConfigurationChanges(SERVER2, QUALITYPROFILE);
         
-        verify(defaultSonarClient).getQualityProfiles(SERVER1);
-        verify(defaultSonarClient).retrieveProfileAndProjectAssociation(SERVER1, QUALITYPROFILE);
-        verify(defaultSonarClient).getQualityProfileConfigurationChanges(SERVER1, QUALITYPROFILE);
     }
 
     private ArrayList<com.capitalone.dashboard.model.Component> components() {
