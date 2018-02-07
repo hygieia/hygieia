@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.collector;
+package com.capitalone.dashboard.model;
 
 /**
  * Bean to hold throttle settings used to throttle the number

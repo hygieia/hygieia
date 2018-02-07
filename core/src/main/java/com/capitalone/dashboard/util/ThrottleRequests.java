@@ -1,5 +1,6 @@
-package com.capitalone.dashboard.collector;
+package com.capitalone.dashboard.util;
 
+import com.capitalone.dashboard.model.ThrottleSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
