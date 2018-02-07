@@ -85,7 +85,7 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
      * @return CodeQualityAuditResponse
      */
     private CodeQualityAuditResponse getStaticAnalysisResponse(CollectorItem collectorItem, List<CollectorItem> repoItems, long beginDate, long endDate) {
-        List<CodeQuality> codeQualities = codeQualityRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(collectorItem.getCollectorId(), beginDate-1, endDate+1);
+        List<CodeQuality> codeQualities = codeQualityRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(collectorItem.getId(), beginDate-1, endDate+1);
         ObjectMapper mapper = new ObjectMapper();
         CodeQualityAuditResponse codeQualityAuditResponse = new CodeQualityAuditResponse();
 

@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.response;
 
+import com.capitalone.dashboard.model.CodeAction;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.status.CodeReviewAuditStatus;
@@ -11,6 +12,7 @@ public class CodeReviewAuditResponseV2 extends AuditReviewResponse<CodeReviewAud
 
     public static class PullRequestAudit extends AuditReviewResponse<CodeReviewAuditStatus>{
         GitRequest pullRequest;
+        List<CodeAction> codeActions;
 
         public GitRequest getPullRequest() {
             return pullRequest;
@@ -18,6 +20,14 @@ public class CodeReviewAuditResponseV2 extends AuditReviewResponse<CodeReviewAud
 
         public void setPullRequest(GitRequest pullRequest) {
             this.pullRequest = pullRequest;
+        }
+
+        public List<CodeAction> getCodeActions() {
+            return codeActions;
+        }
+
+        public void setCodeActions(List<CodeAction> codeActions) {
+            this.codeActions = codeActions;
         }
     }
     private String url;
