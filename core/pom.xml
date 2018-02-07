@@ -201,5 +201,9 @@
             <artifactId>mockito-all</artifactId>
             <version>1.10.19</version>
         </dependency>
+	<dependency>
+	    <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+	</dependency>
     </dependencies>
 </project>
