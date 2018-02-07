@@ -110,11 +110,14 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
 
                 refreshData(enabledProjects(collector, instanceUrl), sonarClient,metrics);
                 
-                try {
-					fetchQualityProfileConfigChanges(collector,instanceUrl,sonarClient);
-				} catch (org.json.simple.parser.ParseException e) {
-					LOG.error(e);
-				}
+                // Changelog apis do not exist for sonarqube versions under version 5.0
+                if (version >= 5.0) {
+                  try {
+                     fetchQualityProfileConfigChanges(collector,instanceUrl,sonarClient);
+                   } catch (Exception e) {
+                     LOG.error(e);
+                    }
+                }
 
                 log("Finished", start);
             }
@@ -234,7 +237,6 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
     		long timestamp = convertToTimestamp((String) configChangeJson.get("date"));
     		profileConfigChange.setTimestamp(timestamp);
     		
-//    		profileConfigChanges.add(profileConfigChange);
     		if (isNewConfig(collector.getId(),(String) configChangeJson.get("authorLogin"),operation,timestamp)) {
     			profileConfigChanges.add(profileConfigChange);
     		}
