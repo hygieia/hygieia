@@ -18,7 +18,6 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class CollectorTaskTest {
     @Mock private TaskScheduler taskScheduler;
-    @Mock private CollectorTask<Collector> mockCollector;
 
     private static final String COLLECTOR_NAME = "Test Collector";
     private CollectorTask<Collector> collector;
