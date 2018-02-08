@@ -13,7 +13,7 @@ public class Cmdb {
     @Id
     private ObjectId id;
     private ObjectId collectorItemId;
-    private long timestamp;
+    private Long timestamp;
     private String configurationItem;
     private String configurationItemSubType;
     private String configurationItemType;
@@ -54,6 +54,10 @@ public class Cmdb {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = Long.parseLong(timestamp);
     }
 
     public String getConfigurationItem() {
