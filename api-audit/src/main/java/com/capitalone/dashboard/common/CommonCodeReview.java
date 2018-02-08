@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -41,7 +43,9 @@ public class CommonCodeReview {
      * @param auditReviewResponse - audit review response
      * @return boolean fail or pass
      */
-    public static boolean computePeerReviewStatus(GitRequest pr, ApiSettings settings,  AuditReviewResponse<CodeReviewAuditStatus> auditReviewResponse) {
+    public static boolean computePeerReviewStatus(GitRequest pr, ApiSettings settings,
+                                                  AuditReviewResponse<CodeReviewAuditStatus> auditReviewResponse,
+                                                  List<Commit> commits) {
         List<Review> reviews = pr.getReviews();
 
         List<CommitStatus> statuses = pr.getCommitStatuses();
@@ -81,7 +85,7 @@ public class CommonCodeReview {
             if (lgtmAttempted) {
                 //if lgtm self-review, then no peer-review was done unless someone else looked at it
                 if (!CollectionUtils.isEmpty(auditReviewResponse.getAuditStatuses()) &&
-                        !isPRReviewedInTimeScale(pr, auditReviewResponse)) {
+                        !isPRReviewedInTimeScale(pr, auditReviewResponse, commits)) {
                     auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_LGTM_SELF_APPROVAL);
                     return false;
                 }
@@ -96,7 +100,7 @@ public class CommonCodeReview {
                     //review done using GitHub Review workflow
                     auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_GHR);
                     if (!CollectionUtils.isEmpty(auditReviewResponse.getAuditStatuses()) &&
-                            !isPRReviewedInTimeScale(pr, auditReviewResponse)) {
+                            !isPRReviewedInTimeScale(pr, auditReviewResponse, commits)) {
                         auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_GHR_SELF_APPROVAL);
                         return false;
                     }
@@ -130,10 +134,26 @@ public class CommonCodeReview {
     }
 
 
-    private static boolean isPRReviewedInTimeScale(GitRequest pr, AuditReviewResponse<CodeReviewAuditStatus> auditReviewResponse) {
+    private static boolean isPRReviewedInTimeScale(GitRequest pr,
+                                                   AuditReviewResponse<CodeReviewAuditStatus> auditReviewResponse,
+                                                   List<Commit> commits) {
+        List<Commit> filteredPrCommits = new ArrayList<>();
+        pr.getCommits().forEach(prC -> {
+            Optional<Commit> cOptionalCommit = commits.stream().filter(c -> Objects.equals(c.getScmRevisionNumber(), prC.getScmRevisionNumber())).findFirst();
+            Commit cCommit = cOptionalCommit.orElse(null);
+
+            if (cCommit != null
+                    && !CollectionUtils.isEmpty(cCommit.getScmParentRevisionNumbers())
+                    && cCommit.getScmParentRevisionNumbers().size() > 1 ) {
+                //exclude commits with multiple parents ie. merge commits
+            } else {
+                filteredPrCommits.add(prC);
+            }
+        });
+
         List<CodeAction> codeActionList = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(pr.getCommits())) {
-            codeActionList.addAll(pr.getCommits().stream().map(c -> new CodeAction(CodeActionType.Commit, c.getScmCommitTimestamp(), "unknown".equalsIgnoreCase(c.getScmAuthorLogin())?pr.getUserId():c.getScmAuthorLogin() , c.getScmCommitLog() )).collect(Collectors.toList()));
+        if (!CollectionUtils.isEmpty(filteredPrCommits)) {
+            codeActionList.addAll(filteredPrCommits.stream().map(c -> new CodeAction(CodeActionType.Commit, c.getScmCommitTimestamp(), "unknown".equalsIgnoreCase(c.getScmAuthorLogin())?pr.getUserId():c.getScmAuthorLogin() , c.getScmCommitLog() )).collect(Collectors.toList()));
         }
         if (!CollectionUtils.isEmpty(pr.getReviews())) {
             codeActionList.addAll(pr.getReviews().stream().map(r -> new CodeAction(CodeActionType.Review, r.getUpdatedAt(), r.getAuthor(), r.getBody())).collect(Collectors.toList()));
