@@ -309,27 +309,13 @@ public class DashboardController {
     }
 
     /**
-     * Get list of dashboards by page (default = 10)
-     *
-     * @return List of dashboards
-     */
-    @RequestMapping(value = "/dashboard/page", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Dashboard>> dashboardByPage(@RequestParam(value = "search", required = false, defaultValue = "") String search, Pageable pageable) {
-        Page<Dashboard> pageDashboardItems = dashboardService.findDashboardsByPage(pageable);
-        return ResponseEntity
-                .ok()
-                .headers(paginationHeaderUtility.buildPaginationHeaders(pageDashboardItems))
-                .body(pageDashboardItems.getContent());
-    }
-
-    /**
      * Get count of all dashboards
      *
      * @return Integer
      */
-    @RequestMapping(value = "/dashboard/count", method = GET, produces = APPLICATION_JSON_VALUE)
-    public long dashboardsCount() {
-        return dashboardService.count();
+    @RequestMapping(value = "/dashboard/count/{type}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public long dashboardsCount(@PathVariable String type) {
+        return dashboardService.count(type);
     }
 
     /**
@@ -337,9 +323,9 @@ public class DashboardController {
      *
      * @return Integer
      */
-    @RequestMapping(value = "/dashboard/filter/count/{title}", method = GET, produces = APPLICATION_JSON_VALUE)
-    public long dashboardsFilterCount(@PathVariable String title) {
-        return dashboardService.getAllDashboardsByTitleCount(title);
+        @RequestMapping(value = "/dashboard/filter/count/{title}/{type}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public long dashboardsFilterCount(@PathVariable String title, @PathVariable String type) {
+        return dashboardService.getAllDashboardsByTitleCount(title, type);
     }
 
     /**
@@ -348,8 +334,10 @@ public class DashboardController {
      * @return List of Dashboards
      */
     @RequestMapping(value = "/dashboard/page/filter", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Dashboard>> dashboardByTitlePage(@RequestParam(value = "search", required = false, defaultValue = "") String search, Pageable pageable) throws HygieiaException {
-        Page<Dashboard> pageDashboardItems = dashboardService.getDashboardByTitleWithFilter(search, pageable);
+    public ResponseEntity<List<Dashboard>> dashboardByTitlePage(@RequestParam(value = "search", required = false, defaultValue = "") String search,
+                                                                @RequestParam(value = "type", required = false, defaultValue = "") String type,
+                                                                Pageable pageable) throws HygieiaException {
+        Page<Dashboard> pageDashboardItems = dashboardService.getDashboardByTitleWithFilter(search, type, pageable);
         return ResponseEntity
                 .ok()
                 .headers(paginationHeaderUtility.buildPaginationHeaders(pageDashboardItems))
@@ -367,6 +355,22 @@ public class DashboardController {
     }
 
 
+    /**
+     * Get list of dashboards by page (default = 10)
+     *
+     * @return List of dashboards
+     */
+    @RequestMapping(value = "/dashboard/page", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Dashboard>> dashboardByPage(@RequestParam(value = "search", required = false, defaultValue = "") String search,
+                                                           @RequestParam(value = "type", required = false, defaultValue = "") String type,
+                                                           Pageable pageable) {
+        Page<Dashboard> pageDashboardItems = dashboardService.findDashboardsByPage(type, pageable);
+        return ResponseEntity
+                .ok()
+                .headers(paginationHeaderUtility.buildPaginationHeaders(pageDashboardItems))
+                .body(pageDashboardItems.getContent());
+    }
+
     // MyDashboard pagination
 
     /**
@@ -375,8 +379,10 @@ public class DashboardController {
      * @return List of dashboards
      */
     @RequestMapping(value = "/dashboard/mydashboard/page", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Dashboard>> myDashboardByPage(@RequestParam(value = "username", required = false, defaultValue = "") String username, Pageable pageable) {
-        Page<Dashboard> pageDashboardItems = dashboardService.findMyDashboardsByPage(pageable);
+    public ResponseEntity<List<Dashboard>> myDashboardByPage(@RequestParam(value = "username", required = false, defaultValue = "") String username,
+                                                             @RequestParam(value = "type", required = false, defaultValue = "") String type,
+                                                             Pageable pageable) {
+        Page<Dashboard> pageDashboardItems = dashboardService.findMyDashboardsByPage(type, pageable);
         return ResponseEntity
                 .ok()
                 .headers(paginationHeaderUtility.buildPaginationHeaders(pageDashboardItems))
@@ -388,9 +394,9 @@ public class DashboardController {
      *
      * @return Integer
      */
-    @RequestMapping(value = "/dashboard/mydashboard/count", method = GET, produces = APPLICATION_JSON_VALUE)
-    public long myDashboardCount() {
-        return dashboardService.myDashboardsCount();
+    @RequestMapping(value = "/dashboard/mydashboard/count/{type}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public long myDashboardCount(@PathVariable String type) {
+        return dashboardService.myDashboardsCount(type);
     }
 
     /**
@@ -398,9 +404,9 @@ public class DashboardController {
      *
      * @return Integer
      */
-    @RequestMapping(value = "/dashboard/mydashboard/filter/count/{title}", method = GET, produces = APPLICATION_JSON_VALUE)
-    public long myDashboardsFilterCount(@PathVariable String title) {
-        return dashboardService.getMyDashboardsByTitleCount(title);
+    @RequestMapping(value = "/dashboard/mydashboard/filter/count/{title}/{type}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public long myDashboardsFilterCount(@PathVariable String title, @PathVariable String type) {
+        return dashboardService.getMyDashboardsByTitleCount(title, type);
     }
 
     /**
@@ -409,12 +415,13 @@ public class DashboardController {
      * @return List of Dashboards
      */
     @RequestMapping(value = "/dashboard/mydashboard/page/filter", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Dashboard>> myDashboardByTitlePage(@RequestParam(value = "search", required = false, defaultValue = "") String search, Pageable pageable) throws HygieiaException {
-        Page<Dashboard> pageDashboardItems = dashboardService.getMyDashboardByTitleWithFilter(search, pageable);
+    public ResponseEntity<List<Dashboard>> myDashboardByTitlePage(@RequestParam(value = "search", required = false, defaultValue = "") String search,
+                                                                  @RequestParam(value = "type", required = false, defaultValue = "") String type,
+                                                                  Pageable pageable) throws HygieiaException {
+        Page<Dashboard> pageDashboardItems = dashboardService.getMyDashboardByTitleWithFilter(search, type, pageable);
         return ResponseEntity
                 .ok()
                 .headers(paginationHeaderUtility.buildPaginationHeaders(pageDashboardItems))
                 .body(pageDashboardItems.getContent());
     }
-
 }

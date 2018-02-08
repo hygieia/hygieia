@@ -80,6 +80,7 @@
 
         function setType(type) {
             ctrl.dashboardType = type;
+            pullDashboards(type);
         }
 
         function admin() {
@@ -134,7 +135,7 @@
         }
 
         function processDashboardResponse(data) {
-            ctrl.dashboards = paginationWrapperService.processDashboardResponse(data);
+            ctrl.dashboards = paginationWrapperService.processDashboardResponse(data, ctrl.dashboardType);
         }
 
         function processDashboardFilterResponse(data) {
@@ -146,7 +147,7 @@
         }
 
         function processMyDashboardResponse(mydata) {
-            ctrl.mydash = paginationWrapperService.processMyDashboardResponse(mydata);
+            ctrl.mydash = paginationWrapperService.processMyDashboardResponse(mydata, ctrl.dashboardType);
         }
 
         function processFilterMyDashboardResponse(mydata) {
@@ -191,42 +192,42 @@
             ctrl.dashboards = uniqueArray;
         }
 
-        function pullDashboards() {
+        function pullDashboards(type) {
             // request dashboards
-            dashboardData.searchByPage({"search": '', "size": getPageSize(), "page": 0})
+            dashboardData.searchByPage({"search": '', "type": type, "size": getPageSize(), "page": 0})
                 .then(processDashboardResponse, processDashboardError);
 
             // request my dashboards
-            dashboardData.searchMyDashboardsByPage({"username": ctrl.username, "size": getPageSize(), "page": 0})
+            dashboardData.searchMyDashboardsByPage({"username": ctrl.username, "type": type, "size": getPageSize(), "page": 0})
                 .then(processMyDashboardResponse, processMyDashboardError);
 
-            paginationWrapperService.calculateTotalItems()
+            paginationWrapperService.calculateTotalItems(type)
                 .then (function () {
                     ctrl.totalItems = paginationWrapperService.getTotalItems();
                 })
 
-            paginationWrapperService.calculateTotalItemsMyDash()
+            paginationWrapperService.calculateTotalItemsMyDash(type)
                 .then (function () {
                     ctrl.totalItemsMyDash = paginationWrapperService.getTotalItemsMyDash();
                 })
         }
 
         function pageChangeHandler(pageNumber) {
-            paginationWrapperService.pageChangeHandler(pageNumber)
+            paginationWrapperService.pageChangeHandler(pageNumber, ctrl.dashboardType)
                 .then(function() {
                     ctrl.dashboards = paginationWrapperService.getDashboards();
                 });
         }
 
         function pageChangeHandlerForMyDash(pageNumber) {
-            paginationWrapperService.pageChangeHandlerForMyDash(pageNumber)
+            paginationWrapperService.pageChangeHandlerForMyDash(pageNumber, ctrl.dashboardType)
                 .then(function() {
                     ctrl.mydash = paginationWrapperService.getMyDashboards();
                 });
         }
 
         function filterByTitle (title) {
-            var promises = paginationWrapperService.filterByTitle(title);
+            var promises = paginationWrapperService.filterByTitle(title, ctrl.dashboardType);
             $q.all(promises).then (function() {
                 ctrl.dashboards = paginationWrapperService.getDashboards();
                 ctrl.mydash = paginationWrapperService.getMyDashboards();

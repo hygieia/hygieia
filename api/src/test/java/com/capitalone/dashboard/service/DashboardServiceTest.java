@@ -802,7 +802,7 @@ public class DashboardServiceTest {
         myDashboard = makeTeamDashboard("template", "title", "appName", "amit",null, null, "comp1", "comp2");
         Page<Dashboard> pagedDashboards = new PageImpl<Dashboard>(Stream.of(myDashboard).collect(Collectors.toList()));
         when(dashboardRepository.findAllByTitleContainingIgnoreCase(any(String.class),any(Pageable.class) )).thenReturn(pagedDashboards);
-        assertNotNull(dashboardService.getDashboardByTitleWithFilter("title",null));
+        assertNotNull(dashboardService.getDashboardByTitleWithFilter("title", "", null));
     }
 
     @Test
@@ -810,7 +810,7 @@ public class DashboardServiceTest {
         myDashboard = makeTeamDashboard("template", "title", "appName", "amit",null, null, "comp1", "comp2");
         Page<Dashboard> pagedDashboards = new PageImpl<Dashboard>(Stream.of(myDashboard).collect(Collectors.toList()));
         when(dashboardRepository.findAllByTitleContainingIgnoreCase(any(String.class))).thenReturn(Stream.of(myDashboard).collect(Collectors.toList()));
-        assertEquals(new Integer(dashboardService.getAllDashboardsByTitleCount("title")),new Integer(1));
+        assertEquals(new Integer(dashboardService.getAllDashboardsByTitleCount("title","")),new Integer(1));
     }
 
     private Dashboard makeTeamDashboard(String template, String title, String appName, String owner,ObjectId configItemBusServId,ObjectId configItemBusAppId, String... compNames) {
