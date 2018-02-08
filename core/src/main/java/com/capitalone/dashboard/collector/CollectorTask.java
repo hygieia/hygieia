@@ -107,15 +107,20 @@ public abstract class CollectorTask<T extends Collector> implements Runnable {
             result = true;
             if (timeElapsed <= requestRateLimitTimeWindow) {
                 long timeToWait = (timeElapsed < requestRateLimitTimeWindow)? ((requestRateLimitTimeWindow - timeElapsed) + waitTime) : waitTime;
-                try {
-                    LOGGER.debug("Rates limit exceeded: timeElapsed = " +timeElapsed+ "; Rate Count = "+requestCount+ "; waiting for " + timeToWait + " milliseconds");
-                    Thread.sleep(timeToWait);
-                } catch (InterruptedException ie) {
-                    LOGGER.error("Thread Interrupted ", ie);
-                }
+
+                LOGGER.debug("Rates limit exceeded: timeElapsed = " +timeElapsed+ "; Rate Count = "+requestCount+ "; waiting for " + timeToWait + " milliseconds");
+                sleep (timeToWait);
             }
         }
         return result;
+    }
+
+    protected void sleep (long timeToWait) {
+        try {
+            Thread.sleep(timeToWait);
+        } catch (InterruptedException ie) {
+            LOGGER.error("Thread Interrupted ", ie);
+        }
     }
 
     protected void log(String marker, long start) {
