@@ -1,6 +1,8 @@
 package com.capitalone.dashboard.model;
 
 import org.bson.types.ObjectId;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Objects;
@@ -9,21 +11,23 @@ import java.util.Objects;
 public class Incident extends BaseModel {
 
     private ObjectId collectorItemId;
-    private long timestamp;
+    private Long timestamp;
     private String incidentItem;
     private String incidentID;
     private String category;
-    private long openTime;
+    private Long openTime;
     private String openedBy;
     private String severity;
-    private long updatedTime;
+    private Long updatedTime;
     private String primaryAssignmentGroup;
     private String status;
-    private long closedTime;
+    private Long closedTime;
     private String closedBy;
     private String closureCode;
     private String affectedItem;
     private String incidentDescription;
+
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
 
     public ObjectId getCollectorItemId() { return collectorItemId; }
 
@@ -32,6 +36,8 @@ public class Incident extends BaseModel {
     public long getTimestamp() { return timestamp; }
 
     public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
+
+    public void setTimestamp(String timestamp) { this.timestamp = DATE_FORMATTER.parseMillis(timestamp); }
 
     public String getIncidentItem() { return incidentItem; }
 
@@ -49,6 +55,8 @@ public class Incident extends BaseModel {
 
     public void setOpenTime(long openTime) { this.openTime = openTime; }
 
+    public void setOpenTime(String openTime) { this.openTime = DATE_FORMATTER.parseMillis(openTime); }
+
     public String getOpenedBy() { return openedBy; }
 
     public void setOpenedBy(String openedBy) { this.openedBy = openedBy; }
@@ -61,6 +69,8 @@ public class Incident extends BaseModel {
 
     public void setUpdatedTime(long updatedTime) { this.updatedTime = updatedTime; }
 
+    public void setUpdatedTime(String updatedTime) { this.updatedTime = DATE_FORMATTER.parseMillis(updatedTime); }
+
     public String getPrimaryAssignmentGroup() { return primaryAssignmentGroup; }
 
     public void setPrimaryAssignmentGroup(String primaryAssignmentGroup) { this.primaryAssignmentGroup = primaryAssignmentGroup; }
@@ -72,6 +82,8 @@ public class Incident extends BaseModel {
     public long getClosedTime() { return closedTime; }
 
     public void setClosedTime(long closedTime) { this.closedTime = closedTime; }
+
+    public void setClosedTime(String closedTime) { this.closedTime = DATE_FORMATTER.parseMillis(closedTime); }
 
     public String getClosedBy() { return closedBy; }
 
