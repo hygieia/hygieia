@@ -149,7 +149,7 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
             } else {
                 pullRequestAudit.addAuditStatus(pr.getUserId().equalsIgnoreCase(mergeCommit.getScmAuthorLogin()) ? CodeReviewAuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER : CodeReviewAuditStatus.COMMITAUTHOR_NE_MERGECOMMITER);
             }
-            boolean peerReviewed = CommonCodeReview.computePeerReviewStatus(pr, settings, pullRequestAudit);
+            boolean peerReviewed = CommonCodeReview.computePeerReviewStatus(pr, settings, pullRequestAudit, commits);
             pullRequestAudit.addAuditStatus(peerReviewed ? CodeReviewAuditStatus.PULLREQ_REVIEWED_BY_PEER : CodeReviewAuditStatus.PULLREQ_NOT_PEER_REVIEWED);
             String sourceRepo = pr.getSourceRepo();
             String targetRepo = pr.getTargetRepo();

@@ -1,6 +1,8 @@
 package com.capitalone.dashboard.model;
 
 import org.bson.types.ObjectId;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Objects;
@@ -9,7 +11,7 @@ import java.util.Objects;
 public class ChangeOrder extends BaseModel{
 
     private ObjectId collectorItemId;
-    private long timestamp;
+    private Long timestamp;
     private String changeOrderItem;
 
     private String changeID;
@@ -21,16 +23,16 @@ public class ChangeOrder extends BaseModel{
     private String assignmentGroup;
     private String changeCoordinator;
     private String coordinatorPhone;
-    private long plannedStart;
-    private long plannedEnd;
+    private Long plannedStart;
+    private Long plannedEnd;
     private String reason;
     private String phase;
     private String riskAssessment;
     private String priority;
-    private long dateEntered;
+    private Long dateEntered;
     private boolean open;
     private String backoutDuration;
-    private long closeTime;
+    private Long closeTime;
     private String extProjectRef;
     private String rFCType2;
     private String company;
@@ -39,6 +41,8 @@ public class ChangeOrder extends BaseModel{
     private String sLAAgreementID;
     private String changeModel;
 
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
+
     public ObjectId getCollectorItemId() { return collectorItemId; }
 
     public void setCollectorItemId(ObjectId collectorItemId) { this.collectorItemId = collectorItemId; }
@@ -46,6 +50,8 @@ public class ChangeOrder extends BaseModel{
     public long getTimestamp() { return timestamp; }
 
     public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
+
+    public void setTimestamp(String timestamp) { this.timestamp = DATE_FORMATTER.parseMillis(timestamp); }
 
     public String getChangeOrderItem() { return changeOrderItem; }
 
@@ -91,9 +97,13 @@ public class ChangeOrder extends BaseModel{
 
     public void setPlannedStart(long plannedStart) { this.plannedStart = plannedStart; }
 
+    public void setPlannedStart(String plannedStart) { this.plannedStart = DATE_FORMATTER.parseMillis(plannedStart); }
+
     public long getPlannedEnd() { return plannedEnd; }
 
     public void setPlannedEnd(long plannedEnd) { this.plannedEnd = plannedEnd; }
+
+    public void setPlannedEnd(String plannedEnd) { this.plannedEnd = DATE_FORMATTER.parseMillis(plannedEnd); }
 
     public String getReason() { return reason; }
 
@@ -115,6 +125,8 @@ public class ChangeOrder extends BaseModel{
 
     public void setDateEntered(long dateEntered) { this.dateEntered = dateEntered; }
 
+    public void setDateEntered(String dateEntered) { this.dateEntered = DATE_FORMATTER.parseMillis(dateEntered); }
+
     public boolean isOpen() { return open; }
 
     public void setOpen(boolean open) { this.open = open; }
@@ -128,6 +140,8 @@ public class ChangeOrder extends BaseModel{
     public long getCloseTime() { return closeTime; }
 
     public void setCloseTime(long closeTime) { this.closeTime = closeTime; }
+
+    public void setCloseTime(String closeTime) { this.closeTime = DATE_FORMATTER.parseMillis(closeTime); }
 
     public String getExtProjectRef() { return extProjectRef; }
 
