@@ -769,7 +769,6 @@ public class DashboardServiceImpl implements DashboardService {
             ownersList = dashboardRepository.findByOwnersAndTitleContainingIgnoreCase(owner,title,pageable);
         }
 
-        ownersList = dashboardRepository.findByOwnersAndTitleContainingIgnoreCase(owner,title,pageable);
         for (Dashboard dashboard: ownersList) {
             ObjectId appObjectId = dashboard.getConfigurationItemBusServObjectId();
             ObjectId compObjectId = dashboard.getConfigurationItemBusAppObjectId();

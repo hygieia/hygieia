@@ -163,8 +163,8 @@
             dashboardData.delete(id).then(function () {
                 _.remove(ctrl.dashboards, {id: id});
                 _.remove(ctrl.mydash, {id: id});
-                paginationWrapperService.calculateTotalItems();
-                paginationWrapperService.calculateTotalItemsMyDash();
+                paginationWrapperService.calculateTotalItems(ctrl.dashboardType);
+                paginationWrapperService.calculateTotalItemsMyDash(ctrl.dashboardType);
             }, function(response) {
                 var msg = 'An error occurred while deleting the dashboard';
 
