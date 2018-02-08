@@ -127,7 +127,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
                 codeReviewAuditResponse.addAuditStatus(pr.getUserId().equalsIgnoreCase(mergeCommit.getScmAuthorLogin()) ? CodeReviewAuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER : CodeReviewAuditStatus.COMMITAUTHOR_NE_MERGECOMMITER);
             }
             codeReviewAuditResponse.setCommits(commitsRelatedToPr);
-            boolean peerReviewed = CommonCodeReview.computePeerReviewStatus(pr, settings, codeReviewAuditResponse);
+            boolean peerReviewed = CommonCodeReview.computePeerReviewStatus(pr, settings, codeReviewAuditResponse, commits);
             codeReviewAuditResponse.addAuditStatus(peerReviewed ? CodeReviewAuditStatus.PULLREQ_REVIEWED_BY_PEER : CodeReviewAuditStatus.PULLREQ_NOT_PEER_REVIEWED);
             String sourceRepo = pr.getSourceRepo();
             String targetRepo = pr.getTargetRepo();
