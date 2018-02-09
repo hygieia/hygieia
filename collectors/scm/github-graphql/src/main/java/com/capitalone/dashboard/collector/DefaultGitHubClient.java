@@ -40,7 +40,6 @@ import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -227,39 +226,7 @@ public class DefaultGitHubClient implements GitHubClient {
      */
 
     private void connectCommitToPulls() {
-        List<Commit> newCommitList = new LinkedList<>();
-
-        //TODO: Need to optimize this method
-        for (Commit commit : commits) {
-            Iterator<GitRequest> pIter = pullRequests.iterator();
-            boolean foundPull = false;
-            while (!foundPull && pIter.hasNext()) {
-                GitRequest pull = pIter.next();
-                if (Objects.equals(pull.getScmRevisionNumber(), commit.getScmRevisionNumber()) ||
-                        Objects.equals(pull.getScmMergeEventRevisionNumber(), commit.getScmRevisionNumber())) {
-                    foundPull = true;
-                    commit.setPullNumber(pull.getNumber());
-                } else {
-                    List<Commit> prCommits = pull.getCommits();
-                    boolean foundCommit = false;
-                    if (!CollectionUtils.isEmpty(prCommits)) {
-                        Iterator<Commit> cIter = prCommits.iterator();
-                        while (!foundCommit && cIter.hasNext()) {
-                            Commit loopCommit = cIter.next();
-                            if (Objects.equals(commit.getScmAuthor(), loopCommit.getScmAuthor()) &&
-                                    (commit.getScmCommitTimestamp() == loopCommit.getScmCommitTimestamp()) &&
-                                    Objects.equals(commit.getScmCommitLog(), loopCommit.getScmCommitLog())) {
-                                foundCommit = true;
-                                foundPull = true;
-                                commit.setPullNumber(pull.getNumber());
-                            }
-                        }
-                    }
-                }
-            }
-            newCommitList.add(commit);
-        }
-        commits = newCommitList;
+        commits = CommitPullMatcher.matchCommitToPulls(commits, pullRequests);
     }
 
     @SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.NcssMethodCount"})
