@@ -31,11 +31,9 @@ public class Dashboard extends BaseModel {
     private DashboardType type;
 
     private Application application;
-    //Ignore Updates
-    @Transient
+
     private String configurationItemBusServName;
-    //Ignore Updates
-    @Transient
+
     private String configurationItemBusAppName;
 
     private ObjectId configurationItemBusServObjectId;
