@@ -9,7 +9,7 @@ permalink: api-audit.html
 [![Docker Stars](https://img.shields.io/docker/stars/capitalone/hygieia-api.svg)](https://hub.docker.com/r/capitalone/hygieia-api/)
 [![Docker Stars](https://img.shields.io/docker/pulls/capitalone/hygieia-api.svg)](https://hub.docker.com/r/capitalone/hygieia-api/)
 
-Hygieia audit API is a collection of API endpoints that serve to audit CICD data gathered by Hygieia collectors. The audit API provides endpoints to audit individual widgets on the Dashboard. In addition to these endpoints, Hygieia also provides a dashboard-level audit API. 
+Hygieia audit API is a collection of API endpoints that serve to audit CI/CD data gathered by Hygieia collectors. The audit API provides endpoints to audit individual widgets on the Dashboard. In addition to these endpoints, Hygieia also provides a dashboard-level audit API. 
 
 The audit API logic adds various audit flags depending on the data. For a  detailed listing of the audit flags, see the audit-api module's [model package](https://github.com/capitalone/Hygieia/blob/master/api-audit/src/main/java/com/capitalone/dashboard/model/AuditStatus.java).
 
