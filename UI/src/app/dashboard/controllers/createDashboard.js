@@ -108,8 +108,6 @@
 
         // method implementations
         function submit(form) {
-            console.log("configurationItemBusApp: "+ ctrl.configurationItemBusApp.configurationItem)
-            console.log("configurationItemBusServ: "+ctrl.configurationItemBusServ.configurationItem)
             var templateValue = "";
             if (ctrl.configureSelect == 'widgets' && ctrl.dashboardType.id == 'team') {
                 templateValue = "widgets";
