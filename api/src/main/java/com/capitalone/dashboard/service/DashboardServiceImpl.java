@@ -101,10 +101,10 @@ public class DashboardServiceImpl implements DashboardService {
     public Iterable<Dashboard> all() {
         Iterable<Dashboard> dashboards = dashboardRepository.findAll(new Sort(Sort.Direction.ASC, "title"));
         for(Dashboard dashboard: dashboards){
-            ObjectId appObjectId = dashboard.getConfigurationItemBusServObjectId();
-            ObjectId compObjectId = dashboard.getConfigurationItemBusAppObjectId();
+            String appName = dashboard.getConfigurationItemBusServName();
+            String compName = dashboard.getConfigurationItemBusAppName();
 
-            setAppAndComponentNameToDashboard(dashboard, appObjectId, compObjectId);
+            setAppAndComponentNameToDashboard(dashboard, appName, compName);
         }
         return dashboards;
     }
@@ -112,10 +112,10 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public Dashboard get(ObjectId id) {
         Dashboard dashboard = dashboardRepository.findOne(id);
-        ObjectId appObjectId = dashboard.getConfigurationItemBusServObjectId();
-        ObjectId compObjectId = dashboard.getConfigurationItemBusAppObjectId();
+        String appName = dashboard.getConfigurationItemBusServName();
+        String compName = dashboard.getConfigurationItemBusAppName();
 
-        setAppAndComponentNameToDashboard(dashboard, appObjectId, compObjectId);
+        setAppAndComponentNameToDashboard(dashboard, appName, compName);
 
         if (!dashboard.getApplication().getComponents().isEmpty()) {
             // Add transient Collector instance to each CollectorItem
@@ -435,23 +435,23 @@ public class DashboardServiceImpl implements DashboardService {
             Cmdb cmdb = cmdbService.configurationItemByConfigurationItem(updatedBusServiceName);
             if(cmdb != null){
                 updateDashboard = true;
-                dashboard.setConfigurationItemBusServObjectId(cmdb.getId());
+                dashboard.setConfigurationItemBusServName(cmdb.getConfigurationItem());
             }
         } else if(originalBusServiceName != null && !originalBusServiceName.isEmpty()){
 
             updateDashboard = true;
-            dashboard.setConfigurationItemBusServObjectId(null);
+            dashboard.setConfigurationItemBusServName(null);
         }
 
         if(updatedBusApplicationName != null && !updatedBusApplicationName.isEmpty()){
             Cmdb cmdb = cmdbService.configurationItemByConfigurationItem(updatedBusApplicationName);
             if(cmdb != null){
                 updateDashboard = true;
-                dashboard.setConfigurationItemBusAppObjectId(cmdb.getId());
+                dashboard.setConfigurationItemBusAppName(cmdb.getConfigurationItem());
             }
         } else if(originalBusApplicationName != null && !originalBusApplicationName.isEmpty()){
                 updateDashboard = true;
-                dashboard.setConfigurationItemBusAppObjectId(null);
+                dashboard.setConfigurationItemBusAppName(null);
         }
         if(updateDashboard){
             dashboard = update(dashboard);
@@ -467,7 +467,7 @@ public class DashboardServiceImpl implements DashboardService {
         Iterable<Dashboard> rt = null;
 
         if(cmdb != null){
-            rt = dashboardRepository.findAllByConfigurationItemBusServObjectId(cmdb.getId());
+            rt = dashboardRepository.findAllByConfigurationItemBusServName(cmdb.getConfigurationItem());
         }
         return new DataResponse<>(rt, System.currentTimeMillis());
     }
@@ -477,7 +477,7 @@ public class DashboardServiceImpl implements DashboardService {
         Iterable<Dashboard> rt = null;
 
         if(cmdb != null){
-           rt = dashboardRepository.findAllByConfigurationItemBusAppObjectId(cmdb.getId());
+           rt = dashboardRepository.findAllByConfigurationItemBusAppName(cmdb.getConfigurationItem());
         }
         return new DataResponse<>(rt, System.currentTimeMillis());
     }
@@ -488,7 +488,7 @@ public class DashboardServiceImpl implements DashboardService {
         Iterable<Dashboard> rt = null;
 
         if(cmdbAppItem != null && cmdbCompItem != null){
-            rt = dashboardRepository.findAllByConfigurationItemBusServObjectIdAndConfigurationItemBusAppObjectId(cmdbAppItem.getId(),cmdbCompItem.getId());
+            rt = dashboardRepository.findAllByConfigurationItemBusServNameAndConfigurationItemBusAppName(cmdbAppItem.getConfigurationItem(),cmdbCompItem.getConfigurationItem());
         }
         return new DataResponse<>(rt, System.currentTimeMillis());
     }
@@ -597,27 +597,27 @@ public class DashboardServiceImpl implements DashboardService {
         for(Dashboard dashboard: findByOwnersList){
 
 
-            ObjectId appObjectId = dashboard.getConfigurationItemBusServObjectId();
-            ObjectId compObjectId = dashboard.getConfigurationItemBusAppObjectId();
-            setAppAndComponentNameToDashboard(dashboard, appObjectId, compObjectId);
+            String appName = dashboard.getConfigurationItemBusServName();
+            String compName = dashboard.getConfigurationItemBusAppName();
+            setAppAndComponentNameToDashboard(dashboard, appName, compName);
         }
     }
 
     /**
      *  Sets business service, business application and valid flag for each to the give Dashboard
      * @param dashboard
-     * @param appObjectId
-     * @param compObjectId
+     * @param appName
+     * @param compName
      */
-    private void setAppAndComponentNameToDashboard(Dashboard dashboard, ObjectId appObjectId, ObjectId compObjectId) {
-        if(appObjectId != null && !"".equals(appObjectId)){
+    private void setAppAndComponentNameToDashboard(Dashboard dashboard, String appName, String compName) {
+        if(appName != null && !"".equals(appName)){
 
-            Cmdb cmdb =  cmdbService.configurationItemsByObjectId(appObjectId);
+            Cmdb cmdb =  cmdbService.configurationItemByConfigurationItem(appName);
             dashboard.setConfigurationItemBusServName(cmdb.getConfigurationItem());
             dashboard.setValidServiceName(cmdb.isValidConfigItem());
         }
-        if(compObjectId != null && !"".equals(compObjectId)){
-            Cmdb cmdb = cmdbService.configurationItemsByObjectId(compObjectId);
+        if(compName != null && !"".equals(compName)){
+            Cmdb cmdb = cmdbService.configurationItemByConfigurationItem(compName);
             dashboard.setConfigurationItemBusAppName(cmdb.getConfigurationItem());
             dashboard.setValidAppName(cmdb.isValidConfigItem());
         }
@@ -630,11 +630,11 @@ public class DashboardServiceImpl implements DashboardService {
      * @throws HygieiaException
      */
     private void duplicateDashboardErrorCheck(Dashboard dashboard) throws HygieiaException {
-        ObjectId appObjectId = dashboard.getConfigurationItemBusServObjectId();
-        ObjectId compObjectId = dashboard.getConfigurationItemBusAppObjectId();
+        String appName = dashboard.getConfigurationItemBusServName();
+        String compName = dashboard.getConfigurationItemBusAppName();
 
-        if(appObjectId != null && compObjectId != null){
-            Dashboard existingDashboard = dashboardRepository.findByConfigurationItemBusServObjectIdAndConfigurationItemBusAppObjectId(appObjectId, compObjectId);
+        if(appName != null && !appName.isEmpty() && compName != null && !compName.isEmpty()){
+            Dashboard existingDashboard = dashboardRepository.findByConfigurationItemBusServNameIgnoreCaseAndConfigurationItemBusAppNameIgnoreCase(appName, compName);
             if(existingDashboard != null && !existingDashboard.getId().equals(dashboard.getId())){
                 throw new HygieiaException("Existing Dashboard: " + existingDashboard.getTitle(), HygieiaException.DUPLICATE_DATA);
             }
@@ -703,9 +703,9 @@ public class DashboardServiceImpl implements DashboardService {
         Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
         Page<Dashboard> ownersList = dashboardRepository.findByOwners(owner,page);
         for (Dashboard dashboard: ownersList) {
-            ObjectId appObjectId = dashboard.getConfigurationItemBusServObjectId();
-            ObjectId compObjectId = dashboard.getConfigurationItemBusAppObjectId();
-            setAppAndComponentNameToDashboard(dashboard, appObjectId, compObjectId);
+            String appName = dashboard.getConfigurationItemBusServName();
+            String compName = dashboard.getConfigurationItemBusAppName();
+            setAppAndComponentNameToDashboard(dashboard, appName, compName);
         }
         return ownersList;
     }
@@ -729,9 +729,9 @@ public class DashboardServiceImpl implements DashboardService {
         Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
         Page<Dashboard> ownersList = dashboardRepository.findByOwnersAndTitleContainingIgnoreCase(owner,title,pageable);
         for (Dashboard dashboard: ownersList) {
-            ObjectId appObjectId = dashboard.getConfigurationItemBusServObjectId();
-            ObjectId compObjectId = dashboard.getConfigurationItemBusAppObjectId();
-            setAppAndComponentNameToDashboard(dashboard, appObjectId, compObjectId);
+            String appName = dashboard.getConfigurationItemBusServName();
+            String compName = dashboard.getConfigurationItemBusAppName();
+            setAppAndComponentNameToDashboard(dashboard, appName, compName);
         }
         return ownersList;
     }

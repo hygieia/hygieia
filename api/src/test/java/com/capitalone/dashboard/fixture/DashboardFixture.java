@@ -19,21 +19,21 @@ import com.capitalone.dashboard.request.DashboardRequest;
  public class DashboardFixture {
  
  	public static DashboardRequest makeDashboardRequest(String template, String title, String appName, String compName,
- 			String owner, List<String> teamDashboardIds, String type, ObjectId configItemAppId, ObjectId configItemComponentId) {
+ 			String owner, List<String> teamDashboardIds, String type, String configItemAppName, String configItemComponentName) {
  		DashboardRequest request = new DashboardRequest();
  		request.setTemplate(template);
  		request.setTitle(title);
  		request.setApplicationName(appName);
  		request.setComponentName(compName);
- 		request.setConfigurationItemBusServObjectId(configItemAppId);
- 		request.setConfigurationItemBusAppObjectId(configItemComponentId);
+ 		request.setConfigurationItemBusServName(configItemAppName);
+ 		request.setConfigurationItemBusAppName(configItemComponentName);
  		request.setType(type);
  
  		return request;
  	}
 
 	 public static DashboardRemoteRequest makeDashboardRemoteRequest(String template, String title, String appName, String compName,
-														 String owner, List<String> teamDashboardIds, String type, ObjectId configItemAppId, ObjectId configItemComponentId) {
+														 String owner, List<String> teamDashboardIds, String type, String configItemAppName, String configItemComponentName) {
 		 DashboardRemoteRequest request = new DashboardRemoteRequest();
 		 DashboardRemoteRequest.DashboardMetaData metaData = new DashboardRemoteRequest.DashboardMetaData();
 		 Owner owner1 = new Owner();
@@ -52,7 +52,7 @@ import com.capitalone.dashboard.request.DashboardRequest;
 	 }
 
  	public static Dashboard makeDashboard(String template, String title, String appName, String compName, String owner,
- 			DashboardType type, ObjectId configItemAppId, ObjectId configItemComponentId) {
+ 			DashboardType type, String configItemAppName, String configItemComponentName) {
  		Application application = null;
  		if (type.equals(DashboardType.Team)) {
  			Component component = new Component();
@@ -60,7 +60,7 @@ import com.capitalone.dashboard.request.DashboardRequest;
  			application = new Application(appName, component);
  		}
 		List<String> activeWidgets = new ArrayList<>();
-		return new Dashboard(template, title, application, new Owner(owner, AuthType.STANDARD), type,configItemAppId, configItemComponentId,activeWidgets);
+		return new Dashboard(template, title, application, new Owner(owner, AuthType.STANDARD), type,configItemAppName, configItemComponentName,activeWidgets);
 	}
  
  	public static Component makeComponent(ObjectId id, String name, CollectorType type, ObjectId collItemId) {

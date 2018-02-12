@@ -39,6 +39,9 @@ public class DashboardRemoteControllerTest {
     @Autowired private WebApplicationContext wac;
     @Autowired private DashboardRemoteService dashboardRemoteService;
 
+    private String configItemBusServName = "ASVTEST";
+    private String configItemBusAppName = "BAPTEST";
+
     @Before
     public void before() {
         SecurityContextHolder.clearContext();
@@ -47,10 +50,10 @@ public class DashboardRemoteControllerTest {
 
     @Test
     public void createTeamDashboardRemote() throws Exception {
-        Dashboard dashboard = makeDashboard("t1", "title", "app", "comp", "someuser", DashboardType.Team, ObjectId.get(), ObjectId.get());
+        Dashboard dashboard = makeDashboard("t1", "title", "app", "comp", "someuser", DashboardType.Team, configItemBusServName, configItemBusAppName);
         dashboard.setId(ObjectId.get());
 
-        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "app", "comp", "someuser", null, "team", ObjectId.get(), ObjectId.get());
+        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "app", "comp", "someuser", null, "team", configItemBusServName, configItemBusAppName);
         initiateSecurityContext("someuser", AuthType.STANDARD);
         when(dashboardRemoteService.remoteCreate(Matchers.any(DashboardRemoteRequest.class), eq(false))).thenReturn(dashboard);
 
@@ -62,10 +65,10 @@ public class DashboardRemoteControllerTest {
 
     @Test
     public void updateTeamDashboardRemote() throws Exception {
-        Dashboard dashboard = makeDashboard("t1", "title", "app", "comp", "someuser", DashboardType.Team, ObjectId.get(), ObjectId.get());
+        Dashboard dashboard = makeDashboard("t1", "title", "app", "comp", "someuser", DashboardType.Team, configItemBusServName, configItemBusAppName);
         dashboard.setId(ObjectId.get());
 
-        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "app", "comp", "someuser", null, "team", ObjectId.get(), ObjectId.get());
+        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "app", "comp", "someuser", null, "team", configItemBusServName, configItemBusAppName);
         initiateSecurityContext("someuser", AuthType.STANDARD);
         when(dashboardRemoteService.remoteCreate(Matchers.any(DashboardRemoteRequest.class), eq(true))).thenReturn(dashboard);
 
