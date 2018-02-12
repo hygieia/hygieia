@@ -39,7 +39,7 @@ public interface DashboardRepository extends PagingAndSortingRepository<Dashboar
 
 	Iterable<Dashboard> findAllByConfigurationItemBusServNameAndConfigurationItemBusAppName(String appName, String compName);
 
-	Dashboard findByConfigurationItemBusServNameAndConfigurationItemBusAppName(String appName, String compName);
+	Dashboard findByConfigurationItemBusServNameIgnoreCaseAndConfigurationItemBusAppNameIgnoreCase(String appName, String compName);
 
 	Page<Dashboard> findAll(Pageable page);
 
@@ -55,5 +55,4 @@ public interface DashboardRepository extends PagingAndSortingRepository<Dashboar
 
 	Page<Dashboard> findByOwnersAndTitleContainingIgnoreCase(Owner owner, String name, Pageable pageable);
 
-	Dashboard findDashboardByConfigurationItemBusServNameAndConfigurationItemBusAppName(String configurationItemBusServName, String configurationItemBusAppName);
 }

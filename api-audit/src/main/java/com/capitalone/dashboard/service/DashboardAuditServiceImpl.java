@@ -136,7 +136,7 @@ public class DashboardAuditServiceImpl implements DashboardAuditService {
             if (busAppItem == null)
                 throw new AuditException("Invalid Business Application Name.", AuditException.BAD_INPUT_DATA);
 
-            return dashboardRepository.findByConfigurationItemBusServNameAndConfigurationItemBusAppName(busServItem.getConfigurationItem(), busAppItem.getConfigurationItem());
+            return dashboardRepository.findByConfigurationItemBusServNameIgnoreCaseAndConfigurationItemBusAppNameIgnoreCase(busServItem.getConfigurationItem(), busAppItem.getConfigurationItem());
         }
         return null;
     }

@@ -634,7 +634,7 @@ public class DashboardServiceImpl implements DashboardService {
         String compName = dashboard.getConfigurationItemBusAppName();
 
         if(appName != null && !appName.isEmpty() && compName != null && !compName.isEmpty()){
-            Dashboard existingDashboard = dashboardRepository.findByConfigurationItemBusServNameAndConfigurationItemBusAppName(appName, compName);
+            Dashboard existingDashboard = dashboardRepository.findByConfigurationItemBusServNameIgnoreCaseAndConfigurationItemBusAppNameIgnoreCase(appName, compName);
             if(existingDashboard != null && !existingDashboard.getId().equals(dashboard.getId())){
                 throw new HygieiaException("Existing Dashboard: " + existingDashboard.getTitle(), HygieiaException.DUPLICATE_DATA);
             }
