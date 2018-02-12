@@ -6,12 +6,7 @@
       "processIdentifier": 31420,
       "counter": 12328657
     },
-    "collectorItemId": {
-      "timestamp": 1515082307,
-      "machineIdentifier": 3402793,
-      "processIdentifier": 27521,
-      "counter": 12817247
-    },
+    "collectorItemId": "5a4e524333ec296b81c3936f",
     "timestamp": 1516222000741,
     "firstEverCommit": true,
     "scmUrl": "https://mygithub.com/compliance-scenario/0-new-repo",
