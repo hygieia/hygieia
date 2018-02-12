@@ -16,12 +16,12 @@ public class HudsonJob extends JobCollectorItem {
 
         HudsonJob hudsonJob = (HudsonJob) o;
 
-        return getInstanceUrl().equals(hudsonJob.getInstanceUrl()) && getJobName().equals(hudsonJob.getJobName());
+        return getJobUrl().equals(hudsonJob.getJobUrl()) && getJobName().equals(hudsonJob.getJobName());
     }
 
     @Override
     public int hashCode() {
-        int result = getInstanceUrl().hashCode();
+        int result = getJobUrl().hashCode();
         result = 31 * result + getJobName().hashCode();
         return result;
     }
