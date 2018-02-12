@@ -93,7 +93,7 @@
       {
         "body": "some random comment",
         "state": "COMMENTED",
-        "author": "ghthree",
+        "author": "ghtwo",
         "createdAt": 1511190486000,
         "updatedAt": 1511190486000
       }
@@ -156,7 +156,7 @@
       {
         "body": "some random comment",
         "state": "APPROVED",
-        "author": "ghthree",
+        "author": "ghtwo",
         "createdAt": 1511190508000,
         "updatedAt": 1511190508000
       }
@@ -438,7 +438,7 @@
     "userId": "ghone",
     "comments": [
       {
-        "user": "ghthree",
+        "user": "ghtwo",
         "createdAt": 1511190526000,
         "updatedAt": 1511190526000,
         "body": "LGTM",
