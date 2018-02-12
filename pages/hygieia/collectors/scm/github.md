@@ -94,4 +94,4 @@ The sample `application.properties` file lists parameter values to configure the
     # Personal access token generated from github and used for making authentiated calls
     github.personalAccessToken=
 ```
-**Note**: For information on generating your GitHub key for private repos, refer to [Encryption of Private Repos](https://github.com/capitalone/Hygieia/blob/gh-pages/pages/hygieia/UI/ui.md#encryption-for-private-repos).
+**Note**: For information on generating your GitHub key for private repos, refer to [Encryption of Private Repos](../../setup.md#encryption-for-private-repos).

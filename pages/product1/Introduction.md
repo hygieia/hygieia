@@ -35,7 +35,7 @@ Before you begin to configure your Dashboard, make sure the following prerequisi
   - API Layer
   - Collectors to configure on the Dashboard
   
-For detailed instructions on configuring each of the components of Hygieia, see the [Configuration Procedure](http://www.capitalone.io/Hygieia/getting_started.html) section in the Getting Started guide.
+For detailed instructions on configuring each of the components of Hygieia, see the [Configuration Procedure](http://capitalone.github.io/Hygieia/getting_started.html) section in the Getting Started guide.
   
 - If you are configuring Hygieia using Docker, make sure the Docker Instances are up and running for all components of Hygieia.
   For detailed instructions on configuring a Docker Image, see the [Build Docker](../hygieia/Build/builddocker.md) section in the Getting Started guide.

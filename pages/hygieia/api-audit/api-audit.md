@@ -1,8 +1,8 @@
 ---
-title: All About Hygieia audit API
+title: Hygieia Audit API
 tags:
 keywords:
-summary: Learn how to install and configure Hygieia audit API
+summary: Learn how to install and configure Hygieia audit APIs
 sidebar: hygieia_sidebar
 permalink: api-audit.html
 ---

@@ -104,4 +104,4 @@ The sample `application.properties` file lists parameter values to configure the
 		# Gitlab key for private repos
 		gitlab.key=<your-generated-key>
 ```
-**Note**: For information on generating your Gitlab key for private repos, refer to [Encryption of Private Repos](https://github.com/capitalone/Hygieia/blob/gh-pages/pages/hygieia/UI/ui.md#encryption-for-private-repos).
+**Note**: For information on generating your Gitlab key for private repos, refer to [Encryption of Private Repos](../../setup.md#encryption-for-private-repos).
