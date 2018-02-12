@@ -13,7 +13,7 @@ public class Cmdb {
     @Id
     private ObjectId id;
     private ObjectId collectorItemId;
-    private Long timestamp;
+    private long timestamp;
     private String configurationItem;
     private String configurationItemSubType;
     private String configurationItemType;

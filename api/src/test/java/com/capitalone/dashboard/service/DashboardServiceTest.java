@@ -88,6 +88,9 @@ public class DashboardServiceTest {
     @InjectMocks
     private DashboardServiceImpl dashboardService;
 
+    private static final String configItemBusServName = "ASVTEST";
+    private static final String configItemBusAppName = "BAPTEST";
+
     @Test
     public void all() {
         Iterable<Dashboard> expected = Lists.newArrayList();
@@ -101,11 +104,9 @@ public class DashboardServiceTest {
     @Test
     public void get() {
         ObjectId id = ObjectId.get();
-        ObjectId configItemBusServId = ObjectId.get();
-        ObjectId configItemBusAppId = ObjectId.get();
-        Dashboard expected = makeTeamDashboard("template", "title", "AppName", "",configItemBusServId,configItemBusAppId,"comp1");
-        when(cmdbService.configurationItemsByObjectId(configItemBusServId)).thenReturn(getConfigItemApp(configItemBusServId));
-        when(cmdbService.configurationItemsByObjectId(configItemBusAppId)).thenReturn(getConfigItemComp(configItemBusAppId));
+        Dashboard expected = makeTeamDashboard("template", "title", "AppName", "",configItemBusServName,configItemBusAppName,"comp1");
+        when(cmdbService.configurationItemByConfigurationItem(configItemBusServName)).thenReturn(getConfigItem(configItemBusServName));
+        when(cmdbService.configurationItemByConfigurationItem(configItemBusAppName)).thenReturn(getConfigItem(configItemBusAppName));
         when(dashboardRepository.findOne(id)).thenReturn(expected);
 
         assertThat(dashboardService.get(id), is(expected));
@@ -113,9 +114,7 @@ public class DashboardServiceTest {
 
     @Test
     public void create() throws HygieiaException {
-        ObjectId configItemBusServId = ObjectId.get();
-        ObjectId configItemBusAppId = ObjectId.get();
-        Dashboard expected = makeTeamDashboard("template", "title", "appName", "",configItemBusServId,configItemBusAppId, "comp1","comp2");
+        Dashboard expected = makeTeamDashboard("template", "title", "appName", "",configItemBusServName,configItemBusAppName, "comp1","comp2");
 
         when(dashboardRepository.save(expected)).thenReturn(expected);
 
@@ -125,15 +124,13 @@ public class DashboardServiceTest {
 
     @Test
     public void create_dup_name_dash() throws HygieiaException {
-        ObjectId configItemBusServId = ObjectId.get();
-        ObjectId configItemBusAppId = ObjectId.get();
 
-        Dashboard firstDash = makeTeamDashboard("template", "title", "appName", "johns",configItemBusServId,configItemBusAppId, "comp1", "comp2");
+        Dashboard firstDash = makeTeamDashboard("template", "title", "appName", "johns",configItemBusServName,configItemBusAppName, "comp1", "comp2");
         when(dashboardRepository.save(firstDash)).thenReturn(firstDash);
         assertThat(dashboardService.create(firstDash), is(firstDash));
         verify(componentRepository, times(1)).save(firstDash.getApplication().getComponents());
 
-        Dashboard secondDash = makeTeamDashboard("template", "title", "appName", "johns",configItemBusServId,configItemBusAppId, "comp1", "comp2");
+        Dashboard secondDash = makeTeamDashboard("template", "title", "appName", "johns",configItemBusServName,configItemBusAppName, "comp1", "comp2");
 
         Throwable t = new Throwable();
         RuntimeException excep = new RuntimeException("Failed creating dashboard.", t);
@@ -154,9 +151,7 @@ public class DashboardServiceTest {
 
     @Test
     public void update() throws HygieiaException {
-        ObjectId configItemBusServId = ObjectId.get();
-        ObjectId configItemBusAppId = ObjectId.get();
-        Dashboard expected = makeTeamDashboard("template", "title", "appName", "",configItemBusServId,configItemBusAppId,"comp1", "comp2");
+        Dashboard expected = makeTeamDashboard("template", "title", "appName", "",configItemBusServName,configItemBusAppName,"comp1", "comp2");
 
         when(dashboardRepository.save(expected)).thenReturn(expected);
 
@@ -482,9 +477,7 @@ public class DashboardServiceTest {
     @Test
     public void delete() {
         ObjectId id = ObjectId.get();
-        ObjectId configItemBusServId = ObjectId.get();
-        ObjectId configItemBusAppId = ObjectId.get();
-        Dashboard expected = makeTeamDashboard("template", "title", "appName",  "",configItemBusServId, configItemBusAppId,"comp1", "comp2");
+        Dashboard expected = makeTeamDashboard("template", "title", "appName",  "",configItemBusServName, configItemBusAppName,"comp1", "comp2");
         when(dashboardRepository.findOne(id)).thenReturn(expected);
 
         List<Service> services = Arrays.asList(new Service());
@@ -507,8 +500,6 @@ public class DashboardServiceTest {
     @Test
     public void deleteTestCollectorItemDisable() {
         ObjectId id = ObjectId.get();
-        ObjectId configItemBusServId = ObjectId.get();
-        ObjectId configItemBusAppId = ObjectId.get();
 
         ObjectId collId = ObjectId.get();
 
@@ -530,7 +521,7 @@ public class DashboardServiceTest {
         component.addCollectorItem(CollectorType.Build, item2);
 
 
-        Dashboard expected = makeTeamDashboard("template", "title", "appName",  "",configItemBusServId, configItemBusAppId,"comp1");
+        Dashboard expected = makeTeamDashboard("template", "title", "appName",  "",configItemBusServName, configItemBusAppName,"comp1");
         expected.getApplication().getComponents().get(0).addCollectorItem(CollectorType.Build, item1);
         expected.getApplication().getComponents().get(0).addCollectorItem(CollectorType.Build, item2);
         when(dashboardRepository.findOne(id)).thenReturn(expected);
@@ -551,8 +542,6 @@ public class DashboardServiceTest {
     @Test
     public void deleteTestCollectorOneItemDisable() {
         ObjectId id = ObjectId.get();
-        ObjectId configItemBusServId = ObjectId.get();
-        ObjectId configItemBusAppId = ObjectId.get();
 
         ObjectId collId = ObjectId.get();
 
@@ -572,7 +561,7 @@ public class DashboardServiceTest {
         Component component = new Component();
         component.addCollectorItem(CollectorType.Build, item1);
 
-        Dashboard expected = makeTeamDashboard("template", "title", "appName",  "",configItemBusServId, configItemBusAppId,"comp1");
+        Dashboard expected = makeTeamDashboard("template", "title", "appName",  "",configItemBusServName, configItemBusAppName,"comp1");
         expected.getApplication().getComponents().get(0).addCollectorItem(CollectorType.Build, item1);
         expected.getApplication().getComponents().get(0).addCollectorItem(CollectorType.Build, item2);
         when(dashboardRepository.findOne(id)).thenReturn(expected);
@@ -591,8 +580,6 @@ public class DashboardServiceTest {
     @Test
     public void deleteTestCollectorNothingDisabled() {
         ObjectId id = ObjectId.get();
-        ObjectId configItemBusServId = ObjectId.get();
-        ObjectId configItemBusAppId = ObjectId.get();
 
         ObjectId collId = ObjectId.get();
 
@@ -613,7 +600,7 @@ public class DashboardServiceTest {
         component.addCollectorItem(CollectorType.Build, item1);
         component.addCollectorItem(CollectorType.Build, item2);
 
-        Dashboard expected = makeTeamDashboard("template", "title", "appName",  "",configItemBusServId, configItemBusAppId,"comp1");
+        Dashboard expected = makeTeamDashboard("template", "title", "appName",  "",configItemBusServName, configItemBusAppName,"comp1");
         expected.getApplication().getComponents().get(0).addCollectorItem(CollectorType.Build, item1);
         expected.getApplication().getComponents().get(0).addCollectorItem(CollectorType.Build, item2);
         when(dashboardRepository.findOne(id)).thenReturn(expected);
@@ -632,9 +619,7 @@ public class DashboardServiceTest {
 
     @Test
     public void addWidget() {
-        ObjectId configItemBusServId = ObjectId.get();
-        ObjectId configItemBusAppId = ObjectId.get();
-        Dashboard d = makeTeamDashboard("template", "title", "appName", "amit", configItemBusServId, configItemBusAppId);
+        Dashboard d = makeTeamDashboard("template", "title", "appName", "amit", configItemBusServName, configItemBusAppName);
         Widget expected = new Widget();
 
         Widget actual = dashboardService.addWidget(d, expected);
@@ -649,9 +634,7 @@ public class DashboardServiceTest {
     @Test
     public void getWidget() {
         ObjectId widgetId = ObjectId.get();
-        ObjectId configItemBusServId = ObjectId.get();
-        ObjectId configItemBusAppId = ObjectId.get();
-        Dashboard d = makeTeamDashboard("template", "title", "appName", "amit", configItemBusServId, configItemBusAppId);
+        Dashboard d = makeTeamDashboard("template", "title", "appName", "amit", configItemBusServName, configItemBusAppName);
         Widget expected = new Widget();
         expected.setId(widgetId);
         d.getWidgets().add(expected);
@@ -662,9 +645,7 @@ public class DashboardServiceTest {
     @Test
     public void updateWidget() {
         ObjectId widgetId = ObjectId.get();
-        ObjectId configItemBusServId = ObjectId.get();
-        ObjectId configItemBusAppId = ObjectId.get();
-        Dashboard d = makeTeamDashboard("template", "title", "appName", "amit",configItemBusServId, configItemBusAppId);
+        Dashboard d = makeTeamDashboard("template", "title", "appName", "amit",configItemBusServName, configItemBusAppName);
         d.getWidgets().add(makeWidget(widgetId, "existing"));
         Widget expected = makeWidget(widgetId, "updated");
 
@@ -678,10 +659,8 @@ public class DashboardServiceTest {
     @Test
     public void deleteWidget() {
         ObjectId widgetId = ObjectId.get();
-        ObjectId configItemBusServId = ObjectId.get();
-        ObjectId configItemBusAppId = ObjectId.get();
         ObjectId compId = ObjectId.get();
-        Dashboard d = makeTeamDashboard("template", "title", "appName", "amit",configItemBusServId, configItemBusAppId);
+        Dashboard d = makeTeamDashboard("template", "title", "appName", "amit",configItemBusServName, configItemBusAppName);
         d.getWidgets().add(makeWidget(widgetId, "existing"));
         Widget expected = makeWidget(widgetId, "updated");
 
@@ -697,10 +676,8 @@ public class DashboardServiceTest {
     @Test
     public void updateOwners_empty_owner_set() {
     	Iterable<Owner> owners = Lists.newArrayList();
-        ObjectId configItemBusServId = ObjectId.get();
-        ObjectId configItemBusAppId = ObjectId.get();
         List<String> activeWidgets = new ArrayList<>();
-    	Dashboard dashboard = new Dashboard("template", "title", new Application("Application"), null, DashboardType.Team, configItemBusServId, configItemBusAppId,activeWidgets);
+    	Dashboard dashboard = new Dashboard("template", "title", new Application("Application"), null, DashboardType.Team, configItemBusServName, configItemBusAppName,activeWidgets);
 
     	when(dashboardRepository.findOne(dashboard.getId())).thenReturn(dashboard);
     	when(dashboardRepository.save(dashboard)).thenReturn(dashboard);
@@ -728,14 +705,12 @@ public class DashboardServiceTest {
     
     @Test
     public void updateOwners() {
-        ObjectId configItemBusServId = ObjectId.get();
-        ObjectId configItemBusAppId = ObjectId.get();
     	Owner existingOwner = new Owner("existing", AuthType.LDAP);
     	UserInfo existingInfo = new UserInfo();
     	existingInfo.setUsername("existing");
     	existingInfo.setAuthType(AuthType.LDAP);
         List<String> activeWidgets = new ArrayList<>();
-    	Dashboard dashboard = new Dashboard("template", "title", new Application("Application"), existingOwner, DashboardType.Team,configItemBusServId,configItemBusAppId,activeWidgets);
+    	Dashboard dashboard = new Dashboard("template", "title", new Application("Application"), existingOwner, DashboardType.Team,configItemBusServName,configItemBusAppName,activeWidgets);
     	
     	when(userInfoRepository.findByUsernameAndAuthType("existing", AuthType.LDAP)).thenReturn(existingInfo);
     	when(dashboardRepository.findOne(dashboard.getId())).thenReturn(dashboard);
@@ -756,25 +731,21 @@ public class DashboardServiceTest {
     public void updateDashboardBusinessItems() throws HygieiaException{
 
         ObjectId id = ObjectId.get();
-        ObjectId configItemBusServIdOrg = ObjectId.get();
-        ObjectId configItemBusAppIdOrg = ObjectId.get();
-        ObjectId configItemBusServIdUpdate = ObjectId.get();
-        ObjectId configItemBusAppIdUpdate = ObjectId.get();
 
         String newServiceName = "ASVTEST123";
         String newAppName = "BAPTEST123";
-        Cmdb serviceUpdated = getConfigItemApp(configItemBusServIdUpdate);
+        Cmdb serviceUpdated = getConfigItem(newServiceName);
         serviceUpdated.setConfigurationItem(newServiceName);
-        Cmdb appUpdated = getConfigItemApp(configItemBusServIdUpdate);
+        Cmdb appUpdated = getConfigItem(newAppName);
         appUpdated.setConfigurationItem(newAppName);
 
-        myDashboard = makeTeamDashboard("template", "title", "appName", "amit",configItemBusServIdOrg, configItemBusAppIdOrg, "comp1", "comp2");
-        Dashboard dashboardRequest = makeTeamDashboard("template", "title", "appName", "amit",configItemBusServIdUpdate, configItemBusAppIdUpdate, "comp1", "comp2");
+        myDashboard = makeTeamDashboard("template", "title", "appName", "amit",configItemBusServName, configItemBusAppName, "comp1", "comp2");
+        Dashboard dashboardRequest = makeTeamDashboard("template", "title", "appName", "amit",newServiceName, newAppName, "comp1", "comp2");
         dashboardRequest.setConfigurationItemBusServName(newServiceName);
         dashboardRequest.setConfigurationItemBusAppName(newAppName);
 
-        when(cmdbService.configurationItemsByObjectId(configItemBusServIdOrg)).thenReturn(getConfigItemApp(configItemBusServIdOrg));
-        when(cmdbService.configurationItemsByObjectId(configItemBusAppIdOrg)).thenReturn(getConfigItemComp(configItemBusAppIdOrg));
+        when(cmdbService.configurationItemByConfigurationItem(configItemBusServName)).thenReturn(getConfigItem(configItemBusServName));
+        when(cmdbService.configurationItemByConfigurationItem(configItemBusAppName)).thenReturn(getConfigItem(configItemBusAppName));
 
         when(dashboardRepository.findOne(id)).thenReturn(myDashboard);
 
@@ -813,13 +784,13 @@ public class DashboardServiceTest {
         assertEquals(new Integer(dashboardService.getAllDashboardsByTitleCount("title")),new Integer(1));
     }
 
-    private Dashboard makeTeamDashboard(String template, String title, String appName, String owner,ObjectId configItemBusServId,ObjectId configItemBusAppId, String... compNames) {
+    private Dashboard makeTeamDashboard(String template, String title, String appName, String owner,String configItemBusServName,String configItemBusAppName, String... compNames) {
         Application app = new Application(appName);
         for (String compName : compNames) {
             app.addComponent(new Component(compName));
         }
         List<String> activeWidgets = new ArrayList<>();
-        return new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemBusServId, configItemBusAppId,activeWidgets);
+        return new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemBusServName, configItemBusAppName,activeWidgets);
     }
 
     private Widget makeWidget(ObjectId id, String name) {
@@ -828,18 +799,12 @@ public class DashboardServiceTest {
         w.setName("updated");
         return w;
     }
-    private Cmdb getConfigItemApp(ObjectId objectId){
+    private Cmdb getConfigItem(String name){
         Cmdb cmdb1 = new Cmdb();
-        cmdb1.setId(objectId);
-        cmdb1.setConfigurationItem("ASVTEST");
+        cmdb1.setId(new ObjectId());
+        cmdb1.setConfigurationItem(name);
         cmdb1.setValidConfigItem(true);
         return cmdb1;
     }
-    private Cmdb getConfigItemComp(ObjectId objectId){
-        Cmdb cmdb1 = new Cmdb();
-        cmdb1.setId(objectId);
-        cmdb1.setConfigurationItem("BAPTEST");
-        cmdb1.setValidConfigItem(true);
-        return cmdb1;
-    }
+
 }

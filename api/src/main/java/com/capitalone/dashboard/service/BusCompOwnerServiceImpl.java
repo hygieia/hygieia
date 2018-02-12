@@ -44,11 +44,11 @@ public class BusCompOwnerServiceImpl implements BusCompOwnerService{
              * Returns List of Business Service ObjectIds where give firstName and lastName are found
              * as an Owner for the Service
              */
-            Iterable<ObjectId> businessServiceObjectIdList = getBusinessServiceList(firstName, lastName.toLowerCase());
+            List<String> businessServiceList = getBusinessServiceList(firstName, lastName.toLowerCase());
             /**
              * Returns list of Dashboard that are tied to the above found Business Service ObjectIds
              */
-            Iterable<Dashboard> dashboards = dashboardRepository.findAllByConfigurationItemBusServObjectIdIn(businessServiceObjectIdList);
+            Iterable<Dashboard> dashboards = dashboardRepository.findAllByConfigurationItemBusAppNameIn(businessServiceList);
             /**
              * Returns list of Dashboard ObjectIds where the logged in user is an owner
              */
@@ -86,8 +86,8 @@ public class BusCompOwnerServiceImpl implements BusCompOwnerService{
      * @param lastName
      * @return returns business service ObjectId list
      */
-    private Iterable<ObjectId> getBusinessServiceList(String firstName, String lastName){
-        List<ObjectId> businessServiceObjectIdList = new ArrayList<>();
+    private List<String> getBusinessServiceList(String firstName, String lastName){
+        List<String> businessServiceList = new ArrayList<>();
         List<Cmdb> cmdbs = cmdbService.getAllBusServices();
 
         /**
@@ -108,7 +108,7 @@ public class BusCompOwnerServiceImpl implements BusCompOwnerService{
 
 
         for(Cmdb cmdb: matching){
-            ObjectId businessServiceObjectId =  cmdb.getId();
+            String businessServiceApp =  cmdb.getConfigurationItem();
 
             boolean serviceOwnerMatch = doesMatchFullName(firstName, cmdb.getAppServiceOwner());
             boolean businessOwnerMatch = doesMatchFullName(firstName, cmdb.getBusinessOwner());
@@ -116,12 +116,12 @@ public class BusCompOwnerServiceImpl implements BusCompOwnerService{
             boolean developmentOwnerMatch = doesMatchFullName(firstName, cmdb.getDevelopmentOwner());
 
             if((serviceOwnerMatch || businessOwnerMatch || supportOwnerMatch || developmentOwnerMatch)
-                    && !businessServiceObjectIdList.contains(businessServiceObjectId)){
-                businessServiceObjectIdList.add(businessServiceObjectId);
+                    && !businessServiceList.contains(businessServiceApp)){
+                businessServiceList.add(businessServiceApp);
             }
         }
 
-        return businessServiceObjectIdList;
+        return businessServiceList;
     }
 
     /**

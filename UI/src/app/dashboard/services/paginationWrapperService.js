@@ -171,8 +171,6 @@
                     validAppName: mydata[x].validAppName,
                     configurationItemBusServName:  mydata[x].configurationItemBusServName,
                     configurationItemBusAppName:  mydata[x].configurationItemBusAppName,
-                    configurationItemBusServId:  mydata[x].configurationItemBusServObjectId,
-                    configurationItemBusAppId:  mydata[x].configurationItemBusAppObjectId,
                     showError: showErrorVal
                 });
             }
@@ -201,8 +199,6 @@
                     validAppName: mydata[x].validAppName,
                     configurationItemBusServName:  mydata[x].configurationItemBusServName,
                     configurationItemBusAppName:  mydata[x].configurationItemBusAppName,
-                    configurationItemBusServId:  mydata[x].configurationItemBusServObjectId,
-                    configurationItemBusAppId:  mydata[x].configurationItemBusAppObjectId,
                     showError: showErrorVal
                 });
             }

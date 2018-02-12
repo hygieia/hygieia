@@ -3,7 +3,6 @@ package com.capitalone.dashboard.repository;
 
 import com.capitalone.dashboard.model.Application;
 import com.capitalone.dashboard.model.AuthType;
-import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
@@ -18,10 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.verify;
 
 public class DashboardCreateTests extends FongoBaseRepositoryTest {
 
@@ -45,17 +40,17 @@ public class DashboardCreateTests extends FongoBaseRepositoryTest {
         Cmdb configItemApp = new Cmdb();
         configItemApp.setConfigurationItem("ASVTEST");
         configItemApp = cmdbRepository.save(configItemApp);
-        configItemApp.getId();
+
 
         Cmdb configItemComp = new Cmdb();
         configItemComp.setConfigurationItem("BAPTEST");
         configItemComp = cmdbRepository.save(configItemComp);
-        configItemComp.getId();
+
 
         Application application = new Application("Jay's App", component);
 
         List<String> activeWidgets = new ArrayList<>();
-        Dashboard dashboard = new Dashboard("Topo", "Jays's Dashboard", application, new Owner("amit", AuthType.STANDARD), DashboardType.Team,  configItemApp.getId(), configItemComp.getId(),activeWidgets);
+        Dashboard dashboard = new Dashboard("Topo", "Jays's Dashboard", application, new Owner("amit", AuthType.STANDARD), DashboardType.Team,  configItemApp.getConfigurationItem(), configItemComp.getConfigurationItem(),activeWidgets);
 
         Widget build = new Widget();
         build.setName("build");

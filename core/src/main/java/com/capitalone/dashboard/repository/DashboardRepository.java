@@ -31,12 +31,16 @@ public interface DashboardRepository extends PagingAndSortingRepository<Dashboar
 	@Query(value="{'widgets.options.teams.collectorItemId': ?0 }")
 	List<Dashboard> findProductDashboardsByTeamDashboardCollectorItemId(String teamDashboardCollectorItemId);
 
-	Iterable<Dashboard> findAllByConfigurationItemBusServObjectId(ObjectId appObjectId);
-	Iterable<Dashboard> findAllByConfigurationItemBusServObjectIdIn(Iterable<ObjectId> busServiceObjectIdList);
-	Iterable<Dashboard> findAllByConfigurationItemBusAppObjectId(ObjectId compObjectId);
-	Iterable<Dashboard> findAllByConfigurationItemBusServObjectIdAndConfigurationItemBusAppObjectId(ObjectId appObjectId, ObjectId compObjectId);
+	Iterable<Dashboard> findAllByConfigurationItemBusServName(String configurationItem);
 
-	Dashboard findByConfigurationItemBusServObjectIdAndConfigurationItemBusAppObjectId(ObjectId appObjectId, ObjectId compObjectId);
+	Iterable<Dashboard> findAllByConfigurationItemBusAppName(String configurationItem);
+
+	Iterable<Dashboard> findAllByConfigurationItemBusAppNameIn(List<String> configurationItemList);
+
+	Iterable<Dashboard> findAllByConfigurationItemBusServNameAndConfigurationItemBusAppName(String appName, String compName);
+
+	Dashboard findByConfigurationItemBusServNameAndConfigurationItemBusAppName(String appName, String compName);
+
 	Page<Dashboard> findAll(Pageable page);
 
 	Page<Dashboard> findAllByTitleContainingIgnoreCase(String name, Pageable pageable);
