@@ -22,6 +22,9 @@ public interface GitRequestRepository  extends CrudRepository<GitRequest, Object
     @Query(value="{ 'collectorItemId' : ?0, 'state' : { $ne : 'merged' }}", fields="{ 'requestType' : 1, 'number' : 2, 'updatedAt' : 3, 'id' : 4}")
     List<GitRequest> findNonMergedRequestNumberAndLastUpdated(ObjectId collectorItemId);
 
+    @Query(value="{ 'collectorItemId' : ?0}", fields="{ 'requestType' : 1, 'number' : 2, 'updatedAt' : 3, 'id' : 4}")
+    List<GitRequest> findRequestNumberAndLastUpdated(ObjectId collectorItemId);
+
     GitRequest findByCollectorItemIdAndScmRevisionNumber(ObjectId collectorItemId, String revisionNumber);
 
     GitRequest findByCollectorItemIdAndNumberAndRequestType(ObjectId collectorItemId, String number, String requestType);
@@ -31,12 +34,13 @@ public interface GitRequestRepository  extends CrudRepository<GitRequest, Object
                                                           Long scmCommitTimestampThreshold);
 
     GitRequest findByCollectorItemIdAndNumber(ObjectId collectorItemId, String number);
-    //GitRequest findByOrgNameAndRepoNameAndNumberAndType(String orgName, String repoName, String number, String type);
 
     List<GitRequest> findByScmUrlIgnoreCaseAndScmBranchIgnoreCaseAndCreatedAtGreaterThanEqualAndMergedAtLessThanEqual(String scmUrl, String scmBranch, long beginDt, long endDt);
 
-    List<GitRequest> findByScmUrlIgnoreCaseAndScmBranchIgnoreCase(String scmUrl, String scmBranch, long beginDt, long endDt);
+    List<GitRequest> findByScmUrlIgnoreCaseAndScmBranchIgnoreCase(String scmUrl, String scmBranch);
 
     List<GitRequest> findByScmRevisionNumber(String revisionNumber);
+
+    List<GitRequest> findByCollectorItemIdAndMergedAtIsBetween(ObjectId collectorItemId, long beginDate, long endDate);
 
 }

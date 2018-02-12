@@ -1,0 +1,11 @@
+[
+    {
+        "auditStatuses": [
+            "COLLECTOR_ITEM_ERROR"
+        ],
+        "errorMessage": "Error in GraphQL query:[{\"path\":[\"repository\"],\"locations\":[{\"line\":2,\"column\":3}],\"message\":\"Could not resolve to a Repository with the name '7-private-repo'.\",\"type\":\"NOT_FOUND\"}]",
+        "lastUpdated": 0,
+        "scmUrl": "https://mygithub.com/compliance-scenario/7-private-repo",
+        "scmBranch": "master"
+    }
+]

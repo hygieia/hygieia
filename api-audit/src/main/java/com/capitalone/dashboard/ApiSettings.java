@@ -16,6 +16,8 @@ public class ApiSettings {
     private boolean corsEnabled;
     private String corsWhitelist;
     private String peerReviewContexts;
+    @Value("${maxDaysRangeForQuery:60}") // 60 days max
+    private long maxDaysRangeForQuery;
     private boolean logRequest;
     
     public String getKey() {
@@ -56,5 +58,13 @@ public class ApiSettings {
 
     public void setLogRequest(boolean logRequest) {
         this.logRequest = logRequest;
+    }
+
+    public long getMaxDaysRangeForQuery() {
+        return maxDaysRangeForQuery;
+    }
+
+    public void setMaxDaysRangeForQuery(long maxDaysRangeForQuery) {
+        this.maxDaysRangeForQuery = maxDaysRangeForQuery;
     }
 }

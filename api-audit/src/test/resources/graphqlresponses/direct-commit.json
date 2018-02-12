@@ -1,0 +1,88 @@
+{
+    "data": {
+        "repository": {
+            "pullRequests": {
+                "totalCount": 0,
+                "pageInfo": {
+                    "endCursor": null,
+                    "hasNextPage": false
+                },
+                "edges": []
+            },
+            "ref": {
+                "target": {
+                    "history": {
+                        "pageInfo": {
+                            "endCursor": "be77363387d4500c33981d70cfab71f9b98b9801 1",
+                            "hasNextPage": false
+                        },
+                        "edges": [
+                            {
+                                "cursor": "be77363387d4500c33981d70cfab71f9b98b9801 0",
+                                "node": {
+                                    "oid": "be77363387d4500c33981d70cfab71f9b98b9801",
+                                    "parents": {
+                                        "nodes": [
+                                            {
+                                                "oid": "e7e55923e69eb485d77e21ad262d828e9b57fe7a"
+                                            }
+                                        ]
+                                    },
+                                    "message": "a direct commit",
+                                    "committer": {
+                                        "user": null,
+                                        "name": "GitHub Enterprise",
+                                        "date": "2017-11-17T13:34:42-08:00"
+                                    },
+                                    "author": {
+                                        "name": "Author, One",
+                                        "user": {
+                                            "login": "ghone"
+                                        },
+                                        "email": "Author.One@mycompany.com",
+                                        "date": "2017-11-17T13:34:42-08:00"
+                                    },
+                                    "status": null
+                                }
+                            },
+                            {
+                                "cursor": "be77363387d4500c33981d70cfab71f9b98b9801 1",
+                                "node": {
+                                    "oid": "e7e55923e69eb485d77e21ad262d828e9b57fe7a",
+                                    "parents": {
+                                        "nodes": []
+                                    },
+                                    "message": "Initial commit",
+                                    "committer": {
+                                        "user": {
+                                            "login": "ghone"
+                                        },
+                                        "name": "Author, One",
+                                        "date": "2017-11-17T13:34:20-08:00"
+                                    },
+                                    "author": {
+                                        "name": "Author, One",
+                                        "user": {
+                                            "login": "ghone"
+                                        },
+                                        "email": "Author.One@mycompany.com",
+                                        "date": "2017-11-17T13:34:20-08:00"
+                                    },
+                                    "status": null
+                                }
+                            }
+                        ]
+                    }
+                }
+            },
+            "issues": {
+                "totalCount": 0,
+                "pageInfo": {
+                    "endCursor": null,
+                    "hasNextPage": false
+                },
+                "edges": []
+            }
+        }
+    }
+}

@@ -36,4 +36,9 @@ public interface CommitRepository extends CrudRepository<Commit, ObjectId>, Quer
     @Query(value="{ 'collectorItemId': ?0, 'scmCommitTimestamp': { $gt: ?1 }}")
     List<Commit> findByCollectorItemIdAndScmCommitTimestamp(ObjectId collectorItemid, Long scmCommitTimestampThreshold);
 
+    List<Commit> findByScmUrlIgnoreCaseAndScmBranchIgnoreCaseAndScmCommitTimestampIsBetween(String scmUrl, String scmBranch, long beginDate, long endDate);
+
+    List<Commit> findByCollectorItemIdAndScmCommitTimestampIsBetween(ObjectId collectorItemId, long beginDate, long endDate);
+
+    List<Commit> findCommitsByCollectorItemIdAndScmCommitTimestampAfterAndPullNumberIsNull(ObjectId collectorItemId, long beginDate);
 }

@@ -19,6 +19,7 @@ import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
@@ -168,7 +169,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                         break;
                     }
 
-                    List<GitRequest> allRequests = gitRequestRepository.findNonMergedRequestNumberAndLastUpdated(repo.getId());
+                    List<GitRequest> allRequests = gitRequestRepository.findRequestNumberAndLastUpdated(repo.getId());
 
                     Map<Long, String> existingPRMap = allRequests.stream().filter(r -> Objects.equals(r.getRequestType(), "pull")).collect(
                             Collectors.toMap(GitRequest::getUpdatedAt, GitRequest::getNumber,
@@ -193,6 +194,10 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                     //Get all the Issues
                     issueCount += processPRorIssueList(repo, allRequests.stream().filter(r -> Objects.equals(r.getRequestType(), "issue")).collect(Collectors.toList()), "issue");
 
+                    // Due to timing of PRs and Commits in PR merge event, some commits may not be included in the response and will not be connected to a PR.
+                    // This is the place attempting to re-connect the commits and PRs in case they were missed during previous run.
+
+                    processOrphanCommits(repo);
 
                     repo.setLastUpdated(System.currentTimeMillis());
                     // if everything went alright, there should be no error!
@@ -204,11 +209,11 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                     repo.getErrors().add(error);
                 } catch (RestClientException | MalformedURLException ex) {
                     LOG.error("Error fetching commits for:" + repo.getRepoUrl(), ex);
-                    CollectionError error = new CollectionError(CollectionError.UNKNOWN_HOST, repo.getRepoUrl());
+                    CollectionError error = new CollectionError(CollectionError.UNKNOWN_HOST, ex.getMessage());
                     repo.getErrors().add(error);
                 } catch (HygieiaException he) {
                     LOG.error("Error fetching commits for:" + repo.getRepoUrl(), he);
-                    CollectionError error = new CollectionError(he.getErrorCode() + " " + he.getMessage(), repo.getRepoUrl());
+                    CollectionError error = new CollectionError(String.valueOf(he.getErrorCode()), he.getMessage());
                     repo.getErrors().add(error);
                 }
                 gitHubRepoRepository.save(repo);
@@ -225,6 +230,15 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
 
     }
 
+    // Retrieves a st of previous commits and Pulls and tries to reconnect them
+    private void processOrphanCommits(GitHubRepo repo) {
+        long refTime = System.currentTimeMillis() - gitHubSettings.getCommitPullSyncTime();
+        List<Commit> orphanCommits = commitRepository.findCommitsByCollectorItemIdAndScmCommitTimestampAfterAndPullNumberIsNull(repo.getId(), refTime);
+        List<GitRequest> pulls = gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(repo.getId(), refTime, System.currentTimeMillis());
+        orphanCommits = CommitPullMatcher.matchCommitToPulls(orphanCommits, pulls);
+        commitRepository.save(orphanCommits.stream().filter(c -> !StringUtils.isEmpty(c.getPullNumber())).collect(Collectors.toList()));
+    }
+
     /**
      * Process commits
      *
@@ -236,7 +250,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         Long existingCount = commitRepository.countCommitsByCollectorItemId(repo.getId());
         if (existingCount == 0) {
             List<Commit> newCommits = gitHubClient.getCommits();
-            newCommits.stream().forEach(c -> c.setCollectorItemId(repo.getId()));
+            newCommits.forEach(c -> c.setCollectorItemId(repo.getId()));
             Iterable<Commit> saved = commitRepository.save(newCommits);
             count = saved != null ? Lists.newArrayList(saved).size() : 0;
         } else {

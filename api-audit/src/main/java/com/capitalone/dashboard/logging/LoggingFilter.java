@@ -1,24 +1,15 @@
 package com.capitalone.dashboard.logging;
 
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import com.capitalone.dashboard.ApiSettings;
+import com.capitalone.dashboard.model.RequestLog;
+import com.capitalone.dashboard.repository.RequestLogRepository;
+import com.mongodb.util.JSON;
+import org.apache.commons.io.output.TeeOutputStream;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
@@ -36,17 +27,25 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 
-import org.apache.commons.io.output.TeeOutputStream;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
-
-import com.capitalone.dashboard.ApiSettings;
-import com.capitalone.dashboard.model.RequestLog;
-import com.capitalone.dashboard.repository.RequestLogRepository;
-import com.mongodb.util.JSON;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 //import org.springframework.util.MimeType;
 
@@ -63,7 +62,7 @@ public class LoggingFilter implements Filter {
 
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) {
 
     }
 
@@ -74,9 +73,9 @@ public class LoggingFilter implements Filter {
 
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        if (httpServletRequest.getMethod().equals(HttpMethod.PUT.toString()) ||
-                (httpServletRequest.getMethod().equals(HttpMethod.POST.toString())) ||
-                (httpServletRequest.getMethod().equals(HttpMethod.DELETE.toString()))) {
+        if (Objects.equals(httpServletRequest.getMethod(), HttpMethod.PUT.toString()) ||
+                (Objects.equals(httpServletRequest.getMethod(), HttpMethod.POST.toString())) ||
+                (Objects.equals(httpServletRequest.getMethod(), HttpMethod.DELETE.toString()))) {
             Map<String, String> requestMap = this.getTypesafeRequestMap(httpServletRequest);
             BufferedRequestWrapper bufferedRequest = new BufferedRequestWrapper(httpServletRequest);
             BufferedResponseWrapper bufferedResponse = new BufferedResponseWrapper(httpServletResponse);
@@ -158,12 +157,12 @@ public class LoggingFilter implements Filter {
     private static final class BufferedRequestWrapper extends HttpServletRequestWrapper {
 
         private ByteArrayInputStream bais = null;
-        private ByteArrayOutputStream baos = null;
+        private ByteArrayOutputStream baos;
         private BufferedServletInputStream bsis = null;
-        private byte[] buffer = null;
+        private byte[] buffer;
 
 
-        public BufferedRequestWrapper(HttpServletRequest req) throws IOException {
+        BufferedRequestWrapper(HttpServletRequest req) throws IOException {
             super(req);
             // Read InputStream and store its content in a buffer.
 
@@ -207,7 +206,7 @@ public class LoggingFilter implements Filter {
 
         private ByteArrayInputStream bais;
 
-        public BufferedServletInputStream(ByteArrayInputStream bais) {
+        BufferedServletInputStream(ByteArrayInputStream bais) {
             this.bais = bais;
         }
 
@@ -247,7 +246,7 @@ public class LoggingFilter implements Filter {
 
         private final TeeOutputStream targetStream;
 
-        public TeeServletOutputStream(OutputStream one, OutputStream two) {
+        TeeServletOutputStream(OutputStream one, OutputStream two) {
             targetStream = new TeeOutputStream(one, two);
         }
 
@@ -285,7 +284,7 @@ public class LoggingFilter implements Filter {
         private ByteArrayOutputStream bos;
         private PrintWriter teeWriter;
 
-        public BufferedResponseWrapper(HttpServletResponse response) {
+        BufferedResponseWrapper(HttpServletResponse response) {
             original = response;
         }
 
