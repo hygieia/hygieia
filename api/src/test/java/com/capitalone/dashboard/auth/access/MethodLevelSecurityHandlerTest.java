@@ -30,8 +30,8 @@ public class MethodLevelSecurityHandlerTest {
 
 	private static final String USERNAME = "username";
 	private static final String SOME_OTHER_USER = "someotheruser";
-	private static final ObjectId configItemAppId = ObjectId.get();
-	private static final ObjectId configItemComponentId = ObjectId.get();
+	private static final String configItemAppName = "ASVTEST";
+	private static final String configItemComponentName = "BAPTEST";
 	
 	@InjectMocks
 	private MethodLevelSecurityHandler handler;
@@ -55,7 +55,7 @@ public class MethodLevelSecurityHandlerTest {
 	public void testIsOwnerOfDashboard_legacyDashFound() {
 		initiateSecurityContext();
 		List<String> activeWidgets = new ArrayList<>();
-		Dashboard dashboard = new Dashboard("team", "title", null, null, DashboardType.Team, configItemAppId,configItemComponentId,activeWidgets);
+		Dashboard dashboard = new Dashboard("team", "title", null, null, DashboardType.Team, configItemAppName,configItemComponentName,activeWidgets);
 		dashboard.setOwner(USERNAME);
 		when(dashboardRepository.findOne(any(ObjectId.class))).thenReturn(dashboard);
 		
@@ -66,7 +66,7 @@ public class MethodLevelSecurityHandlerTest {
 	public void testIsOwnerOfDashboard_newDashFound() {
 		initiateSecurityContext();
 		List<String> activeWidgets = new ArrayList<>();
-		Dashboard dashboard = new Dashboard("team", "title", null, new Owner(USERNAME, AuthType.STANDARD), DashboardType.Team, configItemAppId,configItemComponentId,activeWidgets);
+		Dashboard dashboard = new Dashboard("team", "title", null, new Owner(USERNAME, AuthType.STANDARD), DashboardType.Team, configItemAppName,configItemComponentName,activeWidgets);
 		when(dashboardRepository.findOne(any(ObjectId.class))).thenReturn(dashboard);
 		
 		assertTrue(handler.isOwnerOfDashboard(new ObjectId()));
@@ -76,7 +76,7 @@ public class MethodLevelSecurityHandlerTest {
 	public void testIsNotOwnerOfDashboard() {
 		initiateSecurityContext();
 		List<String> activeWidgets = new ArrayList<>();
-		Dashboard dashboard = new Dashboard("team", "title", null, null, DashboardType.Team,configItemAppId,configItemComponentId,activeWidgets);
+		Dashboard dashboard = new Dashboard("team", "title", null, null, DashboardType.Team,configItemAppName,configItemComponentName,activeWidgets);
 		dashboard.setOwner(SOME_OTHER_USER);
 		when(dashboardRepository.findOne(any(ObjectId.class))).thenReturn(dashboard);
 		

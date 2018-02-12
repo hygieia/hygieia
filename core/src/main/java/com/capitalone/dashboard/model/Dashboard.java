@@ -31,16 +31,10 @@ public class Dashboard extends BaseModel {
     private DashboardType type;
 
     private Application application;
-    //Ignore Updates
-    @Transient
+
     private String configurationItemBusServName;
-    //Ignore Updates
-    @Transient
+
     private String configurationItemBusAppName;
-
-    private ObjectId configurationItemBusServObjectId;
-
-    private ObjectId configurationItemBusAppObjectId;
 
     private boolean validServiceName;
 
@@ -59,15 +53,15 @@ public class Dashboard extends BaseModel {
     Dashboard() {
     }
 
-    public Dashboard(String template, String title, Application application, Owner owner, DashboardType type, ObjectId configurationItemBusServObjectId, ObjectId configurationItemBusAppObjectId,List<String> activeWidgets) {
-        this(false, template, title, application, owner, type,configurationItemBusServObjectId, configurationItemBusAppObjectId,activeWidgets);
+    public Dashboard(String template, String title, Application application, Owner owner, DashboardType type, String configurationItemBusServName, String configurationItemBusAppName,List<String> activeWidgets) {
+        this(false, template, title, application, owner, type,configurationItemBusServName, configurationItemBusAppName,activeWidgets);
     }
 
-    public Dashboard(boolean remoteCreated, String template, String title, Application application, Owner owner, DashboardType type, ObjectId configurationItemBusServObjectId, ObjectId configurationItemBusAppObjectId,List<String> activeWidgets) {
+    public Dashboard(boolean remoteCreated, String template, String title, Application application, Owner owner, DashboardType type, String configurationItemBusServName, String configurationItemBusAppName,List<String> activeWidgets) {
         this.template = template;
         this.title = title;
-        this.configurationItemBusServObjectId = configurationItemBusServObjectId;
-        this.configurationItemBusAppObjectId = configurationItemBusAppObjectId;
+        this.configurationItemBusServName = configurationItemBusServName;
+        this.configurationItemBusAppName = configurationItemBusAppName;
         this.application = application;
         this.type = type;
         this.owners.add(owner);
@@ -140,22 +134,6 @@ public class Dashboard extends BaseModel {
 
     public void setConfigurationItemBusAppName(String configurationItemBusAppName) {
         this.configurationItemBusAppName = configurationItemBusAppName;
-    }
-
-    public ObjectId getConfigurationItemBusServObjectId() {
-        return configurationItemBusServObjectId;
-    }
-
-    public void setConfigurationItemBusServObjectId(ObjectId configurationItemBusServObjectId) {
-        this.configurationItemBusServObjectId = configurationItemBusServObjectId;
-    }
-
-    public ObjectId getConfigurationItemBusAppObjectId() {
-        return configurationItemBusAppObjectId;
-    }
-
-    public void setConfigurationItemBusAppObjectId(ObjectId configurationItemBusAppObjectId) {
-        this.configurationItemBusAppObjectId = configurationItemBusAppObjectId;
     }
 
     public boolean isValidServiceName() {
