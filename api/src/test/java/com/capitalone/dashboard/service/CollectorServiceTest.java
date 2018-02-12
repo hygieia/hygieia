@@ -8,7 +8,9 @@ import static org.mockito.Matchers.anyCollection;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.List;
 
+import com.capitalone.dashboard.repository.CustomRepositoryQuery;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +35,8 @@ public class CollectorServiceTest {
 	private CollectorRepository collectorRepository;
 	@Mock
 	private CollectorItemRepository collectorItemRepository;
+	@Mock
+	private CustomRepositoryQuery customRepositoryQuery;
 	@InjectMocks
 	private CollectorServiceImpl collectorService;
 
@@ -45,7 +49,7 @@ public class CollectorServiceTest {
 		when(collectorRepository.findByCollectorType(CollectorType.Build)).thenReturn(Arrays.asList(c));
 
 		Page<CollectorItem> page = new PageImpl<CollectorItem>(Arrays.asList(item1, item2), null, 2);
-		when(collectorItemRepository.findByCollectorIdInAndDescriptionContainingIgnoreCase(anyCollection(), any(String.class),
+		when(customRepositoryQuery.findByCollectorIdInAndJobNameContainingIgnoreCase(any(List.class), any(String.class),
 				any(Pageable.class))).thenReturn(page);
 		Page<CollectorItem> items = collectorService.collectorItemsByTypeWithFilter(CollectorType.Build, FILTER_STRING,
 				null);
