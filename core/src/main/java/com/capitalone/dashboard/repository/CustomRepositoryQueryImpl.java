@@ -9,6 +9,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -143,7 +146,30 @@ public class CustomRepositoryQueryImpl implements CustomRepositoryQuery {
         return template.find(new Query(c), com.capitalone.dashboard.model.Component.class);
     }
 
-	private String getGitHubParsedString(Map<String, Object> options, Map.Entry<String, Object> e) {
+    @Override
+    public Page<CollectorItem> findByCollectorIdInAndJobNameContainingAndNiceNameContainingAllIgnoreCase(List<ObjectId> collectorIds, String jobName, String niceName, Pageable pageable) {
+        Criteria c = Criteria.where("collectorId").in(collectorIds)
+                .and("options.jobName").regex(Pattern.compile(jobName,Pattern.CASE_INSENSITIVE))
+                .and("niceName").regex(Pattern.compile(niceName,Pattern.CASE_INSENSITIVE));
+        Query query = new Query(c);
+        List<CollectorItem> cItems = template.find(query, com.capitalone.dashboard.model.CollectorItem.class);
+        long count = template.count(query,com.capitalone.dashboard.model.CollectorItem.class);
+        Page<CollectorItem> resultPage = new PageImpl<CollectorItem>(cItems,pageable,count);
+        return resultPage;
+    }
+
+    @Override
+    public Page<CollectorItem> findByCollectorIdInAndJobNameContainingIgnoreCase(List<ObjectId> collectorIds, String jobName, Pageable pageable) {
+        Criteria c = Criteria.where("collectorId").in(collectorIds)
+                .and("options.jobName").regex(Pattern.compile(jobName,Pattern.CASE_INSENSITIVE));
+        Query query = new Query(c);
+        List<CollectorItem> cItems = template.find(query, com.capitalone.dashboard.model.CollectorItem.class);
+        long count = template.count(query,com.capitalone.dashboard.model.CollectorItem.class);
+        Page<CollectorItem> resultPage = new PageImpl<CollectorItem>(cItems,pageable,count);
+        return resultPage;
+    }
+
+    private String getGitHubParsedString(Map<String, Object> options, Map.Entry<String, Object> e) {
         String url = (String)options.get(e.getKey());
         GitHubParsedUrl gitHubParsedUrl = new GitHubParsedUrl(url);
         return gitHubParsedUrl.getUrl();

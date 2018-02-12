@@ -5,6 +5,8 @@ import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Component;
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Map;
@@ -17,4 +19,6 @@ public interface CustomRepositoryQuery {
     List<Component> findComponents(Collector collector, CollectorItem collectorItem);
     List<Component> findComponents(ObjectId collectorId, CollectorType collectorType, CollectorItem collectorItem);
     List<Component> findComponents(ObjectId collectorId, CollectorType collectorType, ObjectId collectorItemId);
+    Page<CollectorItem> findByCollectorIdInAndJobNameContainingAndNiceNameContainingAllIgnoreCase(List<ObjectId> collectorId, String jobName, String niceName,Pageable pageable);
+    Page<CollectorItem> findByCollectorIdInAndJobNameContainingIgnoreCase(List<ObjectId> collectorId, String jobName,Pageable pageable);
 }
