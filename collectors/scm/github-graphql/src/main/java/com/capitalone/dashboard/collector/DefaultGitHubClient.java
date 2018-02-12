@@ -529,10 +529,10 @@ public class DefaultGitHubClient implements GitHubClient {
             commit.setScmCommitLog(message);
             commit.setScmCommitTimestamp(getTimeStampMills(str(authorJSON, "date")));
             commit.setNumberOfChanges(1);
-            commit.setType(getCommitType(message)); //initialize all to new.
             List<String> parentShas = getParentShas(node);
             commit.setScmParentRevisionNumbers(parentShas);
             commit.setFirstEverCommit(CollectionUtils.isEmpty(parentShas));
+            commit.setType(getCommitType(CollectionUtils.size(parentShas), message));
             commits.add(commit);
         }
         return paging;
@@ -775,7 +775,8 @@ public class DefaultGitHubClient implements GitHubClient {
         return mergeEventSha;
     }
 
-    private CommitType getCommitType(String commitMessage) {
+    private CommitType getCommitType(int parentSize, String commitMessage) {
+        if (parentSize > 1) return CommitType.Merge;
         if (settings.getNotBuiltCommits() == null) return CommitType.New;
         if (!CollectionUtils.isEmpty(commitExclusionPatterns)) {
             for (Pattern pattern : commitExclusionPatterns) {
