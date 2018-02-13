@@ -15,6 +15,9 @@ import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.XML;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
@@ -33,10 +36,7 @@ import java.io.*;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * HpsmClient implementation that uses SVNKit to fetch information about
@@ -230,31 +230,43 @@ public class DefaultHpsmClient implements HpsmClient {
 	 */
 	private List <Cmdb> responseToDetailsList(String response) {
         List <Cmdb> returnList = new ArrayList<>();
-		Document doc = responseToDoc(response);
-        NodeList instanceNodeList = doc.getElementsByTagName("instance");
-        for (int i = 0; i < instanceNodeList.getLength(); i++) {
-            NodeList instanceChildNodes = instanceNodeList.item(i).getChildNodes();
-            Cmdb cmdb = new Cmdb();
-            for (int j = 0; j < instanceChildNodes.getLength(); j++) {
-                Node node = instanceChildNodes.item(j);
-                if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    Element elem = (Element) node;
-                    String tagName = elem.getTagName();
-                    String setMethod = "set" + tagName;
-                    String name = elem.getTextContent();
 
-                    callMethod(cmdb, setMethod, new Object[] { name }, String.class);
 
-                }
-            }
-			cmdb.setValidConfigItem(true);
-            cmdb.setItemType(getItemType(cmdb));
+		try {
+			JSONObject xmlJSONObj = XML.toJSONObject(response.trim());
 
-            returnList.add(cmdb);
-        }
+			JSONObject envelope = getObject(xmlJSONObj, "SOAP-ENV:Envelope");
+			if (envelope != null) {
+				JSONObject body = getObject(envelope, "SOAP-ENV:Body");
+				if (body != null) {
+					JSONObject retrieveDeviceListResponse = getObject(body, "RetrieveDeviceListResponse");
+					if (retrieveDeviceListResponse != null) {
+						Object object = retrieveDeviceListResponse.get("instance");
+						if(object instanceof JSONArray){
+							JSONArray instanceArray = (JSONArray) object;
+
+							for(Object obj: instanceArray){
+								if(obj instanceof JSONObject){
+									JSONObject instanceObj = (JSONObject) obj;
+									returnList.add(getCmdbItem(instanceObj));
+								}else{
+									LOG.info("No Object found for instanceArray");
+								}
+							}
+						}else{
+							JSONObject instance = getObject(retrieveDeviceListResponse, "instance");
+							if (instance != null) {
+								returnList.add(getCmdbItem(instance));
+							}
+						}
+					}
+				}
+			}
+		}catch(Exception e){
+			LOG.error(e);
+		}
 		return returnList;
 	}
-
 	private List <ChangeOrder> responseToChangeOrderList(String response) {
 		List <ChangeOrder> returnList = new ArrayList<>();
 		Document doc = responseToDoc(response);
@@ -861,5 +873,56 @@ public class DefaultHpsmClient implements HpsmClient {
 
 		keysTag.addAttribute(query,  queryString);
 
+	}
+
+	private Cmdb getCmdbItem(JSONObject instance) {
+		Cmdb cmdb = new Cmdb();
+
+		JSONObject configurationItem = getObject(instance, "ConfigurationItem");
+		JSONObject configurationItemSubType = getObject(instance, "ConfigurationItemSubType");
+		JSONObject configurationItemType = getObject(instance, "ConfigurationItemType");
+		JSONObject assignmentGroup = getObject(instance, "AssignmentGroup");
+		JSONObject appServiceOwner = getObject(instance, "AppServiceOwner");
+		JSONObject businessOwner = getObject(instance, "BusinessOwner");
+		JSONObject supportOwner = getObject(instance, "SupportOwner");
+		JSONObject developmentOwner = getObject(instance, "DevelopmentOwner");
+		JSONObject ownerDept = getObject(instance, "OwnerDept");
+		JSONObject commonName = getObject(instance, "CommonName");
+
+
+		String configurationItemValue = getString(configurationItem, "content");
+		String configurationItemSubTypeValue = getString(configurationItemSubType, "content");
+		String configurationItemTypeValue = getString(configurationItemType, "content");
+		String assignmentGroupValue = getString(assignmentGroup, "content");
+		String appServiceOwnerValue = getString(appServiceOwner, "content");
+		String businessOwnerValue = getString(businessOwner, "content");
+		String supportOwnerValue = getString(supportOwner, "content");
+		String developmentOwnerValue = getString(developmentOwner, "content");
+		String ownerDeptValue = getString(ownerDept, "content");
+		String commonNameValue = getString(commonName, "content");
+
+		cmdb.setConfigurationItem(configurationItemValue);
+		cmdb.setConfigurationItemSubType(configurationItemSubTypeValue);
+		cmdb.setConfigurationItemType(configurationItemTypeValue);
+		cmdb.setAssignmentGroup(assignmentGroupValue);
+		cmdb.setAppServiceOwner(appServiceOwnerValue);
+		cmdb.setBusinessOwner(businessOwnerValue);
+		cmdb.setSupportOwner(supportOwnerValue);
+		cmdb.setDevelopmentOwner(developmentOwnerValue);
+		cmdb.setOwnerDept(ownerDeptValue);
+		cmdb.setCommonName(commonNameValue);
+		cmdb.setValidConfigItem(true);
+		cmdb.setItemType(getItemType(cmdb));
+		return cmdb;
+	}
+	private JSONObject getObject(JSONObject json, String key) {
+		if (json == null) return new JSONObject();
+		if (!json.has(key)) return new JSONObject();
+		return (JSONObject) json.get(key);
+	}
+	private String getString(JSONObject json, String key) {
+		if (json == null || !json.has(key)) return "";
+		Object value = json.get(key);
+		return (value == null) ? "" : value.toString();
 	}
 }
