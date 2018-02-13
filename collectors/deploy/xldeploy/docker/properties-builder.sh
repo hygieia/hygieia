@@ -18,7 +18,7 @@ fi
   
 if [ "$MONGO_PORT" != "" ]; then
 	# Sample: MONGO_PORT=tcp://172.17.0.20:27017
-	MONGODB_HOST=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\1;'`
+	MONGODB_HOST=`echo $MONGO_HOST|sed 's;.*://\([^:]*\):\(.*\);\1;'`
 	MONGODB_PORT=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\2;'`
 else
 	env

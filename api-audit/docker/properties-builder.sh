@@ -8,7 +8,7 @@ fi
 # if we are linked, use that info
 if [ "$MONGO_PORT" != "" ]; then
   # Sample: MONGO_PORT=tcp://172.17.0.20:27017
-  export SPRING_DATA_MONGODB_HOST=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\1;'`
+  export SPRING_DATA_MONGODB_HOST=`echo $MONGO_HOST|sed 's;.*://\([^:]*\):\(.*\);\1;'`
   export SPRING_DATA_MONGODB_PORT=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\2;'`
 fi
 
