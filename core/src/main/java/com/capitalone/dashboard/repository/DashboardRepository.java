@@ -35,7 +35,7 @@ public interface DashboardRepository extends PagingAndSortingRepository<Dashboar
 
 	Iterable<Dashboard> findAllByConfigurationItemBusAppName(String configurationItem);
 
-	Iterable<Dashboard> findAllByConfigurationItemBusAppNameIn(List<String> configurationItemList);
+	Iterable<Dashboard> findAllByConfigurationItemBusServNameIn(List<String> configurationItemList);
 
 	Iterable<Dashboard> findAllByConfigurationItemBusServNameAndConfigurationItemBusAppName(String appName, String compName);
 
