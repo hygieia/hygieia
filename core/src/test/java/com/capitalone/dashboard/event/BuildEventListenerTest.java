@@ -104,11 +104,9 @@ public class BuildEventListenerTest {
         if (hasBuildCollector) {
             component.addCollectorItem(CollectorType.Build, collectorItem());
         }
-        ObjectId configItemAppId = new ObjectId();
-        ObjectId configItemComponentId = new ObjectId();
 
         Application application = new Application("app", component); List<String> activeWidgets = new ArrayList<>();
-        Dashboard dashboard = new Dashboard("template", "title", application, new Owner("owner", AuthType.STANDARD),  DashboardType.Team , configItemAppId, configItemComponentId,activeWidgets);
+        Dashboard dashboard = new Dashboard("template", "title", application, new Owner("owner", AuthType.STANDARD),  DashboardType.Team , "ASVTEST", "BAPTEST",activeWidgets);
         dashboard.setId(ObjectId.get());
         return dashboard;
     }

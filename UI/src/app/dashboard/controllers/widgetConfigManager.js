@@ -87,8 +87,8 @@
                 type: ctrl.createDashboardData.type,
                 applicationName: ctrl.createDashboardData.applicationName,
                 componentName: ctrl.createDashboardData.componentName,
-                configurationItemBusServObjectId: ctrl.createDashboardData.configurationItemBusServObjectId,
-                configurationItemBusAppObjectId: ctrl.createDashboardData.configurationItemBusAppObjectId,
+                configurationItemBusServName: ctrl.createDashboardData.configurationItemBusServName,
+                configurationItemBusAppName: ctrl.createDashboardData.configurationItemBusAppName,
                 activeWidgets: widgets
             };
 
