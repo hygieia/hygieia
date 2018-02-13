@@ -48,7 +48,7 @@ public class BusCompOwnerServiceImpl implements BusCompOwnerService{
             /**
              * Returns list of Dashboard that are tied to the above found Business Service ObjectIds
              */
-            Iterable<Dashboard> dashboards = dashboardRepository.findAllByConfigurationItemBusAppNameIn(businessServiceList);
+            Iterable<Dashboard> dashboards = dashboardRepository.findAllByConfigurationItemBusServNameIn(businessServiceList);
             /**
              * Returns list of Dashboard ObjectIds where the logged in user is an owner
              */
