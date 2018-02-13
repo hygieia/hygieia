@@ -6,7 +6,6 @@ import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Component;
 import org.bson.types.ObjectId;
 
-
 import java.util.List;
 import java.util.Map;
 
