@@ -35,8 +35,6 @@ public class CollectorServiceTest {
 	private CollectorRepository collectorRepository;
 	@Mock
 	private CollectorItemRepository collectorItemRepository;
-	@Mock
-	private CustomRepositoryQuery customRepositoryQuery;
 	@InjectMocks
 	private CollectorServiceImpl collectorService;
 
@@ -49,7 +47,7 @@ public class CollectorServiceTest {
 		when(collectorRepository.findByCollectorType(CollectorType.Build)).thenReturn(Arrays.asList(c));
 
 		Page<CollectorItem> page = new PageImpl<CollectorItem>(Arrays.asList(item1, item2), null, 2);
-		when(customRepositoryQuery.findByCollectorIdInAndJobNameContainingIgnoreCase(any(List.class), any(String.class),
+		when(collectorItemRepository.findByCollectorIdAndJobName(any(List.class), any(String.class),
 				any(Pageable.class))).thenReturn(page);
 		Page<CollectorItem> items = collectorService.collectorItemsByTypeWithFilter(CollectorType.Build, FILTER_STRING,
 				null);

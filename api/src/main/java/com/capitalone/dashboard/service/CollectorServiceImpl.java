@@ -69,9 +69,9 @@ public class CollectorServiceImpl implements CollectorService {
         }
         if(collectorType == CollectorType.Build){
             if(!niceName.isEmpty()){
-                collectorItems = customRepositoryQuery.findByCollectorIdInAndJobNameContainingAndNiceNameContainingAllIgnoreCase(collectorIds, jobName,niceName, pageable);
+                collectorItems = collectorItemRepository.findByCollectorIdAndJobNameAndNiceName(collectorIds, jobName,niceName,pageable);
             }else{
-                collectorItems = customRepositoryQuery.findByCollectorIdInAndJobNameContainingIgnoreCase(collectorIds, descriptionFilter, pageable);
+                collectorItems = collectorItemRepository.findByCollectorIdAndJobName(collectorIds, descriptionFilter, pageable);
             }
             removeJobUrlAndInstanceUrl(collectorItems);
         }else{
