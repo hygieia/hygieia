@@ -143,7 +143,6 @@ public class CustomRepositoryQueryImpl implements CustomRepositoryQuery {
         return template.find(new Query(c), com.capitalone.dashboard.model.Component.class);
     }
 
-
 	private String getGitHubParsedString(Map<String, Object> options, Map.Entry<String, Object> e) {
         String url = (String)options.get(e.getKey());
         GitHubParsedUrl gitHubParsedUrl = new GitHubParsedUrl(url);
