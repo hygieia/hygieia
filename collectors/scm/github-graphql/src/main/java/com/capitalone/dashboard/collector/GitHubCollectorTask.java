@@ -233,7 +233,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
     // Retrieves a st of previous commits and Pulls and tries to reconnect them
     private void processOrphanCommits(GitHubRepo repo) {
         long refTime = System.currentTimeMillis() - gitHubSettings.getCommitPullSyncTime();
-        List<Commit> orphanCommits = commitRepository.findCommitsByCollectorItemIdAndScmCommitTimestampAfterAndPullNumberIsNull(repo.getId(), refTime);
+        List<Commit> orphanCommits = commitRepository.findCommitsByCollectorItemIdAndTimestampAfterAndPullNumberIsNull(repo.getId(), refTime);
         List<GitRequest> pulls = gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(repo.getId(), refTime, System.currentTimeMillis());
         orphanCommits = CommitPullMatcher.matchCommitToPulls(orphanCommits, pulls);
         commitRepository.save(orphanCommits.stream().filter(c -> !StringUtils.isEmpty(c.getPullNumber())).collect(Collectors.toList()));
