@@ -442,7 +442,9 @@ public class DefaultGitHubClient implements GitHubClient {
                 pull.setResolutiontime((mergedTimestamp - createdTimestamp) / (24 * 3600000));
                 pull.setScmCommitTimestamp(mergedTimestamp);
                 pull.setMergedAt(mergedTimestamp);
-                List<Commit> prCommits = getPRCommits((JSONObject) node.get("commits"), pull);
+                JSONObject commitsObject = (JSONObject) node.get("commits");
+                pull.setNumberOfChanges(commitsObject != null ? asInt(commitsObject, "totalCount") : 0);
+                List<Commit> prCommits = getPRCommits(commitsObject, pull);
                 pull.setCommits(prCommits);
                 List<Comment> comments = getComments((JSONObject) node.get("comments"));
                 pull.setComments(comments);
