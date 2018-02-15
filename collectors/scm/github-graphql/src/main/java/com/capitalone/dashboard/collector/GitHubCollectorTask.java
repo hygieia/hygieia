@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
@@ -233,10 +234,13 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
     // Retrieves a st of previous commits and Pulls and tries to reconnect them
     private void processOrphanCommits(GitHubRepo repo) {
         long refTime = System.currentTimeMillis() - gitHubSettings.getCommitPullSyncTime();
-        List<Commit> orphanCommits = commitRepository.findCommitsByCollectorItemIdAndScmCommitTimestampAfterAndPullNumberIsNull(repo.getId(), refTime);
+        List<Commit> orphanCommits = commitRepository.findCommitsByCollectorItemIdAndTimestampAfterAndPullNumberIsNull(repo.getId(), refTime);
         List<GitRequest> pulls = gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(repo.getId(), refTime, System.currentTimeMillis());
         orphanCommits = CommitPullMatcher.matchCommitToPulls(orphanCommits, pulls);
-        commitRepository.save(orphanCommits.stream().filter(c -> !StringUtils.isEmpty(c.getPullNumber())).collect(Collectors.toList()));
+        List<Commit> orphanSaveList = orphanCommits.stream().filter(c -> !StringUtils.isEmpty(c.getPullNumber())).collect(Collectors.toList());
+        orphanSaveList.forEach( c -> LOG.info( "Updating orphan " + c.getScmRevisionNumber() + " " +
+                new DateTime(c.getScmCommitTimestamp()).toString("yyyy-MM-dd hh:mm:ss.SSa") + " with pull " + c.getPullNumber()));
+        commitRepository.save(orphanSaveList);
     }
 
     /**
