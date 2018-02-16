@@ -10,6 +10,8 @@ import java.util.List;
 
 import com.capitalone.dashboard.Utils;
 import com.capitalone.dashboard.repository.CommitRepository;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +45,7 @@ public class GithubScmWidgetScoreTest {
 
   @Test
   public void calculateScoreNoThresholds() throws IOException {
-    ObjectMapper mapper = new ObjectMapper();
+    ObjectMapper mapper = getObjectMapper();
     byte[] content = Resources.asByteSource(Resources.getResource("github-widget.json")).read();
     Widget githubWidget = mapper.readValue(content, Widget.class);
     GithubScmScoreSettings githubScmScoreSettings = getGithubScmScoreSettingsNoThreshold();
@@ -64,13 +66,13 @@ public class GithubScmWidgetScoreTest {
     ScoreWeight scoreWeight = githubScmWidgetScore.processWidgetScore(githubWidget, githubScmScoreSettings);
 
     LOGGER.info("scoreWeight {}", scoreWeight);
-    assertThat(Utils.roundAlloc(scoreWeight.getScore().getScoreValue()), is("86.8"));
+    assertThat(Utils.roundAlloc(scoreWeight.getScore().getScoreValue()), is("71.4"));
 
   }
 
   @Test
   public void calculateScoreWithFailThresholds() throws IOException {
-    ObjectMapper mapper = new ObjectMapper();
+    ObjectMapper mapper = getObjectMapper();
     byte[] content = Resources.asByteSource(Resources.getResource("github-widget.json")).read();
     Widget githubWidget = mapper.readValue(content, Widget.class);
     GithubScmScoreSettings githubScmScoreSettings = getGithubScmScoreSettingsWithThreshold(90d);
@@ -97,7 +99,7 @@ public class GithubScmWidgetScoreTest {
 
   @Test
   public void calculateScoreWithPassThresholds() throws IOException {
-    ObjectMapper mapper = new ObjectMapper();
+    ObjectMapper mapper = getObjectMapper();
     byte[] content = Resources.asByteSource(Resources.getResource("github-widget.json")).read();
     Widget githubWidget = mapper.readValue(content, Widget.class);
     GithubScmScoreSettings githubScmScoreSettings = getGithubScmScoreSettingsWithThreshold(10d);
@@ -118,7 +120,7 @@ public class GithubScmWidgetScoreTest {
     ScoreWeight scoreWeight = githubScmWidgetScore.processWidgetScore(githubWidget, githubScmScoreSettings);
 
     LOGGER.info("scoreWeight {}", scoreWeight);
-    assertThat(Utils.roundAlloc(scoreWeight.getScore().getScoreValue()), is("86.8"));
+    assertThat(Utils.roundAlloc(scoreWeight.getScore().getScoreValue()), is("71.4"));
   }
 
 
@@ -163,6 +165,13 @@ public class GithubScmWidgetScoreTest {
     return githubScmScoreSettings;
   }
 
+  private ObjectMapper getObjectMapper() {
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    return mapper;
+  }
+  
   private void updateCommitResultTimestamps(List<Commit> commits) {
     int twoInc = 0;
     int daySet = 0;

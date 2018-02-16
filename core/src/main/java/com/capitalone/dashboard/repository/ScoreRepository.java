@@ -1,13 +1,15 @@
 package com.capitalone.dashboard.repository;
 
-import com.capitalone.dashboard.model.CodeQuality;
 import com.capitalone.dashboard.model.ScoreMetric;
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 
+import com.capitalone.dashboard.model.CodeQuality;
+
 /**
- * Repository for {@link ScoreMetric} data.
+ * Repository for {@link CodeQuality} data.
  */
 public interface ScoreRepository extends CrudRepository<ScoreMetric, ObjectId>, QueryDslPredicateExecutor<ScoreMetric> {
 
@@ -35,6 +37,7 @@ public interface ScoreRepository extends CrudRepository<ScoreMetric, ObjectId>, 
      * @param dashboardId collector item id
      * @return a {@link ScoreMetric}
      */
+    @Query(value="{'type': 'DASHBOARD', 'scoreTypeId': ?0}")
     ScoreMetric findByDashboardId(ObjectId dashboardId);
 
 }

@@ -41,26 +41,6 @@
         }
       }
     ],
-    "Team" : [
-      {
-        "id" : "58d4f91030b861443c9a7a03",
-        "description" : "Customer Promise/CP - Enterprise Integration Services (Bedrock",
-        "enabled" : true,
-        "errors" : [],
-        "pushed" : false,
-        "collectorId" : "58d4f8ac30b861443c9a76f3",
-        "lastUpdated" : 0,
-        "options" : {
-          "teamName" : "Customer Promise/CP - Enterprise Integration Services (Bedrock",
-          "pillarName" : "Customer Promise",
-          "pillarId" : "10900",
-          "projectName" : "CP - Enterprise Integration Services (Bedrock",
-          "projectId" : "18815",
-          "instanceUrl" : "https://teamrosters.walmart.com",
-          "appUrl" : "https://teamrosters.walmart.com/app/#/search?pillars=10900&teams=18815"
-        }
-      }
-    ],
     "Score" : [
       {
         "id" : "58d84a9a358d6671fc81ff48",

@@ -102,7 +102,7 @@ public class ScoreCollectorTask extends CollectorTask<ScoreCollector> {
     ScoreMetric existingScore = this.scoreRepository
       .findByCollectorItemId(scoreApplication.getId());
     if (null != existingScore) {
-      this.scoreRepository.delete(existingScore);
+      scoreMetric.setId(existingScore.getId());
     }
     this.scoreRepository.save(scoreMetric);
   }

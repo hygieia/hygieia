@@ -71,7 +71,7 @@ public class DeployWidgetScoreTest {
     ScoreWeight scoreWeight = deployWidgetScore.processWidgetScore(deployWidget, deployScoreSettings);
 
     LOGGER.info("scoreWeight {}", scoreWeight);
-    assertThat(Utils.roundAlloc(scoreWeight.getScore().getScoreValue()), is("61.6"));
+    assertThat(Utils.roundAlloc(scoreWeight.getScore().getScoreValue()), is("75"));
 
   }
 
@@ -105,7 +105,7 @@ public class DeployWidgetScoreTest {
     ScoreWeight scoreWeight = deployWidgetScore.processWidgetScore(deployWidget, deployScoreSettings);
 
     LOGGER.info("scoreWeight {}", scoreWeight);
-    assertThat(Utils.roundAlloc(scoreWeight.getScore().getScoreValue()), is("61.6"));
+    assertThat(Utils.roundAlloc(scoreWeight.getScore().getScoreValue()), is("75"));
 
   }
 
@@ -139,7 +139,7 @@ public class DeployWidgetScoreTest {
     ScoreWeight scoreWeight = deployWidgetScore.processWidgetScore(deployWidget, deployScoreSettings);
 
     LOGGER.info("scoreWeight {}", scoreWeight);
-    assertThat(Utils.roundAlloc(scoreWeight.getScore().getScoreValue()), is("0"));
+    assertThat(Utils.roundAlloc(scoreWeight.getScore().getScoreValue()), is("75"));
 
   }
 

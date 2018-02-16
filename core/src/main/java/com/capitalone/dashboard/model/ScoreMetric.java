@@ -1,21 +1,51 @@
 package com.capitalone.dashboard.model;
 
+import com.google.common.collect.Maps;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Collection;
+import java.util.Map;
 
+/*
+  Collection for scores based on type dashboard/team
+ */
 @Document(collection = "score_metric")
 public class ScoreMetric extends BaseModel {
+  //Collector Item Id for score
   private ObjectId collectorItemId;
-  private ObjectId dashboardId;
+
+  //Id for score type as Dashboard/Team
+  //If type is DASHBOARD, value should be id of dashboard
+  private ObjectId scoreTypeId;
+
+  //Score can be calculated for types defined in ScoreValueType
+  private ScoreValueType type = ScoreValueType.DASHBOARD;
+
+  //Time when score was calculated
   private long timestamp;
+
+  //Score value
   private String score;
+
+  //Score total
   private String total;
+
+  //Failure message
   private String failureMssg;
+
+  //If the dashboard has no score, the flag is set as true
   private boolean noScore;
 
+  //Options to save additional properties
+  public Map<String, String> options = Maps.newHashMap();
+
+  //Collection of scores for individual widgets
   private Collection<ScoreWidgetMetric> scoreWidgetMetrics;
+
+  public Map<String, String> getOptions() {
+    return options;
+  }
 
   public ObjectId getCollectorItemId() {
     return collectorItemId;
@@ -25,12 +55,20 @@ public class ScoreMetric extends BaseModel {
     this.collectorItemId = collectorItemId;
   }
 
-  public ObjectId getDashboardId() {
-    return dashboardId;
+  public ScoreValueType getType() {
+    return type;
   }
 
-  public void setDashboardId(ObjectId dashboardId) {
-    this.dashboardId = dashboardId;
+  public void setType(ScoreValueType type) {
+    this.type = type;
+  }
+
+  public ObjectId getScoreTypeId() {
+    return scoreTypeId;
+  }
+
+  public void setScoreTypeId(ObjectId scoreTypeId) {
+    this.scoreTypeId = scoreTypeId;
   }
 
   public long getTimestamp() {
@@ -84,13 +122,14 @@ public class ScoreMetric extends BaseModel {
   @Override public String toString() {
     return "ScoreMetric{" +
       "collectorItemId=" + collectorItemId +
-      ", dashboardId=" + dashboardId +
+      ", scoreTypeId=" + scoreTypeId +
       ", timestamp=" + timestamp +
       ", score='" + score + '\'' +
       ", total='" + total + '\'' +
       ", failureMssg='" + failureMssg + '\'' +
       ", noScore=" + noScore +
       ", scoreWidgetMetrics=" + scoreWidgetMetrics +
+      ", options=" + options + '\'' +
       '}';
   }
 }

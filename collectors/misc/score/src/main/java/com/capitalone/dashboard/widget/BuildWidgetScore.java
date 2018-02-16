@@ -184,9 +184,12 @@ public class BuildWidgetScore extends WidgetScoreAbstract {
   private Double fetchBuildSuccessRatio(Iterable<Build> builds) {
     int totalBuilds = 0, totalSuccess = 0;
     for (Build build : builds) {
+      if (Constants.IGNORE_STATUS.contains(build.getBuildStatus())) {
+        continue;
+      }
+
       totalBuilds++;
-      if (!build.getBuildStatus().equals(BuildStatus.Failure) &&
-        !build.getBuildStatus().equals(BuildStatus.Unstable)) {
+      if (Constants.SUCCESS_STATUS.contains(build.getBuildStatus())) {
         totalSuccess++;
       }
     }
@@ -199,10 +202,12 @@ public class BuildWidgetScore extends WidgetScoreAbstract {
   private Double fetchBuildDurationWithinThresholdRatio(Iterable<Build> builds, long thresholdInMillis) {
     int totalBuilds = 0, totalBelowThreshold = 0;
     for (Build build : builds) {
+      if (!Constants.SUCCESS_STATUS.contains(build.getBuildStatus())) {
+        continue;
+      }
+
       totalBuilds++;
-      if ((build.getBuildStatus().equals(BuildStatus.Success)
-        || build.getBuildStatus().equals(BuildStatus.Unstable))
-        && build.getDuration() < thresholdInMillis) {
+      if (build.getDuration() < thresholdInMillis) {
         totalBelowThreshold++;
       }
     }

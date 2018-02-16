@@ -15,11 +15,7 @@
         <!-- or whenever the file size reaches 20MB -->
         <maxFileSize>20MB</maxFileSize>
       </timeBasedFileNamingAndTriggeringPolicy>
-      
-	  <!--  keep 5 days worth of history, but at most 100MB -->
-	  <!--  this is in case too many files get archived in a single day due to size based rolling -->
-      <maxHistory>5</maxHistory>
-      <totalSizeCap>100MB</totalSizeCap>
+      <maxHistory>30</maxHistory>
     </rollingPolicy>
     <encoder>
       <pattern>%d %-5level %logger{36} - %msg%n</pattern>

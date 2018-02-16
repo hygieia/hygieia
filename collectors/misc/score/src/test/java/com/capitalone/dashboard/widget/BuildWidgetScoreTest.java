@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.widget;
 
+import com.capitalone.dashboard.Utils;
 import com.capitalone.dashboard.collector.*;
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.BuildRepository;
@@ -68,7 +69,7 @@ public class BuildWidgetScoreTest {
     ScoreWeight scoreWeight = buildWidgetScore.processWidgetScore(buildWidget, buildScoreSettings);
 
     LOGGER.info("scoreWeight {}", scoreWeight);
-    assertThat(scoreWeight.getScore().getScoreValue(), is(52.0d));
+    assertThat(Utils.roundAlloc(scoreWeight.getScore().getScoreValue()), is("62.3"));
 
   }
 
@@ -135,7 +136,7 @@ public class BuildWidgetScoreTest {
 
 
     LOGGER.info("scoreWeight {}", scoreWeight);
-    assertThat(scoreWeight.getScore().getScoreValue(), is(55.0d));
+    assertThat(Utils.roundAlloc(scoreWeight.getScore().getScoreValue()), is("63.6"));
 
   }
 

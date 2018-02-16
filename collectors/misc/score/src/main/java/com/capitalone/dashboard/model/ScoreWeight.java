@@ -1,8 +1,10 @@
 package com.capitalone.dashboard.model;
 
 import java.util.List;
+import java.util.Map;
 
 import com.capitalone.dashboard.collector.ScoreTypeValue;
+import com.google.common.collect.Maps;
 
 public class ScoreWeight {
 
@@ -32,6 +34,8 @@ public class ScoreWeight {
   private boolean alert = false;
 
   private List<ScoreWeight> children;
+
+  private final Map<String, Object> options = Maps.newHashMap();
 
   public ScoreWeight() {}
 
@@ -125,6 +129,10 @@ public class ScoreWeight {
 
   public void setAlert(boolean alert) {
     this.alert = alert;
+  }
+
+  public Map<String, Object> getOptions() {
+    return options;
   }
 
   @Override

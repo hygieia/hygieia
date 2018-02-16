@@ -38,26 +38,6 @@
         }
       }
     ],
-    "Team" : [
-      {
-        "id" : "58e2d45a30b861443c9a929f",
-        "description" : "Strati/SDE - Insights",
-        "enabled" : true,
-        "errors" : [],
-        "pushed" : false,
-        "collectorId" : "58d4f8ac30b861443c9a76f3",
-        "lastUpdated" : 0,
-        "options" : {
-          "teamName" : "Strati/SDE - Insights",
-          "pillarName" : "Strati",
-          "pillarId" : "10000",
-          "projectName" : "SDE - Insights",
-          "projectId" : "19739",
-          "instanceUrl" : "https://teamrosters.walmart.com",
-          "appUrl" : "https://teamrosters.walmart.com/app/#/search?pillars=10000&teams=19739"
-        }
-      }
-    ],
     "CodeQuality" : [
       {
         "id" : "5915eaa1fdfcb761419b5105",

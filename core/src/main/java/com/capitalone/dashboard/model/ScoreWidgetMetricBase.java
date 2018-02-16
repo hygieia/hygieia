@@ -1,17 +1,46 @@
 package com.capitalone.dashboard.model;
 
+import com.google.common.collect.Maps;
+
+import java.util.Map;
+
 public class ScoreWidgetMetricBase {
+  //Score for the widget
   private String score;
+
+  //Score total
   private String total;
+
+  //Weight in percent for a widget
   private String weight;
+
+  //Unique id for widget/component
   private String id;
+
+  //Display name for the widget/component
   private String name;
+
+  //Propagate type value for widget/component
   private String propagate;
+
+  //Status of score calculation
   private String state;
+
+  //If widget/component has no score, flag is true
   private boolean noScore;
+
+  //Alert is true if there is message to alert
   private boolean alert = false;
 
+  //Message to display
   private String message;
+
+  //Additional options to save data
+  public Map<String, Object> options = Maps.newHashMap();
+
+  public Map<String, Object> getOptions() {
+    return options;
+  }
 
   public String getScore() {
     return score;
@@ -103,8 +132,9 @@ public class ScoreWidgetMetricBase {
       ", message='" + message + '\'' +
       ", propagate='" + propagate + '\'' +
       ", state='" + state + '\'' +
-      ", noScore=" + noScore +
+      ", noScore=" + noScore + '\'' +
       ", alert=" + alert +
+      ", options=" + options +
       '}';
   }
 }

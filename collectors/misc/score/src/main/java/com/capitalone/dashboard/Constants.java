@@ -1,7 +1,12 @@
 package com.capitalone.dashboard;
 
+import com.capitalone.dashboard.model.BuildStatus;
+import com.google.common.collect.Lists;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.List;
 
 public final class Constants {
 
@@ -24,5 +29,7 @@ public final class Constants {
 
   public final static DateFormat DAY_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
+  public static final List<BuildStatus> SUCCESS_STATUS = Collections.unmodifiableList(Lists.newArrayList(BuildStatus.Success, BuildStatus.Unstable));
+  public static final List<BuildStatus> IGNORE_STATUS = Collections.unmodifiableList(Lists.newArrayList(BuildStatus.InProgress, BuildStatus.Aborted));
 
 }

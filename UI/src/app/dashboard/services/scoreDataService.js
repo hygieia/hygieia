@@ -17,24 +17,24 @@
             if (!score) {
                 return;
             }
-            _score[score.dashboardId] = score;
+            _score[score.scoreTypeId] = score;
         }
 
 
-        this.setScore = function (dashboardId, score) {
-            _score[dashboardId] = score;
+        this.setScore = function (scoreTypeId, score) {
+            _score[scoreTypeId] = score;
         }
 
-        this.getScore = function (dashboardId) {
-          var score = _score[dashboardId];
+        this.getScore = function (scoreTypeId) {
+          var score = _score[scoreTypeId];
           if (!score) {
             return null;
           }
           return score;
         }
 
-        this.getScoreByDashboardWidget = function (dashboardId, widgetId) {
-            var score = _score[dashboardId];
+        this.getScoreByDashboardWidget = function (scoreTypeId, widgetId) {
+            var score = _score[scoreTypeId];
             if (!score) {
                 return null;
             }

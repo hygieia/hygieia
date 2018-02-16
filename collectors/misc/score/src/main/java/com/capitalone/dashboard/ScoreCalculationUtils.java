@@ -152,7 +152,8 @@ public class ScoreCalculationUtils {
     ScoreMetric scoreMetric = new ScoreMetric();
     scoreMetric.setTotal(String.valueOf(maxScore));
     scoreMetric.setCollectorItemId(collectorItemId);
-    scoreMetric.setDashboardId(dashboardId);
+    scoreMetric.setType(ScoreValueType.DASHBOARD);
+    scoreMetric.setScoreTypeId(dashboardId);
     scoreMetric.setScore(
       Utils.roundAlloc(
         convertBaseMaxScore(
