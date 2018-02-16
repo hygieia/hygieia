@@ -79,8 +79,7 @@ public class DefaultGitHubClient implements GitHubClient {
 
     private int getFetchCount(boolean firstRun, GitHubRepo repo) {
         if (firstRun) return 100;
-        long timeDelta = System.currentTimeMillis() - repo.getLastUpdated();
-        return Math.max(5, Math.min(100, Math.round(timeDelta / 60000)));
+        return settings.getFetchCount();
     }
 
     @Override
