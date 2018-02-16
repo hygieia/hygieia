@@ -360,3 +360,15 @@ hygieia-appdynamics-collector:
 #  - APPDYNAMICS_PASSWORD=password
 #  - APPDYNAMICS_DASHBOARD_URL=http://appdynamics/controller/#/location=APP_DASHBOARD&timeRange=last_15_minutes.BEFORE_NOW.-1.-1.15&application=%s&dashboardMode=force
 #  - APPDYNAMICS_CRON='-1 * * * * *'
+
+hygieia-score-collector:
+  image: hygieia-score-collector:latest
+  container_name: hygieia-score
+  volumes:
+  - ./logs:/hygieia/logs
+  links:
+  - mongodb:mongo
+  - hygieia-api
+#  environment:
+#Collector schedule (required)
+#  - SCORE_CRON:-0 0/5 * * * *

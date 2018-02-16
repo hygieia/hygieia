@@ -14,6 +14,14 @@ import com.capitalone.dashboard.collector.*;
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.DashboardRepository;
 
+/**
+ * Service to calculate Dashboard score for a {@link com.capitalone.dashboard.model.ScoreApplication}
+ * <p>
+ *   On construction the service will initialize settings for widgets.
+ *   These settings will be used to calculate score
+ * <p>
+ *
+ */
 @Service
 public class ApplicationScoreService {
   private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationScoreService.class);
@@ -44,12 +52,24 @@ public class ApplicationScoreService {
 
   }
 
+  /**
+   * Initialize score settings for widgets
+   * <p><ul>
+   * <li>Build
+   * <li>Deploy
+   * <li>Quality
+   * <li>Github SCM
+   * </ul><p>
+   */
   public final void initScoreSettings() {
     ScoreCriteria criteria = this.scoreSettings.getCriteria();
     if (null == criteria) {
       criteria = new ScoreCriteria();
       this.scoreSettings.setCriteria(criteria);
     }
+
+    //Initialize criteria values for no data found and no widget found conditions
+    //Default value is 0 score for no data found and no widget found
     if (null == criteria.getNoDataFound()) {
       criteria.setNoDataFound(ScoreTypeValue.zeroScore());
     }
@@ -65,6 +85,12 @@ public class ApplicationScoreService {
     LOGGER.info("this.scoreSettings {}", this.scoreSettings);
   }
 
+  /**
+   * Initialize build score settings
+   * <p>
+   *  If build widget settings are present merge it with default score settings
+   *  Initialize settings for children scores in build widget
+   */
   private void initBuildScoreSettings() {
     BuildScoreSettings buildScoreSettings = this.scoreSettings.getBuildWidget();
     if (null != buildScoreSettings) {
@@ -77,6 +103,13 @@ public class ApplicationScoreService {
     }
   }
 
+  /**
+   * Initialize Settings for child components in build widget
+   * 1. Build Status criteria settings
+   * 2. Build Duration criteria settings
+   *
+   * @param buildScoreSettings
+   */
   private void initBuildScoreChildrenSettings(BuildScoreSettings buildScoreSettings) {
     ScoreParamSettings buildStatusSettings = Utils.getInstanceIfNull(
       buildScoreSettings.getStatus(),
@@ -98,6 +131,12 @@ public class ApplicationScoreService {
     buildScoreSettings.setDuration(buildDurationSettings);
   }
 
+  /**
+   * Initialize deploy score settings
+   * <p>
+   *  If build widget settings are present merge it with default score settings
+   *  deploy settings for children scores in deploy widget
+   */
   private void initDeployScoreSettings() {
     DeployScoreSettings deployScoreSettings = this.scoreSettings.getDeployWidget();
     if (null != deployScoreSettings) {
@@ -110,6 +149,12 @@ public class ApplicationScoreService {
     }
   }
 
+  /**
+   * Initialize Settings for child components in deploy widget
+   * 1. Deploys Success criteria settings
+   * 2. Instances Online criteria settings
+   * @param deployScoreSettings
+   */
   private void initDeployScoreChildrenSettings(DeployScoreSettings deployScoreSettings) {
     ScoreParamSettings deploySuccessSettings = Utils.getInstanceIfNull(deployScoreSettings.getDeploySuccess(), ScoreParamSettings.class);
     deploySuccessSettings.setCriteria(
@@ -125,6 +170,12 @@ public class ApplicationScoreService {
 
   }
 
+  /**
+   * Initialize quality score settings
+   * <p>
+   *  If quality widget settings are present merge it with default score settings
+   *  Initialize settings for children scores in quality widget
+   */
   private void initQualityScoreSettings() {
     QualityScoreSettings qualityScoreSettings = this.scoreSettings.getQualityWidget();
     if (null != qualityScoreSettings) {
@@ -136,6 +187,14 @@ public class ApplicationScoreService {
     }
   }
 
+  /**
+   * Initialize Settings for child components in quality widget
+   * 1. Code Coverage criteria settings
+   * 2. Unit Tests criteria settings
+   * 3. Violations criteria settings
+   *
+   * @param qualityScoreSettings
+   */
   private void initQualityScoreChildrenSettings(QualityScoreSettings qualityScoreSettings) {
     ScoreParamSettings qualityCCSettings = Utils.getInstanceIfNull(qualityScoreSettings.getCodeCoverage(), ScoreParamSettings.class);
     qualityCCSettings.setCriteria(
@@ -156,6 +215,12 @@ public class ApplicationScoreService {
     qualityScoreSettings.setViolations(violationsSettings);
   }
 
+  /**
+   * Initialize github scm score settings
+   * <p>
+   *  If github scm widget settings are present merge it with default score settings
+   *  Initialize settings for children scores in github scm widget
+   */
   private void initGithubScmScoreSettings() {
     GithubScmScoreSettings githubScmScoreSettings = this.scoreSettings.getGithubScmWidget();
     if (null != githubScmScoreSettings) {
@@ -167,6 +232,11 @@ public class ApplicationScoreService {
     }
   }
 
+  /**
+   * Initialize Settings for child components in scm widget
+   * 1. Commits Per Day criteria settings
+   * @param githubScmScoreSettings
+   */
   private void initGithubScmScoreChildrenSettings(GithubScmScoreSettings githubScmScoreSettings) {
     ScoreParamSettings commitsPerDaySettings = Utils.getInstanceIfNull(githubScmScoreSettings.getCommitsPerDay(), ScoreParamSettings.class);
     commitsPerDaySettings.setCriteria(
@@ -175,6 +245,12 @@ public class ApplicationScoreService {
     githubScmScoreSettings.setCommitsPerDay(commitsPerDaySettings);
   }
 
+  /**
+   * Calculate score for a {@link com.capitalone.dashboard.model.ScoreApplication}
+   *
+   * @param scoreApplication Score Application collector item for a dashboard
+   * @return Score for dashboard
+   */
   public ScoreMetric getScoreForApplication(ScoreApplication scoreApplication) {
     Dashboard dashboard = getDashboard(new ObjectId(scoreApplication.getDashboardId()));
 
@@ -213,6 +289,12 @@ public class ApplicationScoreService {
     return dashboard;
   }
 
+  /**
+   * Calculate dashboard score from widget score settings
+   *
+   * @param widgetScores widget score settings
+   * @return dashboard score
+   */
   private ScoreWeight getDashboardScoreFromWidgets(List<ScoreWeight> widgetScores) {
     if (null == widgetScores) {
       return getDashboardScore(new ScoreTypeValue(Constants.ZERO_SCORE), widgetScores);
@@ -243,6 +325,13 @@ public class ApplicationScoreService {
     return scoreDashboard;
   }
 
+  /**
+   * Process scores for each widget based on widget settings
+   *
+   * @param scoreApplication Score Application Collector Item
+   * @param widgets List of widgets
+   * @return List of widget scores
+   */
   private List<ScoreWeight> processWidgetScores(ScoreApplication scoreApplication, List<Widget> widgets) {
     List<ScoreWeight> scoreWeights = new ArrayList<>();
 
@@ -253,6 +342,7 @@ public class ApplicationScoreService {
       return null;
     }
 
+    //For each widget calculate score
     for (String widgetType : widgetTypes) {
       ScoreParamSettings scoreSettings = scoreParamSettingsMap.get(widgetType);
       WidgetScore widgetScore = getWidgetScoreByType(widgetType);
@@ -281,6 +371,14 @@ public class ApplicationScoreService {
     );
   }
 
+  /**
+   * Add settings for widget in map if it exists
+   * This map is used to calculate score for team
+   *
+   * @param scoreParamSettingsMap Map to update the settings for a widget
+   * @param widgetType Type of widget
+   * @param scoreParamSettings score settings for the widget
+   */
   private void addSettingsToMap(Map<String, ScoreParamSettings> scoreParamSettingsMap, String widgetType, ScoreParamSettings scoreParamSettings) {
     LOGGER.info("addSettingsToMap with widgetType:" + widgetType + " scoreParamSettings:" + scoreParamSettings);
     if (null != scoreParamSettings) {
@@ -288,6 +386,12 @@ public class ApplicationScoreService {
     }
   }
 
+  /**
+   * Generate criteria settings for each widget type
+   *
+   * @param scoreApplication Score Application Collector Item
+   * @return Map of settings by each widget name
+   */
   private Map<String, ScoreParamSettings> generateWidgetSettings(ScoreApplication scoreApplication) {
     Map<String, ScoreParamSettings> scoreParamSettingsMap = new HashMap<>();
     ScoreApplication.SettingsType settingsType = scoreApplication.getSettingsType();

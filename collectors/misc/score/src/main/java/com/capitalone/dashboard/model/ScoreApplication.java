@@ -6,6 +6,9 @@ import com.capitalone.dashboard.collector.*;
 
 public class ScoreApplication extends CollectorItem {
 
+  //A score can have settings as
+  // 1. DEFAULT : this would take default settings from collector
+  // 2. CUSTOM : this would override the default settings and use settings from collector item
   public enum SettingsType {
     DEFAULT,
     CUSTOM

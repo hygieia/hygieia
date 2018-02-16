@@ -164,7 +164,7 @@ score.deployWidget.criteria.noDataFound.scoreValue=0
 score.deployWidget.criteria.noDataFound.propagate=no
 
 # Deployment widget criteria settings
-score.deployWidget.deploySuccess.weight=30
+score.deployWidget.deploySuccess.weight=50
 score.deployWidget.deploySuccess.disabled=false
 score.deployWidget.deploySuccess.criteria.noDataFound.scoreType=zero_score
 score.deployWidget.deploySuccess.criteria.noDataFound.scoreValue=0
@@ -172,33 +172,11 @@ score.deployWidget.deploySuccess.criteria.noDataFound.propagate=widget
 
 
 # Instances online widget criteria settings
-score.deployWidget.intancesOnline.weight=30
+score.deployWidget.intancesOnline.weight=50
 score.deployWidget.intancesOnline.disabled=false
 score.deployWidget.intancesOnline.criteria.noDataFound.scoreType=zero_score
 score.deployWidget.intancesOnline.criteria.noDataFound.scoreValue=0
 score.deployWidget.intancesOnline.criteria.noDataFound.propagate=widget
-
-
-# Deploys per day widget criteria settings
-score.deployWidget.deploysPerDay.weight=40
-score.deployWidget.deploysPerDay.numberOfDays=14
-score.deployWidget.deploysPerDay.disabled=false
-score.deployWidget.deploysPerDay.criteria.noDataFound.scoreType=zero_score
-score.deployWidget.deploysPerDay.criteria.noDataFound.scoreValue=0
-score.deployWidget.deploysPerDay.criteria.noDataFound.propagate=widget
-
-
-score.deployWidget.deploysPerDay.criteria.dataRangeThresholds[0].type=percent
-score.deployWidget.deploysPerDay.criteria.dataRangeThresholds[0].comparator=less_or_equal
-
-# Value to compare
-score.deployWidget.deploysPerDay.criteria.dataRangeThresholds[0].value=20
-
-# If the threshold is met set the score
-score.deployWidget.deploysPerDay.criteria.dataRangeThresholds[0].score.scoreType=zero_score
-score.deployWidget.deploysPerDay.criteria.dataRangeThresholds[0].score.scoreValue=0
-score.deployWidget.deploysPerDay.criteria.dataRangeThresholds[0].score.propagate=widget
-score.deployWidget.deploysPerDay.criteria.dataRangeThresholds[0].numDaysToCheck=7
 
 
 # Score settings for github scm widget
@@ -230,7 +208,7 @@ score.githubScmWidget.criteria.dataRangeThresholds[0].numDaysToCheck=7
 
 
 # Commits per day widget criteria settings
-score.githubScmWidget.commitsPerDay.weight=50
+score.githubScmWidget.commitsPerDay.weight=100
 score.githubScmWidget.commitsPerDay.numberOfDays=14
 score.githubScmWidget.commitsPerDay.disabled=false
 score.githubScmWidget.commitsPerDay.criteria.noDataFound.scoreType=zero_score
@@ -245,24 +223,6 @@ score.githubScmWidget.commitsPerDay.criteria.dataRangeThresholds[0].score.scoreT
 score.githubScmWidget.commitsPerDay.criteria.dataRangeThresholds[0].score.scoreValue=0
 score.githubScmWidget.commitsPerDay.criteria.dataRangeThresholds[0].score.propagate=widget
 score.githubScmWidget.commitsPerDay.criteria.dataRangeThresholds[0].numDaysToCheck=7
-
-# Commits with PR widget criteria settings
-score.githubScmWidget.commitsWithPR.weight=50
-score.githubScmWidget.commitsWithPR.numberOfDays=14
-score.githubScmWidget.commitsWithPR.disabled=false
-score.githubScmWidget.commitsWithPR.criteria.noDataFound.scoreType=zero_score
-score.githubScmWidget.commitsWithPR.criteria.noDataFound.scoreValue=0
-score.githubScmWidget.commitsWithPR.criteria.noDataFound.propagate=widget
-
-
-score.githubScmWidget.commitsWithPR.criteria.dataRangeThresholds[0].type=percent
-score.githubScmWidget.commitsWithPR.criteria.dataRangeThresholds[0].comparator=less_or_equal
-score.githubScmWidget.commitsWithPR.criteria.dataRangeThresholds[0].value=20
-score.githubScmWidget.commitsWithPR.criteria.dataRangeThresholds[0].score.scoreType=zero_score
-score.githubScmWidget.commitsWithPR.criteria.dataRangeThresholds[0].score.scoreValue=0
-score.githubScmWidget.commitsWithPR.criteria.dataRangeThresholds[0].score.propagate=widget
-score.githubScmWidget.commitsWithPR.criteria.dataRangeThresholds[0].numDaysToCheck=7
-
 
 EOF
 
