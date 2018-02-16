@@ -5,9 +5,6 @@ if [ "$SKIP_PROPERTIES_BUILDER" = true ]; then
   exit 0
 fi
 
-# mongo container provides the HOST/PORT
-# api container provided DB Name, ID & PWD
-
 if [ "$TEST_SCRIPT" != "" ]
 then
         #for testing locally

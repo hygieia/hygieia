@@ -4,17 +4,6 @@ if [ "$SKIP_PROPERTIES_BUILDER" = true ]; then
   echo "Skipping properties builder"
   exit 0
 fi
-
-# mongo container provides the HOST/PORT
-# api container provided DB Name, ID & PWD
-
-if [ "$TEST_SCRIPT" != "" ]
-then
-        #for testing locally
-        PROP_FILE=application.properties
-else 
-	PROP_FILE=config/hygieia-chat-ops-collector.properties
-fi
   
 if [ "$MONGO_PORT" != "" ]; then
 	# Sample: MONGO_PORT=tcp://172.17.0.20:27017
@@ -47,7 +36,20 @@ dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-db}
 dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 
 #Collector schedule (required)
-chatops.cron=${CHATOPS_CRON:-5 * * * * *}
+udeploy.cron=${UDEPLOY_CRON:-0 0/5 * * * *}
+
+#UDeploy server (required) - Can provide multiple
+udeploy.servers[0]=${UDEPLOY_URL:-http://udeploy.company.com}
+udeploy.niceNames[0]=${UDEPLOY_NAME:-UDeploy}
+
+#UDeploy user name (required)
+udeploy.username=${UDEPLOY_USERNAME:-bobama}
+
+#UDeploy password (required)
+udeploy.password=${UDEPLOY_PASSWORD:-s3cr3t}
+
+# UDeploy token can be used instead of username and password
+udeploy.token=${UDEPLOY_TOKEN:-theudeploytoken}
 
 EOF
 
