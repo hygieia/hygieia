@@ -4,7 +4,7 @@
   "componentId" : "596c43483d88f70bf778caed",
   "options" : {
     "password" : "",
-    "appUrl" : "https://gecgithub01.walmart.com/devtools/Hygieia",
+    "appUrl" : "https://github.com/capitalone/Hygieia",
     "id" : "repo0",
     "scm" : {
       "name" : "GitHub",
@@ -12,6 +12,6 @@
     },
     "branch" : "master",
     "userID" : "",
-    "url" : "https://gecgithub01.walmart.com/devtools/Hygieia"
+    "url" : "https://github.com/capitalone/Hygieia"
   }
 }

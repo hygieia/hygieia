@@ -15,8 +15,8 @@
         "options" : {
           "projectName" : "bedrock-app master",
           "projectId" : "203114",
-          "instanceUrl" : "http://sonar.looper.prod.walmartlabs.com",
-          "jobUrl" : "https://ci.pebl.walmart.com/job/bedrockapp_qa/job/SNAPSHOT_BUILD_58b5c5eaaaf903af204faa09/"
+          "instanceUrl" : "http://sonar.mycompany.com",
+          "jobUrl" : "https://ci.company.com/job/bedrockapp_qa/job/SNAPSHOT_BUILD_58b5c5eaaaf903af204faa09/"
         }
       }
     ],
@@ -33,11 +33,11 @@
           "orgName" : "CP",
           "assemblyName" : "Bedrock-NextGen",
           "applicationName" : "CP/Bedrock-NextGen",
-          "instanceUrl" : "https://oneops.prod.walmart.com",
+          "instanceUrl" : "https://oneops.mycompany.com",
           "componentVersionVar" : {
             "artifact" : "appVersion"
           },
-          "appUrl" : "https://oneops.prod.walmart.com/CP/assemblies/Bedrock-NextGen/transition"
+          "appUrl" : "https://oneops.mycompany.com/CP/assemblies/Bedrock-NextGen/transition"
         }
       }
     ],
@@ -98,11 +98,11 @@
         "lastUpdated" : 0,
         "options" : {
           "password" : "",
-          "appUrl" : "https://gecgithub01.walmart.com/eei/bedrock-app",
+          "appUrl" : "https://github.com/eei/bedrock-app",
           "scm" : "Github",
           "branch" : "master",
           "userID" : "",
-          "url" : "https://gecgithub01.walmart.com/eei/bedrock-app"
+          "url" : "https://github.com/eei/bedrock-app"
         }
       }
     ],
@@ -118,9 +118,9 @@
         "lastUpdated" : 1503354843014,
         "options" : {
           "jobName" : "SNAPSHOT_BUILD_58b5c5eaaaf903af204faa09",
-          "jobUrl" : "https://ci.pebl.walmart.com/job/bedrockapp_qa/job/SNAPSHOT_BUILD_58b5c5eaaaf903af204faa09/",
-          "appUrl" : "https://ci.pebl.walmart.com/job/bedrockapp_qa/job/SNAPSHOT_BUILD_58b5c5eaaaf903af204faa09/",
-          "instanceUrl" : "https://ci.pebl.walmart.com/"
+          "jobUrl" : "https://ci.company.com/job/bedrockapp_qa/job/SNAPSHOT_BUILD_58b5c5eaaaf903af204faa09/",
+          "appUrl" : "https://ci.company.com/job/bedrockapp_qa/job/SNAPSHOT_BUILD_58b5c5eaaaf903af204faa09/",
+          "instanceUrl" : "https://ci.company.com/"
         }
       }
     ]

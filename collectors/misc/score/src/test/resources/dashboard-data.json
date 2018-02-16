@@ -18,7 +18,7 @@
       "componentId" : "596c43483d88f70bf778caed",
       "options" : {
         "password" : "",
-        "appUrl" : "https://gecgithub01.walmart.com/devtools/Hygieia",
+        "appUrl" : "https://github.com/capitalone/Hygieia",
         "id" : "repo0",
         "scm" : {
           "name" : "GitHub",
@@ -26,7 +26,7 @@
         },
         "branch" : "master",
         "userID" : "",
-        "url" : "https://gecgithub01.walmart.com/devtools/Hygieia"
+        "url" : "https://github.com/capitalone/Hygieia"
       }
     },
     {
@@ -58,7 +58,7 @@
         "aggregateServers" : false,
         "assemblyName" : "hygieia-looper",
         "componentVersionVar" : {},
-        "appUrl" : "https://oneops.prod.walmart.com/devtools/assemblies/hygieia-looper/transition",
+        "appUrl" : "https://oneops.mycompany.com/devtools/assemblies/hygieia-looper/transition",
         "id" : "deploy0",
         "platformNames" : "hygieia-api,hygieia-collectors,hygieia-ui",
         "applicationName" : "devtools/hygieia-looper",

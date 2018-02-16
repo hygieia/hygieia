@@ -1,6 +1,6 @@
 [
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "b59a5c78a7a60f0bb8682134dc1700545b6ff030",
     "scmCommitLog": "Merge pull request #1407 from bkatika\/google-master-bkatika\n\nChanges to the app as part of tech upgrade",
@@ -18,7 +18,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "7fbf0eede2e86c614db86c61a6cfc9e4b961e5fd",
     "scmCommitLog": "Fix Summary (Brief): Changes to the app as part of tech upgrade\nChange Description (Details): Code changes to accomodate new tech stack\nJIRA(s): CPNBCP-2893\nLink(s) (e.g., git CL): https:\/\/confluence.walmart.com\/display\/CPNBCP\/NG+Bedrock+TechStack+upgrade#NGBedrockTechStackupgrade-3rdParty\/OpenSourceLibraries\nReviewer(s): rjha\nUT Summary: Ensure existing test cases are successful",
@@ -36,7 +36,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "ac288030283426b1ea4df6e2609264c4cc7a0bb0",
     "scmCommitLog": "Merge pull request #1408 from srai2\/master\n\nSetting messageID as batchID for IMS kafka publishing",
@@ -54,7 +54,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "ba1482b3288b4d16daaa3d299717220e0b673605",
     "scmCommitLog": "Setting messageID as batchID for IMS kafka publishing",
@@ -72,7 +72,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "f8dc38079f04bf060b710832d7ce530e1bc6e63c",
     "scmCommitLog": "Setting messageID as batchID for IMS kafka publishing",
@@ -90,7 +90,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "9e1be930c94d669e079c8ad3abb5c0947e90faa7",
     "scmCommitLog": "Setting messageID as batchID for IMS kafka publishing",
@@ -108,7 +108,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "c82aa55b58ddc50d117ea1424603c281e457ba8a",
     "scmCommitLog": "Merge pull request #1409 from xchen14\/master\n\nMaster",
@@ -126,7 +126,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "5259fc05b3a594520e3e796589f1e52c78a91c96",
     "scmCommitLog": "Revert ISC change since ISC is not ready",
@@ -144,7 +144,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "2669e6a5eab9c3378b1ec323a1a05ad305edca6b",
     "scmCommitLog": "Add switch for ISC change",
@@ -162,7 +162,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "ed27ffb20b6e001527043e106885abc1aa51bab3",
     "scmCommitLog": "Merge pull request #1411 from r0j008e\/hayneedle_master\n\nHayneedle master",
@@ -180,7 +180,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "91339a73eede58bdc13edabcad1426640f8452d8",
     "scmCommitLog": "minor changes",
@@ -198,10 +198,10 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "3d48c0754d5ede6e63ff9541ba6dbff3985c23d0",
-    "scmCommitLog": "Merge branch 'hayneedle_master' of gecgithub01.walmart.com:r0j008e\/bedrock-app into subhash_hayneedle",
+    "scmCommitLog": "Merge branch 'hayneedle_master' of github.com:r0j008e\/bedrock-app into subhash_hayneedle",
     "scmAuthor": "Subhash Dhaka",
     "scmAuthorLogin": "sdhaka",
     "scmParentRevisionNumbers": [
@@ -216,7 +216,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "5e58d18f1badb7d619e6dd1f788b120309e08b05",
     "scmCommitLog": "abraham review changes",
@@ -234,7 +234,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "f410035c77d7821b7f047b737a156851a0b71faf",
     "scmCommitLog": "minor changes",
@@ -252,7 +252,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "5212ad06943429a9f1f90482a231b79cd1d45690",
     "scmCommitLog": "minor changes",
@@ -270,7 +270,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "fdeac994aad23d382642d018ac2a101715ba752d",
     "scmCommitLog": "Merge pull request #5 from r0j008e\/subhash_hayneedle\n\nSubhash hayneedle",
@@ -288,7 +288,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "fc14273bc75692b980ff32cd8007038f99e1c1dd",
     "scmCommitLog": "order create and cancel edi files handling",
@@ -306,7 +306,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "3cc0e73ed302713ba727acff04a77ff4eca3fc30",
     "scmCommitLog": "transaction logs for hayneedle, minor fixes",
@@ -324,7 +324,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "f016567c85cbca064332e9228aab3268c5ff8c05",
     "scmCommitLog": "30 char restriction changes",
@@ -342,7 +342,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "dbfdf1ab3c682b65efde8eaca934fdddad5eb9b3",
     "scmCommitLog": "resolved merge conflicts",
@@ -360,7 +360,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "a9081f76ba05e79f2d72fb5524c3ed56424f77be",
     "scmCommitLog": "minor changes",
@@ -378,7 +378,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "8c98e76adb84e0676f7ac5b0c66435a54ad212b8",
     "scmCommitLog": "minor changes",
@@ -396,7 +396,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "6b6ce8a842d467ed52ec0f8f9fdc20ce26ab6334",
     "scmCommitLog": "date changes",
@@ -414,7 +414,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "382fbe320f34583387f502124706a6408dd4239c",
     "scmCommitLog": "Merge pull request #6 from r0j008e\/subhash_hayneedle\n\nSubhash hayneedle",
@@ -432,7 +432,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "7dc6363d8257bde1d2e376bd269c6687bb98d379",
     "scmCommitLog": "Merge pull request #1412 from p0s00gg\/master\n\nMaster",
@@ -450,7 +450,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "9f6d09581520a5ab7a85cbffb0293cdd67aaf87c",
     "scmCommitLog": "email preference change",
@@ -468,7 +468,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "35ad3723fd00398ca7cdd7f9647284cf1d77d87a",
     "scmCommitLog": "Merge remote-tracking branch 'upstream\/master'",
@@ -486,7 +486,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "a54c5327446224812d67925246893fcc8f73762d",
     "scmCommitLog": "Merge pull request #1413 from srai2\/master\n\nCorrected the catdeve kafka bootstrap servers",
@@ -504,7 +504,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "3eda59b04aaa0a2ed54836fd78acc707aef8ced4",
     "scmCommitLog": "Corrected the catdeve kafka bootstrap servers",
@@ -522,7 +522,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "a0f998d3a5873759fe587c43658ce2ca05aea67f",
     "scmCommitLog": "Corrected the catdeve kafka bootstrap servers",
@@ -540,7 +540,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "c3c3aef9c302f85edd36b9d82a88569bc57ac5d5",
     "scmCommitLog": "Merge pull request #1414 from xchen14\/Exception\n\nAdd exception code",
@@ -558,7 +558,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "54c7e240be9b6bf766320dc7dd07a883cf964ad0",
     "scmCommitLog": "Add exception code",
@@ -576,7 +576,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "69dc40611901be8ea4a068a344fa74c8c54c69c8",
     "scmCommitLog": "Merge pull request #1410 from xchen14\/master\n\nAdd batch complete pgk in bedrock message",
@@ -594,7 +594,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "f6837d411c3801cc4cb0a9a1b680212ff67d49ff",
     "scmCommitLog": "Add batch complete pgk in bedrock message\n\nto pass complete pkg as batch_type in register batch API",
@@ -612,7 +612,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "ac00694d29eafa5112aeb47d15155e13ceccc2fb",
     "scmCommitLog": "Update batch type value",
@@ -630,7 +630,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "21fa665abe39b1de8b9dec4eb8131350a732dc9c",
     "scmCommitLog": "Merge pull request #1416 from srai2\/master\n\nFixed setting wrong msgType in imskafkaresponse",
@@ -648,7 +648,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "3a4cea434702d5c1301ca27d1716014e9f7cc307",
     "scmCommitLog": "Fixed setting wrong msgType in imskafkaresponse",
@@ -666,7 +666,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "315ac63042ebd93c47a73ca795765e2fcc8c9c10",
     "scmCommitLog": "Merge pull request #1415 from nrao01\/DSVtempchange\n\nchanged template for DSV inventory reroute",
@@ -684,7 +684,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "33d581ebca4c962c1215e94df984f881de5fa9ef",
     "scmCommitLog": "changed template",
@@ -702,7 +702,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "430b76e5d55bfdd041092a911de696c2493455b8",
     "scmCommitLog": "Merge pull request #1417 from bkatika\/google-master-bkatika\n\nMerge request for google changes",
@@ -720,10 +720,10 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "e4fd98c39507bf2c197bd0fcd8f27bfa2d1ddc8b",
-    "scmCommitLog": "Merge branch 'master' of gecgithub01.walmart.com:eei\/bedrock-app into google-master",
+    "scmCommitLog": "Merge branch 'master' of github.com:eei\/bedrock-app into google-master",
     "scmAuthor": "Balaji Katika",
     "scmAuthorLogin": "bkatika",
     "scmParentRevisionNumbers": [
@@ -738,7 +738,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "27c5a0bed25175dce000b729747908bacd0815fa",
     "scmCommitLog": "Fix Summary (Brief): Pass empty values for region\/locality\nChange Description (Details): when google does not pass these values in shipping address\nJIRA(s): CCPNBCP-8229\nLink(s) (e.g., git CL):\nReviewer(s): ksati\nUT Summary: Ensure smooks validation pass when region\/locality is not available",
@@ -756,7 +756,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "ae7fca2375b556cae2b01c1a4507f1bb7a76af3e",
     "scmCommitLog": "Merge pull request #1418 from d0r00cb\/up_master\n\ngoogle socket timeout exception handling for kill flow",
@@ -774,7 +774,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "b38909739ead5f366b452eab35ea5018ebfacd19",
     "scmCommitLog": "google socket timeout exception handling",
@@ -792,7 +792,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "ea5b50a39f34ebcbf7c426f9e76ec90d222e670a",
     "scmCommitLog": "Merge pull request #1419 from r0j008e\/hayneedle_master\n\nHayneedle master",
@@ -810,7 +810,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "f92dea95bb1104d36b83d8d7be426f1994bae04d",
     "scmCommitLog": "minor changes",
@@ -828,7 +828,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "4cfb03214daa6d57e4841f23f8ab2cadf0f2bf20",
     "scmCommitLog": "minor changes",
@@ -846,7 +846,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "47099a70a7eaa2ff9842c240fb5b2a475d5df627",
     "scmCommitLog": "minor change",
@@ -864,7 +864,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "322dbf90638bd5de99f7166e14f122d3ffa9d262",
     "scmCommitLog": "address changes",
@@ -882,7 +882,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "adf1b31fc755cda0790be926d3dc2da5489fae93",
     "scmCommitLog": "minor change",
@@ -900,7 +900,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "350edc7c6b4cd9bd340c7439d3f3a04161f296d1",
     "scmCommitLog": "review changes",
@@ -918,7 +918,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "bc24f23089b3a8eae715e58feef6d27530f10e7c",
     "scmCommitLog": "review changes",
@@ -936,7 +936,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "0cfa94593b1b8f7c7573672cd645813e580b5f93",
     "scmCommitLog": "review changes",
@@ -954,7 +954,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "3019d24f0826cd3572c032ac801ccccea0f5bcc3",
     "scmCommitLog": "review changes",
@@ -972,7 +972,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "0209de0c6ff5c13454c2ae307d7241eeb08f3d12",
     "scmCommitLog": "Merge pull request #7 from r0j008e\/subhash_hayneedle\n\nminor changes",
@@ -990,7 +990,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "b99e4bedd4562b102f9b979cd9c5695ce5a77c81",
     "scmCommitLog": "Merge pull request #1420 from j7wang\/instore_xml_to_json\n\nAdd Timezone as PST for instore status update",
@@ -1008,7 +1008,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "31a01b187705777bfcf2213e9dd45a67fc42565c",
     "scmCommitLog": "Add Timezone as PST for instore status update",
@@ -1026,7 +1026,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "0f7911f38f18e46ffd9fd632dbd672cc4f9dc7ce",
     "scmCommitLog": "Merge pull request #1421 from r0j008e\/hayneedle_master\n\nHayneedle master",
@@ -1044,7 +1044,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "b517f1097976ed6c8bb43129d698eb1f7ddf6738",
     "scmCommitLog": "review changes",
@@ -1062,7 +1062,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "9e49473a70377fcfd8a8ef09c5037042ef3b4ae5",
     "scmCommitLog": "Merge pull request #8 from r0j008e\/subhash_hayneedle\n\nreview changes",
@@ -1080,7 +1080,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "8fc9d4b837284d8fd5d3da7c1f7fe559b0fa8d24",
     "scmCommitLog": "Merge pull request #1422 from r0j008e\/hayneedle_master\n\nHayneedle master",
@@ -1098,10 +1098,10 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "47b727e8378da815b946d1c3d2e67c80601381fa",
-    "scmCommitLog": "Merge branch 'master' of https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app into hayneedle_master",
+    "scmCommitLog": "Merge branch 'master' of https:\/\/github.com\/eei\/bedrock-app into hayneedle_master",
     "scmAuthor": "Ritesh Jha",
     "scmAuthorLogin": "r0j008e",
     "scmParentRevisionNumbers": [
@@ -1116,7 +1116,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "39cc6191a6c194d8eba05cd35659b7cc28ca59be",
     "scmCommitLog": "single line for hayneedle inventory",
@@ -1134,7 +1134,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "b6153f8fd0d0c5ef72d859b78019357f2c834aee",
     "scmCommitLog": "Merge pull request #1423 from r0j008e\/hayneedle_master\n\ntransport destination url",
@@ -1152,7 +1152,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "5c06b79b4ea01b41e50c85df53fb44127d419f8a",
     "scmCommitLog": "transport destination url",
@@ -1170,7 +1170,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "7dab27f48e5a2711ddb6a20e2a413030b954ce38",
     "scmCommitLog": "Merge pull request #1424 from srai2\/master\n\nFixed null pointer in IMS response consumer",
@@ -1188,7 +1188,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "ed49fc587fe6308717227a366a219ab904f93ad9",
     "scmCommitLog": "Fixed null pointer in IMS response consumer",
@@ -1206,7 +1206,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "7e08ded18e90f383344ed2be9c810168ccaf2a15",
     "scmCommitLog": "Merge pull request #1425 from xchen14\/master\n\nUpdate sqlldr.fileRegister.call to pass batch_type",
@@ -1224,10 +1224,10 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "8c06bbf2fed548851988cb86e93f783db89c15b8",
-    "scmCommitLog": "Merge branch 'master' of https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmCommitLog": "Merge branch 'master' of https:\/\/github.com\/eei\/bedrock-app",
     "scmAuthor": "Xue Chen",
     "scmAuthorLogin": "xchen13",
     "scmParentRevisionNumbers": [
@@ -1242,10 +1242,10 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "455e55aa11fbf2652e92822f6a75f3724cc1f16c",
-    "scmCommitLog": "Merge branch 'master' of https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmCommitLog": "Merge branch 'master' of https:\/\/github.com\/eei\/bedrock-app",
     "scmAuthor": "Xue Chen",
     "scmAuthorLogin": "xchen13",
     "scmParentRevisionNumbers": [
@@ -1260,10 +1260,10 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "407dba8967b29449cf60f3711cc8e3a547177fc6",
-    "scmCommitLog": "Merge branch 'master' of https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmCommitLog": "Merge branch 'master' of https:\/\/github.com\/eei\/bedrock-app",
     "scmAuthor": "Xue Chen",
     "scmAuthorLogin": "xchen13",
     "scmParentRevisionNumbers": [
@@ -1278,10 +1278,10 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "308cb72129e69943cc40307013dfc776005e9653",
-    "scmCommitLog": "Merge branch 'master' of https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmCommitLog": "Merge branch 'master' of https:\/\/github.com\/eei\/bedrock-app",
     "scmAuthor": "Xue Chen",
     "scmAuthorLogin": "xchen13",
     "scmParentRevisionNumbers": [
@@ -1296,7 +1296,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "c48e371a6e6c70b6f1c0f89b6245a032430268fc",
     "scmCommitLog": "Add register API call in templates",
@@ -1314,7 +1314,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "5d058b1605aa72d36c7e3b8e351b68d1c9afcea4",
     "scmCommitLog": "Merge pull request #1427 from r0j008e\/hayneedle_master\n\nHayneedle master",
@@ -1332,7 +1332,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "2176510cd09b55fab232e1bb516fcef25e4d99a7",
     "scmCommitLog": "escape string in freemarker for product desc",
@@ -1350,7 +1350,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "2dc13bccb8d358c15220e2c0a572e8677574db51",
     "scmCommitLog": "review changes",
@@ -1368,7 +1368,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "14f52680f297caf5a557401846c23b83099da6cc",
     "scmCommitLog": "review changes",
@@ -1386,7 +1386,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "38b3343802a77093ab5ad19e693cd28857a0a86a",
     "scmCommitLog": "minor changes",
@@ -1404,7 +1404,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "adcd1903176a152d7e92d2af03ed161ea9e6c68d",
     "scmCommitLog": "minor changes",
@@ -1422,7 +1422,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "ecb0d50650aaf2ac01e7f7ec826b7e4e915da3c7",
     "scmCommitLog": "pom version",
@@ -1440,7 +1440,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "a9134cbb8183646d4ee3595552019c6d613914e5",
     "scmCommitLog": "minor chnage",
@@ -1458,7 +1458,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "97fab50904ce3cd66c16410d8f2153c92a351f11",
     "scmCommitLog": "minor changes",
@@ -1476,7 +1476,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "56ad192cefc7af171fd43f90fd2651fc7e6cfc60",
     "scmCommitLog": "minor changes",
@@ -1494,7 +1494,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "836f53819c6c47f64ad181593f78d079c063b9c8",
     "scmCommitLog": "Merge pull request #9 from r0j008e\/subhash_hayneedle\n\nSubhash hayneedle",
@@ -1512,7 +1512,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "9b16d8ab9dd576b0e7e544cf548269a261e15f11",
     "scmCommitLog": "helper",
@@ -1530,7 +1530,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "2bc5d42b6f12fd1b62f03fbb15a4b6d59d86379e",
     "scmCommitLog": "Merge pull request #10 from r0j008e\/subhash_hayneedle\n\nhelper",
@@ -1548,7 +1548,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "b74141c25f93e1b385c4f704c7874fe18ab8532b",
     "scmCommitLog": "fix of surface lookup hayneedle inventory",
@@ -1566,7 +1566,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "4670a54f431f957b55c6f8e8a94b2d503b47294c",
     "scmCommitLog": "Merge pull request #1428 from r0j008e\/hayneedle_master\n\nHayneedle master",
@@ -1584,7 +1584,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "139eded74ad3457ed670efccb774be235730e216",
     "scmCommitLog": "minor chnages",
@@ -1602,7 +1602,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "b7727b951f62cf27d42d451d4df13744abdd0089",
     "scmCommitLog": "Merge pull request #11 from r0j008e\/subhash_hayneedle\n\nminor chnages",
@@ -1620,7 +1620,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "83e3f4311a8efa3a1ac7b83a957381ff2282bf52",
     "scmCommitLog": "Merge pull request #1429 from srai2\/master\n\nFixed JSON parsing exception in IMS ingestion response consumer",
@@ -1638,7 +1638,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "3b96818d7222b29dc4f0a1c5d7e99bf2474e2352",
     "scmCommitLog": "Fixed JSON parsing exception in IMS ingestion response consumer",
@@ -1656,7 +1656,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "3be70dbe0b9013d9b42eeef7529902466fff05e7",
     "scmCommitLog": "Merge pull request #1430 from bkatika\/google-master-bkatika\n\nFix Summary (Brief): Add retry logic for 409 exception from Google",
@@ -1674,7 +1674,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "87b07f96a2b68206d9e88945fc04fcd06fd645fb",
     "scmCommitLog": "Fix Summary (Brief): Add retry logic for 409 exception from Google\nChange Description (Details): Bedrock to retry for http 409 resource conflict exceptions\nJIRA(s):\nLink(s) (e.g., git CL):\nReviewer(s): darshana\nUT Summary: Ensure existing test cases do not fail",
@@ -1692,7 +1692,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "90702fb62451c3e09c9bc4caa678ea10e4b9b5db",
     "scmCommitLog": "Merge pull request #1431 from r0j008e\/hayneedle_master\n\nfixing typo",
@@ -1710,7 +1710,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "de250bbb1da29103105ea4d90a0d865a763b32f8",
     "scmCommitLog": "fixing typo",
@@ -1728,7 +1728,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "9e833c67f8373224c2d4516c6d9cb0cdc9019708",
     "scmCommitLog": "Merge pull request #1432 from psemman\/master\n\nTemplate is updated to publish events with unique event id",
@@ -1746,7 +1746,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "27348017489c8a9cfea0bd44164c4e98ecdbdf6a",
     "scmCommitLog": "Template is updated to publish events with unique event id",
@@ -1764,7 +1764,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "eef4e0e4ad7571edbaabcb2fdec50ed630918799",
     "scmCommitLog": "Merge pull request #1433 from psemman\/master\n\nBuid and mart id set to 0 from blank",
@@ -1782,7 +1782,7 @@
     "squashed": false
   },
   {
-    "scmUrl": "https:\/\/gecgithub01.walmart.com\/eei\/bedrock-app",
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
     "scmBranch": "master",
     "scmRevisionNumber": "6ae010952c289adb08071a4c6e52eb11ec229c14",
     "scmCommitLog": "Buid and mart id set to 0 from blank",

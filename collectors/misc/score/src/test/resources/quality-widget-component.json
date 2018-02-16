@@ -30,11 +30,11 @@
         "lastUpdated" : 0,
         "options" : {
           "password" : "",
-          "appUrl" : "https://gecgithub01.walmart.com/devtools/Hygieia",
+          "appUrl" : "https://github.com/capitalone/Hygieia",
           "scm" : "Github",
           "branch" : "master",
           "userID" : "",
-          "url" : "https://gecgithub01.walmart.com/devtools/Hygieia"
+          "url" : "https://github.com/capitalone/Hygieia"
         }
       }
     ],
@@ -49,10 +49,10 @@
         "collectorId" : "58d61a78358d6671fc81ff23",
         "lastUpdated" : 1505859784672,
         "options" : {
-          "jobUrl" : "https://ci.pebl.walmart.com/job/Hygieia/job/SNAPSHOT_BUILD_cd08204c-30da-480d-bffe-d21e94a35d86/",
+          "jobUrl" : "https://ci.company.com/job/Hygieia/job/SNAPSHOT_BUILD_cd08204c-30da-480d-bffe-d21e94a35d86/",
           "projectName" : "com.walmartlabs.looper.dashboard:Hygieia master",
           "projectId" : "256257",
-          "instanceUrl" : "http://sonar.looper.prod.walmartlabs.com"
+          "instanceUrl" : "http://sonar.mycompany.com"
         }
       }
     ],
@@ -71,10 +71,10 @@
           "assemblyName" : "hygieia-looper",
           "aggregateServers" : false,
           "componentVersionVar" : {},
-          "appUrl" : "https://oneops.prod.walmart.com/devtools/assemblies/hygieia-looper/transition",
+          "appUrl" : "https://oneops.mycompany.com/devtools/assemblies/hygieia-looper/transition",
           "platformNames" : "hygieia-api,hygieia-collectors,hygieia-ui",
           "applicationName" : "devtools/hygieia-looper",
-          "instanceUrl" : "https://oneops.prod.walmart.com",
+          "instanceUrl" : "https://oneops.mycompany.com",
           "envDeployment" : {
             "stage" : "502872534",
             "dev" : "500379425",
@@ -95,9 +95,9 @@
         "lastUpdated" : 1500179312045,
         "options" : {
           "jobName" : "SNAPSHOT_BUILD_cd08204c-30da-480d-bffe-d21e94a35d86",
-          "jobUrl" : "https://ci.pebl.walmart.com/job/Hygieia/job/SNAPSHOT_BUILD_cd08204c-30da-480d-bffe-d21e94a35d86/",
-          "appUrl" : "https://ci.pebl.walmart.com/job/Hygieia/job/SNAPSHOT_BUILD_cd08204c-30da-480d-bffe-d21e94a35d86/",
-          "instanceUrl" : "https://ci.pebl.walmart.com/"
+          "jobUrl" : "https://ci.company.com/job/Hygieia/job/SNAPSHOT_BUILD_cd08204c-30da-480d-bffe-d21e94a35d86/",
+          "appUrl" : "https://ci.company.com/job/Hygieia/job/SNAPSHOT_BUILD_cd08204c-30da-480d-bffe-d21e94a35d86/",
+          "instanceUrl" : "https://ci.company.com/"
         }
       }
     ]
