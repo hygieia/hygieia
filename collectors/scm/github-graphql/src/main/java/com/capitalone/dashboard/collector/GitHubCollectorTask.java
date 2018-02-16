@@ -27,6 +27,7 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 
@@ -273,7 +274,13 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
 
 
     private boolean isUnderRateLimit(GitHubRepo repo) throws MalformedURLException, HygieiaException {
-        GitHubRateLimit rateLimit = gitHubClient.getRateLimit(repo);
+        GitHubRateLimit rateLimit = null;
+        try {
+            rateLimit = gitHubClient.getRateLimit(repo);
+        } catch (HttpClientErrorException hce) {
+            LOG.error("getRateLimit returned " + hce.getStatusCode() + " " + hce.getMessage() + " " + hce);
+            return false;
+        }
         return rateLimit != null && (rateLimit.getRemaining() > gitHubSettings.getRateLimitThreshold());
     }
 
