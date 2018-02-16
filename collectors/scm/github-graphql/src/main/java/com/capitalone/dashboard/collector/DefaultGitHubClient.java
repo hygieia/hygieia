@@ -77,10 +77,9 @@ public class DefaultGitHubClient implements GitHubClient {
         }
     }
 
-    private int getFetchCount(boolean firstRun, GitHubRepo repo) {
+    private int getFetchCount(boolean firstRun) {
         if (firstRun) return 100;
-        long timeDelta = System.currentTimeMillis() - repo.getLastUpdated();
-        return Math.max(5, Math.min(100, Math.round(timeDelta / 60000)));
+        return settings.getFetchCount();
     }
 
     @Override
@@ -237,7 +236,7 @@ public class DefaultGitHubClient implements GitHubClient {
         JSONObject variableJSON = new JSONObject();
         variableJSON.put("owner", gitHubParsed.getOrgName());
         variableJSON.put("name", gitHubParsed.getRepoName());
-        variableJSON.put("fetchCount", getFetchCount(firstRun, repo));
+        variableJSON.put("fetchCount", getFetchCount(firstRun));
 
 
         LOG.debug("Collection Mode =" + mode.toString());
