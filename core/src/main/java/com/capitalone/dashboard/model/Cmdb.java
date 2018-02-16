@@ -6,7 +6,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
-import java.util.Objects;
 
 @Document(collection="cmdb")
 public class Cmdb {
@@ -193,21 +192,7 @@ public class Cmdb {
 
     public List<String> getComponents(){ return components; }
 
-    @Override
-    public int hashCode(){
-        return Objects.hash(configurationItem,
-                assignmentGroup,
-                appServiceOwner,
-                businessOwner,
-                supportOwner,
-                developmentOwner,
-                ownerDept,
-                itemType,
-                configurationItemSubType,
-                configurationItemType);
-    }
-    @Override
-    public boolean equals(Object compareTo){
+    public boolean isCmdbMatch(Object compareTo){
         boolean doesEqual = true;
 
         if(compareTo == null || !compareTo.getClass().isAssignableFrom(Cmdb.class)){
@@ -215,46 +200,20 @@ public class Cmdb {
         }else {
             Cmdb newCmdb = (Cmdb) compareTo;
 
-            if(!newCmdb.toString().equals(toString())){
+            if((newCmdb.getConfigurationItem() !=null && !newCmdb.getConfigurationItem().equals(configurationItem)) ||
+                    (newCmdb.getAssignmentGroup() !=null && !newCmdb.getAssignmentGroup().equals(assignmentGroup)) ||
+                    (newCmdb.getAppServiceOwner() !=null && !newCmdb.getAppServiceOwner().equals(appServiceOwner)) ||
+                    (newCmdb.getBusinessOwner() !=null && !newCmdb.getBusinessOwner().equals(businessOwner)) ||
+                    (newCmdb.getSupportOwner() !=null && !newCmdb.getSupportOwner().equals(supportOwner)) ||
+                    (newCmdb.getDevelopmentOwner() !=null && !newCmdb.getDevelopmentOwner().equals(developmentOwner)) ||
+                    (newCmdb.getOwnerDept() !=null && !newCmdb.getOwnerDept().equals(ownerDept)) ||
+                    (newCmdb.getConfigurationItemSubType() !=null && !newCmdb.getConfigurationItemSubType().equals(configurationItemSubType)) ||
+                    (newCmdb.getConfigurationItemType() !=null && !newCmdb.getConfigurationItemType().equals(configurationItemType)) ||
+                    (newCmdb.isValidConfigItem() != validConfigItem)){
                 doesEqual = false;
             }
         }
 
         return doesEqual;
-    }
-
-    /**
-     *  Returns human readable string of the Cmdb Object.
-     *  * equals(Object object) depends on this method. Changing this method could alter the return of the equals method.
-     * @return object to string
-     */
-    @Override
-    public String toString() {
-
-        StringBuffer buf = new StringBuffer(210);
-        buf.append("configurationItem: ")
-                .append(configurationItem)
-                .append("\nassignmentGroup: ")
-                .append(assignmentGroup)
-                .append("\nappServiceOwner: ")
-                .append(appServiceOwner)
-                .append("\nbusinessOwner: ")
-                .append(businessOwner)
-                .append("\nsupportOwner: ")
-                .append(supportOwner)
-                .append("\ndevelopmentOwner: ")
-                .append(developmentOwner)
-                .append("\nownerDept: ")
-                .append(ownerDept)
-                .append("\nitemType: ")
-                .append(itemType)
-                .append("\nconfigurationItemSubType: ")
-                .append(configurationItemSubType)
-                .append("\nconfigurationItemType: ")
-                .append(configurationItemType)
-                .append("\nvalidConfigItem: ")
-                .append(validConfigItem);
-
-        return buf.toString();
     }
 }

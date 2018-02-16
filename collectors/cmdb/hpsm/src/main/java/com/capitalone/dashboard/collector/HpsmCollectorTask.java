@@ -96,8 +96,7 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
 
         int updatedCount = 0;
         int insertCount = 0;
-        int inValidCount;
-
+        int inValidCount = 0;
         cmdbList = hpsmClient.getApps();
 
         for(Cmdb cmdb: cmdbList){
@@ -105,7 +104,7 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
             String configItem = cmdb.getConfigurationItem();
             Cmdb cmdbDbItem =  cmdbRepository.findByConfigurationItem(configItem);
             configurationItemNameList.add(configItem);
-            if(cmdbDbItem != null && !cmdb.equals(cmdbDbItem)){
+            if(cmdbDbItem != null && !cmdb.isCmdbMatch(cmdbDbItem)){
                 cmdb.setId(cmdbDbItem.getId());
                 cmdb.setCollectorItemId(collector.getId());
                 cmdbRepository.save(cmdb);
@@ -225,7 +224,7 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
      */
     private int cleanUpOldCmdbItems(List<String> configurationItemNameList) {
         int inValidCount = 0;
-        for(Cmdb cmdb:  cmdbRepository.findAll()){
+        for(Cmdb cmdb:  cmdbRepository.findAllByValidConfigItem(true)){
             String configItem = cmdb.getConfigurationItem();
 
             if(configurationItemNameList != null && !configurationItemNameList.contains(configItem)){
@@ -236,5 +235,4 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
         }
         return inValidCount;
     }
-
 }

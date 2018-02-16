@@ -5,6 +5,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
 import java.util.Objects;
 
 @Document(collection="incident")
@@ -25,7 +26,7 @@ public class Incident extends BaseModel {
     private String closedBy;
     private String closureCode;
     private String affectedItem;
-    private String incidentDescription;
+    private List<String> incidentDescription;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
 
@@ -97,9 +98,9 @@ public class Incident extends BaseModel {
 
     public void setAffectedItem(String affectedItem) { this.affectedItem = affectedItem; }
 
-    public String getIncidentDescription() { return incidentDescription; }
+    public List<String> getIncidentDescription() {return incidentDescription;}
 
-    public void setIncidentDescription(String incidentDescription) { this.incidentDescription = incidentDescription; }
+    public void setIncidentDescription(List<String> incidentDescription) {this.incidentDescription = incidentDescription;}
 
     @Override
     public boolean equals(Object compareTo){
