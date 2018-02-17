@@ -301,6 +301,10 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
                     existing.setEnvironment(environment);
                     hudsonJobRepository.save(existing);
                 }
+                if (StringUtils.isEmpty(existing.getInstanceUrl())) {
+                    existing.setInstanceUrl(job.getInstanceUrl());
+                    hudsonJobRepository.save(existing);
+                }
             }
         }
         //save all in one shot

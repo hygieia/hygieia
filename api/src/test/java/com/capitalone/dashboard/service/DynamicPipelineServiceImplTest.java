@@ -619,10 +619,8 @@ public class DynamicPipelineServiceImplTest {
 	}
 
 	private Dashboard setupDashboard(Component component) {
-		ObjectId configItemAppId = ObjectId.get();
-		ObjectId configItemComponentId = ObjectId.get();
 		List<String> activeWidgets = new ArrayList<>();
-		Dashboard rt = new Dashboard("foo", "bar", new Application("helloworld", component), new Owner("MarkRx", AuthType.STANDARD), DashboardType.Product,configItemAppId,configItemComponentId,activeWidgets);
+		Dashboard rt = new Dashboard("foo", "bar", new Application("helloworld", component), new Owner("MarkRx", AuthType.STANDARD), DashboardType.Product,"ASVTEST","BAPTEST",activeWidgets);
 
 		Widget pipelineWidget = new Widget();
 		pipelineWidget.setName("pipeline");

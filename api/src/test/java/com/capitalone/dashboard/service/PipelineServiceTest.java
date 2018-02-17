@@ -54,15 +54,13 @@ public class PipelineServiceTest {
     @Test
     public void search() throws Exception {
         ObjectId dashboardCollectorItemId = ObjectId.get();
-        ObjectId configItemAppId = ObjectId.get();
-        ObjectId configItemComponentId = ObjectId.get();
         //build request
         PipelineSearchRequest request = new PipelineSearchRequest();
         List<ObjectId> dashboardCollectorItemIds = new ArrayList<>();
         dashboardCollectorItemIds.add(dashboardCollectorItemId);
         request.setCollectorItemId(dashboardCollectorItemIds);
 
-        Dashboard dashboard = makeTeamDashboard("template", "title", "appName", "",configItemAppId,configItemComponentId,"comp1", "comp2");
+        Dashboard dashboard = makeTeamDashboard("template", "title", "appName", "","ASVTEST","BAPTEST","comp1", "comp2");
         dashboard.getWidgets().add(makePipelineWidget("Dev ENV", "QA Env", null, null, "Prod"));
         Widget buildWidget = new Widget();
         buildWidget.setName("build");
@@ -154,14 +152,14 @@ public class PipelineServiceTest {
 
     }
 
-    private Dashboard makeTeamDashboard(String template, String title, String appName, String owner, ObjectId configItemAppId,ObjectId configItemComponentId, String... compNames) {
+    private Dashboard makeTeamDashboard(String template, String title, String appName, String owner, String configItemAppName,String configItemComponentName, String... compNames) {
 
         Application app = new Application(appName);
         for (String compName : compNames) {
             app.addComponent(new Component(compName));
         }
         List<String> activeWidgets = new ArrayList<>();
-        Dashboard dashboard = new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemAppId, configItemComponentId,activeWidgets);
+        Dashboard dashboard = new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemAppName, configItemComponentName,activeWidgets);
         return dashboard;
     }
 

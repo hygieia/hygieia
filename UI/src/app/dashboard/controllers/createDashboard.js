@@ -41,8 +41,6 @@
         ctrl.setAvailableTemplates = setAvailableTemplates;
         ctrl.getConfigItem = getConfigItem;
         ctrl.resetFormValidation = resetFormValidation;
-        ctrl.setConfigItemAppId = setConfigItemAppId;
-        ctrl.setConfigItemComponentId = setConfigItemComponentId;
         ctrl.getBusAppToolText = getBusAppToolText;
         ctrl.getBusSerToolText = getBusSerToolText;
         ctrl.configureWidgets = configureWidgets;
@@ -122,8 +120,8 @@
                         type: document.cdf.dashboardType.value,
                         applicationName: appName,
                         componentName: appName,
-                        configurationItemBusServObjectId: dashboardService.getBusinessServiceId(ctrl.configurationItemBusServ),
-                        configurationItemBusAppObjectId: dashboardService.getBusinessApplicationId(ctrl.configurationItemBusApp)
+                        configurationItemBusServName: ctrl.configurationItemBusServ.configurationItem,
+                        configurationItemBusAppName: ctrl.configurationItemBusApp.configurationItem
                     };
                     $uibModalInstance.dismiss();
                     configureWidgets(submitData);
@@ -140,8 +138,8 @@
                             type: document.cdf.dashboardType.value,
                             applicationName: appName,
                             componentName: appName,
-                            configurationItemBusServObjectId: dashboardService.getBusinessServiceId(ctrl.configurationItemBusServ),
-                            configurationItemBusAppObjectId: dashboardService.getBusinessApplicationId(ctrl.configurationItemBusApp)
+                            configurationItemBusServName: ctrl.configurationItemBusServ.configurationItem,
+                            configurationItemBusAppName: ctrl.configurationItemBusApp.configurationItem
                         };
 
                     dashboardData
@@ -182,15 +180,6 @@
             form.configurationItemBusServ.$setValidity('dupBusServError', true);
             form.configurationItemBusApp.$setValidity('dupBusAppError', true);
             form.dashboardTitle.$setValidity('createError', true);
-        }
-
-        function setConfigItemAppId(id) {
-            dashboardService.setBusinessServiceId(id);
-        }
-
-        function setConfigItemComponentId(item) {
-            dashboardService.setBusinessApplicationId(item.id);
-            ctrl.configurationItemBusApp = item.configurationItem;
         }
 
         function getBusAppToolText() {

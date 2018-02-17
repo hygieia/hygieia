@@ -67,8 +67,8 @@ import net.minidev.json.JSONArray;
 @WebAppConfiguration
 public class DashboardControllerTest {
     private MockMvc mockMvc;
-    private ObjectId configItemAppId = ObjectId.get();
-    private ObjectId configItemComponentId = ObjectId.get();
+    private String configItemAppName = "ASVTEST";
+    private String configItemComponentName = "BAPTEST";
     @Autowired private WebApplicationContext wac;
     @Autowired private DashboardService dashboardService;
     @Before
@@ -78,7 +78,7 @@ public class DashboardControllerTest {
     }
     @Test
     public void dashboards() throws Exception {
-        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team, configItemAppId, configItemComponentId);
+        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team, configItemAppName, configItemComponentName);
         when(dashboardService.all()).thenReturn(Arrays.asList(d1));
         mockMvc.perform(get("/dashboard"))
                 .andExpect(status().isOk())
@@ -87,12 +87,12 @@ public class DashboardControllerTest {
                 .andExpect(jsonPath("$[0].title", is("title")))
                 .andExpect(jsonPath("$[0].application.name", is("app")))
                 .andExpect(jsonPath("$[0].application.components[0].name", is("comp")))
-                .andExpect(jsonPath("$[0].configurationItemBusServObjectId", is(configItemAppId.toString())))
-                .andExpect(jsonPath("$[0].configurationItemBusAppObjectId", is(configItemComponentId.toString())));
+                .andExpect(jsonPath("$[0].configurationItemBusServName", is(configItemAppName.toString())))
+                .andExpect(jsonPath("$[0].configurationItemBusAppName", is(configItemComponentName.toString())));
     }
     @Test
     public void createProductDashboard() throws Exception {
-        DashboardRequest request = makeDashboardRequest("template", "dashboard title", null, null,"amit", null, "product", configItemAppId, configItemComponentId);
+        DashboardRequest request = makeDashboardRequest("template", "dashboard title", null, null,"amit", null, "product", configItemAppName, configItemComponentName);
         initiateSecurityContext("amit", AuthType.STANDARD);
         mockMvc.perform(post("/dashboard")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -101,7 +101,7 @@ public class DashboardControllerTest {
     }
     @Test
     public void createTeamDashboard() throws Exception {
-        DashboardRequest request = makeDashboardRequest("template", "dashboard title", "app", "comp","amit", null, "team", configItemAppId, configItemComponentId);
+        DashboardRequest request = makeDashboardRequest("template", "dashboard title", "app", "comp","amit", null, "team", configItemAppName, configItemComponentName);
         initiateSecurityContext("amit", AuthType.STANDARD);
         mockMvc.perform(post("/dashboard")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -140,7 +140,7 @@ public class DashboardControllerTest {
     }
     @Test
     public void createDashboard_specialCharacters_badRequest() throws Exception {
-        DashboardRequest request = makeDashboardRequest("template", "bad/title", "app", "comp","amit", null, "team",configItemAppId, configItemComponentId);
+        DashboardRequest request = makeDashboardRequest("template", "bad/title", "app", "comp","amit", null, "team", configItemAppName, configItemComponentName);
         MvcResult result = mockMvc.perform(post("/dashboard")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(request)))
@@ -152,7 +152,7 @@ public class DashboardControllerTest {
     @Test
     public void getDashboard() throws Exception {
         ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
-        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team, configItemAppId, configItemComponentId);
+        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team, configItemAppName, configItemComponentName);
         d1.setId(objectId);
         when(dashboardService.get(objectId)).thenReturn(d1);
         mockMvc.perform(get("/dashboard/" + objectId.toString()))
@@ -162,8 +162,8 @@ public class DashboardControllerTest {
     @Test
     public void updateTeamDashboard() throws Exception {
         ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
-        Dashboard orig = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team, configItemAppId, configItemComponentId);
-        DashboardRequest request = makeDashboardRequest("template", "dashboard title", "app", "comp","amit", null, "team", configItemAppId, configItemComponentId);
+        Dashboard orig = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team, configItemAppName, configItemComponentName);
+        DashboardRequest request = makeDashboardRequest("template", "dashboard title", "app", "comp","amit", null, "team", configItemAppName, configItemComponentName);
 
         when(dashboardService.get(objectId)).thenReturn(orig);
         when(dashboardService.update(Matchers.any(Dashboard.class))).thenReturn(orig);
@@ -178,7 +178,7 @@ public class DashboardControllerTest {
     @Test
     public void renameTeamDashboard() throws Exception {
         ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
-        Dashboard orig = makeDashboard("t1", "dashboard title", "app", "comp","amit", DashboardType.Team, configItemAppId, configItemComponentId);
+        Dashboard orig = makeDashboard("t1", "dashboard title", "app", "comp","amit", DashboardType.Team, configItemAppName, configItemComponentName);
         orig.setId(objectId);
         DashboardRequestTitle request = makeDashboardRequestTitle("different title");
 
@@ -195,7 +195,7 @@ public class DashboardControllerTest {
     @Test
     public void renameTeamDashboard_sameTitle() throws Exception {
         ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
-        Dashboard orig = makeDashboard("t1", "dashboard title", "app", "comp","amit", DashboardType.Team, configItemAppId, configItemComponentId);
+        Dashboard orig = makeDashboard("t1", "dashboard title", "app", "comp","amit", DashboardType.Team, configItemAppName, configItemComponentName);
         orig.setId(objectId);
         DashboardRequestTitle request = makeDashboardRequestTitle("dashboard title");
 
@@ -212,11 +212,11 @@ public class DashboardControllerTest {
     @Test
     public void renameTeamDashboard_titleExists() throws Exception {
         ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
-        Dashboard orig = makeDashboard("t1", "t1 title", "app", "comp","amit", DashboardType.Team, configItemAppId, configItemComponentId);
+        Dashboard orig = makeDashboard("t1", "t1 title", "app", "comp","amit", DashboardType.Team, configItemAppName, configItemComponentName);
         orig.setId(objectId);
 
         ObjectId objectIdAnother = new ObjectId("54b981222364c80a6136c9f2");
-        Dashboard another = makeDashboard("t2", "new title", "app", "comp","amit", DashboardType.Team, configItemAppId, configItemComponentId);
+        Dashboard another = makeDashboard("t2", "new title", "app", "comp","amit", DashboardType.Team, configItemAppName, configItemComponentName);
         another.setId(objectIdAnother);
 
         List<Dashboard> allDashboards = new ArrayList<Dashboard>();
@@ -238,11 +238,11 @@ public class DashboardControllerTest {
     @Test
     public void renameTeamDashboard_titleDoesntExist() throws Exception {
         ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
-        Dashboard orig = makeDashboard("t1", "t1 title", "app", "comp","amit", DashboardType.Team, configItemAppId, configItemComponentId);
+        Dashboard orig = makeDashboard("t1", "t1 title", "app", "comp","amit", DashboardType.Team, configItemAppName, configItemComponentName);
         orig.setId(objectId);
 
         ObjectId objectIdAnother = new ObjectId("54b981222364c80a6136c9f2");
-        Dashboard another = makeDashboard("t2", "t2 title", "app", "comp","amit", DashboardType.Team, configItemAppId, configItemComponentId);
+        Dashboard another = makeDashboard("t2", "t2 title", "app", "comp","amit", DashboardType.Team, configItemAppName, configItemComponentName);
         another.setId(objectIdAnother);
 
         List<Dashboard> allDashboards = new ArrayList<Dashboard>();
@@ -264,7 +264,7 @@ public class DashboardControllerTest {
     @Test
     public void renameTeamDashboard_invalidTitle() throws Exception {
         ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
-        Dashboard orig = makeDashboard("t1", "dashboard title", "app", "comp","amit", DashboardType.Team, configItemAppId, configItemComponentId);
+        Dashboard orig = makeDashboard("t1", "dashboard title", "app", "comp","amit", DashboardType.Team, configItemAppName, configItemComponentName);
         DashboardRequestTitle request = makeDashboardRequestTitle("bad / title");
 
         when(dashboardService.get(objectId)).thenReturn(orig);
@@ -281,7 +281,7 @@ public class DashboardControllerTest {
     @Test
     public void renameTeamDashboard_emptyTitle() throws Exception {
         ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
-        Dashboard orig = makeDashboard("t1", "dashboard title", "app", "comp","amit", DashboardType.Team, configItemAppId, configItemComponentId);
+        Dashboard orig = makeDashboard("t1", "dashboard title", "app", "comp","amit", DashboardType.Team, configItemAppName, configItemComponentName);
         DashboardRequestTitle request = makeDashboardRequestTitle("");
 
         when(dashboardService.get(objectId)).thenReturn(orig);
@@ -298,7 +298,7 @@ public class DashboardControllerTest {
     @Test
     public void renameTeamDashboard_nullTitle() throws Exception {
         ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
-        Dashboard orig = makeDashboard("t1", "dashboard title", "app", "comp","amit", DashboardType.Team, configItemAppId, configItemComponentId);
+        Dashboard orig = makeDashboard("t1", "dashboard title", "app", "comp","amit", DashboardType.Team, configItemAppName, configItemComponentName);
         DashboardRequestTitle request = new DashboardRequestTitle();
 
         when(dashboardService.get(objectId)).thenReturn(orig);
@@ -326,7 +326,7 @@ public class DashboardControllerTest {
         List<ObjectId> collIds = Arrays.asList(collId);
         Map<String, Object> options = new WidgetOptionsBuilder().put("option1", 1).put("option2", "2").get();
         WidgetRequest request = makeWidgetRequest("build", compId, collIds, options);
-        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team, configItemAppId, configItemComponentId);
+        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team, configItemAppName, configItemComponentName);
         Widget widgetWithId = request.widget();
         widgetWithId.setId(ObjectId.get());
         Component component = makeComponent(compId, "Component", CollectorType.Build, collId);
@@ -356,7 +356,7 @@ public class DashboardControllerTest {
         List<ObjectId> collIds = Arrays.asList(collId);
         Map<String, Object> options = new WidgetOptionsBuilder().put("option1", 2).put("option2", "3").get();
         WidgetRequest request = makeWidgetRequest("build", compId, collIds, options);
-        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team, configItemAppId, configItemComponentId);
+        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team, configItemAppName, configItemComponentName);
         Widget widget = makeWidget(widgetId, "build", compId, options);
         when(dashboardService.get(dashId)).thenReturn(d1);
         when(dashboardService.getWidget(d1, widgetId)).thenReturn(widget);
@@ -376,7 +376,7 @@ public class DashboardControllerTest {
         List<ObjectId> collIds = Arrays.asList(collId);
         Map<String, Object> options = new WidgetOptionsBuilder().put("option1", 2).put("option2", "3").get();
         WidgetRequest request = makeWidgetRequest("build", compId, collIds, options);
-        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team, configItemAppId, configItemComponentId);
+        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team, configItemAppName, configItemComponentName);
         Widget widget = makeWidget(widgetId, "build", compId, options);
         when(dashboardService.get(dashId)).thenReturn(d1);
         when(dashboardService.getWidget(d1, widgetId)).thenReturn(widget);
