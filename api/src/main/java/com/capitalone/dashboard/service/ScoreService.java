@@ -7,11 +7,10 @@ import org.bson.types.ObjectId;
 public interface ScoreService {
 
     /**
-     * A snapshot of the deployment status of each DeployableUnit and Server
-     * in all environments.
+     * Score Metrics by it component id
      *
      * @param componentId id of Component
-     * @return list of Environments
+     * @return DataResponse of type Scores
      */
     DataResponse<ScoreMetric> getScoreMetric(ObjectId componentId);
 }
