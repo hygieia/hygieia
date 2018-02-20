@@ -26,5 +26,4 @@ public interface CollectorItemRepository extends BaseCollectorItemRepository<Col
 
     @Query(value="{ 'collectorId' : ?0, options.url : {$regex : '^?1$', $options: 'i'}, options.branch : {$regex : '^?2$', $options: 'i'}, enabled : ?3}")
     CollectorItem findRepoByUrlAndBranch(ObjectId collectorId, String url, String branch, boolean enabled);
-
 }

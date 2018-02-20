@@ -9,8 +9,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 
-
-
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
