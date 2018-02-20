@@ -9,24 +9,16 @@
     function scoreConfigController(modalData, collectorData, $uibModalInstance) {
         /*jshint validthis:true */
         var ctrl = this;
-        //Cache all apps data
 
         var widgetConfig = modalData.widgetConfig;
 
         // public variables
-        ctrl.jobDropdownDisabled = true;
-        ctrl.jobDropdownPlaceholder = 'Loading...';
         ctrl.submitted = false;
         ctrl.collectors = [];
         ctrl.collectorItemId = null;
         ctrl.settingsType = 'DEFAULT';
-        ctrl.buildWidget = null;
-        ctrl.qualityWidget = null;
-        ctrl.deployWidget = null;
         // public methods
         ctrl.submit = submit;
-        ctrl.isSettingCustom = isSettingCustom;
-        ctrl.settingsTypeChange = settingsTypeChange;
 
         init();
 
@@ -36,49 +28,6 @@
             if (widgetConfig && widgetConfig.options) {
                 getScoreItemForWidget().then(initializeWidgetData)
             }
-        }
-
-        function isSettingCustom() {
-            return (ctrl.settingsType === 'CUSTOM');
-        }
-
-        function settingsTypeChange() {
-            if (ctrl.settingsType === 'CUSTOM') {
-                if (!ctrl.buildWidget && !ctrl.qualityWidget && !ctrl.deployWidget) {
-                    ctrl.buildWidget = {
-                        weight: 34,
-                        numberOfDays: 14,
-                        status: {
-                            weight: 50
-                        },
-                        duration: {
-                            weight: 50,
-                            buildDurationThresholdInMillis: 300000
-                        }
-                    };
-
-                    ctrl.deployWidget = {
-                        intancesOnline: {
-                            weight: 50
-                        },
-                        deploySuccess: {
-                            weight: 50
-                        },
-                        weight: 33
-                    };
-
-                    ctrl.qualityWidget = {
-                        unitTests: {
-                           weight: 50
-                        },
-                        codeCoverage: {
-                           weight: 50
-                        },
-                        weight: 33
-                    };
-                }
-            }
-
         }
 
         function processCollectorsResponse(data) {
@@ -94,9 +43,6 @@
 
             if (ctrl.collectorItemId) {
                 ctrl.settingsType = ctrl.collectorItemId.options.settingsType;
-                ctrl.buildWidget = ctrl.collectorItemId.options.buildWidget;
-                ctrl.qualityWidget = ctrl.collectorItemId.options.qualityWidget;
-                ctrl.deployWidget = ctrl.collectorItemId.options.deployWidget;
             }
         }
 
@@ -141,10 +87,7 @@
                 description: modalData.dashboard.id,
                 options: {
                     dashboardId: modalData.dashboard.id,
-                    settingsType: ctrl.settingsType,
-                    buildWidget: ctrl.buildWidget,
-                    qualityWidget: ctrl.qualityWidget,
-                    deployWidget: ctrl.deployWidget
+                    settingsType: ctrl.settingsType
               }
             };
         }

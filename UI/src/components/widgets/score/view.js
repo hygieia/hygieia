@@ -26,7 +26,6 @@
 
         ctrl.data = {};
         ctrl.load = load;
-        ctrl.scoreTxt = '--';
 
         function load() {
             var deferred = $q.defer();
@@ -43,28 +42,6 @@
         function processResponse(data) {
             ctrl.data = data;
             ctrl.rateItOptions.value = data.score;
-
-            var adjustVal = 100/data.total;
-            ctrl.pieData = {
-                                   labels: ['Score', ''],
-                                   series: [parseInt(data.score * adjustVal), parseInt((data.total - data.score) * adjustVal)]
-                           };
-
-            ctrl.scoreTxt =  "Score: " + data.score + " / " + data.total;
-        }
-
-
-
-        function defaultStateCallback(isDefaultState) {
-            //$scope.$apply(function() {
-                $scope.display = isDefaultState ? DisplayState.DEFAULT : DisplayState.ERROR;
-            //});
-        }
-
-        function environmentsCallback(data) {
-            //$scope.$apply(function () {
-                ctrl.environments = data.environments;
-            //});
         }
 
         ctrl.viewDetails = function() {
