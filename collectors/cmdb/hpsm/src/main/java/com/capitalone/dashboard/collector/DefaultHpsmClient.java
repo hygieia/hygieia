@@ -230,18 +230,18 @@ public class DefaultHpsmClient implements HpsmClient {
 	private List<Cmdb> getConfigurationItemList(HpsmSoapModel hpsmSoapModel){
 		List<Cmdb> configurationItemList = new ArrayList<>();
 		List<Cmdb> detailsList;
-
+		String batchLimit = hpsmSettings.getCmdbBatchLimit();
 		boolean getMore = true;
 		int startValue = 0;
 		while(getMore){
 			String more = "";
 			String status = "";
 
-			int returnLimit = Integer.parseInt(hpsmSettings.getCmdbBatchLimit());
+			int returnLimit = Integer.parseInt(batchLimit);
 
 
 			String newStart = Integer.toString(startValue);
-			String soapString = getCmdbSoapMessage(hpsmSoapModel,newStart);
+			String soapString = getSoapMessage(hpsmSoapModel,newStart, batchLimit, SoapRequestType.CMDB);
 			String response = makeSoapCall(soapString, hpsmSoapModel);
 			Document doc = responseToDoc(response);
 			NodeList instanceNodeList = doc.getElementsByTagName("RetrieveDeviceListResponse");
@@ -254,7 +254,7 @@ public class DefaultHpsmClient implements HpsmClient {
 			}
 			detailsList = responseToDetailsList(response);
 
-			if(detailsList.size() > 0){
+			if(detailsList != null && !detailsList.isEmpty()){
 				configurationItemList.addAll(detailsList);
 			}
 
@@ -386,12 +386,13 @@ public class DefaultHpsmClient implements HpsmClient {
 	 */
 	private List<ChangeOrder> getChangeOrderList(){
 		List<ChangeOrder> changeOrderList;
+		String limit = hpsmSettings.getChangeOrderReturnLimit();
 
 		HpsmSoapModel hpsmSoapModel = new HpsmSoapModel();
 		hpsmSoapModel.setRequestTypeName(hpsmSettings.getChangeOrderRequestType());
 		hpsmSoapModel.setSoapAction(hpsmSettings.getChangeOrderSoapAction());
 
-		String soapString = getChangeSoapMessage(hpsmSoapModel);
+		String soapString = getSoapMessage(hpsmSoapModel,"",limit, SoapRequestType.CHANGE_ORDER);
 
 		String response  = makeSoapCall(soapString, hpsmSoapModel);
 
@@ -407,12 +408,13 @@ public class DefaultHpsmClient implements HpsmClient {
 	 */
 	private List<Incident> getIncidentList(){
 		List<Incident> incidentList;
+		String limit = hpsmSettings.getIncidentReturnLimit();
 
 		HpsmSoapModel hpsmSoapModel = new HpsmSoapModel();
 		hpsmSoapModel.setRequestTypeName(hpsmSettings.getIncidentRequestType());
 		hpsmSoapModel.setSoapAction(hpsmSettings.getIncidentSoapAction());
 
-		String soapString = getIncidentSoapMessage(hpsmSoapModel);
+		String soapString = getSoapMessage(hpsmSoapModel, "", limit, SoapRequestType.INCIDENT );
 
 		String response  = makeSoapCall(soapString, hpsmSoapModel);
 
@@ -600,7 +602,7 @@ public class DefaultHpsmClient implements HpsmClient {
 
     }
 
-    private String getCmdbSoapMessage(HpsmSoapModel hpsmSoapModel, String start){
+	private String getSoapMessage(HpsmSoapModel hpsmSoapModel, String start, String limit, SoapRequestType type){
 		String strMsg = "";
 		SOAPMessage soapMsg;
 		String requestTypeName = hpsmSoapModel.getRequestTypeName();
@@ -621,11 +623,12 @@ public class DefaultHpsmClient implements HpsmClient {
 
 			SOAPBodyElement requestType = body.addBodyElement(envelope.createName(requestTypeName,"ns", ""));
 
-			String limit = hpsmSettings.getCmdbBatchLimit();
 			if(limit != null && !limit.isEmpty()) {
+				LOG.info("NOTE: Collector run limited to " + limit + " results by property file setting.");
 				QName name1 = new QName("count");
 				requestType.addAttribute(name1, limit);
 			}
+
 			if(start != null && !start.isEmpty()) {
 				QName qNameStart = new QName("start");
 				requestType.addAttribute(qNameStart, start);
@@ -641,119 +644,13 @@ public class DefaultHpsmClient implements HpsmClient {
 			// creates instance tag
 			body.addBodyElement(envelope.createName("instance", "ns", ""));
 
-			handleCmdbSoapMessage(hpsmSoapModel, envelope, keysTag);
-
-			modelTag.addChildElement(keysTag);
-
-			requestType.addChildElement(modelTag);
-
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			soapMsg.writeTo(out);
-			strMsg = new String(out.toByteArray());
-
-		} catch (SOAPException e) {
-			LOG.error("SOAPException: " + e);
-		} catch (UnsupportedEncodingException e) {
-			LOG.error("UnsupportedEncodingException: " + e);
-		} catch (IOException e) {
-			LOG.error("IOException: " + e);
-		}
-
-		return strMsg;
-	}
-
-	private String getIncidentSoapMessage(HpsmSoapModel hpsmSoapModel){
-		String strMsg = "";
-		SOAPMessage soapMsg;
-		String requestTypeName = hpsmSoapModel.getRequestTypeName();
-
-		try {
-			MessageFactory factory = MessageFactory.newInstance();
-
-			soapMsg = factory.createMessage();
-
-			SOAPPart part = soapMsg.getSOAPPart();
-
-			SOAPEnvelope envelope = part.getEnvelope();
-			envelope.addNamespaceDeclaration("ns", "http://schemas.hp.com/SM/7");
-			envelope.addNamespaceDeclaration("com", "http://schemas.hp.com/SM/7/Common");
-			envelope.addNamespaceDeclaration("xm", "http://www.w3.org/2005/05/xmlmime");
-
-			SOAPBody body = envelope.getBody();
-
-			SOAPBodyElement requestType = body.addBodyElement(envelope.createName(requestTypeName,"ns", ""));
-
-			String limit = hpsmSettings.getIncidentReturnLimit();
-			if(limit != null && !limit.isEmpty()) {
-				LOG.info("NOTE: Collector run limited to " + limit + " results by property file setting.");
-				QName name1 = new QName("count");
-				requestType.addAttribute(name1, limit);
+			if(type.equals(SoapRequestType.CHANGE_ORDER)){
+				handleChangeSoapMessage(keysTag);
+			}else if(type.equals(SoapRequestType.INCIDENT)){
+				handleIncidentSoapMessage(keysTag);
+			}else{
+				handleCmdbSoapMessage(hpsmSoapModel, envelope, keysTag);
 			}
-
-			SOAPBodyElement modelTag = body.addBodyElement(envelope.createName("model","ns", ""));
-
-			SOAPBodyElement keysTag = body.addBodyElement(envelope.createName("keys","ns", ""));
-
-			// creates instance tag
-			body.addBodyElement(envelope.createName("instance", "ns", ""));
-
-			handleIncidentSoapMessage(keysTag);
-
-			modelTag.addChildElement(keysTag);
-
-			requestType.addChildElement(modelTag);
-
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			soapMsg.writeTo(out);
-			strMsg = new String(out.toByteArray());
-
-		} catch (SOAPException e) {
-			LOG.error("SOAPException: " + e);
-		} catch (UnsupportedEncodingException e) {
-			LOG.error("UnsupportedEncodingException: " + e);
-		} catch (IOException e) {
-			LOG.error("IOException: " + e);
-		}
-
-		return strMsg;
-	}
-
-	private String getChangeSoapMessage(HpsmSoapModel hpsmSoapModel){
-		String strMsg = "";
-		SOAPMessage soapMsg;
-		String requestTypeName = hpsmSoapModel.getRequestTypeName();
-
-		try {
-			MessageFactory factory = MessageFactory.newInstance();
-
-			soapMsg = factory.createMessage();
-
-			SOAPPart part = soapMsg.getSOAPPart();
-
-			SOAPEnvelope envelope = part.getEnvelope();
-			envelope.addNamespaceDeclaration("ns", "http://schemas.hp.com/SM/7");
-			envelope.addNamespaceDeclaration("com", "http://schemas.hp.com/SM/7/Common");
-			envelope.addNamespaceDeclaration("xm", "http://www.w3.org/2005/05/xmlmime");
-
-			SOAPBody body = envelope.getBody();
-
-			SOAPBodyElement requestType = body.addBodyElement(envelope.createName(requestTypeName,"ns", ""));
-
-			String limit = hpsmSettings.getChangeOrderReturnLimit();
-			if(limit != null && !limit.isEmpty()) {
-				LOG.info("NOTE: Collector run limited to " + limit + " results by property file setting.");
-				QName name1 = new QName("count");
-				requestType.addAttribute(name1, limit);
-			}
-
-			SOAPBodyElement modelTag = body.addBodyElement(envelope.createName("model","ns", ""));
-
-			SOAPBodyElement keysTag = body.addBodyElement(envelope.createName("keys","ns", ""));
-
-			// creates instance tag
-			body.addBodyElement(envelope.createName("instance", "ns", ""));
-
-			handleChangeSoapMessage(keysTag);
 
 			modelTag.addChildElement(keysTag);
 
