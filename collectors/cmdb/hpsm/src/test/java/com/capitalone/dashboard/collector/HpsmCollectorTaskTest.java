@@ -77,7 +77,7 @@ public class HpsmCollectorTaskTest {
     public void collect_testCollect() {
         when(hpsmClient.getApps()).thenReturn(getMockList());
         when(cmdbRepository.findAll()).thenReturn(getMockList());
-
+        when(cmdbRepository.findAllByValidConfigItem(true)).thenReturn(getMockList());
 
         HpsmCollector collector =collector();
         collector.setId(new ObjectId("111ca42a258ad365fbb64ecc"));

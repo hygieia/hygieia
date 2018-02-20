@@ -4,6 +4,7 @@ import com.capitalone.dashboard.model.ChangeOrder;
 import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.HpsmSoapModel;
 import com.capitalone.dashboard.model.Incident;
+import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.SimpleHttpConnectionManager;
@@ -19,8 +20,16 @@ import org.json.JSONObject;
 import org.json.XML;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
 
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPEnvelope;
 import javax.xml.soap.SOAPMessage;
@@ -30,6 +39,7 @@ import javax.xml.soap.SOAPBodyElement;
 import javax.xml.soap.SOAPException;
 
 import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -116,7 +126,7 @@ public class DefaultHpsmClient implements HpsmClient {
 	@Override
 	public List<Cmdb> getApps() {
 
-		String limit = hpsmSettings.getCmdbReturnLimit();
+		String limit = hpsmSettings.getCmdbBatchLimit();
 		if(limit != null && !limit.isEmpty()) {
 			LOG.info("NOTE: Collector run limited to " + limit + " results by property file setting.");
 		}
@@ -218,12 +228,45 @@ public class DefaultHpsmClient implements HpsmClient {
 	 * @return
 	 */
 	private List<Cmdb> getConfigurationItemList(HpsmSoapModel hpsmSoapModel){
-		List<Cmdb> configurationItemList;
+		List<Cmdb> configurationItemList = new ArrayList<>();
+		List<Cmdb> detailsList;
 
-		String soapString = getCmdbSoapMessage(hpsmSoapModel);
-		String response = makeSoapCall(soapString, hpsmSoapModel);
-		configurationItemList = responseToDetailsList(response);
+		boolean getMore = true;
+		int startValue = 0;
+		while(getMore){
+			String more = "";
+			String status = "";
+
+			int returnLimit = Integer.parseInt(hpsmSettings.getCmdbBatchLimit());
+
+
+			String newStart = Integer.toString(startValue);
+			String soapString = getCmdbSoapMessage(hpsmSoapModel,newStart);
+			String response = makeSoapCall(soapString, hpsmSoapModel);
+			Document doc = responseToDoc(response);
+			NodeList instanceNodeList = doc.getElementsByTagName("RetrieveDeviceListResponse");
+
+			for (int i = 0; i < instanceNodeList.getLength(); i++) {
+				NamedNodeMap instanceChildNodes = instanceNodeList.item(i).getAttributes();
+				more = instanceChildNodes.getNamedItem("more").getNodeValue();
+				status = instanceChildNodes.getNamedItem("status").getNodeValue();
+
+			}
+			detailsList = responseToDetailsList(response);
+
+			if(detailsList.size() > 0){
+				configurationItemList.addAll(detailsList);
+			}
+
+			if(more == null || !more.equals("1") || status == null || !status.equals("SUCCESS")){
+				getMore = false;
+				LOG.info("No more items retrieved. Item count " + configurationItemList.size());
+			}
+			startValue += returnLimit;
+		}
+
 		return configurationItemList;
+
 	}
 
 	/**
@@ -251,7 +294,6 @@ public class DefaultHpsmClient implements HpsmClient {
 						LOG.info("No Object found for instanceArray");
 					}
 				}
-				LOG.info("returnList size after " + returnList.size());
 			}else if(instance instanceof  JSONObject){
 				JSONObject instanceObject = (JSONObject) instance;
 
@@ -438,6 +480,36 @@ public class DefaultHpsmClient implements HpsmClient {
 
 		return itemType;
 	}
+	/**
+	 *  Converts String response into document for parsing
+	 * @param response SOAP response required for creation of Document
+	 * @return Document Object
+	 */
+	private Document responseToDoc(String response){
+
+		Document doc = null;
+
+		try {
+
+			DocumentBuilderFactory factory = new DocumentBuilderFactoryImpl();
+			DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder =  factory.newDocumentBuilder();
+			ByteArrayInputStream input =  new ByteArrayInputStream(response.getBytes("UTF-8"));
+			doc = builder.parse(input);
+
+		} catch (ParserConfigurationException e) {
+			LOG.error("ParserConfigurationException", e);
+		} catch (UnsupportedEncodingException e) {
+			LOG.error("UnsupportedEncodingException", e);
+		} catch (IOException e) {
+			LOG.error("IOException", e);
+		} catch (SAXException e) {
+			LOG.error("SAXException", e);
+		}
+
+
+		return doc;
+	}
 
 	/**
 	 *  Start SOAP connection
@@ -516,7 +588,7 @@ public class DefaultHpsmClient implements HpsmClient {
 
             response = getResponseString(post.getResponseBodyAsStream());
 
-            if("FAILURE".equals(post.getStatusText())){
+            if(!"OK".equals(post.getStatusText())){
                 LOG.info("Soap Request Failure: " +  post.getStatusCode() + "|response: " +response);
             }
 
@@ -528,7 +600,7 @@ public class DefaultHpsmClient implements HpsmClient {
 
     }
 
-    private String getCmdbSoapMessage(HpsmSoapModel hpsmSoapModel){
+    private String getCmdbSoapMessage(HpsmSoapModel hpsmSoapModel, String start){
 		String strMsg = "";
 		SOAPMessage soapMsg;
 		String requestTypeName = hpsmSoapModel.getRequestTypeName();
@@ -549,11 +621,18 @@ public class DefaultHpsmClient implements HpsmClient {
 
 			SOAPBodyElement requestType = body.addBodyElement(envelope.createName(requestTypeName,"ns", ""));
 
-			String limit = hpsmSettings.getCmdbReturnLimit();
+			String limit = hpsmSettings.getCmdbBatchLimit();
 			if(limit != null && !limit.isEmpty()) {
 				QName name1 = new QName("count");
 				requestType.addAttribute(name1, limit);
 			}
+			if(start != null && !start.isEmpty()) {
+				QName qNameStart = new QName("start");
+				requestType.addAttribute(qNameStart, start);
+			}
+
+			QName qNameIgnoreEmptyValues = new QName("ignoreEmptyElements");
+			requestType.addAttribute(qNameIgnoreEmptyValues, "true");
 
 			SOAPBodyElement modelTag = body.addBodyElement(envelope.createName("model","ns", ""));
 

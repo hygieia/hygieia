@@ -96,7 +96,7 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
 
         int updatedCount = 0;
         int insertCount = 0;
-        int inValidCount = 0;
+
         cmdbList = hpsmClient.getApps();
 
         for(Cmdb cmdb: cmdbList){
@@ -116,11 +116,10 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
             }
         }
 
-        inValidCount = cleanUpOldCmdbItems(configurationItemNameList);
+
 
         LOG.info("Inserted Cmdb Item Count: " + insertCount);
         LOG.info("Updated Cmdb Item Count: " +  updatedCount);
-        LOG.info("Invalid Cmdb Item Count: " +  inValidCount);
 
     }
 
@@ -217,22 +216,4 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
         log("Finished", start);
     }
 
-    /**
-     *  Takes configurationItemNameList (list of all APP/component names) and List<Cmdb> from client and sets flag to false for old items in mongo
-     * @param configurationItemNameList
-     * @return return count of items invalidated
-     */
-    private int cleanUpOldCmdbItems(List<String> configurationItemNameList) {
-        int inValidCount = 0;
-        for(Cmdb cmdb:  cmdbRepository.findAllByValidConfigItem(true)){
-            String configItem = cmdb.getConfigurationItem();
-
-            if(configurationItemNameList != null && !configurationItemNameList.contains(configItem)){
-                cmdb.setValidConfigItem(false);
-                cmdbRepository.save(cmdb);
-                inValidCount++;
-            }
-        }
-        return inValidCount;
-    }
 }

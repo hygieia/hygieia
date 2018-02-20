@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.collector;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -45,8 +46,8 @@ public class HpsmSettings {
 
 	private String changeOrderQuery;
 	private String incidentQuery;
-
-	private String cmdbReturnLimit;
+	@Value("${cmdbBatchLimit:500}")
+	private String cmdbBatchLimit;
 	private String incidentReturnLimit;
 	private String changeOrderReturnLimit;
 
@@ -242,9 +243,9 @@ public class HpsmSettings {
 
 	public void setIncidentQuery(String incidentQuery) { this.incidentQuery = incidentQuery; }
 
-	public String getCmdbReturnLimit() {return cmdbReturnLimit;	}
+	public String getCmdbBatchLimit() {return cmdbBatchLimit;}
 
-	public void setCmdbReturnLimit(String cmdbReturnLimit) { this.cmdbReturnLimit = cmdbReturnLimit; }
+	public void setCmdbBatchLimit(String cmdbBatchLimit) {this.cmdbBatchLimit = cmdbBatchLimit;}
 
 	public String getIncidentReturnLimit() { return incidentReturnLimit; }
 
