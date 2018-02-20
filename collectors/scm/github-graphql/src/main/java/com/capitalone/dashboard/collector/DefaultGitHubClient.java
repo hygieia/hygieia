@@ -77,10 +77,9 @@ public class DefaultGitHubClient implements GitHubClient {
         }
     }
 
-    private int getFetchCount(boolean firstRun, GitHubRepo repo) {
+    private int getFetchCount(boolean firstRun) {
         if (firstRun) return 100;
-        long timeDelta = System.currentTimeMillis() - repo.getLastUpdated();
-        return Math.max(5, Math.min(100, Math.round(timeDelta / 60000)));
+        return settings.getFetchCount();
     }
 
     @Override
@@ -237,7 +236,7 @@ public class DefaultGitHubClient implements GitHubClient {
         JSONObject variableJSON = new JSONObject();
         variableJSON.put("owner", gitHubParsed.getOrgName());
         variableJSON.put("name", gitHubParsed.getRepoName());
-        variableJSON.put("fetchCount", getFetchCount(firstRun, repo));
+        variableJSON.put("fetchCount", getFetchCount(firstRun));
 
 
         LOG.debug("Collection Mode =" + mode.toString());
@@ -442,7 +441,9 @@ public class DefaultGitHubClient implements GitHubClient {
                 pull.setResolutiontime((mergedTimestamp - createdTimestamp) / (24 * 3600000));
                 pull.setScmCommitTimestamp(mergedTimestamp);
                 pull.setMergedAt(mergedTimestamp);
-                List<Commit> prCommits = getPRCommits((JSONObject) node.get("commits"), pull);
+                JSONObject commitsObject = (JSONObject) node.get("commits");
+                pull.setNumberOfChanges(commitsObject != null ? asInt(commitsObject, "totalCount") : 0);
+                List<Commit> prCommits = getPRCommits(commitsObject, pull);
                 pull.setCommits(prCommits);
                 List<Comment> comments = getComments((JSONObject) node.get("comments"));
                 pull.setComments(comments);
@@ -864,7 +865,7 @@ public class DefaultGitHubClient implements GitHubClient {
                 return getDate(new DateTime(), FIRST_RUN_HISTORY_DEFAULT, 0).toString();
             }
         } else {
-            return getDate(new DateTime(repo.getLastUpdated()), 0, 10).toString();
+            return getDate(new DateTime(repo.getLastUpdated()), 0, settings.getOffsetMinutes()).toString();
         }
     }
 
