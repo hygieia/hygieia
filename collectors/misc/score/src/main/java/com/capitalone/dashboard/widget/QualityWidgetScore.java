@@ -24,6 +24,13 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.mysema.query.BooleanBuilder;
 
+/**
+ * Service to calculate quality widget score
+ * Quality scores are based on
+ * 1. Percentage of code coverage
+ * 2. Percentage of successful unit tests
+ * 3. Violations (Critical, Blocker, Major)
+ */
 @Service
 public class QualityWidgetScore extends WidgetScoreAbstract {
   @SuppressWarnings({"unused", "PMD.UnusedPrivateField"})
@@ -132,6 +139,13 @@ public class QualityWidgetScore extends WidgetScoreAbstract {
     }
   }
 
+  /**
+   * Process Code Coverage score
+   *
+   * @param qualityCCSettings Code Coverage Param Settings
+   * @param codeQualityIterable Quality values
+   * @param categoryScores List of category scores
+   */
   private void processQualityCCScore(
     ScoreParamSettings qualityCCSettings,
     Iterable<CodeQuality> codeQualityIterable,
@@ -159,6 +173,13 @@ public class QualityWidgetScore extends WidgetScoreAbstract {
     }
   }
 
+  /**
+   * Process Unit Tests score
+   *
+   * @param qualityUTSettings Unit Tests Param Settings
+   * @param codeQualityIterable Quality values
+   * @param categoryScores List of category scores
+   */
   private void processQualityUTScore(
     ScoreParamSettings qualityUTSettings,
     Iterable<CodeQuality> codeQualityIterable,
@@ -186,6 +207,13 @@ public class QualityWidgetScore extends WidgetScoreAbstract {
     }
   }
 
+  /**
+   * Calculate Violations score based on Blocker, Critical & Major violations
+   *
+   * @param qualityViolationsSettings Violations Param Settings
+   * @param codeQualityIterable Quality values
+   * @param categoryScores List of category scores
+   */
   private void processQualityViolationsScore(
     QualityScoreSettings.ViolationsScoreSettings qualityViolationsSettings,
     Iterable<CodeQuality> codeQualityIterable,
@@ -203,6 +231,10 @@ public class QualityWidgetScore extends WidgetScoreAbstract {
       qualityViolationsScore.setState(ScoreWeight.ProcessingState.criteria_failed);
     } else {
       try {
+        //Violation score is calculated based on weight for each type
+        // Blocker
+        // Critical
+        // Major
         Double violationScore = Double.valueOf(Constants.MAX_SCORE) - (
             getViolationScore(qualityBlockerRatio, qualityViolationsSettings.getBlockerViolationsWeight()) +
             getViolationScore(qualityCriticalRatio, qualityViolationsSettings.getCriticalViolationsWeight()) +
@@ -232,6 +264,13 @@ public class QualityWidgetScore extends WidgetScoreAbstract {
     return (violationValue * (double)weight);
   }
 
+  /**
+   * Fetch param value by param name from quality values
+   *
+   * @param qualityIterable
+   * @param param quality param
+   * @return Param Value
+   */
   private Double fetchQualityValue(Iterable<CodeQuality> qualityIterable, String param) {
     Double paramValue = null;
     Iterator<CodeQuality> qualityIterator = qualityIterable.iterator();

@@ -19,6 +19,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+/**
+ * Service to calculate scm widget score
+ * Scm scores are based on
+ * 1. Percentage of days with commits
+ */
 @Service
 public class GithubScmWidgetScore extends WidgetScoreAbstract {
 
@@ -151,6 +156,13 @@ public class GithubScmWidgetScore extends WidgetScoreAbstract {
     }
   }
 
+  /**
+   * Calculate percentage of days with commits out of total days
+   *
+   * @param commits
+   * @param days
+   * @return percentage of days with commits
+   */
   private Double getPercentCoverageForDays(Iterable<Commit> commits, int days) {
     Set<String> dates = new HashSet<>();
     for (Commit commit : commits) {

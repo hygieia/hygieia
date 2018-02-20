@@ -23,6 +23,12 @@ import com.capitalone.dashboard.repository.ComponentRepository;
 import com.google.common.collect.Lists;
 import com.mysema.query.BooleanBuilder;
 
+/**
+ * Service to calculate build widget score
+ * Build scores are based on
+ * 1. Percentage of successful builds
+ * 2. Percentage of successful builds within threshold
+ */
 @Service
 public class BuildWidgetScore extends WidgetScoreAbstract {
   @SuppressWarnings({"unused", "PMD.UnusedPrivateField"})
@@ -181,6 +187,14 @@ public class BuildWidgetScore extends WidgetScoreAbstract {
     return timestamps;
   }
 
+  /**
+   * Calculate percentage of successful builds
+   * Any build with status InProgress, Aborted is excluded from calculation
+   * Builds with status as Success, Unstable is included as success build
+   *
+   * @param builds iterable build
+   * @return percentage of build success
+   */
   private Double fetchBuildSuccessRatio(Iterable<Build> builds) {
     int totalBuilds = 0, totalSuccess = 0;
     for (Build build : builds) {
@@ -199,6 +213,14 @@ public class BuildWidgetScore extends WidgetScoreAbstract {
     return ((totalSuccess * 100) / (double) totalBuilds);
   }
 
+  /**
+   * Calculate builds that completed successfully within threshold time
+   * Only builds with status as Success, Unstable is included for calculation
+   *
+   * @param builds iterable builds
+   * @param thresholdInMillis threshold for build times in milliseconds
+   * @return percentage of builds within threshold
+   */
   private Double fetchBuildDurationWithinThresholdRatio(Iterable<Build> builds, long thresholdInMillis) {
     int totalBuilds = 0, totalBelowThreshold = 0;
     for (Build build : builds) {
@@ -217,7 +239,12 @@ public class BuildWidgetScore extends WidgetScoreAbstract {
     return ((totalBelowThreshold * 100) / (double) totalBuilds);
   }
 
-
+  /**
+   * Search for build records from request object
+   *
+   * @param request build search request object
+   * @return iterable builds
+   */
   private Iterable<Build> search(BuildSearch request) {
     Component component = componentRepository.findOne(request.getComponentId());
     CollectorItem item = component.getFirstCollectorItemForType(CollectorType.Build);

@@ -22,9 +22,20 @@ import com.capitalone.dashboard.model.IdName;
 import com.capitalone.dashboard.model.ScoreWeight;
 import com.capitalone.dashboard.model.Widget;
 
+/**
+ * Widget Score calculation base class
+ * This should be extended for writing score calculation implementations for widgets
+ */
 public abstract class WidgetScoreAbstract implements WidgetScore {
   private static final Logger LOGGER = LoggerFactory.getLogger(WidgetScoreAbstract.class);
 
+  /**
+   * Process widget score
+   *
+   * @param widget widget configuration from dashboard
+   * @param paramSettings Score Settings for the widget
+   * @return
+   */
   @Override
   public ScoreWeight processWidgetScore(Widget widget, ScoreParamSettings paramSettings) {
 
@@ -43,7 +54,7 @@ public abstract class WidgetScoreAbstract implements WidgetScore {
       return scoreWidget;
     }
 
-    //2. Calculate scores for
+    //2. Calculate scores for each child category
     try {
       calculateCategoryScores(widget, paramSettings, scoreWidget.getChildren());
     } catch (DataNotFoundException ex) {
@@ -58,8 +69,8 @@ public abstract class WidgetScoreAbstract implements WidgetScore {
       return scoreWidget;
     }
 
-    LOGGER.info("scoreWidget {}", scoreWidget);
-    LOGGER.info("scoreWidget.getChildren {}", scoreWidget.getChildren());
+    LOGGER.debug("scoreWidget {}", scoreWidget);
+    LOGGER.debug("scoreWidget.getChildren {}", scoreWidget.getChildren());
     //3. Calculate widget score
     calculateWidgetScore(scoreWidget);
     return scoreWidget;

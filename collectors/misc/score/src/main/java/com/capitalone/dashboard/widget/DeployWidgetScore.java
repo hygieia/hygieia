@@ -20,6 +20,13 @@ import com.capitalone.dashboard.repository.EnvironmentComponentRepository;
 import com.capitalone.dashboard.repository.EnvironmentStatusRepository;
 import com.google.common.collect.Lists;
 
+
+/**
+ * Service to calculate deploy widget score
+ * Deploy scores are based on
+ * 1. Percentage of successfully deployed components
+ * 2. Percentage of instances online
+ */
 @Service
 public class DeployWidgetScore extends WidgetScoreAbstract {
   private static final Logger LOGGER = LoggerFactory.getLogger(DeployWidgetScore.class);
@@ -176,6 +183,12 @@ public class DeployWidgetScore extends WidgetScoreAbstract {
     }
   }
 
+  /**
+   * Calculate percentage of successfully deployed components
+   *
+   * @param collectorItemId Collector Item Id of deploy
+   * @return percentage of deployed components
+   */
   private Double fetchDeploySuccessRatio(ObjectId collectorItemId) {
     int totalDeploys = 0, totalDeploySuccess = 0;
     Double deploySuccessScore = null;
@@ -199,6 +212,12 @@ public class DeployWidgetScore extends WidgetScoreAbstract {
     return deploySuccessScore;
   }
 
+  /**
+   * Calculate percentage of instances online
+   *
+   * @param collectorItemId Collector Item Id of deploy
+   * @return percentage of instances online
+   */
   private Double fetchInstancesOnlineRatio(ObjectId collectorItemId) {
     int totalInstances = 0, totalInstancesOnline = 0;
     Double instancesOnlineScore = null;
