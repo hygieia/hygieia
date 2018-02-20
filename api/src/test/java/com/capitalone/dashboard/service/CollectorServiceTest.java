@@ -8,6 +8,8 @@ import static org.mockito.Matchers.anyCollection;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.List;
+
 
 import org.bson.types.ObjectId;
 import org.junit.Test;
@@ -45,7 +47,7 @@ public class CollectorServiceTest {
 		when(collectorRepository.findByCollectorType(CollectorType.Build)).thenReturn(Arrays.asList(c));
 
 		Page<CollectorItem> page = new PageImpl<CollectorItem>(Arrays.asList(item1, item2), null, 2);
-		when(collectorItemRepository.findByCollectorIdInAndDescriptionContainingIgnoreCase(anyCollection(), any(String.class),
+		when(collectorItemRepository.findByCollectorIdAndJobName(any(List.class), any(String.class),
 				any(Pageable.class))).thenReturn(page);
 		Page<CollectorItem> items = collectorService.collectorItemsByTypeWithFilter(CollectorType.Build, FILTER_STRING,
 				null);
