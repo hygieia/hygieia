@@ -13,7 +13,8 @@
         	PASS: 1,
             WARN: 2,
             FAIL: 3,
-            UNAUTH: 4
+            UNAUTH: 4,
+            CRITICAL: 5
         })
         .directive('dashStatus', dashStatus);
 
@@ -42,6 +43,11 @@
             attrs.$observe('dashStatus', function() {
                 // accept a bunch of different statuses
                 switch (scope.status.toLowerCase()) {
+                    case 5:
+                    case '5':
+                    case 'critical':
+                        scope.currentStatus = DashStatus.CRITICAL;
+                        break;
 	                case 4:
                 	case '4':
                 	case 'unauth':
