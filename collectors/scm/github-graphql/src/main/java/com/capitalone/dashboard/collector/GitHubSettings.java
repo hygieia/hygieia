@@ -24,6 +24,13 @@ public class GitHubSettings {
 	private int errorResetWindow;
 	@Value("${github.rateLimitThreshold:10}")
 	private int rateLimitThreshold;
+	@Value("${github.commitPullSyncTime:86400000}") // 1 day in milliseconds
+	private long commitPullSyncTime;
+	@Value("${github.offsetMinutes:10}") // 10 mins default
+	private int offsetMinutes;
+	@Value("${github.fetchCount:100}")
+	private int fetchCount;
+
 	private String personalAccessToken;
 
 
@@ -97,5 +104,29 @@ public class GitHubSettings {
 
 	public void setErrorResetWindow(int errorResetWindow) {
 		this.errorResetWindow = errorResetWindow;
+	}
+
+	public long getCommitPullSyncTime() {
+		return commitPullSyncTime;
+	}
+
+	public void setCommitPullSyncTime(long commitPullSyncTime) {
+		this.commitPullSyncTime = commitPullSyncTime;
+	}
+
+	public int getOffsetMinutes() {
+		return offsetMinutes;
+	}
+
+	public void setOffsetMinutes(int offsetMinutes) {
+		this.offsetMinutes = offsetMinutes;
+	}
+
+	public int getFetchCount() {
+		return fetchCount;
+	}
+
+	public void setFetchCount(int fetchCount) {
+		this.fetchCount = fetchCount;
 	}
 }

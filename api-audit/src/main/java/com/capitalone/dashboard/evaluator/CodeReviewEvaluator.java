@@ -8,6 +8,7 @@ import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.GitRequest;
+import com.capitalone.dashboard.model.SCM;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.response.CodeReviewAuditResponseV2;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
@@ -131,20 +133,29 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
         reviewAuditResponseV2.setLastUpdated(repoItem.getLastUpdated());
 
         //                reviewAuditResponseV2.addPullRequest(pullRequestAudit);
-        pullRequests.forEach(pr -> {
-            String mergeSha = pr.getScmRevisionNumber();
-            Optional<Commit> mergeOptionalCommit = commits.stream().filter(c -> Objects.equals(c.getScmRevisionNumber(), mergeSha)).findFirst();
+        List<String> allPrCommitShas = new ArrayList<>();
+        pullRequests.stream().filter(pr -> "merged".equalsIgnoreCase(pr.getState())).forEach(pr -> {
+            Optional<Commit> mergeOptionalCommit = commits.stream().filter(c -> Objects.equals(c.getScmRevisionNumber(), pr.getScmRevisionNumber())).findFirst();
             Commit mergeCommit = mergeOptionalCommit.orElse(null);
+
             if (mergeCommit == null) {
-//                reviewAuditResponseV2.addPullRequest(pullRequestAudit);
-                return;
+                mergeOptionalCommit = commits.stream().filter(c -> Objects.equals(c.getScmRevisionNumber(), pr.getScmMergeEventRevisionNumber())).findFirst();
+                mergeCommit = mergeOptionalCommit.orElse(null);
             }
+
             CodeReviewAuditResponseV2.PullRequestAudit pullRequestAudit = new CodeReviewAuditResponseV2.PullRequestAudit();
             pullRequestAudit.setPullRequest(pr);
             List<Commit> commitsRelatedToPr = pr.getCommits();
             commitsRelatedToPr.sort(Comparator.comparing(e -> (e.getScmCommitTimestamp())));
-            pullRequestAudit.addAuditStatus(pr.getUserId().equalsIgnoreCase(mergeCommit.getScmAuthorLogin()) ? CodeReviewAuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER : CodeReviewAuditStatus.COMMITAUTHOR_NE_MERGECOMMITER);
-            boolean peerReviewed = CommonCodeReview.computePeerReviewStatus(pr, settings, pullRequestAudit);
+            if (mergeCommit == null) {
+                pullRequestAudit.addAuditStatus(CodeReviewAuditStatus.MERGECOMMITER_NOT_FOUND);
+            } else {
+                pullRequestAudit.addAuditStatus(pr.getUserId().equalsIgnoreCase(mergeCommit.getScmAuthorLogin()) ? CodeReviewAuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER : CodeReviewAuditStatus.COMMITAUTHOR_NE_MERGECOMMITER);
+            }
+
+            allPrCommitShas.addAll(commitsRelatedToPr.stream().map(SCM::getScmRevisionNumber).collect(Collectors.toList()));
+
+            boolean peerReviewed = CommonCodeReview.computePeerReviewStatus(pr, settings, pullRequestAudit, commits);
             pullRequestAudit.addAuditStatus(peerReviewed ? CodeReviewAuditStatus.PULLREQ_REVIEWED_BY_PEER : CodeReviewAuditStatus.PULLREQ_NOT_PEER_REVIEWED);
             String sourceRepo = pr.getSourceRepo();
             String targetRepo = pr.getTargetRepo();
@@ -153,7 +164,8 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
         });
 
         //check any commits not directly tied to pr
-        commits.stream().filter(commit -> StringUtils.isEmpty(commit.getPullNumber()) && commit.getType() == CommitType.New).forEach(reviewAuditResponseV2::addDirectCommit);
+        commits.stream().filter(commit -> !allPrCommitShas.contains(commit.getScmRevisionNumber()) && StringUtils.isEmpty(commit.getPullNumber()) && commit.getType() == CommitType.New).forEach(reviewAuditResponseV2::addDirectCommit);
+
         return reviewAuditResponseV2;
     }
 }

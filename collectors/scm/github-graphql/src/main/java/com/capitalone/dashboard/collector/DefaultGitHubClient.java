@@ -40,7 +40,6 @@ import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -78,10 +77,9 @@ public class DefaultGitHubClient implements GitHubClient {
         }
     }
 
-    private int getFetchCount(boolean firstRun, GitHubRepo repo) {
+    private int getFetchCount(boolean firstRun) {
         if (firstRun) return 100;
-        long timeDelta = System.currentTimeMillis() - repo.getLastUpdated();
-        return Math.max(5, Math.min(100, Math.round(timeDelta / 60000)));
+        return settings.getFetchCount();
     }
 
     @Override
@@ -227,36 +225,7 @@ public class DefaultGitHubClient implements GitHubClient {
      */
 
     private void connectCommitToPulls() {
-        List<Commit> newCommitList = new LinkedList<>();
-
-        //TODO: Need to optimize this method
-        for (Commit commit : commits) {
-            Iterator<GitRequest> pIter = pullRequests.iterator();
-            boolean foundPull = false;
-            while (!foundPull && pIter.hasNext()) {
-                GitRequest pull = pIter.next();
-                if (Objects.equals(pull.getScmRevisionNumber(), commit.getScmRevisionNumber())) {
-                    foundPull = true;
-                    commit.setPullNumber(pull.getNumber());
-                } else {
-                    List<Commit> prCommits = pull.getCommits();
-                    boolean foundCommit = false;
-                    Iterator<Commit> cIter = prCommits.iterator();
-                    while (!foundCommit && cIter.hasNext()) {
-                        Commit loopCommit = cIter.next();
-                        if (Objects.equals(commit.getScmAuthor(), loopCommit.getScmAuthor()) &&
-                                (commit.getScmCommitTimestamp() == loopCommit.getScmCommitTimestamp()) &&
-                                Objects.equals(commit.getScmCommitLog(), loopCommit.getScmCommitLog())) {
-                            foundCommit = true;
-                            foundPull = true;
-                            commit.setPullNumber(pull.getNumber());
-                        }
-                    }
-                }
-            }
-            newCommitList.add(commit);
-        }
-        commits = newCommitList;
+        commits = CommitPullMatcher.matchCommitToPulls(commits, pullRequests);
     }
 
     @SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.NcssMethodCount"})
@@ -267,7 +236,7 @@ public class DefaultGitHubClient implements GitHubClient {
         JSONObject variableJSON = new JSONObject();
         variableJSON.put("owner", gitHubParsed.getOrgName());
         variableJSON.put("name", gitHubParsed.getRepoName());
-        variableJSON.put("fetchCount", getFetchCount(firstRun, repo));
+        variableJSON.put("fetchCount", getFetchCount(firstRun));
 
 
         LOG.debug("Collection Mode =" + mode.toString());
@@ -467,17 +436,20 @@ public class DefaultGitHubClient implements GitHubClient {
                 JSONObject targetJson = (JSONObject) headrefJson.get("target");
                 pull.setHeadSha(str(targetJson, "oid"));
             }
-            if (merged != null) {
+            if (!StringUtils.isEmpty(merged)) {
                 pull.setScmRevisionNumber(str((JSONObject) node.get("mergeCommit"), "oid"));
                 pull.setResolutiontime((mergedTimestamp - createdTimestamp) / (24 * 3600000));
                 pull.setScmCommitTimestamp(mergedTimestamp);
                 pull.setMergedAt(mergedTimestamp);
-                List<Commit> prCommits = getPRCommits((JSONObject) node.get("commits"), pull);
+                JSONObject commitsObject = (JSONObject) node.get("commits");
+                pull.setNumberOfChanges(commitsObject != null ? asInt(commitsObject, "totalCount") : 0);
+                List<Commit> prCommits = getPRCommits(commitsObject, pull);
                 pull.setCommits(prCommits);
                 List<Comment> comments = getComments((JSONObject) node.get("comments"));
                 pull.setComments(comments);
                 List<Review> reviews = getReviews((JSONObject) node.get("reviews"));
                 pull.setReviews(reviews);
+                pull.setScmMergeEventRevisionNumber(getMergeEventSha(pull, (JSONObject) node.get("timeline")));
             }
             // commit etc details
             pull.setSourceBranch(str(node, "headRefName"));
@@ -492,6 +464,10 @@ public class DefaultGitHubClient implements GitHubClient {
             pull.setTargetBranch(str(node, "baseRefName"));
             //pull.setTargetRepo(gitHubParsed.getUrl());
             pull.setTargetRepo(!Objects.equals("", gitHubParsed.getOrgName()) ? gitHubParsed.getOrgName() + "/" + gitHubParsed.getRepoName() : gitHubParsed.getRepoName());
+
+//            LOG.debug("pr " + pull.getNumber() + " mergedAt " + new DateTime(pull.getMergedAt()).toString("yyyy-MM-dd hh:mm:ss.SSa")
+//                                              + " updateAt " + new DateTime(pull.getUpdatedAt()).toString("yyyy-MM-dd hh:mm:ss.SSa")
+//                                              + " historAt " + new DateTime(historyTimeStamp).toString("yyyy-MM-dd hh:mm:ss.SSa"));
 
             boolean stop = (pull.getUpdatedAt() < historyTimeStamp) ||
                     ((!MapUtils.isEmpty(prMap) && prMap.get(pull.getUpdatedAt()) != null) && (Objects.equals(prMap.get(pull.getUpdatedAt()), pull.getNumber())));
@@ -554,10 +530,10 @@ public class DefaultGitHubClient implements GitHubClient {
             commit.setScmCommitLog(message);
             commit.setScmCommitTimestamp(getTimeStampMills(str(authorJSON, "date")));
             commit.setNumberOfChanges(1);
-            commit.setType(getCommitType(message)); //initialize all to new.
             List<String> parentShas = getParentShas(node);
             commit.setScmParentRevisionNumbers(parentShas);
             commit.setFirstEverCommit(CollectionUtils.isEmpty(parentShas));
+            commit.setType(getCommitType(CollectionUtils.size(parentShas), message));
             commits.add(commit);
         }
         return paging;
@@ -772,7 +748,36 @@ public class DefaultGitHubClient implements GitHubClient {
         return reviews;
     }
 
-    private CommitType getCommitType(String commitMessage) {
+    private String getMergeEventSha(GitRequest pr, JSONObject timelineObject) throws RestClientException {
+        String mergeEventSha = "";
+        if (timelineObject == null) {
+            return mergeEventSha;
+        }
+        JSONArray edges = (JSONArray) timelineObject.get("edges");
+        if (CollectionUtils.isEmpty(edges)) {
+            return mergeEventSha;
+        }
+
+        for (Object e : edges) {
+            JSONObject edge = (JSONObject) e;
+            JSONObject node = (JSONObject) edge.get("node");
+            if (node != null) {
+                String typeName = str(node, "__typename");
+                if ("MergedEvent".equalsIgnoreCase(typeName)) {
+                    JSONObject timelinePrNbrObj = (JSONObject) node.get("pullRequest");
+                    if (timelinePrNbrObj != null && pr.getNumber().equals(str(timelinePrNbrObj, "number"))) {
+                        JSONObject commit = (JSONObject) node.get("commit");
+                        mergeEventSha = str(commit, "oid");
+                        break;
+                    }
+                }
+            }
+        }
+        return mergeEventSha;
+    }
+
+    private CommitType getCommitType(int parentSize, String commitMessage) {
+        if (parentSize > 1) return CommitType.Merge;
         if (settings.getNotBuiltCommits() == null) return CommitType.New;
         if (!CollectionUtils.isEmpty(commitExclusionPatterns)) {
             for (Pattern pattern : commitExclusionPatterns) {
@@ -860,7 +865,7 @@ public class DefaultGitHubClient implements GitHubClient {
                 return getDate(new DateTime(), FIRST_RUN_HISTORY_DEFAULT, 0).toString();
             }
         } else {
-            return getDate(new DateTime(repo.getLastUpdated()), 0, 10).toString();
+            return getDate(new DateTime(repo.getLastUpdated()), 0, settings.getOffsetMinutes()).toString();
         }
     }
 

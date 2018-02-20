@@ -6,6 +6,7 @@ import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitRequest;
+import com.capitalone.dashboard.model.SCM;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.response.CodeReviewAuditResponse;
@@ -22,6 +23,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.capitalone.dashboard.status.CodeReviewAuditStatus.COLLECTOR_ITEM_ERROR;
 
@@ -107,20 +109,31 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
 //check for pr author <> pr merger
 //check to see if pr was reviewed
 //type of branching strategy
-        pullRequests.forEach(pr -> {
+        List<String> allPrCommitShas = new ArrayList<>();
+        pullRequests.stream().filter(pr -> "merged".equalsIgnoreCase(pr.getState())).forEach(pr -> {
             CodeReviewAuditResponse codeReviewAuditResponse = new CodeReviewAuditResponse();
             codeReviewAuditResponse.setPullRequest(pr);
             String mergeSha = pr.getScmRevisionNumber();
             Optional<Commit> mergeOptionalCommit = commits.stream().filter(c -> Objects.equals(c.getScmRevisionNumber(), mergeSha)).findFirst();
             Commit mergeCommit = mergeOptionalCommit.orElse(null);
+
             if (mergeCommit == null) {
-                return;
+                mergeOptionalCommit = commits.stream().filter(c -> Objects.equals(c.getScmRevisionNumber(), pr.getScmMergeEventRevisionNumber())).findFirst();
+                mergeCommit = mergeOptionalCommit.orElse(null);
             }
+            
             List<Commit> commitsRelatedToPr = pr.getCommits();
             commitsRelatedToPr.sort(Comparator.comparing(e -> (e.getScmCommitTimestamp())));
-            codeReviewAuditResponse.addAuditStatus(pr.getUserId().equalsIgnoreCase(mergeCommit.getScmAuthorLogin()) ? CodeReviewAuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER : CodeReviewAuditStatus.COMMITAUTHOR_NE_MERGECOMMITER);
+            if (mergeCommit == null) {
+                codeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.MERGECOMMITER_NOT_FOUND);
+            } else {
+                codeReviewAuditResponse.addAuditStatus(pr.getUserId().equalsIgnoreCase(mergeCommit.getScmAuthorLogin()) ? CodeReviewAuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER : CodeReviewAuditStatus.COMMITAUTHOR_NE_MERGECOMMITER);
+            }
             codeReviewAuditResponse.setCommits(commitsRelatedToPr);
-            boolean peerReviewed = CommonCodeReview.computePeerReviewStatus(pr, settings, codeReviewAuditResponse);
+
+            allPrCommitShas.addAll(commitsRelatedToPr.stream().map(SCM::getScmRevisionNumber).collect(Collectors.toList()));
+
+            boolean peerReviewed = CommonCodeReview.computePeerReviewStatus(pr, settings, codeReviewAuditResponse, commits);
             codeReviewAuditResponse.addAuditStatus(peerReviewed ? CodeReviewAuditStatus.PULLREQ_REVIEWED_BY_PEER : CodeReviewAuditStatus.PULLREQ_NOT_PEER_REVIEWED);
             String sourceRepo = pr.getSourceRepo();
             String targetRepo = pr.getTargetRepo();
@@ -132,7 +145,8 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
         CodeReviewAuditResponse codeReviewAuditResponse = new CodeReviewAuditResponse();
         List<Commit> commitsNotDirectlyTiedToPr = new ArrayList<>();
         commits.forEach(commit -> {
-            if (StringUtils.isEmpty(commit.getPullNumber()) && commit.getType() == CommitType.New) {
+            if (!allPrCommitShas.contains(commit.getScmRevisionNumber()) &&
+                    StringUtils.isEmpty(commit.getPullNumber()) && commit.getType() == CommitType.New) {
                 commitsNotDirectlyTiedToPr.add(commit);
                 codeReviewAuditResponse.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
             }

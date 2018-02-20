@@ -1,6 +1,8 @@
 package com.capitalone.dashboard.model;
 
 import org.bson.types.ObjectId;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Objects;
@@ -9,30 +11,33 @@ import java.util.Objects;
 public class Incident extends BaseModel {
 
     private ObjectId collectorItemId;
-    private String timestamp;
+    private Long timestamp;
     private String incidentItem;
     private String incidentID;
     private String category;
-    private String openTime;
+    private Long openTime;
     private String openedBy;
     private String severity;
-    private String updatedTime;
+    private Long updatedTime;
     private String primaryAssignmentGroup;
     private String status;
-    private String closedTime;
+    private Long closedTime;
     private String closedBy;
     private String closureCode;
     private String affectedItem;
     private String incidentDescription;
-    private boolean validIncidentItem;
+
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
 
     public ObjectId getCollectorItemId() { return collectorItemId; }
 
     public void setCollectorItemId(ObjectId collectorItemId) { this.collectorItemId = collectorItemId; }
 
-    public String getTimestamp() { return timestamp; }
+    public long getTimestamp() { return timestamp; }
 
-    public void setTimestamp(String timestamp) { this.timestamp = timestamp; }
+    public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
+
+    public void setTimestamp(String timestamp) { this.timestamp = DATE_FORMATTER.parseMillis(timestamp); }
 
     public String getIncidentItem() { return incidentItem; }
 
@@ -46,9 +51,11 @@ public class Incident extends BaseModel {
 
     public void setCategory(String category) { this.category = category; }
 
-    public String getOpenTime() { return openTime; }
+    public long getOpenTime() { return openTime; }
 
-    public void setOpenTime(String openTime) { this.openTime = openTime; }
+    public void setOpenTime(long openTime) { this.openTime = openTime; }
+
+    public void setOpenTime(String openTime) { this.openTime = DATE_FORMATTER.parseMillis(openTime); }
 
     public String getOpenedBy() { return openedBy; }
 
@@ -58,9 +65,11 @@ public class Incident extends BaseModel {
 
     public void setSeverity(String severity) { this.severity = severity; }
 
-    public String getUpdatedTime() { return updatedTime; }
+    public long getUpdatedTime() { return updatedTime; }
 
-    public void setUpdatedTime(String updatedTime) { this.updatedTime = updatedTime; }
+    public void setUpdatedTime(long updatedTime) { this.updatedTime = updatedTime; }
+
+    public void setUpdatedTime(String updatedTime) { this.updatedTime = DATE_FORMATTER.parseMillis(updatedTime); }
 
     public String getPrimaryAssignmentGroup() { return primaryAssignmentGroup; }
 
@@ -70,9 +79,11 @@ public class Incident extends BaseModel {
 
     public void setStatus(String status) { this.status = status; }
 
-    public String getClosedTime() { return closedTime; }
+    public long getClosedTime() { return closedTime; }
 
-    public void setClosedTime(String closedTime) { this.closedTime = closedTime; }
+    public void setClosedTime(long closedTime) { this.closedTime = closedTime; }
+
+    public void setClosedTime(String closedTime) { this.closedTime = DATE_FORMATTER.parseMillis(closedTime); }
 
     public String getClosedBy() { return closedBy; }
 
@@ -89,12 +100,6 @@ public class Incident extends BaseModel {
     public String getIncidentDescription() { return incidentDescription; }
 
     public void setIncidentDescription(String incidentDescription) { this.incidentDescription = incidentDescription; }
-
-    public void setValidIncidentItem(boolean validIncidentItem) { this.validIncidentItem = validIncidentItem; }
-
-    public void setValidIncidentItem(String validIncidentItem) { this.validIncidentItem = Boolean.parseBoolean(validIncidentItem); }
-
-    public boolean isValidIncidentItem() { return validIncidentItem; }
 
     @Override
     public boolean equals(Object compareTo){

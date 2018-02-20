@@ -57,8 +57,13 @@ public class HudsonCollector extends Collector {
         options.put(HudsonJob.INSTANCE_URL,"");
         options.put(HudsonJob.JOB_URL,"");
         options.put(HudsonJob.JOB_NAME,"");
+
+        Map<String, Object> uniqueOptions = new HashMap<>();
+        uniqueOptions.put(HudsonJob.JOB_URL,"");
+        uniqueOptions.put(HudsonJob.JOB_NAME,"");
+
         protoType.setAllFields(options);
-        protoType.setUniqueFields(options);
+        protoType.setUniqueFields(uniqueOptions);
         return protoType;
     }
 }

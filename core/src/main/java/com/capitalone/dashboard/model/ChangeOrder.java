@@ -1,6 +1,8 @@
 package com.capitalone.dashboard.model;
 
 import org.bson.types.ObjectId;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Objects;
@@ -9,7 +11,7 @@ import java.util.Objects;
 public class ChangeOrder extends BaseModel{
 
     private ObjectId collectorItemId;
-    private String timestamp;
+    private Long timestamp;
     private String changeOrderItem;
 
     private String changeID;
@@ -21,16 +23,16 @@ public class ChangeOrder extends BaseModel{
     private String assignmentGroup;
     private String changeCoordinator;
     private String coordinatorPhone;
-    private String plannedStart;
-    private String plannedEnd;
+    private Long plannedStart;
+    private Long plannedEnd;
     private String reason;
     private String phase;
     private String riskAssessment;
     private String priority;
-    private String dateEntered;
+    private Long dateEntered;
     private boolean open;
     private String backoutDuration;
-    private String closeTime;
+    private Long closeTime;
     private String extProjectRef;
     private String rFCType2;
     private String company;
@@ -38,15 +40,18 @@ public class ChangeOrder extends BaseModel{
     private String subcategory;
     private String sLAAgreementID;
     private String changeModel;
-    private boolean validChangeItem;
+
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
 
     public ObjectId getCollectorItemId() { return collectorItemId; }
 
     public void setCollectorItemId(ObjectId collectorItemId) { this.collectorItemId = collectorItemId; }
 
-    public String getTimestamp() { return timestamp; }
+    public long getTimestamp() { return timestamp; }
 
-    public void setTimestamp(String timestamp) { this.timestamp = timestamp; }
+    public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
+
+    public void setTimestamp(String timestamp) { this.timestamp = DATE_FORMATTER.parseMillis(timestamp); }
 
     public String getChangeOrderItem() { return changeOrderItem; }
 
@@ -88,13 +93,17 @@ public class ChangeOrder extends BaseModel{
 
     public void setCoordinatorPhone(String coordinatorPhone) { this.coordinatorPhone = coordinatorPhone; }
 
-    public String getPlannedStart() { return plannedStart; }
+    public long getPlannedStart() { return plannedStart; }
 
-    public void setPlannedStart(String plannedStart) { this.plannedStart = plannedStart; }
+    public void setPlannedStart(long plannedStart) { this.plannedStart = plannedStart; }
 
-    public String getPlannedEnd() { return plannedEnd; }
+    public void setPlannedStart(String plannedStart) { this.plannedStart = DATE_FORMATTER.parseMillis(plannedStart); }
 
-    public void setPlannedEnd(String plannedEnd) { this.plannedEnd = plannedEnd; }
+    public long getPlannedEnd() { return plannedEnd; }
+
+    public void setPlannedEnd(long plannedEnd) { this.plannedEnd = plannedEnd; }
+
+    public void setPlannedEnd(String plannedEnd) { this.plannedEnd = DATE_FORMATTER.parseMillis(plannedEnd); }
 
     public String getReason() { return reason; }
 
@@ -112,9 +121,11 @@ public class ChangeOrder extends BaseModel{
 
     public void setPriority(String priority) { this.priority = priority; }
 
-    public String getDateEntered() { return dateEntered; }
+    public long getDateEntered() { return dateEntered; }
 
-    public void setDateEntered(String dateEntered) { this.dateEntered = dateEntered; }
+    public void setDateEntered(long dateEntered) { this.dateEntered = dateEntered; }
+
+    public void setDateEntered(String dateEntered) { this.dateEntered = DATE_FORMATTER.parseMillis(dateEntered); }
 
     public boolean isOpen() { return open; }
 
@@ -126,9 +137,11 @@ public class ChangeOrder extends BaseModel{
 
     public void setBackoutDuration(String backoutDuration) { this.backoutDuration = backoutDuration; }
 
-    public String getCloseTime() { return closeTime; }
+    public long getCloseTime() { return closeTime; }
 
-    public void setCloseTime(String closeTime) { this.closeTime = closeTime; }
+    public void setCloseTime(long closeTime) { this.closeTime = closeTime; }
+
+    public void setCloseTime(String closeTime) { this.closeTime = DATE_FORMATTER.parseMillis(closeTime); }
 
     public String getExtProjectRef() { return extProjectRef; }
 
@@ -157,12 +170,6 @@ public class ChangeOrder extends BaseModel{
     public String getChangeModel() { return changeModel; }
 
     public void setChangeModel(String changeModel) { this.changeModel = changeModel; }
-
-    public void setValidChangeItem(boolean validChangeItem) { this.validChangeItem = validChangeItem; }
-
-    public void setValidChangeItem(String validChangeItem) { this.validChangeItem = Boolean.parseBoolean(validChangeItem); }
-
-    public boolean isValidChangeItem() { return validChangeItem; }
 
     @Override
     public boolean equals(Object compareTo){
