@@ -447,3 +447,7 @@ score.githubScmWidget.commitsPerDay.criteria.dataRangeThresholds[0].score.scoreV
 score.githubScmWidget.commitsPerDay.criteria.dataRangeThresholds[0].score.propagate=widget
 score.githubScmWidget.commitsPerDay.criteria.dataRangeThresholds[0].numDaysToCheck=7
 ```
+## Examples
+- [Default settings](docs/1_default_settings.md)
+- [Enable few widgets](docs/2_enable_few_widgets.md)
+- [Widget all category settings](docs/3_widget_all_category_settings.md)
