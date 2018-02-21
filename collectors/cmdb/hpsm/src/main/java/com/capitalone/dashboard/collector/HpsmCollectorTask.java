@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.collector;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.ChangeOrder;
 import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.HpsmCollector;
@@ -90,12 +91,13 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
 
     public void setCollectorAction(String collectorAction) { this.collectorAction = collectorAction; }
 
-    private void collectApps(HpsmCollector collector) {
+    private void collectApps(HpsmCollector collector) throws HygieiaException{
         List<Cmdb> cmdbList;
         List<String> configurationItemNameList = new ArrayList<>();
 
         int updatedCount = 0;
         int insertCount = 0;
+        int inValidCount;
 
         cmdbList = hpsmClient.getApps();
 
@@ -116,14 +118,15 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
             }
         }
 
-
+        inValidCount = cleanUpOldCmdbItems(configurationItemNameList);
 
         LOG.info("Inserted Cmdb Item Count: " + insertCount);
         LOG.info("Updated Cmdb Item Count: " +  updatedCount);
+        LOG.info("Set Cmdb item invalid Count: " +  inValidCount);
 
     }
 
-    private void collectChangeOrders(HpsmCollector collector) {
+    private void collectChangeOrders(HpsmCollector collector) throws HygieiaException{
 
         long lastExecuted = collector.getLastExecuted();
         long changeCount = changeOrderRepository.count();
@@ -158,7 +161,7 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
 
     }
 
-    private void collectIncidents(HpsmCollector collector) {
+    private void collectIncidents(HpsmCollector collector) throws HygieiaException {
 
         long lastExecuted = collector.getLastExecuted();
         long incidentCount = incidentRepository.count();
@@ -196,24 +199,42 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
     public void collect(HpsmCollector collector) {
         long start = System.currentTimeMillis();
         logBanner("Starting...");
-
-        if(collectorAction.equals(APP_ACTION_NAME)) {
-            log("Collecting Apps");
-            collectApps(collector);
+        try {
+            if (collectorAction.equals(APP_ACTION_NAME)) {
+                log("Collecting Apps");
+                collectApps(collector);
+            } else if (collectorAction.equals(CHANGE_ACTION_NAME)) {
+                log("Collecting Changes");
+                collectChangeOrders(collector);
+            } else if (collectorAction.equals(INCIDENT_ACTION_NAME)) {
+                log("Collecting Incidents");
+                collectIncidents(collector);
+            } else {
+                log("Unknown value passed to -D" + COLLECTOR_ACTION_PROPERTY_KEY + ": " + collectorAction);
+            }
+        }catch (HygieiaException he){
+            LOG.error(he);
         }
-        else if(collectorAction.equals(CHANGE_ACTION_NAME)) {
-            log("Collecting Changes");
-            collectChangeOrders(collector);
-        }
-        else if(collectorAction.equals(INCIDENT_ACTION_NAME)) {
-            log("Collecting Incidents");
-            collectIncidents(collector);
-        }
-        else{
-            log("Unknown value passed to -D" + COLLECTOR_ACTION_PROPERTY_KEY + ": " + collectorAction);
-        }
-
         log("Finished", start);
+    }
+
+    /**
+     *  Takes configurationItemNameList (list of all APP/component names) and List<Cmdb> from client and sets flag to false for old items in mongo
+     * @param configurationItemNameList
+     * @return return count of items invalidated
+     */
+    private int cleanUpOldCmdbItems(List<String> configurationItemNameList) {
+        int inValidCount = 0;
+        for(Cmdb cmdb:  cmdbRepository.findAllByValidConfigItem(true)){
+            String configItem = cmdb.getConfigurationItem();
+
+            if(configurationItemNameList != null && !configurationItemNameList.contains(configItem)){
+                cmdb.setValidConfigItem(false);
+                cmdbRepository.save(cmdb);
+                inValidCount++;
+            }
+        }
+        return inValidCount;
     }
 
 }

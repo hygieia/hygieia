@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.collector;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.ChangeOrder;
 import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.HpsmSoapModel;
@@ -124,7 +125,7 @@ public class DefaultHpsmClient implements HpsmClient {
      * @return Combined List<Cmdb> of APPs and Components
      */
 	@Override
-	public List<Cmdb> getApps() {
+	public List<Cmdb> getApps() throws HygieiaException {
 
 		String limit = hpsmSettings.getCmdbBatchLimit();
 		if(limit != null && !limit.isEmpty()) {
@@ -150,14 +151,14 @@ public class DefaultHpsmClient implements HpsmClient {
 	}
 
 	@Override
-	public List<ChangeOrder> getChangeOrders() {
+	public List<ChangeOrder> getChangeOrders() throws HygieiaException{
 		List<ChangeOrder> changeOrderList;
 		changeOrderList = getChangeOrderList();
 		return changeOrderList;
 	}
 
 	@Override
-	public List<Incident> getIncidents() {
+	public List<Incident> getIncidents() throws HygieiaException{
 		List<Incident> incidentList;
 		incidentList = getIncidentList();
 		return incidentList;
@@ -168,7 +169,7 @@ public class DefaultHpsmClient implements HpsmClient {
 	 * Returns List<Cmdb> of Apps
 	 * @return List<Cmdb>
 	 */
-	private List<Cmdb> getAppList(String status){
+	private List<Cmdb> getAppList(String status) throws HygieiaException{
 		List<Cmdb> appList;
 
 		HpsmSoapModel hpsmSoapModel = new HpsmSoapModel();
@@ -186,7 +187,7 @@ public class DefaultHpsmClient implements HpsmClient {
 	 *
 	 * @return  Returns List<Cmdb> of Components
 	 */
-	private List<Cmdb> getComponentList(String status){
+	private List<Cmdb> getComponentList(String status) throws HygieiaException{
 		List<Cmdb> componentList;
         HpsmSoapModel hpsmSoapModel = new HpsmSoapModel();
 
@@ -206,7 +207,7 @@ public class DefaultHpsmClient implements HpsmClient {
 	 * Returns List<Cmdb> of Environments
 	 * @return List<Cmdb>
 	 */
-	private List<Cmdb> getEnvironmentList(String status){
+	private List<Cmdb> getEnvironmentList(String status) throws HygieiaException{
 		List<Cmdb> componentList;
 		HpsmSoapModel hpsmSoapModel = new HpsmSoapModel();
 
@@ -227,7 +228,7 @@ public class DefaultHpsmClient implements HpsmClient {
 	 * @param hpsmSoapModel
 	 * @return
 	 */
-	private List<Cmdb> getConfigurationItemList(HpsmSoapModel hpsmSoapModel){
+	private List<Cmdb> getConfigurationItemList(HpsmSoapModel hpsmSoapModel) throws  HygieiaException{
 		List<Cmdb> configurationItemList = new ArrayList<>();
 		List<Cmdb> detailsList;
 		String batchLimit = hpsmSettings.getCmdbBatchLimit();
@@ -274,7 +275,7 @@ public class DefaultHpsmClient implements HpsmClient {
 	 * @param response
 	 * @return List <Cmdb>
 	 */
-	private List <Cmdb> responseToDetailsList(String response) {
+	private List <Cmdb> responseToDetailsList(String response) throws  HygieiaException{
         List <Cmdb> returnList = new ArrayList<>();
 		try {
 
@@ -301,7 +302,7 @@ public class DefaultHpsmClient implements HpsmClient {
 
 
 			}else{
-				LOG.info("No items to return");
+				throw new HygieiaException("No items fround in instance | response: " +cmdbListResponse.toString(), HygieiaException.BAD_DATA);
 			}
 
 
@@ -384,7 +385,7 @@ public class DefaultHpsmClient implements HpsmClient {
 	 * Returns List<ChangeOrder> of Change Orders
 	 * @return List<ChangeOrder>
 	 */
-	private List<ChangeOrder> getChangeOrderList(){
+	private List<ChangeOrder> getChangeOrderList() throws HygieiaException{
 		List<ChangeOrder> changeOrderList;
 		String limit = hpsmSettings.getChangeOrderReturnLimit();
 
@@ -392,7 +393,7 @@ public class DefaultHpsmClient implements HpsmClient {
 		hpsmSoapModel.setRequestTypeName(hpsmSettings.getChangeOrderRequestType());
 		hpsmSoapModel.setSoapAction(hpsmSettings.getChangeOrderSoapAction());
 
-		String soapString = getSoapMessage(hpsmSoapModel,"",limit, SoapRequestType.CHANGE_ORDER);
+		String soapString = getSoapMessage(hpsmSoapModel, "", limit, SoapRequestType.CHANGE_ORDER);
 
 		String response  = makeSoapCall(soapString, hpsmSoapModel);
 
@@ -406,7 +407,7 @@ public class DefaultHpsmClient implements HpsmClient {
 	 * Returns List<Incident> of Incidents
 	 * @return List<Incident>
 	 */
-	private List<Incident> getIncidentList(){
+	private List<Incident> getIncidentList() throws HygieiaException{
 		List<Incident> incidentList;
 		String limit = hpsmSettings.getIncidentReturnLimit();
 
@@ -570,7 +571,7 @@ public class DefaultHpsmClient implements HpsmClient {
      * @param hpsmSoapModel hpsmSoapModel
      * @return Soap response
      */
-    private String makeSoapCall(String soapMessageString, HpsmSoapModel hpsmSoapModel){
+    private String makeSoapCall(String soapMessageString, HpsmSoapModel hpsmSoapModel) throws HygieiaException{
 
         String requestAction = hpsmSoapModel.getSoapAction();
         String response = "";
@@ -591,7 +592,7 @@ public class DefaultHpsmClient implements HpsmClient {
             response = getResponseString(post.getResponseBodyAsStream());
 
             if(!"OK".equals(post.getStatusText())){
-                LOG.info("Soap Request Failure: " +  post.getStatusCode() + "|response: " +response);
+                throw new HygieiaException("Soap Request Failure: " +  post.getStatusCode() + "|response: " +response, HygieiaException.BAD_DATA);
             }
 
             stopHttpConnection();
@@ -624,16 +625,13 @@ public class DefaultHpsmClient implements HpsmClient {
 			SOAPBodyElement requestType = body.addBodyElement(envelope.createName(requestTypeName,"ns", ""));
 
 			if(limit != null && !limit.isEmpty()) {
-				LOG.info("NOTE: Collector run limited to " + limit + " results by property file setting.");
 				QName name1 = new QName("count");
 				requestType.addAttribute(name1, limit);
 			}
-
 			if(start != null && !start.isEmpty()) {
-				QName qNameStart = new QName("start");
-				requestType.addAttribute(qNameStart, start);
+				QName name1 = new QName("start");
+				requestType.addAttribute(name1, start);
 			}
-
 			QName qNameIgnoreEmptyValues = new QName("ignoreEmptyElements");
 			requestType.addAttribute(qNameIgnoreEmptyValues, "true");
 
@@ -818,12 +816,15 @@ public class DefaultHpsmClient implements HpsmClient {
 	 * @param response
 	 * @return
 	 */
-	private JSONObject getBodyFromResponse(String response){
+	private JSONObject getBodyFromResponse(String response) throws HygieiaException{
 		JSONObject instanceObject =  new JSONObject();
 		try {
 			JSONObject xmlJSONObj = XML.toJSONObject(response.trim());
 
 			JSONObject envelope = getObject(xmlJSONObj, "SOAP-ENV:Envelope");
+			if(!envelope.has("SOAP-ENV:Body")){
+				throw new HygieiaException("Body not found in response | Response " +response,HygieiaException.BAD_DATA);
+			}
 			if (envelope != null) {
 				Object object  = envelope.get("SOAP-ENV:Body");
 				if (object != null && object instanceof JSONObject) {
