@@ -1,5 +1,5 @@
 /**
- * Gets deploy related data
+ * Gets score related data
  */
 (function () {
     'use strict';
@@ -10,14 +10,14 @@
 
     function scoreData($http) {
         var testDetailRoute = 'test-data/score_detail.json';
-        var deployDetailRoute = '/api/score/metric/';
+        var scoreDetailRoute = '/api/score/metric/';
 
         return {
             details: details
         };
 
         function details(componentId) {
-            return $http.get(HygieiaConfig.local ? testDetailRoute : deployDetailRoute + componentId)
+            return $http.get(HygieiaConfig.local ? testDetailRoute : scoreDetailRoute + componentId)
                 .then(function (response) {
                     return response.data;
                 });
