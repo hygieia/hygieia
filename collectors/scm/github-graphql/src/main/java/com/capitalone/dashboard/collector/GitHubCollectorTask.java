@@ -277,6 +277,8 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         GitHubRateLimit rateLimit = null;
         try {
             rateLimit = gitHubClient.getRateLimit(repo);
+            LOG.info("Remaining " + rateLimit.getRemaining() + " of limit " + rateLimit.getLimit()
+                    + " resetTime " + new DateTime(rateLimit.getResetTime()).toString("yyyy-MM-dd hh:mm:ss.SSa"));
         } catch (HttpClientErrorException hce) {
             LOG.error("getRateLimit returned " + hce.getStatusCode() + " " + hce.getMessage() + " " + hce);
             return false;
