@@ -393,7 +393,7 @@ public class DefaultHpsmClient implements HpsmClient {
 		hpsmSoapModel.setRequestTypeName(hpsmSettings.getChangeOrderRequestType());
 		hpsmSoapModel.setSoapAction(hpsmSettings.getChangeOrderSoapAction());
 
-		String soapString = getSoapMessage(hpsmSoapModel, "", limit, SoapRequestType.CHANGE_ORDER);
+		String soapString = getSoapMessage(hpsmSoapModel,"",limit, SoapRequestType.CHANGE_ORDER);
 
 		String response  = makeSoapCall(soapString, hpsmSoapModel);
 
@@ -629,8 +629,8 @@ public class DefaultHpsmClient implements HpsmClient {
 				requestType.addAttribute(name1, limit);
 			}
 			if(start != null && !start.isEmpty()) {
-				QName name1 = new QName("start");
-				requestType.addAttribute(name1, start);
+				QName qNameStart = new QName("start");
+				requestType.addAttribute(qNameStart, start);
 			}
 			QName qNameIgnoreEmptyValues = new QName("ignoreEmptyElements");
 			requestType.addAttribute(qNameIgnoreEmptyValues, "true");

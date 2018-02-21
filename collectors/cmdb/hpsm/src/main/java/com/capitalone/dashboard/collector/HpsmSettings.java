@@ -46,7 +46,6 @@ public class HpsmSettings {
 
 	private String changeOrderQuery;
 	private String incidentQuery;
-
 	@Value("${cmdbBatchLimit:500}")
 	private String cmdbBatchLimit;
 	private String incidentReturnLimit;
