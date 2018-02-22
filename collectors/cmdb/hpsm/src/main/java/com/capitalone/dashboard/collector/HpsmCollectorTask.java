@@ -106,7 +106,7 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
             String configItem = cmdb.getConfigurationItem();
             Cmdb cmdbDbItem =  cmdbRepository.findByConfigurationItem(configItem);
             configurationItemNameList.add(configItem);
-            if(cmdbDbItem != null && !cmdb.isCmdbMatch(cmdbDbItem)){
+            if(cmdbDbItem != null && !cmdb.equals(cmdbDbItem)){
                 cmdb.setId(cmdbDbItem.getId());
                 cmdb.setCollectorItemId(collector.getId());
                 cmdbRepository.save(cmdb);
@@ -122,7 +122,7 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
 
         LOG.info("Inserted Cmdb Item Count: " + insertCount);
         LOG.info("Updated Cmdb Item Count: " +  updatedCount);
-        LOG.info("Set Cmdb item invalid Count: " +  inValidCount);
+        LOG.info("Invalid Cmdb Item Count: " +  inValidCount);
 
     }
 
@@ -200,18 +200,24 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
         long start = System.currentTimeMillis();
         logBanner("Starting...");
         try {
-            if (collectorAction.equals(APP_ACTION_NAME)) {
-                log("Collecting Apps");
-                collectApps(collector);
-            } else if (collectorAction.equals(CHANGE_ACTION_NAME)) {
-                log("Collecting Changes");
-                collectChangeOrders(collector);
-            } else if (collectorAction.equals(INCIDENT_ACTION_NAME)) {
-                log("Collecting Incidents");
-                collectIncidents(collector);
-            } else {
-                log("Unknown value passed to -D" + COLLECTOR_ACTION_PROPERTY_KEY + ": " + collectorAction);
+            switch (collectorAction) {
+                case APP_ACTION_NAME:
+                    log("Collecting Apps");
+                    collectApps(collector);
+                    break;
+                case CHANGE_ACTION_NAME:
+                    log("Collecting Changes");
+                    collectChangeOrders(collector);
+                    break;
+                case INCIDENT_ACTION_NAME:
+                    log("Collecting Incidents");
+                    collectIncidents(collector);
+                    break;
+                default:
+                    log("Unknown value passed to -D" + COLLECTOR_ACTION_PROPERTY_KEY + ": " + collectorAction);
+                    break;
             }
+
         }catch (HygieiaException he){
             LOG.error(he);
         }

@@ -5,6 +5,8 @@ import com.capitalone.dashboard.model.ChangeOrder;
 import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.HpsmSoapModel;
 import com.capitalone.dashboard.model.Incident;
+import com.capitalone.dashboard.util.HpsmCollectorConstants;
+import com.capitalone.dashboard.util.XmlUtil;
 import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
@@ -16,14 +18,13 @@ import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.XML;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Element;
 import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.NamedNodeMap;
 import org.xml.sax.SAXException;
 
 
@@ -47,9 +48,10 @@ import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Date;
+import java.util.Calendar;
 
 
 /**
@@ -230,34 +232,32 @@ public class DefaultHpsmClient implements HpsmClient {
 	 */
 	private List<Cmdb> getConfigurationItemList(HpsmSoapModel hpsmSoapModel) throws  HygieiaException{
 		List<Cmdb> configurationItemList = new ArrayList<>();
-		List<Cmdb> detailsList;
-		String batchLimit = hpsmSettings.getCmdbBatchLimit();
+
 		boolean getMore = true;
 		int startValue = 0;
 		while(getMore){
-			String more = "";
-			String status = "";
 
+			String batchLimit = hpsmSettings.getCmdbBatchLimit();
 			int returnLimit = Integer.parseInt(batchLimit);
 
 
 			String newStart = Integer.toString(startValue);
 			String soapString = getSoapMessage(hpsmSoapModel,newStart, batchLimit, SoapRequestType.CMDB);
 			String response = makeSoapCall(soapString, hpsmSoapModel);
-			Document doc = responseToDoc(response);
-			NodeList instanceNodeList = doc.getElementsByTagName("RetrieveDeviceListResponse");
 
-			for (int i = 0; i < instanceNodeList.getLength(); i++) {
-				NamedNodeMap instanceChildNodes = instanceNodeList.item(i).getAttributes();
+			Document doc = responseToDoc(response);
+			NodeList responseNodeList = doc.getElementsByTagName("RetrieveDeviceListResponse");
+
+			String more = "";
+			String status = "";
+			for (int i = 0; i < responseNodeList.getLength(); i++) {
+				NamedNodeMap instanceChildNodes = responseNodeList.item(i).getAttributes();
 				more = instanceChildNodes.getNamedItem("more").getNodeValue();
 				status = instanceChildNodes.getNamedItem("status").getNodeValue();
 
 			}
-			detailsList = responseToDetailsList(response);
 
-			if(detailsList != null && !detailsList.isEmpty()){
-				configurationItemList.addAll(detailsList);
-			}
+			configurationItemList.addAll(documentToCmdbDetailsList(doc));
 
 			if(more == null || !more.equals("1") || status == null || !status.equals("SUCCESS")){
 				getMore = false;
@@ -267,113 +267,15 @@ public class DefaultHpsmClient implements HpsmClient {
 		}
 
 		return configurationItemList;
-
 	}
 
-	/**
-	 *  Takes SOAP response and creates List <Cmdb> with details
-	 * @param response
-	 * @return List <Cmdb>
-	 */
-	private List <Cmdb> responseToDetailsList(String response) throws  HygieiaException{
+	private List <Cmdb> documentToCmdbDetailsList(Document doc) throws  HygieiaException{
         List <Cmdb> returnList = new ArrayList<>();
 		try {
-
-			JSONObject bodyObject = getBodyFromResponse(response.trim());
-
-
-			JSONObject cmdbListResponse = getObject(bodyObject, "RetrieveDeviceListResponse");
-			Object instance = cmdbListResponse.get("instance");
-
-			if (instance instanceof JSONArray) {
-				JSONArray instanceArray = (JSONArray) instance;
-				for(Object arrayObject: instanceArray){
-					if(arrayObject instanceof JSONObject){
-						JSONObject contentObj = (JSONObject) arrayObject;
-						returnList = getCmdbItem(contentObj, returnList);
-					}else{
-						LOG.info("No Object found for instanceArray");
-					}
-				}
-			}else if(instance instanceof  JSONObject){
-				JSONObject instanceObject = (JSONObject) instance;
-
-				returnList = getCmdbItem(instanceObject, returnList);
-
-
-			}else{
-				throw new HygieiaException("No items fround in instance | response: " +cmdbListResponse.toString(), HygieiaException.BAD_DATA);
+			for(Node n: XmlUtil.asList(doc.getElementsByTagName("instance"))){
+				Map xmlMap = XmlUtil.getElementKeyValue(n.getChildNodes());
+				returnList.addAll(getCmdbItemFromXmlMap(xmlMap));
 			}
-
-
-
-
-		}catch(Exception e){
-			LOG.error(e);
-		}
-		return returnList;
-	}
-
-	private List <ChangeOrder> responseToChangeOrderList(String response) {
-		List <ChangeOrder> returnList = new ArrayList<>();
-		try {
-			JSONObject bodyObject = getBodyFromResponse(response.trim());
-
-
-			JSONObject changeListResponse = getObject(bodyObject, "RetrieveChangeListResponse");
-			Object instance = changeListResponse.get("instance");
-
-			if (instance instanceof JSONArray) {
-				JSONArray instanceArray = (JSONArray) instance;
-				for (Object instanceArrayObject : instanceArray) {
-					if (instanceArrayObject instanceof JSONObject) {
-						JSONObject instanceJsonObject = (JSONObject) instanceArrayObject;
-						returnList = getChangeItem(instanceJsonObject, returnList);
-					}
-				}
-			} else if(instance instanceof  JSONObject){
-				JSONObject instanceObject = (JSONObject) instance;
-
-				returnList = getChangeItem(instanceObject, returnList);
-
-			}else{
-				LOG.info("No items to return");
-			}
-
-
-		}catch(Exception e){
-			LOG.error(e);
-		}
-
-		return returnList;
-	}
-
-	private List <Incident> responseToIncidentList(String response) {
-		List <Incident> returnList = new ArrayList<>();
-		try {
-			JSONObject bodyObject = getBodyFromResponse(response.trim());
-
-			JSONObject incidentListResponse = getObject(bodyObject, "RetrieveIncidentListResponse");
-			Object instance = incidentListResponse.get("instance");
-
-			if (instance instanceof JSONArray) {
-				JSONArray instanceArray = (JSONArray) instance;
-				for (Object instanceArrayObject : instanceArray) {
-					if (instanceArrayObject instanceof JSONObject) {
-						JSONObject instanceJsonObject = (JSONObject) instanceArrayObject;
-						returnList = getIncidentItem(instanceJsonObject, returnList);
-					}
-				}
-			} else if(instance instanceof  JSONObject){
-				JSONObject instanceObject = (JSONObject) instance;
-
-				returnList = getIncidentItem(instanceObject, returnList);
-
-			}else{
-				LOG.info("No items to return");
-			}
-
-
 		}catch(Exception e){
 			LOG.error(e);
 		}
@@ -401,6 +303,29 @@ public class DefaultHpsmClient implements HpsmClient {
 
 		return changeOrderList;
 	}
+	private List <ChangeOrder> responseToChangeOrderList(String response) {
+		List <ChangeOrder> returnList = new ArrayList<>();
+		try {
+
+			Document doc = responseToDoc(response);
+			for(Node n: XmlUtil.asList(doc.getElementsByTagName("instance"))){
+				for(Node node: XmlUtil.asList(n.getChildNodes())){
+					Element headerElem = (Element) node;
+					String tagName = headerElem.getTagName();
+					if(tagName.equals("header")){
+						Map xmlMap = XmlUtil.getElementKeyValue(node.getChildNodes());
+						returnList.addAll(getChangeFromXmlMap(xmlMap));
+					}
+				}
+
+			}
+
+		}catch(Exception e){
+			LOG.error(e);
+		}
+
+		return returnList;
+	}
 
 	/**
 	 *
@@ -423,7 +348,20 @@ public class DefaultHpsmClient implements HpsmClient {
 
 		return incidentList;
 	}
+	private List <Incident> responseToIncidentList(String response) {
+		List <Incident> returnList = new ArrayList<>();
+		try {
+			Document doc = responseToDoc(response);
+			for(Node n: XmlUtil.asList(doc.getElementsByTagName("instance"))){
+				Map xmlMap = XmlUtil.getElementKeyValue(n.getChildNodes());
+				returnList.addAll(getIncidentFromXmlMap(xmlMap));
+			}
 
+		}catch(Exception e){
+			LOG.error(e);
+		}
+		return returnList;
+	}
 
 	/**
 	 * Returns the type of the configuration item.
@@ -810,182 +748,80 @@ public class DefaultHpsmClient implements HpsmClient {
 		keysTag.addAttribute(query,  queryString);
 
 	}
+	private List<Cmdb> getCmdbItemFromXmlMap(Map map) {
+		if(map == null || map.isEmpty()) return new ArrayList<>();
+		if(getStringValueFromMap(map,HpsmCollectorConstants.CONFIGURATION_ITEM).isEmpty()) return new ArrayList<>();
 
-	/**
-	 * Takes response xml string, creates json string and returns an object
-	 * @param response
-	 * @return
-	 */
-	private JSONObject getBodyFromResponse(String response) throws HygieiaException{
-		JSONObject instanceObject =  new JSONObject();
-		try {
-			JSONObject xmlJSONObj = XML.toJSONObject(response.trim());
-
-			JSONObject envelope = getObject(xmlJSONObj, "SOAP-ENV:Envelope");
-			if(!envelope.has("SOAP-ENV:Body")){
-				throw new HygieiaException("Body not found in response | Response " +response,HygieiaException.BAD_DATA);
-			}
-			if (envelope != null) {
-				Object object  = envelope.get("SOAP-ENV:Body");
-				if (object != null && object instanceof JSONObject) {
-					instanceObject = (JSONObject) object;
-				}
-			}
-		}catch(Exception e){
-			LOG.error(e);
-		}
-		return instanceObject;
-	}
-	private List<Cmdb> getCmdbItem(JSONObject instance,  List<Cmdb> list) {
 		Cmdb cmdb = new Cmdb();
-		if(!instance.has("ConfigurationItem")) return list;
 
-		JSONObject configurationItem = getObject(instance, "ConfigurationItem");
-		JSONObject configurationItemSubType = getObject(instance, "ConfigurationItemSubType");
-		JSONObject configurationItemType = getObject(instance, "ConfigurationItemType");
-		JSONObject assignmentGroup = getObject(instance, "AssignmentGroup");
-		JSONObject appServiceOwner = getObject(instance, "AppServiceOwner");
-		JSONObject businessOwner = getObject(instance, "BusinessOwner");
-		JSONObject supportOwner = getObject(instance, "SupportOwner");
-		JSONObject developmentOwner = getObject(instance, "DevelopmentOwner");
-		JSONObject ownerDept = getObject(instance, "OwnerDept");
-		JSONObject commonName = getObject(instance, "CommonName");
-
-
-		String configurationItemValue = getString(configurationItem, "content");
-		String configurationItemSubTypeValue = getString(configurationItemSubType, "content");
-		String configurationItemTypeValue = getString(configurationItemType, "content");
-		String assignmentGroupValue = getString(assignmentGroup, "content");
-		String appServiceOwnerValue = getString(appServiceOwner, "content");
-		String businessOwnerValue = getString(businessOwner, "content");
-		String supportOwnerValue = getString(supportOwner, "content");
-		String developmentOwnerValue = getString(developmentOwner, "content");
-		String ownerDeptValue = getString(ownerDept, "content");
-		String commonNameValue = getString(commonName, "content");
-
-		cmdb.setConfigurationItem(configurationItemValue);
-		cmdb.setConfigurationItemSubType(configurationItemSubTypeValue);
-		cmdb.setConfigurationItemType(configurationItemTypeValue);
-		cmdb.setAssignmentGroup(assignmentGroupValue);
-		cmdb.setAppServiceOwner(appServiceOwnerValue);
-		cmdb.setBusinessOwner(businessOwnerValue);
-		cmdb.setSupportOwner(supportOwnerValue);
-		cmdb.setDevelopmentOwner(developmentOwnerValue);
-		cmdb.setOwnerDept(ownerDeptValue);
-		cmdb.setCommonName(commonNameValue);
+		cmdb.setConfigurationItem(getStringValueFromMap(map,HpsmCollectorConstants.CONFIGURATION_ITEM));
+		cmdb.setConfigurationItemSubType(getStringValueFromMap(map,HpsmCollectorConstants.CONFIGURATION_ITEM_SUBTYPE));
+		cmdb.setConfigurationItemType(getStringValueFromMap(map,HpsmCollectorConstants.CONFIGURATION_ITEM_TYPE));
+		cmdb.setCommonName(getStringValueFromMap(map,HpsmCollectorConstants.COMMON_NAME));
+		cmdb.setAssignmentGroup(getStringValueFromMap(map,HpsmCollectorConstants.ASSIGNMENT_GROUP));
+		cmdb.setOwnerDept(getStringValueFromMap(map,HpsmCollectorConstants.OWNER_DEPT));
+		cmdb.setAppServiceOwner(getStringValueFromMap(map,HpsmCollectorConstants.APP_SERVICE_OWNER));
+		cmdb.setBusinessOwner(getStringValueFromMap(map,HpsmCollectorConstants.BUSINESS_OWNER));
+		cmdb.setSupportOwner(getStringValueFromMap(map,HpsmCollectorConstants.SUPPORT_OWNER));
+		cmdb.setDevelopmentOwner(getStringValueFromMap(map,HpsmCollectorConstants.DEVELOPMENT_OWNER));
 		cmdb.setItemType(getItemType(cmdb));
 		cmdb.setValidConfigItem(true);
 		cmdb.setTimestamp(System.currentTimeMillis());
-		if(configurationItemValue != null && !configurationItemValue.isEmpty()) {
-			list.add(cmdb);
-		}
+
+		List<Cmdb> list = new ArrayList<>();
+		list.add(cmdb);
 		return list;
 	}
-	private List<Incident> getIncidentItem(JSONObject instance,  List<Incident> list) {
+	private List<Incident> getIncidentFromXmlMap(Map map) {
+		if(map == null || map.isEmpty()) return new ArrayList<>();
+		if(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_ID).isEmpty()) return new ArrayList<>();
+
 		Incident incident = new Incident();
-		if(!instance.has("IncidentID")) return list;
+		incident.setIncidentID(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_ID));
+		incident.setCategory(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_CATEGORY));
+		incident.setOpenTime(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_OPEN_TIME));
+		incident.setOpenedBy(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_OPEN_BY));
+		incident.setUpdatedTime(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_UPDATE_TIME));
+		incident.setSeverity(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_SEVERITY));
+		incident.setPrimaryAssignmentGroup(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_PRIMARY_ASSIGNMENT_GROUP));
+		incident.setStatus(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_STATUS));
+		incident.setAffectedItem(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_AFFECTED_ITEM));
+		incident.setIncidentDescription(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_DESCRIPTION));
 
-		JSONObject incidentID = getObject(instance, "IncidentID");
-		JSONObject category = getObject(instance, "Category");
-		JSONObject openTime = getObject(instance, "OpenTime");
-		JSONObject openedBy = getObject(instance, "OpenedBy");
-		JSONObject severity = getObject(instance, "Severity");
-		JSONObject updatedTime = getObject(instance, "UpdatedTime");
-		JSONObject primaryAssignmentGroup = getObject(instance, "PrimaryAssignmentGroup");
-		JSONObject status = getObject(instance, "Status");
-		JSONObject affectedItem = getObject(instance, "AffectedItem");
-		JSONObject incidentDescription = getObject(instance, "IncidentDescription");
-
-		String incidentIdValue = getString(incidentID, "content");
-		incident.setIncidentID(incidentIdValue);
-		incident.setCategory(getString(category, "content"));
-		incident.setOpenTime(getString(openTime, "content"));
-		incident.setOpenedBy(getString(openedBy,"content"));
-		incident.setUpdatedTime(getString(updatedTime,"content"));
-		incident.setSeverity(getString(severity,"content"));
-		incident.setPrimaryAssignmentGroup(getString(primaryAssignmentGroup,"content"));
-		incident.setStatus(getString(status,"content"));
-		incident.setAffectedItem(getString(affectedItem,"content"));
-
-
-		Object incidentDescriptionObject = incidentDescription.get("IncidentDescription");
-
-		if(incidentDescriptionObject instanceof JSONArray){
-			JSONArray incidentDescriptionArray = (JSONArray) incidentDescriptionObject;
-			List<String> descriptionList = new ArrayList<>();
-			for (Object obj: incidentDescriptionArray){
-				if(obj instanceof JSONObject){
-					JSONObject incidentDescriptionContent = (JSONObject) obj;
-					descriptionList.add(incidentDescriptionContent.getString("content"));
-				}
-			}
-			incident.setIncidentDescription(descriptionList);
-		}
-		if(incidentIdValue != null && !incidentIdValue.isEmpty()) {
-			list.add(incident);
-		}
+		List<Incident> list = new ArrayList<>();
+		list.add(incident);
 		return list;
 	}
+	private List<ChangeOrder> getChangeFromXmlMap(Map map) {
+		if(map == null || map.isEmpty()) return new ArrayList<>();
+		if(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_ID).isEmpty()) return new ArrayList<>();
 
-	private List <ChangeOrder> getChangeItem(JSONObject instance, List <ChangeOrder> list) {
 		ChangeOrder change = new ChangeOrder();
-		JSONObject header = getObject(instance, "header");
-
-		if(!header.has("ChangeID")) return list;
-
-		JSONObject changeID = getObject(header, "ChangeID");
-		JSONObject category = getObject(header, "Category");
-		JSONObject status = getObject(header, "Status");
-		JSONObject approvalStatus = getObject(header, "ApprovalStatus");
-		JSONObject initiatedBy = getObject(header, "InitiatedBy");
-		JSONObject assignedTo = getObject(header, "AssignedTo");
-		JSONObject assignmentGroup = getObject(header, "AssignmentGroup");
-		JSONObject plannedStart = getObject(header, "PlannedStart");
-		JSONObject plannedEnd = getObject(header, "PlannedEnd");
-		JSONObject reason = getObject(header, "Reason");
-
-		JSONObject phase = getObject(header, "Phase");
-		JSONObject riskAssessment = getObject(header, "RiskAssessment");
-		JSONObject dateEntered = getObject(header, "DateEntered");
-		JSONObject open = getObject(header, "Open");
-		JSONObject title = getObject(header, "Title");
-		JSONObject subcategory = getObject(header, "Subcategory");
-		JSONObject changeModel = getObject(header, "ChangeModel");
-
-		String changeIdValue = getString(changeID, "content");
-		change.setChangeID(changeIdValue);
-		change.setCategory(getString(category, "content"));
-		change.setStatus(getString(status, "content"));
-		change.setApprovalStatus(getString(approvalStatus, "content"));
-		change.setInitiatedBy(getString(initiatedBy, "content"));
-		change.setAssignedTo(getString(assignedTo, "content"));
-		change.setAssignmentGroup(getString(assignmentGroup, "content"));
-		change.setPlannedStart(getString(plannedStart, "content"));
-		change.setPlannedEnd(getString(plannedEnd, "content"));
-		change.setReason(getString(reason, "content"));
-		change.setPhase(getString(phase, "content"));
-		change.setRiskAssessment(getString(riskAssessment, "content"));
-		change.setDateEntered(getString(dateEntered, "content"));
-		change.setOpen(getString(open, "content"));
-		change.setTitle(getString(title, "content"));
-		change.setSubcategory(getString(subcategory, "content"));
-		change.setChangeModel(getString(changeModel, "content"));
-
-		if (changeIdValue != null && !changeIdValue.isEmpty()){
-			list.add(change);
-		}
-
+		change.setChangeID(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_ID));
+		change.setCategory(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_CATEGORY));
+		change.setStatus(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_STATUS));
+		change.setApprovalStatus(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_APPROVAL_STATUS));
+		change.setInitiatedBy(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_INITIATED_BY));
+		change.setAssignedTo(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_ASSIGNED_TO));
+		change.setAssignmentGroup(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_ASSIGNMENT_GROUP));
+		change.setPlannedStart(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_PLANNED_START));
+		change.setPlannedEnd(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_PLANNED_END));
+		change.setReason(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_REASON));
+		change.setPhase(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_PHASE));
+		change.setRiskAssessment(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_RISK_ASSESSMENT));
+		change.setDateEntered(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_DATE_ENTERED));
+		change.setOpen(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_OPEN));
+		change.setTitle(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_TITLE));
+		change.setSubcategory(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_SUBCATEGORY));
+		change.setChangeModel(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_MODEL));
+		List<ChangeOrder> list = new ArrayList<>();
+		list.add(change);
 		return list;
 	}
-
-	private JSONObject getObject(JSONObject json, String key) {
-		if (json == null) return new JSONObject();
-		if (!json.has(key)) return new JSONObject();
-		return (JSONObject) json.get(key);
-	}
-	private String getString(JSONObject json, String key) {
-		if (json == null || !json.has(key)) return "";
-		Object value = json.get(key);
-		return (value == null) ? "" : value.toString();
+	private String getStringValueFromMap(Map map, String key){
+		if(!map.containsKey(key)
+				|| map.get(key) == null
+				|| "".equals(key)) return "";
+		return map.get(key).toString();
 	}
 }

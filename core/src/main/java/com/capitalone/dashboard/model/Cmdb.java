@@ -5,7 +5,9 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Objects;
 
 @Document(collection="cmdb")
 public class Cmdb {
@@ -13,6 +15,7 @@ public class Cmdb {
     private ObjectId id;
     private ObjectId collectorItemId;
     private long timestamp;
+    @NotNull
     private String configurationItem;
     private String configurationItemSubType;
     private String configurationItemType;
@@ -192,28 +195,77 @@ public class Cmdb {
 
     public List<String> getComponents(){ return components; }
 
-    public boolean isCmdbMatch(Object compareTo){
-        boolean doesEqual = true;
-
-        if(compareTo == null || !compareTo.getClass().isAssignableFrom(Cmdb.class)){
-            doesEqual = false;
-        }else {
-            Cmdb newCmdb = (Cmdb) compareTo;
-
-            if((newCmdb.getConfigurationItem() !=null && !newCmdb.getConfigurationItem().equals(configurationItem)) ||
-                    (newCmdb.getAssignmentGroup() !=null && !newCmdb.getAssignmentGroup().equals(assignmentGroup)) ||
-                    (newCmdb.getAppServiceOwner() !=null && !newCmdb.getAppServiceOwner().equals(appServiceOwner)) ||
-                    (newCmdb.getBusinessOwner() !=null && !newCmdb.getBusinessOwner().equals(businessOwner)) ||
-                    (newCmdb.getSupportOwner() !=null && !newCmdb.getSupportOwner().equals(supportOwner)) ||
-                    (newCmdb.getDevelopmentOwner() !=null && !newCmdb.getDevelopmentOwner().equals(developmentOwner)) ||
-                    (newCmdb.getOwnerDept() !=null && !newCmdb.getOwnerDept().equals(ownerDept)) ||
-                    (newCmdb.getConfigurationItemSubType() !=null && !newCmdb.getConfigurationItemSubType().equals(configurationItemSubType)) ||
-                    (newCmdb.getConfigurationItemType() !=null && !newCmdb.getConfigurationItemType().equals(configurationItemType)) ||
-                    (newCmdb.isValidConfigItem() != validConfigItem)){
-                doesEqual = false;
-            }
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(
+                this.configurationItem,
+                this.assignmentGroup,
+                this.appServiceOwner,
+                this.businessOwner,
+                this.supportOwner,
+                this.developmentOwner,
+                this.ownerDept,
+                this.itemType,
+                this.configurationItemSubType,
+                this.configurationItemType);
+    }
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == null)
+        {
+            return false;
         }
+        if (getClass() != obj.getClass())
+        {
+            return false;
+        }
+        final Cmdb other = (Cmdb) obj;
+        return    Objects.equals(this.configurationItem, other.configurationItem)
+                && Objects.equals(this.assignmentGroup, other.assignmentGroup)
+                && Objects.equals(this.appServiceOwner, other.appServiceOwner)
+                && Objects.equals(this.businessOwner, other.businessOwner)
+                && Objects.equals(this.supportOwner, other.supportOwner)
+                && Objects.equals(this.developmentOwner, other.developmentOwner)
+                && Objects.equals(this.ownerDept, other.ownerDept)
+                && Objects.equals(this.configurationItemSubType, other.configurationItemSubType)
+                && Objects.equals(this.configurationItemType, other.configurationItemType)
+                && Objects.equals(this.validConfigItem, other.validConfigItem);
 
-        return doesEqual;
+    }
+    /**
+     *  Returns human readable string of the Cmdb Object.
+     *  * equals(Object object) depends on this method. Changing this method could alter the return of the equals method.
+     * @return object to string
+     */
+    @Override
+    public String toString() {
+
+        StringBuffer buf = new StringBuffer(210);
+        buf.append("configurationItem: ")
+                .append(configurationItem)
+                .append("\nassignmentGroup: ")
+                .append(assignmentGroup)
+                .append("\nappServiceOwner: ")
+                .append(appServiceOwner)
+                .append("\nbusinessOwner: ")
+                .append(businessOwner)
+                .append("\nsupportOwner: ")
+                .append(supportOwner)
+                .append("\ndevelopmentOwner: ")
+                .append(developmentOwner)
+                .append("\nownerDept: ")
+                .append(ownerDept)
+                .append("\nitemType: ")
+                .append(itemType)
+                .append("\nconfigurationItemSubType: ")
+                .append(configurationItemSubType)
+                .append("\nconfigurationItemType: ")
+                .append(configurationItemType)
+                .append("\nvalidConfigItem: ")
+                .append(validConfigItem);
+
+        return buf.toString();
     }
 }
