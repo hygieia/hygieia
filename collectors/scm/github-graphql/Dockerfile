@@ -1,10 +1,7 @@
 FROM openjdk:8-jre
 
 VOLUME ["/hygieia/logs"]
-
-RUN mkdir /hygieia/config
-
-EXPOSE 8080
+VOLUME ["/hygieia/config"]
 
 ENV PROP_FILE /hygieia/config/application.properties
 
