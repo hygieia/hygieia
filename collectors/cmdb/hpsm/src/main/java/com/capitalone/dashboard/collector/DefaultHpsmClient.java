@@ -1,9 +1,12 @@
 package com.capitalone.dashboard.collector;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.ChangeOrder;
 import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.HpsmSoapModel;
 import com.capitalone.dashboard.model.Incident;
+import com.capitalone.dashboard.util.HpsmCollectorConstants;
+import com.capitalone.dashboard.util.XmlUtil;
 import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
@@ -17,26 +20,39 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ReflectionUtils;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.NamedNodeMap;
 import org.xml.sax.SAXException;
+
 
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.soap.*;
-import java.io.*;
-import java.lang.reflect.Method;
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.SOAPEnvelope;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.SOAPPart;
+import javax.xml.soap.SOAPBody;
+import javax.xml.soap.SOAPBodyElement;
+import javax.xml.soap.SOAPException;
+
+import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Date;
+import java.util.Calendar;
+
 
 /**
  * HpsmClient implementation that uses SVNKit to fetch information about
@@ -111,9 +127,9 @@ public class DefaultHpsmClient implements HpsmClient {
      * @return Combined List<Cmdb> of APPs and Components
      */
 	@Override
-	public List<Cmdb> getApps() {
+	public List<Cmdb> getApps() throws HygieiaException {
 
-		String limit = hpsmSettings.getCmdbReturnLimit();
+		String limit = hpsmSettings.getCmdbBatchLimit();
 		if(limit != null && !limit.isEmpty()) {
 			LOG.info("NOTE: Collector run limited to " + limit + " results by property file setting.");
 		}
@@ -137,14 +153,14 @@ public class DefaultHpsmClient implements HpsmClient {
 	}
 
 	@Override
-	public List<ChangeOrder> getChangeOrders() {
+	public List<ChangeOrder> getChangeOrders() throws HygieiaException{
 		List<ChangeOrder> changeOrderList;
 		changeOrderList = getChangeOrderList();
 		return changeOrderList;
 	}
 
 	@Override
-	public List<Incident> getIncidents() {
+	public List<Incident> getIncidents() throws HygieiaException{
 		List<Incident> incidentList;
 		incidentList = getIncidentList();
 		return incidentList;
@@ -155,7 +171,7 @@ public class DefaultHpsmClient implements HpsmClient {
 	 * Returns List<Cmdb> of Apps
 	 * @return List<Cmdb>
 	 */
-	private List<Cmdb> getAppList(String status){
+	private List<Cmdb> getAppList(String status) throws HygieiaException{
 		List<Cmdb> appList;
 
 		HpsmSoapModel hpsmSoapModel = new HpsmSoapModel();
@@ -173,7 +189,7 @@ public class DefaultHpsmClient implements HpsmClient {
 	 *
 	 * @return  Returns List<Cmdb> of Components
 	 */
-	private List<Cmdb> getComponentList(String status){
+	private List<Cmdb> getComponentList(String status) throws HygieiaException{
 		List<Cmdb> componentList;
         HpsmSoapModel hpsmSoapModel = new HpsmSoapModel();
 
@@ -193,7 +209,7 @@ public class DefaultHpsmClient implements HpsmClient {
 	 * Returns List<Cmdb> of Environments
 	 * @return List<Cmdb>
 	 */
-	private List<Cmdb> getEnvironmentList(String status){
+	private List<Cmdb> getEnvironmentList(String status) throws HygieiaException{
 		List<Cmdb> componentList;
 		HpsmSoapModel hpsmSoapModel = new HpsmSoapModel();
 
@@ -214,101 +230,54 @@ public class DefaultHpsmClient implements HpsmClient {
 	 * @param hpsmSoapModel
 	 * @return
 	 */
-	private List<Cmdb> getConfigurationItemList(HpsmSoapModel hpsmSoapModel){
-		List<Cmdb> configurationItemList;
+	private List<Cmdb> getConfigurationItemList(HpsmSoapModel hpsmSoapModel) throws  HygieiaException{
+		List<Cmdb> configurationItemList = new ArrayList<>();
 
-		String soapString = getCmdbSoapMessage(hpsmSoapModel);
-		String response = makeSoapCall(soapString, hpsmSoapModel);
-		configurationItemList = responseToDetailsList(response);
+		boolean getMore = true;
+		int startValue = 0;
+		while(getMore){
+
+			String batchLimit = hpsmSettings.getCmdbBatchLimit();
+			int returnLimit = Integer.parseInt(batchLimit);
+
+
+			String newStart = Integer.toString(startValue);
+			String soapString = getSoapMessage(hpsmSoapModel,newStart, batchLimit, SoapRequestType.CMDB);
+			String response = makeSoapCall(soapString, hpsmSoapModel);
+
+			Document doc = responseToDoc(response);
+			NodeList responseNodeList = doc.getElementsByTagName("RetrieveDeviceListResponse");
+
+			String more = "";
+			String status = "";
+			for (int i = 0; i < responseNodeList.getLength(); i++) {
+				NamedNodeMap instanceChildNodes = responseNodeList.item(i).getAttributes();
+				more = instanceChildNodes.getNamedItem("more").getNodeValue();
+				status = instanceChildNodes.getNamedItem("status").getNodeValue();
+
+			}
+
+			configurationItemList.addAll(documentToCmdbDetailsList(doc));
+
+			if(more == null || !more.equals("1") || status == null || !status.equals("SUCCESS")){
+				getMore = false;
+				LOG.info("No more items retrieved. Item count " + configurationItemList.size());
+			}
+			startValue += returnLimit;
+		}
+
 		return configurationItemList;
 	}
 
-	/**
-	 *  Takes SOAP response and creates List <Cmdb> with details
-	 * @param response
-	 * @return List <Cmdb>
-	 */
-	private List <Cmdb> responseToDetailsList(String response) {
+	private List <Cmdb> documentToCmdbDetailsList(Document doc) throws  HygieiaException{
         List <Cmdb> returnList = new ArrayList<>();
-		Document doc = responseToDoc(response);
-        NodeList instanceNodeList = doc.getElementsByTagName("instance");
-        for (int i = 0; i < instanceNodeList.getLength(); i++) {
-            NodeList instanceChildNodes = instanceNodeList.item(i).getChildNodes();
-            Cmdb cmdb = new Cmdb();
-            for (int j = 0; j < instanceChildNodes.getLength(); j++) {
-                Node node = instanceChildNodes.item(j);
-                if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    Element elem = (Element) node;
-                    String tagName = elem.getTagName();
-                    String setMethod = "set" + tagName;
-                    String name = elem.getTextContent();
-
-                    callMethod(cmdb, setMethod, new Object[] { name }, String.class);
-
-                }
-            }
-			cmdb.setValidConfigItem(true);
-            cmdb.setItemType(getItemType(cmdb));
-
-            returnList.add(cmdb);
-        }
-		return returnList;
-	}
-
-	private List <ChangeOrder> responseToChangeOrderList(String response) {
-		List <ChangeOrder> returnList = new ArrayList<>();
-		Document doc = responseToDoc(response);
-		NodeList instanceNodeList = doc.getElementsByTagName("instance");
-		for (int i = 0; i < instanceNodeList.getLength(); i++) {
-			NodeList instanceChildNodes = instanceNodeList.item(i).getChildNodes();
-			ChangeOrder change = new ChangeOrder();
-			for (int j = 0; j < instanceChildNodes.getLength(); j++) {
-
-				Node node = instanceChildNodes.item(j);
-				if (node.getNodeType() == Node.ELEMENT_NODE) {
-					Element elem = (Element) node;
-					String tagName = elem.getTagName();
-					if(tagName.equals("header")){
-						NodeList headerNodes = node.getChildNodes();
-						for(int k = 0; k < headerNodes.getLength(); k++) {
-							Node headerNode = headerNodes.item(k);
-							Element headerElem = (Element) headerNode;
-							String headerTagName = headerElem.getTagName();
-							String setMethod = "set" + headerTagName;
-							String name = headerElem.getTextContent();
-
-							callMethod(change, setMethod, new Object[] { name }, String.class);
-
-						}
-					}
-
-				}
+		try {
+			for(Node n: XmlUtil.asList(doc.getElementsByTagName("instance"))){
+				Map xmlMap = XmlUtil.getElementKeyValue(n.getChildNodes());
+				returnList.addAll(getCmdbItemFromXmlMap(xmlMap));
 			}
-			returnList.add(change);
-		}
-		return returnList;
-	}
-
-	private List <Incident> responseToIncidentList(String response) {
-		List <Incident> returnList = new ArrayList<>();
-		Document doc = responseToDoc(response);
-		NodeList instanceNodeList = doc.getElementsByTagName("instance");
-		for (int i = 0; i < instanceNodeList.getLength(); i++) {
-			NodeList instanceChildNodes = instanceNodeList.item(i).getChildNodes();
-			Incident incident = new Incident();
-			for (int j = 0; j < instanceChildNodes.getLength(); j++) {
-				Node node = instanceChildNodes.item(j);
-				if (node.getNodeType() == Node.ELEMENT_NODE) {
-					Element elem = (Element) node;
-					String tagName = elem.getTagName();
-					String setMethod = "set" + tagName;
-					String name = elem.getTextContent();
-
-					callMethod(incident, setMethod, new Object[] { name }, String.class);
-
-				}
-			}
-			returnList.add(incident);
+		}catch(Exception e){
+			LOG.error(e);
 		}
 		return returnList;
 	}
@@ -318,14 +287,15 @@ public class DefaultHpsmClient implements HpsmClient {
 	 * Returns List<ChangeOrder> of Change Orders
 	 * @return List<ChangeOrder>
 	 */
-	private List<ChangeOrder> getChangeOrderList(){
+	private List<ChangeOrder> getChangeOrderList() throws HygieiaException{
 		List<ChangeOrder> changeOrderList;
+		String limit = hpsmSettings.getChangeOrderReturnLimit();
 
 		HpsmSoapModel hpsmSoapModel = new HpsmSoapModel();
 		hpsmSoapModel.setRequestTypeName(hpsmSettings.getChangeOrderRequestType());
 		hpsmSoapModel.setSoapAction(hpsmSettings.getChangeOrderSoapAction());
 
-		String soapString = getChangeSoapMessage(hpsmSoapModel);
+		String soapString = getSoapMessage(hpsmSoapModel,"",limit, SoapRequestType.CHANGE_ORDER);
 
 		String response  = makeSoapCall(soapString, hpsmSoapModel);
 
@@ -333,20 +303,44 @@ public class DefaultHpsmClient implements HpsmClient {
 
 		return changeOrderList;
 	}
+	private List <ChangeOrder> responseToChangeOrderList(String response) {
+		List <ChangeOrder> returnList = new ArrayList<>();
+		try {
+
+			Document doc = responseToDoc(response);
+			for(Node n: XmlUtil.asList(doc.getElementsByTagName("instance"))){
+				for(Node node: XmlUtil.asList(n.getChildNodes())){
+					Element headerElem = (Element) node;
+					String tagName = headerElem.getTagName();
+					if(tagName.equals("header")){
+						Map xmlMap = XmlUtil.getElementKeyValue(node.getChildNodes());
+						returnList.addAll(getChangeFromXmlMap(xmlMap));
+					}
+				}
+
+			}
+
+		}catch(Exception e){
+			LOG.error(e);
+		}
+
+		return returnList;
+	}
 
 	/**
 	 *
 	 * Returns List<Incident> of Incidents
 	 * @return List<Incident>
 	 */
-	private List<Incident> getIncidentList(){
+	private List<Incident> getIncidentList() throws HygieiaException{
 		List<Incident> incidentList;
+		String limit = hpsmSettings.getIncidentReturnLimit();
 
 		HpsmSoapModel hpsmSoapModel = new HpsmSoapModel();
 		hpsmSoapModel.setRequestTypeName(hpsmSettings.getIncidentRequestType());
 		hpsmSoapModel.setSoapAction(hpsmSettings.getIncidentSoapAction());
 
-		String soapString = getIncidentSoapMessage(hpsmSoapModel);
+		String soapString = getSoapMessage(hpsmSoapModel, "", limit, SoapRequestType.INCIDENT );
 
 		String response  = makeSoapCall(soapString, hpsmSoapModel);
 
@@ -354,7 +348,20 @@ public class DefaultHpsmClient implements HpsmClient {
 
 		return incidentList;
 	}
+	private List <Incident> responseToIncidentList(String response) {
+		List <Incident> returnList = new ArrayList<>();
+		try {
+			Document doc = responseToDoc(response);
+			for(Node n: XmlUtil.asList(doc.getElementsByTagName("instance"))){
+				Map xmlMap = XmlUtil.getElementKeyValue(n.getChildNodes());
+				returnList.addAll(getIncidentFromXmlMap(xmlMap));
+			}
 
+		}catch(Exception e){
+			LOG.error(e);
+		}
+		return returnList;
+	}
 
 	/**
 	 * Returns the type of the configuration item.
@@ -413,26 +420,6 @@ public class DefaultHpsmClient implements HpsmClient {
 		}
 
 		return itemType;
-	}
-
-	/**
-     *  Takes a model , methodName, value to be set, and value type and uses reflection to excute model methods.
-     * @param target model input
-     * @param methodName method to run
-     * @param args value for for method
-     * @param params class
-     * @return result
-     */
-	private Object callMethod(Object target, String methodName, Object[] args, Class<?>...params){
-		Object result;
-		Method put = ReflectionUtils.findMethod(target.getClass(), methodName, params);
-		if(put != null){
-			result = ReflectionUtils.invokeMethod(put, target, args);
-		}
-		else{
-            result = null;
-		}
-		return result;
 	}
 	/**
 	 *  Converts String response into document for parsing
@@ -522,7 +509,7 @@ public class DefaultHpsmClient implements HpsmClient {
      * @param hpsmSoapModel hpsmSoapModel
      * @return Soap response
      */
-    private String makeSoapCall(String soapMessageString, HpsmSoapModel hpsmSoapModel){
+    private String makeSoapCall(String soapMessageString, HpsmSoapModel hpsmSoapModel) throws HygieiaException{
 
         String requestAction = hpsmSoapModel.getSoapAction();
         String response = "";
@@ -542,8 +529,8 @@ public class DefaultHpsmClient implements HpsmClient {
 
             response = getResponseString(post.getResponseBodyAsStream());
 
-            if("FAILURE".equals(post.getStatusText())){
-                LOG.info("Soap Request Failure: " +  post.getStatusCode() + "|response: " +response);
+            if(!"OK".equals(post.getStatusText())){
+                throw new HygieiaException("Soap Request Failure: " +  post.getStatusCode() + "|response: " +response, HygieiaException.BAD_DATA);
             }
 
             stopHttpConnection();
@@ -554,7 +541,7 @@ public class DefaultHpsmClient implements HpsmClient {
 
     }
 
-    private String getCmdbSoapMessage(HpsmSoapModel hpsmSoapModel){
+	private String getSoapMessage(HpsmSoapModel hpsmSoapModel, String start, String limit, SoapRequestType type){
 		String strMsg = "";
 		SOAPMessage soapMsg;
 		String requestTypeName = hpsmSoapModel.getRequestTypeName();
@@ -575,11 +562,16 @@ public class DefaultHpsmClient implements HpsmClient {
 
 			SOAPBodyElement requestType = body.addBodyElement(envelope.createName(requestTypeName,"ns", ""));
 
-			String limit = hpsmSettings.getCmdbReturnLimit();
 			if(limit != null && !limit.isEmpty()) {
 				QName name1 = new QName("count");
 				requestType.addAttribute(name1, limit);
 			}
+			if(start != null && !start.isEmpty()) {
+				QName qNameStart = new QName("start");
+				requestType.addAttribute(qNameStart, start);
+			}
+			QName qNameIgnoreEmptyValues = new QName("ignoreEmptyElements");
+			requestType.addAttribute(qNameIgnoreEmptyValues, "true");
 
 			SOAPBodyElement modelTag = body.addBodyElement(envelope.createName("model","ns", ""));
 
@@ -588,119 +580,13 @@ public class DefaultHpsmClient implements HpsmClient {
 			// creates instance tag
 			body.addBodyElement(envelope.createName("instance", "ns", ""));
 
-			handleCmdbSoapMessage(hpsmSoapModel, envelope, keysTag);
-
-			modelTag.addChildElement(keysTag);
-
-			requestType.addChildElement(modelTag);
-
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			soapMsg.writeTo(out);
-			strMsg = new String(out.toByteArray());
-
-		} catch (SOAPException e) {
-			LOG.error("SOAPException: " + e);
-		} catch (UnsupportedEncodingException e) {
-			LOG.error("UnsupportedEncodingException: " + e);
-		} catch (IOException e) {
-			LOG.error("IOException: " + e);
-		}
-
-		return strMsg;
-	}
-
-	private String getIncidentSoapMessage(HpsmSoapModel hpsmSoapModel){
-		String strMsg = "";
-		SOAPMessage soapMsg;
-		String requestTypeName = hpsmSoapModel.getRequestTypeName();
-
-		try {
-			MessageFactory factory = MessageFactory.newInstance();
-
-			soapMsg = factory.createMessage();
-
-			SOAPPart part = soapMsg.getSOAPPart();
-
-			SOAPEnvelope envelope = part.getEnvelope();
-			envelope.addNamespaceDeclaration("ns", "http://schemas.hp.com/SM/7");
-			envelope.addNamespaceDeclaration("com", "http://schemas.hp.com/SM/7/Common");
-			envelope.addNamespaceDeclaration("xm", "http://www.w3.org/2005/05/xmlmime");
-
-			SOAPBody body = envelope.getBody();
-
-			SOAPBodyElement requestType = body.addBodyElement(envelope.createName(requestTypeName,"ns", ""));
-
-			String limit = hpsmSettings.getIncidentReturnLimit();
-			if(limit != null && !limit.isEmpty()) {
-				LOG.info("NOTE: Collector run limited to " + limit + " results by property file setting.");
-				QName name1 = new QName("count");
-				requestType.addAttribute(name1, limit);
+			if(type.equals(SoapRequestType.CHANGE_ORDER)){
+				handleChangeSoapMessage(keysTag);
+			}else if(type.equals(SoapRequestType.INCIDENT)){
+				handleIncidentSoapMessage(keysTag);
+			}else{
+				handleCmdbSoapMessage(hpsmSoapModel, envelope, keysTag);
 			}
-
-			SOAPBodyElement modelTag = body.addBodyElement(envelope.createName("model","ns", ""));
-
-			SOAPBodyElement keysTag = body.addBodyElement(envelope.createName("keys","ns", ""));
-
-			// creates instance tag
-			body.addBodyElement(envelope.createName("instance", "ns", ""));
-
-			handleIncidentSoapMessage(keysTag);
-
-			modelTag.addChildElement(keysTag);
-
-			requestType.addChildElement(modelTag);
-
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			soapMsg.writeTo(out);
-			strMsg = new String(out.toByteArray());
-
-		} catch (SOAPException e) {
-			LOG.error("SOAPException: " + e);
-		} catch (UnsupportedEncodingException e) {
-			LOG.error("UnsupportedEncodingException: " + e);
-		} catch (IOException e) {
-			LOG.error("IOException: " + e);
-		}
-
-		return strMsg;
-	}
-
-	private String getChangeSoapMessage(HpsmSoapModel hpsmSoapModel){
-		String strMsg = "";
-		SOAPMessage soapMsg;
-		String requestTypeName = hpsmSoapModel.getRequestTypeName();
-
-		try {
-			MessageFactory factory = MessageFactory.newInstance();
-
-			soapMsg = factory.createMessage();
-
-			SOAPPart part = soapMsg.getSOAPPart();
-
-			SOAPEnvelope envelope = part.getEnvelope();
-			envelope.addNamespaceDeclaration("ns", "http://schemas.hp.com/SM/7");
-			envelope.addNamespaceDeclaration("com", "http://schemas.hp.com/SM/7/Common");
-			envelope.addNamespaceDeclaration("xm", "http://www.w3.org/2005/05/xmlmime");
-
-			SOAPBody body = envelope.getBody();
-
-			SOAPBodyElement requestType = body.addBodyElement(envelope.createName(requestTypeName,"ns", ""));
-
-			String limit = hpsmSettings.getChangeOrderReturnLimit();
-			if(limit != null && !limit.isEmpty()) {
-				LOG.info("NOTE: Collector run limited to " + limit + " results by property file setting.");
-				QName name1 = new QName("count");
-				requestType.addAttribute(name1, limit);
-			}
-
-			SOAPBodyElement modelTag = body.addBodyElement(envelope.createName("model","ns", ""));
-
-			SOAPBodyElement keysTag = body.addBodyElement(envelope.createName("keys","ns", ""));
-
-			// creates instance tag
-			body.addBodyElement(envelope.createName("instance", "ns", ""));
-
-			handleChangeSoapMessage(keysTag);
 
 			modelTag.addChildElement(keysTag);
 
@@ -861,5 +747,81 @@ public class DefaultHpsmClient implements HpsmClient {
 
 		keysTag.addAttribute(query,  queryString);
 
+	}
+	private List<Cmdb> getCmdbItemFromXmlMap(Map map) {
+		if(map == null || map.isEmpty()) return new ArrayList<>();
+		if(getStringValueFromMap(map,HpsmCollectorConstants.CONFIGURATION_ITEM).isEmpty()) return new ArrayList<>();
+
+		Cmdb cmdb = new Cmdb();
+
+		cmdb.setConfigurationItem(getStringValueFromMap(map,HpsmCollectorConstants.CONFIGURATION_ITEM));
+		cmdb.setConfigurationItemSubType(getStringValueFromMap(map,HpsmCollectorConstants.CONFIGURATION_ITEM_SUBTYPE));
+		cmdb.setConfigurationItemType(getStringValueFromMap(map,HpsmCollectorConstants.CONFIGURATION_ITEM_TYPE));
+		cmdb.setCommonName(getStringValueFromMap(map,HpsmCollectorConstants.COMMON_NAME));
+		cmdb.setAssignmentGroup(getStringValueFromMap(map,HpsmCollectorConstants.ASSIGNMENT_GROUP));
+		cmdb.setOwnerDept(getStringValueFromMap(map,HpsmCollectorConstants.OWNER_DEPT));
+		cmdb.setAppServiceOwner(getStringValueFromMap(map,HpsmCollectorConstants.APP_SERVICE_OWNER));
+		cmdb.setBusinessOwner(getStringValueFromMap(map,HpsmCollectorConstants.BUSINESS_OWNER));
+		cmdb.setSupportOwner(getStringValueFromMap(map,HpsmCollectorConstants.SUPPORT_OWNER));
+		cmdb.setDevelopmentOwner(getStringValueFromMap(map,HpsmCollectorConstants.DEVELOPMENT_OWNER));
+		cmdb.setItemType(getItemType(cmdb));
+		cmdb.setValidConfigItem(true);
+		cmdb.setTimestamp(System.currentTimeMillis());
+
+		List<Cmdb> list = new ArrayList<>();
+		list.add(cmdb);
+		return list;
+	}
+	private List<Incident> getIncidentFromXmlMap(Map map) {
+		if(map == null || map.isEmpty()) return new ArrayList<>();
+		if(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_ID).isEmpty()) return new ArrayList<>();
+
+		Incident incident = new Incident();
+		incident.setIncidentID(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_ID));
+		incident.setCategory(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_CATEGORY));
+		incident.setOpenTime(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_OPEN_TIME));
+		incident.setOpenedBy(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_OPEN_BY));
+		incident.setUpdatedTime(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_UPDATE_TIME));
+		incident.setSeverity(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_SEVERITY));
+		incident.setPrimaryAssignmentGroup(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_PRIMARY_ASSIGNMENT_GROUP));
+		incident.setStatus(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_STATUS));
+		incident.setAffectedItem(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_AFFECTED_ITEM));
+		incident.setIncidentDescription(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_DESCRIPTION));
+
+		List<Incident> list = new ArrayList<>();
+		list.add(incident);
+		return list;
+	}
+	private List<ChangeOrder> getChangeFromXmlMap(Map map) {
+		if(map == null || map.isEmpty()) return new ArrayList<>();
+		if(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_ID).isEmpty()) return new ArrayList<>();
+
+		ChangeOrder change = new ChangeOrder();
+		change.setChangeID(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_ID));
+		change.setCategory(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_CATEGORY));
+		change.setStatus(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_STATUS));
+		change.setApprovalStatus(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_APPROVAL_STATUS));
+		change.setInitiatedBy(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_INITIATED_BY));
+		change.setAssignedTo(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_ASSIGNED_TO));
+		change.setAssignmentGroup(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_ASSIGNMENT_GROUP));
+		change.setPlannedStart(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_PLANNED_START));
+		change.setPlannedEnd(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_PLANNED_END));
+		change.setReason(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_REASON));
+		change.setPhase(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_PHASE));
+		change.setRiskAssessment(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_RISK_ASSESSMENT));
+		change.setDateEntered(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_DATE_ENTERED));
+		change.setOpen(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_OPEN));
+		change.setTitle(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_TITLE));
+		change.setSubcategory(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_SUBCATEGORY));
+		change.setChangeModel(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_MODEL));
+		List<ChangeOrder> list = new ArrayList<>();
+		list.add(change);
+		return list;
+	}
+	private String getStringValueFromMap(Map map, String key){
+		if(!map.containsKey(key)
+				|| map.get(key) == null
+				|| "".equals(key)) return "";
+		return map.get(key).toString();
 	}
 }
