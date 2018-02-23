@@ -31,12 +31,12 @@ public class GitHubGraphQLQuery {
     public static final String QUERY_COMMIT_HEADER_FIRST = "  ref(qualifiedName: $branch) {\n" +
             "    target {\n" +
             "      ... on Commit {\n" +
-            "        history(since: $since, first: 100) {\n";
+            "        history(since: $since, first: $fetchCount) {\n";
 
     public static final String QUERY_COMMIT_HEADER_AFTER = "  ref(qualifiedName: $branch) {\n" +
             "    target {\n" +
             "      ... on Commit {\n" +
-            "        history(since: $since, first: 100, after: $afterCommit) {\n";
+            "        history(since: $since, first: $fetchCount, after: $afterCommit) {\n";
 
 
     public static final String QUERY_PULL_HEADER_FIRST = "    pullRequests(first: $fetchCount, baseRefName: $branch, orderBy: {field: UPDATED_AT, direction: DESC}) {\n";

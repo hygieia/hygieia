@@ -223,7 +223,7 @@
                             <table class="table">
                                 <tr class="dash-row clickable"
                                     ng-click="caWidget.showLibraryPolicyDetails('License', caWidget.libraryPolicyDetails)">
-                                    <td><span dash-status="caWidget.getDashStatus()"></span></td>
+                                    <td><span dash-status="{{caWidget.getDashStatus()}}"></span></td>
                                     <td class="ca-name">License</td>
                                     <td class="ca-value">{{(caWidget.libraryLicenseThreatStatus) ?
                                         caWidget.libraryLicenseThreatStatus.count : 0}}
@@ -231,7 +231,7 @@
                                 </tr>
                                 <tr class="dash-row clickable"
                                     ng-click="caWidget.showLibraryPolicyDetails('Security', caWidget.libraryPolicyDetails)">
-                                    <td><span dash-status="caWidget.getDashStatus()"></span></td>
+                                    <td><span dash-status="{{caWidget.getDashStatus()}}"></span></td>
                                     <td class="ca-name">Security</td>
                                     <td class="ca-value">{{(caWidget.librarySecurityThreatStatus) ?
                                         caWidget.librarySecurityThreatStatus.count : 0}}
