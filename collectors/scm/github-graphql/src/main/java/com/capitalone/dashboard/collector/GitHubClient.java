@@ -24,4 +24,6 @@ public interface GitHubClient {
     void fireGraphQL(GitHubRepo repo, boolean firstRun, Map<Long, String> existingPRMap, Map<Long, String> prCloseMap) throws RestClientException, MalformedURLException, HygieiaException;
 
     GitHubRateLimit getRateLimit(GitHubRepo repo) throws MalformedURLException, HygieiaException;
+
+    long getRepoOffsetTime(GitHubRepo repo);
 }
