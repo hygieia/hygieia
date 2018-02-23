@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.collector;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.ChangeOrder;
 import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.Incident;
@@ -17,11 +18,11 @@ public interface HpsmClient {
      * @return all Apps in HPSM
      */
 
-	List<Cmdb> getApps();
+	List<Cmdb> getApps() throws HygieiaException;
 
-	List<Incident> getIncidents();
+	List<Incident> getIncidents() throws HygieiaException;
 
-	List<ChangeOrder> getChangeOrders();
+	List<ChangeOrder> getChangeOrders() throws HygieiaException;
 
     void setLastExecuted(long lastExecuted);
 
