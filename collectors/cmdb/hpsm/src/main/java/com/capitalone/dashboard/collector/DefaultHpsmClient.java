@@ -20,7 +20,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.w3c.dom.Element;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -309,13 +308,13 @@ public class DefaultHpsmClient implements HpsmClient {
 
 			Document doc = responseToDoc(response);
 			for(Node n: XmlUtil.asList(doc.getElementsByTagName("instance"))){
-				for(Node node: XmlUtil.asList(n.getChildNodes())){
-					Element headerElem = (Element) node;
-					String tagName = headerElem.getTagName();
-					if(tagName.equals("header")){
-						Map xmlMap = XmlUtil.getElementKeyValue(node.getChildNodes());
-						returnList.addAll(getChangeFromXmlMap(xmlMap));
-					}
+				Map headerMap = XmlUtil.getElementKeyValueByTag(n.getChildNodes(), "header");
+				Map instanceMap = XmlUtil.getElementKeyValue(n.getChildNodes());
+				if(instanceMap.containsKey(HpsmCollectorConstants.CHANGE_SERVICE)){
+					headerMap.put(HpsmCollectorConstants.CHANGE_SERVICE,instanceMap.get(HpsmCollectorConstants.CHANGE_SERVICE));
+				}
+				if(headerMap != null && !headerMap.isEmpty()){
+					returnList.addAll(getChangeFromXmlMap(headerMap));
 				}
 
 			}
@@ -814,6 +813,7 @@ public class DefaultHpsmClient implements HpsmClient {
 		change.setTitle(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_TITLE));
 		change.setSubcategory(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_SUBCATEGORY));
 		change.setChangeModel(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_MODEL));
+		change.setService(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_SERVICE));
 		List<ChangeOrder> list = new ArrayList<>();
 		list.add(change);
 		return list;
