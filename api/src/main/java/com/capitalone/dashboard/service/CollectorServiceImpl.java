@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.BuildSearch;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
@@ -15,6 +16,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -57,22 +59,21 @@ public class CollectorServiceImpl implements CollectorService {
     public Page<CollectorItem> collectorItemsByTypeWithFilter(CollectorType collectorType, String descriptionFilter, Pageable pageable) {
         List<Collector> collectors = collectorRepository.findByCollectorType(collectorType);
         List<ObjectId> collectorIds = Lists.newArrayList(Iterables.transform(collectors, new ToCollectorId()));
-        Page<CollectorItem> collectorItems = null;
-        String niceName = "";
-        String jobName = "";
-        List<String> l= findJobNameAndNiceName(descriptionFilter);
-        if (!l.isEmpty()){
-            niceName =  l.get(0).trim();
-            if(l.size()>1){
-                jobName =  findIndex(descriptionFilter);
-            }
-        }
-        if(!niceName.isEmpty() && collectorType == CollectorType.Build){
-           collectorItems = collectorItemRepository.findByCollectorIdInAndDescriptionContainingAndNiceNameContainingAllIgnoreCase(collectorIds, jobName,niceName, pageable);
-            removeJobUrlAndInstanceUrl(collectorItems);
+        Page<CollectorItem> collectorItems;
+        BuildSearch buildSearch = new BuildSearch(descriptionFilter).invoke();
+        String niceName = buildSearch.getNiceName();
+        String jobName = buildSearch.getJobName();
+        List<String> searchList = getSearchFields(collectors);
+        String defaultSearchField = getDefaultSearchField(searchList);
+        // multiple search criteria
+        if(!StringUtils.isEmpty(niceName) && searchList.size()>1){
+            String advSearchField = getAdvSearchField(searchList);
+            collectorItems = collectorItemRepository.findByCollectorIdAndSearchFields(collectorIds,defaultSearchField,jobName,advSearchField,niceName,pageable);
         }else{
-           collectorItems = collectorItemRepository.findByCollectorIdInAndDescriptionContainingIgnoreCase(collectorIds, descriptionFilter, pageable);
+            // single search criteria
+            collectorItems = collectorItemRepository.findByCollectorIdAndSearchField(collectorIds,defaultSearchField,descriptionFilter,pageable);
         }
+        removeJobUrlAndInstanceUrl(collectorItems);
         for (CollectorItem options : collectorItems) {
             options.setCollector(collectorById(options.getCollectorId(), collectors));
         }
@@ -83,23 +84,10 @@ public class CollectorServiceImpl implements CollectorService {
     // method to remove jobUrl and instanceUrl from build collector items.
     private Page<CollectorItem> removeJobUrlAndInstanceUrl(Page<CollectorItem> collectorItems) {
         for (CollectorItem cItem : collectorItems) {
-            cItem.getOptions().remove("jobUrl");
-            cItem.getOptions().remove("instanceUrl");
+            if(cItem.getOptions().containsKey("jobUrl")) cItem.getOptions().remove("jobUrl");
+            if(cItem.getOptions().containsKey("instanceUrl")) cItem.getOptions().remove("instanceUrl");
         }
         return collectorItems;
-    }
-
-    private List<String> findJobNameAndNiceName(String descriptionFilter){
-        if(descriptionFilter.contains(":"))
-          return  Stream.of(descriptionFilter.split(":")).map(String::trim)
-                            .collect(Collectors.toList());
-        return new ArrayList<>();
-    }
-
-
-    private static String findIndex(String descriptionFilter){
-        return descriptionFilter.substring(descriptionFilter.indexOf(":")+1,descriptionFilter.length()).trim();
-
     }
 
     /**
@@ -230,6 +218,26 @@ public class CollectorServiceImpl implements CollectorService {
         @Override
         public ObjectId apply(Collector input) {
             return input.getId();
+        }
+    }
+
+    private String getAdvSearchField(List<String> searchList) {
+        return searchList!=null && searchList.size()>1?searchList.get(1):null;
+    }
+
+    private String getDefaultSearchField(List<String> searchList) {
+        return searchList!=null?searchList.get(0):null;
+    }
+
+    private List<String> getSearchFields(List<Collector> collectors){
+        List<List<String>> searchList  = Lists.newArrayList(Iterables.transform(collectors, new ToCollectorSearchFields()));
+        return (!searchList.isEmpty() && searchList.get(0)!=null)? searchList.stream().flatMap(List::stream).collect(Collectors.toList()): null;
+    }
+
+    private static class ToCollectorSearchFields implements Function<Collector, List<String>> {
+        @Override
+        public List<String> apply(Collector input) {
+            return input.getSearchFields();
         }
     }
 }
