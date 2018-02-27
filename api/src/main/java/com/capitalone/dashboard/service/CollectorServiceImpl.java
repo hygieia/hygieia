@@ -1,12 +1,12 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.BuildSearch;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.MultiSearchFilter;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
@@ -56,22 +56,20 @@ public class CollectorServiceImpl implements CollectorService {
     }
 
     @Override
-    public Page<CollectorItem> collectorItemsByTypeWithFilter(CollectorType collectorType, String descriptionFilter, Pageable pageable) {
+    public Page<CollectorItem> collectorItemsByTypeWithFilter(CollectorType collectorType, String searchFilterValue, Pageable pageable) {
         List<Collector> collectors = collectorRepository.findByCollectorType(collectorType);
         List<ObjectId> collectorIds = Lists.newArrayList(Iterables.transform(collectors, new ToCollectorId()));
         Page<CollectorItem> collectorItems;
-        BuildSearch buildSearch = new BuildSearch(descriptionFilter).invoke();
-        String niceName = buildSearch.getNiceName();
-        String jobName = buildSearch.getJobName();
-        List<String> searchList = getSearchFields(collectors);
-        String defaultSearchField = getDefaultSearchField(searchList);
+        MultiSearchFilter searchFilter = new MultiSearchFilter(searchFilterValue).invoke();
+        List<String> criteria = getSearchFields(collectors);
+        String defaultSearchField = getDefaultSearchField(criteria);
         // multiple search criteria
-        if(!StringUtils.isEmpty(niceName) && searchList.size()>1){
-            String advSearchField = getAdvSearchField(searchList);
-            collectorItems = collectorItemRepository.findByCollectorIdAndSearchFields(collectorIds,defaultSearchField,jobName,advSearchField,niceName,pageable);
+        if(!StringUtils.isEmpty(searchFilter.getAdvancedSearchKey()) && criteria.size()>1){
+            String advSearchField = getAdvSearchField(criteria);
+            collectorItems = collectorItemRepository.findByCollectorIdAndSearchFields(collectorIds,defaultSearchField,searchFilter.getSearchKey(),advSearchField,searchFilter.getAdvancedSearchKey(),pageable);
         }else{
             // single search criteria
-            collectorItems = collectorItemRepository.findByCollectorIdAndSearchField(collectorIds,defaultSearchField,descriptionFilter,pageable);
+            collectorItems = collectorItemRepository.findByCollectorIdAndSearchField(collectorIds,defaultSearchField,searchFilterValue,pageable);
         }
         removeJobUrlAndInstanceUrl(collectorItems);
         for (CollectorItem options : collectorItems) {
