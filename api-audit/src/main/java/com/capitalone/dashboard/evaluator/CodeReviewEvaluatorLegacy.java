@@ -74,6 +74,8 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
 
         if (repoItem == null) {
             CodeReviewAuditResponse codeReviewAuditResponse = new CodeReviewAuditResponse();
+            codeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.REPO_NOT_CONFIGURED);
+
             allPeerReviews.add(codeReviewAuditResponse);
             return allPeerReviews;
         }
@@ -91,8 +93,21 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
             return allPeerReviews;
         }
 
+        //if there are errors on the collector item
         if (!CollectionUtils.isEmpty(repoItem.getErrors())) {
             CodeReviewAuditResponse noPRsCodeReviewAuditResponse = getErrorResponse(repoItem, scmBranch, parsedUrl);
+            allPeerReviews.add(noPRsCodeReviewAuditResponse);
+            return allPeerReviews;
+        }
+
+        //if the collector item is pending data collection
+        if (repoItem.getLastUpdated() == 0) {
+            CodeReviewAuditResponse noPRsCodeReviewAuditResponse = new CodeReviewAuditResponse();
+            noPRsCodeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.PENDING_DATA_COLLECTION);
+
+            noPRsCodeReviewAuditResponse.setLastUpdated(repoItem.getLastUpdated());
+            noPRsCodeReviewAuditResponse.setScmBranch(scmBranch);
+            noPRsCodeReviewAuditResponse.setScmUrl(scmUrl);
             allPeerReviews.add(noPRsCodeReviewAuditResponse);
             return allPeerReviews;
         }

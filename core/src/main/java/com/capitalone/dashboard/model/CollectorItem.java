@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.model;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -125,7 +126,11 @@ public class CollectorItem extends BaseModel {
         Optional<CollectionError> lastErrorOptional = errors.stream().max(Comparator.comparingLong(CollectionError::getTimestamp));
         long lastErrorTimestamp = lastErrorOptional.isPresent() ? lastErrorOptional.get().getTimestamp() : System.currentTimeMillis();
         if ((System.currentTimeMillis() - lastErrorTimestamp) >= resetWindow) {
-            errors.clear();
+            //clear the oldest error so errors count drops below threshold
+            if (!CollectionUtils.isEmpty(errors)) {
+                errors.sort(Comparator.comparing(CollectionError::getTimestamp));
+                errors.remove(0);
+            }
             return true;
         } else {
             return (errors.size() <= errorThreshold);
