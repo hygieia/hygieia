@@ -93,7 +93,12 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
     private CodeReviewAuditResponseV2 getPeerReviewResponses(CollectorItem repoItem,
                                                              long beginDt, long endDt) {
 
+        CodeReviewAuditResponseV2 reviewAuditResponseV2 = new CodeReviewAuditResponseV2();
 
+        if (repoItem == null) {
+            reviewAuditResponseV2.addAuditStatus(CodeReviewAuditStatus.REPO_NOT_CONFIGURED);
+            return reviewAuditResponseV2;
+        }
         String scmUrl = (String) repoItem.getOptions().get("url");
         String scmBranch = (String) repoItem.getOptions().get("branch");
 
@@ -110,12 +115,20 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
 
         }
 
+        //if the collector item is pending data collection
+        if (repoItem.getLastUpdated() == 0) {
+            reviewAuditResponseV2.addAuditStatus(CodeReviewAuditStatus.PENDING_DATA_COLLECTION);
+
+            reviewAuditResponseV2.setLastUpdated(repoItem.getLastUpdated());
+            reviewAuditResponseV2.setBranch(scmBranch);
+            reviewAuditResponseV2.setUrl(scmUrl);
+            return reviewAuditResponseV2;
+        }
+
         List<GitRequest> pullRequests = gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(repoItem.getId(), beginDt-1, endDt+1);
         List<Commit> commits = commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(repoItem.getId(), beginDt-1, endDt+1);
         commits.sort(Comparator.comparing(Commit::getScmCommitTimestamp).reversed());
         pullRequests.sort(Comparator.comparing(GitRequest::getMergedAt).reversed());
-
-        CodeReviewAuditResponseV2 reviewAuditResponseV2 = new CodeReviewAuditResponseV2();
 
         if (CollectionUtils.isEmpty(pullRequests)) {
             reviewAuditResponseV2.addAuditStatus(CodeReviewAuditStatus.NO_PULL_REQ_FOR_DATE_RANGE);
