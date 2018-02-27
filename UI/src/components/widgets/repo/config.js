@@ -27,19 +27,17 @@
 			value: 'Gitlab'
 		}];
 
-		if (!widgetConfig.options.scm) {
-			ctrl.repoOption="";
-		}
-		else
-		{
-			var myindex;
 
+		var collector = modalData.dashboard.application.components[0].collectorItems.SCM;
+		var scmType = 	collector!=null? collector[0].options.scm: null;
+		var myIndex;
+		if(scmType!=null){
 			for (var v = 0; v < ctrl.repoOptions.length; v++) {
-				if (ctrl.repoOptions[v].name === widgetConfig.options.scm.name) {
-					myindex = v;
+				if (ctrl.repoOptions[v].name.toUpperCase() === scmType.toUpperCase()) {
+					myIndex = v;
 				}
 			}
-			ctrl.repoOption=ctrl.repoOptions[myindex];
+			ctrl.repoOption=ctrl.repoOptions[myIndex];
 		}
 
 		ctrl.repoUrl = removeGit(widgetConfig.options.url);
@@ -191,7 +189,6 @@
 				name : "repo",
 				options : {
 					id : widgetConfig.options.id,
-					scm : ctrl.repoOption,
 					url : removeGit(ctrl.repoUrl),
 					branch : ctrl.gitBranch,
 					userID : getNonNullString(ctrl.repouser),
