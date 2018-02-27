@@ -19,15 +19,25 @@ public class XmlUtil {
                 Collections.emptyList(): new NodeListWrapper(n);
     }
     public static Map getElementKeyValue(NodeList nodeList){
+        if(nodeList == null) return new HashMap();
         Map elements = new HashMap();
-        if (nodeList!=null && nodeList.getLength()>0 ){
-            for(int i=0 ; i < nodeList.getLength() ; i++){
-                Node node = nodeList.item(i);
-                if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    Element elem = (Element) node;
-                    String value = elem.getTextContent();
-                    elements.put(node.getNodeName(), value);
-                }
+        for(Node node: XmlUtil.asList(nodeList)){
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                Element elem = (Element) node;
+                String value = elem.getTextContent();
+                elements.put(node.getNodeName(), value);
+            }
+        }
+        return elements;
+    }
+    public static Map getElementKeyValueByTag(NodeList nodeList, String inputTag){
+        if(nodeList == null || inputTag.isEmpty()) return new HashMap();
+        Map elements = new HashMap();
+        for(Node node: XmlUtil.asList(nodeList)){
+            Element elem = (Element) node;
+            String tagName = elem.getTagName();
+            if(inputTag.equals(tagName)){
+                elements = getElementKeyValue(node.getChildNodes());
             }
         }
         return elements;
