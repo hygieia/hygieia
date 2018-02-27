@@ -40,5 +40,6 @@ public final class HpsmCollectorConstants {
     public static final String CHANGE_TITLE = "Title";
     public static final String CHANGE_SUBCATEGORY = "Subcategory";
     public static final String CHANGE_MODEL = "ChangeModel";
+    public static final String CHANGE_SERVICE = "Service";
 
 }
