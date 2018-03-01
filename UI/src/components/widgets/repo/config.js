@@ -13,31 +13,28 @@
 		var ctrl = this;
 		var widgetConfig = modalData.widgetConfig;
 
-		ctrl.repoOptions = [{
-			name: 'GitHub',
-			value: 'GitHub'
-		}, {
-			name: 'Subversion',
-			value: 'Subversion'
-		},{
-			name: 'Bitbucket',
-			value: 'Bitbucket'
-		}, {
-			name: 'Gitlab',
-			value: 'Gitlab'
-		}];
+		// Request collectors
+		collectorData.collectorsByType('scm').then(processCollectorsResponse);
 
+		function processCollectorsResponse(data) {
+			ctrl.collectors = data;
 
-		var collector = modalData.dashboard.application.components[0].collectorItems.SCM;
-		var scmType = 	collector!=null? collector[0].options.scm: null;
-		var myIndex;
-		if(scmType!=null){
-			for (var v = 0; v < ctrl.repoOptions.length; v++) {
-				if (ctrl.repoOptions[v].name.toUpperCase() === scmType.toUpperCase()) {
-					myIndex = v;
+			ctrl.repoOptions =[];
+			_(data).forEach(function (collector) {
+				ctrl.repoOptions.push({name:collector.name,value:collector.name});
+			});
+			var collector = modalData.dashboard.application.components[0].collectorItems.SCM;
+			var scmType = 	collector!=null? collector[0].options.scm: null;
+			var myIndex;
+			if(scmType!=null){
+				for (var v = 0; v < ctrl.repoOptions.length; v++) {
+					if (ctrl.repoOptions[v].name.toUpperCase() === scmType.toUpperCase()) {
+						myIndex = v;
+					}
 				}
+				ctrl.repoOption=ctrl.repoOptions[myIndex];
 			}
-			ctrl.repoOption=ctrl.repoOptions[myIndex];
+
 		}
 
 		ctrl.repoUrl = removeGit(widgetConfig.options.url);
@@ -52,12 +49,7 @@
 		// public methods
 		ctrl.submit = submitForm;
 
-		// Request collecters
-		collectorData.collectorsByType('scm').then(processCollectorsResponse);
 
-		function processCollectorsResponse(data) {
-			ctrl.collectors = data;
-		}
 
 		/*
 		 * function submitForm(valid, url) { ctrl.submitted = true; if (valid &&
