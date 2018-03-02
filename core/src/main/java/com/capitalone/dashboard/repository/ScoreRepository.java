@@ -31,13 +31,4 @@ public interface ScoreRepository extends CrudRepository<ScoreMetric, ObjectId>, 
      */
     ScoreMetric findByCollectorItemId(ObjectId collectorItemId);
 
-    /**
-     * Finds all {@link ScoreMetric}s for a given {@link com.capitalone.dashboard.model.Dashboard}.
-     *
-     * @param dashboardId collector item id
-     * @return a {@link ScoreMetric}
-     */
-    @Query(value="{'type': 'DASHBOARD', 'scoreTypeId': ?0}")
-    ScoreMetric findByDashboardId(ObjectId dashboardId);
-
 }

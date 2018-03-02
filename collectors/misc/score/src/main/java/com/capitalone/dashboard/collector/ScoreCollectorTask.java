@@ -16,7 +16,7 @@ import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.*;
 
 /**
- * Collects {@link EnvironmentComponent} and {@link EnvironmentStatus} data from
+ * Collects {@link ScoreMetric} data from
  * {@link ScoreApplication}s.
  */
 @org.springframework.stereotype.Component
@@ -87,6 +87,7 @@ public class ScoreCollectorTask extends CollectorTask<ScoreCollector> {
     for (ScoreApplication scoreApplication : scoreApplications) {
       collectScoreForApplication(scoreApplication);
     }
+    clean(collector);
     log("Finished", start);
   }
 
@@ -115,14 +116,12 @@ public class ScoreCollectorTask extends CollectorTask<ScoreCollector> {
   }
 
   /**
-   * Clean up unused deployment collector items
+   * Clean up unused score collector items
    *
    * @param collector the {@link ScoreCollector}
    */
-  //TODO: Siddharth - can this method be removed since its unused or was the intention to use it somewhere?
   @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts")
   private void clean(ScoreCollector collector) {
-    //deleteUnwantedJobs(collector);
     Set<ObjectId> uniqueIDs = new HashSet<>();
 
     for (Component comp : dbComponentRepository
