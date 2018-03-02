@@ -301,12 +301,4 @@ public class ThresholdUtils {
     return ScoreWeight.ProcessingState.criteria_failed;
   }
 
-  public static String getThresholdMessage(ScoreWeight.ProcessingState state, Pair<String, String> messagePair) {
-    if (state == ScoreWeight.ProcessingState.criteria_failed) {
-      return messagePair.getRight();
-    } else {
-      return messagePair.getLeft();
-    }
-  }
-
 }

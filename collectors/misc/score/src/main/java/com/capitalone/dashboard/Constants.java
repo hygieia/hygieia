@@ -22,7 +22,6 @@ public final class Constants {
   public final static String SCORE_ERROR_NO_DATA_FOUND = "No data found!";
   public final static String SCORE_ERROR_NO_WIDGET_FOUND = "No widget found!";
 
-  public final static int SCORE_TOTAL = 100;
   public final static int MAX_SCORE = 100;
 
   public final static double ZERO_SCORE = 0.0d;

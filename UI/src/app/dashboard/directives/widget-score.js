@@ -13,16 +13,11 @@
         .directive('widgetScore',widgetScore);
 
 
-    widgetScoreCtrl.$inject = ['$scope', '$rootScope', '$uibModal'];
-    function widgetScoreCtrl($scope, $rootScope, $uibModal){
+    widgetScoreCtrl.$inject = ['$scope', '$uibModal'];
+    function widgetScoreCtrl($scope, $uibModal){
         var vm = $scope;
         vm.getScoreClass = getScoreClass;
         vm.viewDetails = viewDetails;
-
-        activate();
-
-        function activate() {
-        }
 
         function getScoreClass() {
             if (vm.ngModel.alert) {

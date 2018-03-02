@@ -20,19 +20,6 @@
             _score[score.scoreTypeId] = score;
         }
 
-
-        this.setScore = function (scoreTypeId, score) {
-            _score[scoreTypeId] = score;
-        }
-
-        this.getScore = function (scoreTypeId) {
-          var score = _score[scoreTypeId];
-          if (!score) {
-            return null;
-          }
-          return score;
-        }
-
         this.getScoreByDashboardWidget = function (scoreTypeId, widgetId) {
             var score = _score[scoreTypeId];
             if (!score) {

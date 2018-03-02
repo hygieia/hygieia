@@ -14,16 +14,6 @@ import com.capitalone.dashboard.model.ScoreCollector;
 public interface ScoreApplicationRepository extends BaseCollectorItemRepository<ScoreApplication> {
 
   /**
-   * Find a {@link ScoreApplication} by dashboard id.
-   *
-   * @param collectorId ID of the {@link ScoreCollector}
-   * @param dashboardId DashboardId
-   * @return a {@link ScoreApplication} instance
-   */
-  @Query(value = "{ 'collectorId' : ?0, options.dashboardId : ?1}")
-  ScoreApplication findScoreByDashboard(ObjectId collectorId, ObjectId dashboardId);
-
-  /**
    * Finds all enabled {@link ScoreApplication}s
    *
    * @param collectorId ID of the {@link ScoreCollector}

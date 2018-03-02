@@ -16,7 +16,6 @@
         ctrl.submitted = false;
         ctrl.collectors = [];
         ctrl.collectorItemId = null;
-        ctrl.settingsType = 'DEFAULT';
         // public methods
         ctrl.submit = submit;
 
@@ -39,10 +38,6 @@
                 ctrl.collectorItemId = data[0];
             } else {
                 ctrl.collectorItemId = null;
-            }
-
-            if (ctrl.collectorItemId) {
-                ctrl.settingsType = ctrl.collectorItemId.options.settingsType;
             }
         }
 
@@ -86,8 +81,7 @@
                 collectorId: _.find(ctrl.collectors, {name: 'Score'}).id,
                 description: modalData.dashboard.id,
                 options: {
-                    dashboardId: modalData.dashboard.id,
-                    settingsType: ctrl.settingsType
+                    dashboardId: modalData.dashboard.id
               }
             };
         }

@@ -268,7 +268,7 @@ public class ApplicationScoreService {
     LOGGER.info("dashboard.getTitle():" + dashboard.getTitle() + " " + dashboard.getOwner());
 
     ScoreWeight dashboardScore = getDashboardScoreFromWidgets(
-      processWidgetScores(scoreApplication, dashboard.getWidgets())
+      processWidgetScores(dashboard.getWidgets())
       );
 
     LOGGER.info("dashboardScore: {}" + dashboardScore);
@@ -328,14 +328,13 @@ public class ApplicationScoreService {
   /**
    * Process scores for each widget based on widget settings
    *
-   * @param scoreApplication Score Application Collector Item
    * @param widgets List of widgets
    * @return List of widget scores
    */
-  private List<ScoreWeight> processWidgetScores(ScoreApplication scoreApplication, List<Widget> widgets) {
+  private List<ScoreWeight> processWidgetScores(List<Widget> widgets) {
     List<ScoreWeight> scoreWeights = new ArrayList<>();
 
-    Map<String, ScoreParamSettings> scoreParamSettingsMap = generateWidgetSettings(scoreApplication);
+    Map<String, ScoreParamSettings> scoreParamSettingsMap = generateWidgetSettings();
 
     Set<String> widgetTypes = scoreParamSettingsMap.keySet();
     if (widgetTypes.isEmpty()) {
@@ -389,47 +388,37 @@ public class ApplicationScoreService {
   /**
    * Generate criteria settings for each widget type
    *
-   * @param scoreApplication Score Application Collector Item
    * @return Map of settings by each widget name
    */
-  private Map<String, ScoreParamSettings> generateWidgetSettings(ScoreApplication scoreApplication) {
+  private Map<String, ScoreParamSettings> generateWidgetSettings() {
     Map<String, ScoreParamSettings> scoreParamSettingsMap = new HashMap<>();
-    ScoreApplication.SettingsType settingsType = scoreApplication.getSettingsType();
 
     addSettingsToMap(
       scoreParamSettingsMap,
       Constants.WIDGET_BUILD,
-      fetchWidgetSettings(
-        settingsType,
-        this.scoreSettings.getBuildWidget(),
-        scoreApplication.getBuildWidget()
+      getSettingsIfEnabled(
+        this.scoreSettings.getBuildWidget()
       ));
 
     addSettingsToMap(
       scoreParamSettingsMap,
       Constants.WIDGET_DEPLOY,
-      fetchWidgetSettings(
-        settingsType,
-        this.scoreSettings.getDeployWidget(),
-        scoreApplication.getDeployWidget()
+      getSettingsIfEnabled(
+        this.scoreSettings.getDeployWidget()
       ));
 
     addSettingsToMap(
       scoreParamSettingsMap,
       Constants.WIDGET_CODE_ANALYSIS,
-      fetchWidgetSettings(
-        settingsType,
-        this.scoreSettings.getQualityWidget(),
-        scoreApplication.getQualityWidget()
+      getSettingsIfEnabled(
+        this.scoreSettings.getQualityWidget()
       ));
 
     addSettingsToMap(
       scoreParamSettingsMap,
       Constants.WIDGET_GITHUB_SCM,
-      fetchWidgetSettings(
-        settingsType,
-        this.scoreSettings.getGithubScmWidget(),
-        scoreApplication.getGithubScmWidget()
+      getSettingsIfEnabled(
+        this.scoreSettings.getGithubScmWidget()
       ));
 
     return scoreParamSettingsMap;
@@ -441,33 +430,6 @@ public class ApplicationScoreService {
     }
     return null;
   }
-
-  private ScoreParamSettings fetchWidgetSettings(ScoreApplication.SettingsType settingsType, ScoreParamSettings widgetDefaultSettings, ScoreParamSettings widgetCustomSettings) {
-    if (null != settingsType && null != widgetCustomSettings &&
-      settingsType.equals(ScoreApplication.SettingsType.CUSTOM)) {
-      ScoreParamSettings customSettings = getSettingsIfEnabled(widgetCustomSettings);
-      customSettings.setCriteria(
-        Utils.mergeCriteria(widgetDefaultSettings.getCriteria(), customSettings.getCriteria())
-      );
-      initWidgetChildrenSettings(customSettings);
-      return customSettings;
-    }
-
-    return getSettingsIfEnabled(widgetDefaultSettings);
-  }
-
-  private void initWidgetChildrenSettings(ScoreParamSettings scoreParamSettings) {
-    if (scoreParamSettings instanceof BuildScoreSettings) {
-      initBuildScoreChildrenSettings((BuildScoreSettings) scoreParamSettings);
-    } else if (scoreParamSettings instanceof QualityScoreSettings) {
-      initQualityScoreChildrenSettings((QualityScoreSettings) scoreParamSettings);
-    } else if (scoreParamSettings instanceof DeployScoreSettings) {
-      initDeployScoreChildrenSettings((DeployScoreSettings) scoreParamSettings);
-    } else if (scoreParamSettings instanceof GithubScmScoreSettings) {
-      initGithubScmScoreChildrenSettings((GithubScmScoreSettings) scoreParamSettings);
-    }
-  }
-
 
   private Widget getWidgetByName(List<Widget> widgets, String name) {
     for (Widget widget : widgets) {

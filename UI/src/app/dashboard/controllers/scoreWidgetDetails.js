@@ -8,8 +8,8 @@
         .module(HygieiaConfig.module)
         .controller('ScoreWidgetDetailsController', ScoreWidgetDetailsController);
 
-    ScoreWidgetDetailsController.$inject = ['$scope', '$uibModalInstance', 'scoreWidget'];
-    function ScoreWidgetDetailsController($scope, $uibModalInstance, scoreWidget) {
+    ScoreWidgetDetailsController.$inject = ['$uibModalInstance', 'scoreWidget'];
+    function ScoreWidgetDetailsController($uibModalInstance, scoreWidget) {
         var ctrl = this;
         ctrl.scoreWidget = scoreWidget;
         ctrl.scoreWidgetMetrics = [];

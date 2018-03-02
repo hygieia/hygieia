@@ -5,17 +5,10 @@
         .module(HygieiaConfig.module)
         .controller('scoreViewController', scoreViewController);
 
-    scoreViewController.$inject = ['$scope', 'DashStatus', 'scoreData', 'DisplayState', '$q', '$uibModal', 'scoreDataService'];
-    function scoreViewController($scope, DashStatus, scoreData, DisplayState, $q, $uibModal, scoreDataService) {
+    scoreViewController.$inject = ['$scope', 'scoreData', '$q', '$uibModal', 'scoreDataService'];
+    function scoreViewController($scope, scoreData, $q, $uibModal, scoreDataService) {
         /*jshint validthis:true */
         var ctrl = this;
-
-        ctrl.pieOptions = {
-                    donut: true,
-                    donutWidth: 20,
-                    startAngle: 270,
-                    showLabel: false
-        };
 
         ctrl.rateItOptions = {
             readOnly : true,
