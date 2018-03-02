@@ -21,6 +21,9 @@
 
         $scope.getDashStatus = function getDashStatus(level) {
             switch (level.toLowerCase()) {
+                case 'critical':
+                    return 'critical';
+
                 case 'high':
                     return 'alert';
 

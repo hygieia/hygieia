@@ -3,6 +3,7 @@ package com.capitalone.dashboard.model;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ public class Collector extends BaseModel {
     private Map<String, Object> allFields = new HashMap<>();
 
     private long lastExecuted;
+    private List<String> searchFields = Arrays.asList("description");
 
     public Collector() {
     }
@@ -94,4 +96,13 @@ public class Collector extends BaseModel {
     public void setAllFields(Map<String, Object> allFields) {
         this.allFields = allFields;
     }
+
+    public List<String> getSearchFields() {
+        return searchFields;
+    }
+
+    public void setSearchFields(List<String> searchFields) {
+        this.searchFields = searchFields;
+    }
+
 }

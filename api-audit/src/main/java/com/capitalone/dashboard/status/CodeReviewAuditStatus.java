@@ -32,6 +32,9 @@ public enum CodeReviewAuditStatus {
     GIT_BRANCH_STRATEGY,
     GIT_NO_WORKFLOW,
 
+    REPO_NOT_CONFIGURED,
+    PENDING_DATA_COLLECTION,
+
     NO_COMMIT_FOR_DATE_RANGE, //Removew this later when we can remove legacy peer review
     COMMIT_AFTER_PR_MERGE, COLLECTOR_ITEM_ERROR
 }
