@@ -1,18 +1,18 @@
 /**
- * Detail controller for the score widget
+ * Detail controller for the score component
  */
 (function () {
     'use strict';
 
     angular
         .module(HygieiaConfig.module)
-        .controller('ScoreWidgetDetailsController', ScoreWidgetDetailsController);
+        .controller('ScoreComponentDetailsController', ScoreComponentDetailsController);
 
-    ScoreWidgetDetailsController.$inject = ['$uibModalInstance', 'scoreWidget'];
-    function ScoreWidgetDetailsController($uibModalInstance, scoreWidget) {
+    ScoreComponentDetailsController.$inject = ['$uibModalInstance', 'scoreComponent'];
+    function ScoreComponentDetailsController($uibModalInstance, scoreComponent) {
         var ctrl = this;
-        ctrl.scoreWidget = scoreWidget;
-        ctrl.scoreWidgetMetrics = [];
+        ctrl.scoreComponent = scoreComponent;
+        ctrl.componentMetrics = [];
         ctrl.getIconClass = getIconClass;
         ctrl.close = close;
         ctrl.closeAlert = closeAlert;
@@ -29,41 +29,41 @@
 
         function activate() {
             var typeDashboard = false;
-            if (scoreWidget.scoreWidgetMetrics) {
-              ctrl.scoreWidgetMetrics = scoreWidget.scoreWidgetMetrics;
+            if (scoreComponent.componentMetrics) {
+              ctrl.componentMetrics = scoreComponent.componentMetrics;
               typeDashboard = true;
             } else {
-              ctrl.scoreWidgetMetrics = scoreWidget.children;
+              ctrl.componentMetrics = scoreComponent.children;
             }
-            setAlert(scoreWidget);
-            updateStateProps(scoreWidget);
+            setAlert(scoreComponent);
+            updateStateProps(scoreComponent);
 
-            _.forEach(ctrl.scoreWidgetMetrics, function (scoreWidgetMetric) {
-                scoreWidgetMetric.percent = scoreWidgetMetric.weight + '%';
-                updateStateProps(scoreWidgetMetric);
-                if (scoreWidgetMetric.propagate && (
-                        (typeDashboard && scoreWidgetMetric.propagate === "dashboard") ||
-                        (!typeDashboard && scoreWidgetMetric.propagate === "widget")
+            _.forEach(ctrl.componentMetrics, function (componentMetric) {
+                componentMetric.percent = componentMetric.weight + '%';
+                updateStateProps(componentMetric);
+                if (componentMetric.propagate && (
+                        (typeDashboard && componentMetric.propagate === "dashboard") ||
+                        (!typeDashboard && componentMetric.propagate === "widget")
                     )) {
-                    scoreWidgetMetric.propagateScore = true;
-                    scoreWidgetMetric.propagateMessage = "Propagate score to " +  scoreWidgetMetric.propagate;
+                    componentMetric.propagateScore = true;
+                    componentMetric.propagateMessage = "Propagate score to " +  componentMetric.propagate;
                 }
             });
 
         }
 
-        function updateStateProps(scoreWidget) {
-            var state = scoreWidget.state;
+        function updateStateProps(scoreComponent) {
+            var state = scoreComponent.state;
             if (state) {
-                scoreWidget.statusTxt = getState(state);
-                scoreWidget.statusClass = getStateClass(state);
-                scoreWidget.statusIcon = getStateIcon(state);
+                scoreComponent.statusTxt = getState(state);
+                scoreComponent.statusClass = getStateClass(state);
+                scoreComponent.statusIcon = getStateIcon(state);
             }
         }
 
-        function setAlert(scoreWidget) {
-            var message = scoreWidget.message;
-            var state = scoreWidget.state;
+        function setAlert(scoreComponent) {
+            var message = scoreComponent.message;
+            var state = scoreComponent.state;
             var alertClass = '';
             if (message && state) {
                 if (state === STATE_COMPLETE || state === STATE_CRITERIA_PASSED) {
@@ -120,8 +120,8 @@
             }
         }
 
-        function getIconClass(scoreWidget) {
-            return scoreWidget.statusClass + ' ' + scoreWidget.statusIcon;
+        function getIconClass(scoreComponent) {
+            return scoreComponent.statusClass + ' ' + scoreComponent.statusIcon;
         }
 
         function closeAlert() {

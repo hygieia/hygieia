@@ -61,41 +61,41 @@ public class ScoreServiceTest {
     assertThat(scoreMetricResult.getTotal(), is("5"));
     assertThat(scoreMetricResult.isNoScore(), is(false));
 
-    Collection<ScoreWidgetMetric> scoreWidgetMetrics = scoreMetricResult.getScoreWidgetMetrics();
+    Collection<ScoreComponentMetric> scoreWidgetMetrics = scoreMetricResult.getComponentMetrics();
     assertThat(scoreWidgetMetrics, hasSize(4));
 
-    Iterator<ScoreWidgetMetric> iterator = scoreWidgetMetrics.iterator();
+    Iterator<ScoreComponentMetric> iterator = scoreWidgetMetrics.iterator();
 
-    ScoreWidgetMetric scoreWidgetMetric = iterator.next();
+    ScoreComponentMetric scoreWidgetMetric = iterator.next();
     assertThat(scoreWidgetMetric.getScore(), is("0"));
     assertThat(scoreWidgetMetric.getTotal(), is("5"));
     assertThat(scoreWidgetMetric.getWeight(), is("25"));
-    assertThat(scoreWidgetMetric.getId(), is("build"));
-    assertThat(scoreWidgetMetric.getName(), is("Build"));
+    assertThat(scoreWidgetMetric.getDisplayId(), is("build"));
+    assertThat(scoreWidgetMetric.getDisplayName(), is("Build"));
     assertThat(scoreWidgetMetric.getState(), is("criteria_failed"));
 
     scoreWidgetMetric = iterator.next();
     assertThat(scoreWidgetMetric.getScore(), is("4.3"));
     assertThat(scoreWidgetMetric.getTotal(), is("5"));
     assertThat(scoreWidgetMetric.getWeight(), is("25"));
-    assertThat(scoreWidgetMetric.getId(), is("codeanalysis"));
-    assertThat(scoreWidgetMetric.getName(), is("Quality"));
+    assertThat(scoreWidgetMetric.getDisplayId(), is("codeanalysis"));
+    assertThat(scoreWidgetMetric.getDisplayName(), is("Quality"));
     assertThat(scoreWidgetMetric.getState(), is("complete"));
 
     scoreWidgetMetric = iterator.next();
     assertThat(scoreWidgetMetric.getScore(), is("1.2"));
     assertThat(scoreWidgetMetric.getTotal(), is("5"));
     assertThat(scoreWidgetMetric.getWeight(), is("25"));
-    assertThat(scoreWidgetMetric.getId(), is("repo"));
-    assertThat(scoreWidgetMetric.getName(), is("GitHub SCM"));
+    assertThat(scoreWidgetMetric.getDisplayId(), is("repo"));
+    assertThat(scoreWidgetMetric.getDisplayName(), is("GitHub SCM"));
     assertThat(scoreWidgetMetric.getState(), is("complete"));
 
     scoreWidgetMetric = iterator.next();
     assertThat(scoreWidgetMetric.getScore(), is("4"));
     assertThat(scoreWidgetMetric.getTotal(), is("5"));
     assertThat(scoreWidgetMetric.getWeight(), is("25"));
-    assertThat(scoreWidgetMetric.getId(), is("deploy"));
-    assertThat(scoreWidgetMetric.getName(), is("Deploy"));
+    assertThat(scoreWidgetMetric.getDisplayId(), is("deploy"));
+    assertThat(scoreWidgetMetric.getDisplayName(), is("Deploy"));
     assertThat(scoreWidgetMetric.getState(), is("complete"));
 
 

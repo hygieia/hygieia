@@ -25,7 +25,7 @@
             if (!score) {
                 return null;
             }
-            return _.find(score.scoreWidgetMetrics, {id: widgetId});
+            return _.find(score.componentMetrics, {refId: widgetId});
         }
     }
 })();

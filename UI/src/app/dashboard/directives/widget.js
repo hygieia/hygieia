@@ -180,7 +180,7 @@
             }
 
             function getWidgetScore() {
-                return scoreDataService.getScoreByDashboardWidget($scope.dashboard.id, $scope.name);
+                return scoreDataService.getScoreByDashboardWidget($scope.dashboard.id, $scope.widgetConfig.id);
             }
 
             // redraws the widget which forces it to go through the entire flow

@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.capitalone.dashboard.collector.ScoreTypeValue;
-import com.capitalone.dashboard.collector.WidgetAlert;
+import com.capitalone.dashboard.collector.ComponentAlert;
 import com.capitalone.dashboard.exception.PropagateScoreException;
 import com.capitalone.dashboard.model.*;
 import org.apache.commons.collections.CollectionUtils;
@@ -57,9 +57,9 @@ public class ScoreCalculationUtils {
       int sumOfWeights = 0;
       for (int i = 0; i < scoreWeightsSize; i++) {
         if (i < (scoreWeightsSize - 1)) {
-          int weightForWidget = (int) Math.round(scoreWeightsProcessed.get(i).getWeight() * ratioWith100);
-          scoreWeightsProcessed.get(i).setWeight(weightForWidget);
-          sumOfWeights += weightForWidget;
+          int weightForComponent = (int) Math.round(scoreWeightsProcessed.get(i).getWeight() * ratioWith100);
+          scoreWeightsProcessed.get(i).setWeight(weightForComponent);
+          sumOfWeights += weightForComponent;
         } else {
           scoreWeightsProcessed.get(i).setWeight(100 - sumOfWeights);
         }
@@ -122,11 +122,11 @@ public class ScoreCalculationUtils {
     return Pair.of(filterProcessedWeights, filterNotProcessedWeights);
   }
 
-  public static Double calculateWidgetScore(List<ScoreWeight> scoreWeights) {
-    return calculateWidgetScoreWithMaxLimit(scoreWeights, Constants.MAX_SCORE);
+  public static Double calculateComponentScore(List<ScoreWeight> scoreWeights) {
+    return calculateComponentScoreWithMaxLimit(scoreWeights, Constants.MAX_SCORE);
   }
 
-  public static Double calculateWidgetScoreWithMaxLimit(List<ScoreWeight> scoreWeights, int maxScore) {
+  public static Double calculateComponentScoreWithMaxLimit(List<ScoreWeight> scoreWeights, int maxScore) {
     if (null == scoreWeights || scoreWeights.isEmpty()) {
       return null;
     }
@@ -165,53 +165,53 @@ public class ScoreCalculationUtils {
       );
     scoreMetric.setNoScore(dashboardScore.getScore().isNoScore());
 
-    List<ScoreWidgetMetric> scoreWidgetMetrics = new ArrayList<>();
-    updateWidgetMetrics(dashboardScore.getChildren(), scoreWidgetMetrics, maxScore);
-    scoreMetric.setScoreWidgetMetrics(scoreWidgetMetrics);
+    List<ScoreComponentMetric> scoreComponentMetrics = new ArrayList<>();
+    updateComponentMetrics(dashboardScore.getChildren(), scoreComponentMetrics, maxScore);
+    scoreMetric.setComponentMetrics(scoreComponentMetrics);
 
     return scoreMetric;
   }
 
 
-  public static void updateWidgetMetrics(List<ScoreWeight> childrenScore, List<ScoreWidgetMetric> scoreWidgetMetrics, int maxScore) {
+  public static void updateComponentMetrics(List<ScoreWeight> childrenScore, List<ScoreComponentMetric> scoreComponentMetrics, int maxScore) {
     if (CollectionUtils.isEmpty(childrenScore)) {
       return;
     }
 
     for (ScoreWeight childScore : childrenScore) {
-      ScoreWidgetMetric scoreWidgetMetric = new ScoreWidgetMetric();
+      ScoreComponentMetric scoreComponentMetric = new ScoreComponentMetric();
 
-      updateWidgetScore(scoreWidgetMetric, childScore, maxScore);
-      scoreWidgetMetric.setAlert(childScore.isAlert());
+      updateComponentScore(scoreComponentMetric, childScore, maxScore);
+      scoreComponentMetric.setAlert(childScore.isAlert());
 
       List<ScoreWeight> childrenOfChild = childScore.getChildren();
       if (CollectionUtils.isNotEmpty(childrenOfChild)) {
-        List<ScoreWidgetMetricBase> childScoreWidgetMetrics = new ArrayList<>();
-        scoreWidgetMetric.setChildren(childScoreWidgetMetrics);
-        updateWidgetChildrenMetrics(childrenOfChild, childScoreWidgetMetrics, maxScore);
+        List<ScoreComponentMetricBase> childScoreComponentMetrics = new ArrayList<>();
+        scoreComponentMetric.setChildren(childScoreComponentMetrics);
+        updateComponentChildrenMetrics(childrenOfChild, childScoreComponentMetrics, maxScore);
       }
 
-      scoreWidgetMetrics.add(scoreWidgetMetric);
+      scoreComponentMetrics.add(scoreComponentMetric);
     }
   }
 
 
-  public static void updateWidgetChildrenMetrics(List<ScoreWeight> childrenScore, List<ScoreWidgetMetricBase> scoreWidgetMetrics, int maxScore) {
+  public static void updateComponentChildrenMetrics(List<ScoreWeight> childrenScore, List<ScoreComponentMetricBase> scoreComponentMetrics, int maxScore) {
     if (CollectionUtils.isEmpty(childrenScore)) {
       return;
     }
 
     for (ScoreWeight childScore : childrenScore) {
-      ScoreWidgetMetricBase scoreWidgetMetric = new ScoreWidgetMetricBase();
-      updateWidgetScore(scoreWidgetMetric, childScore, maxScore);
-      scoreWidgetMetrics.add(scoreWidgetMetric);
+      ScoreComponentMetricBase scoreComponentMetric = new ScoreComponentMetricBase();
+      updateComponentScore(scoreComponentMetric, childScore, maxScore);
+      scoreComponentMetrics.add(scoreComponentMetric);
     }
   }
 
 
-  private static void updateWidgetScore(ScoreWidgetMetricBase scoreWidgetMetric, ScoreWeight childScore, int maxScore) {
-    scoreWidgetMetric.setTotal(String.valueOf(maxScore));
-    scoreWidgetMetric.setScore(
+  private static void updateComponentScore(ScoreComponentMetricBase scoreComponentMetric, ScoreWeight childScore, int maxScore) {
+    scoreComponentMetric.setTotal(String.valueOf(maxScore));
+    scoreComponentMetric.setScore(
       Utils.roundAlloc(
         convertBaseMaxScore(
           childScore.getScore().getScoreValue(),
@@ -220,39 +220,40 @@ public class ScoreCalculationUtils {
         )
       )
     );
-    scoreWidgetMetric.setNoScore(childScore.getScore().isNoScore());
-    scoreWidgetMetric.setWeight(String.valueOf(childScore.getWeight()));
-    scoreWidgetMetric.setId(childScore.getId());
-    scoreWidgetMetric.setName(childScore.getName());
-    scoreWidgetMetric.setMessage(childScore.getMessage());
-    scoreWidgetMetric.setState(childScore.getState().name());
-    scoreWidgetMetric.setPropagate(childScore.getPropagate().name());
+    scoreComponentMetric.setNoScore(childScore.getScore().isNoScore());
+    scoreComponentMetric.setWeight(String.valueOf(childScore.getWeight()));
+    scoreComponentMetric.setRefId(childScore.getRefId());
+    scoreComponentMetric.setDisplayId(childScore.getId());
+    scoreComponentMetric.setDisplayName(childScore.getName());
+    scoreComponentMetric.setMessage(childScore.getMessage());
+    scoreComponentMetric.setState(childScore.getState().name());
+    scoreComponentMetric.setPropagate(childScore.getPropagate().name());
   }
 
-  public static ScoreTypeValue calculateWidgetScoreTypeValue(List<ScoreWeight> widgetScores, PropagateType propagateType)
+  public static ScoreTypeValue calculateComponentScoreTypeValue(List<ScoreWeight> componentScores, PropagateType propagateType)
   throws PropagateScoreException {
-    ScoreCalculationUtils.normalizeWeightForScore(widgetScores, propagateType);
-    ScoreWeight propagatedScore = propagatedScore(widgetScores, propagateType);
+    ScoreCalculationUtils.normalizeWeightForScore(componentScores, propagateType);
+    ScoreWeight propagatedScore = propagatedScore(componentScores, propagateType);
     if (null != propagatedScore) {
       throw new PropagateScoreException(propagatedScore.getName() + " - " + propagatedScore.getMessage(), propagatedScore.getScore(), propagatedScore.getState());
     }
 
-    Double widgetScore = ScoreCalculationUtils.calculateWidgetScore(widgetScores);
-    return new ScoreTypeValue(widgetScore);
+    Double componentScore = ScoreCalculationUtils.calculateComponentScore(componentScores);
+    return new ScoreTypeValue(componentScore);
   }
 
-  public static ScoreWeight propagatedScore(List<ScoreWeight> scoreWidgets, PropagateType propagateType) {
+  public static ScoreWeight propagatedScore(List<ScoreWeight> scoreComponents, PropagateType propagateType) {
 
-    for (ScoreWeight scoreWidget : scoreWidgets) {
-      if (scoreWidget.getPropagate().getValue() >= propagateType.getValue()) {
-        return scoreWidget;
+    for (ScoreWeight scoreComponent : scoreComponents) {
+      if (scoreComponent.getPropagate().getValue() >= propagateType.getValue()) {
+        return scoreComponent;
       }
     }
 
     return null;
   }
 
-  public static boolean isWidgetAlert(WidgetAlert alert, Double compareValue) {
+  public static boolean isComponentAlert(ComponentAlert alert, Double compareValue) {
     int compareResult = compareValue.compareTo(alert.getValue());
     switch (alert.getComparator()) {
       case equals:

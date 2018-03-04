@@ -54,6 +54,9 @@ public abstract class WidgetScoreAbstract implements WidgetScore {
       return scoreWidget;
     }
 
+    //Set Reference Id as Widget Id
+    scoreWidget.setRefId(widget.getId());
+
     //2. Calculate scores for each child category
     try {
       calculateCategoryScores(widget, paramSettings, scoreWidget.getChildren());
@@ -88,7 +91,7 @@ public abstract class WidgetScoreAbstract implements WidgetScore {
     List<ScoreWeight> categoryScores = scoreWidget.getChildren();
     try {
     scoreWidget.setScore(
-      ScoreCalculationUtils.calculateWidgetScoreTypeValue(categoryScores, PropagateType.widget)
+      ScoreCalculationUtils.calculateComponentScoreTypeValue(categoryScores, PropagateType.widget)
       );
     scoreWidget.setState(ScoreWeight.ProcessingState.complete);
     } catch (PropagateScoreException ex) {

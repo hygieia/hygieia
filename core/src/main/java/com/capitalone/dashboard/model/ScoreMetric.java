@@ -40,8 +40,8 @@ public class ScoreMetric extends BaseModel {
   //Options to save additional properties
   public Map<String, String> options = Maps.newHashMap();
 
-  //Collection of scores for individual widgets
-  private Collection<ScoreWidgetMetric> scoreWidgetMetrics;
+  //Collection of scores for individual components (widgets for dashboard score)
+  private Collection<ScoreComponentMetric> componentMetrics;
 
   public Map<String, String> getOptions() {
     return options;
@@ -79,12 +79,12 @@ public class ScoreMetric extends BaseModel {
     this.timestamp = timestamp;
   }
 
-  public Collection<ScoreWidgetMetric> getScoreWidgetMetrics() {
-    return scoreWidgetMetrics;
+  public Collection<ScoreComponentMetric> getComponentMetrics() {
+    return componentMetrics;
   }
 
-  public void setScoreWidgetMetrics(Collection<ScoreWidgetMetric> scoreWidgetMetrics) {
-    this.scoreWidgetMetrics = scoreWidgetMetrics;
+  public void setComponentMetrics(Collection<ScoreComponentMetric> componentMetrics) {
+    this.componentMetrics = componentMetrics;
   }
 
   public String getScore() {
@@ -128,7 +128,7 @@ public class ScoreMetric extends BaseModel {
       ", total='" + total + '\'' +
       ", failureMssg='" + failureMssg + '\'' +
       ", noScore=" + noScore +
-      ", scoreWidgetMetrics=" + scoreWidgetMetrics +
+      ", componentMetrics=" + componentMetrics +
       ", options=" + options + '\'' +
       '}';
   }

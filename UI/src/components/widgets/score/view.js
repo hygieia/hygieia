@@ -39,12 +39,12 @@
 
         ctrl.viewDetails = function() {
             $uibModal.open({
-                templateUrl: 'app/dashboard/views/scoreWidgetDetails.html',
-                controller: 'ScoreWidgetDetailsController',
+                templateUrl: 'app/dashboard/views/scoreComponentDetails.html',
+                controller: 'ScoreComponentDetailsController',
                 controllerAs: 'detail',
                 size: 'lg',
                 resolve: {
-                    scoreWidget: function() {
+                    scoreComponent: function() {
                         return ctrl.data;
                     }
                 }

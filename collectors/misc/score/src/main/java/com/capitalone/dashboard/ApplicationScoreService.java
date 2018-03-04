@@ -303,7 +303,7 @@ public class ApplicationScoreService {
     try {
       //Calculate score
       return getDashboardScore(
-        ScoreCalculationUtils.calculateWidgetScoreTypeValue(widgetScores, PropagateType.dashboard),
+        ScoreCalculationUtils.calculateComponentScoreTypeValue(widgetScores, PropagateType.dashboard),
         widgetScores
       );
     } catch (PropagateScoreException ex) {
@@ -361,12 +361,12 @@ public class ApplicationScoreService {
   }
 
   private void setWidgetAlert(ScoreWeight score) {
-    WidgetAlert widgetAlert = this.scoreSettings.getWidgetAlert();
-    if (null == widgetAlert || null == widgetAlert.getValue()) {
+    ComponentAlert componentAlert = this.scoreSettings.getComponentAlert();
+    if (null == componentAlert || null == componentAlert.getValue()) {
       return;
     }
     score.setAlert(
-      ScoreCalculationUtils.isWidgetAlert(widgetAlert, score.getScore().getScoreValue())
+      ScoreCalculationUtils.isComponentAlert(componentAlert, score.getScore().getScoreValue())
     );
   }
 

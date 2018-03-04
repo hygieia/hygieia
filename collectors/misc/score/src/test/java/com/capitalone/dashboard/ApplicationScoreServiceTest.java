@@ -115,12 +115,12 @@ public class ApplicationScoreServiceTest {
       .githubScmWidgetScore(getGithubScmWidgetScore(new ScoreTypeValue(70.0d), ScoreWeight.ProcessingState.complete, PropagateType.no));
 
     ScoreMetric scoreDashboard = calculateScore(calculateScoreBuilder);
-    Collection<ScoreWidgetMetric> scoreWidgetMetrics = scoreDashboard.getScoreWidgetMetrics();
+    Collection<ScoreComponentMetric> scoreWidgetMetrics = scoreDashboard.getComponentMetrics();
     assertThat(scoreDashboard.getScore(), is("3.5"));
     assertThat(scoreDashboard.isNoScore(), is(false));
     assertThat(scoreWidgetMetrics, hasSize(4));
 
-    ScoreWidgetMetric scoreWidgetMetric = getScoreWidgetMetricById(scoreWidgetMetrics, Constants.WIDGET_BUILD);
+    ScoreComponentMetric scoreWidgetMetric = getScoreWidgetMetricById(scoreWidgetMetrics, Constants.WIDGET_BUILD);
     assertThat(scoreWidgetMetric.getScore(), is("3"));
     scoreWidgetMetric = getScoreWidgetMetricById(scoreWidgetMetrics, Constants.WIDGET_DEPLOY);
     assertThat(scoreWidgetMetric.getScore(), is("5"));
@@ -153,12 +153,12 @@ public class ApplicationScoreServiceTest {
       .githubScmWidgetScore(getGithubScmWidgetScore(new ScoreTypeValue(50.0d), ScoreWeight.ProcessingState.complete, PropagateType.no));
 
     ScoreMetric scoreDashboard = calculateScore(calculateScoreBuilder);
-    Collection<ScoreWidgetMetric> scoreWidgetMetrics = scoreDashboard.getScoreWidgetMetrics();
+    Collection<ScoreComponentMetric> scoreWidgetMetrics = scoreDashboard.getComponentMetrics();
     assertThat(scoreDashboard.getScore(), is("2.5"));
     assertThat(scoreDashboard.isNoScore(), is(false));
     assertThat(scoreWidgetMetrics, hasSize(4));
 
-    ScoreWidgetMetric scoreWidgetMetric = getScoreWidgetMetricById(scoreWidgetMetrics, Constants.WIDGET_BUILD);
+    ScoreComponentMetric scoreWidgetMetric = getScoreWidgetMetricById(scoreWidgetMetrics, Constants.WIDGET_BUILD);
     assertThat(scoreWidgetMetric.getScore(), is("0"));
     scoreWidgetMetric = getScoreWidgetMetricById(scoreWidgetMetrics, Constants.WIDGET_DEPLOY);
     assertThat(scoreWidgetMetric.getScore(), is("5"));
@@ -183,12 +183,12 @@ public class ApplicationScoreServiceTest {
       .githubScmWidgetScore(getGithubScmWidgetScore(new ScoreTypeValue(50.0d), ScoreWeight.ProcessingState.complete, PropagateType.no));
 
     ScoreMetric scoreDashboard = calculateScore(calculateScoreBuilder);
-    Collection<ScoreWidgetMetric> scoreWidgetMetrics = scoreDashboard.getScoreWidgetMetrics();
+    Collection<ScoreComponentMetric> scoreWidgetMetrics = scoreDashboard.getComponentMetrics();
     assertThat(scoreDashboard.getScore(), is("0"));
     assertThat(scoreDashboard.isNoScore(), is(true));
     assertThat(scoreWidgetMetrics, hasSize(4));
 
-    ScoreWidgetMetric scoreWidgetMetric = getScoreWidgetMetricById(scoreWidgetMetrics, Constants.WIDGET_BUILD);
+    ScoreComponentMetric scoreWidgetMetric = getScoreWidgetMetricById(scoreWidgetMetrics, Constants.WIDGET_BUILD);
     assertThat(scoreWidgetMetric.getScore(), is("0"));
     scoreWidgetMetric = getScoreWidgetMetricById(scoreWidgetMetrics, Constants.WIDGET_DEPLOY);
     assertThat(scoreWidgetMetric.getScore(), is("5"));
@@ -213,12 +213,12 @@ public class ApplicationScoreServiceTest {
       .githubScmWidgetScore(getGithubScmWidgetScore(new ScoreTypeValue(50.0d), ScoreWeight.ProcessingState.complete, PropagateType.no));
 
     ScoreMetric scoreDashboard = calculateScore(calculateScoreBuilder);
-    Collection<ScoreWidgetMetric> scoreWidgetMetrics = scoreDashboard.getScoreWidgetMetrics();
+    Collection<ScoreComponentMetric> scoreWidgetMetrics = scoreDashboard.getComponentMetrics();
     assertThat(scoreDashboard.getScore(), is("1"));
     assertThat(scoreDashboard.isNoScore(), is(false));
     assertThat(scoreWidgetMetrics, hasSize(4));
 
-    ScoreWidgetMetric scoreWidgetMetric = getScoreWidgetMetricById(scoreWidgetMetrics, Constants.WIDGET_BUILD);
+    ScoreComponentMetric scoreWidgetMetric = getScoreWidgetMetricById(scoreWidgetMetrics, Constants.WIDGET_BUILD);
     assertThat(scoreWidgetMetric.getScore(), is("1"));
     scoreWidgetMetric = getScoreWidgetMetricById(scoreWidgetMetrics, Constants.WIDGET_DEPLOY);
     assertThat(scoreWidgetMetric.getScore(), is("5"));
@@ -244,12 +244,12 @@ public class ApplicationScoreServiceTest {
       .githubScmWidgetScore(getGithubScmWidgetScore(new ScoreTypeValue(50.0d), ScoreWeight.ProcessingState.complete, PropagateType.no));
 
     ScoreMetric scoreDashboard = calculateScore(calculateScoreBuilder);
-    Collection<ScoreWidgetMetric> scoreWidgetMetrics = scoreDashboard.getScoreWidgetMetrics();
+    Collection<ScoreComponentMetric> scoreWidgetMetrics = scoreDashboard.getComponentMetrics();
     assertThat(scoreDashboard.getScore(), is("0"));
     assertThat(scoreDashboard.isNoScore(), is(false));
     assertThat(scoreWidgetMetrics, hasSize(4));
 
-    ScoreWidgetMetric scoreWidgetMetric = getScoreWidgetMetricById(scoreWidgetMetrics, Constants.WIDGET_BUILD);
+    ScoreComponentMetric scoreWidgetMetric = getScoreWidgetMetricById(scoreWidgetMetrics, Constants.WIDGET_BUILD);
     assertThat(scoreWidgetMetric.getScore(), is("0"));
     scoreWidgetMetric = getScoreWidgetMetricById(scoreWidgetMetrics, Constants.WIDGET_DEPLOY);
     assertThat(scoreWidgetMetric.getScore(), is("5"));
@@ -262,9 +262,9 @@ public class ApplicationScoreServiceTest {
   }
 
 
-  private ScoreWidgetMetric getScoreWidgetMetricById(Collection<ScoreWidgetMetric> scoreWidgetMetrics, String id) {
-    for (ScoreWidgetMetric scoreWidgetMetric : scoreWidgetMetrics) {
-      if (scoreWidgetMetric.getId().equals(id)) {
+  private ScoreComponentMetric getScoreWidgetMetricById(Collection<ScoreComponentMetric> scoreWidgetMetrics, String id) {
+    for (ScoreComponentMetric scoreWidgetMetric : scoreWidgetMetrics) {
+      if (scoreWidgetMetric.getDisplayId().equals(id)) {
         return scoreWidgetMetric;
       }
     }

@@ -1,24 +1,28 @@
 package com.capitalone.dashboard.model;
 
 import com.google.common.collect.Maps;
+import org.bson.types.ObjectId;
 
 import java.util.Map;
 
-public class ScoreWidgetMetricBase {
-  //Score for the widget
+public class ScoreComponentMetricBase {
+  //Score for the widget/component
   private String score;
 
   //Score total
   private String total;
 
-  //Weight in percent for a widget
+  //Weight in percent for a widget/component
   private String weight;
 
-  //Unique id for widget/component
-  private String id;
+  //Reference Id. When score is for type Dashboard, value is Widget Id
+  private ObjectId refId;
+
+  //Unique display id for widget/component
+  private String displayId;
 
   //Display name for the widget/component
-  private String name;
+  private String displayName;
 
   //Propagate type value for widget/component
   private String propagate;
@@ -66,12 +70,12 @@ public class ScoreWidgetMetricBase {
     this.weight = weight;
   }
 
-  public String getName() {
-    return name;
+  public String getDisplayName() {
+    return displayName;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setDisplayName(String displayName) {
+    this.displayName = displayName;
   }
 
   public String getMessage() {
@@ -98,12 +102,20 @@ public class ScoreWidgetMetricBase {
     this.noScore = noScore;
   }
 
-  public String getId() {
-    return id;
+  public String getDisplayId() {
+    return displayId;
   }
 
-  public void setId(String id) {
-    this.id = id;
+  public void setDisplayId(String displayId) {
+    this.displayId = displayId;
+  }
+
+  public ObjectId getRefId() {
+    return refId;
+  }
+
+  public void setRefId(ObjectId refId) {
+    this.refId = refId;
   }
 
   public String getState() {
@@ -123,12 +135,13 @@ public class ScoreWidgetMetricBase {
   }
 
   @Override public String toString() {
-    return "ScoreWidgetMetricBase{" +
+    return "ScoreComponentMetricBase{" +
       "score='" + score + '\'' +
       ", total='" + total + '\'' +
       ", weight='" + weight + '\'' +
-      ", id='" + id + '\'' +
-      ", name='" + name + '\'' +
+      ", refId='" + refId + '\'' +
+      ", displayId='" + displayId + '\'' +
+      ", displayName='" + displayName + '\'' +
       ", message='" + message + '\'' +
       ", propagate='" + propagate + '\'' +
       ", state='" + state + '\'' +

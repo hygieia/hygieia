@@ -23,7 +23,7 @@ public class ScoreSettings {
 
   private ScoreCriteria criteria;
 
-  private WidgetAlert widgetAlert;
+  private ComponentAlert componentAlert;
 
   private int maxScore = Constants.MAX_SCORE;
 
@@ -83,12 +83,12 @@ public class ScoreSettings {
     this.maxScore = maxScore;
   }
 
-  public WidgetAlert getWidgetAlert() {
-    return widgetAlert;
+  public ComponentAlert getComponentAlert() {
+    return componentAlert;
   }
 
-  public void setWidgetAlert(WidgetAlert widgetAlert) {
-    this.widgetAlert = widgetAlert;
+  public void setComponentAlert(ComponentAlert componentAlert) {
+    this.componentAlert = componentAlert;
   }
 
   @Override public String toString() {
@@ -100,7 +100,7 @@ public class ScoreSettings {
       ", githubScmWidget=" + githubScmWidget +
       ", criteria=" + criteria +
       ", maxScore=" + maxScore +
-      ", widgetAlert=" + widgetAlert +
+      ", componentAlert=" + componentAlert +
       '}';
   }
 }

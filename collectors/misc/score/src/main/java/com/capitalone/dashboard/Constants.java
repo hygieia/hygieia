@@ -17,7 +17,7 @@ public final class Constants {
   public final static String WIDGET_CODE_ANALYSIS = "codeanalysis";
   public final static String WIDGET_CODE_ANALYSIS_NAME = "Quality";
   public final static String WIDGET_GITHUB_SCM = "repo";
-  public final static String WIDGET_GITHUB_SCM_NAME = "GitHub SCM";
+  public final static String WIDGET_GITHUB_SCM_NAME = "SCM";
 
   public final static String SCORE_ERROR_NO_DATA_FOUND = "No data found!";
   public final static String SCORE_ERROR_NO_WIDGET_FOUND = "No widget found!";

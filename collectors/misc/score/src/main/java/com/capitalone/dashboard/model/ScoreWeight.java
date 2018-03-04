@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.capitalone.dashboard.collector.ScoreTypeValue;
 import com.google.common.collect.Maps;
+import org.bson.types.ObjectId;
 
 public class ScoreWeight {
 
@@ -24,6 +25,9 @@ public class ScoreWeight {
   private ProcessingState state = ProcessingState.not_processed;
 
   private String message;
+
+  //Reference Id. When score is for type Dashboard, value is Widget Id
+  private ObjectId refId;
 
   private String id;
 
@@ -99,6 +103,14 @@ public class ScoreWeight {
     this.weight = weight;
   }
 
+  public ObjectId getRefId() {
+    return refId;
+  }
+
+  public void setRefId(ObjectId refId) {
+    this.refId = refId;
+  }
+
   public String getId() {
     return id;
   }
@@ -142,6 +154,7 @@ public class ScoreWeight {
       ", total='" + total + '\'' +
       ", state=" + state +
       ", message='" + message + '\'' +
+      ", refId='" + refId + '\'' +
       ", id='" + id + '\'' +
       ", name='" + name + '\'' +
       ", weight=" + weight +

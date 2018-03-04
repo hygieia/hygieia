@@ -3,27 +3,28 @@ package com.capitalone.dashboard.model;
 import java.util.List;
 
 /*
-  Score for a widget
+  Score for a component like widget
  */
-public class ScoreWidgetMetric extends ScoreWidgetMetricBase {
-  //Individual components within a widget, with scores for them
-  private List<ScoreWidgetMetricBase> children;
+public class ScoreComponentMetric extends ScoreComponentMetricBase {
+  //Individual components within a component, with scores for them
+  private List<ScoreComponentMetricBase> children;
 
-  public List<ScoreWidgetMetricBase> getChildren() {
+  public List<ScoreComponentMetricBase> getChildren() {
     return children;
   }
 
-  public void setChildren(List<ScoreWidgetMetricBase> children) {
+  public void setChildren(List<ScoreComponentMetricBase> children) {
     this.children = children;
   }
 
   @Override public String toString() {
-    return "ScoreWidgetMetric{" +
+    return "ScoreComponentMetric{" +
       "score='" + getScore() + '\'' +
       ", total='" + getTotal() + '\'' +
       ", weight='" + getWeight() + '\'' +
-      ", id='" + getId() + '\'' +
-      ", name='" + getName() + '\'' +
+      ", refId='" + getRefId() + '\'' +
+      ", displayId='" + getDisplayId() + '\'' +
+      ", displayName='" + getDisplayName() + '\'' +
       ", message='" + getMessage() + '\'' +
       ", propagate='" + getPropagate() + '\'' +
       ", state='" + getState() + '\'' +

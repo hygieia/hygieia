@@ -1,6 +1,6 @@
 package com.capitalone.dashboard.collector;
 
-public class WidgetAlert {
+public class ComponentAlert {
 
   private ScoreThresholdSettings.ComparatorType comparator = ScoreThresholdSettings.ComparatorType.less_or_equal;
 
