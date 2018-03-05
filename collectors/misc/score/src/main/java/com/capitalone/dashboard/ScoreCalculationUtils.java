@@ -154,6 +154,7 @@ public class ScoreCalculationUtils {
     scoreMetric.setCollectorItemId(collectorItemId);
     scoreMetric.setType(ScoreValueType.DASHBOARD);
     scoreMetric.setScoreTypeId(dashboardId);
+    scoreMetric.setTimestamp(System.currentTimeMillis());
     scoreMetric.setScore(
       Utils.roundAlloc(
         convertBaseMaxScore(
