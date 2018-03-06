@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.capitalone.dashboard.Utils;
+import com.capitalone.dashboard.model.score.settings.*;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -21,7 +22,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.capitalone.dashboard.collector.*;
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,7 +48,7 @@ public class GithubScmWidgetScoreTest {
     ObjectMapper mapper = getObjectMapper();
     byte[] content = Resources.asByteSource(Resources.getResource("github-widget.json")).read();
     Widget githubWidget = mapper.readValue(content, Widget.class);
-    GithubScmScoreSettings githubScmScoreSettings = getGithubScmScoreSettingsNoThreshold();
+    ScmScoreSettings scmScoreSettings = getGithubScmScoreSettingsNoThreshold();
 
     LOGGER.info("githubWidget {}", githubWidget);
     content = Resources.asByteSource(Resources.getResource("github-widget-component.json")).read();
@@ -63,7 +63,7 @@ public class GithubScmWidgetScoreTest {
     updateCommitResultTimestamps(commitResult);
     when(commitRepository.findAll((Predicate) any())).thenReturn(commitResult);
 
-    ScoreWeight scoreWeight = githubScmWidgetScore.processWidgetScore(githubWidget, githubScmScoreSettings);
+    ScoreWeight scoreWeight = githubScmWidgetScore.processWidgetScore(githubWidget, scmScoreSettings);
 
     LOGGER.info("scoreWeight {}", scoreWeight);
     assertThat(Utils.roundAlloc(scoreWeight.getScore().getScoreValue()), is("71.4"));
@@ -75,7 +75,7 @@ public class GithubScmWidgetScoreTest {
     ObjectMapper mapper = getObjectMapper();
     byte[] content = Resources.asByteSource(Resources.getResource("github-widget.json")).read();
     Widget githubWidget = mapper.readValue(content, Widget.class);
-    GithubScmScoreSettings githubScmScoreSettings = getGithubScmScoreSettingsWithThreshold(90d);
+    ScmScoreSettings scmScoreSettings = getGithubScmScoreSettingsWithThreshold(90d);
 
     LOGGER.info("githubWidget {}", githubWidget);
     content = Resources.asByteSource(Resources.getResource("github-widget-component.json")).read();
@@ -90,7 +90,7 @@ public class GithubScmWidgetScoreTest {
     updateCommitResultTimestamps(commitResult);
     when(commitRepository.findAll((Predicate) any())).thenReturn(commitResult);
 
-    ScoreWeight scoreWeight = githubScmWidgetScore.processWidgetScore(githubWidget, githubScmScoreSettings);
+    ScoreWeight scoreWeight = githubScmWidgetScore.processWidgetScore(githubWidget, scmScoreSettings);
 
     LOGGER.info("scoreWeight {}", scoreWeight);
     assertThat(scoreWeight.getScore().getScoreType(), is(ScoreType.zero_score));
@@ -102,7 +102,7 @@ public class GithubScmWidgetScoreTest {
     ObjectMapper mapper = getObjectMapper();
     byte[] content = Resources.asByteSource(Resources.getResource("github-widget.json")).read();
     Widget githubWidget = mapper.readValue(content, Widget.class);
-    GithubScmScoreSettings githubScmScoreSettings = getGithubScmScoreSettingsWithThreshold(10d);
+    ScmScoreSettings scmScoreSettings = getGithubScmScoreSettingsWithThreshold(10d);
 
     LOGGER.info("githubWidget {}", githubWidget);
     content = Resources.asByteSource(Resources.getResource("github-widget-component.json")).read();
@@ -117,7 +117,7 @@ public class GithubScmWidgetScoreTest {
     updateCommitResultTimestamps(commitResult);
     when(commitRepository.findAll((Predicate) any())).thenReturn(commitResult);
 
-    ScoreWeight scoreWeight = githubScmWidgetScore.processWidgetScore(githubWidget, githubScmScoreSettings);
+    ScoreWeight scoreWeight = githubScmWidgetScore.processWidgetScore(githubWidget, scmScoreSettings);
 
     LOGGER.info("scoreWeight {}", scoreWeight);
     assertThat(Utils.roundAlloc(scoreWeight.getScore().getScoreValue()), is("71.4"));
@@ -126,22 +126,22 @@ public class GithubScmWidgetScoreTest {
 
 
 
-  private GithubScmScoreSettings getGithubScmScoreSettingsNoThreshold() {
-    GithubScmScoreSettings githubScmScoreSettings = new GithubScmScoreSettings();
-    githubScmScoreSettings.setNumberOfDays(14);
-    githubScmScoreSettings.setWeight(33);
+  private ScmScoreSettings getGithubScmScoreSettingsNoThreshold() {
+    ScmScoreSettings scmScoreSettings = new ScmScoreSettings();
+    scmScoreSettings.setNumberOfDays(14);
+    scmScoreSettings.setWeight(33);
 
-    ScoreParamSettings commitsPerDay = new ScoreParamSettings();
+    ScoreComponentSettings commitsPerDay = new ScoreComponentSettings();
     commitsPerDay.setWeight(40);
-    githubScmScoreSettings.setCommitsPerDay(commitsPerDay);
+    scmScoreSettings.setCommitsPerDay(commitsPerDay);
 
-    return githubScmScoreSettings;
+    return scmScoreSettings;
   }
 
-  private GithubScmScoreSettings getGithubScmScoreSettingsWithThreshold(Double thresholdValue) {
-    GithubScmScoreSettings githubScmScoreSettings = new GithubScmScoreSettings();
-    githubScmScoreSettings.setNumberOfDays(14);
-    githubScmScoreSettings.setWeight(33);
+  private ScmScoreSettings getGithubScmScoreSettingsWithThreshold(Double thresholdValue) {
+    ScmScoreSettings scmScoreSettings = new ScmScoreSettings();
+    scmScoreSettings.setNumberOfDays(14);
+    scmScoreSettings.setWeight(33);
 
     ScoreCriteria criteria = new ScoreCriteria();
     criteria.setNoWidgetFound(ScoreTypeValue.zeroScore());
@@ -156,13 +156,13 @@ public class GithubScmWidgetScoreTest {
 
     criteria.setDataRangeThresholds(Lists.newArrayList(scoreThresholdSettings));
 
-    ScoreParamSettings commitsPerDay = new ScoreParamSettings();
+    ScoreComponentSettings commitsPerDay = new ScoreComponentSettings();
     commitsPerDay.setWeight(40);
-    githubScmScoreSettings.setCommitsPerDay(commitsPerDay);
+    scmScoreSettings.setCommitsPerDay(commitsPerDay);
 
-    githubScmScoreSettings.setCriteria(criteria);
+    scmScoreSettings.setCriteria(criteria);
 
-    return githubScmScoreSettings;
+    return scmScoreSettings;
   }
 
   private ObjectMapper getObjectMapper() {

@@ -9,9 +9,8 @@ import java.io.IOException;
 import java.util.List;
 
 import com.capitalone.dashboard.Utils;
-import com.capitalone.dashboard.collector.*;
+import com.capitalone.dashboard.model.score.settings.*;
 import com.capitalone.dashboard.repository.*;
-import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -163,10 +162,10 @@ public class DeployWidgetScoreTest {
     criteria.setNoWidgetFound(ScoreTypeValue.zeroScore());
     criteria.setNoDataFound(ScoreTypeValue.zeroScore());
 
-    ScoreParamSettings deploySuccess = new ScoreParamSettings();
+    ScoreComponentSettings deploySuccess = new ScoreComponentSettings();
     deploySuccess.setWeight(33);
 
-    ScoreParamSettings intancesOnline = new ScoreParamSettings();
+    ScoreComponentSettings intancesOnline = new ScoreComponentSettings();
     intancesOnline.setWeight(33);
     ScoreThresholdSettings scoreThresholdSettings = new ScoreThresholdSettings();
     scoreThresholdSettings.setComparator(ScoreThresholdSettings.ComparatorType.less);

@@ -1,6 +1,6 @@
 package com.capitalone.dashboard.exception;
 
-import com.capitalone.dashboard.collector.ScoreTypeValue;
+import com.capitalone.dashboard.model.score.settings.ScoreTypeValue;
 import com.capitalone.dashboard.model.ScoreWeight;
 
 public class PropagateScoreException extends Exception {

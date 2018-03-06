@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.capitalone.dashboard.ThresholdUtils;
-import com.capitalone.dashboard.collector.ScoreCriteria;
-import com.capitalone.dashboard.collector.ScoreThresholdSettings;
+import com.capitalone.dashboard.model.score.settings.ScoreComponentSettings;
+import com.capitalone.dashboard.model.score.settings.ScoreCriteria;
+import com.capitalone.dashboard.model.score.settings.ScoreThresholdSettings;
 import com.capitalone.dashboard.exception.PropagateScoreException;
-import com.capitalone.dashboard.model.PropagateType;
+import com.capitalone.dashboard.model.score.settings.PropagateType;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import com.capitalone.dashboard.Constants;
 import com.capitalone.dashboard.ScoreCalculationUtils;
 import com.capitalone.dashboard.Utils;
-import com.capitalone.dashboard.collector.ScoreParamSettings;
 import com.capitalone.dashboard.exception.DataNotFoundException;
 import com.capitalone.dashboard.exception.ThresholdException;
 import com.capitalone.dashboard.model.IdName;
@@ -37,7 +37,7 @@ public abstract class WidgetScoreAbstract implements WidgetScore {
    * @return
    */
   @Override
-  public ScoreWeight processWidgetScore(Widget widget, ScoreParamSettings paramSettings) {
+  public ScoreWeight processWidgetScore(Widget widget, ScoreComponentSettings paramSettings) {
 
     if (!Utils.isScoreEnabled(paramSettings)) {
       return null;
@@ -84,7 +84,7 @@ public abstract class WidgetScoreAbstract implements WidgetScore {
 
   abstract IdName getWidgetIdName();
 
-  abstract void calculateCategoryScores(Widget widget, ScoreParamSettings paramSettings, List<ScoreWeight> categoryScores)
+  abstract void calculateCategoryScores(Widget widget, ScoreComponentSettings paramSettings, List<ScoreWeight> categoryScores)
     throws DataNotFoundException, ThresholdException;
 
   protected void calculateWidgetScore(ScoreWeight scoreWidget) {
@@ -109,7 +109,7 @@ public abstract class WidgetScoreAbstract implements WidgetScore {
     ScoreCalculationUtils.normalizeWeightForScore(categoriesWeight, PropagateType.widget);
   }
 
-  protected ScoreWeight initWidgetScore(ScoreParamSettings paramSettings) {
+  protected ScoreWeight initWidgetScore(ScoreComponentSettings paramSettings) {
     IdName widgetIdName = getWidgetIdName();
     ScoreWeight scoreWidget = new ScoreWeight(
       widgetIdName.getId(),
@@ -183,7 +183,7 @@ public abstract class WidgetScoreAbstract implements WidgetScore {
   }
 
   protected void checkPercentThresholds(
-    ScoreParamSettings scoreSettings,
+    ScoreComponentSettings scoreSettings,
     Double percent)
     throws ThresholdException {
     ScoreCriteria scoreCriteria = scoreSettings.getCriteria();

@@ -1,8 +1,8 @@
 package com.capitalone.dashboard.widget;
 
 import com.capitalone.dashboard.Utils;
-import com.capitalone.dashboard.collector.*;
 import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.score.settings.*;
 import com.capitalone.dashboard.repository.BuildRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -147,7 +147,7 @@ public class BuildWidgetScoreTest {
     buildScoreSettings.setNumberOfDays(14);
     buildScoreSettings.setWeight(33);
 
-    ScoreParamSettings statusSettings = new ScoreParamSettings();
+    ScoreComponentSettings statusSettings = new ScoreComponentSettings();
     statusSettings.setWeight(40);
     buildScoreSettings.setStatus(statusSettings);
 

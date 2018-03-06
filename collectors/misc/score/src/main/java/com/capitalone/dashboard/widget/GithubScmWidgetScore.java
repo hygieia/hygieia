@@ -3,10 +3,10 @@ package com.capitalone.dashboard.widget;
 import com.capitalone.dashboard.Constants;
 import com.capitalone.dashboard.ThresholdUtils;
 import com.capitalone.dashboard.Utils;
-import com.capitalone.dashboard.collector.*;
 import com.capitalone.dashboard.exception.DataNotFoundException;
 import com.capitalone.dashboard.exception.ThresholdException;
 import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.score.settings.*;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.google.common.collect.Lists;
@@ -26,8 +26,6 @@ import java.util.*;
  */
 @Service
 public class GithubScmWidgetScore extends WidgetScoreAbstract {
-
-  public static final int GITHUB_SCM_NUM_OF_DAYS = 14;
 
   protected final static String WIDGET_GITHUB_SCM_COMMITS_PER_DAY = "commitsPerDay";
   protected final static String WIDGET_GITHUB_SCM_COMMITS_PER_DAY_NAME = "Commits Per Day";
@@ -69,17 +67,17 @@ public class GithubScmWidgetScore extends WidgetScoreAbstract {
   }
 
   @Override
-  protected void calculateCategoryScores(Widget githubScmWidget, ScoreParamSettings paramSettings, List<ScoreWeight> categoryScores)
+  protected void calculateCategoryScores(Widget githubScmWidget, ScoreComponentSettings paramSettings, List<ScoreWeight> categoryScores)
     throws DataNotFoundException, ThresholdException {
     if (CollectionUtils.isEmpty(categoryScores)) {
       return;
     }
 
-    GithubScmScoreSettings githubScmScoreSettings = (GithubScmScoreSettings) paramSettings;
+    ScmScoreSettings scmScoreSettings = (ScmScoreSettings) paramSettings;
 
-    ScoreParamSettings commitsPerDaySettings = Utils.getInstanceIfNull(
-      githubScmScoreSettings.getCommitsPerDay(),
-      ScoreParamSettings.class
+    ScoreComponentSettings commitsPerDaySettings = Utils.getInstanceIfNull(
+      scmScoreSettings.getCommitsPerDay(),
+      ScoreComponentSettings.class
     );
 
     setCategoryScoreWeight(categoryScores, WIDGET_GITHUB_SCM_COMMITS_PER_DAY_ID_NAME, commitsPerDaySettings.getWeight());
@@ -89,7 +87,7 @@ public class GithubScmWidgetScore extends WidgetScoreAbstract {
     Iterable<Commit> commits = null;
 
     if (isCommitsPerDayScoreEnabled) {
-      commits = search(githubScmWidget.getComponentId(), githubScmScoreSettings.getNumberOfDays());
+      commits = search(githubScmWidget.getComponentId(), scmScoreSettings.getNumberOfDays());
     }
 
     if (null == commits || !commits.iterator().hasNext()) {
@@ -97,13 +95,13 @@ public class GithubScmWidgetScore extends WidgetScoreAbstract {
     }
 
     //Check thresholds at widget level
-    checkWidgetDataThresholds(githubScmScoreSettings, commits, githubScmScoreSettings.getNumberOfDays());
+    checkWidgetDataThresholds(scmScoreSettings, commits, scmScoreSettings.getNumberOfDays());
 
     if (isCommitsPerDayScoreEnabled) {
       processCommitsPerDayScore(
         commits,
-        githubScmScoreSettings.getCommitsPerDay(),
-        githubScmScoreSettings.getNumberOfDays(),
+        scmScoreSettings.getCommitsPerDay(),
+        scmScoreSettings.getNumberOfDays(),
         categoryScores
       );
     }
@@ -128,7 +126,7 @@ public class GithubScmWidgetScore extends WidgetScoreAbstract {
     return commitRepository.findAll(builder.getValue());
   }
 
-  private void checkWidgetDataThresholds(ScoreParamSettings githubScmScoreSettings, Iterable<Commit> commits, int numberOfDays)
+  private void checkWidgetDataThresholds(ScoreComponentSettings githubScmScoreSettings, Iterable<Commit> commits, int numberOfDays)
     throws ThresholdException {
     ScoreCriteria scoreCriteria = githubScmScoreSettings.getCriteria();
     if (null == scoreCriteria) {
@@ -182,7 +180,7 @@ public class GithubScmWidgetScore extends WidgetScoreAbstract {
 
   private void processCommitsPerDayScore(
     Iterable<Commit> commits,
-    ScoreParamSettings commitsPerDaySettings,
+    ScoreComponentSettings commitsPerDaySettings,
     int numberOfDays,
     List<ScoreWeight> categoryScores) {
     ScoreWeight commitsPerDayScore = getCategoryScoreByIdName(categoryScores, WIDGET_GITHUB_SCM_COMMITS_PER_DAY_ID_NAME);

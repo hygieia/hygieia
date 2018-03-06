@@ -2,6 +2,9 @@ package com.capitalone.dashboard;
 
 import com.capitalone.dashboard.collector.*;
 import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.score.ScoreComponentMetric;
+import com.capitalone.dashboard.model.score.ScoreMetric;
+import com.capitalone.dashboard.model.score.settings.*;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.widget.BuildWidgetScore;
 import com.capitalone.dashboard.widget.DeployWidgetScore;
@@ -33,8 +36,6 @@ public class ApplicationScoreServiceTest {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationScoreServiceTest.class);
 
-  @Mock
-  private ScoreSettings scoreSettings;
   @Mock
   private DashboardRepository dashboardRepository;
 
@@ -88,16 +89,16 @@ public class ApplicationScoreServiceTest {
     return qualityScoreSettings;
   }
 
-  private GithubScmScoreSettings getGithubScmScoreSettingsNoThreshold() {
-    GithubScmScoreSettings githubScmScoreSettings = new GithubScmScoreSettings();
-    githubScmScoreSettings.setWeight(25);
+  private ScmScoreSettings getGithubScmScoreSettingsNoThreshold() {
+    ScmScoreSettings scmScoreSettings = new ScmScoreSettings();
+    scmScoreSettings.setWeight(25);
 
     ScoreCriteria criteria = new ScoreCriteria();
     criteria.setNoWidgetFound(ScoreTypeValue.zeroScore());
     criteria.setNoDataFound(ScoreTypeValue.zeroScore());
-    githubScmScoreSettings.setCriteria(criteria);
+    scmScoreSettings.setCriteria(criteria);
 
-    return githubScmScoreSettings;
+    return scmScoreSettings;
   }
 
 
@@ -283,14 +284,7 @@ public class ApplicationScoreServiceTest {
     byte[] content = Resources.asByteSource(Resources.getResource("dashboard-data.json")).read();
     Dashboard dashboard = mapper.readValue(content, Dashboard.class);
 
-    when(scoreSettings.getBuildWidget()).thenReturn(calculateScoreBuilder.getBuildScoreSettings());
-    when(scoreSettings.getDeployWidget()).thenReturn(calculateScoreBuilder.getDeployScoreSettings());
-    when(scoreSettings.getQualityWidget()).thenReturn(calculateScoreBuilder.getQualityScoreSettings());
-    when(scoreSettings.getGithubScmWidget()).thenReturn(calculateScoreBuilder.getGithubScmScoreSettings());
-    when(scoreSettings.getMaxScore()).thenReturn(5);
-
     when(dashboardRepository.findOne(new ObjectId(scoreApplication.getDashboardId()))).thenReturn(dashboard);
-
 
     when(buildWidgetScore.processWidgetScore(any(), any())).thenReturn(calculateScoreBuilder.getBuildWidgetScore());
     when(qualityWidgetScore.processWidgetScore(any(), any())).thenReturn(calculateScoreBuilder.getQualityWidgetScore());
@@ -298,10 +292,29 @@ public class ApplicationScoreServiceTest {
     when(githubScmWidgetScore.processWidgetScore(any(), any())).thenReturn(calculateScoreBuilder.getGithubScmWidgetScore());
 
 
-    ScoreMetric scoreDashboard = applicationScoreService.getScoreForApplication(scoreApplication);
+    ScoreMetric scoreDashboard = applicationScoreService.getScoreForApplication(scoreApplication, getScoreCriteriaSettings(calculateScoreBuilder));
     return scoreDashboard;
   }
 
+
+  private ScoreCriteriaSettings getScoreCriteriaSettings(CalculateScoreBuilder calculateScoreBuilder) {
+    ScoreCriteriaSettings scoreCriteriaSettings = new ScoreCriteriaSettings();
+    scoreCriteriaSettings.setMaxScore(5);
+    scoreCriteriaSettings.setBuild(
+      calculateScoreBuilder.getBuildScoreSettings()
+    );
+    scoreCriteriaSettings.setDeploy(
+      calculateScoreBuilder.getDeployScoreSettings()
+    );
+    scoreCriteriaSettings.setQuality(
+      calculateScoreBuilder.getQualityScoreSettings()
+    );
+    scoreCriteriaSettings.setScm(
+      calculateScoreBuilder.getScmScoreSettings()
+    );
+
+    return scoreCriteriaSettings;
+  }
 
 
   private ScoreWeight getBuildWidgetScore(
@@ -401,7 +414,7 @@ public class ApplicationScoreServiceTest {
 
     private QualityScoreSettings qualityScoreSettings;
 
-    private GithubScmScoreSettings githubScmScoreSettings;
+    private ScmScoreSettings scmScoreSettings;
 
     private ScoreWeight buildWidgetScore;
 
@@ -427,8 +440,8 @@ public class ApplicationScoreServiceTest {
       return this;
     }
 
-    public CalculateScoreBuilder githubScmScoreSettings(GithubScmScoreSettings githubScmScoreSettings) {
-      this.githubScmScoreSettings = githubScmScoreSettings;
+    public CalculateScoreBuilder githubScmScoreSettings(ScmScoreSettings scmScoreSettings) {
+      this.scmScoreSettings = scmScoreSettings;
       return this;
     }
 
@@ -476,8 +489,8 @@ public class ApplicationScoreServiceTest {
       return qualityWidgetScore;
     }
 
-    public GithubScmScoreSettings getGithubScmScoreSettings() {
-      return githubScmScoreSettings;
+    public ScmScoreSettings getScmScoreSettings() {
+      return scmScoreSettings;
     }
 
     public ScoreWeight getGithubScmWidgetScore() {

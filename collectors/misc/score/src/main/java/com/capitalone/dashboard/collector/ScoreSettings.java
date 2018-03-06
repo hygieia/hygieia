@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.collector;
 
+import com.capitalone.dashboard.model.score.settings.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +20,7 @@ public class ScoreSettings {
 
   private DeployScoreSettings deployWidget;
 
-  private GithubScmScoreSettings githubScmWidget;
+  private ScmScoreSettings scmWidget;
 
   private ScoreCriteria criteria;
 
@@ -59,12 +60,12 @@ public class ScoreSettings {
     this.deployWidget = deployWidget;
   }
 
-  public GithubScmScoreSettings getGithubScmWidget() {
-    return githubScmWidget;
+  public ScmScoreSettings getScmWidget() {
+    return scmWidget;
   }
 
-  public void setGithubScmWidget(GithubScmScoreSettings githubScmWidget) {
-    this.githubScmWidget = githubScmWidget;
+  public void setScmWidget(ScmScoreSettings scmWidget) {
+    this.scmWidget = scmWidget;
   }
 
   public ScoreCriteria getCriteria() {
@@ -97,7 +98,7 @@ public class ScoreSettings {
       ", buildWidget=" + buildWidget +
       ", qualityWidget=" + qualityWidget +
       ", deployWidget=" + deployWidget +
-      ", githubScmWidget=" + githubScmWidget +
+      ", scmWidget=" + scmWidget +
       ", criteria=" + criteria +
       ", maxScore=" + maxScore +
       ", componentAlert=" + componentAlert +

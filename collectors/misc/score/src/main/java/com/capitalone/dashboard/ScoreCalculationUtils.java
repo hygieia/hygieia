@@ -4,17 +4,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.capitalone.dashboard.collector.ScoreTypeValue;
-import com.capitalone.dashboard.collector.ComponentAlert;
+import com.capitalone.dashboard.model.score.settings.PropagateType;
+import com.capitalone.dashboard.model.score.settings.ScoreTypeValue;
+import com.capitalone.dashboard.model.score.settings.ComponentAlert;
 import com.capitalone.dashboard.exception.PropagateScoreException;
 import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.score.ScoreComponentMetric;
+import com.capitalone.dashboard.model.score.ScoreComponentMetricBase;
+import com.capitalone.dashboard.model.score.ScoreMetric;
+import com.capitalone.dashboard.model.score.ScoreValueType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.capitalone.dashboard.collector.ScoreType;
+import com.capitalone.dashboard.model.score.settings.ScoreType;
 
 public class ScoreCalculationUtils {
   @SuppressWarnings({"unused", "PMD.UnusedPrivateField"})

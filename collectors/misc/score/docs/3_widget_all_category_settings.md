@@ -13,38 +13,38 @@ score.criteria.noWidgetFound.scoreType=zero_score
 score.criteria.noDataFound.scoreType=zero_score
 
 #Weight for github widget
-score.githubScmWidget.weight=25
-score.githubScmWidget.disabled=false
+score.scmWidget.weight=25
+score.scmWidget.disabled=false
 #Number of days for commits
-score.githubScmWidget.numberOfDays=14
+score.scmWidget.numberOfDays=14
 
 #Add threshold criteria to check if there is no commit in last 7 days, set score as 0
-score.githubScmWidget.criteria.dataRangeThresholds[0].type=days
-score.githubScmWidget.criteria.dataRangeThresholds[0].comparator=equals
-score.githubScmWidget.criteria.dataRangeThresholds[0].value=0
-score.githubScmWidget.criteria.dataRangeThresholds[0].numDaysToCheck=7
-score.githubScmWidget.criteria.dataRangeThresholds[0].score.scoreType=zero_score
-score.githubScmWidget.criteria.dataRangeThresholds[0].score.propagate=no
+score.scmWidget.criteria.dataRangeThresholds[0].type=days
+score.scmWidget.criteria.dataRangeThresholds[0].comparator=equals
+score.scmWidget.criteria.dataRangeThresholds[0].value=0
+score.scmWidget.criteria.dataRangeThresholds[0].numDaysToCheck=7
+score.scmWidget.criteria.dataRangeThresholds[0].score.scoreType=zero_score
+score.scmWidget.criteria.dataRangeThresholds[0].score.propagate=no
 
 #Add threshold criteria to check if there are less than 25% commits present, set score as 0
-score.githubScmWidget.criteria.dataRangeThresholds[1].type=percent
-score.githubScmWidget.criteria.dataRangeThresholds[1].comparator=less
-score.githubScmWidget.criteria.dataRangeThresholds[1].value=25
-score.githubScmWidget.criteria.dataRangeThresholds[1].score.scoreType=zero_score
-score.githubScmWidget.criteria.dataRangeThresholds[1].score.propagate=no
+score.scmWidget.criteria.dataRangeThresholds[1].type=percent
+score.scmWidget.criteria.dataRangeThresholds[1].comparator=less
+score.scmWidget.criteria.dataRangeThresholds[1].value=25
+score.scmWidget.criteria.dataRangeThresholds[1].score.scoreType=zero_score
+score.scmWidget.criteria.dataRangeThresholds[1].score.propagate=no
 
 # Commits per day widget criteria settings
-score.githubScmWidget.commitsPerDay.weight=100
-score.githubScmWidget.commitsPerDay.numberOfDays=14
+score.scmWidget.commitsPerDay.weight=100
+score.scmWidget.commitsPerDay.numberOfDays=14
 
 
 #Add threshold criteria to check if there are more than 60% commits present, set score as 100
-score.githubScmWidget.commitsPerDay.criteria.dataRangeThresholds[0].type=percent
-score.githubScmWidget.commitsPerDay.criteria.dataRangeThresholds[0].comparator=greater_or_equal
-score.githubScmWidget.commitsPerDay.criteria.dataRangeThresholds[0].value=60
-score.githubScmWidget.commitsPerDay.criteria.dataRangeThresholds[0].score.scoreType=value_percent
-score.githubScmWidget.commitsPerDay.criteria.dataRangeThresholds[0].score.scoreValue=100
-score.githubScmWidget.commitsPerDay.criteria.dataRangeThresholds[0].score.propagate=no
+score.scmWidget.commitsPerDay.criteria.dataRangeThresholds[0].type=percent
+score.scmWidget.commitsPerDay.criteria.dataRangeThresholds[0].comparator=greater_or_equal
+score.scmWidget.commitsPerDay.criteria.dataRangeThresholds[0].value=60
+score.scmWidget.commitsPerDay.criteria.dataRangeThresholds[0].score.scoreType=value_percent
+score.scmWidget.commitsPerDay.criteria.dataRangeThresholds[0].score.scoreValue=100
+score.scmWidget.commitsPerDay.criteria.dataRangeThresholds[0].score.propagate=no
 
 score.buildWidget.numberOfDays=14
 score.buildWidget.weight=25

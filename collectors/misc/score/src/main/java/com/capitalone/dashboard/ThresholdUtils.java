@@ -5,8 +5,8 @@ import java.util.*;
 import com.capitalone.dashboard.model.ScoreWeight;
 import org.apache.commons.collections.CollectionUtils;
 
-import com.capitalone.dashboard.collector.ScoreThresholdSettings;
-import com.capitalone.dashboard.collector.ScoreTypeValue;
+import com.capitalone.dashboard.model.score.settings.ScoreThresholdSettings;
+import com.capitalone.dashboard.model.score.settings.ScoreTypeValue;
 import com.capitalone.dashboard.exception.ThresholdException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.LocalDate;

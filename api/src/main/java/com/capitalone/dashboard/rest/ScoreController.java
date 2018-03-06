@@ -1,7 +1,7 @@
 package com.capitalone.dashboard.rest;
 
 import com.capitalone.dashboard.model.DataResponse;
-import com.capitalone.dashboard.model.ScoreMetric;
+import com.capitalone.dashboard.model.score.ScoreMetric;
 import com.capitalone.dashboard.service.ScoreService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -180,49 +180,49 @@ score.deployWidget.intancesOnline.criteria.noDataFound.propagate=widget
 
 
 # Score settings for github scm widget
-score.githubScmWidget.weight=25
-score.githubScmWidget.disabled=false
-score.githubScmWidget.numberOfDays=14
+score.scmWidget.weight=25
+score.scmWidget.disabled=false
+score.scmWidget.numberOfDays=14
 
-score.githubScmWidget.criteria.noWidgetFound.scoreType=zero_score
-score.githubScmWidget.criteria.noWidgetFound.scoreValue=0
-score.githubScmWidget.criteria.noWidgetFound.propagate=no
+score.scmWidget.criteria.noWidgetFound.scoreType=zero_score
+score.scmWidget.criteria.noWidgetFound.scoreValue=0
+score.scmWidget.criteria.noWidgetFound.propagate=no
 
-score.githubScmWidget.criteria.noDataFound.scoreType=zero_score
-score.githubScmWidget.criteria.noDataFound.scoreValue=0
-score.githubScmWidget.criteria.noDataFound.propagate=no
+score.scmWidget.criteria.noDataFound.scoreType=zero_score
+score.scmWidget.criteria.noDataFound.scoreValue=0
+score.scmWidget.criteria.noDataFound.propagate=no
 
-score.githubScmWidget.criteria.dataRangeThresholds[0].type=percent
-score.githubScmWidget.criteria.dataRangeThresholds[0].comparator=less_or_equal
+score.scmWidget.criteria.dataRangeThresholds[0].type=percent
+score.scmWidget.criteria.dataRangeThresholds[0].comparator=less_or_equal
 
 # Value to compare
-score.githubScmWidget.criteria.dataRangeThresholds[0].value=20
+score.scmWidget.criteria.dataRangeThresholds[0].value=20
 
 # If the threshold is met set the score
-score.githubScmWidget.criteria.dataRangeThresholds[0].score.scoreType=zero_score
-score.githubScmWidget.criteria.dataRangeThresholds[0].score.scoreValue=0
-score.githubScmWidget.criteria.dataRangeThresholds[0].score.propagate=no
+score.scmWidget.criteria.dataRangeThresholds[0].score.scoreType=zero_score
+score.scmWidget.criteria.dataRangeThresholds[0].score.scoreValue=0
+score.scmWidget.criteria.dataRangeThresholds[0].score.propagate=no
 
 # we can set the last n number of days to check for threshold (Not Mandatory)
-score.githubScmWidget.criteria.dataRangeThresholds[0].numDaysToCheck=7
+score.scmWidget.criteria.dataRangeThresholds[0].numDaysToCheck=7
 
 
 # Commits per day widget criteria settings
-score.githubScmWidget.commitsPerDay.weight=100
-score.githubScmWidget.commitsPerDay.numberOfDays=14
-score.githubScmWidget.commitsPerDay.disabled=false
-score.githubScmWidget.commitsPerDay.criteria.noDataFound.scoreType=zero_score
-score.githubScmWidget.commitsPerDay.criteria.noDataFound.scoreValue=0
-score.githubScmWidget.commitsPerDay.criteria.noDataFound.propagate=widget
+score.scmWidget.commitsPerDay.weight=100
+score.scmWidget.commitsPerDay.numberOfDays=14
+score.scmWidget.commitsPerDay.disabled=false
+score.scmWidget.commitsPerDay.criteria.noDataFound.scoreType=zero_score
+score.scmWidget.commitsPerDay.criteria.noDataFound.scoreValue=0
+score.scmWidget.commitsPerDay.criteria.noDataFound.propagate=widget
 
 
-score.githubScmWidget.commitsPerDay.criteria.dataRangeThresholds[0].type=percent
-score.githubScmWidget.commitsPerDay.criteria.dataRangeThresholds[0].comparator=less_or_equal
-score.githubScmWidget.commitsPerDay.criteria.dataRangeThresholds[0].value=20
-score.githubScmWidget.commitsPerDay.criteria.dataRangeThresholds[0].score.scoreType=zero_score
-score.githubScmWidget.commitsPerDay.criteria.dataRangeThresholds[0].score.scoreValue=0
-score.githubScmWidget.commitsPerDay.criteria.dataRangeThresholds[0].score.propagate=widget
-score.githubScmWidget.commitsPerDay.criteria.dataRangeThresholds[0].numDaysToCheck=7
+score.scmWidget.commitsPerDay.criteria.dataRangeThresholds[0].type=percent
+score.scmWidget.commitsPerDay.criteria.dataRangeThresholds[0].comparator=less_or_equal
+score.scmWidget.commitsPerDay.criteria.dataRangeThresholds[0].value=20
+score.scmWidget.commitsPerDay.criteria.dataRangeThresholds[0].score.scoreType=zero_score
+score.scmWidget.commitsPerDay.criteria.dataRangeThresholds[0].score.scoreValue=0
+score.scmWidget.commitsPerDay.criteria.dataRangeThresholds[0].score.propagate=widget
+score.scmWidget.commitsPerDay.criteria.dataRangeThresholds[0].numDaysToCheck=7
 
 EOF
 

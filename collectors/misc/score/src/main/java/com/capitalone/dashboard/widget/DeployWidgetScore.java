@@ -2,8 +2,10 @@ package com.capitalone.dashboard.widget;
 
 import java.util.*;
 
-import com.capitalone.dashboard.collector.*;
 import com.capitalone.dashboard.exception.ThresholdException;
+import com.capitalone.dashboard.model.score.settings.DeployScoreSettings;
+import com.capitalone.dashboard.model.score.settings.ScoreComponentSettings;
+import com.capitalone.dashboard.model.score.settings.ScoreTypeValue;
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
@@ -35,8 +37,6 @@ public class DeployWidgetScore extends WidgetScoreAbstract {
   protected final static String WIDGET_DEPLOY_SUCCESS_NAME = "Deploy Success";
   protected final static String WIDGET_DEPLOY_INSTANCES_ONLINE = "deployInstancesOnline";
   protected final static String WIDGET_DEPLOY_INSTANCES_ONLINE_NAME = "Deploy Instances Online";
-
-  public static final int DEPLOYS_PER_DAY_NUM_OF_DAYS = 14;
 
   public final static IdName WIDGET_ID_NAME = new IdName(
     Constants.WIDGET_DEPLOY,
@@ -84,15 +84,15 @@ public class DeployWidgetScore extends WidgetScoreAbstract {
   }
 
   @Override
-  protected void calculateCategoryScores(Widget deployWidget, ScoreParamSettings paramSettings, List<ScoreWeight> categoryScores)
+  protected void calculateCategoryScores(Widget deployWidget, ScoreComponentSettings paramSettings, List<ScoreWeight> categoryScores)
     throws DataNotFoundException, ThresholdException {
     if (CollectionUtils.isEmpty(categoryScores)) {
       return;
     }
 
     DeployScoreSettings deployScoreSettings = (DeployScoreSettings) paramSettings;
-    ScoreParamSettings deploySuccessSettings = Utils.getInstanceIfNull(deployScoreSettings.getDeploySuccess(), ScoreParamSettings.class);
-    ScoreParamSettings instanceOnlineSettings = Utils.getInstanceIfNull(deployScoreSettings.getIntancesOnline(), ScoreParamSettings.class);
+    ScoreComponentSettings deploySuccessSettings = Utils.getInstanceIfNull(deployScoreSettings.getDeploySuccess(), ScoreComponentSettings.class);
+    ScoreComponentSettings instanceOnlineSettings = Utils.getInstanceIfNull(deployScoreSettings.getIntancesOnline(), ScoreComponentSettings.class);
 
     setCategoryScoreWeight(categoryScores, WIDGET_DEPLOY_SUCCESS_ID_NAME, deploySuccessSettings.getWeight());
     setCategoryScoreWeight(categoryScores, WIDGET_DEPLOY_INSTANCES_ONLINE_ID_NAME, instanceOnlineSettings.getWeight());
@@ -145,7 +145,7 @@ public class DeployWidgetScore extends WidgetScoreAbstract {
 
   private void processDeploySuccessScore(
     ObjectId collectorItemId,
-    ScoreParamSettings deploySuccessSettings,
+    ScoreComponentSettings deploySuccessSettings,
     List<ScoreWeight> categoryScores) {
     ScoreWeight deploySuccessStatusScore = getCategoryScoreByIdName(categoryScores, WIDGET_DEPLOY_SUCCESS_ID_NAME);
     Double deploySuccessRatio = fetchDeploySuccessRatio(collectorItemId);
@@ -165,7 +165,7 @@ public class DeployWidgetScore extends WidgetScoreAbstract {
 
   private void processDeployInstancesOnlineScore(
     ObjectId collectorItemId,
-    ScoreParamSettings instanceOnlineSettings,
+    ScoreComponentSettings instanceOnlineSettings,
     List<ScoreWeight> categoryScores) {
     ScoreWeight deployInstancesOnlineScore = getCategoryScoreByIdName(categoryScores, WIDGET_DEPLOY_INSTANCES_ONLINE_ID_NAME);
     Double instancesOnlineRatio = fetchInstancesOnlineRatio(collectorItemId);

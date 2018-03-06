@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.capitalone.dashboard.Utils;
-import com.capitalone.dashboard.collector.*;
+import com.capitalone.dashboard.model.score.settings.*;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -181,7 +181,7 @@ public class QualityWidgetScoreTest {
 
     criteria.setDataRangeThresholds(Lists.newArrayList(scoreThresholdSettings));
 
-    ScoreParamSettings unitTests = new ScoreParamSettings();
+    ScoreComponentSettings unitTests = new ScoreComponentSettings();
     unitTests.setCriteria(criteria);
     qualityScoreSettings.setUnitTests(unitTests);
 

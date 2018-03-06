@@ -12,7 +12,7 @@ score.criteria.noWidgetFound.scoreType=zero_score
 score.criteria.noDataFound.scoreType=zero_score
 
 #Weight for github widget
-score.githubScmWidget.weight=25
+score.scmWidget.weight=25
 
 #Weight for build widget
 score.buildWidget.weight=25

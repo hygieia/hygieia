@@ -5,24 +5,23 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.capitalone.dashboard.model.score.settings.ScoreComponentSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.capitalone.dashboard.collector.ScoreCriteria;
-import com.capitalone.dashboard.collector.ScoreParamSettings;
-import com.capitalone.dashboard.collector.ScoreThresholdSettings;
-import com.capitalone.dashboard.collector.ScoreTypeValue;
+import com.capitalone.dashboard.model.score.settings.ScoreCriteria;
+import com.capitalone.dashboard.model.score.settings.ScoreThresholdSettings;
+import com.capitalone.dashboard.model.score.settings.ScoreTypeValue;
 
 public final class Utils {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
 
-
   public static String roundAlloc(Double alloc) {
     return new DecimalFormat("#.#").format(alloc);
   }
 
-  public static boolean isScoreEnabled(ScoreParamSettings paramSettings) {
+  public static boolean isScoreEnabled(ScoreComponentSettings paramSettings) {
     return (null != paramSettings && !paramSettings.isDisabled());
   }
 

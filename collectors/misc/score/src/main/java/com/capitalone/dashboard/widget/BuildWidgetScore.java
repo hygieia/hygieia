@@ -3,6 +3,7 @@ package com.capitalone.dashboard.widget;
 import java.util.*;
 
 import com.capitalone.dashboard.exception.ThresholdException;
+import com.capitalone.dashboard.model.score.settings.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
 import com.capitalone.dashboard.Constants;
 import com.capitalone.dashboard.ThresholdUtils;
 import com.capitalone.dashboard.Utils;
-import com.capitalone.dashboard.collector.*;
 import com.capitalone.dashboard.exception.DataNotFoundException;
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.BuildRepository;
@@ -35,10 +35,6 @@ public class BuildWidgetScore extends WidgetScoreAbstract {
   private static final Logger LOGGER = LoggerFactory.getLogger(BuildWidgetScore.class);
   private final BuildRepository buildRepository;
   private final ComponentRepository componentRepository;
-
-  public static final long BUILD_DURATION_THRESHOLD_MILLIS = 300000;
-
-  public static final int BUILD_STATUS_NUM_OF_DAYS = 14;
 
   protected final static String WIDGET_BUILD_STATUS = "status";
   protected final static String WIDGET_BUILD_STATUS_NAME = "Status";
@@ -85,7 +81,7 @@ public class BuildWidgetScore extends WidgetScoreAbstract {
   }
 
   @Override
-  protected void calculateCategoryScores(Widget buildWidget, ScoreParamSettings paramSettings, List<ScoreWeight> categoryScores)
+  protected void calculateCategoryScores(Widget buildWidget, ScoreComponentSettings paramSettings, List<ScoreWeight> categoryScores)
     throws DataNotFoundException, ThresholdException {
     if (CollectionUtils.isEmpty(categoryScores)) {
       return;
@@ -93,9 +89,9 @@ public class BuildWidgetScore extends WidgetScoreAbstract {
 
     BuildScoreSettings buildScoreSettings = (BuildScoreSettings) paramSettings;
 
-    ScoreParamSettings buildStatusSettings = Utils.getInstanceIfNull(
+    ScoreComponentSettings buildStatusSettings = Utils.getInstanceIfNull(
       buildScoreSettings.getStatus(),
-      ScoreParamSettings.class
+      ScoreComponentSettings.class
       );
     BuildScoreSettings.BuildDurationScoreSettings buildDurationSettings = Utils.getInstanceIfNull(
       buildScoreSettings.getDuration(),

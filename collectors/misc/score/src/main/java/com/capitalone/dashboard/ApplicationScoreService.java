@@ -3,6 +3,8 @@ package com.capitalone.dashboard;
 import java.util.*;
 
 import com.capitalone.dashboard.exception.PropagateScoreException;
+import com.capitalone.dashboard.model.score.ScoreMetric;
+import com.capitalone.dashboard.model.score.settings.*;
 import com.capitalone.dashboard.widget.*;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
@@ -10,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.capitalone.dashboard.collector.*;
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.DashboardRepository;
 
@@ -26,7 +27,6 @@ import com.capitalone.dashboard.repository.DashboardRepository;
 public class ApplicationScoreService {
   private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationScoreService.class);
 
-  private final ScoreSettings scoreSettings;
   private final DashboardRepository dashboardRepository;
 
   private final BuildWidgetScore buildWidgetScore;
@@ -36,222 +36,27 @@ public class ApplicationScoreService {
 
   @Autowired
   public ApplicationScoreService(
-    ScoreSettings scoreSettings,
     DashboardRepository dashboardRepository,
     BuildWidgetScore buildWidgetScore,
     QualityWidgetScore qualityWidgetScore,
     DeployWidgetScore deployWidgetScore,
     GithubScmWidgetScore githubScmWidgetScore) {
-    this.scoreSettings = scoreSettings;
     this.dashboardRepository = dashboardRepository;
     this.buildWidgetScore = buildWidgetScore;
     this.qualityWidgetScore = qualityWidgetScore;
     this.deployWidgetScore = deployWidgetScore;
     this.githubScmWidgetScore = githubScmWidgetScore;
-    initScoreSettings();
-
   }
 
-  /**
-   * Initialize score settings for widgets
-   * <p><ul>
-   * <li>Build
-   * <li>Deploy
-   * <li>Quality
-   * <li>Github SCM
-   * </ul><p>
-   */
-  public final void initScoreSettings() {
-    ScoreCriteria criteria = this.scoreSettings.getCriteria();
-    if (null == criteria) {
-      criteria = new ScoreCriteria();
-      this.scoreSettings.setCriteria(criteria);
-    }
-
-    //Initialize criteria values for no data found and no widget found conditions
-    //Default value is 0 score for no data found and no widget found
-    if (null == criteria.getNoDataFound()) {
-      criteria.setNoDataFound(ScoreTypeValue.zeroScore());
-    }
-    if (null == criteria.getNoWidgetFound()) {
-      criteria.setNoWidgetFound(ScoreTypeValue.zeroScore());
-    }
-
-    initBuildScoreSettings();
-    initDeployScoreSettings();
-    initQualityScoreSettings();
-    initGithubScmScoreSettings();
-
-    LOGGER.info("this.scoreSettings {}", this.scoreSettings);
-  }
-
-  /**
-   * Initialize build score settings
-   * <p>
-   *  If build widget settings are present merge it with default score settings
-   *  Initialize settings for children scores in build widget
-   */
-  private void initBuildScoreSettings() {
-    BuildScoreSettings buildScoreSettings = this.scoreSettings.getBuildWidget();
-    if (null != buildScoreSettings) {
-      buildScoreSettings.setCriteria(
-        Utils.mergeCriteria(this.scoreSettings.getCriteria(), buildScoreSettings.getCriteria())
-        );
-
-      initBuildScoreChildrenSettings(buildScoreSettings);
-
-    }
-  }
-
-  /**
-   * Initialize Settings for child components in build widget
-   * 1. Build Status criteria settings
-   * 2. Build Duration criteria settings
-   *
-   * @param buildScoreSettings
-   */
-  private void initBuildScoreChildrenSettings(BuildScoreSettings buildScoreSettings) {
-    ScoreParamSettings buildStatusSettings = Utils.getInstanceIfNull(
-      buildScoreSettings.getStatus(),
-      ScoreParamSettings.class
-    );
-    buildStatusSettings.setCriteria(
-      Utils.mergeCriteria(buildScoreSettings.getCriteria(), buildStatusSettings.getCriteria())
-    );
-    buildScoreSettings.setStatus(buildStatusSettings);
-
-    BuildScoreSettings.BuildDurationScoreSettings buildDurationSettings = Utils.getInstanceIfNull(
-      buildScoreSettings.getDuration(),
-      BuildScoreSettings.BuildDurationScoreSettings.class
-    );
-
-    buildDurationSettings.setCriteria(
-      Utils.mergeCriteria(buildScoreSettings.getCriteria(), buildDurationSettings.getCriteria())
-    );
-    buildScoreSettings.setDuration(buildDurationSettings);
-  }
-
-  /**
-   * Initialize deploy score settings
-   * <p>
-   *  If build widget settings are present merge it with default score settings
-   *  deploy settings for children scores in deploy widget
-   */
-  private void initDeployScoreSettings() {
-    DeployScoreSettings deployScoreSettings = this.scoreSettings.getDeployWidget();
-    if (null != deployScoreSettings) {
-
-      deployScoreSettings.setCriteria(
-        Utils.mergeCriteria(this.scoreSettings.getCriteria(), deployScoreSettings.getCriteria())
-        );
-      initDeployScoreChildrenSettings(deployScoreSettings);
-
-    }
-  }
-
-  /**
-   * Initialize Settings for child components in deploy widget
-   * 1. Deploys Success criteria settings
-   * 2. Instances Online criteria settings
-   * @param deployScoreSettings
-   */
-  private void initDeployScoreChildrenSettings(DeployScoreSettings deployScoreSettings) {
-    ScoreParamSettings deploySuccessSettings = Utils.getInstanceIfNull(deployScoreSettings.getDeploySuccess(), ScoreParamSettings.class);
-    deploySuccessSettings.setCriteria(
-      Utils.mergeCriteria(deployScoreSettings.getCriteria(), deploySuccessSettings.getCriteria())
-    );
-    deployScoreSettings.setDeploySuccess(deploySuccessSettings);
-
-    ScoreParamSettings instanceOnlineSettings = Utils.getInstanceIfNull(deployScoreSettings.getIntancesOnline(), ScoreParamSettings.class);
-    instanceOnlineSettings.setCriteria(
-      Utils.mergeCriteria(deployScoreSettings.getCriteria(), instanceOnlineSettings.getCriteria())
-    );
-    deployScoreSettings.setIntancesOnline(instanceOnlineSettings);
-
-  }
-
-  /**
-   * Initialize quality score settings
-   * <p>
-   *  If quality widget settings are present merge it with default score settings
-   *  Initialize settings for children scores in quality widget
-   */
-  private void initQualityScoreSettings() {
-    QualityScoreSettings qualityScoreSettings = this.scoreSettings.getQualityWidget();
-    if (null != qualityScoreSettings) {
-      qualityScoreSettings.setCriteria(
-        Utils.mergeCriteria(this.scoreSettings.getCriteria(), qualityScoreSettings.getCriteria())
-        );
-
-      initQualityScoreChildrenSettings(qualityScoreSettings);
-    }
-  }
-
-  /**
-   * Initialize Settings for child components in quality widget
-   * 1. Code Coverage criteria settings
-   * 2. Unit Tests criteria settings
-   * 3. Violations criteria settings
-   *
-   * @param qualityScoreSettings
-   */
-  private void initQualityScoreChildrenSettings(QualityScoreSettings qualityScoreSettings) {
-    ScoreParamSettings qualityCCSettings = Utils.getInstanceIfNull(qualityScoreSettings.getCodeCoverage(), ScoreParamSettings.class);
-    qualityCCSettings.setCriteria(
-      Utils.mergeCriteria(qualityScoreSettings.getCriteria(), qualityCCSettings.getCriteria())
-    );
-    qualityScoreSettings.setCodeCoverage(qualityCCSettings);
-
-    ScoreParamSettings qualityUTSettings = Utils.getInstanceIfNull(qualityScoreSettings.getUnitTests(), ScoreParamSettings.class);
-    qualityUTSettings.setCriteria(
-      Utils.mergeCriteria(qualityScoreSettings.getCriteria(), qualityUTSettings.getCriteria())
-    );
-    qualityScoreSettings.setUnitTests(qualityUTSettings);
-
-    QualityScoreSettings.ViolationsScoreSettings violationsSettings = Utils.getInstanceIfNull(qualityScoreSettings.getViolations(), QualityScoreSettings.ViolationsScoreSettings.class);
-    violationsSettings.setCriteria(
-      Utils.mergeCriteria(qualityScoreSettings.getCriteria(), violationsSettings.getCriteria())
-    );
-    qualityScoreSettings.setViolations(violationsSettings);
-  }
-
-  /**
-   * Initialize github scm score settings
-   * <p>
-   *  If github scm widget settings are present merge it with default score settings
-   *  Initialize settings for children scores in github scm widget
-   */
-  private void initGithubScmScoreSettings() {
-    GithubScmScoreSettings githubScmScoreSettings = this.scoreSettings.getGithubScmWidget();
-    if (null != githubScmScoreSettings) {
-      githubScmScoreSettings.setCriteria(
-        Utils.mergeCriteria(this.scoreSettings.getCriteria(), githubScmScoreSettings.getCriteria())
-      );
-
-      initGithubScmScoreChildrenSettings(githubScmScoreSettings);
-    }
-  }
-
-  /**
-   * Initialize Settings for child components in scm widget
-   * 1. Commits Per Day criteria settings
-   * @param githubScmScoreSettings
-   */
-  private void initGithubScmScoreChildrenSettings(GithubScmScoreSettings githubScmScoreSettings) {
-    ScoreParamSettings commitsPerDaySettings = Utils.getInstanceIfNull(githubScmScoreSettings.getCommitsPerDay(), ScoreParamSettings.class);
-    commitsPerDaySettings.setCriteria(
-      Utils.mergeCriteria(githubScmScoreSettings.getCriteria(), commitsPerDaySettings.getCriteria())
-    );
-    githubScmScoreSettings.setCommitsPerDay(commitsPerDaySettings);
-  }
 
   /**
    * Calculate score for a {@link com.capitalone.dashboard.model.ScoreApplication}
    *
    * @param scoreApplication Score Application collector item for a dashboard
+   * @param scoreCriteriaSettings Score Criteria Settings
    * @return Score for dashboard
    */
-  public ScoreMetric getScoreForApplication(ScoreApplication scoreApplication) {
+  public ScoreMetric getScoreForApplication(ScoreApplication scoreApplication, ScoreCriteriaSettings scoreCriteriaSettings) {
     Dashboard dashboard = getDashboard(new ObjectId(scoreApplication.getDashboardId()));
 
     if (null == dashboard) {
@@ -268,13 +73,13 @@ public class ApplicationScoreService {
     LOGGER.info("dashboard.getTitle():" + dashboard.getTitle() + " " + dashboard.getOwner());
 
     ScoreWeight dashboardScore = getDashboardScoreFromWidgets(
-      processWidgetScores(dashboard.getWidgets())
+      processWidgetScores(dashboard.getWidgets(), scoreCriteriaSettings)
       );
 
     LOGGER.info("dashboardScore: {}" + dashboardScore);
     ScoreMetric scoreMetric = ScoreCalculationUtils.generateScoreMetric(
       dashboardScore,
-      this.scoreSettings.getMaxScore(),
+      scoreCriteriaSettings.getMaxScore(),
       scoreApplication.getId(),
       dashboard.getId()
       );
@@ -329,12 +134,13 @@ public class ApplicationScoreService {
    * Process scores for each widget based on widget settings
    *
    * @param widgets List of widgets
+   * @param scoreCriteriaSettings Score Criteria Settings
    * @return List of widget scores
    */
-  private List<ScoreWeight> processWidgetScores(List<Widget> widgets) {
+  private List<ScoreWeight> processWidgetScores(List<Widget> widgets, ScoreCriteriaSettings scoreCriteriaSettings) {
     List<ScoreWeight> scoreWeights = new ArrayList<>();
 
-    Map<String, ScoreParamSettings> scoreParamSettingsMap = generateWidgetSettings();
+    Map<String, ScoreComponentSettings> scoreParamSettingsMap = generateWidgetSettings(scoreCriteriaSettings);
 
     Set<String> widgetTypes = scoreParamSettingsMap.keySet();
     if (widgetTypes.isEmpty()) {
@@ -343,7 +149,7 @@ public class ApplicationScoreService {
 
     //For each widget calculate score
     for (String widgetType : widgetTypes) {
-      ScoreParamSettings scoreSettings = scoreParamSettingsMap.get(widgetType);
+      ScoreComponentSettings scoreSettings = scoreParamSettingsMap.get(widgetType);
       WidgetScore widgetScore = getWidgetScoreByType(widgetType);
       ScoreWeight score = widgetScore.processWidgetScore(
         getWidgetByName(widgets, widgetType),
@@ -352,7 +158,7 @@ public class ApplicationScoreService {
       LOGGER.info("Widget for type: " + widgetType + " score" + score);
 
       if (null != score) {
-        setWidgetAlert(score);
+        setWidgetAlert(score, scoreCriteriaSettings.getComponentAlert());
         scoreWeights.add(score);
       }
     }
@@ -360,8 +166,7 @@ public class ApplicationScoreService {
     return scoreWeights;
   }
 
-  private void setWidgetAlert(ScoreWeight score) {
-    ComponentAlert componentAlert = this.scoreSettings.getComponentAlert();
+  private void setWidgetAlert(ScoreWeight score, ComponentAlert componentAlert) {
     if (null == componentAlert || null == componentAlert.getValue()) {
       return;
     }
@@ -376,57 +181,58 @@ public class ApplicationScoreService {
    *
    * @param scoreParamSettingsMap Map to update the settings for a widget
    * @param widgetType Type of widget
-   * @param scoreParamSettings score settings for the widget
+   * @param scoreComponentSettings score settings for the widget
    */
-  private void addSettingsToMap(Map<String, ScoreParamSettings> scoreParamSettingsMap, String widgetType, ScoreParamSettings scoreParamSettings) {
-    LOGGER.info("addSettingsToMap with widgetType:" + widgetType + " scoreParamSettings:" + scoreParamSettings);
-    if (null != scoreParamSettings) {
-      scoreParamSettingsMap.put(widgetType, scoreParamSettings);
+  private void addSettingsToMap(Map<String, ScoreComponentSettings> scoreParamSettingsMap, String widgetType, ScoreComponentSettings scoreComponentSettings) {
+    LOGGER.info("addSettingsToMap with widgetType:" + widgetType + " scoreParamSettings:" + scoreComponentSettings);
+    if (null != scoreComponentSettings) {
+      scoreParamSettingsMap.put(widgetType, scoreComponentSettings);
     }
   }
 
   /**
    * Generate criteria settings for each widget type
    *
+   * @param scoreCriteriaSettings Score Criteria Settings
    * @return Map of settings by each widget name
    */
-  private Map<String, ScoreParamSettings> generateWidgetSettings() {
-    Map<String, ScoreParamSettings> scoreParamSettingsMap = new HashMap<>();
+  private Map<String, ScoreComponentSettings> generateWidgetSettings(ScoreCriteriaSettings scoreCriteriaSettings) {
+    Map<String, ScoreComponentSettings> scoreParamSettingsMap = new HashMap<>();
 
     addSettingsToMap(
       scoreParamSettingsMap,
       Constants.WIDGET_BUILD,
       getSettingsIfEnabled(
-        this.scoreSettings.getBuildWidget()
+        scoreCriteriaSettings.getBuild()
       ));
 
     addSettingsToMap(
       scoreParamSettingsMap,
       Constants.WIDGET_DEPLOY,
       getSettingsIfEnabled(
-        this.scoreSettings.getDeployWidget()
+        scoreCriteriaSettings.getDeploy()
       ));
 
     addSettingsToMap(
       scoreParamSettingsMap,
       Constants.WIDGET_CODE_ANALYSIS,
       getSettingsIfEnabled(
-        this.scoreSettings.getQualityWidget()
+        scoreCriteriaSettings.getQuality()
       ));
 
     addSettingsToMap(
       scoreParamSettingsMap,
       Constants.WIDGET_GITHUB_SCM,
       getSettingsIfEnabled(
-        this.scoreSettings.getGithubScmWidget()
+        scoreCriteriaSettings.getScm()
       ));
 
     return scoreParamSettingsMap;
   }
 
-  private ScoreParamSettings getSettingsIfEnabled(ScoreParamSettings scoreParamSettings) {
-    if (null != scoreParamSettings && !scoreParamSettings.isDisabled()) {
-      return scoreParamSettings;
+  private ScoreComponentSettings getSettingsIfEnabled(ScoreComponentSettings scoreComponentSettings) {
+    if (null != scoreComponentSettings && !scoreComponentSettings.isDisabled()) {
+      return scoreComponentSettings;
     }
     return null;
   }

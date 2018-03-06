@@ -1,6 +1,6 @@
 package com.capitalone.dashboard.exception;
 
-import com.capitalone.dashboard.collector.ScoreTypeValue;
+import com.capitalone.dashboard.model.score.settings.ScoreTypeValue;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class ThresholdException extends Exception {

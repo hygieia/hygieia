@@ -3,7 +3,8 @@ package com.capitalone.dashboard.model;
 import java.util.List;
 import java.util.Map;
 
-import com.capitalone.dashboard.collector.ScoreTypeValue;
+import com.capitalone.dashboard.model.score.settings.PropagateType;
+import com.capitalone.dashboard.model.score.settings.ScoreTypeValue;
 import com.google.common.collect.Maps;
 import org.bson.types.ObjectId;
 

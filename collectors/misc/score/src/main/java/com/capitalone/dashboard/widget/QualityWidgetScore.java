@@ -3,7 +3,9 @@ package com.capitalone.dashboard.widget;
 import java.util.Iterator;
 import java.util.List;
 
-import com.capitalone.dashboard.collector.*;
+import com.capitalone.dashboard.model.score.settings.QualityScoreSettings;
+import com.capitalone.dashboard.model.score.settings.ScoreComponentSettings;
+import com.capitalone.dashboard.model.score.settings.ScoreTypeValue;
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
@@ -97,7 +99,7 @@ public class QualityWidgetScore extends WidgetScoreAbstract {
   }
 
   @Override
-  protected void calculateCategoryScores(Widget qualityWidget, ScoreParamSettings paramSettings, List<ScoreWeight> categoryScores)
+  protected void calculateCategoryScores(Widget qualityWidget, ScoreComponentSettings paramSettings, List<ScoreWeight> categoryScores)
     throws DataNotFoundException, ThresholdException {
     if (CollectionUtils.isEmpty(categoryScores)) {
       return;
@@ -105,8 +107,8 @@ public class QualityWidgetScore extends WidgetScoreAbstract {
 
     QualityScoreSettings qualityScoreSettings = (QualityScoreSettings) paramSettings;
 
-    ScoreParamSettings qualityCCSettings = Utils.getInstanceIfNull(qualityScoreSettings.getCodeCoverage(), ScoreParamSettings.class);
-    ScoreParamSettings qualityUTSettings = Utils.getInstanceIfNull(qualityScoreSettings.getUnitTests(), ScoreParamSettings.class);
+    ScoreComponentSettings qualityCCSettings = Utils.getInstanceIfNull(qualityScoreSettings.getCodeCoverage(), ScoreComponentSettings.class);
+    ScoreComponentSettings qualityUTSettings = Utils.getInstanceIfNull(qualityScoreSettings.getUnitTests(), ScoreComponentSettings.class);
     QualityScoreSettings.ViolationsScoreSettings violationsSettings = Utils.getInstanceIfNull(qualityScoreSettings.getViolations(), QualityScoreSettings.ViolationsScoreSettings.class);
     setCategoryScoreWeight(categoryScores, WIDGET_QUALITY_CC_ID_NAME, qualityCCSettings.getWeight());
     setCategoryScoreWeight(categoryScores, WIDGET_QUALITY_UT_ID_NAME, qualityUTSettings.getWeight());
@@ -147,7 +149,7 @@ public class QualityWidgetScore extends WidgetScoreAbstract {
    * @param categoryScores List of category scores
    */
   private void processQualityCCScore(
-    ScoreParamSettings qualityCCSettings,
+    ScoreComponentSettings qualityCCSettings,
     Iterable<CodeQuality> codeQualityIterable,
     List<ScoreWeight> categoryScores) {
     ScoreWeight qualityCCScore = getCategoryScoreByIdName(categoryScores, WIDGET_QUALITY_CC_ID_NAME);
@@ -181,7 +183,7 @@ public class QualityWidgetScore extends WidgetScoreAbstract {
    * @param categoryScores List of category scores
    */
   private void processQualityUTScore(
-    ScoreParamSettings qualityUTSettings,
+    ScoreComponentSettings qualityUTSettings,
     Iterable<CodeQuality> codeQualityIterable,
     List<ScoreWeight> categoryScores) {
     ScoreWeight qualityUTScore = getCategoryScoreByIdName(categoryScores, WIDGET_QUALITY_UT_ID_NAME);

@@ -5,6 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.capitalone.dashboard.ScoreSettingsService;
+import com.capitalone.dashboard.model.score.ScoreMetric;
+import com.capitalone.dashboard.model.score.ScoreValueType;
+import com.capitalone.dashboard.model.score.settings.ScoreCriteriaSettings;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +31,9 @@ public class ScoreCollectorTask extends CollectorTask<ScoreCollector> {
   private final ScoreCollectorRepository scoreCollectorRepository;
   private final ScoreApplicationRepository scoreApplicationRepository;
   private final ScoreSettings scoreSettings;
+  private final ScoreSettingsService scoreSettingsService;
   private final ScoreRepository scoreRepository;
+  private final ScoreCriteriaSettingsRepository scoreCriteriaSettingsRepository;
 
   private final ComponentRepository dbComponentRepository;
   private final ApplicationScoreService applicationScoreService;
@@ -39,13 +45,17 @@ public class ScoreCollectorTask extends CollectorTask<ScoreCollector> {
     ScoreApplicationRepository scoreApplicationRepository,
     ScoreRepository scoreRepository,
     ScoreSettings scoreSettings,
+    ScoreSettingsService scoreSettingsService,
+    ScoreCriteriaSettingsRepository scoreCriteriaSettingsRepository,
     ComponentRepository dbComponentRepository,
     ApplicationScoreService applicationScoreService) {
     super(taskScheduler, "Score");
     this.scoreCollectorRepository = scoreCollectorRepository;
     this.scoreApplicationRepository = scoreApplicationRepository;
     this.scoreSettings = scoreSettings;
+    this.scoreSettingsService = scoreSettingsService;
     this.scoreRepository = scoreRepository;
+    this.scoreCriteriaSettingsRepository = scoreCriteriaSettingsRepository;
     this.dbComponentRepository = dbComponentRepository;
     this.applicationScoreService = applicationScoreService;
 
@@ -74,7 +84,9 @@ public class ScoreCollectorTask extends CollectorTask<ScoreCollector> {
 
     long start = System.currentTimeMillis();
 
-    //Step 1
+    //Save Dashboard Score Criteria Settings when collector runs
+    ScoreCriteriaSettings scoreCriteriaSettings = saveDashboardScoreSettings();
+
     //Find enabled applications from collection repository
     //For each enabled application, get the dashboard id
     //For the dashboard id get the dashboard data
@@ -85,16 +97,16 @@ public class ScoreCollectorTask extends CollectorTask<ScoreCollector> {
     List<ScoreApplication> scoreApplications = getScoreApplications(collector);
     log("No of dashboards with score widget=" + scoreApplications.size());
     for (ScoreApplication scoreApplication : scoreApplications) {
-      collectScoreForApplication(scoreApplication);
+      collectScoreForApplication(scoreApplication, scoreCriteriaSettings);
     }
     clean(collector);
     log("Finished", start);
   }
 
 
-  private void collectScoreForApplication(ScoreApplication scoreApplication) {
+  private void collectScoreForApplication(ScoreApplication scoreApplication, ScoreCriteriaSettings scoreCriteriaSettings) {
 
-    ScoreMetric scoreMetric = this.applicationScoreService.getScoreForApplication(scoreApplication);
+    ScoreMetric scoreMetric = this.applicationScoreService.getScoreForApplication(scoreApplication, scoreCriteriaSettings);
 
     if (null == scoreMetric) {
       return;
@@ -151,5 +163,17 @@ public class ScoreCollectorTask extends CollectorTask<ScoreCollector> {
   }
 
 
+  private ScoreCriteriaSettings saveDashboardScoreSettings() {
+    ScoreCriteriaSettings scoreCriteriaSettings = this.scoreSettingsService.getDashboardScoreCriteriaSettings();
+    scoreCriteriaSettings.setTimestamp(System.currentTimeMillis());
+
+    ScoreCriteriaSettings scoreCriteriaSettingsExisting = this.scoreCriteriaSettingsRepository.findByType(ScoreValueType.DASHBOARD);
+
+    if (null != scoreCriteriaSettingsExisting) {
+      scoreCriteriaSettings.setId(scoreCriteriaSettingsExisting.getId());
+    }
+
+    return this.scoreCriteriaSettingsRepository.save(scoreCriteriaSettings);
+  }
 
 }

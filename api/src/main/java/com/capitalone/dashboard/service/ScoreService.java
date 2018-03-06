@@ -1,7 +1,7 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.DataResponse;
-import com.capitalone.dashboard.model.ScoreMetric;
+import com.capitalone.dashboard.model.score.ScoreMetric;
 import org.bson.types.ObjectId;
 
 public interface ScoreService {
