@@ -195,5 +195,10 @@ import com.capitalone.dashboard.util.PaginationHeaderUtility;
 	 public ScoreService scoreService() {
 		 return Mockito.mock(ScoreService.class);
 	 }
+
+	 @Bean
+	 public ScoreCriteriaSettingsService scoreCriteriaSettingsService() {
+		 return Mockito.mock(ScoreCriteriaSettingsService.class);
+	 }
  }
 

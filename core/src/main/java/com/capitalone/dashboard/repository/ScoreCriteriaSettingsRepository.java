@@ -1,6 +1,5 @@
 package com.capitalone.dashboard.repository;
 
-import com.capitalone.dashboard.model.CodeQuality;
 import com.capitalone.dashboard.model.score.ScoreMetric;
 import com.capitalone.dashboard.model.score.ScoreValueType;
 import com.capitalone.dashboard.model.score.settings.ScoreCriteriaSettings;

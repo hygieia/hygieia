@@ -49,7 +49,6 @@ public class ScoreTypeValue {
     return scoreType == ScoreType.no_score;
   }
 
-
   public void setScoreType(ScoreType scoreType) {
     this.scoreType = scoreType;
   }
