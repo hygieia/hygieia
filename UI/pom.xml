@@ -11,7 +11,7 @@
     <artifactId>Hygieia</artifactId>
     <version>2.0.5-SNAPSHOT</version>
   </parent>
-  
+
   <properties>
   	<frontend-maven-plugin.skip>false</frontend-maven-plugin.skip>
   </properties>
@@ -96,7 +96,7 @@
               <goal>bower</goal>
             </goals>
             <configuration>
-              <arguments>install</arguments>
+              <arguments>install --allow-root</arguments>
             </configuration>
           </execution>
 
@@ -120,22 +120,29 @@
 
       </plugin>
       <plugin>
-        <groupId>com.spotify</groupId>
-        <artifactId>docker-maven-plugin</artifactId>
+          <groupId>com.spotify</groupId>
+        <artifactId>dockerfile-maven-plugin</artifactId>
+        <version>1.4.0</version>
+        <executions>
+          <execution>
+            <id>default</id>
+            <goals>
+              <goal>build</goal>
+              <goal>push</goal>
+            </goals>
+          </execution>
+        </executions>
         <configuration>
-	  <skipDockerBuild>false</skipDockerBuild>
-          <imageName>hygieia-ui</imageName>
-	  <skipDockerBuild>false</skipDockerBuild>
-          <dockerDirectory>${project.basedir}/docker</dockerDirectory>
+          <repository>hygieia-ui</repository>
+          <tag>latest</tag>
           <resources>
              <resource>
                <targetPath>html</targetPath>
                <directory>${project.basedir}/dist</directory>
                <include>*/**</include>
              </resource>
-
-           </resources>
-         </configuration>
+          </resources>
+        </configuration>
       </plugin>
     </plugins>
   </build>

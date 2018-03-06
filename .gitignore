@@ -43,3 +43,5 @@ logs
 .pmd
 .classpath
 application.properties
+
+.vagrant

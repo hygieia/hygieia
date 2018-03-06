@@ -55,20 +55,25 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>com.spotify</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <configuration>
-                    <skipDockerBuild>false</skipDockerBuild>
-                    <imageName>hygieia-${project.build.finalName}</imageName>
-                    <dockerDirectory>${project.basedir}/docker</dockerDirectory>
-                    <resources>
-                        <resource>
-                            <targetPath>/hygieia</targetPath>
-                            <directory>${project.build.directory}</directory>
-                            <include>${project.build.finalName}.jar</include>
-                        </resource>
-                    </resources>
-                </configuration>
+              <groupId>com.spotify</groupId>
+              <artifactId>dockerfile-maven-plugin</artifactId>
+              <version>1.4.0</version>
+              <executions>
+                <execution>
+                  <id>default</id>
+                  <goals>
+                    <goal>build</goal>
+                    <goal>push</goal>
+                  </goals>
+                </execution>
+              </executions>
+              <configuration>
+                <repository>hygieia-${project.build.finalName}</repository>
+                <tag>latest</tag>
+                <buildArgs>
+                  <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+                </buildArgs>
+              </configuration>
             </plugin>
         </plugins>
     </build>
