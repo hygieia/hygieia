@@ -69,6 +69,7 @@ public class DashboardServiceImpl implements DashboardService {
     private final PipelineRepository pipelineRepository; //NOPMD
     private final ServiceRepository serviceRepository;
     private final UserInfoRepository userInfoRepository;
+    private final ScoreDashboardService scoreDashboardService;
     private final CmdbService cmdbService;
 
     @Autowired
@@ -84,6 +85,7 @@ public class DashboardServiceImpl implements DashboardService {
                                 PipelineRepository pipelineRepository,
                                 UserInfoRepository userInfoRepository,
                                 CmdbService cmdbService,
+                                ScoreDashboardService scoreDashboardService,
                                 ApiSettings settings) {
         this.dashboardRepository = dashboardRepository;
         this.componentRepository = componentRepository;
@@ -94,6 +96,7 @@ public class DashboardServiceImpl implements DashboardService {
         this.pipelineRepository = pipelineRepository;   //TODO - Review if we need this param, seems it is never used according to PMD
         this.userInfoRepository = userInfoRepository;
         this.cmdbService = cmdbService;
+        this.scoreDashboardService = scoreDashboardService;
         this.settings = settings;
     }
 
@@ -142,7 +145,14 @@ public class DashboardServiceImpl implements DashboardService {
 
         try {
             duplicateDashboardErrorCheck(dashboard);
-            return dashboardRepository.save(dashboard);
+            Dashboard savedDashboard = dashboardRepository.save(dashboard);
+            CollectorItem scoreCollectorItem;
+            if (isUpdate) {
+                scoreCollectorItem = this.scoreDashboardService.editScoreForDashboard(savedDashboard);
+            } else {
+                scoreCollectorItem = this.scoreDashboardService.enableScoreForNewDashboard(savedDashboard);
+            }
+            return savedDashboard;
         }  catch (Exception e) {
             //Exclude deleting of components if this is an update request
             if(!isUpdate) {
@@ -188,6 +198,10 @@ public class DashboardServiceImpl implements DashboardService {
         dashboardRepository.delete(dashboard);
         componentRepository.delete(dashboard.getApplication().getComponents());
         handleCollectorItems(dashboard.getApplication().getComponents());
+        if (dashboard.isScoreEnabled()) {
+            this.scoreDashboardService.disableScoreForDashboard(dashboard);
+        }
+
     }
 
     /**

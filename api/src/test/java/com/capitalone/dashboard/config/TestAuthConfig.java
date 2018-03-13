@@ -213,5 +213,9 @@ public class TestAuthConfig {
         return Mockito.mock(ScoreCriteriaSettingsService.class);
     }
 
+    @Bean
+    public ScoreDashboardService scoreDashboardService() {
+        return Mockito.mock(ScoreDashboardService.class);
+    }
 }
 

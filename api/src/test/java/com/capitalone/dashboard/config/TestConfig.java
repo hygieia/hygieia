@@ -190,4 +190,9 @@ public class TestConfig {
   public ScoreCriteriaSettingsService scoreCriteriaSettingsService() {
     return Mockito.mock(ScoreCriteriaSettingsService.class);
   }
+
+  @Bean
+  public ScoreDashboardService scoreDashboardService() {
+    return Mockito.mock(ScoreDashboardService.class);
+  }
 }

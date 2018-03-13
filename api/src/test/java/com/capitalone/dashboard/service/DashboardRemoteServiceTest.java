@@ -1,15 +1,7 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.Application;
-import com.capitalone.dashboard.model.AuthType;
-import com.capitalone.dashboard.model.Collector;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.DashboardType;
-import com.capitalone.dashboard.model.Owner;
+import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.request.DashboardRemoteRequest;
@@ -58,7 +50,7 @@ public class DashboardRemoteServiceTest {
         Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "someuser",configItemBusServName,configItemBusAppName, "comp1","comp2");
         ObjectId objectId = ObjectId.get();
         expected.setId(objectId);
-        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "someuser", null, "team", configItemBusServName, configItemBusAppName);
+        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "someuser", null, "team", configItemBusServName, configItemBusAppName, false, "HEADER");
 
         when(userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())).thenReturn(true);
         when(dashboardRepository.findByTitle(request.getMetaData().getTitle())).thenReturn(new ArrayList<Dashboard>());
@@ -73,7 +65,7 @@ public class DashboardRemoteServiceTest {
         Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "invaliduser",configItemBusServName,configItemBusAppName, "comp1","comp2");
         ObjectId objectId = ObjectId.get();
         expected.setId(objectId);
-        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "invaliduser", null, "team", configItemBusServName, configItemBusAppName);
+        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "invaliduser", null, "team", configItemBusServName, configItemBusAppName, false, "HEADER");
 
         when(userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())).thenReturn(false);
         when(dashboardRepository.findByTitle(request.getMetaData().getTitle())).thenReturn(new ArrayList<Dashboard>());
@@ -96,7 +88,7 @@ public class DashboardRemoteServiceTest {
         Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "validuser",configItemBusServName,configItemBusAppName, "comp1","comp2");
         ObjectId objectId = ObjectId.get();
         expected.setId(objectId);
-        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "validuser", null, "team", configItemBusServName, configItemBusAppName);
+        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "validuser", null, "team", configItemBusServName, configItemBusAppName, false, "HEADER");
 
         when(userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())).thenReturn(false);
 
@@ -124,7 +116,7 @@ public class DashboardRemoteServiceTest {
         Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "someuser",configItemBusServName,configItemBusAppName, "comp1","comp2");
         ObjectId objectId = ObjectId.get();
         expected.setId(objectId);
-        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "someuser", null, "team", configItemBusServName, configItemBusAppName);
+        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "someuser", null, "team", configItemBusServName, configItemBusAppName, false, "HEADER");
         List<DashboardRemoteRequest.CodeRepoEntry> entries = new ArrayList<DashboardRemoteRequest.CodeRepoEntry>();
         DashboardRemoteRequest.CodeRepoEntry invalidSCM = new DashboardRemoteRequest.CodeRepoEntry();
         invalidSCM.setToolName("Clearcase");
@@ -152,7 +144,7 @@ public class DashboardRemoteServiceTest {
         Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "someuser",configItemBusServName,configItemBusAppName, "comp1","comp2");
         ObjectId objectId = ObjectId.get();
         expected.setId(objectId);
-        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "someuser", null, "team", configItemBusServName, configItemBusAppName);
+        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "someuser", null, "team", configItemBusServName, configItemBusAppName, false, "HEADER");
         List<DashboardRemoteRequest.CodeRepoEntry> entries = new ArrayList<DashboardRemoteRequest.CodeRepoEntry>();
         DashboardRemoteRequest.CodeRepoEntry validSCM = new DashboardRemoteRequest.CodeRepoEntry();
         validSCM.setToolName("GitHub");
@@ -202,7 +194,7 @@ public class DashboardRemoteServiceTest {
         Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "someuser",configItemBusServName,configItemBusAppName, "comp1","comp2");
         ObjectId objectId = ObjectId.get();
         expected.setId(objectId);
-        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "someuser", null, "team", configItemBusServName, configItemBusAppName);
+        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "someuser", null, "team", configItemBusServName, configItemBusAppName, false, "HEADER");
         List<DashboardRemoteRequest.BuildEntry> entries = new ArrayList<DashboardRemoteRequest.BuildEntry>();
         DashboardRemoteRequest.BuildEntry validBuild = new DashboardRemoteRequest.BuildEntry();
         validBuild.setToolName("Hudson");
@@ -253,7 +245,7 @@ public class DashboardRemoteServiceTest {
             app.addComponent(new Component(compName));
         }
         List<String> activeWidgets = new ArrayList<>();
-        return new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemBusServName, configItemBusAppName,activeWidgets);
+        return new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemBusServName, configItemBusAppName,activeWidgets, false, ScoreDisplayType.HEADER);
     }
 
     private Collector makeCollector(String name, CollectorType type) {

@@ -7,14 +7,12 @@ import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -78,6 +76,13 @@ public class DashboardRemoteRequest {
 
         private String businessApplication;
 
+        //Enable/Disable scoring for the dashboard
+        //Disabled by default
+        private boolean scoreEnabled = false;
+
+        //Display position for score.
+        private String scoreDisplay;
+
         public String getTemplate() {
             return template;
         }
@@ -140,6 +145,22 @@ public class DashboardRemoteRequest {
 
         public void setType(String type) {
             this.type = type;
+        }
+
+        public boolean isScoreEnabled() {
+            return scoreEnabled;
+        }
+
+        public void setScoreEnabled(boolean scoreEnabled) {
+            this.scoreEnabled = scoreEnabled;
+        }
+
+        public String getScoreDisplay() {
+            return scoreDisplay;
+        }
+
+        public void setScoreDisplay(String scoreDisplay) {
+            this.scoreDisplay = scoreDisplay;
         }
     }
 
