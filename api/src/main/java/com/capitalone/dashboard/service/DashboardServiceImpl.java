@@ -29,6 +29,7 @@ import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.model.ScoreDisplayType;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
@@ -750,5 +751,19 @@ public class DashboardServiceImpl implements DashboardService {
         return ownersList;
     }
 
+    @Override
+    public Dashboard updateScoreSettings(ObjectId dashboardId, boolean scoreEnabled, ScoreDisplayType scoreDisplay) {
+        Dashboard dashboard = get(dashboardId);
+        if ((scoreEnabled == dashboard.isScoreEnabled()) &&
+            (scoreDisplay == dashboard.getScoreDisplay())) {
+            return null;
+        }
+
+        dashboard.setScoreEnabled(scoreEnabled);
+        dashboard.setScoreDisplay(scoreDisplay);
+        Dashboard savedDashboard = dashboardRepository.save(dashboard);
+        this.scoreDashboardService.editScoreForDashboard(savedDashboard);
+        return savedDashboard;
+    }
 
 }

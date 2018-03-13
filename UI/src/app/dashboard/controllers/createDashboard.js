@@ -22,6 +22,10 @@
         ctrl.configurationItemBusServId = "";
         ctrl.configurationItemBusAppId = "";
         ctrl.configureSelect =  "widgets";
+        ctrl.scoreSettings = {
+            scoreEnabled : false,
+            scoreDisplay : "HEADER"
+        };
 
         // TODO: dynamically register templates with script
         ctrl.templates = [
@@ -121,7 +125,9 @@
                         applicationName: appName,
                         componentName: appName,
                         configurationItemBusServName: ctrl.configurationItemBusServ.configurationItem,
-                        configurationItemBusAppName: ctrl.configurationItemBusApp.configurationItem
+                        configurationItemBusAppName: ctrl.configurationItemBusApp.configurationItem,
+                        scoreEnabled : ctrl.scoreSettings.scoreEnabled,
+                        scoreDisplay : ctrl.scoreSettings.scoreDisplay
                     };
                     $uibModalInstance.dismiss();
                     configureWidgets(submitData);
@@ -139,7 +145,9 @@
                             applicationName: appName,
                             componentName: appName,
                             configurationItemBusServName: ctrl.configurationItemBusServ.configurationItem,
-                            configurationItemBusAppName: ctrl.configurationItemBusApp.configurationItem
+                            configurationItemBusAppName: ctrl.configurationItemBusApp.configurationItem,
+                            scoreEnabled : ctrl.scoreSettings.scoreEnabled,
+                            scoreDisplay : ctrl.scoreSettings.scoreDisplay
                         };
 
                     dashboardData
