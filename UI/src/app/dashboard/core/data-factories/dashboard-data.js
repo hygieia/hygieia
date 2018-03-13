@@ -33,7 +33,7 @@
         var myDashboardFilterRoutePage = '/api/dashboard/mydashboard/page/filter';
         var myDashboardCountRoute = '/api/dashboard/mydashboard/count';
         var myDashboardFilterCountRoute = '/api/dashboard/mydashboard/filter/count';
-
+        var dashboardGenconfigRoute = '/api/dashboard/generalConfig';
         return {
             search: search,
             mydashboard: mydashboard,
@@ -58,7 +58,9 @@
             myDashboardsCount:myDashboardsCount,
             searchMyDashboardsByPage:searchMyDashboardsByPage,
             filterMyDashboardsByTitle:filterMyDashboardsByTitle,
-            filterMyDashboardCount:filterMyDashboardCount
+            filterMyDashboardCount:filterMyDashboardCount,
+            getGeneralConfig: getGeneralConfig,
+            generalConfigSave: generalConfigSave
 
         };
 
@@ -275,6 +277,22 @@
             });
         }
 
-
+        //get List of all configurations
+        function getGeneralConfig(id) {
+            return getPromise(HygieiaConfig.local ? dashboardGenconfigRoute+'/fetch' : dashboardGenconfigRoute+'/fetch');
+        }
+        //To save the general config datas
+        function generalConfigSave(obj){
+            var route = dashboardGenconfigRoute, obj;
+            return $http.put(route, obj)
+                .success(
+                    function (response) {
+                        return response.data;
+                    })
+                .error (function (response) {
+                    console.log("Error Occured while saving the configuration:"+JSON.stringify(response));
+                    return response.data;
+                });
+        }
     }
 })();
