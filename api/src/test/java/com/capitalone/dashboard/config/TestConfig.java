@@ -21,6 +21,7 @@ import com.capitalone.dashboard.service.CloudVolumeService;
 import com.capitalone.dashboard.service.CodeQualityService;
 import com.capitalone.dashboard.service.CollectorService;
 import com.capitalone.dashboard.service.CommitService;
+import com.capitalone.dashboard.service.ConfigurationService;
 import com.capitalone.dashboard.service.BusCompOwnerService;
 import com.capitalone.dashboard.service.GitRequestService;
 import com.capitalone.dashboard.service.DashboardService;
@@ -191,6 +192,11 @@ public class TestConfig {
 	    return Mockito.mock(UserInfoService.class);
 	}
 
+	@Bean
+	public ConfigurationService configurationService() {
+	    return Mockito.mock(ConfigurationService.class);
+	}
+	
 	@Bean
 	public ApiTokenService apiTokenService() {
 		return Mockito.mock(ApiTokenService.class);

@@ -12,8 +12,8 @@ import java.util.List;
 @ConfigurationProperties(prefix = "nexusiq")
 public class NexusIQSettings {
     private String cron;
-    private String username;
-    private String password;
+    private List<String> username;
+    private List<String> password;
     private boolean selectStricterLicense;
     private List<String> servers;
 
@@ -25,23 +25,23 @@ public class NexusIQSettings {
         this.cron = cron;
     }
 
-    public String getUsername() {
-        return username;
-    }
+    public List<String> getUsername() {
+		return username;
+	}
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+	public void setUsername(List<String> username) {
+		this.username = username;
+	}
 
-    public String getPassword() {
-        return password;
-    }
+	public List<String> getPassword() {
+		return password;
+	}
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	public void setPassword(List<String> password) {
+		this.password = password;
+	}
 
-    public boolean isSelectStricterLicense() {
+	public boolean isSelectStricterLicense() {
         return selectStricterLicense;
     }
 

@@ -29,6 +29,7 @@ import com.capitalone.dashboard.service.CmdbService;
 import com.capitalone.dashboard.service.CodeQualityService;
 import com.capitalone.dashboard.service.CollectorService;
 import com.capitalone.dashboard.service.CommitService;
+import com.capitalone.dashboard.service.ConfigurationService;
 import com.capitalone.dashboard.service.BusCompOwnerService;
 import com.capitalone.dashboard.service.DashboardService;
 import com.capitalone.dashboard.service.DefaultAuthenticationServiceImpl;
@@ -193,7 +194,12 @@ import com.capitalone.dashboard.util.PaginationHeaderUtility;
 	 public LibraryPolicyService libraryPolicyService() {
 		 return Mockito.mock(LibraryPolicyService.class);
 	 }
-
+	 
+	 @Bean
+	 public ConfigurationService configuartionService() {
+		 return Mockito.mock(ConfigurationService.class);
+	 }
+	 
 	 @Bean
 	 public PerformanceService performanceService() {
 		 return Mockito.mock(PerformanceService.class);
