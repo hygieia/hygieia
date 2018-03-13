@@ -35,6 +35,18 @@
             }
             dashboard.title = dashboardService.getDashboardTitle(dashboard);
         ctrl.dashboard = dashboard;
+        ctrl.scoreEnabled = !!dashboard.scoreEnabled;
+        ctrl.scoreHeaderEnabled = ctrl.scoreEnabled && (dashboard.scoreDisplay === "HEADER");
+        ctrl.scoreWidgetEnabled = ctrl.scoreEnabled && (dashboard.scoreDisplay === "WIDGET");
+
+        ctrl.scoreRateItOptionsHeader = {
+            readOnly : true,
+            step : 0.1,
+            starWidth : 22,
+            starHeight : 22,
+            class : "score"
+        };
+
         console.log('Dashboard', dashboard);
     }
 })();

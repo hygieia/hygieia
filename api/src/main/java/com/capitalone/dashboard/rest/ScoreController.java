@@ -22,9 +22,9 @@ public class ScoreController {
         this.scoreService = scoreService;
     }
 
-    @RequestMapping(value = "/score/metric/{componentId}", method = GET, produces = APPLICATION_JSON_VALUE)
-    public DataResponse<ScoreMetric> scoreMetric(@PathVariable ObjectId componentId) {
-        return scoreService.getScoreMetric(componentId);
+    @RequestMapping(value = "/score/metric/{dashboardId}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public DataResponse<ScoreMetric> scoreMetric(@PathVariable ObjectId dashboardId) {
+        return scoreService.getScoreMetric(dashboardId);
     }
 
 }

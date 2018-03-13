@@ -3,6 +3,7 @@ package com.capitalone.dashboard;
 import java.util.*;
 
 import com.capitalone.dashboard.exception.PropagateScoreException;
+import com.capitalone.dashboard.model.score.ScoreCollectorItem;
 import com.capitalone.dashboard.model.score.ScoreMetric;
 import com.capitalone.dashboard.model.score.settings.*;
 import com.capitalone.dashboard.widget.*;
@@ -16,7 +17,7 @@ import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.DashboardRepository;
 
 /**
- * Service to calculate Dashboard score for a {@link com.capitalone.dashboard.model.ScoreApplication}
+ * Service to calculate Dashboard score for a {@link ScoreCollectorItem}
  * <p>
  *   On construction the service will initialize settings for widgets.
  *   These settings will be used to calculate score
@@ -50,13 +51,13 @@ public class ApplicationScoreService {
 
 
   /**
-   * Calculate score for a {@link com.capitalone.dashboard.model.ScoreApplication}
+   * Calculate score for a {@link ScoreCollectorItem}
    *
    * @param scoreApplication Score Application collector item for a dashboard
    * @param scoreCriteriaSettings Score Criteria Settings
    * @return Score for dashboard
    */
-  public ScoreMetric getScoreForApplication(ScoreApplication scoreApplication, ScoreCriteriaSettings scoreCriteriaSettings) {
+  public ScoreMetric getScoreForApplication(ScoreCollectorItem scoreApplication, ScoreCriteriaSettings scoreCriteriaSettings) {
     Dashboard dashboard = getDashboard(scoreApplication.getDashboardId());
 
     if (null == dashboard) {

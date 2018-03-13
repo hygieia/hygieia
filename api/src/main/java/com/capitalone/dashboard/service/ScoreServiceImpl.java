@@ -1,42 +1,55 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.score.ScoreCollectorItem;
 import com.capitalone.dashboard.model.score.ScoreMetric;
-import com.capitalone.dashboard.repository.CollectorRepository;
-import com.capitalone.dashboard.repository.ComponentRepository;
-import com.capitalone.dashboard.repository.ScoreRepository;
+import com.capitalone.dashboard.repository.*;
+import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ScoreServiceImpl implements ScoreService {
 
-    private final ComponentRepository componentRepository;
+    private final CollectorService collectorService;
+    private final ScoreCollectorItemRepository scoreCollectorItemRepository;
     private final ScoreRepository scoreRepository;
-    private final CollectorRepository collectorRepository;
 
     @Autowired
-    public ScoreServiceImpl(ComponentRepository componentRepository,
+    public ScoreServiceImpl(CollectorService collectorService,
                              ScoreRepository scoreRepository,
-                             CollectorRepository collectorRepository) {
-        this.componentRepository = componentRepository;
+                             ScoreCollectorItemRepository scoreCollectorItemRepository) {
+        this.collectorService = collectorService;
         this.scoreRepository = scoreRepository;
-        this.collectorRepository = collectorRepository;
+        this.scoreCollectorItemRepository = scoreCollectorItemRepository;
     }
 
     @Override
-    public DataResponse<ScoreMetric> getScoreMetric(ObjectId componentId) {
-        Component component = componentRepository.findOne(componentId);
-        CollectorItem item = component.getCollectorItems()
-                .get(CollectorType.Score).get(0);
-        ObjectId collectorItemId = item.getId();
+    public DataResponse<ScoreMetric> getScoreMetric(ObjectId dashboardId) {
+        List<Collector> collectors = collectorService.collectorsByType(CollectorType.Score);
+        if (CollectionUtils.isEmpty(collectors)) {
+            return new DataResponse<>(null, 0);
+        }
+
+        Collector scoreCollector = collectors.get(0);
+
+        ScoreCollectorItem scoreCollectorItem = this.scoreCollectorItemRepository.findCollectorItemByCollectorIdAndDashboardId(
+          scoreCollector.getId(),
+          dashboardId
+        );
+
+        if (null == scoreCollectorItem) {
+            return new DataResponse<>(null, 0);
+        }
+
+        ObjectId collectorItemId = scoreCollectorItem.getId();
 
         ScoreMetric scoreMetric = scoreRepository
                 .findByCollectorItemId(collectorItemId);
 
-        Collector collector = collectorRepository
-                .findOne(item.getCollectorId());
-        return new DataResponse<>(scoreMetric, collector.getLastExecuted());
+        return new DataResponse<>(scoreMetric, scoreCollector.getLastExecuted());
     }
 }

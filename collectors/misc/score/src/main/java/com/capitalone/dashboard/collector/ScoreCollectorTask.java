@@ -1,15 +1,12 @@
 package com.capitalone.dashboard.collector;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.capitalone.dashboard.ScoreSettingsService;
+import com.capitalone.dashboard.model.score.ScoreCollectorItem;
 import com.capitalone.dashboard.model.score.ScoreMetric;
 import com.capitalone.dashboard.model.score.ScoreValueType;
 import com.capitalone.dashboard.model.score.settings.ScoreCriteriaSettings;
-import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +18,7 @@ import com.capitalone.dashboard.repository.*;
 
 /**
  * Collects {@link ScoreMetric} data from
- * {@link ScoreApplication}s.
+ * {@link ScoreCollectorItem}s.
  */
 @org.springframework.stereotype.Component
 public class ScoreCollectorTask extends CollectorTask<ScoreCollector> {
@@ -29,34 +26,31 @@ public class ScoreCollectorTask extends CollectorTask<ScoreCollector> {
   private static final Logger LOGGER = LoggerFactory.getLogger(ScoreCollectorTask.class);
 
   private final ScoreCollectorRepository scoreCollectorRepository;
-  private final ScoreApplicationRepository scoreApplicationRepository;
+  private final ScoreCollectorItemRepository scoreCollectorItemRepository;
   private final ScoreSettings scoreSettings;
   private final ScoreSettingsService scoreSettingsService;
   private final ScoreRepository scoreRepository;
   private final ScoreCriteriaSettingsRepository scoreCriteriaSettingsRepository;
 
-  private final ComponentRepository dbComponentRepository;
   private final ApplicationScoreService applicationScoreService;
 
   @Autowired
   @SuppressWarnings("PMD.ExcessiveParameterList")
   public ScoreCollectorTask(TaskScheduler taskScheduler,
     ScoreCollectorRepository scoreCollectorRepository,
-    ScoreApplicationRepository scoreApplicationRepository,
+    ScoreCollectorItemRepository scoreCollectorItemRepository,
     ScoreRepository scoreRepository,
     ScoreSettings scoreSettings,
     ScoreSettingsService scoreSettingsService,
     ScoreCriteriaSettingsRepository scoreCriteriaSettingsRepository,
-    ComponentRepository dbComponentRepository,
     ApplicationScoreService applicationScoreService) {
     super(taskScheduler, "Score");
     this.scoreCollectorRepository = scoreCollectorRepository;
-    this.scoreApplicationRepository = scoreApplicationRepository;
+    this.scoreCollectorItemRepository = scoreCollectorItemRepository;
     this.scoreSettings = scoreSettings;
     this.scoreSettingsService = scoreSettingsService;
     this.scoreRepository = scoreRepository;
     this.scoreCriteriaSettingsRepository = scoreCriteriaSettingsRepository;
-    this.dbComponentRepository = dbComponentRepository;
     this.applicationScoreService = applicationScoreService;
 
   }
@@ -94,17 +88,16 @@ public class ScoreCollectorTask extends CollectorTask<ScoreCollector> {
 
 
     //Get all dashboards with score widget
-    List<ScoreApplication> scoreApplications = getScoreApplications(collector);
+    List<ScoreCollectorItem> scoreApplications = getScoreApplications(collector);
     log("No of dashboards with score widget=" + scoreApplications.size());
-    for (ScoreApplication scoreApplication : scoreApplications) {
+    for (ScoreCollectorItem scoreApplication : scoreApplications) {
       collectScoreForApplication(scoreApplication, scoreCriteriaSettings);
     }
-    clean(collector);
     log("Finished", start);
   }
 
 
-  private void collectScoreForApplication(ScoreApplication scoreApplication, ScoreCriteriaSettings scoreCriteriaSettings) {
+  private void collectScoreForApplication(ScoreCollectorItem scoreApplication, ScoreCriteriaSettings scoreCriteriaSettings) {
 
     ScoreMetric scoreMetric = this.applicationScoreService.getScoreForApplication(scoreApplication, scoreCriteriaSettings);
 
@@ -121,45 +114,10 @@ public class ScoreCollectorTask extends CollectorTask<ScoreCollector> {
   }
 
 
-  private List<ScoreApplication> getScoreApplications(ScoreCollector collector) {
+  private List<ScoreCollectorItem> getScoreApplications(ScoreCollector collector) {
     log("Score collector id = " + collector.getId());
-    return scoreApplicationRepository.findEnabledScores(
+    return scoreCollectorItemRepository.findEnabledScores(
       collector.getId());
-  }
-
-  /**
-   * Clean up unused score collector items
-   *
-   * @param collector the {@link ScoreCollector}
-   */
-  @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts")
-  private void clean(ScoreCollector collector) {
-    Set<ObjectId> uniqueIDs = new HashSet<>();
-
-    for (Component comp : dbComponentRepository
-      .findAll()) {
-      if (comp.getCollectorItems() == null || comp.getCollectorItems().isEmpty())
-        continue;
-      List<CollectorItem> itemList = comp.getCollectorItems().get(
-        CollectorType.Score);
-      if (itemList == null)
-        continue;
-      for (CollectorItem ci : itemList) {
-        if (ci == null)
-          continue;
-        uniqueIDs.add(ci.getId());
-      }
-    }
-    List<ScoreApplication> appList = new ArrayList<>();
-    Set<ObjectId> udId = new HashSet<>();
-    udId.add(collector.getId());
-    for (ScoreApplication app : scoreApplicationRepository.findByCollectorIdIn(udId)) {
-      if (app != null) {
-        app.setEnabled(uniqueIDs.contains(app.getId()));
-        appList.add(app);
-      }
-    }
-    scoreApplicationRepository.save(appList);
   }
 
 

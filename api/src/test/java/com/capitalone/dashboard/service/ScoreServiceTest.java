@@ -1,13 +1,16 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.score.ScoreCollectorItem;
 import com.capitalone.dashboard.model.score.ScoreComponentMetric;
 import com.capitalone.dashboard.model.score.ScoreMetric;
 import com.capitalone.dashboard.model.score.ScoreValueType;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.repository.ScoreCollectorItemRepository;
 import com.capitalone.dashboard.repository.ScoreRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
 import org.bson.types.ObjectId;
 import org.junit.Test;
@@ -30,31 +33,37 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class ScoreServiceTest {
   @Mock
-  private ComponentRepository componentRepository;
+  private CollectorService collectorService;
+  @Mock
+  private ScoreCollectorItemRepository scoreCollectorItemRepository;
   @Mock
   private ScoreRepository scoreRepository;
-  @Mock
-  private CollectorRepository collectorRepository;
   @InjectMocks
   private ScoreServiceImpl scoreService;
 
   @Test
   public void getScoreMetric() throws Exception {
-    ObjectId compId = ObjectId.get();
-    Component component = new Component();
-    CollectorItem item = new CollectorItem();
+    Collector collector = new Collector();
+    collector.setCollectorType(CollectorType.Score);
+    collector.setId(ObjectId.get());
+
+    ObjectId dashboardId = ObjectId.get();
+
+    ScoreCollectorItem item = new ScoreCollectorItem();
     item.setId(ObjectId.get());
-    item.setCollectorId(ObjectId.get());
-    component.getCollectorItems().put(CollectorType.Score, Arrays.asList(item));
-    when(componentRepository.findOne(compId)).thenReturn(component);
-    when(collectorRepository.findOne(item.getCollectorId())).thenReturn(new Collector());
+    item.setDashboardId(dashboardId);
+    item.setCollectorId(collector.getId());
+
+    when(collectorService.collectorsByType(CollectorType.Score)).thenReturn(Lists.newArrayList(collector));
+    when(scoreCollectorItemRepository.findCollectorItemByCollectorIdAndDashboardId(collector.getId(), dashboardId)).thenReturn(item);
+
 
     ObjectMapper mapper = new ObjectMapper();
     byte[] content = Resources.asByteSource(Resources.getResource("score-metric.json")).read();
     ScoreMetric scoreMetric = mapper.readValue(content, ScoreMetric.class);
     when(scoreRepository.findByCollectorItemId(item.getId())).thenReturn(scoreMetric);
 
-    DataResponse<ScoreMetric> scoreMetricDataResponse = scoreService.getScoreMetric(compId);
+    DataResponse<ScoreMetric> scoreMetricDataResponse = scoreService.getScoreMetric(dashboardId);
 
     ScoreMetric scoreMetricResult = scoreMetricDataResponse.getResult();
     assertNotNull(scoreMetricResult);

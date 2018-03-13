@@ -1,0 +1,18 @@
+<div class="score-view-header">
+            <span>
+                Score:
+            </span>
+            <span class="widget-score" ng-class="getScoreClass()" ng-click="viewDetails()">
+                <div class="score-value">{{rateItOptions.value}}</div>
+                <div class="score-widget-wrap">
+                    <ng-rate-it
+                            ng-model="rateItOptions.value"
+                            read-only="true"
+                            star-width="rateItOptions.starWidth"
+                            star-height="rateItOptions.starHeight"
+                            step="rateItOptions.step"
+                            class="{{rateItOptions.class}}">
+                    </ng-rate-it>
+                </div>
+            </span>
+</div>

@@ -16,8 +16,8 @@
             details: details
         };
 
-        function details(componentId) {
-            return $http.get(HygieiaConfig.local ? testDetailRoute : scoreDetailRoute + componentId)
+        function details(dashboardId) {
+            return $http.get(HygieiaConfig.local ? testDetailRoute : scoreDetailRoute + dashboardId)
                 .then(function (response) {
                     return response.data;
                 });

@@ -1,7 +1,7 @@
 package com.capitalone.dashboard;
 
-import com.capitalone.dashboard.collector.*;
 import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.score.ScoreCollectorItem;
 import com.capitalone.dashboard.model.score.ScoreComponentMetric;
 import com.capitalone.dashboard.model.score.ScoreMetric;
 import com.capitalone.dashboard.model.score.settings.*;
@@ -276,7 +276,7 @@ public class ApplicationScoreServiceTest {
 
 
   public ScoreMetric calculateScore(CalculateScoreBuilder calculateScoreBuilder) throws IOException {
-    ScoreApplication scoreApplication = new ScoreApplication();
+    ScoreCollectorItem scoreApplication = new ScoreCollectorItem();
     scoreApplication.setDashboardId(new ObjectId("596c43483d88f70bf778caee"));
     scoreApplication.setId(new ObjectId("596c43483d88f70bf778caef"));
 

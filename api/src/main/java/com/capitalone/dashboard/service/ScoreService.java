@@ -7,10 +7,10 @@ import org.bson.types.ObjectId;
 public interface ScoreService {
 
     /**
-     * Score Metrics by it component id
+     * Score Metrics by it dashboard id
      *
-     * @param componentId id of Component
+     * @param dashboardId id of dashboard
      * @return DataResponse of type Scores
      */
-    DataResponse<ScoreMetric> getScoreMetric(ObjectId componentId);
+    DataResponse<ScoreMetric> getScoreMetric(ObjectId dashboardId);
 }

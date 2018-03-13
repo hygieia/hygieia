@@ -4,8 +4,9 @@ import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.score.ScoreCollectorItem;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
-import com.capitalone.dashboard.repository.CustomRepositoryQuery;
+import com.capitalone.dashboard.repository.ScoreCollectorItemRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -20,17 +21,17 @@ public class ScoreDashboardServiceImpl implements ScoreDashboardService {
   private static final Logger LOGGER = Logger.getLogger(ScoreDashboardServiceImpl.class);
 
   private final CollectorService collectorService;
-  private final CustomRepositoryQuery customRepositoryQuery;
+  private final ScoreCollectorItemRepository scoreCollectorItemRepository;
   private final CollectorItemRepository collectorItemRepository;
 
   @Autowired
   public ScoreDashboardServiceImpl(
     CollectorService collectorService,
-    CustomRepositoryQuery customRepositoryQuery,
+    ScoreCollectorItemRepository scoreCollectorItemRepository,
     CollectorItemRepository collectorItemRepository) {
     this.collectorService = collectorService;
-    this.customRepositoryQuery = customRepositoryQuery;
     this.collectorItemRepository = collectorItemRepository;
+    this.scoreCollectorItemRepository = scoreCollectorItemRepository;
   }
 
   @Override
@@ -71,23 +72,16 @@ public class ScoreDashboardServiceImpl implements ScoreDashboardService {
       scoreCollector = collectors.get(0);
     }
 
-    CollectorItem scoreCollectorItem = generateScoreCollectorItem(
-      dashboardId,
-      scoreCollector.getId()
-    );
-
-    List<CollectorItem> items = customRepositoryQuery.findCollectorItemsBySubsetOptions(
+    ScoreCollectorItem scoreCollectorItem = this.scoreCollectorItemRepository.findCollectorItemByCollectorIdAndDashboardId(
       scoreCollector.getId(),
-      scoreCollectorItem.getOptions(),
-      scoreCollectorItem.getOptions()
+      dashboardId
     );
 
-    if (CollectionUtils.isEmpty(items)) {
+    if (null == scoreCollectorItem) {
       LOGGER.warn("No Score Collector item found");
       return null;
     }
 
-    scoreCollectorItem = items.get(0);
     scoreCollectorItem.setEnabled(false);
 
     return this.collectorItemRepository.save(scoreCollectorItem);
@@ -103,7 +97,7 @@ public class ScoreDashboardServiceImpl implements ScoreDashboardService {
       scoreCollector = collectorService.createCollector(generateScoreCollector());
     }
 
-    CollectorItem scoreCollectorItem = generateScoreCollectorItem(
+    ScoreCollectorItem scoreCollectorItem = generateScoreCollectorItem(
       dashboardId,
       scoreCollector.getId()
     );
@@ -121,10 +115,10 @@ public class ScoreDashboardServiceImpl implements ScoreDashboardService {
   }
 
 
-  private CollectorItem generateScoreCollectorItem(ObjectId dashboardId, ObjectId collectorId) {
-    CollectorItem item = new CollectorItem();
+  private ScoreCollectorItem generateScoreCollectorItem(ObjectId dashboardId, ObjectId collectorId) {
+    ScoreCollectorItem item = new ScoreCollectorItem();
     item.setCollectorId(collectorId);
-    item.getOptions().put("dashboardId", dashboardId);
+    item.setDashboardId(dashboardId);
     item.setDescription(dashboardId.toString());
     item.setEnabled(true);
     return item;
