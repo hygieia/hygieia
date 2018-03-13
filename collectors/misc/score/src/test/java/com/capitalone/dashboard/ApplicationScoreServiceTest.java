@@ -277,14 +277,14 @@ public class ApplicationScoreServiceTest {
 
   public ScoreMetric calculateScore(CalculateScoreBuilder calculateScoreBuilder) throws IOException {
     ScoreApplication scoreApplication = new ScoreApplication();
-    scoreApplication.setDashboardId("596c43483d88f70bf778caee");
+    scoreApplication.setDashboardId(new ObjectId("596c43483d88f70bf778caee"));
     scoreApplication.setId(new ObjectId("596c43483d88f70bf778caef"));
 
     ObjectMapper mapper = new ObjectMapper();
     byte[] content = Resources.asByteSource(Resources.getResource("dashboard-data.json")).read();
     Dashboard dashboard = mapper.readValue(content, Dashboard.class);
 
-    when(dashboardRepository.findOne(new ObjectId(scoreApplication.getDashboardId()))).thenReturn(dashboard);
+    when(dashboardRepository.findOne(scoreApplication.getDashboardId())).thenReturn(dashboard);
 
     when(buildWidgetScore.processWidgetScore(any(), any())).thenReturn(calculateScoreBuilder.getBuildWidgetScore());
     when(qualityWidgetScore.processWidgetScore(any(), any())).thenReturn(calculateScoreBuilder.getQualityWidgetScore());

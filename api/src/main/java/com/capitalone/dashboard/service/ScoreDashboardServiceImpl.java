@@ -72,7 +72,7 @@ public class ScoreDashboardServiceImpl implements ScoreDashboardService {
     }
 
     CollectorItem scoreCollectorItem = generateScoreCollectorItem(
-      dashboardId.toString(),
+      dashboardId,
       scoreCollector.getId()
     );
 
@@ -104,7 +104,7 @@ public class ScoreDashboardServiceImpl implements ScoreDashboardService {
     }
 
     CollectorItem scoreCollectorItem = generateScoreCollectorItem(
-      dashboardId.toString(),
+      dashboardId,
       scoreCollector.getId()
     );
 
@@ -121,11 +121,11 @@ public class ScoreDashboardServiceImpl implements ScoreDashboardService {
   }
 
 
-  private CollectorItem generateScoreCollectorItem(String dashboardId, ObjectId collectorId) {
+  private CollectorItem generateScoreCollectorItem(ObjectId dashboardId, ObjectId collectorId) {
     CollectorItem item = new CollectorItem();
     item.setCollectorId(collectorId);
     item.getOptions().put("dashboardId", dashboardId);
-    item.setDescription(dashboardId);
+    item.setDescription(dashboardId.toString());
     item.setEnabled(true);
     return item;
   }

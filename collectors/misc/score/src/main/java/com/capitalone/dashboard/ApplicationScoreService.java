@@ -57,7 +57,7 @@ public class ApplicationScoreService {
    * @return Score for dashboard
    */
   public ScoreMetric getScoreForApplication(ScoreApplication scoreApplication, ScoreCriteriaSettings scoreCriteriaSettings) {
-    Dashboard dashboard = getDashboard(new ObjectId(scoreApplication.getDashboardId()));
+    Dashboard dashboard = getDashboard(scoreApplication.getDashboardId());
 
     if (null == dashboard) {
       LOGGER.info("Dashboard with id " + scoreApplication.getDashboardId() + " is null!");

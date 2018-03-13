@@ -1,14 +1,16 @@
 package com.capitalone.dashboard.model;
 
+import org.bson.types.ObjectId;
+
 public class ScoreApplication extends CollectorItem {
 
   private static final String DASHBOARD_ID = "dashboardId";
 
-  public String getDashboardId() {
-    return (String) getOptions().get(DASHBOARD_ID);
+  public ObjectId getDashboardId() {
+    return (ObjectId) getOptions().get(DASHBOARD_ID);
   }
 
-  public void setDashboardId(String dashboardId) {
+  public void setDashboardId(ObjectId dashboardId) {
     getOptions().put(DASHBOARD_ID, dashboardId);
   }
 
