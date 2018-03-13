@@ -54,8 +54,8 @@
         ctrl.scoreRateItOptionsWidget = {
             readOnly : true,
             step : 0.1,
-            starWidth : 35,
-            starHeight : 35,
+            starWidth : 40,
+            starHeight : 40,
             class : "score"
         };
 
