@@ -16,6 +16,8 @@
         ctrl.viewDetails = viewDetails;
         ctrl.getScoreClass = getScoreClass;
 
+        ctrl.scoreViewInfoToolTip = "Overall score for your dashboard. Click on score to view more details";
+
         load();
 
         function load() {
@@ -24,6 +26,9 @@
                 var result = data.result;
                 processResponse(result);
                 scoreDataService.addDashboardScore(result);
+                var lastUpdated = data.lastUpdated;
+                ctrl.lastUpdatedActual = lastUpdated;
+                ctrl.lastUpdatedDisplay = moment(lastUpdated).dash('ago');
                 deferred.resolve(data.lastUpdated);
             });
             return deferred.promise;

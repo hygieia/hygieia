@@ -167,5 +167,56 @@
       }
     }
   }
+
+  .score-info {
+    padding-left: 10px;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .last-updated {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.4rem;
+    padding-top: 10px;
+  }
 }
 
+#dashboard {
+  .score-view {
+    .panel-body {
+      padding-top: .5rem;
+    }
+
+    .details-title{
+      cursor: pointer;
+    }
+
+    .widget {
+      margin-bottom: 0 !important;
+    }
+
+    .score-widget {
+      font-size: 4rem;
+      margin-left: 8px;
+      position: relative;
+      top: -2px;
+      vertical-align: middle;
+      .score-value {
+        top:-1px;
+        display: inline-block;
+        position:relative;
+        padding-right: 10px;
+      }
+      .score-widget-wrap {
+        display: inline-block;
+        position: relative;
+        .score.ngrateit {
+          .ngrateit-star {
+            background-size: 35px;
+          }
+        }
+      }
+    }
+  }
+}

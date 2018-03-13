@@ -35,15 +35,27 @@
             }
             dashboard.title = dashboardService.getDashboardTitle(dashboard);
         ctrl.dashboard = dashboard;
+
+        //Add attributes for score
         ctrl.scoreEnabled = !!dashboard.scoreEnabled;
         ctrl.scoreHeaderEnabled = ctrl.scoreEnabled && (dashboard.scoreDisplay === "HEADER");
         ctrl.scoreWidgetEnabled = ctrl.scoreEnabled && (dashboard.scoreDisplay === "WIDGET");
 
+        //Default options to use with score display in header
         ctrl.scoreRateItOptionsHeader = {
             readOnly : true,
             step : 0.1,
             starWidth : 22,
             starHeight : 22,
+            class : "score"
+        };
+
+        //Default options to use with score display in widget
+        ctrl.scoreRateItOptionsWidget = {
+            readOnly : true,
+            step : 0.1,
+            starWidth : 35,
+            starHeight : 35,
             class : "score"
         };
 

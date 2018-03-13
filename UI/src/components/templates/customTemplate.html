@@ -24,7 +24,11 @@
             <div ng-repeat="widgetChunk in template.widgetsOrder">
                 <div class="row">
                     <div class="col-md-4" ng-repeat="widgetName in widgetChunk track by $index">
-                        <div class="col-sm-4 col-md-12" ng-if="$index==0">
+                        <div class="col-sm-4 col-md-12" ng-if="$index==0 && widgetName=='score'">
+                            <score-view-widget dashboard-id="{{ctrl.dashboard.id}}" rate-it-options="ctrl.scoreRateItOptionsWidget">
+                            </score-view-widget>
+                        </div>
+                        <div class="col-sm-4 col-md-12" ng-if="$index==0 && widgetName!=='score'">
                             <widget name="{{widgetName}}"
                                     widget-title="{{template.widgetDisplay[widgetName]}}"></widget>
                         </div>

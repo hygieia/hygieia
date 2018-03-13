@@ -15,6 +15,7 @@
     scoreSettingsCtrl.$inject = ['$scope'];
     function scoreSettingsCtrl($scope){
         var vm = $scope;
+        vm.selectHeaderOrWidgetToolTip = "Dashboard score can either be displayed in header or as a widget.";
     }
 
 
