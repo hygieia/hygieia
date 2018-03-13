@@ -6,12 +6,14 @@ import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorItemConfigHistory;
 import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Configuration;
 import com.capitalone.dashboard.model.HudsonCollector;
 import com.capitalone.dashboard.model.HudsonJob;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.BuildRepository;
 import com.capitalone.dashboard.repository.CollItemConfigHistoryRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.repository.ConfigurationRepository;
 import com.capitalone.dashboard.repository.HudsonCollectorRepository;
 import com.capitalone.dashboard.repository.HudsonJobRepository;
 import com.google.common.collect.Lists;
@@ -48,6 +50,7 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
     private final HudsonClient hudsonClient;
     private final HudsonSettings hudsonSettings;
     private final ComponentRepository dbComponentRepository;
+	private final ConfigurationRepository configurationRepository;
 
     @Autowired
     public HudsonCollectorTask(TaskScheduler taskScheduler,
@@ -55,7 +58,8 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
                                HudsonJobRepository hudsonJobRepository,
                                BuildRepository buildRepository, CollItemConfigHistoryRepository configRepository, HudsonClient hudsonClient,
                                HudsonSettings hudsonSettings,
-                               ComponentRepository dbComponentRepository) {
+                               ComponentRepository dbComponentRepository, 
+                               ConfigurationRepository configurationRepository) {
         super(taskScheduler, "Hudson");
         this.hudsonCollectorRepository = hudsonCollectorRepository;
         this.hudsonJobRepository = hudsonJobRepository;
@@ -64,10 +68,25 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
         this.hudsonClient = hudsonClient;
         this.hudsonSettings = hudsonSettings;
         this.dbComponentRepository = dbComponentRepository;
+		this.configurationRepository = configurationRepository;
     }
 
     @Override
     public HudsonCollector getCollector() {
+    	Configuration config = configurationRepository.findByCollectorName("Hudson");
+		if (config != null ) {
+			config.decryptOrEncrptInfo();
+			// To clear the username and password from existing run and
+			// pick the latest
+				hudsonSettings.setUsernames(new ArrayList<>());
+				hudsonSettings.setApiKeys(new ArrayList<>());
+				hudsonSettings.setServers(new ArrayList<>());
+			for (Map<String, String> jenkinsServer : config.getInfo()) {
+				hudsonSettings.getServers().add(jenkinsServer.get("url"));
+				hudsonSettings.getUsernames().add(jenkinsServer.get("userName"));
+				hudsonSettings.getApiKeys().add(jenkinsServer.get("password"));
+			}
+		}
         return HudsonCollector.prototype(hudsonSettings.getServers(), hudsonSettings.getNiceNames(),
                 hudsonSettings.getEnvironments());
     }

@@ -20,6 +20,7 @@ import com.capitalone.dashboard.service.CmdbService;
 import com.capitalone.dashboard.service.CodeQualityService;
 import com.capitalone.dashboard.service.CollectorService;
 import com.capitalone.dashboard.service.CommitService;
+import com.capitalone.dashboard.service.ConfigurationService;
 import com.capitalone.dashboard.service.DashboardRemoteService;
 import com.capitalone.dashboard.service.DashboardService;
 import com.capitalone.dashboard.service.DefaultAuthenticationServiceImpl;
@@ -90,6 +91,11 @@ public class TestAuthConfig {
         return Mockito.mock(BuildService.class);
     }
 
+    @Bean
+    public ConfigurationService configurationService() {
+        return Mockito.mock(ConfigurationService.class);
+    }
+    
     @Bean
     public CollectorService collectorService() {
         return Mockito.mock(CollectorService.class);
