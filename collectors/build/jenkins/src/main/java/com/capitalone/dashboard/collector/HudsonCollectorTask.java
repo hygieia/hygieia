@@ -1,6 +1,23 @@
 package com.capitalone.dashboard.collector;
 
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.RestClientException;
+
 import com.capitalone.dashboard.model.BaseModel;
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.CollectorItem;
@@ -17,22 +34,6 @@ import com.capitalone.dashboard.repository.ConfigurationRepository;
 import com.capitalone.dashboard.repository.HudsonCollectorRepository;
 import com.capitalone.dashboard.repository.HudsonJobRepository;
 import com.google.common.collect.Lists;
-import org.apache.commons.lang3.StringUtils;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.RestClientException;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 
 
 /**
@@ -78,9 +79,15 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
 			config.decryptOrEncrptInfo();
 			// To clear the username and password from existing run and
 			// pick the latest
+			if(hudsonSettings.getServers() == null) {
 				hudsonSettings.setUsernames(new ArrayList<>());
 				hudsonSettings.setApiKeys(new ArrayList<>());
 				hudsonSettings.setServers(new ArrayList<>());
+			} else {
+				hudsonSettings.getUsernames().clear();
+				hudsonSettings.getUsernames().clear();
+				hudsonSettings.getUsernames().clear();
+			}
 			for (Map<String, String> jenkinsServer : config.getInfo()) {
 				hudsonSettings.getServers().add(jenkinsServer.get("url"));
 				hudsonSettings.getUsernames().add(jenkinsServer.get("userName"));

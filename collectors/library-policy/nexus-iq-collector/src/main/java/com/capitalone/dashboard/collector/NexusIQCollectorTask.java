@@ -1,5 +1,17 @@
 package com.capitalone.dashboard.collector;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.stereotype.Component;
+
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Configuration;
@@ -13,17 +25,6 @@ import com.capitalone.dashboard.repository.ConfigurationRepository;
 import com.capitalone.dashboard.repository.LibraryPolicyResultsRepository;
 import com.capitalone.dashboard.repository.NexusIQApplicationRepository;
 import com.capitalone.dashboard.repository.NexusIQCollectorRepository;
-import org.apache.commons.collections.CollectionUtils;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @Component
 public class NexusIQCollectorTask extends CollectorTask<NexusIQCollector> {
@@ -58,14 +59,19 @@ public class NexusIQCollectorTask extends CollectorTask<NexusIQCollector> {
 			config.decryptOrEncrptInfo();
 			// To clear the username and password from existing run and
 			// pick the latest
-				nexusIQSettings.setUsername(new ArrayList<>());
+			if(nexusIQSettings.getServers() == null) {
+				nexusIQSettings.setUsernames(new ArrayList<>());
 				nexusIQSettings.setPassword(new ArrayList<>());
 				nexusIQSettings.setServers(new ArrayList<>());
-			
+			} else {
+				nexusIQSettings.getUsernames().clear();
+				nexusIQSettings.getPasswords().clear();
+				nexusIQSettings.getServers().clear();
+			}
 			for (Map<String, String> jenkinsServer : config.getInfo()) {
 				nexusIQSettings.getServers().add(jenkinsServer.get("url"));
-				nexusIQSettings.getUsername().add(jenkinsServer.get("userName"));
-				nexusIQSettings.getPassword().add(jenkinsServer.get("password"));
+				nexusIQSettings.getUsernames().add(jenkinsServer.get("userName"));
+				nexusIQSettings.getPasswords().add(jenkinsServer.get("password"));
 			}
 		}
 		return NexusIQCollector.prototype(nexusIQSettings.getServers());

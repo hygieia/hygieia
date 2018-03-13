@@ -293,8 +293,8 @@ public class DefaultNexusIQClient implements NexusIQClient {
 
     	for(int i=0;i<nexusIQSettings.getServers().size();i++) {
     		if(url.contains(nexusIQSettings.getServers().get(i))){
-        		username = nexusIQSettings.getUsername().get(i);
-        		password = nexusIQSettings.getPassword().get(i);
+        		username = nexusIQSettings.getUsernames().get(i);
+        		password = nexusIQSettings.getPasswords().get(i);
     		}
     	}
         if (username != null && !username.isEmpty() &&
