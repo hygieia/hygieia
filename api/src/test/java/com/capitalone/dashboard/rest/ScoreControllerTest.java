@@ -45,16 +45,16 @@ public class ScoreControllerTest {
 
   @Test
   public void scoreMetric() throws Exception {
-    ObjectId componentId = ObjectId.get();
+    ObjectId dashboardId = ObjectId.get();
     ObjectMapper mapper = new ObjectMapper();
     byte[] content = Resources.asByteSource(Resources.getResource("score-metric.json")).read();
     ScoreMetric scoreMetric = mapper.readValue(content, ScoreMetric.class);
 
     DataResponse<ScoreMetric> response = new DataResponse<>(scoreMetric, 1);
 
-    when(scoreService.getScoreMetric(componentId)).thenReturn(response);
+    when(scoreService.getScoreMetric(dashboardId)).thenReturn(response);
 
-    mockMvc.perform(get("/score/metric/" + componentId.toString()))
+    mockMvc.perform(get("/score/metric/" + dashboardId.toString()))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.result.type", is(ScoreValueType.DASHBOARD.toString())))
       .andExpect(jsonPath("$.result.score", is("2.4")))

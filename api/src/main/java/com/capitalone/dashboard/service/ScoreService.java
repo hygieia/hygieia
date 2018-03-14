@@ -7,7 +7,7 @@ import org.bson.types.ObjectId;
 public interface ScoreService {
 
     /**
-     * Score Metrics by it dashboard id
+     * Score Metrics by dashboard id
      *
      * @param dashboardId id of dashboard
      * @return DataResponse of type Scores

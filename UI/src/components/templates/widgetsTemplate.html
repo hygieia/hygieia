@@ -30,7 +30,7 @@
                         </div>
                         <div class="col-sm-4 col-md-12" ng-if="$index==0 && widgetName!=='score'">
                             <widget name="{{widgetName}}"
-                                    widget-title="{{template.widgetDisplay[widgetName]}}"></widget>
+                                    widget-title="{{template.widgetDisplay[widgetName.toLowerCase()]}}"></widget>
                         </div>
                         <div class="col-sm-4 col-md-12" ng-if="$index==1">
                             <widget name="{{widgetName}}"

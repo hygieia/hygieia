@@ -48,7 +48,6 @@
             scope.widgetDefinition = widgetManager.getWidget(attrs.name);
             scope.title = attrs.title || scope.widgetDefinition.view.defaults.title;
             scope.header = attrs.header ? attrs.header != 'false' : true;
-            scope.name = attrs.name;
 
             // when the widget loads, register it with the container which will then call back to process
             // the widget with the proper config value if it's already been configured on the dashboard
@@ -85,7 +84,6 @@
 
             // default variables
             $scope.title = '';
-            $scope.name = '';
             $scope.state = WidgetState.READY;
             $scope.display = DisplayState.DEFAULT;
 
