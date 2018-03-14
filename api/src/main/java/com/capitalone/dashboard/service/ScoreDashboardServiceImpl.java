@@ -35,7 +35,7 @@ public class ScoreDashboardServiceImpl implements ScoreDashboardService {
   }
 
   @Override
-  public CollectorItem enableScoreForNewDashboard(Dashboard dashboard) {
+  public CollectorItem addScoreForDashboardIfScoreEnabled(Dashboard dashboard) {
     if (dashboard.isScoreEnabled()) {
       return addScoreForDashboard(dashboard);
     }
@@ -120,6 +120,7 @@ public class ScoreDashboardServiceImpl implements ScoreDashboardService {
     item.setCollectorId(collectorId);
     item.setDashboardId(dashboardId);
     item.setDescription(dashboardId.toString());
+    item.setLastUpdated(System.currentTimeMillis());
     item.setEnabled(true);
     return item;
   }

@@ -42,21 +42,8 @@ import com.capitalone.dashboard.util.UnsafeDeleteException;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.apache.commons.collections.CollectionUtils;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
@@ -151,7 +138,7 @@ public class DashboardServiceImpl implements DashboardService {
             if (isUpdate) {
                 scoreCollectorItem = this.scoreDashboardService.editScoreForDashboard(savedDashboard);
             } else {
-                scoreCollectorItem = this.scoreDashboardService.enableScoreForNewDashboard(savedDashboard);
+                scoreCollectorItem = this.scoreDashboardService.addScoreForDashboardIfScoreEnabled(savedDashboard);
             }
             return savedDashboard;
         }  catch (Exception e) {
