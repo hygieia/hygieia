@@ -40,6 +40,7 @@ public class ChangeOrder extends BaseModel{
     private String subcategory;
     private String sLAAgreementID;
     private String changeModel;
+    private String service;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
 
@@ -170,6 +171,14 @@ public class ChangeOrder extends BaseModel{
     public String getChangeModel() { return changeModel; }
 
     public void setChangeModel(String changeModel) { this.changeModel = changeModel; }
+
+    public String getService() {
+        return service;
+    }
+
+    public void setService(String service) {
+        this.service = service;
+    }
 
     @Override
     public boolean equals(Object compareTo){
