@@ -27,6 +27,8 @@ public class HudsonSettings {
     @Value("${folderDepth:10}")
     private int folderDepth;
 
+    private String proxy;
+    
     public String getCron() {
         return cron;
     }
@@ -115,4 +117,13 @@ public class HudsonSettings {
     public int getFolderDepth() {
         return folderDepth;
     }
+
+	public String getProxy() {
+		return proxy;
+	}
+
+	public void setProxy(String proxy) {
+		this.proxy = proxy;
+	}
+    
 }
