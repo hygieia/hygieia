@@ -157,7 +157,7 @@ To create a Docker image for Hygieia's API layer, execute the following steps:
 	use dashboarddb
 
 	# Create dashboard user
-	db.createUser({user: "dashoarduser", pwd: "dbpassword", roles: [{role: "readWrite", db: "dashboarddb"}]})
+	db.createUser({user: "dashboarduser", pwd: "dbpassword", roles: [{role: "readWrite", db: "dashboarddb"}]})
 
 	# To execute from CLI:
 
