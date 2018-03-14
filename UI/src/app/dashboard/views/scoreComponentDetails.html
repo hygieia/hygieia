@@ -1,5 +1,6 @@
 <widget-modal widget-modal-close="true">
-    <div class="widget-detail widget-score-details">
+    <h2 ng-if="!detail.showDetails">No Details Found!</h2>
+    <div class="widget-detail widget-score-details" ng-if="detail.showDetails">
         <div class="widget-detail-heading widget-score-desc">
             <i ng-if="detail.scoreComponent.state" uib-popover="{{detail.scoreComponent.statusTxt}}" popover-trigger="'mouseenter'"
                ng-class="detail.getIconClass(detail.scoreComponent)" class="score-status-icon score-status-icon-header fa"></i>

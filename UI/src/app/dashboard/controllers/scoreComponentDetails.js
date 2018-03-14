@@ -13,6 +13,7 @@
         var ctrl = this;
         ctrl.scoreComponent = scoreComponent;
         ctrl.componentMetrics = [];
+        ctrl.showDetails = true;
         ctrl.getIconClass = getIconClass;
         ctrl.close = close;
         ctrl.closeAlert = closeAlert;
@@ -28,15 +29,19 @@
         activate();
 
         function activate() {
+            if (!ctrl.scoreComponent) {
+                ctrl.showDetails = false;
+                return;
+            }
             var typeDashboard = false;
-            if (scoreComponent.componentMetrics) {
-              ctrl.componentMetrics = scoreComponent.componentMetrics;
+            if (ctrl.scoreComponent.componentMetrics) {
+              ctrl.componentMetrics = ctrl.scoreComponent.componentMetrics;
               typeDashboard = true;
             } else {
-              ctrl.componentMetrics = scoreComponent.children;
+              ctrl.componentMetrics = ctrl.scoreComponent.children;
             }
-            setAlert(scoreComponent);
-            updateStateProps(scoreComponent);
+            setAlert(ctrl.scoreComponent);
+            updateStateProps(ctrl.scoreComponent);
 
             _.forEach(ctrl.componentMetrics, function (componentMetric) {
                 componentMetric.percent = componentMetric.weight + '%';
