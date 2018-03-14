@@ -5,8 +5,8 @@
     </div>
     <div ng-if="ngModel.scoreEnabled" id="scoreDisplay" class="score-display">
         <span class="col-sm-8">
-            <label class="radio-inline" for="scoreDisplayHeader"> <input id="scoreDisplayHeader" type="radio" name="scoreDisplay" ng-model="ngModel.scoreDisplay" value="HEADER"  ng-checked="true"> Display in Header </label>
-            <label class="radio-inline" for="scoreDisplayWidget"> <input id="scoreDisplayWidget" type="radio" name="scoreDisplay" ng-model="ngModel.scoreDisplay" value="WIDGET"> Display in Widget </label></span>
+            <label class="radio-inline" for="scoreDisplayHeader"> <input id="scoreDisplayHeader" type="radio" name="scoreDisplay" ng-model="ngModel.scoreDisplay" value="{{scoreDisplayType.HEADER}}"  ng-checked="true"> Display in Header </label>
+            <label class="radio-inline" for="scoreDisplayWidget"> <input id="scoreDisplayWidget" type="radio" name="scoreDisplay" ng-model="ngModel.scoreDisplay" value="{{scoreDisplayType.WIDGET}}"> Display in Widget </label></span>
         <span class="col-sm-4 pull-left"> <i class="fa fa-stack-1x fa-info-circle pull-right" uib-tooltip = "{{selectHeaderOrWidgetToolTip}}" tooltip-trigger="focus" tooltip-placement="top" aria-hidden="true"></i></span>
     </div>
 

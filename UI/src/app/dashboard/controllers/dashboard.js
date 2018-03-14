@@ -9,8 +9,8 @@
         .module(HygieiaConfig.module)
         .controller('DashboardController', DashboardController);
 
-    DashboardController.$inject = ['dashboard', '$location', 'dashboardService'];
-    function DashboardController(dashboard, $location, dashboardService) {
+    DashboardController.$inject = ['dashboard', '$location', 'dashboardService', 'ScoreDisplayType'];
+    function DashboardController(dashboard, $location, dashboardService, ScoreDisplayType) {
         var ctrl = this;
 
         // if dashboard isn't available through resolve it may have been deleted
@@ -38,8 +38,8 @@
 
         //Add attributes for score
         ctrl.scoreEnabled = !!dashboard.scoreEnabled;
-        ctrl.scoreHeaderEnabled = ctrl.scoreEnabled && (dashboard.scoreDisplay === "HEADER");
-        ctrl.scoreWidgetEnabled = ctrl.scoreEnabled && (dashboard.scoreDisplay === "WIDGET");
+        ctrl.scoreHeaderEnabled = ctrl.scoreEnabled && (dashboard.scoreDisplay === ScoreDisplayType.HEADER);
+        ctrl.scoreWidgetEnabled = ctrl.scoreEnabled && (dashboard.scoreDisplay === ScoreDisplayType.WIDGET);
 
         //Default options to use with score display in header
         ctrl.scoreRateItOptionsHeader = {

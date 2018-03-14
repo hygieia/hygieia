@@ -12,10 +12,11 @@
         .directive('scoreSettings', scoreSettings);
 
 
-    scoreSettingsCtrl.$inject = ['$scope'];
-    function scoreSettingsCtrl($scope){
+    scoreSettingsCtrl.$inject = ['$scope', 'ScoreDisplayType'];
+    function scoreSettingsCtrl($scope, ScoreDisplayType){
         var vm = $scope;
         vm.selectHeaderOrWidgetToolTip = "Dashboard score can either be displayed in header or as a widget.";
+        vm.scoreDisplayType = ScoreDisplayType;
     }
 
 

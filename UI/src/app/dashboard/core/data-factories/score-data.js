@@ -6,6 +6,10 @@
 
     angular
         .module(HygieiaConfig.module + '.core')
+        .constant('ScoreDisplayType', {
+            HEADER: 'HEADER',
+            WIDGET: 'WIDGET'
+        })
         .factory('scoreData', scoreData);
 
     function scoreData($http) {
