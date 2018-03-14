@@ -401,7 +401,17 @@ public class DashboardControllerTest {
     	
     }
 
+    @Test
+    public void updateScoreSettings() throws Exception {
+        ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
+        Dashboard dashboard = makeDashboard("t1", "dashboard", "app", "comp","amit", DashboardType.Team, configItemAppName, configItemComponentName, false, ScoreDisplayType.HEADER);
+        dashboard.setId(objectId);
 
+        when(dashboardService.updateScoreSettings(objectId, true, ScoreDisplayType.HEADER)).thenReturn(dashboard);
+
+        mockMvc.perform(put("/dashboard/updateScoreSettings/" + objectId.toString() + "?scoreEnabled=true&scoreDisplay=HEADER"))
+          .andExpect(status().isOk());
+    }
 
     
     private DashboardRequestTitle makeDashboardRequestTitle(String title) {

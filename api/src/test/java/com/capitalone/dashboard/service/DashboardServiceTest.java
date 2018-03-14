@@ -113,6 +113,16 @@ public class DashboardServiceTest {
     }
 
     @Test
+    public void createWithScoreEnabled() throws HygieiaException {
+        Dashboard expected = makeTeamDashboard("template", "title", "appName", "",configItemBusServName,configItemBusAppName, "comp1","comp2");
+        expected.setScoreEnabled(true);
+        when(dashboardRepository.save(expected)).thenReturn(expected);
+        when(scoreDashboardService.addScoreForDashboard(expected)).thenReturn(new CollectorItem());
+        assertThat(dashboardService.create(expected), is(expected));
+        verify(componentRepository, times(1)).save(expected.getApplication().getComponents());
+    }
+
+    @Test
     public void create_dup_name_dash() throws HygieiaException {
 
         Dashboard firstDash = makeTeamDashboard("template", "title", "appName", "johns",configItemBusServName,configItemBusAppName, "comp1", "comp2");
@@ -137,6 +147,24 @@ public class DashboardServiceTest {
         }
 
         verify(componentRepository).delete(components);
+    }
+
+    @Test
+    public void updateWithScoreEnabled() throws HygieiaException {
+        Dashboard expected = makeTeamDashboard("template", "title", "appName", "",configItemBusServName,configItemBusAppName,"comp1", "comp2");
+        expected.setScoreEnabled(true);
+        when(dashboardRepository.save(expected)).thenReturn(expected);
+        when(scoreDashboardService.editScoreForDashboard(expected)).thenReturn(new CollectorItem());
+        assertThat(dashboardService.update(expected), is(expected));
+    }
+
+    @Test
+    public void updateWithScoreDisabled() throws HygieiaException {
+        Dashboard expected = makeTeamDashboard("template", "title", "appName", "",configItemBusServName,configItemBusAppName,"comp1", "comp2");
+        expected.setScoreEnabled(false);
+        when(dashboardRepository.save(expected)).thenReturn(expected);
+        when(scoreDashboardService.editScoreForDashboard(expected)).thenReturn(new CollectorItem());
+        assertThat(dashboardService.update(expected), is(expected));
     }
 
     @Test
@@ -774,6 +802,23 @@ public class DashboardServiceTest {
         Page<Dashboard> pagedDashboards = new PageImpl<Dashboard>(Stream.of(myDashboard).collect(Collectors.toList()));
         when(dashboardRepository.findAllByTitleContainingIgnoreCase(any(String.class))).thenReturn(Stream.of(myDashboard).collect(Collectors.toList()));
         assertEquals(new Integer(dashboardService.getAllDashboardsByTitleCount("title")),new Integer(1));
+    }
+
+    @Test
+    public void updateScoreSettings() {
+        Dashboard myDashboard = makeTeamDashboard("template", "title", "appName", "amit",null, null, "comp1", "comp2");
+        myDashboard.setScoreEnabled(false);
+        myDashboard.setId(ObjectId.get());
+        when(dashboardRepository.findOne(myDashboard.getId())).thenReturn(myDashboard);
+
+        Dashboard myDashboardResponse = makeTeamDashboard("template", "title", "appName", "amit",null, null, "comp1", "comp2");
+        myDashboardResponse.setScoreEnabled(true);
+        myDashboardResponse.setId(myDashboard.getId());
+        myDashboardResponse.setScoreDisplay(ScoreDisplayType.HEADER);
+
+        when(dashboardRepository.save(any(Dashboard.class))).thenReturn(myDashboardResponse);
+        when(scoreDashboardService.editScoreForDashboard(myDashboardResponse)).thenReturn(new CollectorItem());
+        assertNotNull(dashboardService.updateScoreSettings(myDashboard.getId(), true, ScoreDisplayType.HEADER));
     }
 
     private Dashboard makeTeamDashboard(String template, String title, String appName, String owner,String configItemBusServName,String configItemBusAppName, String... compNames) {
