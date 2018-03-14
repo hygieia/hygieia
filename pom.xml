@@ -87,24 +87,6 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>com.spotify</groupId>
-        <artifactId>docker-maven-plugin</artifactId>
-        <configuration>
-          <skipDockerBuild>true</skipDockerBuild>
-          <useConfigFile>${docker.useConfigFile}</useConfigFile>
-        </configuration>
-        <executions>
-          <execution>
-            <!-- Note: Today we make the containers optional, we want these
-              standard we should uncomment this: -->
-            <!--<phase>package</phase>-->
-            <goals>
-              <goal>build</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
         <version>${pmd.version}</version>
@@ -130,11 +112,6 @@
     </plugins>
     <pluginManagement>
       <plugins>
-        <plugin>
-          <groupId>com.spotify</groupId>
-          <artifactId>docker-maven-plugin</artifactId>
-          <version>0.4.10</version>
-        </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <!--<groupId>org.sonarsource.scanner.maven</groupId>-->

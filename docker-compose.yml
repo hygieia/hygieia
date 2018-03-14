@@ -16,6 +16,7 @@ services:
       - db
 
   api:
+    # build: api
     image: hygieia-api
     depends_on:
       - db-setup
@@ -23,6 +24,7 @@ services:
       - "8080:8080"
 
   ui:
+    # build: UI
     image: hygieia-ui
     depends_on:
       - api
@@ -30,67 +32,80 @@ services:
       - "3000:80"
 
   appdynamics-collector:
-    image: hygieia-appdynamics-collector
+    # build: collectors/performance/appdynamics
+    image: hygieia_appdynamics_collector
     depends_on:
       - db-setup
 
   artifactory-artifact-collector:
-    image: hygieia-artifactory-artifact-collector
+    # build: collectors/artifact/artifactory
+    image: hygieia_artifactory_collector
     depends_on:
       - db-setup
 
   bitbucket-collector:
-    image: hygieia-bitbucket-scm-collector
+    # build: collectors/scm/bitbucket
+    image: hygieia_bitbucket_collector
     depends_on:
       - db-setup
 
   chat-ops-collector:
-    image: hygieia-chat-ops-collector
+    # build: collectors/misc/chat-ops
+    image: hygieia_chatops_collector
     depends_on:
       - db-setup
 
   github-collector:
-    image: hygieia-github-scm-collector
+    # build: collectors/scm/github
+    image: hygieia_github_collector
     depends_on:
       - db-setup
 
   jenkins-build-collector:
-    image: hygieia-jenkins-build-collector
+    # build: collectors/build/jenkins
+    image: hygieia_jenkins_collector
     depends_on:
       - db-setup
 
   jenkins-cucumber-test-collector:
-    image: hygieia-jenkins-cucumber-test-collector
+    # build: collectors/build/jenkins-cucumber
+    image: hygieia_jenkins_cucumber_collector
     depends_on:
       - db-setup
 
   jira-collector:
-    image: hygieia-jira-feature-collector
+    # build: collectors/feature/jira
+    image: hygieia_jira_collector
     depends_on:
       - db-setup
 
   sonar-codequality-collector:
-    image: hygieia-sonar-codequality-collector
+  #  build: collectors/build/sonar
+    image: hygieia_sonar_collector
     depends_on:
       - db-setup
 
   subversion-collector:
-    image: hygieia-subversion-scm-collector
+    # build: collectors/scm/subversion
+    image: hygieia_subversion_collector
     depends_on:
       - db-setup
 
   udeploy-collector:
-    image: hygieia-udeploy-collector
+    # build: collectors/deploy/udeploy
+    image: hygieia_udeploy_collector
     depends_on:
       - db-setup
 
   versionone-collector:
-    image: hygieia-versionone-collector
+    # build: collectors/feature/versionone
+    image: hygieia_versionone_collector
     depends_on:
       - db-setup
 
   xldeploy-collector:
-    image: hygieia-xldeploy-collector
+    # build: collectors/deploy/xldeploy
+    image: hygieia_xldeploy_collector
     depends_on:
       - db-setup
 
