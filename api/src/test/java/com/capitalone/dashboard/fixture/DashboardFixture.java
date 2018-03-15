@@ -8,12 +8,11 @@ package com.capitalone.dashboard.fixture;
  import org.bson.types.ObjectId;
 
  import com.capitalone.dashboard.request.DashboardRequest;
- 
+
  public class DashboardFixture {
- 
+
  	public static DashboardRequest makeDashboardRequest(String template, String title, String appName, String compName,
- 			String owner, List<String> teamDashboardIds, String type, String configItemAppName, String configItemComponentName,
-			boolean scoreEnabled, String scoreDisplay) {
+ 			String owner, List<String> teamDashboardIds, String type, String configItemAppName, String configItemComponentName) {
  		DashboardRequest request = new DashboardRequest();
  		request.setTemplate(template);
  		request.setTitle(title);
@@ -22,14 +21,12 @@ package com.capitalone.dashboard.fixture;
  		request.setConfigurationItemBusServName(configItemAppName);
  		request.setConfigurationItemBusAppName(configItemComponentName);
  		request.setType(type);
-		request.setScoreEnabled(scoreEnabled);
-		request.setScoreDisplay(scoreDisplay);
+
  		return request;
  	}
 
 	 public static DashboardRemoteRequest makeDashboardRemoteRequest(String template, String title, String appName, String compName,
-														 String owner, List<String> teamDashboardIds, String type, String configItemAppName, String configItemComponentName,
-		  											 boolean scoreEnabled, String scoreDisplay) {
+														 String owner, List<String> teamDashboardIds, String type, String configItemAppName, String configItemComponentName) {
 		 DashboardRemoteRequest request = new DashboardRemoteRequest();
 		 DashboardRemoteRequest.DashboardMetaData metaData = new DashboardRemoteRequest.DashboardMetaData();
 		 Owner owner1 = new Owner();
@@ -41,8 +38,6 @@ package com.capitalone.dashboard.fixture;
 		 metaData.setTemplate(template);
 		 metaData.setTitle(title);
 		 metaData.setType(type);
-		 metaData.setScoreEnabled(scoreEnabled);
-		 metaData.setScoreDisplay(scoreDisplay);
 		 request.setMetaData(metaData);
 
 
@@ -50,8 +45,7 @@ package com.capitalone.dashboard.fixture;
 	 }
 
  	public static Dashboard makeDashboard(String template, String title, String appName, String compName, String owner,
- 			DashboardType type, String configItemAppName, String configItemComponentName,
-			boolean scoreEnabled, ScoreDisplayType scoreDisplay) {
+ 			DashboardType type, String configItemAppName, String configItemComponentName) {
  		Application application = null;
  		if (type.equals(DashboardType.Team)) {
  			Component component = new Component();
@@ -59,19 +53,19 @@ package com.capitalone.dashboard.fixture;
  			application = new Application(appName, component);
  		}
 		List<String> activeWidgets = new ArrayList<>();
-		return new Dashboard(template, title, application, new Owner(owner, AuthType.STANDARD), type,configItemAppName, configItemComponentName, activeWidgets, scoreEnabled, scoreDisplay);
+		return new Dashboard(template, title, application, new Owner(owner, AuthType.STANDARD), type,configItemAppName, configItemComponentName,activeWidgets, false, ScoreDisplayType.HEADER);
 	}
- 
+
  	public static Component makeComponent(ObjectId id, String name, CollectorType type, ObjectId collItemId) {
  		Component c = new Component();
  		c.setId(id);
  		c.setName(name);
- 
+
  		CollectorItem item = new CollectorItem();
  		item.setId(collItemId);
- 
+
  		c.addCollectorItem(type, item);
  		return c;
  	}
- 
+
  }

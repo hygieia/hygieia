@@ -33,7 +33,9 @@ public class ScoreDashboardServiceTest {
 
   @Test
   public void addScoreForDashboard() throws Exception {
-    Dashboard dashboard = makeDashboard("t1", "title", "app", "comp", "someuser", DashboardType.Team, configItemBusServName, configItemBusAppName, true, ScoreDisplayType.HEADER);
+    Dashboard dashboard = makeDashboard("t1", "title", "app", "comp", "someuser", DashboardType.Team, configItemBusServName, configItemBusAppName);
+    dashboard.setScoreEnabled(true);
+    dashboard.setScoreDisplay(ScoreDisplayType.HEADER);
     dashboard.setId(ObjectId.get());
 
     Collector collector = new Collector();
@@ -57,7 +59,9 @@ public class ScoreDashboardServiceTest {
 
   @Test
   public void addScoreForDashboardScoreEnabled() throws Exception {
-    Dashboard dashboard = makeDashboard("t1", "title", "app", "comp", "someuser", DashboardType.Team, configItemBusServName, configItemBusAppName, true, ScoreDisplayType.HEADER);
+    Dashboard dashboard = makeDashboard("t1", "title", "app", "comp", "someuser", DashboardType.Team, configItemBusServName, configItemBusAppName);
+    dashboard.setScoreEnabled(true);
+    dashboard.setScoreDisplay(ScoreDisplayType.HEADER);
     dashboard.setId(ObjectId.get());
 
     Collector collector = new Collector();
@@ -81,7 +85,9 @@ public class ScoreDashboardServiceTest {
 
   @Test
   public void addScoreForDashboardScoreDisabled() throws Exception {
-    Dashboard dashboard = makeDashboard("t1", "title", "app", "comp", "someuser", DashboardType.Team, configItemBusServName, configItemBusAppName, false, ScoreDisplayType.HEADER);
+    Dashboard dashboard = makeDashboard("t1", "title", "app", "comp", "someuser", DashboardType.Team, configItemBusServName, configItemBusAppName);
+    dashboard.setScoreEnabled(false);
+    dashboard.setScoreDisplay(ScoreDisplayType.HEADER);
     dashboard.setId(ObjectId.get());
 
     CollectorItem scoreCollectorItemResult = scoreDashboardService.addScoreForDashboardIfScoreEnabled(dashboard);
@@ -90,7 +96,9 @@ public class ScoreDashboardServiceTest {
 
   @Test
   public void disableScoreForDashboard() throws Exception {
-    Dashboard dashboard = makeDashboard("t1", "title", "app", "comp", "someuser", DashboardType.Team, configItemBusServName, configItemBusAppName, false, ScoreDisplayType.HEADER);
+    Dashboard dashboard = makeDashboard("t1", "title", "app", "comp", "someuser", DashboardType.Team, configItemBusServName, configItemBusAppName);
+    dashboard.setScoreEnabled(false);
+    dashboard.setScoreDisplay(ScoreDisplayType.HEADER);
     dashboard.setId(ObjectId.get());
 
     Collector collector = new Collector();
@@ -120,7 +128,9 @@ public class ScoreDashboardServiceTest {
 
   @Test
   public void editScoreForDashboardDisable() throws Exception {
-    Dashboard dashboard = makeDashboard("t1", "title", "app", "comp", "someuser", DashboardType.Team, configItemBusServName, configItemBusAppName, false, ScoreDisplayType.HEADER);
+    Dashboard dashboard = makeDashboard("t1", "title", "app", "comp", "someuser", DashboardType.Team, configItemBusServName, configItemBusAppName);
+    dashboard.setScoreEnabled(false);
+    dashboard.setScoreDisplay(ScoreDisplayType.HEADER);
     dashboard.setId(ObjectId.get());
 
     Collector collector = new Collector();
@@ -150,7 +160,9 @@ public class ScoreDashboardServiceTest {
 
   @Test
   public void editScoreForDashboardEnable() throws Exception {
-    Dashboard dashboard = makeDashboard("t1", "title", "app", "comp", "someuser", DashboardType.Team, configItemBusServName, configItemBusAppName, true, ScoreDisplayType.HEADER);
+    Dashboard dashboard = makeDashboard("t1", "title", "app", "comp", "someuser", DashboardType.Team, configItemBusServName, configItemBusAppName);
+    dashboard.setScoreEnabled(true);
+    dashboard.setScoreDisplay(ScoreDisplayType.HEADER);
     dashboard.setId(ObjectId.get());
 
     Collector collector = new Collector();
