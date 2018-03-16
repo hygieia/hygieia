@@ -8,8 +8,8 @@
         .module(HygieiaConfig.module)
         .controller('WidgetTemplateController', WidgetTemplateController);
 
-    WidgetTemplateController.$inject = ['$scope', '$rootScope'];
-    function WidgetTemplateController($scope, $rootScope) {
+    WidgetTemplateController.$inject = ['$scope'];
+    function WidgetTemplateController($scope) {
         var ctrl = this;
         ctrl.tabs = [
             {name: "Widget"},
