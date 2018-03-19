@@ -1,0 +1,17 @@
+{
+  "id" : "596c435cad53330a63ac5802",
+  "name" : "repo",
+  "componentId" : "596c43483d88f70bf778caed",
+  "options" : {
+    "password" : "",
+    "appUrl" : "https://github.com/capitalone/Hygieia",
+    "id" : "repo0",
+    "scm" : {
+      "name" : "GitHub",
+      "value" : "GitHub"
+    },
+    "branch" : "master",
+    "userID" : "",
+    "url" : "https://github.com/capitalone/Hygieia"
+  }
+}

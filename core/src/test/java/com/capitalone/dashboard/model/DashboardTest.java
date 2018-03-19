@@ -53,7 +53,7 @@ public class DashboardTest {
             app.addComponent(new Component(compName));
         }
         List<String> activeWidgets = new ArrayList<>();
-        Dashboard dashboard = new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team,configItemAppName, configItemComponentName,activeWidgets);
+        Dashboard dashboard = new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team,configItemAppName, configItemComponentName, activeWidgets, false, ScoreDisplayType.HEADER);
         return dashboard;
     }
 

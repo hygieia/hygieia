@@ -94,5 +94,10 @@ services:
     depends_on:
       - db-setup
 
+  score-collector:
+      image: hygieia-score-collector
+      depends_on:
+        - db-setup
+
 volumes:
   db-data:
