@@ -10,6 +10,7 @@ import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Owner;
+import com.capitalone.dashboard.model.ScoreDisplayType;
 
 import java.util.List;
 
@@ -29,6 +30,13 @@ public class DashboardRequest {
     private String configurationItemBusServName;
 
     private String configurationItemBusAppName;
+
+    //Enable/Disable scoring for the dashboard
+    //Disabled by default. It can be enabled when dashboard type is Team
+    private boolean scoreEnabled = false;
+
+    //Display position for score.
+    private String scoreDisplay;
 
     @NotNull
     @Size(min=1, message="Please select a type")
@@ -102,11 +110,38 @@ public class DashboardRequest {
         this.activeWidgets = activeWidgets;
     }
 
+    public boolean isScoreEnabled() {
+        return scoreEnabled;
+    }
+
+    public void setScoreEnabled(boolean scoreEnabled) {
+        this.scoreEnabled = scoreEnabled;
+    }
+
+    public String getScoreDisplay() {
+        return scoreDisplay;
+    }
+
+    public void setScoreDisplay(String scoreDisplay) {
+        this.scoreDisplay = scoreDisplay;
+    }
+
     public Dashboard toDashboard() {
         DashboardType type = DashboardType.fromString(this.type);
         Application application = new Application(applicationName, new Component(componentName));
         Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
-        return new Dashboard(template, dashboardRequestTitle.getTitle(), application, owner, type , configurationItemBusServName, configurationItemBusAppName,activeWidgets);
+        return new Dashboard(
+          template,
+          dashboardRequestTitle.getTitle(),
+          application,
+          owner,
+          type ,
+          configurationItemBusServName,
+          configurationItemBusAppName,
+          activeWidgets,
+          scoreEnabled,
+          ScoreDisplayType.fromString(scoreDisplay)
+        );
 
 
     }

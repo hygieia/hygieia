@@ -41,11 +41,16 @@
             { name: "Dashboard Title"},
             { name: "Business Service/ Application"},
             { name: "Owner Information"},
-            { name: "Widget Management"}
+            { name: "Widget Management"},
+            { name: "Score"}
 
         ];
         ctrl.tabView = ctrl.tabs[0].name;
         ctrl.activeWidgets = [];
+        ctrl.scoreSettings = {
+            scoreEnabled : !!dashboardItem.scoreEnabled,
+            scoreDisplay : dashboardItem.scoreDisplay
+        };
 
         // public methods
         ctrl.submit = submit;
@@ -60,6 +65,7 @@
         ctrl.isValidBusAppName = isValidBusAppName;
         ctrl.saveWidgets = saveWidgets;
         ctrl.onConfigurationItemBusAppSelect = onConfigurationItemBusAppSelect;
+        ctrl.submitScoreSettings = submitScoreSettings;
 
         ctrl.validBusServName = isValidBusServName();
         ctrl.validBusAppName = isValidBusAppName();
@@ -277,6 +283,20 @@
 
         function onConfigurationItemBusAppSelect(value){
             ctrl.configurationItemBusApp = value;
+        }
+
+        function submitScoreSettings(form) {
+            if(form.$valid ){
+                dashboardData
+                    .updateDashboardScoreSettings(dashboardItem.id, ctrl.scoreSettings.scoreEnabled, ctrl.scoreSettings.scoreDisplay)
+                    .success(function (data) {
+                        $uibModalInstance.close();
+                    })
+                    .error(function (data) {
+                        var msg = 'An error occurred while editing dashboard';
+                        swal(msg);
+                    });
+            }
         }
     }
 })();

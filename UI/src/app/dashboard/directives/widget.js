@@ -25,8 +25,8 @@
         })
         .directive('widget', widgetDirective);
 
-    widgetDirective.$inject = ['$controller', '$http', '$templateCache', '$compile', 'widgetManager', '$uibModal', 'WidgetState', 'DisplayState', '$interval', 'dashboardData','userService'];
-    function widgetDirective($controller, $http, $templateCache, $compile, widgetManager, $uibModal, WidgetState, DisplayState, $interval, dashboardData, userService) {
+    widgetDirective.$inject = ['$controller', '$http', '$templateCache', '$compile', 'widgetManager', '$uibModal', 'WidgetState', 'DisplayState', '$interval', 'dashboardData','userService', 'scoreDataService'];
+    function widgetDirective($controller, $http, $templateCache, $compile, widgetManager, $uibModal, WidgetState, DisplayState, $interval, dashboardData, userService, scoreDataService) {
         return {
             templateUrl: 'app/dashboard/views/widget.html',
             require: '^widgetContainer',
@@ -48,7 +48,6 @@
             scope.widgetDefinition = widgetManager.getWidget(attrs.name);
             scope.title = attrs.title || scope.widgetDefinition.view.defaults.title;
             scope.header = attrs.header ? attrs.header != 'false' : true;
-
 
             // when the widget loads, register it with the container which will then call back to process
             // the widget with the proper config value if it's already been configured on the dashboard
@@ -112,6 +111,7 @@
             $scope.hasPermission = hasPermission;
             $scope.setState = setState;
             $scope.init = init;
+            $scope.getWidgetScore = getWidgetScore;
 
             // method implementations
             function configModal() {
@@ -175,6 +175,10 @@
                             init();
                         });
                 }
+            }
+
+            function getWidgetScore() {
+                return scoreDataService.getScoreByDashboardWidget($scope.dashboard.id, $scope.widgetConfig.id);
             }
 
             // redraws the widget which forces it to go through the entire flow

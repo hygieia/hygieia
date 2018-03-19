@@ -1,0 +1,46 @@
+<div class="widget row">
+    <div class="widget-heading">
+        <span>Score</span>
+
+        <span ng-if="lastUpdatedActual > 0" class="pull-right last-updated">
+            {{lastUpdatedDisplay}}
+        </span>
+    </div>
+    <div class="widget-body">
+        <div class="widget-body-main">
+            <div class="score-view">
+                <div class="widget">
+                    <div class="widget-heading">
+                        <div class="row">
+                            <div class="col-md-6">Score
+                            </div>
+                            <div class="col-md-6">
+                                <span class="pull-right details-title" ng-click="viewDetails()">View Details <span class="fa fa-angle-right"></span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="widget-body text-center">
+                        <span class="score-widget">
+                            <div class="score-value">{{rateItOptions.value}}</div>
+                            <div class="score-widget-wrap">
+                                <ng-rate-it
+                                        ng-model="rateItOptions.value"
+                                        read-only="true"
+                                        star-width="rateItOptions.starWidth"
+                                        star-height="rateItOptions.starHeight"
+                                        step="rateItOptions.step"
+                                        class="{{rateItOptions.class}}">
+                                </ng-rate-it>
+                            </div>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
