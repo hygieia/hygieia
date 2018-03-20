@@ -6,12 +6,14 @@ MAINTAINER Hygieia@capitalone.com
 RUN mkdir /hygieia /hygieia/config
 
 COPY *.jar /hygieia/
-COPY nexus-iq-properties-builder.sh /hygieia/
+COPY properties-builder.sh /hygieia/
 
 WORKDIR /hygieia
 
 VOLUME ["/hygieia/logs"]
 
-CMD ./nexus-iq-properties-builder.sh && \
-  java -jar nexus-iq-collector*.jar --spring.config.location=/hygieia/config/hygieia-nexus-iq-collector.properties
+ENV PROP_FILE /hygieia/config/application.properties
+
+CMD ./properties-builder.sh && \
+  java -jar nexus-iq-collector*.jar --spring.config.location=$PROP_FILE
 
