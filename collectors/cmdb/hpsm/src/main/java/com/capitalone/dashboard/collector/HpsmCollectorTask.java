@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.collector;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.ChangeOrder;
 import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.HpsmCollector;
@@ -90,7 +91,7 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
 
     public void setCollectorAction(String collectorAction) { this.collectorAction = collectorAction; }
 
-    private void collectApps(HpsmCollector collector) {
+    private void collectApps(HpsmCollector collector) throws HygieiaException{
         List<Cmdb> cmdbList;
         List<String> configurationItemNameList = new ArrayList<>();
 
@@ -125,7 +126,7 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
 
     }
 
-    private void collectChangeOrders(HpsmCollector collector) {
+    private void collectChangeOrders(HpsmCollector collector) throws HygieiaException{
 
         long lastExecuted = collector.getLastExecuted();
         long changeCount = changeOrderRepository.count();
@@ -160,7 +161,7 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
 
     }
 
-    private void collectIncidents(HpsmCollector collector) {
+    private void collectIncidents(HpsmCollector collector) throws HygieiaException {
 
         long lastExecuted = collector.getLastExecuted();
         long incidentCount = incidentRepository.count();
@@ -198,23 +199,28 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
     public void collect(HpsmCollector collector) {
         long start = System.currentTimeMillis();
         logBanner("Starting...");
+        try {
+            switch (collectorAction) {
+                case APP_ACTION_NAME:
+                    log("Collecting Apps");
+                    collectApps(collector);
+                    break;
+                case CHANGE_ACTION_NAME:
+                    log("Collecting Changes");
+                    collectChangeOrders(collector);
+                    break;
+                case INCIDENT_ACTION_NAME:
+                    log("Collecting Incidents");
+                    collectIncidents(collector);
+                    break;
+                default:
+                    log("Unknown value passed to -D" + COLLECTOR_ACTION_PROPERTY_KEY + ": " + collectorAction);
+                    break;
+            }
 
-        if(collectorAction.equals(APP_ACTION_NAME)) {
-            log("Collecting Apps");
-            collectApps(collector);
+        }catch (HygieiaException he){
+            LOG.error(he);
         }
-        else if(collectorAction.equals(CHANGE_ACTION_NAME)) {
-            log("Collecting Changes");
-            collectChangeOrders(collector);
-        }
-        else if(collectorAction.equals(INCIDENT_ACTION_NAME)) {
-            log("Collecting Incidents");
-            collectIncidents(collector);
-        }
-        else{
-            log("Unknown value passed to -D" + COLLECTOR_ACTION_PROPERTY_KEY + ": " + collectorAction);
-        }
-
         log("Finished", start);
     }
 
@@ -225,7 +231,7 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
      */
     private int cleanUpOldCmdbItems(List<String> configurationItemNameList) {
         int inValidCount = 0;
-        for(Cmdb cmdb:  cmdbRepository.findAll()){
+        for(Cmdb cmdb:  cmdbRepository.findAllByValidConfigItem(true)){
             String configItem = cmdb.getConfigurationItem();
 
             if(configurationItemNameList != null && !configurationItemNameList.contains(configItem)){

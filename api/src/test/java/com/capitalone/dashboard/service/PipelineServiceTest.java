@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitalone.dashboard.model.*;
 import org.apache.commons.lang.NotImplementedException;
 import org.bson.types.ObjectId;
 import org.junit.Ignore;
@@ -20,19 +21,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.capitalone.dashboard.model.Application;
-import com.capitalone.dashboard.model.AuthType;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.DashboardType;
-import com.capitalone.dashboard.model.Owner;
-import com.capitalone.dashboard.model.Pipeline;
-import com.capitalone.dashboard.model.PipelineCommit;
-import com.capitalone.dashboard.model.PipelineResponse;
-import com.capitalone.dashboard.model.PipelineResponseCommit;
-import com.capitalone.dashboard.model.PipelineStage;
-import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.PipelineRepository;
@@ -159,7 +147,7 @@ public class PipelineServiceTest {
             app.addComponent(new Component(compName));
         }
         List<String> activeWidgets = new ArrayList<>();
-        Dashboard dashboard = new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemAppName, configItemComponentName,activeWidgets);
+        Dashboard dashboard = new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemAppName, configItemComponentName, activeWidgets, false, ScoreDisplayType.HEADER);
         return dashboard;
     }
 

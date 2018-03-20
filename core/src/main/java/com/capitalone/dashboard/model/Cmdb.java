@@ -5,6 +5,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,6 +15,7 @@ public class Cmdb {
     private ObjectId id;
     private ObjectId collectorItemId;
     private long timestamp;
+    @NotNull
     private String configurationItem;
     private String configurationItemSubType;
     private String configurationItemType;
@@ -194,35 +196,44 @@ public class Cmdb {
     public List<String> getComponents(){ return components; }
 
     @Override
-    public int hashCode(){
-        return Objects.hash(configurationItem,
-                assignmentGroup,
-                appServiceOwner,
-                businessOwner,
-                supportOwner,
-                developmentOwner,
-                ownerDept,
-                itemType,
-                configurationItemSubType,
-                configurationItemType);
+    public int hashCode()
+    {
+        return Objects.hash(
+                this.configurationItem,
+                this.assignmentGroup,
+                this.appServiceOwner,
+                this.businessOwner,
+                this.supportOwner,
+                this.developmentOwner,
+                this.ownerDept,
+                this.itemType,
+                this.configurationItemSubType,
+                this.configurationItemType);
     }
     @Override
-    public boolean equals(Object compareTo){
-        boolean doesEqual = true;
-
-        if(compareTo == null || !compareTo.getClass().isAssignableFrom(Cmdb.class)){
-            doesEqual = false;
-        }else {
-            Cmdb newCmdb = (Cmdb) compareTo;
-
-            if(!newCmdb.toString().equals(toString())){
-                doesEqual = false;
-            }
+    public boolean equals(Object obj)
+    {
+        if (obj == null)
+        {
+            return false;
         }
+        if (getClass() != obj.getClass())
+        {
+            return false;
+        }
+        final Cmdb other = (Cmdb) obj;
+        return    Objects.equals(this.configurationItem, other.configurationItem)
+                && Objects.equals(this.assignmentGroup, other.assignmentGroup)
+                && Objects.equals(this.appServiceOwner, other.appServiceOwner)
+                && Objects.equals(this.businessOwner, other.businessOwner)
+                && Objects.equals(this.supportOwner, other.supportOwner)
+                && Objects.equals(this.developmentOwner, other.developmentOwner)
+                && Objects.equals(this.ownerDept, other.ownerDept)
+                && Objects.equals(this.configurationItemSubType, other.configurationItemSubType)
+                && Objects.equals(this.configurationItemType, other.configurationItemType)
+                && Objects.equals(this.validConfigItem, other.validConfigItem);
 
-        return doesEqual;
     }
-
     /**
      *  Returns human readable string of the Cmdb Object.
      *  * equals(Object object) depends on this method. Changing this method could alter the return of the equals method.

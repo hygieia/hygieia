@@ -3,21 +3,14 @@ package com.capitalone.dashboard.fixture;
  import java.util.ArrayList;
  import java.util.List;
 
+ import com.capitalone.dashboard.model.*;
  import com.capitalone.dashboard.request.DashboardRemoteRequest;
  import org.bson.types.ObjectId;
 
-import com.capitalone.dashboard.model.Application;
-import com.capitalone.dashboard.model.AuthType;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.DashboardType;
-import com.capitalone.dashboard.model.Owner;
-import com.capitalone.dashboard.request.DashboardRequest;
- 
+ import com.capitalone.dashboard.request.DashboardRequest;
+
  public class DashboardFixture {
- 
+
  	public static DashboardRequest makeDashboardRequest(String template, String title, String appName, String compName,
  			String owner, List<String> teamDashboardIds, String type, String configItemAppName, String configItemComponentName) {
  		DashboardRequest request = new DashboardRequest();
@@ -28,7 +21,7 @@ import com.capitalone.dashboard.request.DashboardRequest;
  		request.setConfigurationItemBusServName(configItemAppName);
  		request.setConfigurationItemBusAppName(configItemComponentName);
  		request.setType(type);
- 
+
  		return request;
  	}
 
@@ -60,19 +53,19 @@ import com.capitalone.dashboard.request.DashboardRequest;
  			application = new Application(appName, component);
  		}
 		List<String> activeWidgets = new ArrayList<>();
-		return new Dashboard(template, title, application, new Owner(owner, AuthType.STANDARD), type,configItemAppName, configItemComponentName,activeWidgets);
+		return new Dashboard(template, title, application, new Owner(owner, AuthType.STANDARD), type,configItemAppName, configItemComponentName,activeWidgets, false, ScoreDisplayType.HEADER);
 	}
- 
+
  	public static Component makeComponent(ObjectId id, String name, CollectorType type, ObjectId collItemId) {
  		Component c = new Component();
  		c.setId(id);
  		c.setName(name);
- 
+
  		CollectorItem item = new CollectorItem();
  		item.setId(collItemId);
- 
+
  		c.addCollectorItem(type, item);
  		return c;
  	}
- 
+
  }
