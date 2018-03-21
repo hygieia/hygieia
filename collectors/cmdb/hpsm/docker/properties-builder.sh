@@ -1,20 +1,4 @@
 #!/bin/bash
-
-if [ "$SKIP_PROPERTIES_BUILDER" = true ]; then
-  echo "Skipping properties builder"
-  exit 0
-fi
-
-# mongo container provides the HOST/PORT
-# api container provided DB Name, ID & PWD
-
-if [ "$TEST_SCRIPT" != "" ]
-then
-        #for testing locally
-        PROP_FILE=application.properties
-else 
-	PROP_FILE=config/hygieia-udeploy-deployment-collector.properties
-fi
   
 if [ "$MONGO_PORT" != "" ]; then
 	# Sample: MONGO_PORT=tcp://172.17.0.20:27017
@@ -47,20 +31,32 @@ dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-db}
 dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 
 #Collector schedule (required)
-udeploy.cron=${UDEPLOY_CRON:-0 0/5 * * * *}
+hpsm.cron=${HPSM_CRON:-* * 1 * * *}
 
-#UDeploy server (required) - Can provide multiple
-udeploy.servers[0]=${UDEPLOY_URL:-http://udeploy.company.com}
-udeploy.niceNames[0]=${UDEPLOY_NAME:-UDeploy}
+#Api Details
+hpsm.server=${HPSM_SERVER:}
+hpsm.port=${HPSM_PORT:}
+hpsm.protocol=${HPSM_PROTOCOL:http}
+hpsm.resource=${HPSM_RESOURCE:SM/7/ws/}
+hpsm.contentType=${HPSM_CONTENTTYPE:text/xml}
+hpsm.charset=${HPSM_CHARSET:UTF-8}
 
-#UDeploy user name (required)
-udeploy.username=${UDEPLOY_USERNAME:-bobama}
+#Api User/ Pass
+hpsm.user=${HPSM_USER:}
+hpsm.pass=${HPSM_PASS:}
 
-#UDeploy password (required)
-udeploy.password=${UDEPLOY_PASSWORD:-s3cr3t}
+#Api App Query settings
+hpsm.appSubType=${HPSM_APP_SUBTYPE:}
+hpsm.appType=${HPSM_APP_TYPE:}
+hpsm.appStatus=${HPSM_APP_STATUS:}
 
-# UDeploy token can be used instead of username and password
-udeploy.token=${UDEPLOY_TOKEN:-theudeploytoken}
+#Api Component Query settings
+hpsm.compSubType=${HPSM_COMP_SUBTYPE:}
+hpsm.compType=${HPSM_COMP_TYPE:}
+
+#API app details
+hpsm.detailsRequestType=${HPSM_REQUEST_TYPE:RetrieveDeviceListRequest}
+hpsm.detailsSoapAction=${HPSM_SOAP_ACTION:RetrieveList}
 
 EOF
 
