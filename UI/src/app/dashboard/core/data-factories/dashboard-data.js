@@ -34,6 +34,7 @@
         var myDashboardCountRoute = '/api/dashboard/mydashboard/count';
         var myDashboardFilterCountRoute = '/api/dashboard/mydashboard/filter/count';
         var dashboardGenconfigRoute = '/api/dashboard/generalConfig';
+        var updateDashboardScoreSettingsRoute = '/api/dashboard/updateScoreSettings';
         return {
             search: search,
             mydashboard: mydashboard,
@@ -60,8 +61,8 @@
             filterMyDashboardsByTitle:filterMyDashboardsByTitle,
             filterMyDashboardCount:filterMyDashboardCount,
             getGeneralConfig: getGeneralConfig,
-            generalConfigSave: generalConfigSave
-
+            generalConfigSave: generalConfigSave,
+            updateDashboardScoreSettings: updateDashboardScoreSettings
         };
 
         // reusable helper
@@ -294,5 +295,15 @@
                     return response.data;
                 });
         }
+        function updateDashboardScoreSettings(id, scoreEnabled, scoreDisplay) {
+            return $http.put(updateDashboardScoreSettingsRoute + "/" + id + "?scoreEnabled=" + scoreEnabled + "&scoreDisplay=" + scoreDisplay)
+                .success(function (response) {
+                    return response.data;
+                })
+                .error(function (response) {
+                    return null;
+                });
+        }
+
     }
 })();

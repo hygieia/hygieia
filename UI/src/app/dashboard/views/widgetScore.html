@@ -1,0 +1,14 @@
+<span ng-hide="ngModel.noScore" class="widget-score" ng-class="getScoreClass()" ng-click="viewDetails()">
+    <div class="score-value">{{ngModel.score}}</div>
+    <div class="score-widget-wrap">
+        <ng-rate-it
+            ng-model="ngModel.score"
+            ng-model-options=" {getterSetter: true }"
+            read-only="true"
+            star-width="12"
+            star-height="12"
+            step="0.1"
+            class="score">
+     </ng-rate-it>
+    </div>
+</span>

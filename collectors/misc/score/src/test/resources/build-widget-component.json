@@ -1,0 +1,128 @@
+{
+  "id" : "58d8440d358d6671fc81ff34",
+  "name" : "bedrock",
+  "collectorItems" : {
+    "CodeQuality" : [
+      {
+        "id" : "58d84370358d6671fc81ff30",
+        "description" : "bedrock-app master",
+        "niceName" : "looper-jenkins",
+        "enabled" : true,
+        "errors" : [],
+        "pushed" : true,
+        "collectorId" : "58d61a78358d6671fc81ff23",
+        "lastUpdated" : 1506630367827,
+        "options" : {
+          "projectName" : "bedrock-app master",
+          "projectId" : "203114",
+          "instanceUrl" : "http://sonar.mycompany.com",
+          "jobUrl" : "https://ci.company.com/job/bedrockapp_qa/job/SNAPSHOT_BUILD_58b5c5eaaaf903af204faa09/"
+        }
+      }
+    ],
+    "Deployment" : [
+      {
+        "id" : "58d4f8ca30b861439085f115",
+        "description" : "CP/Bedrock-NextGen",
+        "enabled" : true,
+        "errors" : [],
+        "pushed" : false,
+        "collectorId" : "58d4f8ac30b861439085e956",
+        "lastUpdated" : 0,
+        "options" : {
+          "orgName" : "CP",
+          "assemblyName" : "Bedrock-NextGen",
+          "applicationName" : "CP/Bedrock-NextGen",
+          "instanceUrl" : "https://oneops.mycompany.com",
+          "componentVersionVar" : {
+            "artifact" : "appVersion"
+          },
+          "appUrl" : "https://oneops.mycompany.com/CP/assemblies/Bedrock-NextGen/transition"
+        }
+      }
+    ],
+    "Score" : [
+      {
+        "id" : "58d84a9a358d6671fc81ff48",
+        "enabled" : true,
+        "errors" : [],
+        "pushed" : false,
+        "collectorId" : "58d4f8ac30b86143e50642e0",
+        "lastUpdated" : 0,
+        "options" : {
+          "dashboardId" : "58d8440d358d6671fc81ff35"
+        }
+      }
+    ],
+    "ScopeOwner" : [
+      {
+        "id" : "58dd8a7030b86139f9f749d7",
+        "description" : "CP - Enterprise Integration Services (Bedrock",
+        "enabled" : true,
+        "errors" : [],
+        "pushed" : false,
+        "collectorId" : "58dd8a6c30b86139f9f748e9",
+        "lastUpdated" : 0,
+        "options" : {
+          "teamId" : "18815",
+          "changeDate" : "",
+          "assetState" : "Active",
+          "isDeleted" : "False"
+        }
+      }
+    ],
+    "AgileTool" : [
+      {
+        "id" : "58ec89046ac2de1a13bfc7eb",
+        "enabled" : true,
+        "errors" : [],
+        "pushed" : false,
+        "collectorId" : "58dd8a6c30b86139f9f748e9",
+        "lastUpdated" : 0,
+        "options" : {
+          "teamName" : "Any",
+          "featureTool" : "Jira",
+          "projectName" : "CP - Enterprise Integration Services (Bedrock",
+          "projectId" : "18815",
+          "teamId" : "Any"
+        }
+      }
+    ],
+    "SCM" : [
+      {
+        "id" : "594c172b3d88f74214c4f6de",
+        "enabled" : true,
+        "errors" : [],
+        "pushed" : false,
+        "collectorId" : "58d848bc358d6671fc81ff3f",
+        "lastUpdated" : 0,
+        "options" : {
+          "password" : "",
+          "appUrl" : "https://github.com/eei/bedrock-app",
+          "scm" : "Github",
+          "branch" : "master",
+          "userID" : "",
+          "url" : "https://github.com/eei/bedrock-app"
+        }
+      }
+    ],
+    "Build" : [
+      {
+        "id" : "58d842e9358d6671fc81ff2e",
+        "description" : "SNAPSHOT_BUILD_58b5c5eaaaf903af204faa09",
+        "niceName" : "looper-jenkins",
+        "enabled" : true,
+        "errors" : [],
+        "pushed" : true,
+        "collectorId" : "58d61a5d358d6671fc81ff20",
+        "lastUpdated" : 1503354843014,
+        "options" : {
+          "jobName" : "SNAPSHOT_BUILD_58b5c5eaaaf903af204faa09",
+          "jobUrl" : "https://ci.company.com/job/bedrockapp_qa/job/SNAPSHOT_BUILD_58b5c5eaaaf903af204faa09/",
+          "appUrl" : "https://ci.company.com/job/bedrockapp_qa/job/SNAPSHOT_BUILD_58b5c5eaaaf903af204faa09/",
+          "instanceUrl" : "https://ci.company.com/"
+        }
+      }
+    ]
+  }
+}

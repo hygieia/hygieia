@@ -10,6 +10,7 @@ import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.model.ScoreDisplayType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -198,6 +199,8 @@ public interface DashboardService {
     int getMyDashboardsByTitleCount(String title);
 
     Page<Dashboard> getMyDashboardByTitleWithFilter(String title, Pageable pageable);
+
+    Dashboard updateScoreSettings(ObjectId dashboardId, boolean scoreEnabled, ScoreDisplayType scoreDisplay);
 
 }
 
