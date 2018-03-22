@@ -51,46 +51,50 @@ java -jar jenkins-collector.jar --spring.config.name=jenkins --spring.config.loc
 ### Sample Application Properties File
 
 ```properties
-		# Database Name
-		dbname=dashboarddb
+# Database Name
+dbname=dashboarddb
 
-		# Database HostName - default is localhost
-		dbhost=localhost
+# Database HostName - default is localhost
+dbhost=localhost
 
-		# Database Port - default is 27017
-		dbport=9999
+# Database Port - default is 27017
+dbport=9999
 
-		# MongoDB replicaset
-		dbreplicaset=[false if you are not using MongoDB replicaset]
-		dbhostport=[host1:port1,host2:port2,host3:port3]
+# MongoDB replicaset
+dbreplicaset=[false if you are not using MongoDB replicaset]
+dbhostport=[host1:port1,host2:port2,host3:port3]
 
-		# Database Username - default is blank
-		dbusername=dashboarduser
+# Database Username - default is blank
+dbusername=dashboarduser
 
-		# Database Password - default is blank
-		dbpassword=dbpassword
+# Database Password - default is blank
+dbpassword=dbpassword
 
-		# Collector schedule (required)
-		jenkins.cron=0 0/5 * * * *
+# Collector schedule (required)
+jenkins.cron=0 0/5 * * * *
 
-		# The page size
-		jenkins.pageSize=1000
+# The page size
+jenkins.pageSize=1000
 
-		# The folder depth - default is 10
-		jenkins.folderDepth=10
+# The folder depth - default is 10
+jenkins.folderDepth=10
 
-		# Jenkins server (required) - Can provide multiple
-		jenkins.servers[0]=http://jenkins.company.com
+# Jenkins server (required) - Can provide multiple
+jenkins.servers[0]=http://jenkins.company.com
 
-		# If using username/token for API authentication
-		# (required for Cloudbees Jenkins Ops Center) For example,
-		jenkins.servers[1]=http://username:token@jenkins.company.com
+# If using username/token for API authentication
+# (required for Cloudbees Jenkins Ops Center) For example,
+jenkins.servers[1]=http://username:token@jenkins.company.com
 
-		# Another option: If using same username/password Jenkins auth,
-		# set username/apiKey to use HTTP Basic Auth (blank=no auth)
-		jenkins.usernames[0]=
-		jenkins.apiKeys[0]=
+# Another option: If using same username/password Jenkins auth,
+# set username/apiKey to use HTTP Basic Auth (blank=no auth)
+jenkins.usernames[0]=
+jenkins.apiKeys[0]=
 
-		# Determines if build console log is collected - defaults to false
-		jenkins.saveLog=true
+# Determines if build console log is collected - defaults to false
+jenkins.saveLog=true
+		
+# Search criteria enabled via properties (max search criteria = 2) 
+jenkins.searchFields[0]= options.jobName
+jenkins.searchFields[1]= niceName 
 ```

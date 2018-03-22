@@ -8,20 +8,22 @@ sidebar: product1_sidebar
 permalink: widget_view.html
 ---
 
-The widget view gives detailed information about the features, code contribution, continuous integration, deployment, and environment status.
+The widget view enables you to configure widgets with various DevOps tools that are used to manage your CI/CD pipeline. The widgets are highly flexible, meaning you can choose to configure the necessary widgets to view your DevOps pipeline on the Hygieia dashboard. These widgets are integrated with Collectors to showcase information, collected from the CI/CD tools, on the Hygieia dashboard.
 
 ## Standard Dashboard Widgets
 
-|Widget | Description |
-|-------|-------------|
-|Features | Displays features in the current sprint to help you track epics or issues based on a sprint type using feature management tools |
-|Repo | Displays code contribution activities from one of the supported code repositories. |
-|Build | Displays the build status |
-|Quality | Displays the code quality details based on unit and functional test results. |
-|Performance | Displays the performance details based on unit and functional test results. |
-|Deploy | Displays deployment and environment status details |
-|Monitor | Displays the monitor details |
-|ChatOps | Displays collaboration details from the chat engine. |
+This section gives a high-level overview of the standard dashboard widgets available in a team dashboard. 
+
+|Widget | Description | Supported Collectors |
+|-------|-------------|----------------------|
+|Features | The Features widget displays Epics or Issues in the current sprint to help you track epics or issues based upon a sprint type using the feature management tools. | Jira, VersionOne, GitLab Feature |
+|Code Repo | The Code Repo widget displays graphical representations and summary of the code contribution activities from one of the supported code repositories. The code contribution activities include commits to the repository, number of issues raised, number of pull requests submitted per day, and the current coding trend. | GitHub, Subversion, Bitbucket, GitLab |
+|Build | The Build widget shows the build status – which is either a success or a failure – and the average duration of time of the builds over the course of the last 14 days. | Jenkins, Bamboo |
+|Quality | The Quality widget displays the code quality details based on unit and functional test results in a tabular format. Each tab displays static code analysis, detection of security issues, license and security issues, and functional test results in Open Source projects. | Sonar, Fortify, Nexus IQ |
+|Performance | The Performance widget displays the performance matrix of the application. That means, this widget tracks the overall health of business transactions, node health, as well as the health of HTTP traffic in the application. | AppDynamics
+|Deploy | The Deploy widget displays deployment and environment status details, including information about artifacts and server(s). | UDeploy, XLDeploy |
+|Monitor | The Monitor widget displays the monitor details that track the status of services such as APIs, GitHub URLs, or Jenkins. This widget displays the status based on the service HTTP code. | Any URL |
+|ChatOps | The ChatOps widget displays the collaborative details from the chat engine. | HipChat |
 
 ## Configure Widgets - Common Procedure
 
