@@ -41,6 +41,7 @@ var localStorageSupported = (function () {
         'ui.bootstrap',
         'fitText',
         'angular-chartist',
+        'chart.js',
         'gridstack-angular',
         'ngCookies',
         'validation.match',

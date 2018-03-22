@@ -1,0 +1,49 @@
+<div class="rally-view" style="margin-top: -10px;">
+	<div class="widget">
+		<div class="widget-heading">
+            {{rallyView.projectTitle}}
+        </div>
+        <div class="widget-body">
+    	<div ng-if="rallyResults!=''" uib-carousel active="active" interval="myInterval" no-wrap="noWrapSlides">
+			<div uib-slide ng-repeat="item in rallyResults track by item.id" index="item.id" class="rally-summary-table">
+
+		    	<div class="row text-left">
+		    		<div class="col-lg-12">{{item.iterationName}}</div>
+		    	</div>
+		     	<div class="row text-left">
+		    		<div class="col-lg-12">Remaining Days : {{item.remainingDays}} Days</div>
+		    	</div>
+				<div class="row">
+					<div class="col-md-2 text-center">
+		                <div class="legendTxtValue tdTxtColRally1">{{item.totalUserStories}}</div>	
+		                <div class="legendTxts legendTxtStyle text-center"><a ng-click="rallyView.showRallyBuildDetail(item.storyStages[0].userStories, 'all')">Total</a></div>
+					</div>
+					<div class="col-md-2  text-center">
+		                <div class="legendTxtValue tdTxtColRally3">{{item.storyStages[0].defined}}</div>	
+		                <div class="legendTxts legendTxtStyle"><a ng-click="rallyView.showRallyBuildDetail(item.storyStages[0].userStories, 'Defined')">Defined</a></div>
+					</div>
+					<div class="col-md-2 text-center">
+		                <div class="legendTxtValue tdTxtColRally4">{{item.storyStages[0].inProgress}}</div>	
+		                <div class="legendTxts legendTxtStyle"><a ng-click="rallyView.showRallyBuildDetail(item.storyStages[0].userStories, 'In Progress')">In-Progress</a></div>	
+					</div>
+					<div class="col-md-3 text-center">
+		                <div class="legendTxtValue tdTxtColRally5">{{item.storyStages[0].completed}}</div>	
+		                <div class="legendTxts legendTxtStyle"><a ng-click="rallyView.showRallyBuildDetail(item.storyStages[0].userStories, 'Completed')">Completed</a></div>	
+					</div>
+					<div class="col-md-3 text-center">
+		                <div class="legendTxtValue tdTxtColRally6">{{item.storyStages[0].accepted}}</div>	
+		                <div class="legendTxts legendTxtStyle"><a ng-click="rallyView.showRallyBuildDetail(item.storyStages[0].userStories, 'Accepted')">Accepted</a></div>	
+					</div>
+				</div>
+				<div class="row"><span>Iteration Burndown&nbsp;</span><span class="glyphicon glyphicon-resize-full repo-fullscreen-Icon" ng-click="rallyView.showGraphDetail(item.planEstimateArr, item.data, item.labels)" style="cursor: pointer;"></span></div>
+				<canvas id="base" width="150" height="77" class="chart chart-bar" chart-data="item.data" chart-labels="item.labels" chart-colors="item.colors"
+	               chart-series="series" chart-options="item.options"
+	              chart-dataset-override="item.datasetOverride"></canvas>
+			</div>
+		</div>
+		<div ng-if="rallyResults==''" class="text-center">
+			<b>No Active Iteration found</b>
+		</div>	
+        </div>
+</div>
+</div>
