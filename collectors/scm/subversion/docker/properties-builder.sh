@@ -4,18 +4,7 @@ if [ "$SKIP_PROPERTIES_BUILDER" = true ]; then
   echo "Skipping properties builder"
   exit 0
 fi
-
-# mongo container provides the HOST/PORT
-# api container provided DB Name, ID & PWD
-
-if [ "$TEST_SCRIPT" != "" ]
-then
-        #for testing locally
-        PROP_FILE=application.properties
-else
-	PROP_FILE=config/hygieia-nexus-iq-collector.properties
-fi
-
+  
 if [ "$MONGO_PORT" != "" ]; then
 	# Sample: MONGO_PORT=tcp://172.17.0.20:27017
 	MONGODB_HOST=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\1;'`
@@ -29,19 +18,6 @@ fi
 echo "MONGODB_HOST: $MONGODB_HOST"
 echo "MONGODB_PORT: $MONGODB_PORT"
 
-#update local host to bridge ip if used for a URL
-NEXUSIQ_LOCALHOST=
-echo $NEXUSIQ_URL|egrep localhost >>/dev/null
-if [ $? -ne 1 ]
-then
-        #this seems to give a access to the VM of the docker-machine
-        #LOCALHOST=`ip route|egrep '^default via'|cut -f3 -d' '`
-        #see http://superuser.com/questions/144453/virtualbox-guest-os-accessing-local-server-on-host-os
-        NEXUSIQ_LOCALHOST=10.0.2.2
-        MAPPED_URL=`echo "$NEXUSIQ_URL"|sed "s|localhost|$NEXUSIQ_LOCALHOST|"`
-        echo "Mapping localhost -> $MAPPED_URL"
-        NEXUSIQ_URL=$MAPPED_URL
-fi
 
 cat > $PROP_FILE <<EOF
 #Database Name
@@ -60,15 +36,14 @@ dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-db}
 dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 
 #Collector schedule (required)
-nexusiq.cron=${NEXUSIQ_CRON:-0 0/5 * * * *}
+subversion.cron=${SUBVERSION_CRON:-0 0/5 * * * *}
 
-nexusiq.servers[0]=${NEXUSIQ_URL:-http://localhost:9000}
+#Shared subversion username and password
+subversion.username=${SUBVERSION_USERNAME:-foo}
+subversion.password=${SUBVERSION_PASSWORD:-bar}
 
-#NEXUS IQ Authentication Username - default is blank
-nexusiq.username=$NEXUSIQ_USERNAME
-
-#Nexus IQ Authentication Password - default is blank
-nexusiq.password=$NEXUSIQ_PASSWORD
+#Maximum number of days to go back in time when fetching commits
+subversion.commitThresholdDays=${SUBVERSION_COMMIT_THRESHOLD_DAYS:-15}
 
 EOF
 

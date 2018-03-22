@@ -4,17 +4,6 @@ if [ "$SKIP_PROPERTIES_BUILDER" = true ]; then
   echo "Skipping properties builder"
   exit 0
 fi
-
-# mongo container provides the HOST/PORT
-# api container provided DB Name, ID & PWD
-
-if [ "$TEST_SCRIPT" != "" ]
-then
-        #for testing locally
-        PROP_FILE=application.properties
-else 
-	PROP_FILE=config/hygieia-subversion-collector.properties
-fi
   
 if [ "$MONGO_PORT" != "" ]; then
 	# Sample: MONGO_PORT=tcp://172.17.0.20:27017
@@ -47,14 +36,7 @@ dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-db}
 dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 
 #Collector schedule (required)
-subversion.cron=${SUBVERSION_CRON:-0 0/5 * * * *}
-
-#Shared subversion username and password
-subversion.username=${SUBVERSION_USERNAME:-foo}
-subversion.password=${SUBVERSION_PASSWORD:-bar}
-
-#Maximum number of days to go back in time when fetching commits
-subversion.commitThresholdDays=${SUBVERSION_COMMIT_THRESHOLD_DAYS:-15}
+chatops.cron=${CHATOPS_CRON:-5 * * * * *}
 
 EOF
 
