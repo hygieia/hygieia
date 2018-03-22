@@ -1,0 +1,129 @@
+[{
+  "id" : "59c07197bbc40009772e30ee",
+  "collectorItemId" : "58d522fc30b8614390865a45",
+  "environmentID" : "205456129",
+  "environmentName" : "stage",
+  "environmentUrl" : "https://oneops.mycompany.com/devtools/assemblies/hygieia-looper/transition/environments/stage",
+  "componentID" : "205456209",
+  "componentName" : "hygieia-api/java",
+  "deployed" : true,
+  "deployTime" : 1494529505989,
+  "asOfDate" : 1494529505989
+}
+,
+{
+  "id" : "59c07197bbc40009772e30ef",
+  "collectorItemId" : "58d522fc30b8614390865a45",
+  "environmentID" : "205456129",
+  "environmentName" : "stage",
+  "environmentUrl" : "https://oneops.mycompany.com/devtools/assemblies/hygieia-looper/transition/environments/stage",
+  "componentID" : "205456199",
+  "componentName" : "hygieia-api/user-app",
+  "deployed" : false,
+  "deployTime" : 1501596629731,
+  "asOfDate" : 1501596629731
+}
+,
+{
+  "id" : "59c07197bbc40009772e30f0",
+  "collectorItemId" : "58d522fc30b8614390865a45",
+  "environmentID" : "205456129",
+  "environmentName" : "stage",
+  "environmentUrl" : "https://oneops.mycompany.com/devtools/assemblies/hygieia-looper/transition/environments/stage",
+  "componentID" : "205456197",
+  "componentName" : "hygieia-api/user-sbhask1",
+  "deployed" : false,
+  "deployTime" : 1490298445315,
+  "asOfDate" : 1490298445315
+}
+,
+{
+  "id" : "59c07197bbc40009772e30f1",
+  "collectorItemId" : "58d522fc30b8614390865a45",
+  "environmentID" : "205456129",
+  "environmentName" : "stage",
+  "environmentUrl" : "https://oneops.mycompany.com/devtools/assemblies/hygieia-looper/transition/environments/stage",
+  "componentID" : "205456195",
+  "componentName" : "hygieia-api/fqdn",
+  "deployed" : true,
+  "deployTime" : 1491109886707,
+  "asOfDate" : 1491109886707
+}
+,
+{
+  "id" : "59c07197bbc40009772e30f2",
+  "collectorItemId" : "58d522fc30b8614390865a45",
+  "environmentID" : "205456129",
+  "environmentName" : "stage",
+  "environmentUrl" : "https://oneops.mycompany.com/devtools/assemblies/hygieia-looper/transition/environments/stage",
+  "componentID" : "205456179",
+  "componentName" : "hygieia-api/os",
+  "deployed" : true,
+  "deployTime" : 1495834069596,
+  "asOfDate" : 1495834069596
+}
+,
+{
+  "id" : "59c07197bbc40009772e30f3",
+  "collectorItemId" : "58d522fc30b8614390865a45",
+  "environmentID" : "205456129",
+  "environmentName" : "stage",
+  "environmentUrl" : "https://oneops.mycompany.com/devtools/assemblies/hygieia-looper/transition/environments/stage",
+  "componentID" : "205456206",
+  "componentName" : "hygieia-api/artifact",
+  "deployed" : true,
+  "deployTime" : 1505452958048,
+  "asOfDate" : 1505452958048
+}
+,
+{
+  "id" : "59c07197bbc40009772e30f4",
+  "collectorItemId" : "58d522fc30b8614390865a45",
+  "environmentID" : "205456129",
+  "environmentName" : "stage",
+  "environmentUrl" : "https://oneops.mycompany.com/devtools/assemblies/hygieia-looper/transition/environments/stage",
+  "componentID" : "205456203",
+  "componentName" : "hygieia-api/dashboard_properties",
+  "deployed" : true,
+  "deployTime" : 1505776181426,
+  "asOfDate" : 1505776181426
+}
+,
+{
+  "id" : "59c07197bbc40009772e30f5",
+  "collectorItemId" : "58d522fc30b8614390865a45",
+  "environmentID" : "205456129",
+  "environmentName" : "stage",
+  "environmentUrl" : "https://oneops.mycompany.com/devtools/assemblies/hygieia-looper/transition/environments/stage",
+  "componentID" : "257376442",
+  "componentName" : "hygieia-api/monit-service",
+  "deployed" : true,
+  "deployTime" : 1503421078922,
+  "asOfDate" : 1503421078922
+}
+,
+{
+  "id" : "59c07197bbc40009772e30f6",
+  "collectorItemId" : "58d522fc30b8614390865a45",
+  "environmentID" : "205456129",
+  "environmentName" : "stage",
+  "environmentUrl" : "https://oneops.mycompany.com/devtools/assemblies/hygieia-looper/transition/environments/stage",
+  "componentID" : "256895567",
+  "componentName" : "hygieia-api/api-logrotate-file",
+  "deployed" : true,
+  "deployTime" : 1503209416093,
+  "asOfDate" : 1503209416093
+}
+,
+{
+  "id" : "59c07197bbc40009772e30f7",
+  "collectorItemId" : "58d522fc30b8614390865a45",
+  "environmentID" : "205456129",
+  "environmentName" : "stage",
+  "environmentUrl" : "https://oneops.mycompany.com/devtools/assemblies/hygieia-looper/transition/environments/stage",
+  "componentID" : "256895565",
+  "componentName" : "hygieia-api/hygieia-api-monit-conf",
+  "deployed" : true,
+  "deployTime" : 1503421078922,
+  "asOfDate" : 1503421078922
+}]

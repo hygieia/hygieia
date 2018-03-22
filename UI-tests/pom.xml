@@ -49,7 +49,7 @@
 			<plugin>
 				<groupId>com.spotify</groupId>
 				<artifactId>docker-maven-plugin</artifactId>
-				<executions>
+				<!-- <executions>
 					<execution>
 						<id>docker</id>
 						<phase>package</phase>
@@ -57,7 +57,7 @@
 							<goal>build</goal>
 						</goals>
 					</execution>
-				</executions>
+				</executions> -->
 				<configuration>
 					<skipDockerBuild>true</skipDockerBuild>
 					<imageName>hygieia-${project.build.finalName}</imageName>
