@@ -169,5 +169,18 @@
                 </div>
             </div>
         </div>
+        <div class="container-fluid" ng-if="ctrl.tabView == 'Score'">
+            <div class="row">
+                <div class="col-xs-12 gap">
+                    <form name="scoreSettingsForm">
+                        <score-settings ng-model="ctrl.scoreSettings"></score-settings>
+                    </form>
+                </div>
+            </div>
+            <div class="button-row row text-center">
+                <button type="submit" class="btn btn-primary btn-wide" ng-click="ctrl.submitScoreSettings(scoreSettingsForm)">Save
+                </button>
+            </div>
+        </div>
     </div>
 </widget-modal>

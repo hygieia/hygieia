@@ -3,7 +3,10 @@
      ng-class="{'configure' : state == widget_state.CONFIGURE, 'alert': display == display_state.ERROR}">
     <div ng-class="(title!='Quality' && title!='Performance') ? 'widget-heading' : 'widget-heading-performance'" ng-if="header">
         <span ng-if="title!='Quality' && title!='Performance'">{{title}}</span>
-
+        <widget-score ng-if="getWidgetScore()"
+                      ng-model="getWidgetScore()"
+                      ng-model-options="{getterSetter: true }">
+        </widget-score>
     <span class="widget-settings-icon clickable pull-right fa fa-cog"
               type="button"
               ng-if="hasPermission() && widgetDefinition && widgetDefinition.config && state == widget_state.READY"
