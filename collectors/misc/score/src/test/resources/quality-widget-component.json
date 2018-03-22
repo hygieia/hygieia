@@ -1,0 +1,105 @@
+{
+  "id" : "596c43483d88f70bf778caed",
+  "name" : "Devtools Hygieia",
+  "collectorItems" : {
+    "Score" : [
+      {
+        "id" : "596c434b3d88f70bf778caf0",
+        "description" : "596c43483d88f70bf778caee",
+        "enabled" : true,
+        "errors" : [],
+        "pushed" : false,
+        "collectorId" : "58d4f8ac30b86143e50642e0",
+        "lastUpdated" : 0,
+        "options" : {
+          "qualityWidget" : null,
+          "buildWidget" : null,
+          "deployWidget" : null,
+          "settingsType" : "DEFAULT",
+          "dashboardId" : "596c43483d88f70bf778caee"
+        }
+      }
+    ],
+    "SCM" : [
+      {
+        "id" : "59110904fdfcb71b10fa84c9",
+        "enabled" : true,
+        "errors" : [],
+        "pushed" : false,
+        "collectorId" : "58d848bc358d6671fc81ff3f",
+        "lastUpdated" : 0,
+        "options" : {
+          "password" : "",
+          "appUrl" : "https://github.com/capitalone/Hygieia",
+          "scm" : "Github",
+          "branch" : "master",
+          "userID" : "",
+          "url" : "https://github.com/capitalone/Hygieia"
+        }
+      }
+    ],
+    "CodeQuality" : [
+      {
+        "id" : "5915eaa1fdfcb761419b5105",
+        "description" : "com.walmartlabs.looper.dashboard:Hygieia master",
+        "niceName" : "looper-jenkins",
+        "enabled" : true,
+        "errors" : [],
+        "pushed" : true,
+        "collectorId" : "58d61a78358d6671fc81ff23",
+        "lastUpdated" : 1505859784672,
+        "options" : {
+          "jobUrl" : "https://ci.company.com/job/Hygieia/job/SNAPSHOT_BUILD_cd08204c-30da-480d-bffe-d21e94a35d86/",
+          "projectName" : "com.walmartlabs.looper.dashboard:Hygieia master",
+          "projectId" : "256257",
+          "instanceUrl" : "http://sonar.mycompany.com"
+        }
+      }
+    ],
+    "Deployment" : [
+      {
+        "id" : "58d522fc30b8614390865a45",
+        "description" : "devtools/hygieia-looper",
+        "enabled" : true,
+        "errors" : [],
+        "pushed" : false,
+        "collectorId" : "58d4f8ac30b861439085e956",
+        "lastUpdated" : 0,
+        "options" : {
+          "orgName" : "devtools",
+          "ignoreRegex" : "",
+          "assemblyName" : "hygieia-looper",
+          "aggregateServers" : false,
+          "componentVersionVar" : {},
+          "appUrl" : "https://oneops.mycompany.com/devtools/assemblies/hygieia-looper/transition",
+          "platformNames" : "hygieia-api,hygieia-collectors,hygieia-ui",
+          "applicationName" : "devtools/hygieia-looper",
+          "instanceUrl" : "https://oneops.mycompany.com",
+          "envDeployment" : {
+            "stage" : "502872534",
+            "dev" : "500379425",
+            "stg-redundant" : "502872675"
+          }
+        }
+      }
+    ],
+    "Build" : [
+      {
+        "id" : "5915e630fdfcb761419b50f2",
+        "description" : "SNAPSHOT_BUILD_cd08204c-30da-480d-bffe-d21e94a35d86",
+        "niceName" : "looper-jenkins",
+        "enabled" : true,
+        "errors" : [],
+        "pushed" : true,
+        "collectorId" : "58d61a5d358d6671fc81ff20",
+        "lastUpdated" : 1500179312045,
+        "options" : {
+          "jobName" : "SNAPSHOT_BUILD_cd08204c-30da-480d-bffe-d21e94a35d86",
+          "jobUrl" : "https://ci.company.com/job/Hygieia/job/SNAPSHOT_BUILD_cd08204c-30da-480d-bffe-d21e94a35d86/",
+          "appUrl" : "https://ci.company.com/job/Hygieia/job/SNAPSHOT_BUILD_cd08204c-30da-480d-bffe-d21e94a35d86/",
+          "instanceUrl" : "https://ci.company.com/"
+        }
+      }
+    ]
+  }
+}

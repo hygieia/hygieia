@@ -1,0 +1,63 @@
+<widget-modal widget-modal-close="true">
+    <h2 ng-if="!detail.showDetails">No Details Found!</h2>
+    <div class="widget-detail widget-score-details" ng-if="detail.showDetails">
+        <div class="widget-detail-heading widget-score-desc">
+            <i ng-if="detail.scoreComponent.state" uib-popover="{{detail.scoreComponent.statusTxt}}" popover-trigger="'mouseenter'"
+               ng-class="detail.getIconClass(detail.scoreComponent)" class="score-status-icon score-status-icon-header fa"></i>
+            {{::detail.scoreComponent.name}} Score Details
+            <span class="pull-right">
+                <span class="score-heading-value">{{::detail.scoreComponent.score}}</span>
+                <ng-rate-it
+                        ng-model="detail.scoreComponent.score"
+                        read-only="true"
+                        star-width="24"
+                        star-height="24"
+                        step="0.1"
+                        class="score-heading">
+                </ng-rate-it>
+            </span>
+        </div>
+        <div uib-alert ng-if="detail.alert" class="score-alert" ng-class="detail.alert.alertClass" close="detail.closeAlert()">
+            <span class="score-alert-header"><i ng-class="detail.getIconClass(detail.scoreComponent)" class="score-status-icon fa"></i> {{detail.scoreComponent.statusTxt}}</span>
+            <hr/>
+            <span class="score-alert-details">{{detail.alert.message}}</span>
+        </div>
+        <div class="widget-detail-body">
+            <span class="no-changesets" ng-hide="detail.componentMetrics.length">No Widget Scores</span>
+            <table class="table" ng-show="detail.componentMetrics.length">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Message</th>
+                    <th>Weight</th>
+                    <th><span class="pull-right">Score</span></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="componentMetric in detail.componentMetrics">
+                    <td>{{::componentMetric.displayName}}</td>
+                    <td>
+                        <i ng-class="detail.getIconClass(componentMetric)" class="score-status-icon score-status-icon-row fa"></i>
+                        <span class="score-status-text">{{componentMetric.statusTxt}}</span>
+                    </td>
+                    <td>{{::componentMetric.message}}</td>
+                    <td>{{::componentMetric.percent}}</td>
+                    <td class="count-link score-col">
+                        <i ng-if="componentMetric.propagateScore"  uib-popover="{{componentMetric.propagateMessage}}" popover-trigger="'mouseenter'" class="score-status-icon criteria-failed fa fa-level-up"></i>
+                        <span class="score-value">{{::componentMetric.score}}</span>
+                        <ng-rate-it
+                                ng-model="componentMetric.score"
+                                read-only="true"
+                                star-width="18"
+                                star-height="18"
+                                step="0.1"
+                                class="score">
+                        </ng-rate-it>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</widget-modal>

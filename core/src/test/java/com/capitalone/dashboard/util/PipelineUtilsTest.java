@@ -1,15 +1,6 @@
 package com.capitalone.dashboard.util;
 
-import com.capitalone.dashboard.model.Application;
-import com.capitalone.dashboard.model.AuthType;
-import com.capitalone.dashboard.model.Build;
-import com.capitalone.dashboard.model.Commit;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.DashboardType;
-import com.capitalone.dashboard.model.Owner;
-import com.capitalone.dashboard.model.Pipeline;
-import com.capitalone.dashboard.model.Widget;
+import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.CommitRepository;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
@@ -55,7 +46,7 @@ public class PipelineUtilsTest {
         ObjectId configItemAppId = new ObjectId();
         ObjectId configItemComponetId = new ObjectId();
         List<String> activeWidgets = new ArrayList<>();
-        Dashboard rt = new Dashboard("Capone", "hygieia", new Application("hygieia", new Component()), new Owner("owner", AuthType.STANDARD), DashboardType.Team, "ASVTEST", "BAPTEST",activeWidgets);
+        Dashboard rt = new Dashboard("Capone", "hygieia", new Application("hygieia", new Component()), new Owner("owner", AuthType.STANDARD), DashboardType.Team, "ASVTEST", "BAPTEST",activeWidgets, false, ScoreDisplayType.HEADER);
 
         Widget pipelineWidget = new Widget();
         pipelineWidget.setName("pipeline");
