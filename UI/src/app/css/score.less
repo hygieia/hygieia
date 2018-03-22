@@ -1,0 +1,215 @@
+@import '../../../bower_components/angular-rateit/dist/ng-rateit.css';
+
+// SCORE WIDGET
+// ========================================
+
+// VARIABLES
+@score-lighten-percentage:              10%;
+@score-widget-background:               #555;
+@score-widget-low-background:           #e00700;
+@score-color:                           #555555;
+
+.widget-score {
+  background-color: @score-widget-background;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 12px;
+  margin-left: 8px;
+  padding: 4px 5px 1px;
+  position: relative;
+  top: -1px;
+  vertical-align: middle;
+  .score-value {
+    top:-1px;
+    display: inline-block;
+    position:relative;
+    padding-right: 3px;
+  }
+  .score-widget-wrap {
+    display: inline-block;
+    position: relative;
+    .score.ngrateit {
+      .ngrateit-star {
+        background-size: 12px;
+      }
+    }
+  }
+
+  &:hover {
+    cursor: pointer;
+    background-color: lighten(@score-widget-background, @score-lighten-percentage);
+  }
+}
+
+.widget-score.low {
+  background-color: @score-widget-low-background;
+  &:hover {
+    background-color: lighten(@score-widget-low-background, @score-lighten-percentage);
+  }
+}
+
+.widget-score-details {
+  font-size: 1.5rem !important;
+
+  .count-link {
+    text-align: right;
+    padding-right: 20px;
+    font-weight: bold;
+  }
+
+  .score-col {
+    min-width:150px
+  }
+  .score.ngrateit {
+    display: inline-block;
+    padding-left: 10px;
+    position: relative;
+    .ngrateit-star {
+      background-size: 18px;
+    }
+  }
+
+  .score-heading.ngrateit {
+    display: inline-block;
+    padding-left: 10px;
+    position: relative;
+    .ngrateit-star {
+      background-size: 24px;
+    }
+  }
+
+  .score-value {
+    color: @score-color;
+    font-size: 1.5rem;
+    top: -2px;
+    position: relative;
+  }
+
+  .widget-score-desc {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 3rem;
+    vertical-align: middle;
+  }
+
+  .score-status-icon {
+    margin-left: 2px;
+    margin-right: 5px;
+  }
+
+  .score-status-icon-row {
+    font-size: 1.5rem;
+  }
+
+  .score-status-icon-header {
+    font-size: 2.8rem;
+  }
+
+  .score-alert {
+    .score-alert-header {
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .score-alert-details {
+      padding-left: 10px
+    }
+
+    hr {
+      border-bottom: 0 none !important;
+      height: 0 !important;
+      margin-bottom: 10px;
+      margin-top: 5px;
+    }
+  }
+
+  .score-heading-value {
+    color: @score-color;
+    font-size: 2.2rem;
+    top: -2px;
+    position: relative;
+  }
+
+  .score-status-text {
+    font-size: 1.5rem;
+    vertical-align: middle;
+  }
+
+  .processed {
+    color: @state-success-text !important;
+  }
+
+  .criteria-failed {
+    color: @state-danger-text !important;
+  }
+}
+
+.score-settings {
+  .score-enabled {
+    font-weight: 600;
+  }
+  .score-display {
+    padding: 5px 0 0 10px;
+  }
+}
+
+.score-view-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 2.2rem;
+  padding: 10px 5px 5px 5px;
+
+  .widget-score {
+    font-size: 2.4rem;
+    .score.ngrateit {
+      .ngrateit-star {
+        background-size: 22px;
+      }
+    }
+  }
+
+  .score-info {
+    padding-left: 10px;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .last-updated {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.4rem;
+    padding-top: 10px;
+  }
+}
+
+#dashboard {
+  .score-view {
+    .panel-body {
+      padding-top: .5rem;
+    }
+
+    .details-title{
+      cursor: pointer;
+    }
+
+    .widget {
+      margin-bottom: 0 !important;
+    }
+
+    .score-widget {
+      font-size: 4rem;
+      .score-value {
+        line-height: 4.2rem;
+        text-align: center;
+        margin-top: .5rem;
+      }
+      .score-widget-wrap {
+        .score.ngrateit {
+          .ngrateit-star {
+            background-size: 40px;
+          }
+        }
+      }
+    }
+  }
+}

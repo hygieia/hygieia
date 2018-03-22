@@ -6,12 +6,13 @@ MAINTAINER Hygieia@capitalone.com
 RUN mkdir /hygieia /hygieia/config
 
 COPY *.jar /hygieia/
-COPY chat-ops-properties-builder.sh /hygieia/
+COPY properties-builder.sh /hygieia/
 
 WORKDIR /hygieia
 
 VOLUME ["/hygieia/logs"]
 
-CMD ./chat-ops-properties-builder.sh && \
-  java -jar chat-ops-collector*.jar --spring.config.location=/hygieia/config/hygieia-chat-ops-collector.properties
+ENV PROP_FILE /hygieia/config/application.properties
 
+CMD ./properties-builder.sh && \
+  java -jar chat-ops-collector*.jar --spring.config.location=$PROP_FILE

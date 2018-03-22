@@ -9,6 +9,7 @@ import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Widget;
+import com.capitalone.dashboard.model.ScoreDisplayType;
 import com.capitalone.dashboard.repository.CmdbRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.CustomRepositoryQuery;
@@ -171,6 +172,6 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
             serviceName = service.getConfigurationItem();
         }
         List<String> activeWidgets = new ArrayList<>();
-        return new Dashboard(true, metaData.getTemplate(), metaData.getTitle(), application, metaData.getOwner(), DashboardType.fromString(metaData.getType()), serviceName, appName,activeWidgets);
+        return new Dashboard(true, metaData.getTemplate(), metaData.getTitle(), application, metaData.getOwner(), DashboardType.fromString(metaData.getType()), serviceName, appName,activeWidgets, false, ScoreDisplayType.HEADER);
     }
 }
