@@ -108,6 +108,10 @@
             </div>
         </form-group>
 
+        <div class="form-group" ng-if="ctrl.dashboardType.id == 'team'">
+            <score-settings ng-model="ctrl.scoreSettings"></score-settings>
+        </div>
+
         <div class="button-row row text-center">
             <button type="submit" class="btn btn-primary btn-wide">Create</button>
         </div>

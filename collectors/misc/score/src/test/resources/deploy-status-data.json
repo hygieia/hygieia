@@ -1,0 +1,103 @@
+[
+  {
+    "id" : "59ce5f24bbc4000977c09cc2",
+    "collectorItemId" : "58d522fc30b8614390865a45",
+    "componentID" : "205456209",
+    "environmentName" : "stage",
+    "componentName" : "hygieia-api/java",
+    "resourceName" : "java-198391587-1",
+    "online" : true
+  }
+,
+  {
+    "id" : "59ce5f24bbc4000977c09cc3",
+    "collectorItemId" : "58d522fc30b8614390865a45",
+    "componentID" : "205456209",
+    "environmentName" : "stage",
+    "componentName" : "hygieia-api/java",
+    "resourceName" : "java-198391593-1",
+    "online" : false
+  }
+,
+  {
+    "id" : "59ce5f24bbc4000977c09cc4",
+    "collectorItemId" : "58d522fc30b8614390865a45",
+    "componentID" : "205456199",
+    "environmentName" : "stage",
+    "componentName" : "hygieia-api/user-app",
+    "resourceName" : "user-app-198391587-1",
+    "online" : true
+  }
+,
+  {
+    "id" : "59ce5f24bbc4000977c09cc5",
+    "collectorItemId" : "58d522fc30b8614390865a45",
+    "componentID" : "205456199",
+    "environmentName" : "stage",
+    "componentName" : "hygieia-api/user-app",
+    "resourceName" : "user-app-198391593-1",
+    "online" : false
+  }
+,
+  {
+    "id" : "59ce5f24bbc4000977c09cc6",
+    "collectorItemId" : "58d522fc30b8614390865a45",
+    "componentID" : "205456197",
+    "environmentName" : "stage",
+    "componentName" : "hygieia-api/user-sbhask1",
+    "resourceName" : "user-sbhask1-198391587-1",
+    "online" : true
+  }
+,
+  {
+    "id" : "59ce5f24bbc4000977c09cc7",
+    "collectorItemId" : "58d522fc30b8614390865a45",
+    "componentID" : "205456197",
+    "environmentName" : "stage",
+    "componentName" : "hygieia-api/user-sbhask1",
+    "resourceName" : "user-sbhask1-198391593-1",
+    "online" : false
+  }
+,
+  {
+    "id" : "59ce5f24bbc4000977c09cc8",
+    "collectorItemId" : "58d522fc30b8614390865a45",
+    "componentID" : "205456195",
+    "environmentName" : "stage",
+    "componentName" : "hygieia-api/fqdn",
+    "resourceName" : "fqdn-198391587-1",
+    "online" : true
+  }
+,
+  {
+    "id" : "59ce5f24bbc4000977c09cc9",
+    "collectorItemId" : "58d522fc30b8614390865a45",
+    "componentID" : "205456195",
+    "environmentName" : "stage",
+    "componentName" : "hygieia-api/fqdn",
+    "resourceName" : "fqdn-198391593-1",
+    "online" : true
+  }
+
+ ,
+
+  {
+    "id" : "59ce5f24bbc4000977c09cca",
+    "collectorItemId" : "58d522fc30b8614390865a45",
+    "componentID" : "205456179",
+    "environmentName" : "stage",
+    "componentName" : "hygieia-api/os",
+    "resourceName" : "os-198391587-1",
+    "online" : true
+  }
+,
+  {
+    "id" : "59ce5f24bbc4000977c09ccb",
+    "collectorItemId" : "58d522fc30b8614390865a45",
+    "componentID" : "205456179",
+    "environmentName" : "stage",
+    "componentName" : "hygieia-api/os",
+    "resourceName" : "os-198391593-1",
+    "online" : true
+  }
+]

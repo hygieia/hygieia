@@ -1,0 +1,17 @@
+{
+  "id" : "596c43df3d88f70bf778caf2",
+  "name" : "deploy",
+  "componentId" : "596c43483d88f70bf778caed",
+  "options" : {
+    "ignoreRegex" : "",
+    "orgName" : "devtools",
+    "aggregateServers" : false,
+    "assemblyName" : "hygieia-looper",
+    "componentVersionVar" : {},
+    "appUrl" : "https://oneops.mycompany.com/devtools/assemblies/hygieia-looper/transition",
+    "id" : "deploy0",
+    "platformNames" : "hygieia-api,hygieia-collectors,hygieia-ui",
+    "applicationName" : "devtools/hygieia-looper",
+    "deployType" : "OneOps"
+  }
+}

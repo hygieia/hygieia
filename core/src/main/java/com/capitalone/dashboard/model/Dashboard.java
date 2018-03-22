@@ -1,6 +1,5 @@
 package com.capitalone.dashboard.model;
 
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,6 +14,7 @@ import java.util.List;
  */
 @Document(collection="dashboards")
 public class Dashboard extends BaseModel {
+
     private String template;
 
     //NOTE Mongodb treats strings as different if they have different case
@@ -42,6 +42,13 @@ public class Dashboard extends BaseModel {
 
     private boolean remoteCreated;
 
+    //Enable/Disable scoring for the dashboard
+    private boolean scoreEnabled;
+
+    //Display position for score.
+    //Default to HEADER
+    private ScoreDisplayType scoreDisplay = ScoreDisplayType.HEADER;
+
     private List<String> activeWidgets;
 
     @Transient
@@ -53,11 +60,11 @@ public class Dashboard extends BaseModel {
     Dashboard() {
     }
 
-    public Dashboard(String template, String title, Application application, Owner owner, DashboardType type, String configurationItemBusServName, String configurationItemBusAppName,List<String> activeWidgets) {
-        this(false, template, title, application, owner, type,configurationItemBusServName, configurationItemBusAppName,activeWidgets);
+    public Dashboard(String template, String title, Application application, Owner owner, DashboardType type, String configurationItemBusServName, String configurationItemBusAppName, List<String> activeWidgets, boolean scoreEnabled, ScoreDisplayType scoreDisplay) {
+        this(false, template, title, application, owner, type,configurationItemBusServName, configurationItemBusAppName,activeWidgets, scoreEnabled, scoreDisplay);
     }
 
-    public Dashboard(boolean remoteCreated, String template, String title, Application application, Owner owner, DashboardType type, String configurationItemBusServName, String configurationItemBusAppName,List<String> activeWidgets) {
+    public Dashboard(boolean remoteCreated, String template, String title, Application application, Owner owner, DashboardType type, String configurationItemBusServName, String configurationItemBusAppName,List<String> activeWidgets, boolean scoreEnabled, ScoreDisplayType scoreDisplay) {
         this.template = template;
         this.title = title;
         this.configurationItemBusServName = configurationItemBusServName;
@@ -66,6 +73,8 @@ public class Dashboard extends BaseModel {
         this.type = type;
         this.owners.add(owner);
         this.activeWidgets = activeWidgets;
+        this.scoreEnabled = scoreEnabled;
+        this.scoreDisplay = scoreDisplay;
     }
 
     public String getTemplate() {
@@ -184,4 +193,19 @@ public class Dashboard extends BaseModel {
         this.activeWidgets = activeWidgets;
     }
 
+    public boolean isScoreEnabled() {
+        return scoreEnabled;
+    }
+
+    public void setScoreEnabled(boolean scoreEnabled) {
+        this.scoreEnabled = scoreEnabled;
+    }
+
+    public ScoreDisplayType getScoreDisplay() {
+        return scoreDisplay;
+    }
+
+    public void setScoreDisplay(ScoreDisplayType scoreDisplay) {
+        this.scoreDisplay = scoreDisplay;
+    }
 }
