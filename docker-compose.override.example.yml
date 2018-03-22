@@ -10,6 +10,9 @@ services:
     # volumes:
     #   - ./logs:/hygieia/logs
 
+  api-audit:
+    # environment:
+
   ui:
     # environment:
 
@@ -17,6 +20,9 @@ services:
     # environment:
 
   artifactory-artifact-collector:
+    # environment:
+
+  bamboo-build-collector:
     # environment:
 
   bitbucket-collector:
@@ -28,13 +34,31 @@ services:
   github-collector:
     # environment:
 
+  hpsm-cmdb-collector:
+    # environment:
+
+  github-graphql-collector:
+    # environment:
+
+  gitlab-feature-collector:
+    # environment:
+
+  gitlab-scm-collector:
+    # environment:
+
   jenkins-build-collector:
+    # environment:
+
+  jenkins-codequality-collector:
     # environment:
 
   jenkins-cucumber-test-collector:
     # environment:
 
   jira-collector:
+    # environment:
+
+  nexus-iq-collector:
     # environment:
 
   sonar-codequality-collector:

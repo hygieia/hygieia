@@ -56,6 +56,11 @@
                 });
                 ctrl.widgetDisplay = widgetObj;
                 ctrl.sortOrder = response.order;
+                //Check in parent controller if score is enabled
+                //Push to the top of display
+                if ($scope.ctrl.scoreWidgetEnabled) {
+                    ctrl.sortOrder.unshift('score');
+                }
                 ctrl.widgetsOrder = chunk(ctrl.sortOrder,3);
             });
         };
