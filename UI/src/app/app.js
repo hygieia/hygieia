@@ -48,7 +48,8 @@ var localStorageSupported = (function () {
         'as.sortable',
         'ui.select',
         'angular-jwt',
-        'angularUtils.directives.dirPagination'
+        'angularUtils.directives.dirPagination',
+        'ngRateIt'
     ])
 
         .config(['$httpProvider', 'jwtOptionsProvider',
