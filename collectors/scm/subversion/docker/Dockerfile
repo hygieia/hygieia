@@ -6,12 +6,14 @@ MAINTAINER Hygieia@capitalone.com
 RUN mkdir /hygieia /hygieia/config
 
 COPY *.jar /hygieia/
-COPY subversion-properties-builder.sh /hygieia/
+COPY properties-builder.sh /hygieia/
 
 WORKDIR /hygieia
 
 VOLUME ["/hygieia/logs"]
 
-CMD ./subversion-properties-builder.sh && \
-  java -jar subversion-collector*.jar --spring.config.location=/hygieia/config/hygieia-subversion-collector.properties
+ENV PROP_FILE /hygieia/config/application.properties
+
+CMD ./properties-builder.sh && \
+  java -jar subversion-collector*.jar --spring.config.location=$PROP_FILE
 

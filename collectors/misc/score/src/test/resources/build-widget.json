@@ -1,0 +1,10 @@
+{
+  "id" : "58d84427358d6671fc81ff37",
+  "name" : "build",
+  "componentId" : "58d8440d358d6671fc81ff34",
+  "options" : {
+    "id" : "build0",
+    "buildDurationThreshold" : 5,
+    "consecutiveFailureThreshold" : 5
+  }
+}

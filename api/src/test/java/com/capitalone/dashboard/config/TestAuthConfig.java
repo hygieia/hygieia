@@ -6,6 +6,7 @@ import com.capitalone.dashboard.repository.ApiTokenRepository;
 import com.capitalone.dashboard.repository.AuthenticationRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.UserInfoRepository;
+
 import com.capitalone.dashboard.service.ApiTokenService;
 import com.capitalone.dashboard.service.ApiTokenServiceImpl;
 import com.capitalone.dashboard.service.AuthenticationService;
@@ -41,6 +42,9 @@ import com.capitalone.dashboard.service.TemplateService;
 import com.capitalone.dashboard.service.TestResultService;
 import com.capitalone.dashboard.service.UserInfoService;
 import com.capitalone.dashboard.service.UserInfoServiceImpl;
+
+import com.capitalone.dashboard.service.*;
+
 import com.capitalone.dashboard.util.PaginationHeaderUtility;
 import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -247,6 +251,19 @@ public class TestAuthConfig {
         return Mockito.mock(AuthenticationService.class);
     }
 
+    @Bean
+    public ScoreService scoreService() {
+        return Mockito.mock(ScoreService.class);
+    }
 
+    @Bean
+    public ScoreCriteriaSettingsService scoreCriteriaSettingsService() {
+        return Mockito.mock(ScoreCriteriaSettingsService.class);
+    }
+
+    @Bean
+    public ScoreDashboardService scoreDashboardService() {
+        return Mockito.mock(ScoreDashboardService.class);
+    }
 }
 

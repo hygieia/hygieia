@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.capitalone.dashboard.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -44,13 +45,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.capitalone.dashboard.config.TestConfig;
 import com.capitalone.dashboard.config.WebMVCConfig;
-import com.capitalone.dashboard.model.AuthType;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.DashboardType;
-import com.capitalone.dashboard.model.Owner;
-import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.request.DashboardRequest;
 import com.capitalone.dashboard.request.DashboardRequestTitle;
 import com.capitalone.dashboard.request.WidgetRequest;
@@ -407,7 +401,17 @@ public class DashboardControllerTest {
     	
     }
 
+    @Test
+    public void updateScoreSettings() throws Exception {
+        ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
+        Dashboard dashboard = makeDashboard("t1", "dashboard", "app", "comp","amit", DashboardType.Team, configItemAppName, configItemComponentName);
+        dashboard.setId(objectId);
 
+        when(dashboardService.updateScoreSettings(objectId, true, ScoreDisplayType.HEADER)).thenReturn(dashboard);
+
+        mockMvc.perform(put("/dashboard/updateScoreSettings/" + objectId.toString() + "?scoreEnabled=true&scoreDisplay=HEADER"))
+          .andExpect(status().isOk());
+    }
 
     
     private DashboardRequestTitle makeDashboardRequestTitle(String title) {

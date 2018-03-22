@@ -205,6 +205,7 @@
         <module>collectors/scm/gitlab</module>
         <module>collectors/cmdb/hpsm</module>
         <module>collectors/library-policy/nexus-iq-collector</module>
+        <module>collectors/misc/score</module>
         <module>hygieia-jenkins-plugin</module>
         <module>UI</module>
         <module>UI-tests</module>
@@ -252,6 +253,7 @@
         <module>collectors/scm/gitlab</module>
         <module>collectors/cmdb/hpsm</module>
         <module>collectors/library-policy/nexus-iq-collector</module>
+        <module>collectors/misc/score</module>
         <module>hygieia-jenkins-plugin</module>
      	<module>UI</module>
         <module>UI-tests</module>
