@@ -29,6 +29,7 @@ import com.capitalone.dashboard.service.DeployService;
 import com.capitalone.dashboard.service.EncryptionService;
 import com.capitalone.dashboard.service.FeatureService;
 import com.capitalone.dashboard.service.PipelineService;
+import com.capitalone.dashboard.service.RallyFeatureService;
 import com.capitalone.dashboard.service.ScopeService;
 import com.capitalone.dashboard.service.ServiceService;
 import com.capitalone.dashboard.service.TeamService;
@@ -191,7 +192,12 @@ public class TestConfig {
 	public UserInfoService userInfoService() {
 	    return Mockito.mock(UserInfoService.class);
 	}
-
+    
+    @Bean
+   	public RallyFeatureService rallyFeatureService() {
+   	    return Mockito.mock(RallyFeatureService.class);
+   	}
+    
 	@Bean
 	public ConfigurationService configurationService() {
 	    return Mockito.mock(ConfigurationService.class);

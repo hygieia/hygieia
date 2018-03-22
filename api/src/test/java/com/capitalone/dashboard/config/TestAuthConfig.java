@@ -33,6 +33,7 @@ import com.capitalone.dashboard.service.MaturityModelService;
 import com.capitalone.dashboard.service.Monitor2Service;
 import com.capitalone.dashboard.service.PerformanceService;
 import com.capitalone.dashboard.service.PipelineService;
+import com.capitalone.dashboard.service.RallyFeatureService;
 import com.capitalone.dashboard.service.ScopeService;
 import com.capitalone.dashboard.service.ServiceService;
 import com.capitalone.dashboard.service.TeamService;
@@ -211,6 +212,11 @@ public class TestAuthConfig {
         return Mockito.mock(GitRequestService.class);
     }
 
+    @Bean
+    public RallyFeatureService rallyFeatureService() {
+        return Mockito.mock(RallyFeatureService.class);
+    }
+    
     @Bean
     public CmdbService cmdbService() {
         return Mockito.mock(CmdbService.class);

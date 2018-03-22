@@ -37,6 +37,7 @@ import com.capitalone.dashboard.service.DeployService;
 import com.capitalone.dashboard.service.EncryptionService;
 import com.capitalone.dashboard.service.FeatureService;
 import com.capitalone.dashboard.service.PipelineService;
+import com.capitalone.dashboard.service.RallyFeatureService;
 import com.capitalone.dashboard.service.ScopeService;
 import com.capitalone.dashboard.service.ServiceService;
 import com.capitalone.dashboard.service.TeamService;
@@ -204,7 +205,12 @@ import com.capitalone.dashboard.util.PaginationHeaderUtility;
 	 public PerformanceService performanceService() {
 		 return Mockito.mock(PerformanceService.class);
 	 }
-
+	 
+	 @Bean
+	 public RallyFeatureService rallyFeatureService() {
+		 return Mockito.mock(RallyFeatureService.class);
+	 }
+	 
 	 @Bean
 	 public Monitor2Service monitor2Service(){
 		 return Mockito.mock(Monitor2Service.class);
