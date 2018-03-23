@@ -1,29 +1,10 @@
 #!/bin/bash
 
-# mongo container provides the HOST/PORT
-# api container provided DB Name, ID & PWD
-
-if [ "$TEST_SCRIPT" != "" ]
-then
-        #for testing locally
-        PROP_FILE=application.properties
-else 
-	PROP_FILE=hygieia-score-collector.properties
+if [ "$SKIP_PROPERTIES_BUILDER" = true ]; then
+  echo "Skipping properties builder"
+  echo "`cat $PROP_FILE`"
+  exit 0
 fi
-  
-if [ "$MONGO_PORT" != "" ]; then
-	# Sample: MONGO_PORT=tcp://172.17.0.20:27017
-	MONGODB_HOST=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\1;'`
-	MONGODB_PORT=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\2;'`
-else
-	env
-	echo "ERROR: MONGO_PORT not defined"
-	exit 1
-fi
-
-echo "MONGODB_HOST: $MONGODB_HOST"
-echo "MONGODB_PORT: $MONGODB_PORT"
-
 
 cat > $PROP_FILE <<EOF
 #Database Name
