@@ -7,10 +7,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -58,7 +56,6 @@ public class DefaultRallyClient implements RallyClient {
 	private static final String TASKREMAININGTOTAL = "TaskRemainingTotal";
 	private final RallyProjectRepository rallyProjectRepository;
 	private final RestOperations rest;
-	public Set<Map<String, String>> rallyServers = new HashSet<>();
 	private final RallySettings rallySettings;
 
 	@Autowired
