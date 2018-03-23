@@ -72,23 +72,30 @@ public class RallyCollectorTask extends CollectorTask<RallyCollector> {
 	public RallyCollector getCollector() {
 		Configuration config = configurationRepository.findByCollectorName("Rally");
 	
+		if(rallySettings.getHttpProxyHost()!=null && rallySettings.getHttpProxyPort()!=null 
+													&& rallySettings.getHttpsProxyHost()!=null
+													&& rallySettings.getHttpsProxyPort()!=null) {
 		System.setProperty("http.proxyHost", rallySettings.getHttpProxyHost());
 		System.setProperty("https.proxyHost", rallySettings.getHttpsProxyHost());
 		System.setProperty("http.proxyPort", rallySettings.getHttpProxyPort());
 		System.setProperty("https.proxyPort", rallySettings.getHttpsProxyPort());
-			// To clear the username and password from existing run and
-			// pick the latest
-			if(rallySettings.getServers() == null) {
+		}
+			
+			if(rallySettings.getServers()==null) {
 				rallySettings.setUsernames(new ArrayList<>());
 				rallySettings.setPasswords(new ArrayList<>());
 				rallySettings.setServers(new ArrayList<>());
 			} else {
 				rallySettings.getUsernames().clear();
-				rallySettings.getUsernames().clear();
-				rallySettings.getUsernames().clear();
+				rallySettings.getServers().clear();
+				rallySettings.getPasswords().clear();
 			}
+				
 			if (config != null ) {
 				config.decryptOrEncrptInfo();
+				// To clear the username and password from existing run and
+				// pick the latest
+				
 			for (Map<String, String> rallyServer : config.getInfo()) {
 				rallySettings.getServers().add(rallyServer.get("url"));
 				rallySettings.getUsernames().add(rallyServer.get("userName"));

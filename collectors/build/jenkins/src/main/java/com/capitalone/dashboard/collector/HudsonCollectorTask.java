@@ -85,8 +85,8 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
 				hudsonSettings.setServers(new ArrayList<>());
 			} else {
 				hudsonSettings.getUsernames().clear();
-				hudsonSettings.getUsernames().clear();
-				hudsonSettings.getUsernames().clear();
+				hudsonSettings.getServers().clear();
+				hudsonSettings.getApiKeys().clear();
 			}
 			for (Map<String, String> jenkinsServer : config.getInfo()) {
 				hudsonSettings.getServers().add(jenkinsServer.get("url"));

@@ -61,7 +61,7 @@ public class RallyFeature extends BaseModel {
     private String state;
     private String taskActualTotal;
     private String taskEstimateTotal;
-    private String TaskRemainingTotal;
+    private String taskRemainingTotal;
     private String projectId;
     private String projectName;
     private String planEstimate;
@@ -142,11 +142,11 @@ public class RallyFeature extends BaseModel {
 	}
 
 	public String getTaskRemainingTotal() {
-		return TaskRemainingTotal;
+		return taskRemainingTotal;
 	}
 
 	public void setTaskRemainingTotal(String taskRemainingTotal) {
-		TaskRemainingTotal = taskRemainingTotal;
+		this.taskRemainingTotal = taskRemainingTotal;
 	}
 
 	public String getProjectId() {

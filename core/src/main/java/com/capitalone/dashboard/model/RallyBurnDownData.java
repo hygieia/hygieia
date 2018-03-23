@@ -10,9 +10,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 public class RallyBurnDownData extends BaseModel{
 	
-	public static String ITERATION_TO_DO_HOURS = "iterationToDoHours";
-	public static String ACCEPTED_POINTS = "acceptedPoints";
-	public static String ITERATION_DATE = "iterationDate";
+	public static final String ITERATION_TO_DO_HOURS = "iterationToDoHours";
+	public static final String ACCEPTED_POINTS = "acceptedPoints";
+	public static final String ITERATION_DATE = "iterationDate";
 	
 	private List<Map<String,String>> burnDownData; 
 	private String iterationId;
