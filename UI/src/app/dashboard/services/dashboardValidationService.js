@@ -44,7 +44,7 @@
             var title = data.title;
             var businessServiceName = data.configurationItemBusServName ? "-" + data.configurationItemBusServName : "";
             var businessApplicationName = data.configurationItemBusAppName ? "-" + data.configurationItemBusAppName : "";
-            var applicationName = data.application.name ? "-" + data.application.name : "" ;
+            var applicationName = data.application && data.application.name ? "-" + data.application.name : "" ;
 
             if(businessServiceName != "" || businessApplicationName != "" ){
                title = title +  businessServiceName + businessApplicationName;
