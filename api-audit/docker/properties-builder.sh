@@ -27,7 +27,7 @@ dbhost=${SPRING_DATA_MONGODB_HOST:-10.0.1.1}
 dbport=${SPRING_DATA_MONGODB_PORT:-9999}
 
 #Database Username - default is blank
-dbusername=${SPRING_DATA_MONGODB_USERNAME:-db}
+dbusername=${SPRING_DATA_MONGODB_USERNAME:-dashboarduser}
 
 #Database Password - default is blank
 dbpassword=${SPRING_DATA_MONGODB_PASSWORD:-dbpass}

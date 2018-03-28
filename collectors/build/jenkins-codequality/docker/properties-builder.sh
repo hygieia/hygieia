@@ -39,7 +39,7 @@ dbhost=${MONGODB_HOST:-10.0.1.1}
 dbport=${MONGODB_PORT:-27017}
 
 #Database Username - default is blank
-dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-db}
+dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-dashboarduser}
 
 #Database Password - default is blank
 dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
