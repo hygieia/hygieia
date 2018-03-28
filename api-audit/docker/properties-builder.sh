@@ -30,7 +30,7 @@ dbport=${SPRING_DATA_MONGODB_PORT:-9999}
 dbusername=${SPRING_DATA_MONGODB_USERNAME:-dashboarduser}
 
 #Database Password - default is blank
-dbpassword=${SPRING_DATA_MONGODB_PASSWORD:-dbpass}
+dbpassword=${SPRING_DATA_MONGODB_PASSWORD:-dbpassword}
 
 logRequest=${LOG_REQUEST:-false}
 logSplunkRequest=${LOG_SPLUNK_REQUEST:-false}
