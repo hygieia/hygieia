@@ -31,7 +31,7 @@ echo "MONGODB_PORT: $MONGODB_PORT"
 
 cat > $PROP_FILE <<EOF
 #Database Name
-dbname=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_DATABASE:-dashboard}
+dbname=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_DATABASE:-dashboarddb}
 
 #Database HostName - default is localhost
 dbhost=${MONGODB_HOST:-10.0.1.1}

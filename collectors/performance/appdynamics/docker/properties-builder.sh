@@ -29,7 +29,7 @@ echo "MONGODB_PORT: $MONGODB_PORT"
 
 cat > $PROP_FILE <<EOF
 #Database Name - default is test
-database=${SPRING_DATA_MONGODB_DATABASE:-dashboard}
+database=${SPRING_DATA_MONGODB_DATABASE:-dashboarddb}
 
 #Database HostName - default is localhost
 dbhost=${SPRING_DATA_MONGODB_HOST:-10.0.1.1}
