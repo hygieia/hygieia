@@ -201,7 +201,7 @@ public class DefaultSonar6Client implements SonarClient {
     public JSONArray getQualityProfileConfigurationChanges(String instanceUrl,String qualityProfile) throws ParseException{
     	String url = instanceUrl + URL_QUALITY_PROFILE_CHANGES + qualityProfile;
     	try {
-    		JSONArray qualityProfileConfigChanges = this.parseAsArray(instanceUrl, "events");
+    		JSONArray qualityProfileConfigChanges = this.parseAsArray(url, "events");
     		return qualityProfileConfigChanges;
     	} catch (ParseException e) {
     		LOG.error("Could not parse response from: " + url, e);
