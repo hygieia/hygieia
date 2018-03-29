@@ -7,12 +7,14 @@ RUN \
   mkdir /hygieia
 
 COPY *.jar /hygieia/
-COPY score-properties-builder.sh /hygieia/
+COPY properties-builder.sh /hygieia/
+
+ENV PROP_FILE /hygieia/config/application.properties
 
 WORKDIR /hygieia
 
 VOLUME ["/hygieia/logs"]
 
-CMD ./score-properties-builder.sh && \
-  java -jar score-collector*.jar --spring.config.location=/hygieia/hygieia-score-collector.properties
+CMD ./properties-builder.sh && \
+  java -jar score-collector*.jar --spring.config.location=$PROP_FILE
 
