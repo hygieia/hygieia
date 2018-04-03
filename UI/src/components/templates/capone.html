@@ -21,10 +21,16 @@
     </div>
 
     <div class="dashboard-widgets container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.widgetView == 'Widget'">
+        <div ng-if="ctrl.scoreHeaderEnabled">
+            <score-view-header dashboard-id="{{ctrl.dashboard.id}}" rate-it-options="ctrl.scoreRateItOptionsHeader"></score-view-header>
+        </div>
         <div class="row">
             <div class="col-md-3">
                 <div class="row">
                     <div class="col-xs-12">
+                        <div ng-if="ctrl.scoreWidgetEnabled">
+                            <score-view-widget dashboard-id="{{ctrl.dashboard.id}}" rate-it-options="ctrl.scoreRateItOptionsWidget"></score-view-widget>
+                        </div>
                         <widget name="feature" widget-title="Feature"></widget>
                         <widget name="repo"></widget>
                         </div>

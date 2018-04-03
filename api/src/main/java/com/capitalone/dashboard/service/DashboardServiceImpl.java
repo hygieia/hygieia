@@ -29,6 +29,7 @@ import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.model.ScoreDisplayType;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
@@ -41,21 +42,8 @@ import com.capitalone.dashboard.util.UnsafeDeleteException;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.apache.commons.collections.CollectionUtils;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
@@ -69,6 +57,7 @@ public class DashboardServiceImpl implements DashboardService {
     private final PipelineRepository pipelineRepository; //NOPMD
     private final ServiceRepository serviceRepository;
     private final UserInfoRepository userInfoRepository;
+    private final ScoreDashboardService scoreDashboardService;
     private final CmdbService cmdbService;
 
     @Autowired
@@ -84,6 +73,7 @@ public class DashboardServiceImpl implements DashboardService {
                                 PipelineRepository pipelineRepository,
                                 UserInfoRepository userInfoRepository,
                                 CmdbService cmdbService,
+                                ScoreDashboardService scoreDashboardService,
                                 ApiSettings settings) {
         this.dashboardRepository = dashboardRepository;
         this.componentRepository = componentRepository;
@@ -94,6 +84,7 @@ public class DashboardServiceImpl implements DashboardService {
         this.pipelineRepository = pipelineRepository;   //TODO - Review if we need this param, seems it is never used according to PMD
         this.userInfoRepository = userInfoRepository;
         this.cmdbService = cmdbService;
+        this.scoreDashboardService = scoreDashboardService;
         this.settings = settings;
     }
 
@@ -142,7 +133,14 @@ public class DashboardServiceImpl implements DashboardService {
 
         try {
             duplicateDashboardErrorCheck(dashboard);
-            return dashboardRepository.save(dashboard);
+            Dashboard savedDashboard = dashboardRepository.save(dashboard);
+            CollectorItem scoreCollectorItem;
+            if (isUpdate) {
+                scoreCollectorItem = this.scoreDashboardService.editScoreForDashboard(savedDashboard);
+            } else {
+                scoreCollectorItem = this.scoreDashboardService.addScoreForDashboardIfScoreEnabled(savedDashboard);
+            }
+            return savedDashboard;
         }  catch (Exception e) {
             //Exclude deleting of components if this is an update request
             if(!isUpdate) {
@@ -188,6 +186,10 @@ public class DashboardServiceImpl implements DashboardService {
         dashboardRepository.delete(dashboard);
         componentRepository.delete(dashboard.getApplication().getComponents());
         handleCollectorItems(dashboard.getApplication().getComponents());
+        if (dashboard.isScoreEnabled()) {
+            this.scoreDashboardService.disableScoreForDashboard(dashboard);
+        }
+
     }
 
     /**
@@ -736,5 +738,19 @@ public class DashboardServiceImpl implements DashboardService {
         return ownersList;
     }
 
+    @Override
+    public Dashboard updateScoreSettings(ObjectId dashboardId, boolean scoreEnabled, ScoreDisplayType scoreDisplay) {
+        Dashboard dashboard = get(dashboardId);
+        if ((scoreEnabled == dashboard.isScoreEnabled()) &&
+            (scoreDisplay == dashboard.getScoreDisplay())) {
+            return null;
+        }
+
+        dashboard.setScoreEnabled(scoreEnabled);
+        dashboard.setScoreDisplay(scoreDisplay);
+        Dashboard savedDashboard = dashboardRepository.save(dashboard);
+        this.scoreDashboardService.editScoreForDashboard(savedDashboard);
+        return savedDashboard;
+    }
 
 }

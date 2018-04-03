@@ -1,15 +1,7 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.Application;
-import com.capitalone.dashboard.model.AuthType;
-import com.capitalone.dashboard.model.Collector;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.DashboardType;
-import com.capitalone.dashboard.model.Owner;
+import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.request.DashboardRemoteRequest;
@@ -253,7 +245,7 @@ public class DashboardRemoteServiceTest {
             app.addComponent(new Component(compName));
         }
         List<String> activeWidgets = new ArrayList<>();
-        return new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemBusServName, configItemBusAppName,activeWidgets);
+        return new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemBusServName, configItemBusAppName,activeWidgets, false, ScoreDisplayType.HEADER);
     }
 
     private Collector makeCollector(String name, CollectorType type) {

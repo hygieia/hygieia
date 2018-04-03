@@ -33,6 +33,7 @@
         var myDashboardFilterRoutePage = '/api/dashboard/mydashboard/page/filter';
         var myDashboardCountRoute = '/api/dashboard/mydashboard/count';
         var myDashboardFilterCountRoute = '/api/dashboard/mydashboard/filter/count';
+        var updateDashboardScoreSettingsRoute = '/api/dashboard/updateScoreSettings';
 
         return {
             search: search,
@@ -58,8 +59,8 @@
             myDashboardsCount:myDashboardsCount,
             searchMyDashboardsByPage:searchMyDashboardsByPage,
             filterMyDashboardsByTitle:filterMyDashboardsByTitle,
-            filterMyDashboardCount:filterMyDashboardCount
-
+            filterMyDashboardCount:filterMyDashboardCount,
+            updateDashboardScoreSettings: updateDashboardScoreSettings
         };
 
         // reusable helper
@@ -273,6 +274,16 @@
             return  $http.get(HygieiaConfig.local ? testSearchRoute : myDashboardFilterCountRoute+ '/'+title).then(function (response) {
                 return response.data;
             });
+        }
+
+        function updateDashboardScoreSettings(id, scoreEnabled, scoreDisplay) {
+            return $http.put(updateDashboardScoreSettingsRoute + "/" + id + "?scoreEnabled=" + scoreEnabled + "&scoreDisplay=" + scoreDisplay)
+                .success(function (response) {
+                    return response.data;
+                })
+                .error(function (response) {
+                    return null;
+                });
         }
 
 

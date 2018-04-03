@@ -19,7 +19,7 @@
                             <div class="widget-body">
                                 <div class="widget ca-issues">
                                     <br>
-                                    <a href="{{caWidget.reportUrl}}" target="_blank">
+                                    <a ng-href="{{caWidget.reportUrl ? caWidget.reportUrl : ''}}" target="_blank">
                                 <span class="report-link pull-left">View All <i class="fa fa-arrow-right"
                                                                                 aria-hidden="true"></i></span>
                                     </a> <br>
@@ -223,7 +223,7 @@
                             <table class="table">
                                 <tr class="dash-row clickable"
                                     ng-click="caWidget.showLibraryPolicyDetails('License', caWidget.libraryPolicyDetails)">
-                                    <td><span dash-status="caWidget.getDashStatus()"></span></td>
+                                    <td><span dash-status="{{caWidget.getDashStatus()}}"></span></td>
                                     <td class="ca-name">License</td>
                                     <td class="ca-value">{{(caWidget.libraryLicenseThreatStatus) ?
                                         caWidget.libraryLicenseThreatStatus.count : 0}}
@@ -231,7 +231,7 @@
                                 </tr>
                                 <tr class="dash-row clickable"
                                     ng-click="caWidget.showLibraryPolicyDetails('Security', caWidget.libraryPolicyDetails)">
-                                    <td><span dash-status="caWidget.getDashStatus()"></span></td>
+                                    <td><span dash-status="{{caWidget.getDashStatus()}}"></span></td>
                                     <td class="ca-name">Security</td>
                                     <td class="ca-value">{{(caWidget.librarySecurityThreatStatus) ?
                                         caWidget.librarySecurityThreatStatus.count : 0}}
