@@ -18,7 +18,7 @@ echo "SPRING_DATA_MONGODB_PORT: $SPRING_DATA_MONGODB_PORT"
 
 cat > config/hygieia-api-audit.properties <<EOF
 #Database Name - default is test
-dbname=${SPRING_DATA_MONGODB_DATABASE:-dashboard}
+dbname=${SPRING_DATA_MONGODB_DATABASE:-dashboarddb}
 
 #Database HostName - default is localhost
 dbhost=${SPRING_DATA_MONGODB_HOST:-10.0.1.1}
@@ -27,10 +27,10 @@ dbhost=${SPRING_DATA_MONGODB_HOST:-10.0.1.1}
 dbport=${SPRING_DATA_MONGODB_PORT:-9999}
 
 #Database Username - default is blank
-dbusername=${SPRING_DATA_MONGODB_USERNAME:-db}
+dbusername=${SPRING_DATA_MONGODB_USERNAME:-dashboarduser}
 
 #Database Password - default is blank
-dbpassword=${SPRING_DATA_MONGODB_PASSWORD:-dbpass}
+dbpassword=${SPRING_DATA_MONGODB_PASSWORD:-dbpassword}
 
 logRequest=${LOG_REQUEST:-false}
 logSplunkRequest=${LOG_SPLUNK_REQUEST:-false}
