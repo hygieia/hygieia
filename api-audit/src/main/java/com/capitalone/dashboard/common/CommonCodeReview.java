@@ -147,7 +147,10 @@ public class CommonCodeReview {
                     && cCommit.getScmParentRevisionNumbers().size() > 1 ) {
                 //exclude commits with multiple parents ie. merge commits
             } else {
-                filteredPrCommits.add(prC);
+                String mergeCommitLog = String.format("Merge branch '%s' into %s", pr.getScmBranch(), pr.getSourceBranch());
+                if (!prC.getScmCommitLog().contains(mergeCommitLog)) {
+                    filteredPrCommits.add(prC);
+                }
             }
         });
 
@@ -169,7 +172,7 @@ public class CommonCodeReview {
         codeActionList.stream().forEach(c->LOGGER.debug( new DateTime(c.getTimestamp()).toString("yyyy-MM-dd hh:mm:ss.SSa")
                 + " " + c.getType() + " " + c.getActor() + " " + c.getMessage()));
 
-        List<CodeAction> clonedCodeActions = codeActionList.stream().map(item -> new CodeAction(item)).collect(Collectors.toList());
+        List<CodeAction> clonedCodeActions = codeActionList.stream().map(CodeAction::new).collect(Collectors.toList());
         if (auditReviewResponse instanceof CodeReviewAuditResponse) {
             ((CodeReviewAuditResponse)auditReviewResponse).setCodeActions(clonedCodeActions);
         } else if (auditReviewResponse instanceof CodeReviewAuditResponseV2.PullRequestAudit) {
