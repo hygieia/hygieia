@@ -117,10 +117,11 @@ public class DefaultGitHubClient implements GitHubClient {
 
         String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
         String personalAccessToken = (String) repo.getOptions().get("personalAccessToken");
+        String decryptPersonalAccessToken = decryptString(personalAccessToken, settings.getKey());
         boolean alldone = false;
 
-        GitHubPaging dummyPRPaging = isThereNewPRorIssue(gitHubParsed, repo, decryptedPassword, personalAccessToken,existingPRMap, "pull", firstRun);
-        GitHubPaging dummyIssuePaging = isThereNewPRorIssue(gitHubParsed, repo, decryptedPassword,personalAccessToken, existingIssueMap, "issue", firstRun);
+        GitHubPaging dummyPRPaging = isThereNewPRorIssue(gitHubParsed, repo, decryptedPassword, decryptPersonalAccessToken,existingPRMap, "pull", firstRun);
+        GitHubPaging dummyIssuePaging = isThereNewPRorIssue(gitHubParsed, repo, decryptedPassword,decryptPersonalAccessToken, existingIssueMap, "issue", firstRun);
         GitHubPaging dummyCommitPaging = new GitHubPaging();
         dummyCommitPaging.setLastPage(false);
 
@@ -129,7 +130,7 @@ public class DefaultGitHubClient implements GitHubClient {
         int loopCount = 1;
         while (!alldone) {
             LOG.debug("Executing loop " + loopCount + " for " + gitHubParsed.getOrgName() + "/" + gitHubParsed.getRepoName());
-            ResponseEntity<String> response = makeRestCallPost(graphQLurl, repo.getUserId(), decryptedPassword,personalAccessToken, query);
+            ResponseEntity<String> response = makeRestCallPost(graphQLurl, repo.getUserId(), decryptedPassword,decryptPersonalAccessToken, query);
             JSONObject data = (JSONObject) parseAsObject(response).get("data");
             JSONArray errors = getArray(parseAsObject(response), "errors");
 
@@ -185,7 +186,7 @@ public class DefaultGitHubClient implements GitHubClient {
         int missingCommitCount = 0;
         while (!alldone) {
             LOG.debug("Executing loop " + loopCount + " for " + gitHubParsed.getOrgName() + "/" + gitHubParsed.getRepoName());
-            ResponseEntity<String> response = makeRestCallPost(graphQLurl, repo.getUserId(), decryptedPassword,personalAccessToken, query);
+            ResponseEntity<String> response = makeRestCallPost(graphQLurl, repo.getUserId(), decryptedPassword,decryptPersonalAccessToken, query);
             JSONObject data = (JSONObject) parseAsObject(response).get("data");
             JSONArray errors = getArray(parseAsObject(response), "errors");
 
@@ -851,11 +852,12 @@ public class DefaultGitHubClient implements GitHubClient {
         GitHubParsed gitHubParsed = new GitHubParsed(repo.getRepoUrl());
         String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
         String personalAccessToken = (String) repo.getOptions().get("personalAccessToken");
+        String decryptPersonalAccessToken = decryptString(personalAccessToken, settings.getKey());
         JSONObject query = new JSONObject();
         query.put("query", GitHubGraphQLQuery.QUERY_RATE_LIMIT);
 
         ResponseEntity<String> response = null;
-        response = makeRestCallPost(gitHubParsed.getGraphQLUrl(), repo.getUserId(), decryptedPassword,personalAccessToken, query);
+        response = makeRestCallPost(gitHubParsed.getGraphQLUrl(), repo.getUserId(), decryptedPassword,decryptPersonalAccessToken, query);
 
         JSONObject data = (JSONObject) parseAsObject(response).get("data");
 

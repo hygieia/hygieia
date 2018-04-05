@@ -48,6 +48,8 @@
 
 	</form-group>
 
+	<hr/>
+
 	<form-group ng-if="repoConfig.repoOption.name != 'Gitlab'" input="repouser"
 				errors="{}">
 
@@ -71,6 +73,8 @@
 				 autocomplete="new-password"
 			   placeholder="Enter your repo password" />
 	</form-group>
+
+	<label class="modal-label">(or)</label>
 
 	<form-group ng-if="repoConfig.repoOption.name == 'GitHub'" input="repoPersonalAccessToken"
 				errors="{}">
