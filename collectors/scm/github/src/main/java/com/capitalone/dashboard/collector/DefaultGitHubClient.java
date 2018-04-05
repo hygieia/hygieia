@@ -87,7 +87,6 @@ public class DefaultGitHubClient implements GitHubClient {
 
         String queryUrl = apiUrl.concat("/commits?sha=" + repo.getBranch()
                 + "&since=" + getTimeForApi(getRunDate(repo, firstRun)));
-
         String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
         String personalAccessToken = (String) repo.getOptions().get("personalAccessToken");
         String decryptedPersonalAccessToken = decryptString(personalAccessToken, settings.getKey());
@@ -263,8 +262,6 @@ public class DefaultGitHubClient implements GitHubClient {
                 pull.setCommentsUrl(commentsUrl);
                 List<Comment> comments = getComments(commentsUrl, repo);
                 pull.setComments(comments);
-//                List<Comment> reviewComments = getComments(reviewCommentsUrl, repo);
-//                pull.setReviewComments(reviewComments);
                 pull.setReviewCommentsUrl(reviewCommentsUrl);
                 List<CommitStatus> commitStatuses = getCommitStatuses(commitStatusesUrl, repo);
                 pull.setCommitStatuses(commitStatuses);
@@ -307,28 +304,23 @@ public class DefaultGitHubClient implements GitHubClient {
 
         GitHubParsed gitHubParsed = new GitHubParsed((String) repo.getOptions().get("url"));
         String apiUrl = gitHubParsed.getApiUrl();
-
         // decrypt password
         String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
         String queryUrl = apiUrl.concat("/issues?state=all&since=" + getTimeForApi(getRunDate(repo, firstRun)));
         String personalAccessToken = (String) repo.getOptions().get("personalAccessToken");
         String decryptedPersonalAccessToken = decryptString(personalAccessToken, settings.getKey());
-
         boolean lastPage = false;
         String queryUrlPage = queryUrl;
-
         while (!lastPage) {
             LOG.info("Executing " + queryUrlPage);
             ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword,decryptedPersonalAccessToken);
             JSONArray jsonArray = parseAsArray(response);
             for (Object item : jsonArray) {
                 JSONObject jsonObject = (JSONObject) item;
-
                 //pull requests are also issues
                 if (jsonObject.get("pull_request") != null) {
                     continue;
                 }
-
                 String message = str(jsonObject, "title");
                 String number = str(jsonObject, "number");
 
@@ -337,9 +329,7 @@ public class DefaultGitHubClient implements GitHubClient {
                 String created = str(jsonObject, "created_at");
                 String closed = str(jsonObject, "closed_at");
                 long createdTimestamp = new DateTime(created).getMillis();
-
                 GitRequest issue = new GitRequest();
-
                 if (closed != null && closed.length() >= 10) {
                     long mergedTimestamp = new DateTime(closed).getMillis();
                     issue.setScmCommitTimestamp(mergedTimestamp);
@@ -589,22 +579,15 @@ public class DefaultGitHubClient implements GitHubClient {
                                                 String password,String personalAccessToken) {
         // Basic Auth only.
         if (!"".equals(userId) && !"".equals(password)) {
-            return restOperations.exchange(url, HttpMethod.GET,
-                    new HttpEntity<>(createHeaders(userId, password)),
-                    String.class);
-
-        } else if ((personalAccessToken!=null && !"".equals(personalAccessToken!=null)) ) {
-            return restOperations.exchange(url, HttpMethod.GET,
-                    new HttpEntity<>(createHeaders(personalAccessToken)),String.class);
+            return restOperations.exchange(url, HttpMethod.GET, new HttpEntity<>(createHeaders(userId, password)), String.class);
+        } else if ((personalAccessToken!=null && !"".equals(personalAccessToken)) ) {
+            return restOperations.exchange(url, HttpMethod.GET,new HttpEntity<>(createHeaders(personalAccessToken)),String.class);
         } else if (settings.getPersonalAccessToken() != null && !"".equals(settings.getPersonalAccessToken())){
-            return restOperations.exchange(url, HttpMethod.GET,
-                    new HttpEntity<>(createHeaders(settings.getPersonalAccessToken())),
-                    String.class);
+            String decryptPAC = decryptString(settings.getPersonalAccessToken(),settings.getKey());
+            return restOperations.exchange(url, HttpMethod.GET, new HttpEntity<>(createHeaders(decryptPAC)), String.class);
         }else {
-            return restOperations.exchange(url, HttpMethod.GET, null,
-                    String.class);
+            return restOperations.exchange(url, HttpMethod.GET, null, String.class);
         }
-
     }
 
     private HttpHeaders createHeaders(final String userId, final String password) {

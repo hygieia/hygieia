@@ -99,7 +99,28 @@
 							}
 						});
 					}
-				} else {
+				}
+				if (ctrl.repoPersonalAccessToken) {
+					if (ctrl.repoPersonalAccessToken === widgetConfig.options.personalAccessToken) {
+						//password is unchanged in the form so don't encrypt it again
+						try {
+							createCollectorItem().then(processCollectorItemResponse, handleError);
+						} catch (e) {
+							console.log(e);
+						}
+					} else {
+						collectorData.encrypt(ctrl.repoPersonalAccessToken).then(function (response) {
+
+							ctrl.repoPersonalAccessToken = response;
+							try {
+								createCollectorItem().then(processCollectorItemResponse, handleError);
+							} catch (e) {
+								console.log(e);
+							}
+						});
+					}
+				}
+				else {
 					createCollectorItem().then(processCollectorItemResponse, handleError);
 				}
 			}
