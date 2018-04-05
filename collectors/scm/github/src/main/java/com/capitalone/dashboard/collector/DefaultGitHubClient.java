@@ -89,11 +89,12 @@ public class DefaultGitHubClient implements GitHubClient {
                 + "&since=" + getTimeForApi(getRunDate(repo, firstRun)));
 
         String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
+        String personalAccessToken = (String) repo.getOptions().get("personalAccessToken");
         boolean lastPage = false;
         String queryUrlPage = queryUrl;
         while (!lastPage) {
             LOG.info("Executing " + queryUrlPage);
-            ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
+            ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword,personalAccessToken);
             JSONArray jsonArray = parseAsArray(response);
             for (Object item : jsonArray) {
                 JSONObject jsonObject = (JSONObject) item;
@@ -177,6 +178,7 @@ public class DefaultGitHubClient implements GitHubClient {
         String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
         GitHubParsed gitHubParsed = new GitHubParsed((String) repo.getOptions().get("url"));
         String branch = (repo.getBranch() != null) ? repo.getBranch() : "master";
+        String personalAccessToken = (String) repo.getOptions().get("personalAccessToken");
 
         String pageUrl = gitHubParsed.getApiUrl().concat("/pulls?state=" + status + "&base=" + branch + "&sort=updated&direction=desc");
 
@@ -186,7 +188,7 @@ public class DefaultGitHubClient implements GitHubClient {
 
         while (!lastPage && !stop) {
             LOG.info("Executing [" + queryUrlPage);
-            ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
+            ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword,personalAccessToken);
             JSONArray jsonArray = parseAsArray(response);
             for (Object item : jsonArray) {
                 JSONObject jsonObject = (JSONObject) item;
@@ -307,13 +309,14 @@ public class DefaultGitHubClient implements GitHubClient {
         // decrypt password
         String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
         String queryUrl = apiUrl.concat("/issues?state=all&since=" + getTimeForApi(getRunDate(repo, firstRun)));
+        String personalAccessToken = (String) repo.getOptions().get("personalAccessToken");
 
         boolean lastPage = false;
         String queryUrlPage = queryUrl;
 
         while (!lastPage) {
             LOG.info("Executing " + queryUrlPage);
-            ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
+            ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword,personalAccessToken);
             JSONArray jsonArray = parseAsArray(response);
             for (Object item : jsonArray) {
                 JSONObject jsonObject = (JSONObject) item;
@@ -387,10 +390,12 @@ public class DefaultGitHubClient implements GitHubClient {
         // decrypt password
         String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
 
+        String personalAccessToken = (String) repo.getOptions().get("personalAccessToken");
+
         boolean lastPage = false;
         String queryUrlPage = commentsUrl;
         while (!lastPage) {
-            ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
+            ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword,personalAccessToken);
             JSONArray jsonArray = parseAsArray(response);
             for (Object item : jsonArray) {
                 JSONObject jsonObject = (JSONObject) item;
@@ -437,11 +442,11 @@ public class DefaultGitHubClient implements GitHubClient {
 
         // decrypt password
         String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
-
+        String personalAccessToken = (String) repo.getOptions().get("personalAccessToken");
         boolean lastPage = false;
         String queryUrlPage = statusUrl;
         while (!lastPage) {
-            ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
+            ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword,personalAccessToken);
             JSONArray jsonArray = parseAsArray(response);
             for (Object item : jsonArray) {
                 JSONObject jsonObject = (JSONObject) item;
@@ -482,11 +487,11 @@ public class DefaultGitHubClient implements GitHubClient {
 
         // decrypt password
         String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
-
+        String personalAccessToken = (String) repo.getOptions().get("personalAccessToken");
         boolean lastPage = false;
         String queryUrlPage = reviewsUrl;
         while (!lastPage) {
-            ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
+            ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword,personalAccessToken);
             JSONArray jsonArray = parseAsArray(response);
             for (Object item : jsonArray) {
                 JSONObject jsonObject = (JSONObject) item;
@@ -575,18 +580,21 @@ public class DefaultGitHubClient implements GitHubClient {
     }
 
     private ResponseEntity<String> makeRestCall(String url, String userId,
-                                                String password) {
+                                                String password,String personalAccessToken) {
         // Basic Auth only.
         if (!"".equals(userId) && !"".equals(password)) {
             return restOperations.exchange(url, HttpMethod.GET,
                     new HttpEntity<>(createHeaders(userId, password)),
                     String.class);
 
-        } else if (settings.getPersonalAccessToken() != null && !"".equals(settings.getPersonalAccessToken())) {
+        } else if ((personalAccessToken!=null && !"".equals(personalAccessToken!=null)) ) {
+            return restOperations.exchange(url, HttpMethod.GET,
+                    new HttpEntity<>(createHeaders(personalAccessToken)),String.class);
+        } else if (settings.getPersonalAccessToken() != null && !"".equals(settings.getPersonalAccessToken())){
             return restOperations.exchange(url, HttpMethod.GET,
                     new HttpEntity<>(createHeaders(settings.getPersonalAccessToken())),
                     String.class);
-        } else {
+        }else {
             return restOperations.exchange(url, HttpMethod.GET, null,
                     String.class);
         }

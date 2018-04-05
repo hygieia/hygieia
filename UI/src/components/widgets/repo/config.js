@@ -24,23 +24,28 @@
 				ctrl.repoOptions.push({name:collector.name,value:collector.name});
 			});
 			var collector = modalData.dashboard.application.components[0].collectorItems.SCM;
-			var scmType = 	collector!=null? collector[0].options.scm: null;
-			var myIndex;
-			if(scmType!=null){
-				for (var v = 0; v < ctrl.repoOptions.length; v++) {
-					if (ctrl.repoOptions[v].name.toUpperCase() === scmType.toUpperCase()) {
-						myIndex = v;
+			var collectorId = (collector!=null && collector[0].collector!=null)? collector[0].collector.id: null;
+			collectorData.collectorsById(collectorId).then(function(response){
+				var collectorResponse = response[0];
+				var scmType = 	collectorResponse.name;
+				var myIndex;
+				if(scmType!=null){
+					for (var v = 0; v < ctrl.repoOptions.length; v++) {
+						if (ctrl.repoOptions[v].name.toUpperCase() === scmType.toUpperCase()) {
+							myIndex = v;
+						}
 					}
+					ctrl.repoOption=ctrl.repoOptions[myIndex];
 				}
-				ctrl.repoOption=ctrl.repoOptions[myIndex];
-			}
 
+			});
 		}
 
 		ctrl.repoUrl = removeGit(widgetConfig.options.url);
 		ctrl.gitBranch = widgetConfig.options.branch;
 		ctrl.repouser = widgetConfig.options.userID;
 		ctrl.repopass = widgetConfig.options.password;
+		ctrl.repoPersonalAccessToken = widgetConfig.options.personalAccessToken;
 
 		// public variables
 		ctrl.submitted = false;
@@ -120,21 +125,19 @@
 		}
 		function getOptions(scm) {
 			return {
-				scm: scm,
 				url: removeGit(ctrl.repoUrl),
 				branch: getNonNullString(ctrl.gitBranch),
                 userID: getNonNullString(ctrl.repouser),
-                password: getNonNullString(ctrl.repopass)
+                password: getNonNullString(ctrl.repopass),
+				personalAccessToken:getNonNullString(ctrl.repoPersonalAccessToken)
 			}
 		}
 
 		function getUniqueOptions (scm) {
 			return {
-                scm: scm,
                 url: removeGit(ctrl.repoUrl),
-                branch: ctrl.gitBranch,
-                userID: getNonNullString(ctrl.repouser)
-            }
+                branch: ctrl.gitBranch
+			}
 		}
 
 		function createCollectorItem() {
@@ -184,7 +187,8 @@
 					url : removeGit(ctrl.repoUrl),
 					branch : ctrl.gitBranch,
 					userID : getNonNullString(ctrl.repouser),
-					password: getNonNullString(ctrl.repopass)
+					password: getNonNullString(ctrl.repopass),
+					personalAccessToken: getNonNullString(ctrl.repoPersonalAccessToken)
 				},
 				componentId : modalData.dashboard.application.components[0].id,
 				collectorItemId : response.data.id

@@ -72,6 +72,20 @@
 			   placeholder="Enter your repo password" />
 	</form-group>
 
+	<form-group ng-if="repoConfig.repoOption.name == 'GitHub'" input="repoPersonalAccessToken"
+				errors="{}">
+
+		<label class="modal-label">Personal Access Token (Optional, required for private repos)</label>
+
+		<input type="password"
+			   name="repoPersonalAccessToken"
+			   class="form-control text-center"
+			   ng-model="repoConfig.repoPersonalAccessToken"
+			   maxlength="100"
+			   autocomplete="new-password"
+			   placeholder="Enter your Github personal access token"/>
+	</form-group>
+
 	<form-group ng-if="repoConfig.repoOption.name == 'Gitlab'" input="repokey"
 				errors="{}">
 

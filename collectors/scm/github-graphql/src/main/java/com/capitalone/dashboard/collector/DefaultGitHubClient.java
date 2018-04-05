@@ -116,10 +116,11 @@ public class DefaultGitHubClient implements GitHubClient {
         long historyTimeStamp = getTimeStampMills(getRunDate(repo, firstRun, false));
 
         String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
+        String personalAccessToken = (String) repo.getOptions().get("personalAccessToken");
         boolean alldone = false;
 
-        GitHubPaging dummyPRPaging = isThereNewPRorIssue(gitHubParsed, repo, decryptedPassword, existingPRMap, "pull", firstRun);
-        GitHubPaging dummyIssuePaging = isThereNewPRorIssue(gitHubParsed, repo, decryptedPassword, existingIssueMap, "issue", firstRun);
+        GitHubPaging dummyPRPaging = isThereNewPRorIssue(gitHubParsed, repo, decryptedPassword, personalAccessToken,existingPRMap, "pull", firstRun);
+        GitHubPaging dummyIssuePaging = isThereNewPRorIssue(gitHubParsed, repo, decryptedPassword,personalAccessToken, existingIssueMap, "issue", firstRun);
         GitHubPaging dummyCommitPaging = new GitHubPaging();
         dummyCommitPaging.setLastPage(false);
 
@@ -128,7 +129,7 @@ public class DefaultGitHubClient implements GitHubClient {
         int loopCount = 1;
         while (!alldone) {
             LOG.debug("Executing loop " + loopCount + " for " + gitHubParsed.getOrgName() + "/" + gitHubParsed.getRepoName());
-            ResponseEntity<String> response = makeRestCallPost(graphQLurl, repo.getUserId(), decryptedPassword, query);
+            ResponseEntity<String> response = makeRestCallPost(graphQLurl, repo.getUserId(), decryptedPassword,personalAccessToken, query);
             JSONObject data = (JSONObject) parseAsObject(response).get("data");
             JSONArray errors = getArray(parseAsObject(response), "errors");
 
@@ -184,7 +185,7 @@ public class DefaultGitHubClient implements GitHubClient {
         int missingCommitCount = 0;
         while (!alldone) {
             LOG.debug("Executing loop " + loopCount + " for " + gitHubParsed.getOrgName() + "/" + gitHubParsed.getRepoName());
-            ResponseEntity<String> response = makeRestCallPost(graphQLurl, repo.getUserId(), decryptedPassword, query);
+            ResponseEntity<String> response = makeRestCallPost(graphQLurl, repo.getUserId(), decryptedPassword,personalAccessToken, query);
             JSONObject data = (JSONObject) parseAsObject(response).get("data");
             JSONArray errors = getArray(parseAsObject(response), "errors");
 
@@ -211,7 +212,7 @@ public class DefaultGitHubClient implements GitHubClient {
     }
 
     @SuppressWarnings("PMD.NPathComplexity")
-    private GitHubPaging isThereNewPRorIssue(GitHubParsed gitHubParsed, GitHubRepo repo, String decryptedPassword, Map<Long, String> existingMap, String type, boolean firstRun) throws HygieiaException {
+    private GitHubPaging isThereNewPRorIssue(GitHubParsed gitHubParsed, GitHubRepo repo, String decryptedPassword,String personalAccessToken, Map<Long, String> existingMap, String type, boolean firstRun) throws HygieiaException {
 
         GitHubPaging paging = new GitHubPaging();
         paging.setLastPage(true);
@@ -233,7 +234,7 @@ public class DefaultGitHubClient implements GitHubClient {
         query.put("variables", variableJSON.toString());
 
 
-        ResponseEntity<String> response = makeRestCallPost(gitHubParsed.getGraphQLUrl(), repo.getUserId(), decryptedPassword, query);
+        ResponseEntity<String> response = makeRestCallPost(gitHubParsed.getGraphQLUrl(), repo.getUserId(), decryptedPassword,personalAccessToken, query);
         JSONObject data = (JSONObject) parseAsObject(response).get("data");
         JSONArray errors = getArray(parseAsObject(response), "errors");
 
@@ -849,15 +850,12 @@ public class DefaultGitHubClient implements GitHubClient {
     public GitHubRateLimit getRateLimit(GitHubRepo repo) throws MalformedURLException, HygieiaException {
         GitHubParsed gitHubParsed = new GitHubParsed(repo.getRepoUrl());
         String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
+        String personalAccessToken = (String) repo.getOptions().get("personalAccessToken");
         JSONObject query = new JSONObject();
         query.put("query", GitHubGraphQLQuery.QUERY_RATE_LIMIT);
 
         ResponseEntity<String> response = null;
-        if (StringUtils.isEmpty(settings.getPersonalAccessToken())) {
-            response = makeRestCallPost(gitHubParsed.getGraphQLUrl(), repo.getUserId(), decryptedPassword, query);
-        } else {
-            response = makeRestCallPost(gitHubParsed.getGraphQLUrl(), "", "", query);
-        }
+        response = makeRestCallPost(gitHubParsed.getGraphQLUrl(), repo.getUserId(), decryptedPassword,personalAccessToken, query);
 
         JSONObject data = (JSONObject) parseAsObject(response).get("data");
 
@@ -959,7 +957,7 @@ public class DefaultGitHubClient implements GitHubClient {
 
 
     private ResponseEntity<String> makeRestCallPost(String url, String userId,
-                                                    String password, JSONObject query) {
+                                                    String password, String personalAccessToken, JSONObject query) {
 
         // Basic Auth only.
         if (!Objects.equals("", userId) && !Objects.equals("", password)) {
@@ -967,6 +965,9 @@ public class DefaultGitHubClient implements GitHubClient {
                     new HttpEntity<Object>(query, createHeaders(userId, password)),
                     String.class);
 
+        }else if ((personalAccessToken!=null && !"".equals(personalAccessToken!=null)) ) {
+            return restOperations.exchange(url, HttpMethod.GET,
+                    new HttpEntity<>(createHeaders(personalAccessToken)),String.class);
         } else if (settings.getPersonalAccessToken() != null && !Objects.equals("", settings.getPersonalAccessToken())) {
             return restOperations.exchange(url, HttpMethod.POST,
                     new HttpEntity<Object>(query, createHeaders(settings.getPersonalAccessToken())),

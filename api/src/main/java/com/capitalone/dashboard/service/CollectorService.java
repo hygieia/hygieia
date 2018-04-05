@@ -20,7 +20,16 @@ public interface CollectorService {
      * @return Collectors matching the specified type
      */
     List<Collector>  collectorsByType(CollectorType collectorType);
-    
+
+
+    /**
+     * Finds all Collectors of a given id.
+     *
+     * @param ObjectId
+     * @return Collectors matching the specified type
+     */
+    List<Collector>  collectorsById(ObjectId id);
+
     /**
      * Finds paged results of CollectorItems of a given type.
      *
