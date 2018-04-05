@@ -62,6 +62,13 @@ public class CollectorController {
         return collectorService.collectorsByType(collectorType);
     }
 
+    @RequestMapping(value = "/collector/collectorId/{id}",
+            method = GET, produces = APPLICATION_JSON_VALUE)
+    public List<Collector> collectorsByType(@PathVariable ObjectId id) {
+        return collectorService.collectorsById(id);
+    }
+
+
     @RequestMapping(value = "/collector/item", method = POST,
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectorItem> createCollectorItem(@Valid @RequestBody CollectorItemRequest request) {
