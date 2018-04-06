@@ -1,14 +1,17 @@
 package com.capitalone.dashboard.request;
 
 import com.capitalone.dashboard.model.AuditType;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Set;
 
 public class DashboardAuditRequest extends AuditReviewRequest {
-    private String title;
+    @ApiModelProperty(value = "Title", example = "coderepofix")
+	private String title;
     private String businessService;
     private String businessApplication;
-    private Set<AuditType> auditType;
+    @ApiModelProperty(value = "Audit Type has one of these values: ALL, CODE_REVIEW, BUILD_REVIEW, CODE_QUALITY, TEST_RESULT, PERF_TEST", example = "ALL")
+	private Set<AuditType> auditType;
 
 
     public String getTitle() {
