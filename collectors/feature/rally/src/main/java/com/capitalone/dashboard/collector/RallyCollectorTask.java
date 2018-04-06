@@ -1,7 +1,8 @@
 package com.capitalone.dashboard.collector;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -236,9 +237,9 @@ public class RallyCollectorTask extends CollectorTask<RallyCollector> {
 	private void refreshData(List<RallyProject> rallyProjects) {
 		long start = System.currentTimeMillis();
 		int count = 0;
+		Date currentDate = new Date();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.HOUR, -1);
 		for (RallyProject project : rallyProjects) {
 
 			if (project.getErrors().stream()
@@ -250,21 +251,10 @@ public class RallyCollectorTask extends CollectorTask<RallyCollector> {
 					List<RallyFeature> iterationsForProject = rallyFeatureRepository
 							.findByProjectId(project.getProjectId());
 
-					for (RallyFeature iteration : iterationsForProject) {
-						if (iterationDatas.isEmpty()) {
+					for (RallyFeature iteration : iterationsForProject) {						
+						if(format.parse(format.format(currentDate)).after(format.parse(iteration.getEndDate().toString())) && iteration.getRemainingDays()!=0) {
 							iteration.setRemainingDays(0);
 							rallyFeatureRepository.save(iteration);
-						} else {
-							boolean currentIterationStatus = false;
-
-							for (RallyFeature currentIteration : iterationDatas) {
-								if (currentIteration.getIterationId().equals(iteration.getIterationId())) {
-									currentIterationStatus = true;
-								}
-							}
-							if (!currentIterationStatus) {
-								rallyFeatureRepository.save(iteration);
-							}
 						}
 					}
 
@@ -283,7 +273,6 @@ public class RallyCollectorTask extends CollectorTask<RallyCollector> {
 														// latest..
 								currentIteration.setId(truncateData.getId());
 							}
-							currentIteration.setRemainingDays(0);
 							JSONArray userStories = rallyClient.getIterationStories(currentIteration);
 							currentIteration.getStoryStages().add(rallyClient.getStoryStages(currentIteration.getProjectId(), userStories));
 							rallyFeatureRepository.save(currentIteration);
@@ -319,6 +308,8 @@ public class RallyCollectorTask extends CollectorTask<RallyCollector> {
 					LOG.error("Error fetching data for:" + project.getProjectName(), e);
 					CollectionError error = new CollectionError("Error parsing data", project.getProjectName());
 					project.getErrors().add(error);
+				} catch (java.text.ParseException e) {
+					LOG.error("Parsing date error "+e);
 				} finally {
 					rallyProjectRepository.save(project);
 				}
