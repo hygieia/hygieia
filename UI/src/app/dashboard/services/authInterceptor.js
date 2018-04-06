@@ -13,6 +13,7 @@
       return {
         responseError: function (response) {
           if (response.status === 401) {
+            tokenService.removeToken();
             $location.path('/login');
           }
           return $q.reject(response);
