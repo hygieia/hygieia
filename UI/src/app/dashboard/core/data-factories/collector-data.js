@@ -14,7 +14,7 @@
         var itemsByTypeRoute = '/api/collector/item/type/';
         var collectorsByTypeRoute = '/api/collector/type/';
         var encryptRoute = "/api/encrypt/";
-        var collectorByIdRoute = "api/collector/collectorId/";
+        var collectorByIdRoute = "/api/collector/collectorId/";
 
         return {
             itemsByType: itemsByType,
