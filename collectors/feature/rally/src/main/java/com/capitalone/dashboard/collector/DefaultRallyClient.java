@@ -319,17 +319,15 @@ public class DefaultRallyClient implements RallyClient {
 						&& dateFormat.parse(iterationDate).before(dateFormat.parse(dateFormat.format(currentDate)))) {
 					rallyBurnDownData.setId(existingBurnDownData.getId());
 					rallyBurnDownData.getBurnDownData()
-							.add(existingBurnDownData
-									.getBurnDownData().stream().filter(stream -> stream
-											.get(RallyBurnDownData.ITERATION_DATE).equals(iterationDate))
-									.findAny().orElse(null));
-					
+									.add(existingBurnDownData.getBurnDownData().stream()
+									.filter(stream -> stream.get(RallyBurnDownData.ITERATION_DATE).equals(iterationDate))
+									.findAny()
+									.orElse(createEmptyBurnDown(burnDownDetails)));
 					continue;
+				} else {
+					createEmptyBurnDown(burnDownDetails);
 				}
-				if (burnDownDetails.get(RallyBurnDownData.ACCEPTED_POINTS) == null
-						|| burnDownDetails.get(RallyBurnDownData.ITERATION_TO_DO_HOURS) == null) {
-					burnDownDetails.put(RallyBurnDownData.ACCEPTED_POINTS, "0");
-					burnDownDetails.put(RallyBurnDownData.ITERATION_TO_DO_HOURS, "0");
+				if (iteration.getTaskEstimateTotal() != null) {
 					rallyBurnDownData.setTotalEstimate(Double.parseDouble(iteration.getTaskEstimateTotal()));
 				}
 				rallyBurnDownData.getBurnDownData().add(burnDownDetails);
@@ -453,5 +451,11 @@ public class DefaultRallyClient implements RallyClient {
 	@Nonnull
 	private static Stream<Object> arrayToStream(JSONArray array) {
 		return StreamSupport.stream(array.spliterator(), false);
+	}
+	
+	private Map<String, String> createEmptyBurnDown(Map<String, String> burnDownDetails) {
+		burnDownDetails.put(RallyBurnDownData.ACCEPTED_POINTS, "0");
+		burnDownDetails.put(RallyBurnDownData.ITERATION_TO_DO_HOURS, "0");
+		return burnDownDetails;
 	}
 }
