@@ -35,7 +35,7 @@ public interface RallyFeatureRepository extends CrudRepository<RallyFeature, Obj
     @Query(value="{'collectorItemId' :?0}")
     List<RallyFeature> findByProjectIterationId(Object collectorItemId);
     
-    List<RallyFeature> findByCollectorItemIdAndRemainingDaysNot(Object collectorItemId, String remainginDays);
+    List<RallyFeature> findByCollectorItemIdAndRemainingDaysNot(Object collectorItemId, int remainginDays);
     
 
 	List<RallyFeature> findByProjectId(String projectId);

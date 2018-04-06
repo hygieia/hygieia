@@ -28,7 +28,6 @@ import com.capitalone.dashboard.repository.RallyBurnDownRepository;
 import com.capitalone.dashboard.repository.RallyFeatureRepository;
 import com.capitalone.dashboard.request.RallyFeatureRequest;
 import com.capitalone.dashboard.response.RallyBurnDownResponse;
-import com.google.common.collect.Iterables;
 
 @Service
 public class RallyFeatureServiceImpl implements RallyFeatureService {
@@ -64,7 +63,7 @@ public class RallyFeatureServiceImpl implements RallyFeatureService {
 
 	public List<RallyFeature> rallyWidgetDataDetails(CollectorItem collectorItem) {
 		List<RallyFeature> currentIteration = rallyFeatureRepository
-				.findByCollectorItemIdAndRemainingDaysNot(collectorItem.getId(),"0");
+				.findByCollectorItemIdAndRemainingDaysNot(collectorItem.getId(),0);
 		return currentIteration;
 	}
 
