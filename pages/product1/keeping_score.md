@@ -29,27 +29,27 @@ By keeping score for the team dashboards, Hygieia allows you to:
 
 ## Create a New Dashboard with Scores Enabled
 
-To enable scoring for a new dashboard, check *Enable Score* in the *Create a New Dashboard* window. For more details, see the [Create a Team Dashboard](select_dashboard.md#create-a-team-dashboard) section.
+To enable scoring for a new dashboard, check **Enable Score** in the **Create a New Dashboard** window. For more details, see the [Create a Team Dashboard](select_dashboard.md#create-a-team-dashboard) section.
 
 ## Enable or Disable Scores for an Existing Dashboard
 
-The owner or administrator of the dashboard can either enable or disable dashboard scores for an existing dashboard. You can do this from the *Administer Your Dashboard* screen. 
+The owner or administrator of the dashboard can either enable or disable dashboard scores for an existing dashboard. You can do this from the **Administer Your Dashboard** screen. 
 
-Click the Settings icon to invoke the *Administer Your Dashboard* screen. In this screen, click on the *Score* tab for settings related to the scoring feature:
+Click the Settings icon to invoke the **Administer Your Dashboard** screen. In this screen, click on the **Score** tab for settings related to the scoring feature:
 
-*Enable Score* – Check this box to indicate that you want to enable the scoring feature for an existing team dashboard. 
+**Enable Score** – Check this box to indicate that you want to enable the scoring feature for an existing team dashboard. 
 
-For an existing dashboard, uncheck *Enable Score* to remove the star ratings.
+For an existing dashboard, uncheck **Enable Score** to remove the star ratings.
 
 Select one of the following radio-buttons to choose how the score should appear on the dashboard:
 
-- *Display in Header* – Select this option to display the overall dashboard score at the top of the team dashboard. Click on the star rating to view the score details.
+- **Display in Header** – Select this option to display the overall dashboard score at the top of the team dashboard. Click on the star rating to view the score details.
 
   If you select this option, to view score details, click on the score. The Score Details window pops up.
   
-- *Display in Widget* – Choose this option to display the overall score as a widget on the dashboard. Click *View Details* on the widget to see the score details.  
+- **Display in Widget** – Choose this option to display the overall score as a widget on the dashboard. Click **View Details** on the widget to see the score details.  
 
-The *Score Details* pop-up offers a breakdown on the ratings for each of the widgets configured on the team dashboard. These details include:
+The **Score Details** pop-up offers a breakdown on the ratings for each of the widgets configured on the team dashboard. These details include:
 
 - The list of widgets
 - Processing status of the widget (either processed or failed)
