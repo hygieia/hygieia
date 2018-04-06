@@ -8,6 +8,7 @@ public class GitHubRepo extends CollectorItem {
     public static final String BRANCH = "branch"; // master, development etc.
     public static final String USER_ID = "userID";
     public static final String PASSWORD = "password";
+    public static final String PERSONAL_ACCESS_TOKEN = "personalAccessToken";
 
 
     public String getUserId() {
@@ -33,6 +34,14 @@ public class GitHubRepo extends CollectorItem {
 
     public void setBranch(String branch) {
         getOptions().put(BRANCH, branch);
+    }
+
+    public static String getPersonalAccessToken() {
+        return PERSONAL_ACCESS_TOKEN;
+    }
+
+    public void setPersonalAccessToken(String personalAccessToken) {
+        getOptions().put(PERSONAL_ACCESS_TOKEN, personalAccessToken);
     }
 
 
