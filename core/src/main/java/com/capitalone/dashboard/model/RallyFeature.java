@@ -8,31 +8,35 @@ import java.util.Set;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-
-
 /**
- * Represents code quality at a specific point in time. This could include
- * a unit test run, a security scan, static analysis, functional tests,
- * manual acceptance tests or bug reports.
- *
- * Possible Collectors:
- *  Sonar (in scope)
- *  Fortify
- *  ALM
- *  Various build system test results
- *
+ * Represents the rally metrics data for a particular iteration with remaining days calculated 
+ * by start date and end date.
  */
-@Document(collection="rally_feature")
+@Document(collection = "rally_feature")
 public class RallyFeature extends BaseModel {
-	 private long timestamp;
-	 
-    /*private String name;
-    private String url;
-    private CodeQualityType type;
-    private String version;
-    private  ObjectId buildId;*/
-	 
+	private long timestamp;
+	private Object endDate;
+	private int remainingDays;
 	private Object startDate;
+	private long lastUpdated;
+
+	private ObjectId collectorItemId;
+	private String plannedVelocity;
+	private String state;
+	private String taskActualTotal;
+	private String taskEstimateTotal;
+	private String taskRemainingTotal;
+	private String projectId;
+	private String projectName;
+	private String planEstimate;
+	private static final String INSTANCE_URL = "instanceUrl";
+	private static final String ITERATION_NAME = "iterationName";
+	private static final String ITERATION_ID = "iterationId";
+	private String userListCount;
+	private String lastExecuted;
+	private Map<String, Object> options = new HashMap<>();
+
+	private Set<RallyStoryStages> storyStages = new HashSet<>();
 	
 	public Object getStartDate() {
 		return startDate;
@@ -42,10 +46,6 @@ public class RallyFeature extends BaseModel {
 		this.startDate = startDate;
 	}
 
-	private Object endDate;
-	private int remainingDays;
-
-
 	public int getRemainingDays() {
 		return remainingDays;
 	}
@@ -53,26 +53,6 @@ public class RallyFeature extends BaseModel {
 	public void setRemainingDays(int remainingDays) {
 		this.remainingDays = remainingDays;
 	}
-
-	private long lastUpdated;
-
-	private ObjectId collectorItemId;
-    private String plannedVelocity;
-    private String state;
-    private String taskActualTotal;
-    private String taskEstimateTotal;
-    private String taskRemainingTotal;
-    private String projectId;
-    private String projectName;
-    private String planEstimate;
-    private static final String INSTANCE_URL = "instanceUrl";
-    private static final String ITERATION_NAME = "iterationName";
-    private static final String ITERATION_ID = "iterationId";
-    private String userListCount;
-    private String lastExecuted;
-    
-    
-
 
 	public String getLastExecuted() {
 		return lastExecuted;
@@ -90,18 +70,11 @@ public class RallyFeature extends BaseModel {
 		this.userListCount = userListCount;
 	}
 
-	private Map<String, Object> options = new HashMap<>();
-    
-   // private Map<String, Object> storyStages = new HashMap<>();
-    
-    private Set<RallyStoryStages> storyStages = new HashSet<>();
-    
-    
 	public Map<String, Object> getOptions() {
 		return options;
 	}
-    
-    public String getPlanEstimate() {
+
+	public String getPlanEstimate() {
 		return planEstimate;
 	}
 
@@ -165,53 +138,45 @@ public class RallyFeature extends BaseModel {
 		this.projectName = projectName;
 	}
 
-    public ObjectId getCollectorItemId() {
-        return collectorItemId;
-    }
+	public ObjectId getCollectorItemId() {
+		return collectorItemId;
+	}
 
-    public void setCollectorItemId(ObjectId collectorItemId) {
-        this.collectorItemId = collectorItemId;
-    }
-    
-    public String getInstanceUrl() {
-        return (String) getOptions().get(INSTANCE_URL);
-    }
+	public void setCollectorItemId(ObjectId collectorItemId) {
+		this.collectorItemId = collectorItemId;
+	}
 
-    public void setInstanceUrl(String instanceUrl) {
-        getOptions().put(INSTANCE_URL, instanceUrl);
-    }
+	public String getInstanceUrl() {
+		return (String) getOptions().get(INSTANCE_URL);
+	}
 
-    public String getIterationId() {
-        return (String) getOptions().get(ITERATION_ID);
-    }
+	public void setInstanceUrl(String instanceUrl) {
+		getOptions().put(INSTANCE_URL, instanceUrl);
+	}
 
-    public void setIterationId(String id) {
-        getOptions().put(ITERATION_ID, id);
-    }
+	public String getIterationId() {
+		return (String) getOptions().get(ITERATION_ID);
+	}
 
-    public String getIterationName() {
-        return (String) getOptions().get(ITERATION_NAME);
-    }
+	public void setIterationId(String id) {
+		getOptions().put(ITERATION_ID, id);
+	}
 
-    public void setIterationName(String name) {
-        getOptions().put(ITERATION_NAME, name);
-    }
-    
-    public long getTimestamp() {
+	public String getIterationName() {
+		return (String) getOptions().get(ITERATION_NAME);
+	}
+
+	public void setIterationName(String name) {
+		getOptions().put(ITERATION_NAME, name);
+	}
+
+	public long getTimestamp() {
 		return timestamp;
 	}
 
 	public void setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
 	}
-	
-	/*public Object getCreationDate() {
-		return creationDate;
-	}
-
-	public void setCreationDate(Object creationDate) {
-		this.creationDate = creationDate;
-	}*/
 
 	public Object getEndDate() {
 		return endDate;
@@ -220,7 +185,7 @@ public class RallyFeature extends BaseModel {
 	public void setEndDate(Object endDate) {
 		this.endDate = endDate;
 	}
-	
+
 	public long getLastUpdated() {
 		return lastUpdated;
 	}
@@ -228,7 +193,7 @@ public class RallyFeature extends BaseModel {
 	public void setLastUpdated(long lastUpdated) {
 		this.lastUpdated = lastUpdated;
 	}
-	
+
 	public Set<RallyStoryStages> getStoryStages() {
 		return storyStages;
 	}
@@ -237,6 +202,4 @@ public class RallyFeature extends BaseModel {
 		this.storyStages = storyStages;
 	}
 
-
-    
 }

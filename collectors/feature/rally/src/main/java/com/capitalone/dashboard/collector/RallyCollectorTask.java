@@ -41,7 +41,6 @@ import com.capitalone.dashboard.repository.RallyProjectRepository;
 
 @Component
 public class RallyCollectorTask extends CollectorTask<RallyCollector> {
-	@SuppressWarnings({ "PMD.UnusedPrivateField", "unused" })
 	private static final Log LOG = LogFactory.getLog(RallyCollectorTask.class);
 
 	private final RallyCollectorRepository rallyCollectorRepository;
