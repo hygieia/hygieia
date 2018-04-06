@@ -59,4 +59,4 @@ The **Score Details** pop-up offers a breakdown on the ratings for each of the w
 
 ![Image](http://capitalone.github.io/Hygieia/media/images/Dashboard_Gamification_ScoreDetails.png)
 
-For additional information on *Administer Your Dashboard* screen, see [Change Dashboard Settings](dashboard_administration.md#change-dashboard-settings) section.
+For additional information on **Administer Your Dashboard** screen, see [Change Dashboard Settings](dashboard_administration.md#change-dashboard-settings) section.

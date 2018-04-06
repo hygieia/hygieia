@@ -27,7 +27,7 @@ In this screen, you can make specific changes to the dashboard in the following 
 To delete a dashboard:
 
 1.	Go to All Dashboards tab in the main console. 
-2.	Under My Dashboards, select the dashboard you want to delete, click the *Delete* icon to the right of the dashboard name, and then confirm deletion by clicking *Delete*.  
+2.	In the **My Dashboards** section, select the dashboard you want to delete, click the **Delete** icon to the right of the dashboard name, and then confirm deletion by clicking **Delete**.  
  
 The dashboard is deleted.
 
