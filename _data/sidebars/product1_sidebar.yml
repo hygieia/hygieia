@@ -46,6 +46,9 @@ entries:
     - title: Widget View
       url: widget_view.html
       output: web, pdf
+    - title: Dashboard Gamification
+      url: keeping_score.html
+      output: web, pdf
     - title: Product View
       url: product_view.html
       output: web, pdf

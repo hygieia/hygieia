@@ -67,7 +67,7 @@ To install the plugin in Jenkins:
 
 7. The following screenshot shows a simple pipeline script with Maven build, Hygieia artifact, and deploy publishing.
 
-![Image](http://www.capitalone.github.io/Hygieia/media/images/jenkins2.0-pipeline-deploy-publish.png)
+![Image](http://capitalone.github.io/Hygieia/media/images/jenkins2.0-pipeline-deploy-publish.png)
 
 ### Jenkins (Versions Prior to 2.0)
 
