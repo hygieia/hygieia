@@ -16,6 +16,8 @@ public class ApiSettings {
     private boolean corsEnabled;
     private String corsWhitelist;
     private String peerReviewContexts;
+    private String peerReviewApprovalText;
+    private String serviceAccountOU;
     @Value("${maxDaysRangeForQuery:60}") // 60 days max
     private long maxDaysRangeForQuery;
     private boolean logRequest;
@@ -66,5 +68,21 @@ public class ApiSettings {
 
     public void setMaxDaysRangeForQuery(long maxDaysRangeForQuery) {
         this.maxDaysRangeForQuery = maxDaysRangeForQuery;
+    }
+
+    public String getPeerReviewApprovalText() {
+        return peerReviewApprovalText;
+    }
+
+    public void setPeerReviewApprovalText(String peerReviewApprovalText) {
+        this.peerReviewApprovalText = peerReviewApprovalText;
+    }
+
+    public String getServiceAccountOU() {
+        return serviceAccountOU;
+    }
+
+    public void setServiceAccountOU(String serviceAccountOU) {
+        this.serviceAccountOU = serviceAccountOU;
     }
 }
