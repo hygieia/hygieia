@@ -35,6 +35,7 @@ Hygieia supports the following collectors Inventory:
   - [Gitlab](feature/feature-gitlab.md)
 - **Miscellaneous Collectors**
   - [Chat Ops](misc/chat-ops.md)
+  - [Score](misc/score.md)
 - **SCM Collectors** 
   - [Bitbucket](scm/bitbucket.md)
   - [GitHub](scm/github.md)
