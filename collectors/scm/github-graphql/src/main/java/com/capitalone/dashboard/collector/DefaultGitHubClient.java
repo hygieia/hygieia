@@ -952,8 +952,7 @@ public class DefaultGitHubClient implements GitHubClient {
         }else if (personalAccessToken != null && !Objects.equals("", personalAccessToken)) {
             return restOperations.exchange(url, HttpMethod.POST, new HttpEntity<Object>(query, createHeaders(personalAccessToken)), String.class);
         }else if (settings.getPersonalAccessToken() != null && !Objects.equals("", settings.getPersonalAccessToken())) {
-            String decryptPAC = decryptString(settings.getPersonalAccessToken(),settings.getKey());
-            return restOperations.exchange(url, HttpMethod.POST, new HttpEntity<Object>(query, createHeaders(decryptPAC)), String.class);
+            return restOperations.exchange(url, HttpMethod.POST, new HttpEntity<Object>(query, createHeaders(settings.getPersonalAccessToken())), String.class);
         } else {
             return restOperations.exchange(url, HttpMethod.POST, new HttpEntity<Object>(query, null), String.class);
         }
