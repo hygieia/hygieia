@@ -222,7 +222,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                 }
                 gitHubRepoRepository.save(repo);
             } else {
-                LOG.info(repo.getOptions().toString() + "::" + repo.getBranch() + ":: errorThreshold exceeded");
+                LOG.info(repo.getRepoUrl()+ "::" + repo.getBranch() + ":: errorThreshold exceeded");
             }
             repoCount++;
         }
