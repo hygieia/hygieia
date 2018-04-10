@@ -77,7 +77,7 @@
 		size="55"/>
 	</form-group>
 
-	<label class="modal-label">(OR)</label>
+	<label ng-if="repoConfig.repoOption.name == 'GitHub'" class="modal-label">(OR)</label>
 
 	<form-group ng-if="repoConfig.repoOption.name == 'GitHub'" input="repoPersonalAccessToken"
 				errors="{}">
