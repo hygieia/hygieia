@@ -90,7 +90,7 @@ Based on the configuration, Hygieia displays the following details in the Featur
    - Enter the **Branch** for the repo. The repo branch is not applicable for Subversion.
    - Enter the repo login **Credentials**. This is not applicable for Gitlab.
    - Enter the **API Key** for a private Gitlab repo. 
-   - Enter the **Personal Access Token** for a GitHub repo. For details on generating a Personal Access Token for GitHub, see the [Github documentation](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/).
+   - Enter the **Personal Access Token** for a GitHub repo. For details on generating a Personal Access Token for GitHub, see the [GitHub documentation](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/).
    
 2. Click **Save**. The Repo Widget is configured for the selected repo.
 
