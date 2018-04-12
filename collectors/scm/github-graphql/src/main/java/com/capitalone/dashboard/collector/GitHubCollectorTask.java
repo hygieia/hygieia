@@ -170,7 +170,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                 try {
                     if (!isUnderRateLimit(repo)) {
                         LOG.error("GraphQL API rate limit reached. Stopping processing");
-                        break;
+                        continue;
                     }
 
                     List<GitRequest> allRequests = gitRequestRepository.findRequestNumberAndLastUpdated(repo.getId());

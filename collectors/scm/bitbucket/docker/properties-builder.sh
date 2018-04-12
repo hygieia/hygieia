@@ -46,7 +46,7 @@ git.api=${BITBUCKET_API:-/rest/api/1.0/}
 git.commitThresholdDays=${BITBUCKET_COMMIT_THRESHOLD_DAYS:-15}
 
 #Page size for rest calls. Only applicable to Bitbucket Server.
-git.pageSize=${BITBUCKET_PAGE_SIZE,-25}
+git.pageSize=${BITBUCKET_PAGE_SIZE:-25}
 
 #Bitbucket product
 # Set to "cloud" to use Bitbucket Cloud (formerly known as Bitbucket)
