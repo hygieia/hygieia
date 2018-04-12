@@ -132,7 +132,7 @@ public class GitHubGraphQLQuery {
                     "            login\n" +
                     "            resourcePath\n" +
                     "          }" +
-                    "          commits(first: 100) {\n" +
+                    "          commits(first: 250) {\n" +
                     "            totalCount\n" +
                     "            nodes {\n" +
                     "              commit {\n" +

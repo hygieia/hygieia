@@ -1,19 +1,6 @@
 package com.capitalone.dashboard.event;
 
-import com.capitalone.dashboard.model.Application;
-import com.capitalone.dashboard.model.AuthType;
-import com.capitalone.dashboard.model.Build;
-import com.capitalone.dashboard.model.Collector;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.Commit;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.DashboardType;
-import com.capitalone.dashboard.model.EnvironmentStage;
-import com.capitalone.dashboard.model.Owner;
-import com.capitalone.dashboard.model.Pipeline;
-import com.capitalone.dashboard.model.PipelineStage;
+import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
@@ -104,11 +91,9 @@ public class BuildEventListenerTest {
         if (hasBuildCollector) {
             component.addCollectorItem(CollectorType.Build, collectorItem());
         }
-        ObjectId configItemAppId = new ObjectId();
-        ObjectId configItemComponentId = new ObjectId();
 
         Application application = new Application("app", component); List<String> activeWidgets = new ArrayList<>();
-        Dashboard dashboard = new Dashboard("template", "title", application, new Owner("owner", AuthType.STANDARD),  DashboardType.Team , configItemAppId, configItemComponentId,activeWidgets);
+        Dashboard dashboard = new Dashboard("template", "title", application, new Owner("owner", AuthType.STANDARD),  DashboardType.Team , "ASVTEST", "BAPTEST",activeWidgets, false, ScoreDisplayType.HEADER);
         dashboard.setId(ObjectId.get());
         return dashboard;
     }

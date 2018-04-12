@@ -9,8 +9,8 @@
         .module(HygieiaConfig.module)
         .controller('CreateDashboardController', CreateDashboardController);
 
-    CreateDashboardController.$inject = ['$location', '$uibModalInstance', 'dashboardData', 'userService', 'DashboardType', 'cmdbData', 'dashboardService', 'templateMangerData','$uibModal'];
-    function CreateDashboardController($location, $uibModalInstance, dashboardData, userService, DashboardType, cmdbData, dashboardService, templateMangerData,$uibModal) {
+    CreateDashboardController.$inject = ['$location', '$uibModalInstance', 'dashboardData', 'userService', 'DashboardType', 'cmdbData', 'dashboardService', 'templateMangerData','$uibModal', 'ScoreDisplayType'];
+    function CreateDashboardController($location, $uibModalInstance, dashboardData, userService, DashboardType, cmdbData, dashboardService, templateMangerData,$uibModal, ScoreDisplayType) {
         var ctrl = this;
 
         // public variables
@@ -22,6 +22,10 @@
         ctrl.configurationItemBusServId = "";
         ctrl.configurationItemBusAppId = "";
         ctrl.configureSelect =  "widgets";
+        ctrl.scoreSettings = {
+            scoreEnabled : false,
+            scoreDisplay : ScoreDisplayType.HEADER
+        };
 
         // TODO: dynamically register templates with script
         ctrl.templates = [
@@ -41,8 +45,6 @@
         ctrl.setAvailableTemplates = setAvailableTemplates;
         ctrl.getConfigItem = getConfigItem;
         ctrl.resetFormValidation = resetFormValidation;
-        ctrl.setConfigItemAppId = setConfigItemAppId;
-        ctrl.setConfigItemComponentId = setConfigItemComponentId;
         ctrl.getBusAppToolText = getBusAppToolText;
         ctrl.getBusSerToolText = getBusSerToolText;
         ctrl.configureWidgets = configureWidgets;
@@ -122,8 +124,10 @@
                         type: document.cdf.dashboardType.value,
                         applicationName: appName,
                         componentName: appName,
-                        configurationItemBusServObjectId: dashboardService.getBusinessServiceId(ctrl.configurationItemBusServ),
-                        configurationItemBusAppObjectId: dashboardService.getBusinessApplicationId(ctrl.configurationItemBusApp)
+                        configurationItemBusServName: ctrl.configurationItemBusServ.configurationItem,
+                        configurationItemBusAppName: ctrl.configurationItemBusApp.configurationItem,
+                        scoreEnabled : ctrl.scoreSettings.scoreEnabled,
+                        scoreDisplay : ctrl.scoreSettings.scoreDisplay
                     };
                     $uibModalInstance.dismiss();
                     configureWidgets(submitData);
@@ -140,8 +144,10 @@
                             type: document.cdf.dashboardType.value,
                             applicationName: appName,
                             componentName: appName,
-                            configurationItemBusServObjectId: dashboardService.getBusinessServiceId(ctrl.configurationItemBusServ),
-                            configurationItemBusAppObjectId: dashboardService.getBusinessApplicationId(ctrl.configurationItemBusApp)
+                            configurationItemBusServName: ctrl.configurationItemBusServ.configurationItem,
+                            configurationItemBusAppName: ctrl.configurationItemBusApp.configurationItem,
+                            scoreEnabled : ctrl.scoreSettings.scoreEnabled,
+                            scoreDisplay : ctrl.scoreSettings.scoreDisplay
                         };
 
                     dashboardData
@@ -182,15 +188,6 @@
             form.configurationItemBusServ.$setValidity('dupBusServError', true);
             form.configurationItemBusApp.$setValidity('dupBusAppError', true);
             form.dashboardTitle.$setValidity('createError', true);
-        }
-
-        function setConfigItemAppId(id) {
-            dashboardService.setBusinessServiceId(id);
-        }
-
-        function setConfigItemComponentId(item) {
-            dashboardService.setBusinessApplicationId(item.id);
-            ctrl.configurationItemBusApp = item.configurationItem;
         }
 
         function getBusAppToolText() {

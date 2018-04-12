@@ -40,5 +40,5 @@ public interface CommitRepository extends CrudRepository<Commit, ObjectId>, Quer
 
     List<Commit> findByCollectorItemIdAndScmCommitTimestampIsBetween(ObjectId collectorItemId, long beginDate, long endDate);
 
-    List<Commit> findCommitsByCollectorItemIdAndScmCommitTimestampAfterAndPullNumberIsNull(ObjectId collectorItemId, long beginDate);
+    List<Commit> findCommitsByCollectorItemIdAndTimestampAfterAndPullNumberIsNull(ObjectId collectorItemId, long beginDate);
 }

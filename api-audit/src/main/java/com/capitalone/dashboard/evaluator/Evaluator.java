@@ -70,6 +70,6 @@ public abstract class Evaluator<T> {
 
 
     public Dashboard getDashboard(String businessService, String businessComponent) {
-        return dashboardRepository.findDashboardByConfigurationItemBusServNameAndConfigurationItemBusAppName(businessService, businessComponent);
+        return dashboardRepository.findByConfigurationItemBusServNameIgnoreCaseAndConfigurationItemBusAppNameIgnoreCase(businessService, businessComponent);
     }
 }

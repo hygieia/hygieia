@@ -3,6 +3,7 @@ package com.capitalone.dashboard.model;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,9 @@ public class HudsonCollector extends Collector {
     private List<String> buildServers = new ArrayList<>();
     private List<String> niceNames = new ArrayList<>();
     private List<String> environments = new ArrayList<>();
+    private static final String NICE_NAME = "niceName";
+    private static final String JOB_NAME = "options.jobName";
+
 
     public List<String> getBuildServers() {
         return buildServers;
@@ -64,6 +68,7 @@ public class HudsonCollector extends Collector {
 
         protoType.setAllFields(options);
         protoType.setUniqueFields(uniqueOptions);
+        protoType.setSearchFields(Arrays.asList(JOB_NAME,NICE_NAME));
         return protoType;
     }
 }

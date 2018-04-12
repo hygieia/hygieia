@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.collector;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.*;
 import org.apache.commons.logging.Log;
@@ -74,10 +75,10 @@ public class HpsmCollectorTaskTest {
     }
 
     @Test
-    public void collect_testCollect() {
+    public void collect_testCollect() throws HygieiaException {
         when(hpsmClient.getApps()).thenReturn(getMockList());
         when(cmdbRepository.findAll()).thenReturn(getMockList());
-
+        when(cmdbRepository.findAllByValidConfigItem(true)).thenReturn(getMockList());
 
         HpsmCollector collector =collector();
         collector.setId(new ObjectId("111ca42a258ad365fbb64ecc"));
@@ -144,7 +145,7 @@ public class HpsmCollectorTaskTest {
     }
 
     @Test
-    public void collect_testCollectChangeOrders() {
+    public void collect_testCollectChangeOrders() throws HygieiaException {
         String collectorAction = "HpsmChange";
         System.setProperty("collector.action", collectorAction);
 
@@ -198,7 +199,7 @@ public class HpsmCollectorTaskTest {
     }
 
     @Test
-    public void collect_testCollectIncidents() {
+    public void collect_testCollectIncidents() throws HygieiaException{
         String collectorAction = "HpsmIncident";
         System.setProperty("collector.action", collectorAction);
 

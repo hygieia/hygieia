@@ -33,6 +33,7 @@ import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.model.WidgetResponse;
+import com.capitalone.dashboard.model.ScoreDisplayType;
 import com.capitalone.dashboard.request.DashboardRequest;
 import com.capitalone.dashboard.request.DashboardRequestTitle;
 import com.capitalone.dashboard.request.WidgetRequest;
@@ -289,6 +290,22 @@ public class DashboardController {
                     .body(he.getMessage());
         }
 
+    }
+
+    @DashboardOwnerOrAdmin
+    @RequestMapping(value = "/dashboard/updateScoreSettings/{id}", method = PUT)
+    public ResponseEntity<String> updateScoreSettings(
+      @PathVariable ObjectId id,
+      @RequestParam(value = "scoreEnabled", required = true, defaultValue = "false") boolean scoreEnabled,
+      @RequestParam(value = "scoreDisplay", required = false, defaultValue = "HEADER") String scoreDisplay) {
+        Dashboard dashboard = dashboardService.updateScoreSettings(
+          id, scoreEnabled, ScoreDisplayType.fromString(scoreDisplay)
+        );
+        if(dashboard != null){
+            return ResponseEntity.ok("Updated");
+        }else{
+            return ResponseEntity.ok("Unchanged");
+        }
     }
 
 

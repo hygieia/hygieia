@@ -109,7 +109,9 @@
                     validAppName: data[x].validAppName,
                     configurationItemBusServName: data[x].configurationItemBusServName,
                     configurationItemBusAppName: data[x].configurationItemBusAppName,
-                    isProduct: data[x].type && data[x].type.toLowerCase() === DashboardType.PRODUCT.toLowerCase()
+                    isProduct: data[x].type && data[x].type.toLowerCase() === DashboardType.PRODUCT.toLowerCase(),
+                    scoreEnabled: data[x].scoreEnabled,
+                    scoreDisplay: data[x].scoreDisplay
                 };
 
                 if(board.isProduct) {
@@ -180,9 +182,9 @@
                     validAppName: mydata[x].validAppName,
                     configurationItemBusServName:  mydata[x].configurationItemBusServName,
                     configurationItemBusAppName:  mydata[x].configurationItemBusAppName,
-                    configurationItemBusServId:  mydata[x].configurationItemBusServObjectId,
-                    configurationItemBusAppId:  mydata[x].configurationItemBusAppObjectId,
-                    showError: showErrorVal
+                    showError: showErrorVal,
+                    scoreEnabled: mydata[x].scoreEnabled,
+                    scoreDisplay: mydata[x].scoreDisplay
                 });
             }
 
@@ -214,9 +216,9 @@
                     validAppName: mydata[x].validAppName,
                     configurationItemBusServName:  mydata[x].configurationItemBusServName,
                     configurationItemBusAppName:  mydata[x].configurationItemBusAppName,
-                    configurationItemBusServId:  mydata[x].configurationItemBusServObjectId,
-                    configurationItemBusAppId:  mydata[x].configurationItemBusAppObjectId,
-                    showError: showErrorVal
+                    showError: showErrorVal,
+                    scoreEnabled: mydata[x].scoreEnabled,
+                    scoreDisplay: mydata[x].scoreDisplay
                 });
             }
 

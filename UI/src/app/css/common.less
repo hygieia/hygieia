@@ -8,6 +8,7 @@
 @import 'commit-blocks';
 
 @import 'site';
+@import 'score';
 
 // TODO: remove
 #__bs_notify__ { display: none !important;}
@@ -690,6 +691,18 @@ tr.dash-row > td {
         background: @dash-status-ignore;
         border: .2rem solid @dash-status-ignore-border;
         color: @dash-status-ignore-text;
+        line-height: 1.75rem;
+        .border-radius(50%);
+    }
+
+    .dash-status-critical {
+        display: inline-block;
+        font-weight: bold;
+        width: 2rem;
+        height: 2rem;
+        background: black;
+        border: .2rem solid @dash-status-fail-border;
+        color: @dash-status-fail;
         line-height: 1.75rem;
         .border-radius(50%);
     }

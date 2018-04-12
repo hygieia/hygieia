@@ -23,14 +23,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -89,6 +92,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         allOptions.put(GitHubRepo.BRANCH, "");
         allOptions.put(GitHubRepo.USER_ID, "");
         allOptions.put(GitHubRepo.PASSWORD, "");
+        allOptions.put(GitHubRepo.PERSONAL_ACCESS_TOKEN, "");
         protoType.setAllFields(allOptions);
 
         Map<String, Object> uniqueOptions = new HashMap<>();
@@ -166,7 +170,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                 try {
                     if (!isUnderRateLimit(repo)) {
                         LOG.error("GraphQL API rate limit reached. Stopping processing");
-                        break;
+                        continue;
                     }
 
                     List<GitRequest> allRequests = gitRequestRepository.findRequestNumberAndLastUpdated(repo.getId());
@@ -218,7 +222,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                 }
                 gitHubRepoRepository.save(repo);
             } else {
-                LOG.info(repo.getOptions().toString() + "::" + repo.getBranch() + ":: errorThreshold exceeded");
+                LOG.info(repo.getRepoUrl()+ "::" + repo.getBranch() + ":: errorThreshold exceeded");
             }
             repoCount++;
         }
@@ -232,11 +236,14 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
 
     // Retrieves a st of previous commits and Pulls and tries to reconnect them
     private void processOrphanCommits(GitHubRepo repo) {
-        long refTime = System.currentTimeMillis() - gitHubSettings.getCommitPullSyncTime();
-        List<Commit> orphanCommits = commitRepository.findCommitsByCollectorItemIdAndScmCommitTimestampAfterAndPullNumberIsNull(repo.getId(), refTime);
+        long refTime = Math.min(System.currentTimeMillis() - gitHubSettings.getCommitPullSyncTime(), gitHubClient.getRepoOffsetTime(repo));
+        List<Commit> orphanCommits = commitRepository.findCommitsByCollectorItemIdAndTimestampAfterAndPullNumberIsNull(repo.getId(), refTime);
         List<GitRequest> pulls = gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(repo.getId(), refTime, System.currentTimeMillis());
         orphanCommits = CommitPullMatcher.matchCommitToPulls(orphanCommits, pulls);
-        commitRepository.save(orphanCommits.stream().filter(c -> !StringUtils.isEmpty(c.getPullNumber())).collect(Collectors.toList()));
+        List<Commit> orphanSaveList = orphanCommits.stream().filter(c -> !StringUtils.isEmpty(c.getPullNumber())).collect(Collectors.toList());
+        orphanSaveList.forEach( c -> LOG.info( "Updating orphan " + c.getScmRevisionNumber() + " " +
+                new DateTime(c.getScmCommitTimestamp()).toString("yyyy-MM-dd hh:mm:ss.SSa") + " with pull " + c.getPullNumber()));
+        commitRepository.save(orphanSaveList);
     }
 
     /**
@@ -254,7 +261,10 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
             Iterable<Commit> saved = commitRepository.save(newCommits);
             count = saved != null ? Lists.newArrayList(saved).size() : 0;
         } else {
-            for (Commit commit : gitHubClient.getCommits()) {
+            Collection<Commit> nonDupCommits = gitHubClient.getCommits().stream()
+                    .<Map<String, Commit>> collect(HashMap::new,(m,c)->m.put(c.getScmRevisionNumber(), c), Map::putAll)
+                    .values();
+            for (Commit commit : nonDupCommits) {
                 LOG.debug(commit.getTimestamp() + ":::" + commit.getScmCommitLog());
                 if (isNewCommit(repo, commit)) {
                     commit.setCollectorItemId(repo.getId());
@@ -269,7 +279,20 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
 
 
     private boolean isUnderRateLimit(GitHubRepo repo) throws MalformedURLException, HygieiaException {
-        GitHubRateLimit rateLimit = gitHubClient.getRateLimit(repo);
+        GitHubRateLimit rateLimit = null;
+        try {
+            rateLimit = gitHubClient.getRateLimit(repo);
+            if(rateLimit!=null){
+                LOG.info("Remaining " + rateLimit.getRemaining() + " of limit " + rateLimit.getLimit()
+                        + " resetTime " + new DateTime(rateLimit.getResetTime()).toString("yyyy-MM-dd hh:mm:ss.SSa"));
+            }else{
+                LOG.info("Rate limit is null");
+            }
+
+        } catch (HttpClientErrorException hce) {
+            LOG.error("getRateLimit returned " + hce.getStatusCode() + " " + hce.getMessage() + " " + hce);
+            return false;
+        }
         return rateLimit != null && (rateLimit.getRemaining() > gitHubSettings.getRateLimitThreshold());
     }
 

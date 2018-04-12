@@ -9,6 +9,7 @@ import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Widget;
+import com.capitalone.dashboard.model.ScoreDisplayType;
 import com.capitalone.dashboard.repository.CmdbRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.CustomRepositoryQuery;
@@ -158,19 +159,19 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
     private Dashboard requestToDashboard(DashboardRemoteRequest request) throws HygieiaException {
         DashboardRemoteRequest.DashboardMetaData metaData = request.getMetaData();
         Application application = new Application(metaData.getApplicationName(), new Component(metaData.getComponentName()));
-        ObjectId appId = null;
-        ObjectId serviceId = null;
+        String appName = null;
+        String serviceName = null;
         if (!StringUtils.isEmpty(metaData.getBusinessApplication())) {
             Cmdb app = cmdbRepository.findByConfigurationItemAndItemType(metaData.getBusinessApplication(), "component");
             if (app == null) throw new HygieiaException("Invalid Business Application Name.", HygieiaException.BAD_DATA);
-            appId = app.getId();
+            appName = app.getConfigurationItem();
         }
         if (!StringUtils.isEmpty(metaData.getBusinessService())) {
             Cmdb service = cmdbRepository.findByConfigurationItemAndItemType(metaData.getBusinessService(), "app");
             if (service == null) throw new HygieiaException("Invalid Business Service Name.", HygieiaException.BAD_DATA);
-            serviceId = service.getId();
+            serviceName = service.getConfigurationItem();
         }
         List<String> activeWidgets = new ArrayList<>();
-        return new Dashboard(true, metaData.getTemplate(), metaData.getTitle(), application, metaData.getOwner(), DashboardType.fromString(metaData.getType()), serviceId, appId,activeWidgets);
+        return new Dashboard(true, metaData.getTemplate(), metaData.getTitle(), application, metaData.getOwner(), DashboardType.fromString(metaData.getType()), serviceName, appName,activeWidgets, false, ScoreDisplayType.HEADER);
     }
 }

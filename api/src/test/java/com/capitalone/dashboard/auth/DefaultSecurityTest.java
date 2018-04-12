@@ -9,7 +9,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.bson.types.ObjectId;
+ import com.capitalone.dashboard.model.*;
+ import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,13 +31,7 @@ import com.capitalone.dashboard.auth.token.TokenAuthenticationServiceImpl;
 import com.capitalone.dashboard.config.TestDefaultAuthConfig;
 import com.capitalone.dashboard.config.WebMVCConfig;
 import com.capitalone.dashboard.config.WebSecurityConfig;
-import com.capitalone.dashboard.model.AuthType;
-import com.capitalone.dashboard.model.Authentication;
-import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.DashboardType;
-import com.capitalone.dashboard.model.UserInfo;
-import com.capitalone.dashboard.model.UserRole;
-import com.capitalone.dashboard.repository.AuthenticationRepository;
+ import com.capitalone.dashboard.repository.AuthenticationRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.UserInfoRepository;
 import com.capitalone.dashboard.service.DashboardService;
@@ -102,9 +97,7 @@ import com.google.common.collect.Lists;
      @Test
      public void owner_deleteDashboard() throws Exception{
      	String jwtHeader = authenticateAs("someUser", "someUserPassword", UserRole.ROLE_USER);
-     	ObjectId configItemAppId = ObjectId.get();
-     	ObjectId configItemComponentId = ObjectId.get();
-     	Dashboard dashboard = makeDashboard("t1", "title", "app", "comp","someUser", DashboardType.Team, configItemAppId, configItemComponentId);
+     	Dashboard dashboard = makeDashboard("t1", "title", "app", "comp","someUser", DashboardType.Team, "ASVTEST", "BAPTEST");
      	String stringObjectId = "54b982620364c80a6136c9f2";
      	ObjectId objectId = new ObjectId(stringObjectId);
      	when(dashboardTestRepository.findOne(objectId)).thenReturn(dashboard);
