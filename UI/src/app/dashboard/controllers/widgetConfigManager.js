@@ -89,6 +89,8 @@
                 componentName: ctrl.createDashboardData.componentName,
                 configurationItemBusServName: ctrl.createDashboardData.configurationItemBusServName,
                 configurationItemBusAppName: ctrl.createDashboardData.configurationItemBusAppName,
+                scoreEnabled : ctrl.createDashboardData.scoreEnabled,
+                scoreDisplay : ctrl.createDashboardData.scoreDisplay,
                 activeWidgets: widgets
             };
 

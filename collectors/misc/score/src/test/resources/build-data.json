@@ -1,0 +1,522 @@
+
+[{
+  "id" : "59bf62d2ad5333039e9348df",
+  "collectorItemId" : "58d842e9358d6671fc81ff2e",
+  "timestamp" : 1505714948535,
+  "number" : "563",
+  "buildUrl" : "https://ci.company.com/job/bedrockapp_qa/job/SNAPSHOT_BUILD_58b5c5eaaaf903af204faa09/563/",
+  "startTime" : 1505714897359,
+  "endTime" : 1505714948321,
+  "duration" : 50962,
+  "buildStatus" : "Failure",
+  "codeRepos" : [
+    {
+      "url" : "${CDAAS_GIT_SSH_URL}",
+      "branch" : "detached",
+      "type" : "GIT"
+    }
+  ],
+  "sourceChangeSet" : [
+    {
+      "scmRevisionNumber" : "64697915dab371b58849862208f6ebac43bf2db6",
+      "scmCommitLog" : "Fix Summary (Brief: Correct the walmartOrderId for Order Published",
+      "scmAuthor" : "Balaji Katika",
+      "scmCommitTimestamp" : 1502360088000,
+      "numberOfChanges" : 1
+    },
+    {
+      "scmRevisionNumber" : "7fbf0eede2e86c614db86c61a6cfc9e4b961e5fd",
+      "scmCommitLog" : "Fix Summary (Brief: Changes to the app as part of tech upgrade Change",
+      "scmAuthor" : "Balaji Katika",
+      "scmCommitTimestamp" : 1505712472000,
+      "numberOfChanges" : 2
+    }
+  ]
+}
+
+,
+{
+  "id" : "59bfa7a6ad5333039e934c29",
+  "collectorItemId" : "58d842e9358d6671fc81ff2e",
+  "timestamp" : 1505732560603,
+  "number" : "564",
+  "buildUrl" : "https://ci.company.com/job/bedrockapp_qa/job/SNAPSHOT_BUILD_58b5c5eaaaf903af204faa09/564/",
+  "startTime" : 1505732518521,
+  "endTime" : 1505732560277,
+  "duration" : 41756,
+  "buildStatus" : "Failure",
+  "codeRepos" : [
+    {
+      "url" : "${CDAAS_GIT_SSH_URL}",
+      "branch" : "detached",
+      "type" : "GIT"
+    }
+  ],
+  "sourceChangeSet" : [
+    {
+      "scmRevisionNumber" : "ba1482b3288b4d16daaa3d299717220e0b673605",
+      "scmCommitLog" : "Setting messageID as batchID for IMS kafka publishing",
+      "scmAuthor" : "Sukhpal Rai",
+      "scmCommitTimestamp" : 1505730405000,
+      "numberOfChanges" : 2
+    },
+    {
+      "scmRevisionNumber" : "f8dc38079f04bf060b710832d7ce530e1bc6e63c",
+      "scmCommitLog" : "Setting messageID as batchID for IMS kafka publishing",
+      "scmAuthor" : "Sukhpal Rai",
+      "scmCommitTimestamp" : 1505731018000,
+      "numberOfChanges" : 1
+    },
+    {
+      "scmRevisionNumber" : "9e1be930c94d669e079c8ad3abb5c0947e90faa7",
+      "scmCommitLog" : "Setting messageID as batchID for IMS kafka publishing",
+      "scmAuthor" : "Sukhpal Rai",
+      "scmCommitTimestamp" : 1505731286000,
+      "numberOfChanges" : 1
+    }
+  ]
+}
+
+,
+{
+  "id" : "59c0321cad533303b7ba4e73",
+  "collectorItemId" : "58d842e9358d6671fc81ff2e",
+  "timestamp" : 1505768174174,
+  "number" : "565",
+  "buildUrl" : "https://ci.company.com/job/bedrockapp_qa/job/SNAPSHOT_BUILD_58b5c5eaaaf903af204faa09/565/",
+  "startTime" : 1505767964285,
+  "endTime" : 1505768173938,
+  "duration" : 209653,
+  "buildStatus" : "Success",
+  "codeRepos" : [
+    {
+      "url" : "${CDAAS_GIT_SSH_URL}",
+      "branch" : "detached",
+      "type" : "GIT"
+    }
+  ],
+  "sourceChangeSet" : [
+    {
+      "scmRevisionNumber" : "5259fc05b3a594520e3e796589f1e52c78a91c96",
+      "scmCommitLog" : "Revert ISC change since ISC is not ready",
+      "scmAuthor" : "Xue Chen",
+      "scmCommitTimestamp" : 1505759922000,
+      "numberOfChanges" : 2
+    },
+    {
+      "scmRevisionNumber" : "2669e6a5eab9c3378b1ec323a1a05ad305edca6b",
+      "scmCommitLog" : "Add switch for ISC change",
+      "scmAuthor" : "Xue Chen",
+      "scmCommitTimestamp" : 1505759922000,
+      "numberOfChanges" : 2
+    },
+    {
+      "scmRevisionNumber" : "64697915dab371b58849862208f6ebac43bf2db6",
+      "scmCommitLog" : "Fix Summary (Brief: Correct the walmartOrderId for Order Published",
+      "scmAuthor" : "Balaji Katika",
+      "scmCommitTimestamp" : 1502360088000,
+      "numberOfChanges" : 1
+    },
+    {
+      "scmRevisionNumber" : "7fbf0eede2e86c614db86c61a6cfc9e4b961e5fd",
+      "scmCommitLog" : "Fix Summary (Brief: Changes to the app as part of tech upgrade Change",
+      "scmAuthor" : "Balaji Katika",
+      "scmCommitTimestamp" : 1505712472000,
+      "numberOfChanges" : 2
+    },
+    {
+      "scmRevisionNumber" : "ba1482b3288b4d16daaa3d299717220e0b673605",
+      "scmCommitLog" : "Setting messageID as batchID for IMS kafka publishing",
+      "scmAuthor" : "Sukhpal Rai",
+      "scmCommitTimestamp" : 1505730405000,
+      "numberOfChanges" : 2
+    },
+    {
+      "scmRevisionNumber" : "f8dc38079f04bf060b710832d7ce530e1bc6e63c",
+      "scmCommitLog" : "Setting messageID as batchID for IMS kafka publishing",
+      "scmAuthor" : "Sukhpal Rai",
+      "scmCommitTimestamp" : 1505731018000,
+      "numberOfChanges" : 1
+    },
+    {
+      "scmRevisionNumber" : "9e1be930c94d669e079c8ad3abb5c0947e90faa7",
+      "scmCommitLog" : "Setting messageID as batchID for IMS kafka publishing",
+      "scmAuthor" : "Sukhpal Rai",
+      "scmCommitTimestamp" : 1505731286000,
+      "numberOfChanges" : 1
+    },
+    {
+      "scmRevisionNumber" : "64697915dab371b58849862208f6ebac43bf2db6",
+      "scmCommitLog" : "Fix Summary (Brief: Correct the walmartOrderId for Order Published",
+      "scmAuthor" : "Balaji Katika",
+      "scmCommitTimestamp" : 1502360088000,
+      "numberOfChanges" : 1
+    },
+    {
+      "scmRevisionNumber" : "7fbf0eede2e86c614db86c61a6cfc9e4b961e5fd",
+      "scmCommitLog" : "Fix Summary (Brief: Changes to the app as part of tech upgrade Change",
+      "scmAuthor" : "Balaji Katika",
+      "scmCommitTimestamp" : 1505712472000,
+      "numberOfChanges" : 2
+    },
+    {
+      "scmRevisionNumber" : "ba1482b3288b4d16daaa3d299717220e0b673605",
+      "scmCommitLog" : "Setting messageID as batchID for IMS kafka publishing",
+      "scmAuthor" : "Sukhpal Rai",
+      "scmCommitTimestamp" : 1505730405000,
+      "numberOfChanges" : 2
+    },
+    {
+      "scmRevisionNumber" : "f8dc38079f04bf060b710832d7ce530e1bc6e63c",
+      "scmCommitLog" : "Setting messageID as batchID for IMS kafka publishing",
+      "scmAuthor" : "Sukhpal Rai",
+      "scmCommitTimestamp" : 1505731018000,
+      "numberOfChanges" : 1
+    },
+    {
+      "scmRevisionNumber" : "9e1be930c94d669e079c8ad3abb5c0947e90faa7",
+      "scmCommitLog" : "Setting messageID as batchID for IMS kafka publishing",
+      "scmAuthor" : "Sukhpal Rai",
+      "scmCommitTimestamp" : 1505731286000,
+      "numberOfChanges" : 1
+    }
+  ]
+}
+
+,
+{
+  "id" : "59c0d72b3d88f70ed1d8a609",
+  "collectorItemId" : "58d842e9358d6671fc81ff2e",
+  "timestamp" : 1505810529835,
+  "number" : "566",
+  "buildUrl" : "https://ci.company.com/job/bedrockapp_qa/job/SNAPSHOT_BUILD_58b5c5eaaaf903af204faa09/566/",
+  "startTime" : 1505810219393,
+  "endTime" : 1505810529186,
+  "duration" : 309793,
+  "buildStatus" : "Success",
+  "codeRepos" : [
+    {
+      "url" : "${CDAAS_GIT_SSH_URL}",
+      "branch" : "detached",
+      "type" : "GIT"
+    }
+  ],
+  "sourceChangeSet" : [
+    {
+      "scmRevisionNumber" : "c5b02cb6314928d24099b133ffa849ab5fa6f47f",
+      "scmCommitLog" : "Java templates for hayneedle order processing",
+      "scmAuthor" : "Ritesh Jha",
+      "scmCommitTimestamp" : 1504519517000,
+      "numberOfChanges" : 4
+    },
+    {
+      "scmRevisionNumber" : "e73a10f63b0d28fda12191f67dd049bf8f1311c9",
+      "scmCommitLog" : "smooks config and haynedle edi 850  mapping files",
+      "scmAuthor" : "Subhash Dhaka",
+      "scmCommitTimestamp" : 1504682794000,
+      "numberOfChanges" : 2
+    },
+    {
+      "scmRevisionNumber" : "488b4ebf1d5199d4796d47ed5e01d1ca451d58a3",
+      "scmCommitLog" : "hayneedle inventory flow",
+      "scmAuthor" : "Ritesh Jha",
+      "scmCommitTimestamp" : 1505369292000,
+      "numberOfChanges" : 11
+    },
+    {
+      "scmRevisionNumber" : "da42ca947c68dd4812d4f94ebc4553cce8302275",
+      "scmCommitLog" : "shipment confirmation changes",
+      "scmAuthor" : "Subhash Dhaka",
+      "scmCommitTimestamp" : 1505385328000,
+      "numberOfChanges" : 6
+    },
+    {
+      "scmRevisionNumber" : "7785f69090d8ece2a00eb6aad324af15c74b5523",
+      "scmCommitLog" : "minor changes",
+      "scmAuthor" : "Subhash Dhaka",
+      "scmCommitTimestamp" : 1505457873000,
+      "numberOfChanges" : 4
+    },
+    {
+      "scmRevisionNumber" : "45e2f1f16d0bcd53d80a1e9b6be7572d0b6e95ee",
+      "scmCommitLog" : "Update HAYNEEDLE_EDI_850_MAPPING.xml",
+      "scmAuthor" : "dtsupport",
+      "scmCommitTimestamp" : 1505459409000,
+      "numberOfChanges" : 1
+    },
+    {
+      "scmRevisionNumber" : "7e9fabf53bbe1838c42610b3e646014e5b8fde3d",
+      "scmCommitLog" : "added control number seq",
+      "scmAuthor" : "Subhash Dhaka",
+      "scmCommitTimestamp" : 1505466369000,
+      "numberOfChanges" : 1
+    },
+    {
+      "scmRevisionNumber" : "91339a73eede58bdc13edabcad1426640f8452d8",
+      "scmCommitLog" : "minor changes",
+      "scmAuthor" : "Subhash Dhaka",
+      "scmCommitTimestamp" : 1505714864000,
+      "numberOfChanges" : 4
+    },
+    {
+      "scmRevisionNumber" : "5e58d18f1badb7d619e6dd1f788b120309e08b05",
+      "scmCommitLog" : "abraham review changes",
+      "scmAuthor" : "Subhash Dhaka",
+      "scmCommitTimestamp" : 1505721707000,
+      "numberOfChanges" : 2
+    },
+    {
+      "scmRevisionNumber" : "f410035c77d7821b7f047b737a156851a0b71faf",
+      "scmCommitLog" : "minor changes",
+      "scmAuthor" : "Subhash Dhaka",
+      "scmCommitTimestamp" : 1505727392000,
+      "numberOfChanges" : 2
+    },
+    {
+      "scmRevisionNumber" : "5212ad06943429a9f1f90482a231b79cd1d45690",
+      "scmCommitLog" : "minor changes",
+      "scmAuthor" : "Subhash Dhaka",
+      "scmCommitTimestamp" : 1505727572000,
+      "numberOfChanges" : 1
+    },
+    {
+      "scmRevisionNumber" : "fc14273bc75692b980ff32cd8007038f99e1c1dd",
+      "scmCommitLog" : "order create and cancel edi files handling",
+      "scmAuthor" : "Subhash Dhaka",
+      "scmCommitTimestamp" : 1505801198000,
+      "numberOfChanges" : 6
+    },
+    {
+      "scmRevisionNumber" : "f016567c85cbca064332e9228aab3268c5ff8c05",
+      "scmCommitLog" : "30 char restriction changes",
+      "scmAuthor" : "Subhash Dhaka",
+      "scmCommitTimestamp" : 1505806917000,
+      "numberOfChanges" : 1
+    },
+    {
+      "scmRevisionNumber" : "a9081f76ba05e79f2d72fb5524c3ed56424f77be",
+      "scmCommitLog" : "minor changes",
+      "scmAuthor" : "Subhash Dhaka",
+      "scmCommitTimestamp" : 1505807585000,
+      "numberOfChanges" : 2
+    },
+    {
+      "scmRevisionNumber" : "8c98e76adb84e0676f7ac5b0c66435a54ad212b8",
+      "scmCommitLog" : "minor changes",
+      "scmAuthor" : "Subhash Dhaka",
+      "scmCommitTimestamp" : 1505807965000,
+      "numberOfChanges" : 1
+    },
+    {
+      "scmRevisionNumber" : "6b6ce8a842d467ed52ec0f8f9fdc20ce26ab6334",
+      "scmCommitLog" : "date changes",
+      "scmAuthor" : "Subhash Dhaka",
+      "scmCommitTimestamp" : 1505808292000,
+      "numberOfChanges" : 1
+    }
+  ]
+}
+
+,
+{
+  "id" : "59c1af803d88f703a6261ba1",
+  "collectorItemId" : "58d842e9358d6671fc81ff2e",
+  "timestamp" : 1505865814090,
+  "number" : "567",
+  "buildUrl" : "https://ci.company.com/job/bedrockapp_qa/job/SNAPSHOT_BUILD_58b5c5eaaaf903af204faa09/567/",
+  "startTime" : 1505865599821,
+  "endTime" : 1505865813914,
+  "duration" : 214093,
+  "buildStatus" : "Success",
+  "codeRepos" : [
+    {
+      "url" : "${CDAAS_GIT_SSH_URL}",
+      "branch" : "detached",
+      "type" : "GIT"
+    }
+  ],
+  "sourceChangeSet" : [
+    {
+      "scmRevisionNumber" : "9f6d09581520a5ab7a85cbffb0293cdd67aaf87c",
+      "scmCommitLog" : "email preference change",
+      "scmAuthor" : "Premkumar Subbu - P0S00GG",
+      "scmCommitTimestamp" : 1505865382000,
+      "numberOfChanges" : 2
+    }
+  ]
+}
+
+,
+{
+  "id" : "59c200a5ad533303b11d7849",
+  "collectorItemId" : "58d842e9358d6671fc81ff2e",
+  "timestamp" : 1505886769675,
+  "number" : "568",
+  "buildUrl" : "https://ci.company.com/job/bedrockapp_qa/job/SNAPSHOT_BUILD_58b5c5eaaaf903af204faa09/568/",
+  "startTime" : 1505886373262,
+  "endTime" : 1505886769464,
+  "duration" : 396202,
+  "buildStatus" : "Success",
+  "codeRepos" : [
+    {
+      "url" : "${CDAAS_GIT_SSH_URL}",
+      "branch" : "detached",
+      "type" : "GIT"
+    }
+  ],
+  "sourceChangeSet" : [
+    {
+      "scmRevisionNumber" : "3eda59b04aaa0a2ed54836fd78acc707aef8ced4",
+      "scmCommitLog" : "Corrected the catdeve kafka bootstrap servers",
+      "scmAuthor" : "Sukhpal Rai",
+      "scmCommitTimestamp" : 1505886110000,
+      "numberOfChanges" : 2
+    },
+    {
+      "scmRevisionNumber" : "a0f998d3a5873759fe587c43658ce2ca05aea67f",
+      "scmCommitLog" : "Corrected the catdeve kafka bootstrap servers",
+      "scmAuthor" : "Sukhpal Rai",
+      "scmCommitTimestamp" : 1505886197000,
+      "numberOfChanges" : 1
+    }
+  ]
+}
+
+,
+{
+  "id" : "59c2bb98ad533303b5db234c",
+  "collectorItemId" : "58d842e9358d6671fc81ff2e",
+  "timestamp" : 1505934270372,
+  "number" : "569",
+  "buildUrl" : "https://ci.company.com/job/bedrockapp_qa/job/SNAPSHOT_BUILD_58b5c5eaaaf903af204faa09/569/",
+  "startTime" : 1505934232391,
+  "endTime" : 1505934270201,
+  "duration" : 37810,
+  "buildStatus" : "Failure",
+  "codeRepos" : [
+    {
+      "url" : "${CDAAS_GIT_SSH_URL}",
+      "branch" : "detached",
+      "type" : "GIT"
+    }
+  ],
+  "sourceChangeSet" : [
+    {
+      "scmRevisionNumber" : "54c7e240be9b6bf766320dc7dd07a883cf964ad0",
+      "scmCommitLog" : "Add exception code",
+      "scmAuthor" : "Xue Chen",
+      "scmCommitTimestamp" : 1505778994000,
+      "numberOfChanges" : 26
+    }
+  ]
+}
+
+,
+{
+  "id" : "59c2f1ec3d88f703a87ea956",
+  "collectorItemId" : "58d842e9358d6671fc81ff2e",
+  "timestamp" : 1505948480131,
+  "number" : "570",
+  "buildUrl" : "https://ci.company.com/job/bedrockapp_qa/job/SNAPSHOT_BUILD_58b5c5eaaaf903af204faa09/570/",
+  "startTime" : 1505948139802,
+  "endTime" : 1505948479906,
+  "duration" : 340104,
+  "buildStatus" : "Success",
+  "codeRepos" : [
+    {
+      "url" : "${CDAAS_GIT_SSH_URL}",
+      "branch" : "detached",
+      "type" : "GIT"
+    }
+  ],
+  "sourceChangeSet" : [
+    {
+      "scmRevisionNumber" : "f6837d411c3801cc4cb0a9a1b680212ff67d49ff",
+      "scmCommitLog" : "Add batch complete pgk in bedrock message",
+      "scmAuthor" : "Xue Chen",
+      "scmCommitTimestamp" : 1505841952000,
+      "numberOfChanges" : 2
+    },
+    {
+      "scmRevisionNumber" : "ac00694d29eafa5112aeb47d15155e13ceccc2fb",
+      "scmCommitLog" : "Update batch type value",
+      "scmAuthor" : "Xue Chen",
+      "scmCommitTimestamp" : 1505841952000,
+      "numberOfChanges" : 2
+    },
+    {
+      "scmRevisionNumber" : "54c7e240be9b6bf766320dc7dd07a883cf964ad0",
+      "scmCommitLog" : "Add exception code",
+      "scmAuthor" : "Xue Chen",
+      "scmCommitTimestamp" : 1505778994000,
+      "numberOfChanges" : 26
+    },
+    {
+      "scmRevisionNumber" : "54c7e240be9b6bf766320dc7dd07a883cf964ad0",
+      "scmCommitLog" : "Add exception code",
+      "scmAuthor" : "Xue Chen",
+      "scmCommitTimestamp" : 1505778994000,
+      "numberOfChanges" : 26
+    }
+  ]
+}
+
+,
+{
+  "id" : "59c4c5903d88f703b9fcb200",
+  "collectorItemId" : "58d842e9358d6671fc81ff2e",
+  "timestamp" : 1506068126898,
+  "number" : "571",
+  "buildUrl" : "https://ci.company.com/job/bedrockapp_qa/job/SNAPSHOT_BUILD_58b5c5eaaaf903af204faa09/571/",
+  "startTime" : 1506067856662,
+  "endTime" : 1506068126675,
+  "duration" : 270013,
+  "buildStatus" : "Success",
+  "codeRepos" : [
+    {
+      "url" : "${CDAAS_GIT_SSH_URL}",
+      "branch" : "detached",
+      "type" : "GIT"
+    }
+  ],
+  "sourceChangeSet" : [
+    {
+      "scmRevisionNumber" : "3a4cea434702d5c1301ca27d1716014e9f7cc307",
+      "scmCommitLog" : "Fixed setting wrong msgType in imskafkaresponse",
+      "scmAuthor" : "Sukhpal Rai",
+      "scmCommitTimestamp" : 1506067730000,
+      "numberOfChanges" : 1
+    }
+  ]
+}
+
+,
+{
+  "id" : "59c4c915ad533303bab93061",
+  "collectorItemId" : "58d842e9358d6671fc81ff2e",
+  "timestamp" : 1506068982271,
+  "number" : "572",
+  "buildUrl" : "https://ci.company.com/job/bedrockapp_qa/job/SNAPSHOT_BUILD_58b5c5eaaaf903af204faa09/572/",
+  "startTime" : 1506068757059,
+  "endTime" : 1506068982017,
+  "duration" : 224958,
+  "buildStatus" : "Success",
+  "codeRepos" : [
+    {
+      "url" : "${CDAAS_GIT_SSH_URL}",
+      "branch" : "detached",
+      "type" : "GIT"
+    }
+  ],
+  "sourceChangeSet" : [
+    {
+      "scmRevisionNumber" : "33d581ebca4c962c1215e94df984f881de5fa9ef",
+      "scmCommitLog" : "changed template",
+      "scmAuthor" : "Naznin Richhariya",
+      "scmCommitTimestamp" : 1505988979000,
+      "numberOfChanges" : 1
+    }
+  ]
+}
+
+]

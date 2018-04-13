@@ -1,0 +1,155 @@
+{
+  "lastUpdated": 1422924638613,
+  "result": {
+    "id": "5a7a613ce993ab0716801ceb",
+    "collectorItemId": "5a54b3a6f842e55ad9e44452",
+    "scoreTypeId": "5a54b39e867b6e5bcad1a722",
+    "type": "DASHBOARD",
+    "timestamp": 0,
+    "score": "2.4",
+    "total": "5",
+    "noScore": false,
+    "options": {
+    },
+    "componentMetrics": [
+      {
+        "score": "0",
+        "total": "5",
+        "weight": "25",
+        "displayId": "build",
+        "displayName": "Build",
+        "propagate": "no",
+        "state": "criteria_failed",
+        "noScore": false,
+        "alert": true,
+        "message": "Data should be present for more than 0 days of last 7 days",
+        "children": [
+          {
+            "score": "0",
+            "total": "5",
+            "weight": "0",
+            "displayId": "status",
+            "displayName": "Status",
+            "propagate": "no",
+            "state": "not_processed",
+            "noScore": false,
+            "alert": false
+          }
+        ],
+        "options": {
+        }
+      },
+      {
+        "score": "4.3",
+        "total": "5",
+        "weight": "25",
+        "displayId": "codeanalysis",
+        "displayName": "Quality",
+        "propagate": "no",
+        "state": "complete",
+        "noScore": false,
+        "alert": false,
+        "children": [
+          {
+            "score": "3.9",
+            "total": "5",
+            "weight": "34",
+            "displayId": "qualityCC",
+            "displayName": "Code Coverage",
+            "propagate": "no",
+            "state": "complete",
+            "noScore": false,
+            "alert": false
+          },
+          {
+            "score": "5",
+            "total": "5",
+            "weight": "33",
+            "displayId": "qualityUT",
+            "displayName": "Unit Tests Success",
+            "propagate": "no",
+            "state": "complete",
+            "noScore": false,
+            "alert": false
+          },
+          {
+            "score": "4.2",
+            "total": "5",
+            "weight": "33",
+            "displayId": "qualityViolations",
+            "displayName": "Violations",
+            "propagate": "no",
+            "state": "complete",
+            "noScore": false,
+            "alert": false
+          }
+        ],
+        "options": {
+        }
+      },
+      {
+        "score": "1.2",
+        "total": "5",
+        "weight": "25",
+        "displayId": "repo",
+        "displayName": "GitHub SCM",
+        "propagate": "no",
+        "state": "complete",
+        "noScore": false,
+        "alert": false,
+        "children": [
+          {
+            "score": "1.2",
+            "total": "5",
+            "weight": "100",
+            "displayId": "commitsPerDay",
+            "displayName": "Commits Per Day",
+            "propagate": "no",
+            "state": "complete",
+            "noScore": false,
+            "alert": false
+          }
+        ],
+        "options": {
+        }
+      },
+      {
+        "score": "4",
+        "total": "5",
+        "weight": "25",
+        "displayId": "deploy",
+        "displayName": "Deploy",
+        "propagate": "no",
+        "state": "complete",
+        "noScore": false,
+        "alert": false,
+        "children": [
+          {
+            "score": "5",
+            "total": "5",
+            "weight": "50",
+            "displayId": "deploySuccess",
+            "displayName": "Deploy Success",
+            "propagate": "no",
+            "state": "complete",
+            "noScore": false,
+            "alert": false
+          },
+          {
+            "score": "3",
+            "total": "5",
+            "weight": "50",
+            "displayId": "deployInstancesOnline",
+            "displayName": "Deploy Instances Online",
+            "propagate": "no",
+            "state": "complete",
+            "noScore": false,
+            "alert": false
+          }
+        ],
+        "options": {
+        }
+      }
+    ]
+  }
+}

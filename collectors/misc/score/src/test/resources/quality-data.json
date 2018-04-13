@@ -1,0 +1,617 @@
+[
+  {
+    "id" : "59c198c8ad533303b11d6a81",
+    "collectorItemId" : "5915eaa1fdfcb761419b5105",
+    "timestamp" : 1505859784662,
+    "name" : "com.walmartlabs.looper.dashboard:Hygieia master",
+    "url" : "http://sonar.mycompany.com/dashboard/index/256257",
+    "type" : "StaticAnalysis",
+    "version" : "2.0.28-SNAPSHOT",
+    "buildId" : "59c19269ad533303b11d692f",
+    "metrics" : [
+      {
+        "name" : "coverage",
+        "value" : 33.0,
+        "formattedValue" : "33.0%",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_coverage",
+        "status" : "Ok"
+      },
+      {
+        "name" : "violations",
+        "value" : 2180.0,
+        "formattedValue" : "2,180",
+        "status" : "Ok"
+      },
+      {
+        "name" : "sqale_index",
+        "value" : 18411.0,
+        "formattedValue" : "38d",
+        "status" : "Ok"
+      },
+      {
+        "name" : "critical_violations",
+        "value" : 2.0,
+        "formattedValue" : "2",
+        "status" : "Ok"
+      },
+      {
+        "name" : "blocker_violations",
+        "value" : 2.0,
+        "formattedValue" : "2",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_major_violations",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      },
+      {
+        "name" : "test_failures",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      },
+      {
+        "name" : "test_success_density",
+        "value" : 100.0,
+        "formattedValue" : "100.0%",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_line_coverage",
+        "status" : "Ok"
+      },
+      {
+        "name" : "tests",
+        "value" : 496.0,
+        "formattedValue" : "496",
+        "status" : "Ok"
+      },
+      {
+        "name" : "major_violations",
+        "value" : 5.0,
+        "formattedValue" : "5",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_critical_violations",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_violations",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_blocker_violations",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      },
+      {
+        "name" : "ncloc",
+        "value" : 42771.0,
+        "formattedValue" : "42,771",
+        "status" : "Ok"
+      },
+      {
+        "name" : "line_coverage",
+        "value" : 34.4,
+        "formattedValue" : "34.4%",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_lines_to_cover",
+        "status" : "Ok"
+      },
+      {
+        "name" : "test_errors",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      }
+    ]
+  }
+
+  ,
+  {
+    "id" : "59c04870ad533303b7ba5081",
+    "collectorItemId" : "5915eaa1fdfcb761419b5105",
+    "timestamp" : 1505773680418,
+    "name" : "com.walmartlabs.looper.dashboard:Hygieia master",
+    "url" : "http://sonar.mycompany.com/dashboard/index/256257",
+    "type" : "StaticAnalysis",
+    "version" : "2.0.27-SNAPSHOT",
+    "buildId" : "59c044ac3d88f703c459ed35",
+    "metrics" : [
+      {
+        "name" : "coverage",
+        "value" : 33.0,
+        "formattedValue" : "33.0%",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_coverage",
+        "value" : 0.564971751412429,
+        "formattedValue" : "0.6%",
+        "status" : "Warning",
+        "statusMessage" : "Coverage on New Code < 50 since previous version (2.0.26-SNAPSHOT - 2017 Sep 13"
+      },
+      {
+        "name" : "violations",
+        "value" : 2180.0,
+        "formattedValue" : "2,180",
+        "status" : "Ok"
+      },
+      {
+        "name" : "sqale_index",
+        "value" : 18411.0,
+        "formattedValue" : "38d",
+        "status" : "Ok"
+      },
+      {
+        "name" : "critical_violations",
+        "value" : 7.0,
+        "formattedValue" : "7",
+        "status" : "Ok"
+      },
+      {
+        "name" : "blocker_violations",
+        "value" : 2.0,
+        "formattedValue" : "2",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_major_violations",
+        "value" : 20.0,
+        "formattedValue" : "20",
+        "status" : "Ok"
+      },
+      {
+        "name" : "test_failures",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      },
+      {
+        "name" : "test_success_density",
+        "value" : 100.0,
+        "formattedValue" : "100.0%",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_line_coverage",
+        "value" : 0.78740157480315,
+        "formattedValue" : "0.8%",
+        "status" : "Ok"
+      },
+      {
+        "name" : "tests",
+        "value" : 496.0,
+        "formattedValue" : "496",
+        "status" : "Ok"
+      },
+      {
+        "name" : "major_violations",
+        "value" : 1382.0,
+        "formattedValue" : "1,382",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_critical_violations",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_violations",
+        "value" : 28.0,
+        "formattedValue" : "28",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_blocker_violations",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      },
+      {
+        "name" : "ncloc",
+        "value" : 42771.0,
+        "formattedValue" : "42,771",
+        "status" : "Ok"
+      },
+      {
+        "name" : "line_coverage",
+        "value" : 34.4,
+        "formattedValue" : "34.4%",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_lines_to_cover",
+        "value" : 127.0,
+        "formattedValue" : "127",
+        "status" : "Ok"
+      },
+      {
+        "name" : "test_errors",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      }
+    ]
+  }
+
+,
+  {
+    "id" : "59c00de2ad533303b7ba4a7b",
+    "collectorItemId" : "5915eaa1fdfcb761419b5105",
+    "timestamp" : 1505758690088,
+    "name" : "com.walmartlabs.looper.dashboard:Hygieia master",
+    "url" : "http://sonar.mycompany.com/dashboard/index/256257",
+    "type" : "StaticAnalysis",
+    "version" : "2.0.27-SNAPSHOT",
+    "buildId" : "59c00810ad533303b7ba4a21",
+    "metrics" : [
+      {
+        "name" : "coverage",
+        "value" : 33.5,
+        "formattedValue" : "33.5%",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_coverage",
+        "status" : "Ok"
+      },
+      {
+        "name" : "violations",
+        "value" : 2152.0,
+        "formattedValue" : "2,152",
+        "status" : "Ok"
+      },
+      {
+        "name" : "sqale_index",
+        "value" : 17919.0,
+        "formattedValue" : "37d",
+        "status" : "Ok"
+      },
+      {
+        "name" : "critical_violations",
+        "value" : 7.0,
+        "formattedValue" : "7",
+        "status" : "Ok"
+      },
+      {
+        "name" : "blocker_violations",
+        "value" : 2.0,
+        "formattedValue" : "2",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_major_violations",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      },
+      {
+        "name" : "test_failures",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      },
+      {
+        "name" : "test_success_density",
+        "value" : 100.0,
+        "formattedValue" : "100.0%",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_line_coverage",
+        "status" : "Ok"
+      },
+      {
+        "name" : "tests",
+        "value" : 496.0,
+        "formattedValue" : "496",
+        "status" : "Ok"
+      },
+      {
+        "name" : "major_violations",
+        "value" : 1362.0,
+        "formattedValue" : "1,362",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_critical_violations",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_violations",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_blocker_violations",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      },
+      {
+        "name" : "ncloc",
+        "value" : 41702.0,
+        "formattedValue" : "41,702",
+        "status" : "Ok"
+      },
+      {
+        "name" : "line_coverage",
+        "value" : 34.8,
+        "formattedValue" : "34.8%",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_lines_to_cover",
+        "status" : "Ok"
+      },
+      {
+        "name" : "test_errors",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      }
+    ]
+  },
+
+
+  {
+    "id" : "59bc2272ad533303a6192b53",
+    "collectorItemId" : "5915eaa1fdfcb761419b5105",
+    "timestamp" : 1505501810314,
+    "name" : "com.walmartlabs.looper.dashboard:Hygieia master",
+    "url" : "http://sonar.mycompany.com/dashboard/index/256257",
+    "type" : "StaticAnalysis",
+    "version" : "2.0.27-SNAPSHOT",
+    "buildId" : "59bc1e58ad533303a6192aaa",
+    "metrics" : [
+      {
+        "name" : "coverage",
+        "value" : 33.5,
+        "formattedValue" : "33.5%",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_coverage",
+        "status" : "Ok"
+      },
+      {
+        "name" : "violations",
+        "value" : 2152.0,
+        "formattedValue" : "2,152",
+        "status" : "Ok"
+      },
+      {
+        "name" : "sqale_index",
+        "value" : 17919.0,
+        "formattedValue" : "37d",
+        "status" : "Ok"
+      },
+      {
+        "name" : "critical_violations",
+        "value" : 7.0,
+        "formattedValue" : "7",
+        "status" : "Ok"
+      },
+      {
+        "name" : "blocker_violations",
+        "value" : 2.0,
+        "formattedValue" : "2",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_major_violations",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      },
+      {
+        "name" : "test_failures",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      },
+      {
+        "name" : "test_success_density",
+        "value" : 100.0,
+        "formattedValue" : "100.0%",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_line_coverage",
+        "status" : "Ok"
+      },
+      {
+        "name" : "tests",
+        "value" : 496.0,
+        "formattedValue" : "496",
+        "status" : "Ok"
+      },
+      {
+        "name" : "major_violations",
+        "value" : 1362.0,
+        "formattedValue" : "1,362",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_critical_violations",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_violations",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_blocker_violations",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      },
+      {
+        "name" : "ncloc",
+        "value" : 41702.0,
+        "formattedValue" : "41,702",
+        "status" : "Ok"
+      },
+      {
+        "name" : "line_coverage",
+        "value" : 34.8,
+        "formattedValue" : "34.8%",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_lines_to_cover",
+        "status" : "Ok"
+      },
+      {
+        "name" : "test_errors",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      }
+    ]
+  }
+
+  ,
+  {
+    "id" : "59bb1d69ad53330395863206",
+    "collectorItemId" : "5915eaa1fdfcb761419b5105",
+    "timestamp" : 1505434985313,
+    "name" : "com.walmartlabs.looper.dashboard:Hygieia master",
+    "url" : "http://sonar.mycompany.com/dashboard/index/256257",
+    "type" : "StaticAnalysis",
+    "version" : "2.0.27-SNAPSHOT",
+    "buildId" : "59bb19613d88f703bde6d1f5",
+    "metrics" : [
+      {
+        "name" : "coverage",
+        "value" : 33.5,
+        "formattedValue" : "33.5%",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_coverage",
+        "status" : "Ok"
+      },
+      {
+        "name" : "violations",
+        "value" : 2152.0,
+        "formattedValue" : "2,152",
+        "status" : "Ok"
+      },
+      {
+        "name" : "sqale_index",
+        "value" : 17919.0,
+        "formattedValue" : "37d",
+        "status" : "Ok"
+      },
+      {
+        "name" : "critical_violations",
+        "value" : 7.0,
+        "formattedValue" : "7",
+        "status" : "Ok"
+      },
+      {
+        "name" : "blocker_violations",
+        "value" : 2.0,
+        "formattedValue" : "2",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_major_violations",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      },
+      {
+        "name" : "test_failures",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      },
+      {
+        "name" : "test_success_density",
+        "value" : 100.0,
+        "formattedValue" : "100.0%",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_line_coverage",
+        "status" : "Ok"
+      },
+      {
+        "name" : "tests",
+        "value" : 496.0,
+        "formattedValue" : "496",
+        "status" : "Ok"
+      },
+      {
+        "name" : "major_violations",
+        "value" : 1362.0,
+        "formattedValue" : "1,362",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_critical_violations",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_violations",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_blocker_violations",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      },
+      {
+        "name" : "ncloc",
+        "value" : 41702.0,
+        "formattedValue" : "41,702",
+        "status" : "Ok"
+      },
+      {
+        "name" : "line_coverage",
+        "value" : 34.8,
+        "formattedValue" : "34.8%",
+        "status" : "Ok"
+      },
+      {
+        "name" : "new_lines_to_cover",
+        "status" : "Ok"
+      },
+      {
+        "name" : "test_errors",
+        "value" : 0.0,
+        "formattedValue" : "0",
+        "status" : "Ok"
+      }
+    ]
+  }
+]

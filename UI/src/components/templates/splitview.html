@@ -1,6 +1,12 @@
 <div class="dashboard-widgets container-fluid" widget-container dashboard="ctrl.dashboard">
+    <div ng-if="ctrl.scoreHeaderEnabled">
+        <score-view-header dashboard-id="{{ctrl.dashboard.id}}" rate-it-options="ctrl.scoreRateItOptionsHeader"></score-view-header>
+    </div>
     <div class="row">
         <div class="col-sm-5">
+            <div ng-if="ctrl.scoreWidgetEnabled">
+                <score-view-widget dashboard-id="{{ctrl.dashboard.id}}" rate-it-options="ctrl.scoreRateItOptionsWidget"></score-view-widget>
+            </div>
             <widget name="build"></widget>
             <widget name="repo"></widget>
         </div>

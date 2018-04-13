@@ -1,0 +1,1802 @@
+[
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "b59a5c78a7a60f0bb8682134dc1700545b6ff030",
+    "scmCommitLog": "Merge pull request #1407 from bkatika\/google-master-bkatika\n\nChanges to the app as part of tech upgrade",
+    "scmAuthor": "Ritesh Jha - r0j008e",
+    "scmAuthorLogin": "r0j008e",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505714909000,
+    "numberOfChanges": 2,
+    "id": "59bf62baad5333039e9348d5",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505714875665,
+    "pullRequestNum": "1407",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "7fbf0eede2e86c614db86c61a6cfc9e4b961e5fd",
+    "scmCommitLog": "Fix Summary (Brief): Changes to the app as part of tech upgrade\nChange Description (Details): Code changes to accomodate new tech stack\nJIRA(s): CPNBCP-2893\nLink(s) (e.g., git CL): https:\/\/confluence.walmart.com\/display\/CPNBCP\/NG+Bedrock+TechStack+upgrade#NGBedrockTechStackupgrade-3rdParty\/OpenSourceLibraries\nReviewer(s): rjha\nUT Summary: Ensure existing test cases are successful",
+    "scmAuthor": "Balaji Katika",
+    "scmAuthorLogin": "bkatika",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505712472000,
+    "numberOfChanges": 2,
+    "id": "59bf62bcad5333039e9348da",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505714875665,
+    "pullRequestNum": "1407",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "ac288030283426b1ea4df6e2609264c4cc7a0bb0",
+    "scmCommitLog": "Merge pull request #1408 from srai2\/master\n\nSetting messageID as batchID for IMS kafka publishing",
+    "scmAuthor": "Kailash Sati - k0s00my",
+    "scmAuthorLogin": "k0s00my",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505732531000,
+    "numberOfChanges": 1,
+    "id": "59bfa7903d88f703c459dc5a",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505732497546,
+    "pullRequestNum": "1408",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "ba1482b3288b4d16daaa3d299717220e0b673605",
+    "scmCommitLog": "Setting messageID as batchID for IMS kafka publishing",
+    "scmAuthor": "shantanu rai",
+    "scmAuthorLogin": "srai2",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505730405000,
+    "numberOfChanges": 2,
+    "id": "59bfa7913d88f703c459dc5b",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505732497546,
+    "pullRequestNum": "1408",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "f8dc38079f04bf060b710832d7ce530e1bc6e63c",
+    "scmCommitLog": "Setting messageID as batchID for IMS kafka publishing",
+    "scmAuthor": "shantanu rai",
+    "scmAuthorLogin": "srai2",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505731018000,
+    "numberOfChanges": 1,
+    "id": "59bfa7913d88f703c459dc5c",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505732497546,
+    "pullRequestNum": "1408",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "9e1be930c94d669e079c8ad3abb5c0947e90faa7",
+    "scmCommitLog": "Setting messageID as batchID for IMS kafka publishing",
+    "scmAuthor": "shantanu rai",
+    "scmAuthorLogin": "srai2",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505731286000,
+    "numberOfChanges": 1,
+    "id": "59bfa7913d88f703c459dc5d",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505732497546,
+    "pullRequestNum": "1408",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "c82aa55b58ddc50d117ea1424603c281e457ba8a",
+    "scmCommitLog": "Merge pull request #1409 from xchen14\/master\n\nMaster",
+    "scmAuthor": "Manohar Reddy",
+    "scmAuthorLogin": "m2reddy",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505767980000,
+    "numberOfChanges": 2,
+    "id": "59c03208ad533303b7ba4e70",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505767945765,
+    "pullRequestNum": "1409",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "5259fc05b3a594520e3e796589f1e52c78a91c96",
+    "scmCommitLog": "Revert ISC change since ISC is not ready",
+    "scmAuthor": "Xue Chen",
+    "scmAuthorLogin": "xchen13",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505759922000,
+    "numberOfChanges": 2,
+    "id": "59c03209ad533303b7ba4e71",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505767945765,
+    "pullRequestNum": "1409",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "2669e6a5eab9c3378b1ec323a1a05ad305edca6b",
+    "scmCommitLog": "Add switch for ISC change",
+    "scmAuthor": "Xue Chen",
+    "scmAuthorLogin": "xchen13",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505759922000,
+    "numberOfChanges": 2,
+    "id": "59c03209ad533303b7ba4e72",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505767945765,
+    "pullRequestNum": "1409",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "ed27ffb20b6e001527043e106885abc1aa51bab3",
+    "scmCommitLog": "Merge pull request #1411 from r0j008e\/hayneedle_master\n\nHayneedle master",
+    "scmAuthor": "Ritesh Jha - r0j008e",
+    "scmAuthorLogin": "r0j008e",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505810231000,
+    "numberOfChanges": 21,
+    "id": "59c0d7133d88f70ed1d8a5e6",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505810197465,
+    "pullRequestNum": "1411",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "91339a73eede58bdc13edabcad1426640f8452d8",
+    "scmCommitLog": "minor changes",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505714864000,
+    "numberOfChanges": 4,
+    "id": "59c0d7183d88f70ed1d8a5f5",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505810197465,
+    "pullRequestNum": "1411",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "3d48c0754d5ede6e63ff9541ba6dbff3985c23d0",
+    "scmCommitLog": "Merge branch 'hayneedle_master' of github.com:r0j008e\/bedrock-app into subhash_hayneedle",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505714906000,
+    "numberOfChanges": 0,
+    "id": "59c0d7183d88f70ed1d8a5f6",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505810197465,
+    "pullRequestNum": "1411",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "5e58d18f1badb7d619e6dd1f788b120309e08b05",
+    "scmCommitLog": "abraham review changes",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505721707000,
+    "numberOfChanges": 2,
+    "id": "59c0d7183d88f70ed1d8a5f7",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505810197465,
+    "pullRequestNum": "1411",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "f410035c77d7821b7f047b737a156851a0b71faf",
+    "scmCommitLog": "minor changes",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505727392000,
+    "numberOfChanges": 2,
+    "id": "59c0d7193d88f70ed1d8a5f8",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505810197465,
+    "pullRequestNum": "1411",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "5212ad06943429a9f1f90482a231b79cd1d45690",
+    "scmCommitLog": "minor changes",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505727572000,
+    "numberOfChanges": 1,
+    "id": "59c0d7193d88f70ed1d8a5f9",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505810197465,
+    "pullRequestNum": "None",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "fdeac994aad23d382642d018ac2a101715ba752d",
+    "scmCommitLog": "Merge pull request #5 from r0j008e\/subhash_hayneedle\n\nSubhash hayneedle",
+    "scmAuthor": "Ritesh Jha - r0j008e",
+    "scmAuthorLogin": "r0j008e",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505797627000,
+    "numberOfChanges": 5,
+    "id": "59c0d7193d88f70ed1d8a5fb",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505810197465,
+    "pullRequestNum": "1411",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "fc14273bc75692b980ff32cd8007038f99e1c1dd",
+    "scmCommitLog": "order create and cancel edi files handling",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505801198000,
+    "numberOfChanges": 6,
+    "id": "59c0d71a3d88f70ed1d8a5fc",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505810197465,
+    "pullRequestNum": "1411",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "3cc0e73ed302713ba727acff04a77ff4eca3fc30",
+    "scmCommitLog": "transaction logs for hayneedle, minor fixes",
+    "scmAuthor": "Ritesh Jha",
+    "scmAuthorLogin": "r0j008e",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505803325000,
+    "numberOfChanges": 57,
+    "id": "59c0d71a3d88f70ed1d8a5fd",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505810197465,
+    "pullRequestNum": "1411",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "f016567c85cbca064332e9228aab3268c5ff8c05",
+    "scmCommitLog": "30 char restriction changes",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505806917000,
+    "numberOfChanges": 1,
+    "id": "59c0d71a3d88f70ed1d8a5fe",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505810197465,
+    "pullRequestNum": "1411",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "dbfdf1ab3c682b65efde8eaca934fdddad5eb9b3",
+    "scmCommitLog": "resolved merge conflicts",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505807411000,
+    "numberOfChanges": 57,
+    "id": "59c0d71a3d88f70ed1d8a5ff",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505810197465,
+    "pullRequestNum": "1411",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "a9081f76ba05e79f2d72fb5524c3ed56424f77be",
+    "scmCommitLog": "minor changes",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505807585000,
+    "numberOfChanges": 2,
+    "id": "59c0d71b3d88f70ed1d8a600",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505810197465,
+    "pullRequestNum": "1411",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "8c98e76adb84e0676f7ac5b0c66435a54ad212b8",
+    "scmCommitLog": "minor changes",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505807965000,
+    "numberOfChanges": 1,
+    "id": "59c0d71b3d88f70ed1d8a601",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505810197465,
+    "pullRequestNum": "1411",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "6b6ce8a842d467ed52ec0f8f9fdc20ce26ab6334",
+    "scmCommitLog": "date changes",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505808292000,
+    "numberOfChanges": 1,
+    "id": "59c0d71b3d88f70ed1d8a602",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505810197465,
+    "pullRequestNum": "1411",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "382fbe320f34583387f502124706a6408dd4239c",
+    "scmCommitLog": "Merge pull request #6 from r0j008e\/subhash_hayneedle\n\nSubhash hayneedle",
+    "scmAuthor": "Ritesh Jha - r0j008e",
+    "scmAuthorLogin": "r0j008e",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505808910000,
+    "numberOfChanges": 8,
+    "id": "59c0d71b3d88f70ed1d8a603",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505810197465,
+    "pullRequestNum": "1411",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "7dc6363d8257bde1d2e376bd269c6687bb98d379",
+    "scmCommitLog": "Merge pull request #1412 from p0s00gg\/master\n\nMaster",
+    "scmAuthor": "Premkumar Subbu - p0s00gg",
+    "scmAuthorLogin": "p0s00gg",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505865614000,
+    "numberOfChanges": 2,
+    "id": "59c1af6a3d88f703a6261b9c",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505865579079,
+    "pullRequestNum": "1412",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "9f6d09581520a5ab7a85cbffb0293cdd67aaf87c",
+    "scmCommitLog": "email preference change",
+    "scmAuthor": "p0s00gg",
+    "scmAuthorLogin": "p0s00gg",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505865382000,
+    "numberOfChanges": 2,
+    "id": "59c1af6a3d88f703a6261b9d",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505865579079,
+    "pullRequestNum": "1412",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "35ad3723fd00398ca7cdd7f9647284cf1d77d87a",
+    "scmCommitLog": "Merge remote-tracking branch 'upstream\/master'",
+    "scmAuthor": "p0s00gg",
+    "scmAuthorLogin": "p0s00gg",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505865526000,
+    "numberOfChanges": 29,
+    "id": "59c1af6b3d88f703a6261b9e",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505865579079,
+    "pullRequestNum": "1412",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "a54c5327446224812d67925246893fcc8f73762d",
+    "scmCommitLog": "Merge pull request #1413 from srai2\/master\n\nCorrected the catdeve kafka bootstrap servers",
+    "scmAuthor": "Ritesh Jha - r0j008e",
+    "scmAuthorLogin": "r0j008e",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505886385000,
+    "numberOfChanges": 1,
+    "id": "59c2008dad533303b11d783e",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505886350008,
+    "pullRequestNum": "1413",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "3eda59b04aaa0a2ed54836fd78acc707aef8ced4",
+    "scmCommitLog": "Corrected the catdeve kafka bootstrap servers",
+    "scmAuthor": "shantanu rai",
+    "scmAuthorLogin": "srai2",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505886110000,
+    "numberOfChanges": 2,
+    "id": "59c2008dad533303b11d783f",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505886350008,
+    "pullRequestNum": "1413",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "a0f998d3a5873759fe587c43658ce2ca05aea67f",
+    "scmCommitLog": "Corrected the catdeve kafka bootstrap servers",
+    "scmAuthor": "shantanu rai",
+    "scmAuthorLogin": "srai2",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505886197000,
+    "numberOfChanges": 1,
+    "id": "59c2008ead533303b11d7840",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505886350008,
+    "pullRequestNum": "1413",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "c3c3aef9c302f85edd36b9d82a88569bc57ac5d5",
+    "scmCommitLog": "Merge pull request #1414 from xchen14\/Exception\n\nAdd exception code",
+    "scmAuthor": "Manohar Reddy",
+    "scmAuthorLogin": "m2reddy",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505934244000,
+    "numberOfChanges": 26,
+    "id": "59c2bb7f3d88f703a87ea1bb",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505934208611,
+    "pullRequestNum": "1414",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "54c7e240be9b6bf766320dc7dd07a883cf964ad0",
+    "scmCommitLog": "Add exception code",
+    "scmAuthor": "Xue Chen",
+    "scmAuthorLogin": "xchen13",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505778994000,
+    "numberOfChanges": 26,
+    "id": "59c2bb803d88f703a87ea1bc",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505934208611,
+    "pullRequestNum": "1414",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "69dc40611901be8ea4a068a344fa74c8c54c69c8",
+    "scmCommitLog": "Merge pull request #1410 from xchen14\/master\n\nAdd batch complete pgk in bedrock message",
+    "scmAuthor": "Manohar Reddy",
+    "scmAuthorLogin": "m2reddy",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505948151000,
+    "numberOfChanges": 2,
+    "id": "59c2f1d23d88f703a87ea94e",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505948115822,
+    "pullRequestNum": "1410",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "f6837d411c3801cc4cb0a9a1b680212ff67d49ff",
+    "scmCommitLog": "Add batch complete pgk in bedrock message\n\nto pass complete pkg as batch_type in register batch API",
+    "scmAuthor": "Xue Chen",
+    "scmAuthorLogin": "xchen13",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505841952000,
+    "numberOfChanges": 2,
+    "id": "59c2f1d33d88f703a87ea94f",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505948115822,
+    "pullRequestNum": "1410",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "ac00694d29eafa5112aeb47d15155e13ceccc2fb",
+    "scmCommitLog": "Update batch type value",
+    "scmAuthor": "Xue Chen",
+    "scmAuthorLogin": "xchen13",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505841952000,
+    "numberOfChanges": 2,
+    "id": "59c2f1d33d88f703a87ea950",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1505948115822,
+    "pullRequestNum": "1410",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "21fa665abe39b1de8b9dec4eb8131350a732dc9c",
+    "scmCommitLog": "Merge pull request #1416 from srai2\/master\n\nFixed setting wrong msgType in imskafkaresponse",
+    "scmAuthor": "Kailash Sati - k0s00my",
+    "scmAuthorLogin": "k0s00my",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506067867000,
+    "numberOfChanges": 1,
+    "id": "59c4c5763d88f703b9fcb1fb",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506067831539,
+    "pullRequestNum": "1416",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "3a4cea434702d5c1301ca27d1716014e9f7cc307",
+    "scmCommitLog": "Fixed setting wrong msgType in imskafkaresponse",
+    "scmAuthor": "shantanu rai",
+    "scmAuthorLogin": "srai2",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506067730000,
+    "numberOfChanges": 1,
+    "id": "59c4c5773d88f703b9fcb1fc",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506067831539,
+    "pullRequestNum": "1416",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "315ac63042ebd93c47a73ca795765e2fcc8c9c10",
+    "scmCommitLog": "Merge pull request #1415 from nrao01\/DSVtempchange\n\nchanged template for DSV inventory reroute",
+    "scmAuthor": "Balaji Katika - bkatika",
+    "scmAuthorLogin": "bkatika",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506068772000,
+    "numberOfChanges": 1,
+    "id": "59c4c8ff3d88f703b9fcb208",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506068736198,
+    "pullRequestNum": "1415",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "33d581ebca4c962c1215e94df984f881de5fa9ef",
+    "scmCommitLog": "changed template",
+    "scmAuthor": "Naresh rao",
+    "scmAuthorLogin": "nrao01",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505988979000,
+    "numberOfChanges": 1,
+    "id": "59c4c8ff3d88f703b9fcb209",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506068736198,
+    "pullRequestNum": "1415",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "430b76e5d55bfdd041092a911de696c2493455b8",
+    "scmCommitLog": "Merge pull request #1417 from bkatika\/google-master-bkatika\n\nMerge request for google changes",
+    "scmAuthor": "Balaji Katika - bkatika",
+    "scmAuthorLogin": "bkatika",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506069363000,
+    "numberOfChanges": 2,
+    "id": "59c4cb4e3d88f703b9fcb214",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506069326899,
+    "pullRequestNum": "1417",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "e4fd98c39507bf2c197bd0fcd8f27bfa2d1ddc8b",
+    "scmCommitLog": "Merge branch 'master' of github.com:eei\/bedrock-app into google-master",
+    "scmAuthor": "Balaji Katika",
+    "scmAuthorLogin": "bkatika",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505712992000,
+    "numberOfChanges": 8,
+    "id": "59c4cb4e3d88f703b9fcb215",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506069326899,
+    "pullRequestNum": "1417",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "27c5a0bed25175dce000b729747908bacd0815fa",
+    "scmCommitLog": "Fix Summary (Brief): Pass empty values for region\/locality\nChange Description (Details): when google does not pass these values in shipping address\nJIRA(s): CCPNBCP-8229\nLink(s) (e.g., git CL):\nReviewer(s): ksati\nUT Summary: Ensure smooks validation pass when region\/locality is not available",
+    "scmAuthor": "Balaji Katika",
+    "scmAuthorLogin": "bkatika",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506068580000,
+    "numberOfChanges": 2,
+    "id": "59c4cb4e3d88f703b9fcb216",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506069326899,
+    "pullRequestNum": "1417",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "ae7fca2375b556cae2b01c1a4507f1bb7a76af3e",
+    "scmCommitLog": "Merge pull request #1418 from d0r00cb\/up_master\n\ngoogle socket timeout exception handling for kill flow",
+    "scmAuthor": "Balaji Katika - bkatika",
+    "scmAuthorLogin": "bkatika",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506074448000,
+    "numberOfChanges": 1,
+    "id": "59c4df2bad533303bab931de",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506074411872,
+    "pullRequestNum": "1418",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "b38909739ead5f366b452eab35ea5018ebfacd19",
+    "scmCommitLog": "google socket timeout exception handling",
+    "scmAuthor": "Darshana Ravindranath - d0r00cb",
+    "scmAuthorLogin": "d0r00cb",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506073415000,
+    "numberOfChanges": 1,
+    "id": "59c4df2bad533303bab931df",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506074411872,
+    "pullRequestNum": "1418",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "ea5b50a39f34ebcbf7c426f9e76ec90d222e670a",
+    "scmCommitLog": "Merge pull request #1419 from r0j008e\/hayneedle_master\n\nHayneedle master",
+    "scmAuthor": "Ritesh Jha - r0j008e",
+    "scmAuthorLogin": "r0j008e",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506335112000,
+    "numberOfChanges": 9,
+    "id": "59c8d9883d88f703bd66eac1",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506335113658,
+    "pullRequestNum": "1419",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "f92dea95bb1104d36b83d8d7be426f1994bae04d",
+    "scmCommitLog": "minor changes",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505810578000,
+    "numberOfChanges": 1,
+    "id": "59c8d9883d88f703bd66eac2",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506335113658,
+    "pullRequestNum": "1419",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "4cfb03214daa6d57e4841f23f8ab2cadf0f2bf20",
+    "scmCommitLog": "minor changes",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505810734000,
+    "numberOfChanges": 1,
+    "id": "59c8d9893d88f703bd66eac3",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506335113658,
+    "pullRequestNum": "1419",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "47099a70a7eaa2ff9842c240fb5b2a475d5df627",
+    "scmCommitLog": "minor change",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505813736000,
+    "numberOfChanges": 2,
+    "id": "59c8d9893d88f703bd66eac4",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506335113658,
+    "pullRequestNum": "1419",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "322dbf90638bd5de99f7166e14f122d3ffa9d262",
+    "scmCommitLog": "address changes",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505819227000,
+    "numberOfChanges": 1,
+    "id": "59c8d98a3d88f703bd66eac5",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506335113658,
+    "pullRequestNum": "1419",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "adf1b31fc755cda0790be926d3dc2da5489fae93",
+    "scmCommitLog": "minor change",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505881443000,
+    "numberOfChanges": 1,
+    "id": "59c8d98a3d88f703bd66eac6",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506335113658,
+    "pullRequestNum": "1419",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "350edc7c6b4cd9bd340c7439d3f3a04161f296d1",
+    "scmCommitLog": "review changes",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505985246000,
+    "numberOfChanges": 7,
+    "id": "59c8d98b3d88f703bd66eac7",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506335113658,
+    "pullRequestNum": "1419",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "bc24f23089b3a8eae715e58feef6d27530f10e7c",
+    "scmCommitLog": "review changes",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506050866000,
+    "numberOfChanges": 1,
+    "id": "59c8d98b3d88f703bd66eac8",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506335113658,
+    "pullRequestNum": "None",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "0cfa94593b1b8f7c7573672cd645813e580b5f93",
+    "scmCommitLog": "review changes",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506050986000,
+    "numberOfChanges": 1,
+    "id": "59c8d98b3d88f703bd66eaca",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506335113658,
+    "pullRequestNum": "1419",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "3019d24f0826cd3572c032ac801ccccea0f5bcc3",
+    "scmCommitLog": "review changes",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506070007000,
+    "numberOfChanges": 4,
+    "id": "59c8d98c3d88f703bd66eacb",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506335113658,
+    "pullRequestNum": "1419",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "0209de0c6ff5c13454c2ae307d7241eeb08f3d12",
+    "scmCommitLog": "Merge pull request #7 from r0j008e\/subhash_hayneedle\n\nminor changes",
+    "scmAuthor": "Ritesh Jha - r0j008e",
+    "scmAuthorLogin": "r0j008e",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506335073000,
+    "numberOfChanges": 9,
+    "id": "59c8d98c3d88f703bd66eacc",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506335113658,
+    "pullRequestNum": "1419",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "b99e4bedd4562b102f9b979cd9c5695ce5a77c81",
+    "scmCommitLog": "Merge pull request #1420 from j7wang\/instore_xml_to_json\n\nAdd Timezone as PST for instore status update",
+    "scmAuthor": "Manohar Reddy",
+    "scmAuthorLogin": "m2reddy",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506377366000,
+    "numberOfChanges": 1,
+    "id": "59c97e963d88f703b240a9a5",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506377369088,
+    "pullRequestNum": "1420",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "31a01b187705777bfcf2213e9dd45a67fc42565c",
+    "scmCommitLog": "Add Timezone as PST for instore status update",
+    "scmAuthor": "Jason Wang",
+    "scmAuthorLogin": "j7wang",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506377025000,
+    "numberOfChanges": 1,
+    "id": "59c97e973d88f703b240a9a6",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506377369088,
+    "pullRequestNum": "1420",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "0f7911f38f18e46ffd9fd632dbd672cc4f9dc7ce",
+    "scmCommitLog": "Merge pull request #1421 from r0j008e\/hayneedle_master\n\nHayneedle master",
+    "scmAuthor": "Ritesh Jha - r0j008e",
+    "scmAuthorLogin": "r0j008e",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506475387000,
+    "numberOfChanges": 3,
+    "id": "59cafd7b3d88f703cc921e21",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506475388383,
+    "pullRequestNum": "1421",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "b517f1097976ed6c8bb43129d698eb1f7ddf6738",
+    "scmCommitLog": "review changes",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506407242000,
+    "numberOfChanges": 3,
+    "id": "59cafd7b3d88f703cc921e22",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506475388383,
+    "pullRequestNum": "1421",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "9e49473a70377fcfd8a8ef09c5037042ef3b4ae5",
+    "scmCommitLog": "Merge pull request #8 from r0j008e\/subhash_hayneedle\n\nreview changes",
+    "scmAuthor": "Ritesh Jha - r0j008e",
+    "scmAuthorLogin": "r0j008e",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506444940000,
+    "numberOfChanges": 3,
+    "id": "59cafd7c3d88f703cc921e23",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506475388383,
+    "pullRequestNum": "1421",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "8fc9d4b837284d8fd5d3da7c1f7fe559b0fa8d24",
+    "scmCommitLog": "Merge pull request #1422 from r0j008e\/hayneedle_master\n\nHayneedle master",
+    "scmAuthor": "Ritesh Jha - r0j008e",
+    "scmAuthorLogin": "r0j008e",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506476666000,
+    "numberOfChanges": 2,
+    "id": "59cb02793d88f703cc921e52",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506476666506,
+    "pullRequestNum": "1422",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "47b727e8378da815b946d1c3d2e67c80601381fa",
+    "scmCommitLog": "Merge branch 'master' of https:\/\/github.com\/eei\/bedrock-app into hayneedle_master",
+    "scmAuthor": "Ritesh Jha",
+    "scmAuthorLogin": "r0j008e",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506467581000,
+    "numberOfChanges": 37,
+    "id": "59cb027a3d88f703cc921e53",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506476666506,
+    "pullRequestNum": "1422",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "39cc6191a6c194d8eba05cd35659b7cc28ca59be",
+    "scmCommitLog": "single line for hayneedle inventory",
+    "scmAuthor": "Ritesh Jha",
+    "scmAuthorLogin": "r0j008e",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506476466000,
+    "numberOfChanges": 2,
+    "id": "59cb027a3d88f703cc921e54",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506476666506,
+    "pullRequestNum": "1422",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "b6153f8fd0d0c5ef72d859b78019357f2c834aee",
+    "scmCommitLog": "Merge pull request #1423 from r0j008e\/hayneedle_master\n\ntransport destination url",
+    "scmAuthor": "Ritesh Jha - r0j008e",
+    "scmAuthorLogin": "r0j008e",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506485502000,
+    "numberOfChanges": 3,
+    "id": "59cb24fead533303a7f04a4c",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506485502076,
+    "pullRequestNum": "1423",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "5c06b79b4ea01b41e50c85df53fb44127d419f8a",
+    "scmCommitLog": "transport destination url",
+    "scmAuthor": "Ritesh Jha",
+    "scmAuthorLogin": "r0j008e",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506485433000,
+    "numberOfChanges": 3,
+    "id": "59cb24fe3d88f703cc921f27",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506485502076,
+    "pullRequestNum": "1423",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "7dab27f48e5a2711ddb6a20e2a413030b954ce38",
+    "scmCommitLog": "Merge pull request #1424 from srai2\/master\n\nFixed null pointer in IMS response consumer",
+    "scmAuthor": "Kailash Sati - k0s00my",
+    "scmAuthorLogin": "k0s00my",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506493291000,
+    "numberOfChanges": 1,
+    "id": "59cb436a3d88f703cc922127",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506493291312,
+    "pullRequestNum": "1424",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "ed49fc587fe6308717227a366a219ab904f93ad9",
+    "scmCommitLog": "Fixed null pointer in IMS response consumer",
+    "scmAuthor": "shantanu rai",
+    "scmAuthorLogin": "srai2",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506493153000,
+    "numberOfChanges": 1,
+    "id": "59cb436b3d88f703cc922128",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506493291312,
+    "pullRequestNum": "1424",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "7e08ded18e90f383344ed2be9c810168ccaf2a15",
+    "scmCommitLog": "Merge pull request #1425 from xchen14\/master\n\nUpdate sqlldr.fileRegister.call to pass batch_type",
+    "scmAuthor": "Manohar Reddy",
+    "scmAuthorLogin": "m2reddy",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506539683000,
+    "numberOfChanges": 2,
+    "id": "59cbf8a2ad533303aab57ae4",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506539683150,
+    "pullRequestNum": "1425",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "8c06bbf2fed548851988cb86e93f783db89c15b8",
+    "scmCommitLog": "Merge branch 'master' of https:\/\/github.com\/eei\/bedrock-app",
+    "scmAuthor": "Xue Chen",
+    "scmAuthorLogin": "xchen13",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505946779000,
+    "numberOfChanges": 29,
+    "id": "59cbf8a2ad533303aab57ae5",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506539683150,
+    "pullRequestNum": "1425",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "455e55aa11fbf2652e92822f6a75f3724cc1f16c",
+    "scmCommitLog": "Merge branch 'master' of https:\/\/github.com\/eei\/bedrock-app",
+    "scmAuthor": "Xue Chen",
+    "scmAuthorLogin": "xchen13",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1505950169000,
+    "numberOfChanges": 0,
+    "id": "59cbf8a3ad533303aab57ae6",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506539683150,
+    "pullRequestNum": "1425",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "407dba8967b29449cf60f3711cc8e3a547177fc6",
+    "scmCommitLog": "Merge branch 'master' of https:\/\/github.com\/eei\/bedrock-app",
+    "scmAuthor": "Xue Chen",
+    "scmAuthorLogin": "xchen13",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506103121000,
+    "numberOfChanges": 5,
+    "id": "59cbf8a3ad533303aab57ae7",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506539683150,
+    "pullRequestNum": "1425",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "308cb72129e69943cc40307013dfc776005e9653",
+    "scmCommitLog": "Merge branch 'master' of https:\/\/github.com\/eei\/bedrock-app",
+    "scmAuthor": "Xue Chen",
+    "scmAuthorLogin": "xchen13",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506375029000,
+    "numberOfChanges": 9,
+    "id": "59cbf8a3ad533303aab57ae8",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506539683150,
+    "pullRequestNum": "1425",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "c48e371a6e6c70b6f1c0f89b6245a032430268fc",
+    "scmCommitLog": "Add register API call in templates",
+    "scmAuthor": "Xue Chen",
+    "scmAuthorLogin": "xchen13",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506377448000,
+    "numberOfChanges": 2,
+    "id": "59cbf8a3ad533303aab57ae9",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506539683150,
+    "pullRequestNum": "1425",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "5d058b1605aa72d36c7e3b8e351b68d1c9afcea4",
+    "scmCommitLog": "Merge pull request #1427 from r0j008e\/hayneedle_master\n\nHayneedle master",
+    "scmAuthor": "Ritesh Jha - r0j008e",
+    "scmAuthorLogin": "r0j008e",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506571193000,
+    "numberOfChanges": 10,
+    "id": "59cc73b8ad533303aab5871e",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506571193900,
+    "pullRequestNum": "1427",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "2176510cd09b55fab232e1bb516fcef25e4d99a7",
+    "scmCommitLog": "escape string in freemarker for product desc",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506485441000,
+    "numberOfChanges": 1,
+    "id": "59cc73b9ad533303aab5871f",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506571193900,
+    "pullRequestNum": "1427",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "2dc13bccb8d358c15220e2c0a572e8677574db51",
+    "scmCommitLog": "review changes",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506505955000,
+    "numberOfChanges": 5,
+    "id": "59cc73b9ad533303aab58720",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506571193900,
+    "pullRequestNum": "1427",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "14f52680f297caf5a557401846c23b83099da6cc",
+    "scmCommitLog": "review changes",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506506130000,
+    "numberOfChanges": 1,
+    "id": "59cc73baad533303aab58721",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506571193900,
+    "pullRequestNum": "1427",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "38b3343802a77093ab5ad19e693cd28857a0a86a",
+    "scmCommitLog": "minor changes",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506506366000,
+    "numberOfChanges": 42,
+    "id": "59cc73baad533303aab58722",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506571193900,
+    "pullRequestNum": "1427",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "adcd1903176a152d7e92d2af03ed161ea9e6c68d",
+    "scmCommitLog": "minor changes",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506506977000,
+    "numberOfChanges": 3,
+    "id": "59cc73baad533303aab58723",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506571193900,
+    "pullRequestNum": "1427",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "ecb0d50650aaf2ac01e7f7ec826b7e4e915da3c7",
+    "scmCommitLog": "pom version",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506507028000,
+    "numberOfChanges": 1,
+    "id": "59cc73bbad533303aab58724",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506571193900,
+    "pullRequestNum": "1427",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "a9134cbb8183646d4ee3595552019c6d613914e5",
+    "scmCommitLog": "minor chnage",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506507119000,
+    "numberOfChanges": 1,
+    "id": "59cc73bbad533303aab58726",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506571193900,
+    "pullRequestNum": "None",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "97fab50904ce3cd66c16410d8f2153c92a351f11",
+    "scmCommitLog": "minor changes",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506507249000,
+    "numberOfChanges": 1,
+    "id": "59cc73bcad533303aab58727",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506571193900,
+    "pullRequestNum": "1427",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "56ad192cefc7af171fd43f90fd2651fc7e6cfc60",
+    "scmCommitLog": "minor changes",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506507472000,
+    "numberOfChanges": 1,
+    "id": "59cc73bcad533303aab58728",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506571193900,
+    "pullRequestNum": "1427",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "836f53819c6c47f64ad181593f78d079c063b9c8",
+    "scmCommitLog": "Merge pull request #9 from r0j008e\/subhash_hayneedle\n\nSubhash hayneedle",
+    "scmAuthor": "Ritesh Jha - r0j008e",
+    "scmAuthorLogin": "r0j008e",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506507524000,
+    "numberOfChanges": 5,
+    "id": "59cc73bcad533303aab58729",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506571193900,
+    "pullRequestNum": "1427",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "9b16d8ab9dd576b0e7e544cf548269a261e15f11",
+    "scmCommitLog": "helper",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506509137000,
+    "numberOfChanges": 3,
+    "id": "59cc73bdad533303aab5872a",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506571193900,
+    "pullRequestNum": "1427",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "2bc5d42b6f12fd1b62f03fbb15a4b6d59d86379e",
+    "scmCommitLog": "Merge pull request #10 from r0j008e\/subhash_hayneedle\n\nhelper",
+    "scmAuthor": "Subhash Dhaka - sdhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506509251000,
+    "numberOfChanges": 3,
+    "id": "59cc73bdad533303aab5872b",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506571193900,
+    "pullRequestNum": "1427",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "b74141c25f93e1b385c4f704c7874fe18ab8532b",
+    "scmCommitLog": "fix of surface lookup hayneedle inventory",
+    "scmAuthor": "Ritesh Jha",
+    "scmAuthorLogin": "r0j008e",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506571099000,
+    "numberOfChanges": 4,
+    "id": "59cc73bdad533303aab5872c",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506571193900,
+    "pullRequestNum": "1427",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "4670a54f431f957b55c6f8e8a94b2d503b47294c",
+    "scmCommitLog": "Merge pull request #1428 from r0j008e\/hayneedle_master\n\nHayneedle master",
+    "scmAuthor": "Ritesh Jha - r0j008e",
+    "scmAuthorLogin": "r0j008e",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506593037000,
+    "numberOfChanges": 1,
+    "id": "59ccc90c3d88f703af9579d1",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506593037397,
+    "pullRequestNum": "1428",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "139eded74ad3457ed670efccb774be235730e216",
+    "scmCommitLog": "minor chnages",
+    "scmAuthor": "Subhash Dhaka",
+    "scmAuthorLogin": "sdhaka",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506592804000,
+    "numberOfChanges": 1,
+    "id": "59ccc90c3d88f703af9579d2",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506593037397,
+    "pullRequestNum": "1428",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "b7727b951f62cf27d42d451d4df13744abdd0089",
+    "scmCommitLog": "Merge pull request #11 from r0j008e\/subhash_hayneedle\n\nminor chnages",
+    "scmAuthor": "Ritesh Jha - r0j008e",
+    "scmAuthorLogin": "r0j008e",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506593008000,
+    "numberOfChanges": 1,
+    "id": "59ccc90d3d88f703af9579d3",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506593037397,
+    "pullRequestNum": "1428",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "83e3f4311a8efa3a1ac7b83a957381ff2282bf52",
+    "scmCommitLog": "Merge pull request #1429 from srai2\/master\n\nFixed JSON parsing exception in IMS ingestion response consumer",
+    "scmAuthor": "Kailash Sati - k0s00my",
+    "scmAuthorLogin": "k0s00my",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506594237000,
+    "numberOfChanges": 1,
+    "id": "59cccdbcad533303aab589b0",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506594236805,
+    "pullRequestNum": "1429",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "3b96818d7222b29dc4f0a1c5d7e99bf2474e2352",
+    "scmCommitLog": "Fixed JSON parsing exception in IMS ingestion response consumer",
+    "scmAuthor": "shantanu rai",
+    "scmAuthorLogin": "srai2",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506594081000,
+    "numberOfChanges": 1,
+    "id": "59cccdbcad533303aab589b1",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506594236805,
+    "pullRequestNum": "1429",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "3be70dbe0b9013d9b42eeef7529902466fff05e7",
+    "scmCommitLog": "Merge pull request #1430 from bkatika\/google-master-bkatika\n\nFix Summary (Brief): Add retry logic for 409 exception from Google",
+    "scmAuthor": "Balaji Katika - bkatika",
+    "scmAuthorLogin": "bkatika",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506597120000,
+    "numberOfChanges": 1,
+    "id": "59ccd8fead533303aab58a4b",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506597119735,
+    "pullRequestNum": "1430",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "87b07f96a2b68206d9e88945fc04fcd06fd645fb",
+    "scmCommitLog": "Fix Summary (Brief): Add retry logic for 409 exception from Google\nChange Description (Details): Bedrock to retry for http 409 resource conflict exceptions\nJIRA(s):\nLink(s) (e.g., git CL):\nReviewer(s): darshana\nUT Summary: Ensure existing test cases do not fail",
+    "scmAuthor": "Balaji Katika",
+    "scmAuthorLogin": "bkatika",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506596998000,
+    "numberOfChanges": 1,
+    "id": "59ccd8ffad533303aab58a4c",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506597119735,
+    "pullRequestNum": "1430",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "90702fb62451c3e09c9bc4caa678ea10e4b9b5db",
+    "scmCommitLog": "Merge pull request #1431 from r0j008e\/hayneedle_master\n\nfixing typo",
+    "scmAuthor": "Ritesh Jha - r0j008e",
+    "scmAuthorLogin": "r0j008e",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506611597000,
+    "numberOfChanges": 1,
+    "id": "59cd118c3d88f7039265d35d",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506611596741,
+    "pullRequestNum": "1431",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "de250bbb1da29103105ea4d90a0d865a763b32f8",
+    "scmCommitLog": "fixing typo",
+    "scmAuthor": "Ritesh Jha",
+    "scmAuthorLogin": "r0j008e",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506611362000,
+    "numberOfChanges": 1,
+    "id": "59cd118c3d88f7039265d35e",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506611596741,
+    "pullRequestNum": "1431",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "9e833c67f8373224c2d4516c6d9cb0cdc9019708",
+    "scmCommitLog": "Merge pull request #1432 from psemman\/master\n\nTemplate is updated to publish events with unique event id",
+    "scmAuthor": "Ponsankar",
+    "scmAuthorLogin": "psemman",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506629753000,
+    "numberOfChanges": 1,
+    "id": "59cd5878ad533303b6e24dfa",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506629753498,
+    "pullRequestNum": "1432",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "27348017489c8a9cfea0bd44164c4e98ecdbdf6a",
+    "scmCommitLog": "Template is updated to publish events with unique event id",
+    "scmAuthor": "Ponsankar",
+    "scmAuthorLogin": "psemman",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506629711000,
+    "numberOfChanges": 1,
+    "id": "59cd5879ad533303b6e24dfb",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506629753498,
+    "pullRequestNum": "1432",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "eef4e0e4ad7571edbaabcb2fdec50ed630918799",
+    "scmCommitLog": "Merge pull request #1433 from psemman\/master\n\nBuid and mart id set to 0 from blank",
+    "scmAuthor": "Ponsankar",
+    "scmAuthorLogin": "psemman",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506630118000,
+    "numberOfChanges": 1,
+    "id": "59cd59e53d88f7039265dc86",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506630117856,
+    "pullRequestNum": "1433",
+    "squashed": false
+  },
+  {
+    "scmUrl": "https:\/\/github.com\/eei\/bedrock-app",
+    "scmBranch": "master",
+    "scmRevisionNumber": "6ae010952c289adb08071a4c6e52eb11ec229c14",
+    "scmCommitLog": "Buid and mart id set to 0 from blank",
+    "scmAuthor": "Ponsankar",
+    "scmAuthorLogin": "psemman",
+    "scmParentRevisionNumbers": [
+
+    ],
+    "scmCommitTimestamp": 1506629995000,
+    "numberOfChanges": 1,
+    "id": "59cd59e53d88f7039265dc87",
+    "collectorItemId": "594c172b3d88f74214c4f6de",
+    "timestamp": 1506630117856,
+    "pullRequestNum": "1433",
+    "squashed": false
+  }
+]
