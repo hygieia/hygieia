@@ -1,47 +1,15 @@
 package com.capitalone.dashboard.config;
 
 import com.capitalone.dashboard.repository.ApiTokenRepository;
-import com.capitalone.dashboard.service.ApiTokenService;
-import com.capitalone.dashboard.service.ApiTokenServiceImpl;
-import com.capitalone.dashboard.service.DashboardRemoteService;
-import com.capitalone.dashboard.service.GitRequestService;
-import com.capitalone.dashboard.service.LibraryPolicyService;
-import com.capitalone.dashboard.service.Monitor2Service;
-import com.capitalone.dashboard.service.PerformanceService;
-import com.capitalone.dashboard.service.TemplateService;
+import com.capitalone.dashboard.service.*;
 import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import com.capitalone.dashboard.service.MaturityModelService;
 
 import com.capitalone.dashboard.repository.AuthenticationRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.UserInfoRepository;
-import com.capitalone.dashboard.service.AuthenticationService;
-import com.capitalone.dashboard.service.BinaryArtifactService;
-import com.capitalone.dashboard.service.BuildService;
-import com.capitalone.dashboard.service.CloudInstanceService;
-import com.capitalone.dashboard.service.CloudSubnetService;
-import com.capitalone.dashboard.service.CloudVirtualNetworkService;
-import com.capitalone.dashboard.service.CloudVolumeService;
-import com.capitalone.dashboard.service.CmdbService;
-import com.capitalone.dashboard.service.CodeQualityService;
-import com.capitalone.dashboard.service.CollectorService;
-import com.capitalone.dashboard.service.CommitService;
-import com.capitalone.dashboard.service.BusCompOwnerService;
-import com.capitalone.dashboard.service.DashboardService;
-import com.capitalone.dashboard.service.DefaultAuthenticationServiceImpl;
-import com.capitalone.dashboard.service.DeployService;
-import com.capitalone.dashboard.service.EncryptionService;
-import com.capitalone.dashboard.service.FeatureService;
-import com.capitalone.dashboard.service.PipelineService;
-import com.capitalone.dashboard.service.ScopeService;
-import com.capitalone.dashboard.service.ServiceService;
-import com.capitalone.dashboard.service.TeamService;
-import com.capitalone.dashboard.service.TestResultService;
-import com.capitalone.dashboard.service.UserInfoService;
-import com.capitalone.dashboard.service.UserInfoServiceImpl;
 import com.capitalone.dashboard.util.PaginationHeaderUtility;
 
 
@@ -222,5 +190,20 @@ import com.capitalone.dashboard.util.PaginationHeaderUtility;
     public TemplateService templateService() {
         return Mockito.mock(TemplateService.class);
     }
+
+	 @Bean
+	 public ScoreService scoreService() {
+		 return Mockito.mock(ScoreService.class);
+	 }
+
+	 @Bean
+	 public ScoreCriteriaSettingsService scoreCriteriaSettingsService() {
+		 return Mockito.mock(ScoreCriteriaSettingsService.class);
+	 }
+
+	 @Bean
+	 public ScoreDashboardService scoreDashboardService() {
+		 return Mockito.mock(ScoreDashboardService.class);
+	 }
  }
 
