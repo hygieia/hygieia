@@ -330,28 +330,7 @@
 //Configuration settings functionality starts here
         dashboardData.getGeneralConfig().then(processGeneralConfigResponse);
         function processGeneralConfigResponse(data){
-            console.log(data)
-            if(data){
                 $scope.choices = data;
-            }else{
-                $scope.choices = [
-                        {
-                            "id": "5aa11a4d69bd522f3089e16e",
-                            "collectorName": "GitHub",
-                            "info": [{}]
-                        },
-                        {
-                            "id": "5aa11af169bd522f3089e16f",
-                            "collectorName": "sonatype",
-                            "info": [{}]
-                        },
-                        {
-                            "collectorName": "Sonar",
-                            "info": [{}]
-                        }
-                    ];
-
-            }
         }
 
         $scope.oneAtATime = false;
