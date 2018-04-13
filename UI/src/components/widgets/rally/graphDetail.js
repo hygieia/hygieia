@@ -9,18 +9,12 @@
     function RallyGraphDetailController($scope,$uibModalInstance, $uibModal, iterationBurnData, planEstimate, label) {
 
         var maxYaxisAccepted = (20-(parseInt(planEstimate)%20))+parseInt(planEstimate);
-        console.log(planEstimate);
-        console.log(iterationBurnData);
-        console.log(label);
         var ctrl = this;
         var data = iterationBurnData;
-/*****Start Iteration bburndown charts configuration *****/
+/*****Start Iteration burndown charts configuration *****/
   $scope.labels = label;
   $scope.colors = ['#5c9acb', '#696969', '#7fb17f'];
   $scope.data = iterationBurnData;
-  $scope.onClick = function (points, evt) {
-    console.log(points, evt);
-  };
   $scope.datasetOverride = [
     { yAxisID: 'y-axis-1',label: "Task To Do (Hours)",type: 'bar',backgroundColor: "rgba(92,154,203,1)"}, 
     { yAxisID: 'y-axis-1',label: "Ideal (Hours)",type: 'line',borderColor: "rgba(105,105,105,1)", fill: false  }, 
@@ -72,6 +66,6 @@
     }]
     }
   };
-/*****End Iteration bburndown charts configuration *****/
+/*****End Iteration burndown charts configuration *****/
     }
 })();
