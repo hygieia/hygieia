@@ -19,7 +19,10 @@ import java.util.List;
 public interface DashboardRepository extends PagingAndSortingRepository<Dashboard, ObjectId> {
 	
 	List<Dashboard> findByOwner(String owner);
+
 	List<Dashboard> findByOwners(Owner owner);
+	List<Dashboard> findByOwnersAndTypeContainingIgnoreCase(Owner owner, String type);
+
 	List<Dashboard> findByTitle(String title);
 	Dashboard findByTitleAndType(String title, DashboardType type);
 
@@ -42,17 +45,24 @@ public interface DashboardRepository extends PagingAndSortingRepository<Dashboar
 	Dashboard findByConfigurationItemBusServNameIgnoreCaseAndConfigurationItemBusAppNameIgnoreCase(String appName, String compName);
 
 	Page<Dashboard> findAll(Pageable page);
+	Page<Dashboard> findAllByTypeContainingIgnoreCase(String type,Pageable pageable);
 
 	Page<Dashboard> findAllByTitleContainingIgnoreCase(String name, Pageable pageable);
+	Page<Dashboard> findAllByTypeContainingIgnoreCaseAndTitleContainingIgnoreCase(String type, String title, Pageable pageable);
 
 	List<Dashboard> findAllByTitleContainingIgnoreCase(String name);
+	List<Dashboard> findAllByTypeContainingIgnoreCaseAndTitleContainingIgnoreCase(String type, String title);
 
 	long count();
+	long countByTypeContainingIgnoreCase(String type);
 
 	Page<Dashboard> findByOwners(Owner owner, Pageable pageable);
+	Page<Dashboard> findByOwnersAndTypeContainingIgnoreCase(Owner owner, String type, Pageable pageable);
 
 	List<Dashboard> findByOwnersAndTitleContainingIgnoreCase(Owner owner, String name);
+	List<Dashboard> findByOwnersAndTypeContainingIgnoreCaseAndTitleContainingIgnoreCase(Owner owner, String type, String title);
 
-	Page<Dashboard> findByOwnersAndTitleContainingIgnoreCase(Owner owner, String name, Pageable pageable);
+	Page<Dashboard> findByOwnersAndTitleContainingIgnoreCase(Owner owner, String title, Pageable pageable);
+	Page<Dashboard> findByOwnersAndTypeContainingIgnoreCaseAndTitleContainingIgnoreCase(Owner owner, String type, String title, Pageable pageable);
 
 }
