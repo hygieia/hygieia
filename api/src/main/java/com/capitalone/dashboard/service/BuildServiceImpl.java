@@ -125,8 +125,14 @@ public class BuildServiceImpl implements BuildService {
         allOptions.put("jobUrl", "");
         allOptions.put("instanceUrl", "");
         allOptions.put("jobName","");
+
+        Map<String, Object> uniqueOptions = new HashMap<>();
+        uniqueOptions.put("jobUrl", "");
+        uniqueOptions.put("jobName","");
+
         col.setAllFields(allOptions);
-        col.setUniqueFields(allOptions);
+        col.setUniqueFields(uniqueOptions);
+        col.setSearchFields(Arrays.asList("options.jobName","niceName"));
         return collectorService.createCollector(col);
     }
 
