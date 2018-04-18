@@ -26,7 +26,7 @@ import org.springframework.data.repository.CrudRepository;
 import com.capitalone.dashboard.model.Feature;
 
 /**
- * Repository for {@link FeatureCollector}.
+ * Repository for {@link Feature}.
  */
 public interface FeatureRepository extends CrudRepository<Feature, ObjectId>,
 		QueryDslPredicateExecutor<Feature>, FeatureRepositoryCustom {
