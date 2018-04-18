@@ -1,25 +1,30 @@
 {
   "auditStatuses": [
-    "DASHBOARD_TEST_NOT_CONFIGURED",
+    "DASHBOARD_TEST_CONFIGURED",
+    "DASHBOARD_CODEQUALITY_NOT_CONFIGURED",
+    "DASHBOARD_REPO_NOT_CONFIGURED",
     "DASHBOARD_PERFORMANCE_TEST_CONFIGURED",
-    "DASHBOARD_CODEQUALITY_CONFIGURED",
-    "DASHBOARD_BUILD_CONFIGURED",
-    "DASHBOARD_REPO_CONFIGURED"
+    "DASHBOARD_BUILD_NOT_CONFIGURED"
   ],
   "lastUpdated": 0,
-  "dashboardTitle": "COAF - LS Bluefin",
+  "dashboardTitle": "FS_COAF_DS_Slate",
   "businessService": "unknown",
   "businessApplication": "unknown",
   "review": {
-    "CODE_QUALITY": [
+    "TEST_RESULT": [
       {
         "auditStatuses": [
-          "CODE_QUALITY_DETAIL_MISSING"
+          "TEST_RESULT_MISSING"
         ],
         "lastUpdated": 0,
-        "lastExecutionTime": 0,
-        "codeAuthors": [],
-        "configChanges": []
+        "lastExecutionTime": 0
+      },
+      {
+        "auditStatuses": [
+          "TEST_RESULT_MISSING"
+        ],
+        "lastUpdated": 0,
+        "lastExecutionTime": 0
       }
     ],
     "PERF_TEST": [
@@ -30,32 +35,14 @@
         "lastUpdated": 0,
         "lastExecutionTime": 0,
         "result": []
-      }
-    ],
-    "CODE_REVIEW": [
+      },
       {
         "auditStatuses": [
-          "NO_COMMIT_FOR_DATE_RANGE",
-          "NO_PULL_REQ_FOR_DATE_RANGE"
-        ],
-        "lastUpdated": 1520023272113,
-        "url": "https://github.kdc.capitalone.com/coaf-cs/AutoIL",
-        "branch": "dev",
-        "lastCommitTime": 0,
-        "lastPRMergeTime": 0,
-        "directCommits": [],
-        "pullRequests": []
-      }
-    ],
-    "BUILD_REVIEW": [
-      {
-        "auditStatuses": [
-          "BUILD_AUTHOR_NE_REPO_AUTHOR",
-          "BUILD_REPO_MISMATCH"
+          "PERF_RESULT_AUDIT_MISSING"
         ],
         "lastUpdated": 0,
-        "lastBuildTime": 0,
-        "configHistory": []
+        "lastExecutionTime": 0,
+        "result": []
       }
     ]
   }

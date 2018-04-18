@@ -1,7 +1,7 @@
 Feature: dashboardReview
 
   Background:
-    * header apiUser = 'auditapi'
+    * header apiUser = 'apiadmin'
     * header Authorization = call read('classpath:basic-auth.js')
     * url baseUrl
     * configure readTimeout = 60000

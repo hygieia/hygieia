@@ -2,24 +2,24 @@ function karateConfig() {
     var env = karate.env; // get system property 'karate.env'
     karate.log('karate.env system property was:', env);
     if (!env) {
-        env = 'qa';
+        env = 'dev';
     }
     var config = {
         env: env,
-        baseUrl: 'https://hygieia-qa.cloud.capitalone.com/apiaudit/'
+        baseUrl: 'http://localhost:8888/api-audit/'
     }
 
-    if (env == 'dev1') {
-        config.baseUrl = 'https://hygieia-qa.cloud.capitalone.com/api/';
+    if (env == 'dev') {
+        config.baseUrl = 'http://localhost:8888/api-audit/';
 
     }
 
     else if (env == 'qa') {
-        config.baseUrl = 'https://hygieia-qa.cloud.capitalone.com/apiaudit/';
+        config.baseUrl = 'https://my-qa-environment.com/apiaudit/';
     }
 
     else if (env == 'prod') {
-        config.baseUrl = 'https://hygieia.cloud.capitalone.com/api/';
+        config.baseUrl = 'https://my-prod-environment.com/apiaudit/';
     }
 
     return config;
