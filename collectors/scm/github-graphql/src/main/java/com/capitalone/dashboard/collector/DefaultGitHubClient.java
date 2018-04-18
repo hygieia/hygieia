@@ -949,7 +949,10 @@ public class DefaultGitHubClient implements GitHubClient {
 
             String queryUrl = apiUrl.concat("users/").concat(user);
             String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
-            ResponseEntity<String> response = makeRestCallGet(queryUrl, repo.getUserId(), decryptedPassword);
+            String personalAccessToken = (String) repo.getOptions().get("personalAccessToken");
+            String decryptedPersonalAccessToken = decryptString(personalAccessToken, settings.getKey());
+
+            ResponseEntity<String> response = makeRestCallGet(queryUrl, repo.getUserId(), decryptedPassword,decryptedPersonalAccessToken);
             JSONObject jsonObject = parseAsObject(response);
             String ldapDN = str(jsonObject, "ldap_dn");
             if (!StringUtils.isEmpty(ldapDN)) {
@@ -1045,13 +1048,14 @@ public class DefaultGitHubClient implements GitHubClient {
     }
 
     private ResponseEntity<String> makeRestCallGet(String url, String userId,
-                                                   String password) throws RestClientException {
+                                                   String password, String personalAccessToken) throws RestClientException {
         // Basic Auth only.
         if (!Objects.equals("", userId) && !Objects.equals("", password)) {
             return restOperations.exchange(url, HttpMethod.GET,
                     new HttpEntity<>(createHeaders(userId, password)),
                     String.class);
-
+        } else if ((personalAccessToken!=null && !Objects.equals("", personalAccessToken)) ) {
+            return restOperations.exchange(url, HttpMethod.GET,new HttpEntity<>(createHeaders(personalAccessToken)),String.class);
         } else if (settings.getPersonalAccessToken() != null && !Objects.equals("", settings.getPersonalAccessToken())) {
             String decryptPAC = decryptString(settings.getPersonalAccessToken(), settings.getKey());
             return restOperations.exchange(url, HttpMethod.GET,
