@@ -7,11 +7,9 @@
  "options": {
    "scm": "Github",
    "branch": "master",
-   "url": "https://github.kdc.capitalone.com/hlsaturn/saturnweb",
+   "url": "https://github.com/capitalone/Hygieia",
    "branches": [
-     "Saturn-KYC",
-     "master",
-     "release"
+     "master"
    ]
  },
  "collector": {
