@@ -182,23 +182,23 @@ public interface DashboardService {
 
     Dashboard updateDashboardWidgets(ObjectId dashboardId, Dashboard request) throws HygieiaException;
 
-    Page<Dashboard> findDashboardsByPage(Pageable page);
+    Page<Dashboard> findDashboardsByPage(String type, Pageable page);
 
-    Page<Dashboard> getDashboardByTitleWithFilter(String title, Pageable pageable);
+    Page<Dashboard> getDashboardByTitleWithFilter(String title, String type, Pageable pageable);
 
-    long count();
+    long count(String type);
 
-    Integer getAllDashboardsByTitleCount(String title);
+    Integer getAllDashboardsByTitleCount(String title, String type);
 
     int getPageSize();
 
-    Page<Dashboard> findMyDashboardsByPage(Pageable page);
+    Page<Dashboard> findMyDashboardsByPage(String type, Pageable page);
 
-    long myDashboardsCount();
+    long myDashboardsCount(String type);
 
-    int getMyDashboardsByTitleCount(String title);
+    int getMyDashboardsByTitleCount(String title, String type);
 
-    Page<Dashboard> getMyDashboardByTitleWithFilter(String title, Pageable pageable);
+    Page<Dashboard> getMyDashboardByTitleWithFilter(String title, String type, Pageable pageable);
 
     Dashboard updateScoreSettings(ObjectId dashboardId, boolean scoreEnabled, ScoreDisplayType scoreDisplay);
 
