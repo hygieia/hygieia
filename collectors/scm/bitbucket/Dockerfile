@@ -10,6 +10,7 @@ ENV PROP_FILE /hygieia/config/application.properties
 
 WORKDIR /hygieia
 
+COPY certs/*.crt /certs
 COPY target/*.jar /hygieia
 COPY docker/properties-builder.sh /hygieia/
 
