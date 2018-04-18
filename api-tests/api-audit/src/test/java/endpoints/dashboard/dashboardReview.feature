@@ -11,5 +11,5 @@ Feature: dashboardReview
     And params read('dashboardReview-params.json')
     When method get
     Then status 200
-    And match $.review.CODE_QUALITY[*].auditStatuses == [["CODE_QUALITY_DETAIL_MISSING"]]
-    And match $.review.CODE_REVIEW[*].url == ["https://github.kdc.capitalone.com/coaf-cs/AutoIL"]
+    And match $.review.PERF_TEST[*].auditStatuses contains [["PERF_RESULT_AUDIT_MISSING"]]
+    And match $.review.CODE_REVIEW[*].url == ["https://github.com/capitalone/Hygieia"]
