@@ -7,10 +7,9 @@ RUN mkdir /hygieia/config
 EXPOSE 8080
 
 ENV PROP_FILE /hygieia/config/application.properties
-
+ENV CACERTS /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts
 WORKDIR /hygieia
 
-COPY certs/*.crt /certs
 COPY target/*.jar /hygieia
 COPY docker/properties-builder.sh /hygieia/
 
