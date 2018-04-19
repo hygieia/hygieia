@@ -8,4 +8,5 @@ Procedure:
 volumes:
   - ./certs:/certs
 ```	
-3. Reuse the script found in collectors/scm/bitbucket/docker/properties-builder.sh
+3. Depending on the collector's environment, create a env variable named CACERTS that points to the local cacert
+4. Reuse the script found in collectors/scm/bitbucket/docker/properties-builder.sh
