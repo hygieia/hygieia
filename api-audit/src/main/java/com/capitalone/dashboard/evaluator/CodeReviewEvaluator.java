@@ -179,6 +179,19 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
         //check any commits not directly tied to pr
         commits.stream().filter(commit -> !allPrCommitShas.contains(commit.getScmRevisionNumber()) && StringUtils.isEmpty(commit.getPullNumber()) && commit.getType() == CommitType.New).forEach(reviewAuditResponseV2::addDirectCommit);
 
+        //check any commits not directly tied to pr
+
+        List<Commit> commitsNotDirectlyTiedToPr = new ArrayList<>();
+        commits.forEach(commit -> {
+            if (!allPrCommitShas.contains(commit.getScmRevisionNumber()) &&
+                    StringUtils.isEmpty(commit.getPullNumber()) && commit.getType() == CommitType.New) {
+                commitsNotDirectlyTiedToPr.add(commit);
+                if (!StringUtils.isEmpty(commit.getScmAuthorLDAPDN()) && CommonCodeReview.checkForServiceAccount(commit.getScmAuthorLDAPDN(), settings))  {
+                    reviewAuditResponseV2.addAuditStatus(CodeReviewAuditStatus.COMMITAUTHOR_EQ_SERVICEACCOUNT);
+                }
+            }
+        });
+
         return reviewAuditResponseV2;
     }
 }

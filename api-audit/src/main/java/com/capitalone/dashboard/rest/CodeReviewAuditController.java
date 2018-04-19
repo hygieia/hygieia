@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestBody;
+
 
 import javax.validation.Valid;
 import java.util.Collection;
@@ -40,7 +40,7 @@ public class CodeReviewAuditController {
      */
     @RequestMapping(value = "/peerReview", method = GET, produces = APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Audit status of peer review validation", notes = "Returns the audit status as passed or failed for the peer review of a pull request, based on the following checks: <br />" +  "• No direct commits merged to master/release branch <br />" + "• Any change made to the master/release branch is reviewed by a second person before merge ", response = CodeReviewAuditResponse.class, responseContainer = "List")
-    public ResponseEntity<Iterable<CodeReviewAuditResponse>> peerReviewByRepo(@Valid @RequestBody CodeReviewAuditRequest request) throws AuditException {
+    public ResponseEntity<Iterable<CodeReviewAuditResponse>> peerReviewByRepo(@Valid CodeReviewAuditRequest request) throws AuditException {
         GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(request.getRepo());
         String repoUrl = gitHubParsed.getUrl();
         Collection<CodeReviewAuditResponse> allPeerReviews = codeReviewAuditService.getPeerReviewResponses(repoUrl, request.getBranch(), request.getScmName(), request.getBeginDate(), request.getEndDate());
