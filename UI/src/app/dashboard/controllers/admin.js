@@ -186,7 +186,7 @@
         }
 
         function processResponse(data) {
-            ctrl.dashboards = paginationWrapperService.processDashboardResponse(data);
+            ctrl.dashboards = paginationWrapperService.processDashboardResponse({"data" : data});
         }
 
         function processUserResponse(response) {

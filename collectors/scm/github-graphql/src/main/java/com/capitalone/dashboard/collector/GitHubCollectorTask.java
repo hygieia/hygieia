@@ -92,6 +92,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         allOptions.put(GitHubRepo.BRANCH, "");
         allOptions.put(GitHubRepo.USER_ID, "");
         allOptions.put(GitHubRepo.PASSWORD, "");
+        allOptions.put(GitHubRepo.PERSONAL_ACCESS_TOKEN, "");
         protoType.setAllFields(allOptions);
 
         Map<String, Object> uniqueOptions = new HashMap<>();
@@ -169,7 +170,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                 try {
                     if (!isUnderRateLimit(repo)) {
                         LOG.error("GraphQL API rate limit reached. Stopping processing");
-                        break;
+                        continue;
                     }
 
                     List<GitRequest> allRequests = gitRequestRepository.findRequestNumberAndLastUpdated(repo.getId());
@@ -221,7 +222,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                 }
                 gitHubRepoRepository.save(repo);
             } else {
-                LOG.info(repo.getOptions().toString() + "::" + repo.getBranch() + ":: errorThreshold exceeded");
+                LOG.info(repo.getRepoUrl()+ "::" + repo.getBranch() + ":: errorThreshold exceeded");
             }
             repoCount++;
         }
@@ -281,8 +282,13 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         GitHubRateLimit rateLimit = null;
         try {
             rateLimit = gitHubClient.getRateLimit(repo);
-            LOG.info("Remaining " + rateLimit.getRemaining() + " of limit " + rateLimit.getLimit()
-                    + " resetTime " + new DateTime(rateLimit.getResetTime()).toString("yyyy-MM-dd hh:mm:ss.SSa"));
+            if(rateLimit!=null){
+                LOG.info("Remaining " + rateLimit.getRemaining() + " of limit " + rateLimit.getLimit()
+                        + " resetTime " + new DateTime(rateLimit.getResetTime()).toString("yyyy-MM-dd hh:mm:ss.SSa"));
+            }else{
+                LOG.info("Rate limit is null");
+            }
+
         } catch (HttpClientErrorException hce) {
             LOG.error("getRateLimit returned " + hce.getStatusCode() + " " + hce.getMessage() + " " + hce);
             return false;

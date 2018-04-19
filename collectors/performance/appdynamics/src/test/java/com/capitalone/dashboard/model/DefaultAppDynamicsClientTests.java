@@ -29,9 +29,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
-/**
- * Created by syq410 on 5/5/17.
- */
+
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultAppDynamicsClientTests {
 
@@ -54,12 +52,12 @@ public class DefaultAppDynamicsClientTests {
 
     @Test
     public void joinURLsTest() throws Exception {
-        String u = DefaultAppdynamicsClient.joinURL("http://appdyn-hqa-c01.kdc.capitalone.com/","app1","app2","app3" );
-        assertEquals("http://appdyn-hqa-c01.kdc.capitalone.com/app1/app2/app3", u);
-        String u1 = DefaultAppdynamicsClient.joinURL("http://appdyn-hqa-c01.kdc.capitalone.com","app1","app2","app3" );
-        assertEquals("http://appdyn-hqa-c01.kdc.capitalone.com/app1/app2/app3", u1);
-        String u2 = DefaultAppdynamicsClient.joinURL("http://appdyn-hqa-c01.kdc.capitalone.com","/app1/","/app2/","/app3" );
-        assertEquals("http://appdyn-hqa-c01.kdc.capitalone.com/app1/app2/app3", u2);
+        String u = DefaultAppdynamicsClient.joinURL("http://test.com/","app1","app2","app3" );
+        assertEquals("http://test.com/app1/app2/app3", u);
+        String u1 = DefaultAppdynamicsClient.joinURL("http://test.com","app1","app2","app3" );
+        assertEquals("http://test.com/app1/app2/app3", u1);
+        String u2 = DefaultAppdynamicsClient.joinURL("http://test.com","/app1/","/app2/","/app3" );
+        assertEquals("http://test.com/app1/app2/app3", u2);
 
     }
 

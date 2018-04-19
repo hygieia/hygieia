@@ -1,12 +1,14 @@
 package com.capitalone.dashboard.request;
 
 import javax.validation.constraints.NotNull;
+import io.swagger.annotations.ApiModelProperty;
 
 public class AuditReviewRequest {
-
+	@ApiModelProperty(value = "Begin Date", example="1521222841800")
     @NotNull
     private long beginDate;
-    @NotNull
+    @ApiModelProperty(value = "End Date", example="1521222842000")
+	@NotNull
     private long endDate;
 
     public long getBeginDate() {

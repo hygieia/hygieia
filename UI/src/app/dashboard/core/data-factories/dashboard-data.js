@@ -118,8 +118,7 @@
                     return null;
                 });
         }
-
-
+        
         // renames a dashboard
 
         function renameDashboard(id,newDashboardName){
@@ -222,27 +221,27 @@
         }
 
         // gets count of all dashboards
-        function count() {
-            return getPromise(HygieiaConfig.local ? testSearchRoute : dashboardCountRoute);
+        function count(type) {
+            return getPromise(HygieiaConfig.local ? testSearchRoute : dashboardCountRoute+ '/'+type);
         }
 
         // gets list of dashboards according to page size (default = 10)
         function searchByPage(params) {
             return  $http.get(HygieiaConfig.local ? testSearchRoute : dashboardRoutePage,{params: params}).then(function (response) {
-                return response.data;
+                return {"data": response.data, "type": params.type};
             });
         }
 
         // gets list of dashboards filtered by title with page size (default = 10)
         function filterByTitle(params) {
             return  $http.get(HygieiaConfig.local ? testSearchRoute : dashboardFilterRoutePage,{params: params}).then(function (response) {
-                return response.data;
+                return {"data": response.data, "type": params.type};
             });
         }
 
         //gets count of filtered dashboards for pagination
-        function filterCount(title){
-            return  $http.get(HygieiaConfig.local ? testSearchRoute : dashboardFilterCountRoute+ '/'+title).then(function (response) {
+        function filterCount(title, type){
+            return  $http.get(HygieiaConfig.local ? testSearchRoute : dashboardFilterCountRoute+ '/'+title+ '/'+type).then(function (response) {
                 return response.data;
             });
         }
@@ -253,27 +252,27 @@
         }
 
         // gets count of all my dashboards
-        function myDashboardsCount() {
-            return getPromise(HygieiaConfig.local ? testSearchRoute : myDashboardCountRoute);
+        function myDashboardsCount(type) {
+            return getPromise(HygieiaConfig.local ? testSearchRoute : myDashboardCountRoute+ '/'+type);
         }
 
         // gets list of my dashboards according to page size (default = 10)
         function searchMyDashboardsByPage(params) {
             return  $http.get(HygieiaConfig.local ? testSearchRoute : myDashboardRoutePage,{params: params}).then(function (response) {
-                return response.data;
+                return {"data": response.data, "type": params.type};
             });
         }
 
         // gets list of my dashboards filtered by title with page size (default = 10)
         function filterMyDashboardsByTitle(params) {
             return  $http.get(HygieiaConfig.local ? testSearchRoute : myDashboardFilterRoutePage,{params: params}).then(function (response) {
-                return response.data;
+                return {"data": response.data, "type": params.type};
             });
         }
 
         //gets count of filtered dashboards for pagination
-        function filterMyDashboardCount(title){
-            return  $http.get(HygieiaConfig.local ? testSearchRoute : myDashboardFilterCountRoute+ '/'+title).then(function (response) {
+        function filterMyDashboardCount(title, type){
+            return  $http.get(HygieiaConfig.local ? testSearchRoute : myDashboardFilterCountRoute+ '/'+title+ '/'+type).then(function (response) {
                 return response.data;
             });
         }
@@ -295,6 +294,7 @@
                     return response.data;
                 });
         }
+
         function updateDashboardScoreSettings(id, scoreEnabled, scoreDisplay) {
             return $http.put(updateDashboardScoreSettingsRoute + "/" + id + "?scoreEnabled=" + scoreEnabled + "&scoreDisplay=" + scoreDisplay)
                 .success(function (response) {
