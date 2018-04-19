@@ -12,7 +12,9 @@ import com.capitalone.dashboard.model.StoryIndicators;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
+import com.capitalone.dashboard.response.AuditReviewResponse;
 import com.capitalone.dashboard.response.TestResultsAuditResponse;
+import com.capitalone.dashboard.status.PerformanceTestAuditStatus;
 import com.capitalone.dashboard.status.TestResultAuditStatus;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,11 +70,6 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
 
         TestResultsAuditResponse testResultsAuditResponse = new TestResultsAuditResponse();
 
-        if (CollectionUtils.isEmpty(testResults)) {
-            testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_MISSING);
-            return testResultsAuditResponse;
-        }
-
         for (TestResult testResult : testResults) {
             if (TestSuiteType.Regression.toString().equalsIgnoreCase(testResult.getType().name()) ||
                     TestSuiteType.Functional.toString().equalsIgnoreCase(testResult.getType().name())) {
@@ -80,14 +77,14 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                 testResultsAuditResponse.setTestCapabilities(testResult.getTestCapabilities());
                 testResultsAuditResponse.setLastExecutionTime(testResult.getStartTime());
 
-                List<StoryIndicators> storyIndicatorsList = new ArrayList<>();
-
                 testResults.stream()
                         .map(TestResult::getTestCapabilities).flatMap(Collection::stream)
                         .map(TestCapability::getTestSuites).flatMap(Collection::stream)
                         .map(TestSuite::getTestCases).flatMap(Collection::stream)
                         .forEach(testCase -> {
                             Set<String> tags = testCase.getTags();
+                            List<StoryIndicators> storyIndicatorsList = new ArrayList<>();
+
                             if (CollectionUtils.isEmpty(tags)) {
                                 testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_NOT_FOUND);
                             } else {
@@ -99,7 +96,6 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
 
                                         featureDetails.stream()
                                                 .forEach(feature -> {
-                                                    System.out.print("\n ********** VALID TAG" + tag + "\n");
                                                     testResultsAuditResponse.addAuditStatus((tag.equals("@" + feature.getsNumber())) ? TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_STORY_MATCH :
                                                             TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_STORY_NOT_FOUND);
 
@@ -114,7 +110,6 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                                                     storyIndicators.setsProjectName(feature.getsProjectName());
                                                     storyIndicators.setsTeamName(feature.getsTeamName());
                                                     storyIndicators.setsSprintName(feature.getsSprintName());
-
                                                     if (feature.getsStatus().equalsIgnoreCase("ACCEPTED") ||
                                                             feature.getsStatus().equalsIgnoreCase("CLOSED") ||
                                                             feature.getsStatus().equalsIgnoreCase("RESOLVED") ||
@@ -126,6 +121,10 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                                                     }
                                                     storyIndicatorsList.add(storyIndicators);
                                                     testCase.setStoryIndicators(storyIndicatorsList);
+
+                                                    if (CollectionUtils.isEmpty(storyIndicatorsList)) {
+                                                        testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_AUDIT_MISSING);
+                                                    }
                                                 });
                                     }
 
