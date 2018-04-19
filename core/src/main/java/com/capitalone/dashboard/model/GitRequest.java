@@ -39,7 +39,8 @@ public class GitRequest  {
     private long closedAt;
     private String state;
     private long mergedAt;
-
+    private String mergeAuthor;
+    private String mergeAuthorLDAPDN;
     private long timestamp;
     private long resolutiontime;
     private String userId = null;
@@ -325,5 +326,21 @@ public class GitRequest  {
 
     public void setUpdatedAt(long updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getMergeAuthor() {
+        return mergeAuthor;
+    }
+
+    public void setMergeAuthor(String mergeAuthor) {
+        this.mergeAuthor = mergeAuthor;
+    }
+
+    public String getMergeAuthorLDAPDN() {
+        return mergeAuthorLDAPDN;
+    }
+
+    public void setMergeAuthorLDAPDN(String mergeAuthorLDAPDN) {
+        this.mergeAuthorLDAPDN = mergeAuthorLDAPDN;
     }
 }
