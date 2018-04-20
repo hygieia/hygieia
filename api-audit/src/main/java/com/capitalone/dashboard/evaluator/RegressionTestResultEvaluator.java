@@ -8,13 +8,12 @@ import com.capitalone.dashboard.model.TestResult;
 import com.capitalone.dashboard.model.TestSuiteType;
 import com.capitalone.dashboard.model.TestCapability;
 import com.capitalone.dashboard.model.TestSuite;
-import com.capitalone.dashboard.model.StoryIndicators;
+import com.capitalone.dashboard.model.TestCase;
+import com.capitalone.dashboard.model.StoryIndicator;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
-import com.capitalone.dashboard.response.AuditReviewResponse;
 import com.capitalone.dashboard.response.TestResultsAuditResponse;
-import com.capitalone.dashboard.status.PerformanceTestAuditStatus;
 import com.capitalone.dashboard.status.TestResultAuditStatus;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +64,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
      * Thrown by Object mapper method
      */
     private TestResultsAuditResponse getRegressionTestResultAudit(CollectorItem testItem, long beginDate, long endDate) {
+
         List<TestResult> testResults = testResultRepository
                 .findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(testItem.getId(), beginDate-1, endDate+1);
 
@@ -82,53 +82,10 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                         .map(TestCapability::getTestSuites).flatMap(Collection::stream)
                         .map(TestSuite::getTestCases).flatMap(Collection::stream)
                         .forEach(testCase -> {
-                            Set<String> tags = testCase.getTags();
-                            List<StoryIndicators> storyIndicatorsList = new ArrayList<>();
-
-                            if (CollectionUtils.isEmpty(tags)) {
-                                testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_NOT_FOUND);
-                            } else {
-                                Pattern p = Pattern.compile("((?<!([A-Za-z]{1,10})-?)[A-Z]+-\\d+)");
-                                tags.forEach(tag -> {
-                                    Matcher tagMatch = p.matcher(tag);
-                                    if (tagMatch.find()){
-                                        List<Feature> featureDetails = featureRepository.getStoryByNumber(tag.substring(1, tag.length()));
-
-                                        featureDetails.stream()
-                                                .forEach(feature -> {
-                                                    testResultsAuditResponse.addAuditStatus((tag.equals("@" + feature.getsNumber())) ? TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_STORY_MATCH :
-                                                            TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_STORY_NOT_FOUND);
-
-                                                    StoryIndicators storyIndicators = new StoryIndicators();
-
-                                                    storyIndicators.setsId(feature.getsId());
-                                                    storyIndicators.setsTypeName(feature.getsTypeName());
-                                                    storyIndicators.setsNumber(feature.getsNumber());
-                                                    storyIndicators.setsName(feature.getsName());
-                                                    storyIndicators.setsEpicNumber(feature.getsEpicNumber());
-                                                    storyIndicators.setsEpicName(feature.getsEpicName());
-                                                    storyIndicators.setsProjectName(feature.getsProjectName());
-                                                    storyIndicators.setsTeamName(feature.getsTeamName());
-                                                    storyIndicators.setsSprintName(feature.getsSprintName());
-                                                    if (feature.getsStatus().equalsIgnoreCase("ACCEPTED") ||
-                                                            feature.getsStatus().equalsIgnoreCase("CLOSED") ||
-                                                            feature.getsStatus().equalsIgnoreCase("RESOLVED") ||
-                                                            feature.getsStatus().equalsIgnoreCase("DONE")) {
-                                                        storyIndicators.setsStatus(feature.getsStatus());
-                                                        storyIndicators.setsState(feature.getsState());
-                                                    } else {
-                                                        testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_STORY_STATUS_INVALID);
-                                                    }
-                                                    storyIndicatorsList.add(storyIndicators);
-                                                    testCase.setStoryIndicators(storyIndicatorsList);
-
-                                                    if (CollectionUtils.isEmpty(storyIndicatorsList)) {
-                                                        testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_AUDIT_MISSING);
-                                                    }
-                                                });
-                                    }
-
-                                });
+                            List<StoryIndicator> storyIndicatorList = this.getStoryIndicators(testResultsAuditResponse, testCase);
+                            testCase.setStoryIndicators(storyIndicatorList);
+                            if (CollectionUtils.isEmpty(storyIndicatorList)) {
+                                testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_AUDIT_MISSING);
                             }
                         });
                 break;
@@ -137,4 +94,53 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
 
         return testResultsAuditResponse;
     }
+
+    private List<StoryIndicator> getStoryIndicators(TestResultsAuditResponse testResultsAuditResponse, TestCase testCase) {
+
+        List<StoryIndicator> storyIndicatorList = new ArrayList<>();
+        Set<String> tags = testCase.getTags();
+
+        if (CollectionUtils.isEmpty(tags)) {
+            testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_NOT_FOUND);
+        } else {
+            Pattern p = Pattern.compile("((?<!([A-Za-z]{1,10})-?)[A-Z]+-\\d+)");
+            tags.forEach(tag -> {
+                Matcher tagMatch = p.matcher(tag);
+                if (tagMatch.find()) {
+                    List<Feature> featureDetails = featureRepository.getStoryByNumber(tag.substring(1, tag.length()));
+
+                    featureDetails.stream()
+                            .forEach(feature -> {
+                                testResultsAuditResponse.addAuditStatus((tag.equals("@" + feature.getsNumber())) ? TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_STORY_MATCH :
+                                        TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_STORY_NOT_FOUND);
+
+                                StoryIndicator storyIndicator = new StoryIndicator();
+
+                                storyIndicator.setStoryId(feature.getsId());
+                                storyIndicator.setStoryType(feature.getsTypeName());
+                                storyIndicator.setStoryNumber(feature.getsNumber());
+                                storyIndicator.setStoryName(feature.getsName());
+                                storyIndicator.setEpicNumber(feature.getsEpicNumber());
+                                storyIndicator.setEpicName(feature.getsEpicName());
+                                storyIndicator.setProjectName(feature.getsProjectName());
+                                storyIndicator.setTeamName(feature.getsTeamName());
+                                storyIndicator.setSprintName(feature.getsSprintName());
+                                if (feature.getsStatus().equalsIgnoreCase("ACCEPTED") ||
+                                        feature.getsStatus().equalsIgnoreCase("CLOSED") ||
+                                        feature.getsStatus().equalsIgnoreCase("RESOLVED") ||
+                                        feature.getsStatus().equalsIgnoreCase("DONE")) {
+                                    storyIndicator.setStoryStatus(feature.getsStatus());
+                                    storyIndicator.setStoryState(feature.getsState());
+                                } else {
+                                    testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_STORY_STATUS_INVALID);
+                                }
+                                storyIndicatorList.add(storyIndicator);
+                            });
+                }
+            });
+        }
+
+        return storyIndicatorList;
+    }
+
 }

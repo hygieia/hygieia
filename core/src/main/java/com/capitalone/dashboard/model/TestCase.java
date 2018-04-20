@@ -50,7 +50,7 @@ public class TestCase {
     /**
      * Jira story information for traceability
      */
-    private Collection<StoryIndicators> storyIndicators = new ArrayList<>();
+    private Collection<StoryIndicator> storyIndicators = new ArrayList<>();
 
     private Collection<TestCaseCondition> before = new ArrayList<>();
 
@@ -157,11 +157,11 @@ public class TestCase {
         return after;
     }
 
-    public Collection<StoryIndicators> getStoryIndicators() {
+    public Collection<StoryIndicator> getStoryIndicators() {
         return storyIndicators;
     }
 
-    public void setStoryIndicators(Collection<StoryIndicators> storyIndicators) {
+    public void setStoryIndicators(Collection<StoryIndicator> storyIndicators) {
         this.storyIndicators = storyIndicators;
     }
 
