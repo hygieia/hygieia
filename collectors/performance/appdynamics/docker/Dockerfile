@@ -1,4 +1,4 @@
-FROM docker.io/openjdk:8-jre
+FROM docker.io/openjdk:8-jre-alpine
 
 MAINTAINER Hygieia@capitalone.com
 

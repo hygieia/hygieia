@@ -1,7 +1,9 @@
 
-FROM docker.io/openjdk:8-jre
+FROM docker.io/openjdk:8-jre-alpine
 
 MAINTAINER Hygieia@capitalone.com
+
+RUN apk add --no-cache bash
 
 RUN mkdir /hygieia /hygieia/config
 
@@ -12,7 +14,7 @@ WORKDIR /hygieia
 
 VOLUME ["/hygieia/logs"]
 
-ENV PROP_FILE /hygieia/config/application.properties
+ENV PROP_FILE /hygieia/config/hygieia-gitlab-scm-collector.properties
 
 CMD ./properties-builder.sh && \
   java -jar gitlab-scm-collector*.jar --spring.config.location=$PROP_FILE
