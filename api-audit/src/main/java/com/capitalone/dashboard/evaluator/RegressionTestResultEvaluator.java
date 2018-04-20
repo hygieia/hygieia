@@ -97,13 +97,14 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
 
     private List<StoryIndicator> getStoryIndicators(TestResultsAuditResponse testResultsAuditResponse, TestCase testCase) {
 
+        final String REGEX_ANY_STRING_MATCHING_FEATURE_ID = "((?<!([A-Za-z]{1,10})-?)[A-Z]+-\\d+)";
         List<StoryIndicator> storyIndicatorList = new ArrayList<>();
         Set<String> tags = testCase.getTags();
 
         if (CollectionUtils.isEmpty(tags)) {
             testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_NOT_FOUND);
         } else {
-            Pattern p = Pattern.compile("((?<!([A-Za-z]{1,10})-?)[A-Z]+-\\d+)");
+            Pattern p = Pattern.compile(REGEX_ANY_STRING_MATCHING_FEATURE_ID);
             tags.forEach(tag -> {
                 Matcher tagMatch = p.matcher(tag);
                 if (tagMatch.find()) {
