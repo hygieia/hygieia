@@ -97,7 +97,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
 
     private List<StoryIndicator> getStoryIndicators(TestResultsAuditResponse testResultsAuditResponse, TestCase testCase) {
 
-        final String REGEX_ANY_STRING_MATCHING_FEATURE_ID = "((?<!([A-Za-z]{1,10})-?)[A-Z]+-\\d+)";
+        final String REGEX_ANY_STRING_MATCHING_FEATURE_ID = settings.getFeatureIDPattern();
         List<StoryIndicator> storyIndicatorList = new ArrayList<>();
         Set<String> tags = testCase.getTags();
 

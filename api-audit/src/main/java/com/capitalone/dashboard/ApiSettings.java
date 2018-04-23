@@ -21,6 +21,8 @@ public class ApiSettings {
     @Value("${maxDaysRangeForQuery:60}") // 60 days max
     private long maxDaysRangeForQuery;
     private boolean logRequest;
+
+    private String featureIDPattern;
     
     public String getKey() {
         return key;
@@ -84,5 +86,13 @@ public class ApiSettings {
 
     public void setServiceAccountOU(String serviceAccountOU) {
         this.serviceAccountOU = serviceAccountOU;
+    }
+
+    public String getFeatureIDPattern() {
+        return featureIDPattern;
+    }
+
+    public void setFeatureIDPattern(String featureIDPattern) {
+        this.featureIDPattern = featureIDPattern;
     }
 }
