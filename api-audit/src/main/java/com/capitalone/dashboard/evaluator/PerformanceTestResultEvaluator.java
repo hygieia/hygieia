@@ -79,7 +79,8 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
                             int j = 0;
                             for (TestCaseStep testCaseStep : testSteps) {
                                 String value = testCaseStep.getDescription();
-                                kpi.setTarget((j == 0) ? Double.parseDouble(value) : Double.parseDouble(value));
+                                if (j == 0) kpi.setTarget(Double.parseDouble(value));
+                                if (j == 1) kpi.setAchieved(Double.parseDouble(value));
                                 j++;
                             }
                             kpilist.add(kpi);
