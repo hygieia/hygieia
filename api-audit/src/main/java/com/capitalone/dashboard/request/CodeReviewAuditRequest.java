@@ -1,13 +1,16 @@
 package com.capitalone.dashboard.request;
 
 import javax.validation.constraints.NotNull;
+import io.swagger.annotations.ApiModelProperty;
 
 public class CodeReviewAuditRequest extends AuditReviewRequest {
-    @NotNull
+    @ApiModelProperty(value = "Repo Description", example="https://github.com/somerepo")
+	@NotNull
     private String repo;
-    @NotNull
+    @ApiModelProperty(value = "Branch Description", example="master")
+	@NotNull
     private String branch;
-
+    @ApiModelProperty(value = "SCM Name", example="GitHub")
     private String scmName;
 
     public String getRepo() {

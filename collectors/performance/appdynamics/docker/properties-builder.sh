@@ -29,7 +29,7 @@ echo "MONGODB_PORT: $MONGODB_PORT"
 
 cat > $PROP_FILE <<EOF
 #Database Name - default is test
-database=${SPRING_DATA_MONGODB_DATABASE:-dashboard}
+database=${SPRING_DATA_MONGODB_DATABASE:-dashboarddb}
 
 #Database HostName - default is localhost
 dbhost=${SPRING_DATA_MONGODB_HOST:-10.0.1.1}
@@ -38,10 +38,10 @@ dbhost=${SPRING_DATA_MONGODB_HOST:-10.0.1.1}
 dbport=${SPRING_DATA_MONGODB_PORT:-27017}
 
 #Database Username - default is blank
-dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-db}
+dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-dashboarduser}
 
 #Database Password - default is blank
-dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
+dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpassword}
 
 #Logging File
 logging.file=${APPDYNAMICS_LOGFILE:-./logs/appd-collector.log}
