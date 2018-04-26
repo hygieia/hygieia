@@ -189,6 +189,5 @@
                 }
             });
         }
-        ctrl.rallyUrl = "https://idp.aa.com/idp/startSSO.ping?PartnerSpId=sso.rallydev.com";
     }
 })();
