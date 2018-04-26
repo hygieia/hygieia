@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -91,6 +92,16 @@ public class CollectorControllerTest {
                 .andExpect(jsonPath("$.collector.name", is(collector.getName())))
                 .andExpect(jsonPath("$.description", is(item1.getDescription())))
                 .andExpect(jsonPath("$.enabled", is(item1.isEnabled())));
+    }
+
+    @Test
+    public void getCollectorById() throws Exception {
+        Collector collector = makeCollector("Hudson", CollectorType.Build);
+        when(collectorService.collectorsById(collector.getId())).thenReturn(Collections.singletonList(collector));
+        mockMvc.perform(get("/collector/collectorId/" + collector.getId().toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id", is(collector.getId().toString())))
+                .andExpect(jsonPath("$[0].name", is("Hudson")));
     }
 
     private Collector makeCollector(String name, CollectorType type) {

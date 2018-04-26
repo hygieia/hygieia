@@ -31,87 +31,16 @@ public class CustomRepositoryQueryImpl implements CustomRepositoryQuery {
 
 
     @Override
-    public List<CollectorItem> findCollectorItemsBySubsetOptions(ObjectId id, Map<String, Object> allOptions, Map<String, Object> uniqueOptions) {
+    public List<CollectorItem> findCollectorItemsBySubsetOptions(ObjectId id, Map<String, Object> allOptions, Map<String, Object> uniqueOptions,Map<String, Object> uniqueOptionsFromCollector) {
         Criteria c = Criteria.where("collectorId").is(id);
         uniqueOptions.values().removeIf(d-> d.equals(null) || ((d instanceof String) && StringUtils.isEmpty((String) d)));
         for (Map.Entry<String, Object> e : allOptions.entrySet()) {
-            if (uniqueOptions.containsKey(e.getKey())) {
+            if (uniqueOptionsFromCollector.containsKey(e.getKey())) {
                 c = getCriteria(uniqueOptions, c, e);
-            } else {
-                switch (e.getValue().getClass().getSimpleName()) {
-                    case "String":
-                        c = c.and("options." + e.getKey()).regex(REGEX_ANY_STRING_INCLUDING_EMPTY);
-                        break;
-
-                    case "Integer":
-                        c = c.and("options." + e.getKey()).is(0);
-                        break;
-
-                    case "Long":
-                        c = c.and("options." + e.getKey()).is(0);
-                        break;
-
-                    case "Double":
-                        c = c.and("options." + e.getKey()).is(0.0);
-                        break;
-
-                    case "Boolean":
-                        c = c.and("options." + e.getKey()).exists(true);
-                        break;
-
-                    default:
-                        c = c.and("options." + e.getKey()).exists(true);
-                        break;
-                }
             }
         }
-
         List<CollectorItem> items =  template.find(new Query(c), CollectorItem.class);
-        if (CollectionUtils.isEmpty(items)) {
-            items = findCollectorItemsBySubsetOptionsWithNullCheck(id, allOptions, uniqueOptions);
-        }
         return items;
-    }
-
-    //Due toe limitation of the query class, we have to create a second query to see if optional fields are null. This still does not handle combination of
-    // initialized and null fields. Still better.
-    //TODO: This needs to be re-thought out.
-    private List<CollectorItem> findCollectorItemsBySubsetOptionsWithNullCheck(ObjectId id, Map<String, Object> allOptions, Map<String, Object> uniqueOptions) {
-        Criteria c = Criteria.where("collectorId").is(id);
-        uniqueOptions.values().removeIf(d-> d.equals(null) || ((d instanceof String) && StringUtils.isEmpty((String) d)));
-        for (Map.Entry<String, Object> e : allOptions.entrySet()) {
-            if (uniqueOptions.containsKey(e.getKey())) {
-                c = getCriteria(uniqueOptions, c, e);
-            } else {
-                switch (e.getValue().getClass().getSimpleName()) {
-                    case "String":
-                        c = c.and("options." + e.getKey()).is(null);
-                        break;
-
-                    case "Integer":
-                        c = c.and("options." + e.getKey()).is(null);
-                        break;
-
-                    case "Long":
-                        c = c.and("options." + e.getKey()).is(null);
-                        break;
-
-                    case "Double":
-                        c = c.and("options." + e.getKey()).is(null);
-                        break;
-
-                    case "Boolean":
-                        c = c.and("options." + e.getKey()).is(null);
-                        break;
-
-                    default:
-                        c = c.and("options." + e.getKey()).is(null);
-                        break;
-                }
-            }
-        }
-
-        return template.find(new Query(c), CollectorItem.class);
     }
 
     @Override

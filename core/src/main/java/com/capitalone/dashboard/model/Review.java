@@ -4,6 +4,7 @@ public class Review {
     private String body;
     private String state;
     private String author;
+    private String authorLDAPDN;
     private long createdAt;
     private long updatedAt;
 
@@ -29,6 +30,14 @@ public class Review {
 
     public void setAuthor(String author) {
         this.author = author;
+    }
+
+    public String getAuthorLDAPDN() {
+        return authorLDAPDN;
+    }
+
+    public void setAuthorLDAPDN(String authorLDAPDN) {
+        this.authorLDAPDN = authorLDAPDN;
     }
 
     public long getCreatedAt() {

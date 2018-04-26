@@ -33,7 +33,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
 
     @Override
     public Collection<TestResultsAuditResponse> evaluate(Dashboard dashboard, long beginDate, long endDate, Map<?, ?> dummy) throws AuditException {
-        List<CollectorItem> testItems = getCollectorItems(dashboard, "test", CollectorType.Test);
+        List<CollectorItem> testItems = getCollectorItems(dashboard, "codeanalysis", CollectorType.Test);
         Collection<TestResultsAuditResponse> responses = new ArrayList<>();
         if (CollectionUtils.isEmpty(testItems)) {
             throw new AuditException("No tests configured", AuditException.NO_COLLECTOR_ITEM_CONFIGURED);

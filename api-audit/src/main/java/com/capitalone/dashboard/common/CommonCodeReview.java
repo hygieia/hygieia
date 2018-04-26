@@ -22,11 +22,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.ldap.support.LdapUtils;
 
+import javax.naming.InvalidNameException;
+import javax.naming.ldap.LdapName;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -39,7 +45,7 @@ public class CommonCodeReview {
     /**
      * Calculates the peer review status for a given pull request
      *
-     * @param pr                      - pull request
+     * @param pr                  - pull request
      * @param auditReviewResponse - audit review response
      * @return boolean fail or pass
      */
@@ -49,6 +55,8 @@ public class CommonCodeReview {
         List<Review> reviews = pr.getReviews();
 
         List<CommitStatus> statuses = pr.getCommitStatuses();
+
+        Map<String, String> actors = getActors(pr);
 
         if (!CollectionUtils.isEmpty(statuses)) {
             String contextString = settings.getPeerReviewContexts();
@@ -73,6 +81,15 @@ public class CommonCodeReview {
                         case "success":
                             lgtmStateResult = true;
                             auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_LGTM_SUCCESS);
+
+                            String description = status.getDescription();
+                            if (!StringUtils.isEmpty(settings.getServiceAccountOU()) && !StringUtils.isEmpty(settings.getPeerReviewApprovalText()) && !StringUtils.isEmpty(description) &&
+                                    description.startsWith(settings.getPeerReviewApprovalText())) {
+                                String user = description.replace(settings.getPeerReviewApprovalText(), "").trim();
+                                if (!StringUtils.isEmpty(actors.get(user)) && checkForServiceAccount(actors.get(user), settings)) {
+                                    auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_BY_SERVICEACCOUNT);
+                                }
+                            }
                             break;
 
                         default:
@@ -97,6 +114,9 @@ public class CommonCodeReview {
         if (!CollectionUtils.isEmpty(reviews)) {
             for (Review review : reviews) {
                 if ("approved".equalsIgnoreCase(review.getState())) {
+                    if (!StringUtils.isEmpty(review.getAuthorLDAPDN()) && checkForServiceAccount(review.getAuthorLDAPDN(), settings)) {
+                        auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_BY_SERVICEACCOUNT);
+                    }
                     //review done using GitHub Review workflow
                     auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_GHR);
                     if (!CollectionUtils.isEmpty(auditReviewResponse.getAuditStatuses()) &&
@@ -110,6 +130,37 @@ public class CommonCodeReview {
         }
 
         return false;
+    }
+
+
+    public static boolean checkForServiceAccount(String userLdapDN, ApiSettings settings) {
+        if (!StringUtils.isEmpty(settings.getServiceAccountOU())) {
+            try {
+                return (settings.getServiceAccountOU().equalsIgnoreCase(LdapUtils.getStringValue(new LdapName(userLdapDN), "OU")));
+            } catch (InvalidNameException e) {
+                LOGGER.error("Error parsing LDAP DN:" + userLdapDN);
+            }
+        } else {
+            LOGGER.info("API Settings missing service account RDN");
+        }
+        return false;
+    }
+
+    /**
+     * Get all the actors associated with this user.s
+     *
+     * @param pr
+     * @return
+     */
+    private static Map<String, String> getActors(GitRequest pr) {
+        Map<String, String> actors = new HashMap<>();
+        if (!StringUtils.isEmpty(pr.getMergeAuthorLDAPDN())) {
+            actors.put(pr.getMergeAuthor(), pr.getMergeAuthorLDAPDN());
+        }
+        Optional.ofNullable(pr.getCommits()).orElse(Collections.emptyList()).stream().filter(c -> !StringUtils.isEmpty(c.getScmAuthorLDAPDN())).forEach(c -> actors.put(c.getScmAuthor(), c.getScmAuthorLDAPDN()));
+        Optional.ofNullable(pr.getComments()).orElse(Collections.emptyList()).stream().filter(c -> !StringUtils.isEmpty(c.getUserLDAPDN())).forEach(c -> actors.put(c.getUser(), c.getUserLDAPDN()));
+        Optional.ofNullable(pr.getReviews()).orElse(Collections.emptyList()).stream().filter(r -> !StringUtils.isEmpty(r.getAuthorLDAPDN())).forEach(r -> actors.put(r.getAuthor(), r.getAuthorLDAPDN()));
+        return actors;
     }
 
     /**
@@ -144,36 +195,44 @@ public class CommonCodeReview {
 
             if (cCommit != null
                     && !CollectionUtils.isEmpty(cCommit.getScmParentRevisionNumbers())
-                    && cCommit.getScmParentRevisionNumbers().size() > 1 ) {
+                    && cCommit.getScmParentRevisionNumbers().size() > 1) {
                 //exclude commits with multiple parents ie. merge commits
             } else {
-                filteredPrCommits.add(prC);
+                String mergeCommitLog = String.format("Merge branch '%s' into %s", pr.getScmBranch(), pr.getSourceBranch());
+                if (!prC.getScmCommitLog().contains(mergeCommitLog)) {
+                    filteredPrCommits.add(prC);
+                }
             }
         });
 
         List<CodeAction> codeActionList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(filteredPrCommits)) {
-            codeActionList.addAll(filteredPrCommits.stream().map(c -> new CodeAction(CodeActionType.Commit, c.getScmCommitTimestamp(), "unknown".equalsIgnoreCase(c.getScmAuthorLogin())?pr.getUserId():c.getScmAuthorLogin() , c.getScmCommitLog() )).collect(Collectors.toList()));
+            codeActionList.addAll(filteredPrCommits.stream().map(c -> new CodeAction(CodeActionType.Commit, c.getScmCommitTimestamp(),
+                    "unknown".equalsIgnoreCase(c.getScmAuthorLogin()) ? pr.getUserId() : c.getScmAuthorLogin(),
+                    c.getScmAuthorLDAPDN() != null ? c.getScmAuthorLDAPDN() : "unknown", c.getScmCommitLog())).collect(Collectors.toList()));
         }
         if (!CollectionUtils.isEmpty(pr.getReviews())) {
-            codeActionList.addAll(pr.getReviews().stream().map(r -> new CodeAction(CodeActionType.Review, r.getUpdatedAt(), r.getAuthor(), r.getBody())).collect(Collectors.toList()));
+            codeActionList.addAll(pr.getReviews().stream().map(r -> new CodeAction(CodeActionType.Review, r.getUpdatedAt(),
+                    r.getAuthor(), r.getAuthorLDAPDN() != null ? r.getAuthorLDAPDN() : "unknown", r.getBody())).collect(Collectors.toList()));
         }
         if (!CollectionUtils.isEmpty(pr.getComments())) {
-            codeActionList.addAll(pr.getComments().stream().map(r -> new CodeAction(CodeActionType.Review, r.getUpdatedAt(), r.getUser(), r.getBody())).collect(Collectors.toList()));
+            codeActionList.addAll(pr.getComments().stream().map(r -> new CodeAction(CodeActionType.Review, r.getUpdatedAt(),
+                    r.getUser(), r.getUserLDAPDN() != null ? r.getUserLDAPDN() : "unknown", r.getBody())).collect(Collectors.toList()));
         }
-        codeActionList.add(new CodeAction(CodeActionType.PRMerge, pr.getMergedAt(), "IRRELEVANT", "merged"));
-        codeActionList.add(new CodeAction(CodeActionType.PRCreate, pr.getCreatedAt(), pr.getUserId(), "create"));
+
+        codeActionList.add(new CodeAction(CodeActionType.PRMerge, pr.getMergedAt(), pr.getMergeAuthor(), pr.getMergeAuthorLDAPDN(), "merged"));
+        codeActionList.add(new CodeAction(CodeActionType.PRCreate, pr.getCreatedAt(), pr.getUserId(), "unknown", "create"));
 
         codeActionList.sort(Comparator.comparing(CodeAction::getTimestamp));
 
-        codeActionList.stream().forEach(c->LOGGER.debug( new DateTime(c.getTimestamp()).toString("yyyy-MM-dd hh:mm:ss.SSa")
+        codeActionList.stream().forEach(c -> LOGGER.debug(new DateTime(c.getTimestamp()).toString("yyyy-MM-dd hh:mm:ss.SSa")
                 + " " + c.getType() + " " + c.getActor() + " " + c.getMessage()));
 
-        List<CodeAction> clonedCodeActions = codeActionList.stream().map(item -> new CodeAction(item)).collect(Collectors.toList());
+        List<CodeAction> clonedCodeActions = codeActionList.stream().map(CodeAction::new).collect(Collectors.toList());
         if (auditReviewResponse instanceof CodeReviewAuditResponse) {
-            ((CodeReviewAuditResponse)auditReviewResponse).setCodeActions(clonedCodeActions);
+            ((CodeReviewAuditResponse) auditReviewResponse).setCodeActions(clonedCodeActions);
         } else if (auditReviewResponse instanceof CodeReviewAuditResponseV2.PullRequestAudit) {
-            ((CodeReviewAuditResponseV2.PullRequestAudit)auditReviewResponse).setCodeActions(clonedCodeActions);
+            ((CodeReviewAuditResponseV2.PullRequestAudit) auditReviewResponse).setCodeActions(clonedCodeActions);
         }
 
         Set<CodeAction> reviewedList = new HashSet<>();
@@ -191,7 +250,8 @@ public class CommonCodeReview {
     }
 
 
-    public static Set<String> getCodeAuthors(List<CollectorItem> repoItems, long beginDate, long endDate, CommitRepository commitRepository) {
+    public static Set<String> getCodeAuthors(List<CollectorItem> repoItems, long beginDate,
+                                             long endDate, CommitRepository commitRepository) {
         Set<String> authors = new HashSet<>();
         //making sure we have a goot url?
         repoItems.forEach(repoItem -> {
@@ -199,7 +259,7 @@ public class CommonCodeReview {
             String scmBranch = (String) repoItem.getOptions().get("branch");
             GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(scmUrl);
             String parsedUrl = gitHubParsed.getUrl(); //making sure we have a goot url?
-            List<Commit> commits = commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(repoItem.getId(), beginDate-1, endDate+1);
+            List<Commit> commits = commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(repoItem.getId(), beginDate - 1, endDate + 1);
             authors.addAll(commits.stream().map(SCM::getScmAuthor).collect(Collectors.toCollection(HashSet::new)));
         });
         return authors;
