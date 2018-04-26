@@ -13,6 +13,7 @@ public class SCM {
     protected String scmCommitLog;
     protected String scmAuthor;
     protected String scmAuthorLogin;
+    protected String scmAuthorLDAPDN;
     protected List<String> scmParentRevisionNumbers;
     protected long scmCommitTimestamp;
     protected long numberOfChanges;
@@ -137,5 +138,13 @@ public class SCM {
 
     public void setPullNumber(String pullNumber) {
         this.pullNumber = pullNumber;
+    }
+
+    public String getScmAuthorLDAPDN() {
+        return scmAuthorLDAPDN;
+    }
+
+    public void setScmAuthorLDAPDN(String scmAuthorLDAPDN) {
+        this.scmAuthorLDAPDN = scmAuthorLDAPDN;
     }
 }

@@ -94,6 +94,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         allOptions.put(GitHubRepo.BRANCH, "");
         allOptions.put(GitHubRepo.USER_ID, "");
         allOptions.put(GitHubRepo.PASSWORD, "");
+        allOptions.put(GitHubRepo.PERSONAL_ACCESS_TOKEN, "");
         protoType.setAllFields(allOptions);
 
         Map<String, Object> uniqueOptions = new HashMap<>();

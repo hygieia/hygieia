@@ -35,7 +35,7 @@ fi
 
 cat > $PROP_FILE <<EOF
 #Database Name
-dbname=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_DATABASE:-dashboard}
+dbname=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_DATABASE:-dashboarddb}
 
 #Database HostName - default is localhost
 dbhost=${MONGODB_HOST:-10.0.1.1}
@@ -44,10 +44,10 @@ dbhost=${MONGODB_HOST:-10.0.1.1}
 dbport=${MONGODB_PORT:-27017}
 
 #Database Username - default is blank
-dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-db}
+dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-dashboarduser}
 
 #Database Password - default is blank
-dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
+dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpassword}
 
 #Collector schedule (required)
 jenkins-cucumber.cron=${JENKINS_CRON:-0 0/5 * * * *}

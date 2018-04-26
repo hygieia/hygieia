@@ -4,7 +4,7 @@
     "collectorItemId": "54bd1d970364d503eb606979",
     "timestamp": 1453991426000,
     "name": "Hudson Collector",
-    "url": "http://vantage.kdc.capitalone.com:11300/sonar/dashboard/index/113501",
+    "url": "http://test.com/sonar/dashboard/index/113501",
     "type": "StaticAnalysis",
     "version": "0.1.1-SNAPSHOT",
     "metrics": [

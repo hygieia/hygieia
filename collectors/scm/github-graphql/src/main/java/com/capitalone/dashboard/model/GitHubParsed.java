@@ -8,11 +8,14 @@ import java.net.URL;
 public class GitHubParsed {
     private String url;
     private String apiUrl;
+    private String baseApiUrl;
     private String graphQLUrl;
     private String orgName;
     private String repoName;
 
     private static final String SEGMENT_API = "/api/v3/repos";
+    private static final String BASE_API = "/api/v3/";
+    private static final String PUBLIC_GITHUB_BASE_API = "api.github.com/";
     private static final String PUBLIC_GITHUB_REPO_HOST = "api.github.com/repos";
     private static final String PUBLIC_GITHUB_HOST_NAME = "github.com";
 
@@ -41,10 +44,12 @@ public class GitHubParsed {
         orgName = parts[1];
         repoName = parts[2];
         if (host.startsWith(PUBLIC_GITHUB_HOST_NAME)) {
+            baseApiUrl = protocol + "://" + PUBLIC_GITHUB_BASE_API;
             apiUrl = protocol + "://" + PUBLIC_GITHUB_REPO_HOST + path;
             graphQLUrl = protocol + "://" + PUBLIC_GITHUB_REPO_HOST + PUBLIC_GITHUB_GRAPHQL;
         } else {
             apiUrl = protocol + "://" + host + SEGMENT_API + path;
+            baseApiUrl = protocol + "://" + host + BASE_API;
             graphQLUrl = protocol + "://" + host + SEGMENT_GRAPHQL;
         }
     }
@@ -55,6 +60,10 @@ public class GitHubParsed {
 
     public String getApiUrl() {
         return apiUrl;
+    }
+
+    public String getBaseApiUrl() {
+        return baseApiUrl;
     }
 
     public String getOrgName() {
