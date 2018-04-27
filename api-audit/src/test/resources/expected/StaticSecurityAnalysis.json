@@ -1,0 +1,29 @@
+{
+  "url": "https://appsec.com",
+  "lastExecutionTime": 1523109642049,
+  "codeQuality": {
+    "id": "5acfb6ac5a7ae0fcac89c305",
+    "collectorItemId": "5abe9bd73788eb860af837dc",
+    "timestamp": 1523109642049,
+    "type": "SecurityAnalysis",
+    "metrics": [
+      {
+        "name": "Score",
+        "value": 89,
+        "formattedValue": "89"
+      },
+      {
+        "name": "Low",
+        "value": 1,
+        "formattedValue": "1",
+        "status": "Ok"
+      },
+      {
+        "name": "Medium",
+        "value": 4,
+        "formattedValue": "4",
+        "status": "Warning"
+      }
+    ]
+  }
+}
