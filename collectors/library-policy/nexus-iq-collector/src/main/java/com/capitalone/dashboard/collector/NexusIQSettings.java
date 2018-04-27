@@ -1,9 +1,9 @@
 package com.capitalone.dashboard.collector;
 
+import java.util.List;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 /**
  * Bean to hold settings specific to the Sonar collector.
@@ -11,9 +11,10 @@ import java.util.List;
 @Component
 @ConfigurationProperties(prefix = "nexusiq")
 public class NexusIQSettings {
-    private String cron;
-    private String username;
-    private String password;
+
+	private String cron;
+    private List<String> usernames;
+    private List<String> passwords;
     private boolean selectStricterLicense;
     private List<String> servers;
 
@@ -25,23 +26,23 @@ public class NexusIQSettings {
         this.cron = cron;
     }
 
-    public String getUsername() {
-        return username;
-    }
+    public List<String> getUsernames() {
+		return usernames;
+	}
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+	public void setUsernames(List<String> usernames) {
+		this.usernames = usernames;
+	}
 
-    public String getPassword() {
-        return password;
-    }
+	public List<String> getPasswords() {
+		return passwords;
+	}
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	public void setPassword(List<String> passwords) {
+		this.passwords = passwords;
+	}
 
-    public boolean isSelectStricterLicense() {
+	public boolean isSelectStricterLicense() {
         return selectStricterLicense;
     }
 

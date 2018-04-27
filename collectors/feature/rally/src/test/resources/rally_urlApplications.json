@@ -1,0 +1,41 @@
+{
+  "QueryResult": [{
+    "_rallyAPIMajor": "2",
+    "_rallyAPIMinor": "0",
+    "Errors": [
+      
+    ],
+    "Warnings": [
+      
+    ],
+    "TotalResultCount": 3,
+    "StartIndex": 1,
+    "PageSize": 20,
+    "Results": [
+      {
+        "_rallyAPIMajor": "2",
+        "_rallyAPIMinor": "0",
+        "_ref": "https://rally1.rallydev.com/slm/webservice/v2.0/project/11931834275",
+        "_refObjectUUID": "2c6a6097-be77-4c93-8363-a43ae739aa74",
+        "_refObjectName": "SNAP",
+        "_type": "Project"
+      },
+      {
+        "_rallyAPIMajor": "2",
+        "_rallyAPIMinor": "0",
+        "_ref": "https://rally1.rallydev.com/slm/webservice/v2.0/project/38165521104",
+        "_refObjectUUID": "4bde9579-7de0-4518-8f40-d85f3e1eb607",
+        "_refObjectName": "Standard Activities",
+        "_type": "Project"
+      },
+      {
+        "_rallyAPIMajor": "2",
+        "_rallyAPIMinor": "0",
+        "_ref": "https://rally1.rallydev.com/slm/webservice/v2.0/project/72526393952",
+        "_refObjectUUID": "37dbd416-3cf7-4920-99a9-d62b82614404",
+        "_refObjectName": "Enterprise DevOps Service Full Funding",
+        "_type": "Project"
+      }
+    ]
+  }]
+}
