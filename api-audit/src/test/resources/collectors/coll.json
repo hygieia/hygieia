@@ -1,24 +1,54 @@
-{
-  "name": "GitHub",
-  "collectorType": "SCM",
-  "enabled": true,
-  "online": true,
-  "errors": [],
-  "uniqueFields": {
-    "branch": "",
-    "url": ""
+[
+  {
+    "name": "GitHub",
+    "collectorType": "SCM",
+    "enabled": true,
+    "online": true,
+    "errors": [],
+    "uniqueFields": {
+      "branch": "",
+      "url": ""
+    },
+    "allFields": {
+      "password": "",
+      "branch": "",
+      "userID": "",
+      "url": ""
+    },
+    "lastExecuted": 1516222026477,
+    "id": {
+      "timestamp": 1456084265,
+      "machineIdentifier": 8366972,
+      "processIdentifier": 26815,
+      "counter": 14369292
+    }
   },
-  "allFields": {
-    "password": "",
-    "branch": "",
-    "userID": "",
-    "url": ""
-  },
-  "lastExecuted": 1516222026477,
-  "id": {
-    "timestamp": 1456084265,
-    "machineIdentifier": 8366972,
-    "processIdentifier": 26815,
-    "counter": 14369292
+  {
+    "name": "Eratocode",
+    "collectorType": "StaticSecurityScan",
+    "enabled": true,
+    "online": false,
+    "errors": [],
+    "uniqueFields": {
+      "applicationID": "",
+      "projectName": "",
+      "applicationName": "",
+      "instanceUrl": ""
+    },
+    "allFields": {
+      "applicationType": "",
+      "reportUrl": "",
+      "applicationID": "",
+      "projectName": "",
+      "applicationName": "",
+      "instanceUrl": ""
+    },
+    "lastExecuted": 1523562531181,
+    "id": {
+      "timestamp": 1456084266,
+      "machineIdentifier": 8366972,
+      "processIdentifier": 26815,
+      "counter": 14369292
+    }
   }
-}
+]
