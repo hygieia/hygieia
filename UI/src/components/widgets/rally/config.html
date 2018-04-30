@@ -1,0 +1,25 @@
+<widget-modal widget-modal-title="Configure Rally Widget" class="rally-config">
+   <form name="rallyConfigForm" role="form"
+      ng-submit="rallyConfig.submit(rallyConfigForm.$valid,rallyConfig.rallyProject.id)" novalidate="novalidate">
+      <form-group input="rallyProject"
+         class="text-center"
+         errors="{required:'Please select a project'}">
+         <label class="modal-label">Project</label>
+         <ui-select id="rallyProject" ng-model="rallyConfig.rallyProject" theme="bootstrap"
+            ng-disabled="rallyConfig.toolsDropdownDisabled" required>
+            <ui-select-match placeholder={{rallyConfig.toolsDropdownPlaceholder}}>{{$select.selected.options.projectName}}
+            </ui-select-match>
+            <ui-select-choices group-by="'group'" allow-clear="true"
+               repeat="item in (rallyConfig.rallyProjects | orderBy: 'options.projectName' | filter: $select.search | limitTo: 100) track by item.options.projectId">
+               <div ng-bind-html="item.options.projectName | highlight: $select.search"></div>
+            </ui-select-choices>
+            <ui-select-no-choice>
+               No Projects were found
+            </ui-select-no-choice>
+         </ui-select>
+      </form-group>
+      <div class="button-row row text-center">
+         <button type="submit" class="btn btn-primary btn-wide">Save</button>
+      </div>
+   </form>
+</widget-modal>
