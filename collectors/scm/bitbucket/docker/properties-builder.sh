@@ -54,6 +54,9 @@ git.pageSize=${BITBUCKET_PAGE_SIZE:-25}
 # More information can be found here: href="https://github.com/capitalone/Hygieia/issues/609
 git.product=${BITBUCKET_PRODUCT:-cloud}
 
+#API encryption key. Optional. See http://capitalone.github.io/Hygieia/setup.html#encryption-for-private-repos	
+git.key=${BITBUCKET_KEY:-}
+
 EOF
 
 echo "
