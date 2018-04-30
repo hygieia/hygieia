@@ -72,6 +72,9 @@ server.contextPath=[Web Context path, if any]
 server.port=[Web server port - default is 8080]
 logRequest=false
 logSplunkRequest=false
+
+# pattern to match the featureID/storyNumber (Jira ID, VersionOne ID, etc) for traceability
+featureIDPattern=((?<!([A-Za-z]{1,10})-?)[A-Z]+-\\d+)
 ```
 
 All the above values are optional. If you have MongoDB installed with no authorization, you must be able to run the API even without the properties file.
