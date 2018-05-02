@@ -17,18 +17,6 @@
     <version>2.0.5-SNAPSHOT</version>
     <relativePath>../../..</relativePath>
   </parent>
-
-	 <!--<distributionManagement>
-    	<repository>
-	        <id>nexus-releases</id>
-	        <url>http://10.62.98.65:8081/nexus/content/repositories/releases/</url>
-	    </repository>
-		<snapshotRepository>
-	        <id>nexus-snapshots</id>
-	        <url>http://10.62.98.65:8081/nexus/content/repositories/snapshots/</url>
-	        <uniqueVersion>false</uniqueVersion>
-		 </snapshotRepository>
-  	</distributionManagement>
  
   <distributionManagement>
     <snapshotRepository>
@@ -39,7 +27,7 @@
       <id>ossrh</id>
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
-  </distributionManagement> -->
+  </distributionManagement>
   
 
   <properties>
