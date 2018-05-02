@@ -137,7 +137,7 @@ public class DashboardAuditServiceTest {
                 String businessApplication = "CI375032";
                 String url = (String) item.getOptions().get("reportUrl");
 
-                DashboardReviewResponse actual = dashboardAuditService.getDashboardReviewResponse(title, DashboardType.Team, businessService, businessApplication, 1519728000000L, System.currentTimeMillis(), Sets.newHashSet(AuditType.STATIC_SECURITY_ANALYSIS));
+                DashboardReviewResponse actual = dashboardAuditService.getDashboardReviewResponse(title, DashboardType.Team, businessService, businessApplication, 1519728000000L, 1523180525854L, Sets.newHashSet(AuditType.STATIC_SECURITY_ANALYSIS));
                 SecurityReviewAuditResponse expected = getExpectedSecurityReview(url);
 
                 Map<AuditType, Collection<AuditReviewResponse>> auditReviewResponse = actual.getReview();
