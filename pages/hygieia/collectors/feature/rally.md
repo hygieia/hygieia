@@ -3,8 +3,8 @@ title: Hygieia Rally Collector
 tags:
 keywords:
 summary:
-sidebar: 
-permalink: 
+sidebar: hygieia_sidebar
+permalink: rally.html
 ---
 
 Configure the Rally Collector to display the details of the current iteration of the configured project in Hygieia dashboard. Hygieia uses Spring Boot to package the collector as an executable JAR file with dependencies.
