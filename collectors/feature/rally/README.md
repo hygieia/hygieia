@@ -80,8 +80,8 @@ The sample `application.properties` file lists parameters with sample values to 
 		rally.servers[0]=http://rallydev.com
 
 		# Nexus IQ username/password - with read-access to all reports, and so on.
-		rally.username[0]=myrallyuserid
-		rally.password[0]=myrallypassword
+		rally.usernames[0]=myrallyuserid
+		rally.passwords[0]=myrallypassword
 
 		# If your rally needs to connect through a proxy please specify the HTTP & HTTPS proxy using below attributes.(Optional)
 		rally.httpProxyPort=
