@@ -51,7 +51,7 @@ java -jar rally-collector.jar --spring.config.name=rally --spring.config.locatio
 
 ### Sample Application Properties File
 
-The sample `application.properties` file lists parameters with sample values to configure the Nexus IQ Collector. Set the parameters based on your environment setup.
+The sample `application.properties` file lists parameters with sample values to configure the Rally Collector. Set the parameters based on your environment setup.
 
 ```properties
 		# Database Name
