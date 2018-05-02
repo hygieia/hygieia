@@ -4,6 +4,7 @@ import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.TestResult;
 import com.capitalone.dashboard.model.TestSuiteType;
 import com.capitalone.dashboard.model.TestCapability;
@@ -34,7 +35,6 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
 
     private final TestResultRepository testResultRepository;
     private final FeatureRepository featureRepository;
-
 
     @Autowired
     public RegressionTestResultEvaluator(TestResultRepository testResultRepository, FeatureRepository featureRepository) {
@@ -76,7 +76,10 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                 testResultsAuditResponse.addAuditStatus((testResult.getFailureCount() == 0) ? TestResultAuditStatus.TEST_RESULT_AUDIT_OK : TestResultAuditStatus.TEST_RESULT_AUDIT_FAIL);
                 testResultsAuditResponse.setTestCapabilities(testResult.getTestCapabilities());
                 testResultsAuditResponse.setLastExecutionTime(testResult.getStartTime());
-
+                List<String> totalStories = this.getTotalCompletedStoriesInGivenDateRange("FS_COAF_DS_Slate");
+                testResultsAuditResponse.setTotalStories(totalStories);
+                testResultsAuditResponse.setTotalStoryCount(totalStories.size());
+                testResultsAuditResponse.setThreshold(80);
                 testResults.stream()
                         .map(TestResult::getTestCapabilities).flatMap(Collection::stream)
                         .map(TestCapability::getTestSuites).flatMap(Collection::stream)
@@ -84,6 +87,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                         .forEach(testCase -> {
                             List<StoryIndicator> storyIndicatorList = this.getStoryIndicators(testResultsAuditResponse, testCase);
                             testCase.setStoryIndicators(storyIndicatorList);
+                            testResultsAuditResponse.setPercentTraceability((storyIndicatorList.size() * 100) / totalStories.size());
                             if (CollectionUtils.isEmpty(storyIndicatorList)) {
                                 testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_AUDIT_MISSING);
                             }
@@ -142,6 +146,27 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         }
 
         return storyIndicatorList;
+    }
+
+    private List<String> getTotalCompletedStoriesInGivenDateRange(String dashboard) {
+
+        List<String> totalStories = new ArrayList<>();
+        Dashboard dashboardDetails = dashboardRepository.findByTitleAndType(dashboard, DashboardType.Team);
+
+        dashboardDetails.getWidgets().forEach(widget ->
+        {
+            if (widget.getName().equals("feature")) {
+                List<Feature> featureDetails = featureRepository.getStoryByTeamID(widget.getOptions().get("teamId").toString());
+                featureDetails.stream()
+                        .forEach(feature -> {
+                            totalStories.add(feature.getsNumber());
+                        });
+            }
+        });
+
+        System.out.print("TOTAL STORIES : " + totalStories);
+
+        return totalStories;
     }
 
 }
