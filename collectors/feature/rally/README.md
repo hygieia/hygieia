@@ -76,10 +76,10 @@ The sample `application.properties` file lists parameters with sample values to 
 		# Collector schedule (required)
 		rally.cron=0 0/5 * * * *
 
-		# Nexus IQ server(s) (required) - Can provide multiple
+		# Rally server(s) (required) - Can provide multiple
 		rally.servers[0]=http://rallydev.com
 
-		# Nexus IQ username/password - with read-access to all reports, and so on.
+		# Rally username/password for the provided server- with read-access to all resources.
 		rally.usernames[0]=myrallyuserid
 		rally.passwords[0]=myrallypassword
 
