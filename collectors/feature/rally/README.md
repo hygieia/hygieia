@@ -77,7 +77,7 @@ The sample `application.properties` file lists parameters with sample values to 
 		rally.cron=0 0/5 * * * *
 
 		# Nexus IQ server(s) (required) - Can provide multiple
-		rally.servers[0]=http://nexusiq.company.com
+		rally.servers[0]=http://rallydev.com
 
 		# Nexus IQ username/password - with read-access to all reports, and so on.
 		rally.username[0]=myrallyuserid
