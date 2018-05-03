@@ -1,14 +1,24 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.model.CloudInstance;
-import com.capitalone.dashboard.model.LibraryPolicyReport;
-import com.capitalone.dashboard.model.LibraryPolicyResult;
-import com.capitalone.dashboard.model.LibraryPolicyThreatLevel;
-import com.capitalone.dashboard.model.LibraryPolicyType;
-import com.capitalone.dashboard.model.NexusIQApplication;
-import com.capitalone.dashboard.util.Supplier;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.io.IOUtils;
-import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,21 +32,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import com.capitalone.dashboard.model.LibraryPolicyReport;
+import com.capitalone.dashboard.model.LibraryPolicyResult;
+import com.capitalone.dashboard.model.LibraryPolicyThreatLevel;
+import com.capitalone.dashboard.model.LibraryPolicyType;
+import com.capitalone.dashboard.model.NexusIQApplication;
+import com.capitalone.dashboard.util.Supplier;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultNexusIQClientTest {
@@ -55,6 +56,7 @@ public class DefaultNexusIQClientTest {
     public void init() {
         when(restOperationsSupplier.get()).thenReturn(rest);
         settings = new NexusIQSettings();
+        settings.setServers(new ArrayList<>());
         defaultNexusIQClient = new DefaultNexusIQClient(restOperationsSupplier, settings);
     }
 

@@ -1,0 +1,9 @@
+[{
+	"collectorName" : "testCollector",
+    "info" : [ 
+        {
+            "url" : "http://testurl.domain:9000",
+            "password": "password"
+        }
+    ]
+}]

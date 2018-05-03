@@ -72,7 +72,7 @@
               <goal>install-node-and-npm</goal>
             </goals>
             <configuration>
-              <nodeVersion>v5.4.1</nodeVersion>
+              <nodeVersion>v6.9.1</nodeVersion>
               <npmVersion>2.14.15</npmVersion>
                 <nodeDownloadRoot>http://nodejs.org/dist/</nodeDownloadRoot>
                 <npmDownloadRoot>http://registry.npmjs.org/npm/-/</npmDownloadRoot>

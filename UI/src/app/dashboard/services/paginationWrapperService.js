@@ -18,14 +18,14 @@
         var username = userService.getUsername();
         var mydash;
 
-        this.calculateTotalItems = function () {
-            return dashboardData.count().then(function (data) {
+        this.calculateTotalItems = function (type) {
+            return dashboardData.count(type).then(function (data) {
                 totalItems = data;
             });
         }
 
-        this.calculateTotalItemsMyDash = function () {
-            return dashboardData.myDashboardsCount().then(function (data) {
+        this.calculateTotalItemsMyDash = function (type) {
+            return dashboardData.myDashboardsCount(type).then(function (data) {
                 totalItemsMyDash = data;
             });
         }
@@ -68,23 +68,23 @@
             return showError;
         }
 
-        this.pageChangeHandler = function (pageNumber) {
+        this.pageChangeHandler = function (pageNumber, type) {
             currentPage = pageNumber;
 
             if (searchFilter=="") {
-               return dashboardData.searchByPage({"search": '', "size": pageSize, "page": pageNumber-1})
+               return dashboardData.searchByPage({"search": '', "type": type, "size": pageSize, "page": pageNumber-1})
                     .then(this.processDashboardResponse, this.processDashboardError);
             } else {
-               return dashboardData.filterByTitle({"search": searchFilter, "size": pageSize, "page": pageNumber-1})
+               return dashboardData.filterByTitle({"search": searchFilter, "type": type, "size": pageSize, "page": pageNumber-1})
                     .then(this.processDashboardFilterResponse, this.processDashboardError);
             }
         }
 
-        this.pageChangeHandlerForMyDash = function (pageNumber) {
+        this.pageChangeHandlerForMyDash = function (pageNumber, type) {
             currentPageMyDash = pageNumber;
 
             if(searchFilter==""){
-                return  dashboardData.searchMyDashboardsByPage({"username": username, "size": pageSize, "page": pageNumber-1})
+                return  dashboardData.searchMyDashboardsByPage({"username": username, "type": type, "size": pageSize, "page": pageNumber-1})
                     .then(this.processMyDashboardResponse, this.processMyDashboardError);
             } else {
                 return dashboardData.filterMyDashboardsByTitle({"search":  searchFilter, "size": pageSize, "page": pageNumber-1})
@@ -92,7 +92,10 @@
             }
         }
 
-        this.processDashboardResponse = function (data) {
+        this.processDashboardResponse = function (response) {
+            var data = response.data;
+            var type = response.type;
+
             // add dashboards to list
             dashboards = [];
             var dashboardsLocal = [];
@@ -118,14 +121,17 @@
             }
 
             dashboards = dashboardsLocal;
-            dashboardData.count().then(function (data) {
+            dashboardData.count(type).then(function (data) {
                 totalItems = data;
             });
 
             return dashboardsLocal;
         }
 
-        this.processDashboardFilterResponse = function (data) {
+        this.processDashboardFilterResponse = function (response) {
+            var data = response.data;
+            var type = response.type;
+
             dashboards = [];
             var dashboardsLocal = [];
 
@@ -144,7 +150,7 @@
 
             dashboards = dashboardsLocal;
             if (searchFilter=="") {
-                dashboardData.count().then(function (data) {
+                dashboardData.count(type).then(function (data) {
                     totalItems = data;
                 });
             }
@@ -157,7 +163,10 @@
             return dashboards;
         }
 
-        this.processMyDashboardResponse = function (mydata) {
+        this.processMyDashboardResponse = function (response) {
+            var mydata = response.data;
+            var type = response.type;
+
             // add dashboards to list
             mydash = [];
             var dashboardsLocal = [];
@@ -180,14 +189,18 @@
             }
 
             mydash = dashboardsLocal;
-            dashboardData.myDashboardsCount().then(function (data) {
+            dashboardData.myDashboardsCount(type).then(function (data) {
                 totalItemsMyDash = data;
             });
+
 
             return dashboardsLocal;
         }
 
-        this.processFilterMyDashboardResponse = function (mydata) {
+        this.processFilterMyDashboardResponse = function (response) {
+            var mydata = response.data;
+            var type = response.type;
+
             // add dashboards to list
             mydash = [];
             var dashboardsLocal = [];
@@ -211,7 +224,7 @@
 
             mydash = dashboardsLocal;
             if(searchFilter=="") {
-                dashboardData.myDashboardsCount().then(function (data) {
+                dashboardData.myDashboardsCount(type).then(function (data) {
                     totalItemsMyDash = data;
                 });
             }
@@ -224,27 +237,27 @@
             return mydash;
         }
 
-        this.filterByTitle = function (title) {
+        this.filterByTitle = function (title, type) {
             currentPage = 0;
             currentPageMyDash = 0;
             searchFilter = title;
             var promises = [];
 
             if(title=="") {
-                promises.push(dashboardData.searchByPage({"search": '', "size": pageSize, "page": 0})
+                promises.push(dashboardData.searchByPage({"search": '', "type": type, "size": pageSize, "page": 0})
                                 .then(this.processDashboardResponse, this.processDashboardError));
 
-                promises.push(dashboardData.searchMyDashboardsByPage({"username": username, "size": pageSize, "page": 0})
+                promises.push(dashboardData.searchMyDashboardsByPage({"username": username, "type": type, "size": pageSize, "page": 0})
                                 .then(this.processMyDashboardResponse, this.processMyDashboardError));
             } else {
-                promises.push(dashboardData.filterCount(title).then(function (data) {totalItems = data;}));
+                promises.push(dashboardData.filterCount(title, type).then(function (data) {totalItems = data;}));
 
-                promises.push(dashboardData.filterByTitle({"search": title, "size": pageSize, "page": 0})
+                promises.push(dashboardData.filterByTitle({"search": title, "type": type, "size": pageSize, "page": 0})
                     .then(this.processDashboardFilterResponse, this.processDashboardError));
 
-                promises.push(dashboardData.filterMyDashboardCount(title).then(function (data) {totalItemsMyDash = data;}));
+                promises.push(dashboardData.filterMyDashboardCount(title, type).then(function (data) {totalItemsMyDash = data;}));
 
-                promises.push(dashboardData.filterMyDashboardsByTitle({"search": title, "size": pageSize, "page": 0})
+                promises.push(dashboardData.filterMyDashboardsByTitle({"search": title, "type": type, "size": pageSize, "page": 0})
                     .then(this.processFilterMyDashboardResponse, this.processMyDashboardError));
             }
 

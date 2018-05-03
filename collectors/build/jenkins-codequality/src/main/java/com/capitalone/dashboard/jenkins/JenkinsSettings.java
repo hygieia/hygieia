@@ -43,23 +43,23 @@ public class JenkinsSettings {
         this.artifactRegex.put(type, artifactRegex);
     }
 
-    public String getUsername() {
-        return username;
-    }
+	public String getUsername() {
+		return username;
+	}
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
-    public String getApiKey() {
-        return apiKey;
-    }
+	public String getApiKey() {
+		return apiKey;
+	}
 
-    public void setApiKey(String apiKey) {
-        this.apiKey = apiKey;
-    }
+	public void setApiKey(String apiKey) {
+		this.apiKey = apiKey;
+	}
 
-    public String getDockerLocalHostIP() {
+	public String getDockerLocalHostIP() {
         return dockerLocalHostIP;
     }
 

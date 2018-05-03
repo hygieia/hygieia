@@ -23,6 +23,7 @@
     "ng-sortable": "~1.3.2",
     "regression-js": "~1.3.0",
     "angular-ui-select": "^0.18.0",
+    "angular-chart.js": "^1.1.1",
     "json-logic-js": "^1.0.11",
     "angular-jwt": "~0.1.8",
     "gridstack": "~0.2.6",
