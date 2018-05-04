@@ -223,7 +223,7 @@
             <table class="table" border="0">
             <tbody>
                 <tr>
-                <td width="45%" class="table-td">
+                <td width="60%" class="table-td">
                     <div class="chartDimens">
                     <chartist class="ct-chart ct-chart-donut ct-golden-section" 
                     chartist-data="caWidget.donutData" 
@@ -237,7 +237,7 @@
                     </span>         
                     </div>    
                 </td>
-                <td  width="35%" class="table-td">
+                <td  width="40%" class="table-td">
                 <div class="tableTdColum tdBgCol1">
                 {{caWidget.criticalCountPolicy}}
                 </div>
@@ -252,13 +252,17 @@
                 <span class="comSubHeader">AFFECTING {{caWidget.policyAffectedCompCount}} COMPONENTS</span>
                 </div>
                 </td>
-                <td  width="20%" class="table-td">
+                </tr>
+                <tr>
+                <td>
                     <div class="dash-row clickable"
                                     ng-click="caWidget.showLibraryPolicyDetails('License', caWidget.libraryPolicyDetails)">
                         <span dash-status="{{caWidget.getDashStatus()}}"></span>License <span>
                             {{(caWidget.libraryLicenseThreatStatus) ? caWidget.libraryLicenseThreatStatus.count : 0}}
                         </span>
                     </div>
+                </td>
+                <td>
                     <div class="dash-row clickable"
                                     ng-click="caWidget.showLibraryPolicyDetails('Security', caWidget.libraryPolicyDetails)">
                         <span dash-status="{{caWidget.getDashStatus()}}"></span>Security <span>
