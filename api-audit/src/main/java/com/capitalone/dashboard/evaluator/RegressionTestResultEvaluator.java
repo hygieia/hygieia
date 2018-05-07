@@ -25,8 +25,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 
 @Component
@@ -138,9 +143,9 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                                 storyIndicator.setTeamName(feature.getsTeamName());
                                 storyIndicator.setSprintName(feature.getsSprintName());
                                 if (feature.getsStatus().equalsIgnoreCase("ACCEPTED") ||
-                                        feature.getsStatus().equalsIgnoreCase("CLOSED") ||
+                                        feature.getsStatus().equalsIgnoreCase("DONE") ||
                                         feature.getsStatus().equalsIgnoreCase("RESOLVED") ||
-                                        feature.getsStatus().equalsIgnoreCase("DONE")) {
+                                        feature.getsState().equalsIgnoreCase("CLOSED")) {
                                     storyIndicator.setStoryStatus(feature.getsStatus());
                                     storyIndicator.setStoryState(feature.getsState());
                                 } else {
@@ -166,13 +171,26 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                 List<Feature> featureDetails = featureRepository.getStoryByTeamID(widget.getOptions().get("teamId").toString());
                 featureDetails.stream()
                         .forEach(feature -> {
-                            totalStories.add(feature.getsNumber());
+                            long changeDate = 0;
+                            try {
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                                Date dt = sdf.parse(feature.getChangeDate());
+                                changeDate = dt.getTime();
+                            } catch(ParseException e) {
+                                e.printStackTrace();
+                            }
 
+                            if (feature.getsStatus().equalsIgnoreCase("ACCEPTED") ||
+                                    feature.getsStatus().equalsIgnoreCase("DONE") ||
+                                    feature.getsStatus().equalsIgnoreCase("RESOLVED") ||
+                                    feature.getsState().equalsIgnoreCase("CLOSED")) {
+                                if (changeDate >= beginDate && changeDate <= endDate) {
+                                    totalStories.add(feature.getsNumber());
+                                }
+                            }
                         });
             }
         });
-
-        System.out.print("\n TOTAL STORIES: " + totalStories);
 
         return totalStories;
     }
