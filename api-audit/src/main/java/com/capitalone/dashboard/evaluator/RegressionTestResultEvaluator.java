@@ -28,7 +28,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import java.util.stream.Collectors;
 
 @Component
 public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditResponse> {
@@ -45,17 +44,23 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
     @Override
     public Collection<TestResultsAuditResponse> evaluate(Dashboard dashboard, long beginDate, long endDate, Map<?, ?> dummy) throws AuditException {
         List<CollectorItem> testItems = getCollectorItems(dashboard, "codeanalysis", CollectorType.Test);
-        Collection<TestResultsAuditResponse> responses = new ArrayList<>();
+
+        Collection<TestResultsAuditResponse> testResultsAuditResponse = new ArrayList<>();
+
         if (CollectionUtils.isEmpty(testItems)) {
             throw new AuditException("No tests configured", AuditException.NO_COLLECTOR_ITEM_CONFIGURED);
         }
 
-        return testItems.stream().map(item -> evaluate(item, beginDate, endDate, null)).collect(Collectors.toList());
+        testItems.forEach(testItem -> {
+            testResultsAuditResponse.add(getRegressionTestResultAudit(dashboard, testItem, beginDate, endDate));
+        });
+
+        return testResultsAuditResponse;
     }
 
     @Override
     public TestResultsAuditResponse evaluate(CollectorItem collectorItem, long beginDate, long endDate, Map<?, ?> dummy) {
-        return getRegressionTestResultAudit(collectorItem, beginDate, endDate);
+        return null;
     }
 
     /**
@@ -63,7 +68,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
      * @return TestResultsAuditResponse
      * Thrown by Object mapper method
      */
-    private TestResultsAuditResponse getRegressionTestResultAudit(CollectorItem testItem, long beginDate, long endDate) {
+    private TestResultsAuditResponse getRegressionTestResultAudit(Dashboard dashboard, CollectorItem testItem, long beginDate, long endDate) {
 
         List<TestResult> testResults = testResultRepository
                 .findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(testItem.getId(), beginDate-1, endDate+1);
@@ -76,7 +81,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                 testResultsAuditResponse.addAuditStatus((testResult.getFailureCount() == 0) ? TestResultAuditStatus.TEST_RESULT_AUDIT_OK : TestResultAuditStatus.TEST_RESULT_AUDIT_FAIL);
                 testResultsAuditResponse.setTestCapabilities(testResult.getTestCapabilities());
                 testResultsAuditResponse.setLastExecutionTime(testResult.getStartTime());
-                List<String> totalStories = this.getTotalCompletedStoriesInGivenDateRange("FS_COAF_DS_Slate");
+                List<String> totalStories = this.getTotalCompletedStoriesInGivenDateRange(dashboard.getTitle(), beginDate, endDate);
                 testResultsAuditResponse.setTotalStories(totalStories);
                 testResultsAuditResponse.setTotalStoryCount(totalStories.size());
                 testResultsAuditResponse.setThreshold(80);
@@ -87,7 +92,9 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                         .forEach(testCase -> {
                             List<StoryIndicator> storyIndicatorList = this.getStoryIndicators(testResultsAuditResponse, testCase);
                             testCase.setStoryIndicators(storyIndicatorList);
-                            testResultsAuditResponse.setPercentTraceability((storyIndicatorList.size() * 100) / totalStories.size());
+                            if(totalStories.size() > 0) {
+                                testResultsAuditResponse.setPercentTraceability((storyIndicatorList.size() * 100) / totalStories.size());
+                            }
                             if (CollectionUtils.isEmpty(storyIndicatorList)) {
                                 testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_AUDIT_MISSING);
                             }
@@ -148,7 +155,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         return storyIndicatorList;
     }
 
-    private List<String> getTotalCompletedStoriesInGivenDateRange(String dashboard) {
+    private List<String> getTotalCompletedStoriesInGivenDateRange(String dashboard, Long beginDate, Long endDate) {
 
         List<String> totalStories = new ArrayList<>();
         Dashboard dashboardDetails = dashboardRepository.findByTitleAndType(dashboard, DashboardType.Team);
@@ -160,11 +167,12 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                 featureDetails.stream()
                         .forEach(feature -> {
                             totalStories.add(feature.getsNumber());
+
                         });
             }
         });
 
-        System.out.print("TOTAL STORIES : " + totalStories);
+        System.out.print("\n TOTAL STORIES: " + totalStories);
 
         return totalStories;
     }
