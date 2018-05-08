@@ -121,11 +121,11 @@ public class DashboardAuditServiceTest {
 
                         List<Review> lhsPRReviews = lhsPR.getReviews();
                         List<Review> rhsPRReviews = rhsPR.getReviews();
-                        compareReviews (lhsPRReviews, rhsPRReviews);
+                        compareReviews(lhsPRReviews, rhsPRReviews);
 
                         List<Comment> lhsPRComments = lhsPR.getComments();
                         List<Comment> rhsPRComments = rhsPR.getComments();
-                        compareComments (lhsPRComments, rhsPRComments);
+                        compareComments(lhsPRComments, rhsPRComments);
 
                     }
                     compareCommits(lhsCommits, rhsCommits);
@@ -163,7 +163,7 @@ public class DashboardAuditServiceTest {
         IntStream.range(0, lhsPRReviews.size()).forEach(i -> assertThat(lhsPRReviews.get(i)).isEqualToComparingFieldByField(rhsPRReviews.get(i)));
     }
 
-    private void compareCommits (List<Commit> lhsCommits, List<Commit> rhsCommits) {
+    private void compareCommits(List<Commit> lhsCommits, List<Commit> rhsCommits) {
         int lhsSize = CollectionUtils.isEmpty(lhsCommits) ? 0 : lhsCommits.size();
         int rhsSize = CollectionUtils.isEmpty(rhsCommits) ? 0 : rhsCommits.size();
         assertThat(lhsSize).isEqualTo(rhsSize);
@@ -172,7 +172,7 @@ public class DashboardAuditServiceTest {
             assertThat(lhsCommits.size()).isEqualByComparingTo(rhsCommits.size());
             lhsCommits.sort(Comparator.comparing(Commit::getScmRevisionNumber));
             rhsCommits.sort(Comparator.comparing(Commit::getScmRevisionNumber));
-            IntStream.range(0, lhsCommits.size()).forEach( j -> assertThat(lhsCommits.get(j)).isEqualToIgnoringGivenFields(rhsCommits.get(j), "id", "timestamp"));
+            IntStream.range(0, lhsCommits.size()).forEach(j -> assertThat(lhsCommits.get(j)).isEqualToIgnoringGivenFields(rhsCommits.get(j), "id", "timestamp"));
         }
     }
 
@@ -181,17 +181,34 @@ public class DashboardAuditServiceTest {
         if (!bothNull) {
             assertThat(lhs.size()).isEqualByComparingTo(rhs.size());
             Integer lhsScore = null;
+            Integer lhsHigh = null;
+            Integer lhsCritical = null;
             Integer rhsScore = null;
+            Integer rhsHigh = null;
+            Integer rhsCritical = null;
+
             for (CodeQualityMetric metric : lhs) {
                 if (metric.getName().equalsIgnoreCase("Score"))
                     lhsScore = Integer.parseInt(metric.getValue().toString());
+                else if (metric.getName().equalsIgnoreCase("High"))
+                    lhsHigh = Integer.parseInt(metric.getValue().toString());
+                else if (metric.getName().equalsIgnoreCase("Critical"))
+                    lhsCritical = Integer.parseInt(metric.getValue().toString());
             }
             for (CodeQualityMetric metric : rhs) {
                 if (metric.getName().equalsIgnoreCase("Score"))
                     rhsScore = Integer.parseInt(metric.getValue().toString());
+                else if (metric.getName().equalsIgnoreCase("High"))
+                    rhsHigh = Integer.parseInt(metric.getValue().toString());
+                else if (metric.getName().equalsIgnoreCase("Critical"))
+                    rhsCritical = Integer.parseInt(metric.getValue().toString());
             }
             if (lhsScore != null && rhsScore != null)
                 assertThat(lhsScore).isEqualTo(rhsScore);
+            if (lhsHigh != null && rhsHigh != null)
+                assertThat(lhsHigh).isEqualTo(rhsHigh);
+            if (lhsCritical != null && rhsCritical != null)
+                assertThat(lhsCritical).isEqualTo(rhsCritical);
         }
     }
 

@@ -12,15 +12,27 @@
       },
       {
         "name": "Low",
-        "value": 1,
+        "value": "1",
         "formattedValue": "1",
         "status": "Ok"
       },
       {
         "name": "Medium",
-        "value": 4,
+        "value": "4",
         "formattedValue": "4",
         "status": "Warning"
+      },
+      {
+        "name": "Critical",
+        "value": "3",
+        "formattedValue": "3",
+        "status": "Alert"
+      },
+      {
+        "name": "High",
+        "value": "21",
+        "formattedValue": "21",
+        "status": "Alert"
       }
     ]
   }
