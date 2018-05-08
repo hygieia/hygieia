@@ -33,10 +33,10 @@
       "applicationType": null,
       "reportUrl": "https://appsec.com/StaticSecurityAnalysis",
       "applicationID": [
-        "ASVCARDDIGITALSERVICING"
+        "TestBusServ"
       ],
-      "projectName": "card-cust-service",
-      "applicationName": "card-customer-service",
+      "projectName": "cust-service",
+      "applicationName": "customer-service",
       "instanceUrl": "https://appsec.com"
     },
     "id": "5b4e524333ec296b81c3935f"

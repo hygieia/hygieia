@@ -133,8 +133,8 @@ public class DashboardAuditServiceTest {
                 });
             } else if ((collector != null) && (collector.getCollectorType() == CollectorType.StaticSecurityScan)) {
                 String title = "TestSSA";
-                String businessService = "ASVCARDDIGITALSERVICING";
-                String businessApplication = "CI375032";
+                String businessService = "TestBusServ";
+                String businessApplication = "confItem";
                 String url = (String) item.getOptions().get("reportUrl");
 
                 DashboardReviewResponse actual = dashboardAuditService.getDashboardReviewResponse(title, DashboardType.Team, businessService, businessApplication, 1519728000000L, 1523180525854L, Sets.newHashSet(AuditType.STATIC_SECURITY_ANALYSIS));

@@ -101,8 +101,8 @@
   "validServiceName": true,
   "validAppName": true,
   "remoteCreated": false,
-  "configurationItemBusServName": "ASVCARDDIGITALSERVICING",
-  "configurationItemBusAppName": "CI375032",
+  "configurationItemBusServName": "TestBusServ",
+  "configurationItemBusAppName": "confItem",
   "activeWidgets": [
     "repo"
   ],
