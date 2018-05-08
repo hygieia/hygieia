@@ -1,5 +1,47 @@
 [
   {
+    "description": "Registered by Remote Call.",
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": {
+      "timestamp": 1456084265,
+      "machineIdentifier": 8366972,
+      "processIdentifier": 26815,
+      "counter": 14369292
+    },
+    "lastUpdated": 1516222021186,
+    "options": {
+      "branch": "master",
+      "url": "https://mygithub.com/compliance-scenario/0-new-repo"
+    },
+    "id": "5a4e524333ec296b81c3936f"
+  },
+  {
+    "description": "card-customer-service:card-cust-service",
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": {
+      "timestamp": 1456084266,
+      "machineIdentifier": 8366972,
+      "processIdentifier": 26815,
+      "counter": 14369292
+    },
+    "lastUpdated": 1523562528850,
+    "options": {
+      "applicationType": null,
+      "reportUrl": "https://appsec.com/StaticSecurityAnalysis",
+      "applicationID": [
+        "TestBusServ"
+      ],
+      "projectName": "cust-service",
+      "applicationName": "customer-service",
+      "instanceUrl": "https://appsec.com"
+    },
+    "id": "5b4e524333ec296b81c3935f"
+  },
+  {
     "description": "TestAudit",
     "enabled": false,
     "errors": [],

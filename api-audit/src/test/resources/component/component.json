@@ -27,6 +27,31 @@
           "counter": 3010191
         }
       }
+    ],
+    "StaticSecurityScan": [
+      {
+        "enabled": true,
+        "errors": [],
+        "pushed": false,
+        "collectorId": {
+          "timestamp": 1522773350945,
+          "machineIdentifier": 1084966,
+          "processIdentifier": 27772,
+          "counter": 16289003
+        },
+        "lastUpdated": 1522773350945,
+        "options": {
+          "applicationType": "Desktop",
+          "reportUrl": "https://appsec.com",
+          "applicationID": [
+            "TestBusServ"
+          ],
+          "projectName": "cust-service",
+          "applicationName": "customer-service",
+          "instanceUrl": "https://appsec.com"
+        },
+        "id": "5b4e524333ec296b81c3935f"
+      }
     ]
   },
   "id": {
