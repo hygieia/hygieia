@@ -23,6 +23,7 @@ public class ApiSettings {
     private boolean logRequest;
 
     private String featureIDPattern;
+    private int threshold;
     
     public String getKey() {
         return key;
@@ -94,5 +95,13 @@ public class ApiSettings {
 
     public void setFeatureIDPattern(String featureIDPattern) {
         this.featureIDPattern = featureIDPattern;
+    }
+
+    public int getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(int threshold) {
+        this.threshold = threshold;
     }
 }

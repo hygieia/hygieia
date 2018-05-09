@@ -78,6 +78,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                 .findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(testItem.getId(), beginDate-1, endDate+1);
 
         TestResultsAuditResponse testResultsAuditResponse = new TestResultsAuditResponse();
+        int traceabilityThreshold = settings.getThreshold();
 
         for (TestResult testResult : testResults) {
             if (TestSuiteType.Regression.toString().equalsIgnoreCase(testResult.getType().name()) ||
@@ -88,7 +89,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                 List<String> totalStories = this.getTotalCompletedStoriesInGivenDateRange(dashboard.getTitle(), beginDate, endDate);
                 testResultsAuditResponse.setTotalStories(totalStories);
                 testResultsAuditResponse.setTotalStoryCount(totalStories.size());
-                testResultsAuditResponse.setThreshold(80);
+                testResultsAuditResponse.setThreshold(traceabilityThreshold);
                 testResults.stream()
                         .map(TestResult::getTestCapabilities).flatMap(Collection::stream)
                         .map(TestCapability::getTestSuites).flatMap(Collection::stream)
@@ -96,8 +97,12 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                         .forEach(testCase -> {
                             List<StoryIndicator> storyIndicatorList = this.getStoryIndicators(testResultsAuditResponse, testCase);
                             testCase.setStoryIndicators(storyIndicatorList);
-                            if(totalStories.size() > 0) {
-                                testResultsAuditResponse.setPercentTraceability((storyIndicatorList.size() * 100) / totalStories.size());
+                            if (totalStories.size() > 0) {
+                                int percentTraceability = (storyIndicatorList.size() * 100) / totalStories.size();
+                                testResultsAuditResponse.setPercentTraceability(percentTraceability);
+                                if (percentTraceability >= traceabilityThreshold) {
+                                    testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_THRESHOLD_DEFAULT);
+                                }
                             } else {
                                 testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_NOT_FOUND_IN_GIVEN_DATE_RANGE);
                             }
