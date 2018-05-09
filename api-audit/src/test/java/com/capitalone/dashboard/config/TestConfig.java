@@ -25,8 +25,8 @@ public class TestConfig {
         return settings;
     }
 
-    @Bean
+/*    @Bean
     public DashboardAuditService dashboardAuditService() {
         return Mockito.mock(DashboardAuditService.class);
-    }
+    }*/
 }
