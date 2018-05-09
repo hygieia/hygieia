@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -99,6 +98,8 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                             testCase.setStoryIndicators(storyIndicatorList);
                             if(totalStories.size() > 0) {
                                 testResultsAuditResponse.setPercentTraceability((storyIndicatorList.size() * 100) / totalStories.size());
+                            } else {
+                                testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_NOT_FOUND_IN_GIVEN_DATE_RANGE);
                             }
                             if (CollectionUtils.isEmpty(storyIndicatorList)) {
                                 testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_AUDIT_MISSING);
@@ -162,6 +163,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
 
     private List<String> getTotalCompletedStoriesInGivenDateRange(String dashboard, Long beginDate, Long endDate) {
 
+        String datePattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
         List<String> totalStories = new ArrayList<>();
         Dashboard dashboardDetails = dashboardRepository.findByTitleAndType(dashboard, DashboardType.Team);
 
@@ -173,7 +175,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                         .forEach(feature -> {
                             long changeDate = 0;
                             try {
-                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                                SimpleDateFormat sdf = new SimpleDateFormat(datePattern);
                                 Date dt = sdf.parse(feature.getChangeDate());
                                 changeDate = dt.getTime();
                             } catch(ParseException e) {
