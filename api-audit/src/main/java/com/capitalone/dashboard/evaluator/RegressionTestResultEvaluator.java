@@ -79,6 +79,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
 
         TestResultsAuditResponse testResultsAuditResponse = new TestResultsAuditResponse();
         int traceabilityThreshold = settings.getThreshold();
+        List<StoryIndicator> totalStoryIndicatorList = new ArrayList<>();
 
         for (TestResult testResult : testResults) {
             if (TestSuiteType.Regression.toString().equalsIgnoreCase(testResult.getType().name()) ||
@@ -97,19 +98,25 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                         .forEach(testCase -> {
                             List<StoryIndicator> storyIndicatorList = this.getStoryIndicators(testResultsAuditResponse, testCase);
                             testCase.setStoryIndicators(storyIndicatorList);
-                            if (totalStories.size() > 0) {
-                                int percentTraceability = (storyIndicatorList.size() * 100) / totalStories.size();
-                                testResultsAuditResponse.setPercentTraceability(percentTraceability);
-                                if (percentTraceability >= traceabilityThreshold) {
-                                    testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_THRESHOLD_DEFAULT);
-                                }
-                            } else {
-                                testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_NOT_FOUND_IN_GIVEN_DATE_RANGE);
-                            }
                             if (CollectionUtils.isEmpty(storyIndicatorList)) {
                                 testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_AUDIT_MISSING);
                             }
+                            storyIndicatorList.forEach(sil -> {
+                                if (!totalStoryIndicatorList.stream().anyMatch(o -> o.getStoryNumber().equals(sil.getStoryNumber()))) {
+                                    totalStoryIndicatorList.add(sil);
+                                }
+                            });
                         });
+
+                if (totalStories.size() > 0) {
+                    int percentTraceability = (totalStoryIndicatorList.size() * 100) / totalStories.size();
+                    testResultsAuditResponse.setPercentTraceability(percentTraceability);
+                    if (percentTraceability >= traceabilityThreshold) {
+                        testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_THRESHOLD_DEFAULT);
+                    }
+                } else {
+                    testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_NOT_FOUND_IN_GIVEN_DATE_RANGE);
+                }
                 break;
             }
         }
