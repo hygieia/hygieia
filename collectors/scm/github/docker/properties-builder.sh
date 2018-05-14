@@ -1,4 +1,27 @@
 #!/bin/bash
+
+if [ "$SKIP_PROPERTIES_BUILDER" = true ]; then
+  echo "Skipping properties builder"
+  exit 0
+fi
+
+# mongo container provides the HOST/PORT
+# api container provided DB Name, ID & PWD
+
+if [ "$TEST_SCRIPT" != "" ]
+then
+        #for testing locally
+        PROP_FILE=application.properties
+else 
+	PROP_FILE=hygieia-github-graphql-scm-collector.properties
+fi
+  
+MONGODB_HOST=${MONGODB_HOST:-db}
+MONGODB_PORT=${MONGODB_PORT:-27017}
+
+echo "MONGODB_HOST: $MONGODB_HOST"
+echo "MONGODB_PORT: $MONGODB_PORT"
+
 cat > $PROP_FILE <<EOF
 #Database Name
 dbname=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_DATABASE:-dashboarddb}
