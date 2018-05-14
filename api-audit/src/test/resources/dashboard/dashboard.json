@@ -1,7 +1,26 @@
 {
   "template": "widgets",
-  "title": "TestAudit",
+  "title": "TestSSA",
   "widgets": [
+    {
+      "id": {
+        "timestamp": 1515646073,
+        "machineIdentifier": 4693261,
+        "processIdentifier": 6916,
+        "counter": 3010193
+      },
+      "name": "codeanalysis",
+      "componentId": {
+        "timestamp": 1515645665,
+        "machineIdentifier": 4693261,
+        "processIdentifier": 6916,
+        "counter": 3010182
+      },
+      "options": {
+        "testJobNames": [],
+        "id": "codeanalysis0"
+      }
+    },
     {
       "id": {
         "timestamp": 1515646073,
@@ -79,9 +98,11 @@
       }
     ]
   },
-  "validServiceName": false,
-  "validAppName": false,
+  "validServiceName": true,
+  "validAppName": true,
   "remoteCreated": false,
+  "configurationItemBusServName": "TestBusServ",
+  "configurationItemBusAppName": "confItem",
   "activeWidgets": [
     "repo"
   ],
