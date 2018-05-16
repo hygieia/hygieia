@@ -18,7 +18,7 @@ entries:
       output: pdf
       type: frontmatter
 
-  - title: Home/Getting Started
+  - title: Getting Started
     output: web, pdf
     folderitems:
     - title: Introduction
@@ -88,7 +88,14 @@ entries:
     - title: Set up Jenkins
       url: /jenkinssetup.html
       output: web, pdf    
-        
+ 
+  - title: Audit APIs
+    output: web, pdf
+    folderitems:
+    - title: About Audit APIs
+      url: /troubleshoot.html
+      output: web, pdf
+ 
   - title: Troubleshooting
     output: web, pdf
     folderitems:
