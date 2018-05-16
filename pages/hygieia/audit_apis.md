@@ -1,5 +1,5 @@
 ---
-title: Hygieia Audit APIs
+title: About Audit APIs
 tags: 
 type: 
 homepage: 
@@ -113,13 +113,13 @@ This API performs the following requirement checks:
 -	Must execute automated performance test suite for each release build
 -	Performance test results must meet the pass threshold for each release build
 
-**Input parameters**
+**Input Parameters**
 
 - Business Application
 - Business Service
 - Date Range
 
-**API response**
+**API Response**
 
 Passed Validation – The performance threshold is met.
 Failed Validation – The performance threshold is either not met or is missing.

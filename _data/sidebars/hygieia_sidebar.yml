@@ -93,7 +93,7 @@ entries:
     output: web, pdf
     folderitems:
     - title: About Audit APIs
-      url: /troubleshoot.html
+      url: /audit_apis.html
       output: web, pdf
  
   - title: Troubleshooting
