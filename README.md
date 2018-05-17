@@ -34,6 +34,18 @@
 
 <table>
 <colgroup>
+<col width="100%" />
+</colgroup>
+ 
+<tbody>
+<tr>
+<td><a href="https://github.com/Hygieia/ExecDashboard"><img src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/ReadmeIcons/Hygieia3.png" alt="Hygieia3.0" height="145" width="940"/></a></td>
+</tr> 
+</tbody> 
+</table>
+
+<table>
+<colgroup>
 <col width="33.3%" />
 <col width="33.3%" />
 <col width="33.4%" />
