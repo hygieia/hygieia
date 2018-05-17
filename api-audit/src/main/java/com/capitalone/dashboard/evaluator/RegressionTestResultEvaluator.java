@@ -111,7 +111,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                 if (totalStories.size() > 0) {
                     int percentTraceability = (totalStoryIndicatorList.size() * 100) / totalStories.size();
                     testResultsAuditResponse.setPercentTraceability(percentTraceability);
-                    if (percentTraceability >= traceabilityThreshold) {
+                    if (traceabilityThreshold == 0) {
                         testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_THRESHOLD_DEFAULT);
                     }
                 } else {
@@ -144,27 +144,28 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                                 testResultsAuditResponse.addAuditStatus((tag.equals("@" + feature.getsNumber())) ? TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_STORY_MATCH :
                                         TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_STORY_NOT_FOUND);
 
-                                StoryIndicator storyIndicator = new StoryIndicator();
-
-                                storyIndicator.setStoryId(feature.getsId());
-                                storyIndicator.setStoryType(feature.getsTypeName());
-                                storyIndicator.setStoryNumber(feature.getsNumber());
-                                storyIndicator.setStoryName(feature.getsName());
-                                storyIndicator.setEpicNumber(feature.getsEpicNumber());
-                                storyIndicator.setEpicName(feature.getsEpicName());
-                                storyIndicator.setProjectName(feature.getsProjectName());
-                                storyIndicator.setTeamName(feature.getsTeamName());
-                                storyIndicator.setSprintName(feature.getsSprintName());
                                 if (feature.getsStatus().equalsIgnoreCase("ACCEPTED") ||
                                         feature.getsStatus().equalsIgnoreCase("DONE") ||
                                         feature.getsStatus().equalsIgnoreCase("RESOLVED") ||
                                         feature.getsState().equalsIgnoreCase("CLOSED")) {
+
+                                    StoryIndicator storyIndicator = new StoryIndicator();
+
+                                    storyIndicator.setStoryId(feature.getsId());
+                                    storyIndicator.setStoryType(feature.getsTypeName());
+                                    storyIndicator.setStoryNumber(feature.getsNumber());
+                                    storyIndicator.setStoryName(feature.getsName());
+                                    storyIndicator.setEpicNumber(feature.getsEpicNumber());
+                                    storyIndicator.setEpicName(feature.getsEpicName());
+                                    storyIndicator.setProjectName(feature.getsProjectName());
+                                    storyIndicator.setTeamName(feature.getsTeamName());
+                                    storyIndicator.setSprintName(feature.getsSprintName());
                                     storyIndicator.setStoryStatus(feature.getsStatus());
                                     storyIndicator.setStoryState(feature.getsState());
+                                    storyIndicatorList.add(storyIndicator);
                                 } else {
                                     testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_STORY_STATUS_INVALID);
                                 }
-                                storyIndicatorList.add(storyIndicator);
                             });
                 }
             });
