@@ -96,7 +96,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                         .map(TestCapability::getTestSuites).flatMap(Collection::stream)
                         .map(TestSuite::getTestCases).flatMap(Collection::stream)
                         .forEach(testCase -> {
-                            List<StoryIndicator> storyIndicatorList = this.getStoryIndicators(testResultsAuditResponse, testCase);
+                            List<StoryIndicator> storyIndicatorList = this.getStoryIndicatorsInGivenDateRange(testResultsAuditResponse, testCase, beginDate, endDate);
                             testCase.setStoryIndicators(storyIndicatorList);
                             if (CollectionUtils.isEmpty(storyIndicatorList)) {
                                 testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_AUDIT_MISSING);
@@ -124,7 +124,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         return testResultsAuditResponse;
     }
 
-    private List<StoryIndicator> getStoryIndicators(TestResultsAuditResponse testResultsAuditResponse, TestCase testCase) {
+    private List<StoryIndicator> getStoryIndicatorsInGivenDateRange(TestResultsAuditResponse testResultsAuditResponse, TestCase testCase, Long beginDate, Long endDate) {
 
         final String REGEX_ANY_STRING_MATCHING_FEATURE_ID = settings.getFeatureIDPattern();
         List<StoryIndicator> storyIndicatorList = new ArrayList<>();
@@ -144,27 +144,29 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                                 testResultsAuditResponse.addAuditStatus((tag.equals("@" + feature.getsNumber())) ? TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_STORY_MATCH :
                                         TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_STORY_NOT_FOUND);
 
-                                if (feature.getsStatus().equalsIgnoreCase("ACCEPTED") ||
-                                        feature.getsStatus().equalsIgnoreCase("DONE") ||
-                                        feature.getsStatus().equalsIgnoreCase("RESOLVED") ||
-                                        feature.getsState().equalsIgnoreCase("CLOSED")) {
+                                if (this.getChangeDate(feature) >= beginDate && this.getChangeDate(feature) <= endDate) {
+                                    if (feature.getsStatus().equalsIgnoreCase("ACCEPTED") ||
+                                            feature.getsStatus().equalsIgnoreCase("DONE") ||
+                                            feature.getsStatus().equalsIgnoreCase("RESOLVED") ||
+                                            feature.getsState().equalsIgnoreCase("CLOSED")) {
 
-                                    StoryIndicator storyIndicator = new StoryIndicator();
+                                        StoryIndicator storyIndicator = new StoryIndicator();
 
-                                    storyIndicator.setStoryId(feature.getsId());
-                                    storyIndicator.setStoryType(feature.getsTypeName());
-                                    storyIndicator.setStoryNumber(feature.getsNumber());
-                                    storyIndicator.setStoryName(feature.getsName());
-                                    storyIndicator.setEpicNumber(feature.getsEpicNumber());
-                                    storyIndicator.setEpicName(feature.getsEpicName());
-                                    storyIndicator.setProjectName(feature.getsProjectName());
-                                    storyIndicator.setTeamName(feature.getsTeamName());
-                                    storyIndicator.setSprintName(feature.getsSprintName());
-                                    storyIndicator.setStoryStatus(feature.getsStatus());
-                                    storyIndicator.setStoryState(feature.getsState());
-                                    storyIndicatorList.add(storyIndicator);
-                                } else {
-                                    testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_STORY_STATUS_INVALID);
+                                        storyIndicator.setStoryId(feature.getsId());
+                                        storyIndicator.setStoryType(feature.getsTypeName());
+                                        storyIndicator.setStoryNumber(feature.getsNumber());
+                                        storyIndicator.setStoryName(feature.getsName());
+                                        storyIndicator.setEpicNumber(feature.getsEpicNumber());
+                                        storyIndicator.setEpicName(feature.getsEpicName());
+                                        storyIndicator.setProjectName(feature.getsProjectName());
+                                        storyIndicator.setTeamName(feature.getsTeamName());
+                                        storyIndicator.setSprintName(feature.getsSprintName());
+                                        storyIndicator.setStoryStatus(feature.getsStatus());
+                                        storyIndicator.setStoryState(feature.getsState());
+                                        storyIndicatorList.add(storyIndicator);
+                                    } else {
+                                        testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_STORY_STATUS_INVALID);
+                                    }
                                 }
                             });
                 }
@@ -176,7 +178,6 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
 
     private List<String> getTotalCompletedStoriesInGivenDateRange(String dashboard, Long beginDate, Long endDate) {
 
-        String datePattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
         List<String> totalStories = new ArrayList<>();
         Dashboard dashboardDetails = dashboardRepository.findByTitleAndType(dashboard, DashboardType.Team);
 
@@ -186,20 +187,11 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                 List<Feature> featureDetails = featureRepository.getStoryByTeamID(widget.getOptions().get("teamId").toString());
                 featureDetails.stream()
                         .forEach(feature -> {
-                            long changeDate = 0;
-                            try {
-                                SimpleDateFormat sdf = new SimpleDateFormat(datePattern);
-                                Date dt = sdf.parse(feature.getChangeDate());
-                                changeDate = dt.getTime();
-                            } catch(ParseException e) {
-                                e.printStackTrace();
-                            }
-
                             if (feature.getsStatus().equalsIgnoreCase("ACCEPTED") ||
                                     feature.getsStatus().equalsIgnoreCase("DONE") ||
                                     feature.getsStatus().equalsIgnoreCase("RESOLVED") ||
                                     feature.getsState().equalsIgnoreCase("CLOSED")) {
-                                if (changeDate >= beginDate && changeDate <= endDate) {
+                                if (this.getChangeDate(feature) >= beginDate && this.getChangeDate(feature) <= endDate) {
                                     totalStories.add(feature.getsNumber());
                                 }
                             }
@@ -208,6 +200,21 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         });
 
         return totalStories;
+    }
+
+    private long getChangeDate(Feature feature) {
+        String datePattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+        long changeDate = 0;
+
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat(datePattern);
+            Date dt = sdf.parse(feature.getChangeDate());
+            changeDate = dt.getTime();
+        } catch(ParseException e) {
+            e.printStackTrace();
+        }
+
+        return changeDate;
     }
 
 }
