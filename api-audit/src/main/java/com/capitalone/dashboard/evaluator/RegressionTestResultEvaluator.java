@@ -96,7 +96,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                         .map(TestCapability::getTestSuites).flatMap(Collection::stream)
                         .map(TestSuite::getTestCases).flatMap(Collection::stream)
                         .forEach(testCase -> {
-                            List<StoryIndicator> storyIndicatorList = this.getStoryIndicatorsInGivenDateRange(testResultsAuditResponse, testCase, beginDate, endDate);
+                            List<StoryIndicator> storyIndicatorList = this.getStoryIndicatorsInGivenDateRange(dashboard, testResultsAuditResponse, testCase, beginDate, endDate);
                             testCase.setStoryIndicators(storyIndicatorList);
                             if (CollectionUtils.isEmpty(storyIndicatorList)) {
                                 testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_AUDIT_MISSING);
@@ -124,7 +124,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         return testResultsAuditResponse;
     }
 
-    private List<StoryIndicator> getStoryIndicatorsInGivenDateRange(TestResultsAuditResponse testResultsAuditResponse, TestCase testCase, Long beginDate, Long endDate) {
+    private List<StoryIndicator> getStoryIndicatorsInGivenDateRange(Dashboard dashboard, TestResultsAuditResponse testResultsAuditResponse, TestCase testCase, Long beginDate, Long endDate) {
 
         final String REGEX_ANY_STRING_MATCHING_FEATURE_ID = settings.getFeatureIDPattern();
         List<StoryIndicator> storyIndicatorList = new ArrayList<>();
@@ -138,17 +138,18 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                 Matcher tagMatch = p.matcher(tag);
                 if (tagMatch.find()) {
                     List<Feature> featureDetails = featureRepository.getStoryByNumber(tag.substring(1, tag.length()));
-
+                    if (!this.getTotalStoriesInGivenDateRange(dashboard.getTitle(), beginDate, endDate).contains(tag.substring(1, tag.length()))) {
+                        testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_STORY_NOT_FOUND);
+                    }
                     featureDetails.stream()
                             .forEach(feature -> {
-                                testResultsAuditResponse.addAuditStatus((tag.equals("@" + feature.getsNumber())) ? TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_STORY_MATCH :
-                                        TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_STORY_NOT_FOUND);
-
                                 if (this.getChangeDate(feature) >= beginDate && this.getChangeDate(feature) <= endDate) {
                                     if (feature.getsStatus().equalsIgnoreCase("ACCEPTED") ||
                                             feature.getsStatus().equalsIgnoreCase("DONE") ||
                                             feature.getsStatus().equalsIgnoreCase("RESOLVED") ||
                                             feature.getsState().equalsIgnoreCase("CLOSED")) {
+
+                                        testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_STORY_MATCH);
 
                                         StoryIndicator storyIndicator = new StoryIndicator();
 
@@ -194,6 +195,27 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                                 if (this.getChangeDate(feature) >= beginDate && this.getChangeDate(feature) <= endDate) {
                                     totalStories.add(feature.getsNumber());
                                 }
+                            }
+                        });
+            }
+        });
+
+        return totalStories;
+    }
+
+    private List<String> getTotalStoriesInGivenDateRange(String dashboard, Long beginDate, Long endDate) {
+
+        List<String> totalStories = new ArrayList<>();
+        Dashboard dashboardDetails = dashboardRepository.findByTitleAndType(dashboard, DashboardType.Team);
+
+        dashboardDetails.getWidgets().forEach(widget ->
+        {
+            if (widget.getName().equals("feature")) {
+                List<Feature> featureDetails = featureRepository.getStoryByTeamID(widget.getOptions().get("teamId").toString());
+                featureDetails.stream()
+                        .forEach(feature -> {
+                            if (this.getChangeDate(feature) >= beginDate && this.getChangeDate(feature) <= endDate) {
+                                totalStories.add(feature.getsNumber());
                             }
                         });
             }
