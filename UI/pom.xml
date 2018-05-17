@@ -73,7 +73,7 @@
             </goals>
             <configuration>
               <nodeVersion>v6.9.1</nodeVersion>
-              <npmVersion>2.14.15</npmVersion>
+              <npmVersion>5.0.1</npmVersion>
                 <nodeDownloadRoot>http://nodejs.org/dist/</nodeDownloadRoot>
                 <npmDownloadRoot>http://registry.npmjs.org/npm/-/</npmDownloadRoot>
             </configuration>
