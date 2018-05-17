@@ -1,0 +1,40 @@
+<widget-modal widget-modal-close="true">
+   <div class="widget-detail rally-build-detail">
+      <div class="widget-body">
+         <div class="widget-modal-heading ng-binding">USER STORIES</div>
+         <div class="form-group row">
+            <div class="col-xs-4">
+               <input type="text" class="form-control" id="userSearch"
+                  placeholder="Filter by Owners" ng-model="userSearch.ownerName">
+            </div>
+         </div>
+         <uib-accordion close-others="oneAtATime">
+            <div uib-accordion-group class="panel-default" is-open="status.open" ng-repeat="group in groups | filter:userSearch">
+               <uib-accordion-heading>
+                  {{group.storyId}} - {{group.storyName}} <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+               </uib-accordion-heading>
+               <div class="row ">
+                  <div class="table-responsive">
+                     <table class="table">
+                        <thead>
+                           <tr>
+                              <th>Owner Name<i class="fa fa-md fa-user text-info"></i></th>
+                              <th>Last Updated<a href="{{group.storyUrl}}" target="_blank" title="Go to user story"><i class="fa fa-lg fa-link text-info"></i></a></th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           <tr>
+                              <td>{{group.ownerName}}</td>
+                              <td>
+                                 {{group.lastUpdateDate | date:'MMM d, HH:mm:ss'}}
+                              </td>
+                           </tr>
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
+            </div>
+         </uib-accordion>
+      </div>
+   </div>
+</widget-modal>
