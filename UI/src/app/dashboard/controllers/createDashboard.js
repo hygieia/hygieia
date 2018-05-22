@@ -113,6 +113,8 @@
         // method implementations
         function submit(form) {
             var templateValue = "";
+            var configBusSerItem = ctrl.configurationItemBusServ ? ctrl.configurationItemBusServ.configurationItem : null;
+            var configBusAppItem = ctrl.configurationItemBusApp ? ctrl.configurationItemBusApp.configurationItem : null;
             if (ctrl.configureSelect == 'widgets' && ctrl.dashboardType.id == 'team') {
                 templateValue = "widgets";
                 form.selectedTemplate.$setValidity('required', true);
@@ -124,8 +126,8 @@
                         type: document.cdf.dashboardType.value,
                         applicationName: appName,
                         componentName: appName,
-                        configurationItemBusServName: ctrl.configurationItemBusServ.configurationItem,
-                        configurationItemBusAppName: ctrl.configurationItemBusApp.configurationItem,
+                        configurationItemBusServName: configBusSerItem,
+                        configurationItemBusAppName: configBusAppItem,
                         scoreEnabled : ctrl.scoreSettings.scoreEnabled,
                         scoreDisplay : ctrl.scoreSettings.scoreDisplay
                     };
@@ -144,8 +146,8 @@
                             type: document.cdf.dashboardType.value,
                             applicationName: appName,
                             componentName: appName,
-                            configurationItemBusServName: ctrl.configurationItemBusServ.configurationItem,
-                            configurationItemBusAppName: ctrl.configurationItemBusApp.configurationItem,
+                            configurationItemBusServName: configBusSerItem,
+                            configurationItemBusAppName: configBusAppItem,
                             scoreEnabled : ctrl.scoreSettings.scoreEnabled,
                             scoreDisplay : ctrl.scoreSettings.scoreDisplay
                         };
