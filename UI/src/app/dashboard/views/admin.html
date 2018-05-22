@@ -8,6 +8,7 @@
         <li role="presentation" ng-class="{active:tab === 'users'}"><a href ng-click="navigateToTab('users')">Manage Admins</a></li>
         <li role="presentation" ng-class="{active:tab === 'apitokens'}"><a href ng-click="navigateToTab('apitokens')">Generate ApiTokens</a></li>
         <li role="presentation"  ng-class="{active:tab === 'templates'}"><a href ng-click="navigateToTab('templates')">Manage Templates</a></li>
+        <li role="presentation" ng-class="{active:tab === 'configurations'}"><a href ng-click="navigateToTab('configurations')">General Configurations</a></li>
       </ul>
     </div>
 
@@ -203,6 +204,94 @@
                     </div>
                 </div>
             </div>
+
+<div ng-show="tab === 'configurations'">
+   <div class="widget-modal">
+      <div class="widget-modal-heading">
+         General Configurations
+      </div>
+      <div class="widget-modal-body">
+         <form class="generalConfigForm" name="generalConfigForm" ng-submit="generalConfigFormSave(generalConfigForm, choices)"
+            novalidate="novalidate">
+            <uib-accordion close-others="oneAtATime">
+               <div uib-accordion-group class="panel-default" is-open="status.open" ng-repeat="(key,group) in choices">
+                  <uib-accordion-heading>
+                     {{group.collectorName}} <span class="confHeaderIcon" uib-tooltip-html="configTooltip"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+<i class="fa fa-trash-o" ng-click="removeConfigHead($event,key)"></i>
+                     <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                  </uib-accordion-heading>
+                  <div class="row configApplyPadd" ng-class-odd="'cssConfigOdd'"  ng-class-even="'cssConfigEven'"  ng-repeat="choice in group.info" style="margin-bottom:5px;">
+                     <div class="col-xs-12">
+                        <div class="col-xs-10">
+                           <div class="row">
+                              <span class="col-xs-1">
+                              Url: 
+                              </span>
+                              <span class="col-xs-11">
+                                 <form-group input="input{{group.collectorName}}Url_{{$index + 1}}" >
+                                    <input type="url" 
+                                       class="form-control"
+                                       ng-model="choice.url" 
+                                       name="input{{group.collectorName}}Url_{{$index + 1}}" 
+                                       placeholder="Enter the server url"
+                                       required>
+                                 </form-group>
+                              </span>
+                           </div>
+                           <div class="row">
+                              <span class="col-xs-2">
+                              Username: 
+                              </span>
+                              <span class="col-xs-4">
+                                 <form-group input="input{{group.collectorName}}Username_{{$index + 1}}" >
+                                    <input type="text" 
+                                       class="form-control"
+                                       ng-model="choice.userName" 
+                                       name="input{{group.collectorName}}Username_{{$index + 1}}" 
+                                       placeholder="Enter the username"
+                                       required>
+                                 </form-group>
+                              </span>
+                              <span class="col-xs-2">
+                              Password: 
+                              </span>
+                              <span class="col-xs-4">
+                                 <form-group input="input{{group.collectorName}}Pass_{{$index + 1}}" >
+                                    <div class="input-group">
+                                       <input type="password" 
+                                          class="form-control"
+                                          ng-model="choice.password" 
+                                          name="input{{group.collectorName}}Pass_{{$index + 1}}" 
+                                          id="input{{group.collectorName}}Pass_{{$index + 1}}"
+                                          placeholder="Enter the Password"
+                                          required>
+                                       <span class="input-group-addon inputBoxStyle" ng-click="togglePasswordType('input'+group.collectorName+'Pass_'+($index + 1),'input'+group.collectorName+'PassClass_'+($index + 1))">
+                                       <i id="input{{group.collectorName}}PassClass_{{$index + 1}}" class="fa fa-eye" aria-hidden="true"></i>
+                                       </span>
+                                    </div>
+                                 </form-group>
+                              </span>
+                           </div>
+                        </div>
+                        <div class="col-xs-2">
+                           <dash-trash class="clickable" ng-show="$index!=0" ng-click="removeNewConfig($index,key)"></dash-trash>
+                           <dash-add class="clickable" ng-show="$last" ng-click="addNewConfig(key)"></dash-add>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </uib-accordion>
+            <div class="row">
+               <div class="col-xs-12">
+                  <button class="btn btn-primary pull-right"  >Save</button>
+               </div>
+            </div>
+         </form>
+      </div>
+   </div>
+</div>
+
+
         </div>
     </div>
 

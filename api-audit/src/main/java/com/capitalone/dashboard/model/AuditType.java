@@ -6,6 +6,7 @@ public enum AuditType {
     CODE_REVIEW,
     BUILD_REVIEW,
     CODE_QUALITY,
+    STATIC_SECURITY_ANALYSIS,
     TEST_RESULT,
     PERF_TEST;
 
