@@ -143,7 +143,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                     }
                     featureDetails.stream()
                             .forEach(feature -> {
-                                if (this.getChangeDate(feature) >= beginDate && this.getChangeDate(feature) <= endDate) {
+                                if (this.getEpochChangeDate(feature) >= beginDate && this.getEpochChangeDate(feature) <= endDate) {
                                     if (feature.getsStatus().equalsIgnoreCase("ACCEPTED") ||
                                             feature.getsStatus().equalsIgnoreCase("DONE") ||
                                             feature.getsStatus().equalsIgnoreCase("RESOLVED") ||
@@ -192,7 +192,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                                     feature.getsStatus().equalsIgnoreCase("DONE") ||
                                     feature.getsStatus().equalsIgnoreCase("RESOLVED") ||
                                     feature.getsState().equalsIgnoreCase("CLOSED")) {
-                                if (this.getChangeDate(feature) >= beginDate && this.getChangeDate(feature) <= endDate) {
+                                if (this.getEpochChangeDate(feature) >= beginDate && this.getEpochChangeDate(feature) <= endDate) {
                                     totalStories.add(feature.getsNumber());
                                 }
                             }
@@ -214,7 +214,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                 List<Feature> featureDetails = featureRepository.getStoryByTeamID(widget.getOptions().get("teamId").toString());
                 featureDetails.stream()
                         .forEach(feature -> {
-                            if (this.getChangeDate(feature) >= beginDate && this.getChangeDate(feature) <= endDate) {
+                            if (this.getEpochChangeDate(feature) >= beginDate && this.getEpochChangeDate(feature) <= endDate) {
                                 totalStories.add(feature.getsNumber());
                             }
                         });
@@ -224,7 +224,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         return totalStories;
     }
 
-    private long getChangeDate(Feature feature) {
+    private long getEpochChangeDate(Feature feature) {
         String datePattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
         long changeDate = 0;
 
