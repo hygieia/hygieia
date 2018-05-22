@@ -48,14 +48,10 @@ public class DefaultNexusIQClient implements NexusIQClient {
 
 
     private final RestOperations rest;
-    private final HttpEntity<String> httpHeaders;
     private final NexusIQSettings nexusIQSettings;
 
     @Autowired
     public DefaultNexusIQClient(Supplier<RestOperations> restOperationsSupplier, NexusIQSettings settings) {
-        this.httpHeaders = new HttpEntity<>(
-                this.createHeaders(settings.getUsername(), settings.getPassword())
-        );
         this.rest = restOperationsSupplier.get();
         this.nexusIQSettings = settings;
     }
@@ -241,12 +237,12 @@ public class DefaultNexusIQClient implements NexusIQClient {
 
 
     private JSONArray parseAsArray(String url) throws ParseException {
-        ResponseEntity<String> response = rest.exchange(url, HttpMethod.GET, this.httpHeaders, String.class);
+        ResponseEntity<String> response = rest.exchange(url, HttpMethod.GET, createHeaders(url), String.class);
         return (JSONArray) new JSONParser().parse(response.getBody());
     }
 
     private JSONObject parseAsObject(String url) throws ParseException {
-        ResponseEntity<String> response = rest.exchange(url, HttpMethod.GET, this.httpHeaders, String.class);
+        ResponseEntity<String> response = rest.exchange(url, HttpMethod.GET, createHeaders(url), String.class);
         return (JSONObject) new JSONParser().parse(response.getBody());
     }
 
@@ -290,8 +286,17 @@ public class DefaultNexusIQClient implements NexusIQClient {
         return obj == null ? null : Boolean.valueOf(obj.toString());
     }
 
-    private HttpHeaders createHeaders(String username, String password) {
+    private HttpEntity<String> createHeaders(String url) {
+    	String username = null;
+    	String password = null;
         HttpHeaders headers = new HttpHeaders();
+
+    	for(int i=0;i<nexusIQSettings.getServers().size();i++) {
+    		if(url.contains(nexusIQSettings.getServers().get(i))){
+        		username = nexusIQSettings.getUsernames().get(i);
+        		password = nexusIQSettings.getPasswords().get(i);
+    		}
+    	}
         if (username != null && !username.isEmpty() &&
                 password != null && !password.isEmpty()) {
             String auth = username + ":" + password;
@@ -301,6 +306,7 @@ public class DefaultNexusIQClient implements NexusIQClient {
             String authHeader = "Basic " + new String(encodedAuth);
             headers.set("Authorization", authHeader);
         }
-        return headers;
+        return new HttpEntity<>(headers);
+
     }
 }
