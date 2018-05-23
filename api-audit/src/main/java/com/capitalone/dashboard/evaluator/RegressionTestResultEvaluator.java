@@ -68,9 +68,13 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
     }
 
     /**
-     * @param testItem Test Collector Item
-     * @return TestResultsAuditResponse
-     * Thrown by Object mapper method
+     * Gets the json response from test_results collection with story information based on tags.
+     *
+     * @param dashboard
+     * @param testItem
+     * @param beginDate
+     * @param endDate
+     * @return
      */
     private TestResultsAuditResponse getRegressionTestResultAudit(Dashboard dashboard, CollectorItem testItem, long beginDate, long endDate) {
 
@@ -124,6 +128,16 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         return testResultsAuditResponse;
     }
 
+    /**
+     * Gets list of Stories & Story details based on the cucumber tags in `REGEX_ANY_STRING_MATCHING_FEATURE_ID` Regex Pattern
+     *
+     * @param dashboard
+     * @param testResultsAuditResponse
+     * @param testCase
+     * @param beginDate
+     * @param endDate
+     * @return
+     */
     private List<StoryIndicator> getStoryIndicatorsInGivenDateRange(Dashboard dashboard, TestResultsAuditResponse testResultsAuditResponse, TestCase testCase, Long beginDate, Long endDate) {
 
         final String REGEX_ANY_STRING_MATCHING_FEATURE_ID = settings.getFeatureIDPattern();
@@ -177,6 +191,14 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         return storyIndicatorList;
     }
 
+    /**
+     * Gets total completed stories(ACCEPTED/DONE/RESOLVED/CLOSED) based on the change date
+     *
+     * @param dashboard
+     * @param beginDate
+     * @param endDate
+     * @return
+     */
     private List<String> getTotalCompletedStoriesInGivenDateRange(String dashboard, Long beginDate, Long endDate) {
 
         List<String> totalStories = new ArrayList<>();
@@ -203,6 +225,14 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         return totalStories;
     }
 
+    /**
+     * Gets total stories(ALL STATUS) based on the change date
+     *
+     * @param dashboard
+     * @param beginDate
+     * @param endDate
+     * @return
+     */
     private List<String> getTotalStoriesInGivenDateRange(String dashboard, Long beginDate, Long endDate) {
 
         List<String> totalStories = new ArrayList<>();
@@ -224,6 +254,12 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         return totalStories;
     }
 
+    /**
+     * Coverts the Human readable time date to Epoch Time Stamp in Milliseconds
+     *
+     * @param feature
+     * @return
+     */
     private long getEpochChangeDate(Feature feature) {
         String datePattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
         long changeDate = 0;
