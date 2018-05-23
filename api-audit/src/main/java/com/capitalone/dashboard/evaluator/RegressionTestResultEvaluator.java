@@ -112,14 +112,14 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                             });
                         });
 
-                if (totalStories.size() > 0) {
+                if (totalStories.size() <= 0) {
+                    testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_NOT_FOUND_IN_GIVEN_DATE_RANGE);
+                } else {
                     int percentTraceability = (totalStoryIndicatorList.size() * 100) / totalStories.size();
                     testResultsAuditResponse.setPercentTraceability(percentTraceability);
                     if (traceabilityThreshold == 0) {
                         testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_THRESHOLD_DEFAULT);
                     }
-                } else {
-                    testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_NOT_FOUND_IN_GIVEN_DATE_RANGE);
                 }
                 break;
             }
