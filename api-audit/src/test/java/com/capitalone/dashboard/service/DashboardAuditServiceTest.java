@@ -1,44 +1,60 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.common.TestUtils;
-import com.capitalone.dashboard.config.CustomObjectMapper;
 import com.capitalone.dashboard.config.FongoConfig;
 import com.capitalone.dashboard.config.TestConfig;
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.mapper.ObjectIdSerializer;
+import com.capitalone.dashboard.model.AuditException;
+import com.capitalone.dashboard.model.AuditType;
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Comment;
+import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.GitRequest;
+import com.capitalone.dashboard.model.Review;
+import com.capitalone.dashboard.repository.CodeQualityRepository;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
-import com.capitalone.dashboard.repository.CodeQualityRepository;
+import com.capitalone.dashboard.repository.LibraryPolicyResultsRepository;
 import com.capitalone.dashboard.response.AuditReviewResponse;
 import com.capitalone.dashboard.response.CodeReviewAuditResponse;
 import com.capitalone.dashboard.response.DashboardReviewResponse;
+import com.capitalone.dashboard.response.LibraryPolicyAuditResponse;
 import com.capitalone.dashboard.response.SecurityReviewAuditResponse;
+import com.capitalone.dashboard.testutil.GsonUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.github.fakemongo.junit.FongoRule;
 import com.google.common.collect.Sets;
 import com.google.common.io.Resources;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ldap.support.LdapUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.naming.InvalidNameException;
-import javax.naming.ldap.LdapName;
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,8 +65,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext
 
 public class DashboardAuditServiceTest {
-    private static final Log LOGGER = LogFactory.getLog(DashboardAuditServiceTest.class);
-
     @Autowired
     private DashboardRepository dashboardRepository;
     @Autowired
@@ -77,6 +91,10 @@ public class DashboardAuditServiceTest {
     @Autowired
     private CodeQualityRepository codeQualityRepository;
 
+    @Autowired
+    private LibraryPolicyResultsRepository libraryPolicyResultsRepository;
+
+
     @Before
     public void loadStuff() throws IOException {
         TestUtils.loadDashBoard(dashboardRepository);
@@ -86,19 +104,60 @@ public class DashboardAuditServiceTest {
         TestUtils.loadCollector(collectorRepository);
         TestUtils.loadPullRequests(gitRequestRepository);
         TestUtils.loadSSCRequests(codeQualityRepository);
+        TestUtils.loadLibraryPolicy(libraryPolicyResultsRepository);
     }
 
     @Test
-    public void runTests() throws AuditException, IOException {
+    public void runStaticSecurityAuditTests() throws AuditException, IOException {
+        DashboardReviewResponse actual = getActualReviewResponse(dashboardAuditService.getDashboardReviewResponse(
+                        "TestSSA",
+                        DashboardType.Team,
+                        "TestBusServ",
+                        "confItem", 1519728000000L, 1523180525854L,
+                        Sets.newHashSet(AuditType.STATIC_SECURITY_ANALYSIS)), SecurityReviewAuditResponse.class);
+        DashboardReviewResponse expected = getExpectedReviewResponse("StaticSecurityAnalysisAudit.json", SecurityReviewAuditResponse.class);
+        assertDashboardAudit(actual, expected);
+        assertThat(actual.getReview()).isNotEmpty();
+        assertThat(actual.getReview().get(AuditType.STATIC_SECURITY_ANALYSIS)).isNotNull();
+        Map<AuditType, Collection<LibraryPolicyAuditResponse>> actualReviewMap = actual.getReview();
+        Collection<LibraryPolicyAuditResponse> actualReview = actualReviewMap.get(AuditType.STATIC_SECURITY_ANALYSIS);
+        Map<AuditType, Collection<LibraryPolicyAuditResponse>> expectedReviewMap = expected.getReview();
+        Collection<LibraryPolicyAuditResponse> expectedReview = expectedReviewMap.get(AuditType.STATIC_SECURITY_ANALYSIS);
+        assertThat(actualReview.size()).isEqualTo(1);
+        assertThat(actualReview.toArray()[0]).isEqualToComparingFieldByField(expectedReview.toArray()[0]);
+    }
+
+    @Test
+    public void runLibraryPolicyAuditTests() throws AuditException, IOException {
+        DashboardReviewResponse actual = getActualReviewResponse(dashboardAuditService.getDashboardReviewResponse("TestSSA",
+                                                            DashboardType.Team,
+                                                            "TestBusServ",
+                                                            "confItem",
+                                                            1522623841000L, 1526505798000L,
+                                                        Sets.newHashSet(AuditType.LIBRARY_POLICY)), LibraryPolicyAuditResponse.class);
+        DashboardReviewResponse expected = getExpectedReviewResponse("LibraryPolicyAudit.json", LibraryPolicyAuditResponse.class);
+
+        assertDashboardAudit(actual, expected);
+        assertThat(actual.getReview()).isNotEmpty();
+        assertThat(actual.getReview().get(AuditType.LIBRARY_POLICY)).isNotNull();
+        Map<AuditType, Collection<LibraryPolicyAuditResponse>> actualReviewMap = actual.getReview();
+        Collection<LibraryPolicyAuditResponse> actualReview = actualReviewMap.get(AuditType.LIBRARY_POLICY);
+        Map<AuditType, Collection<LibraryPolicyAuditResponse>> expectedReviewMap = expected.getReview();
+        Collection<LibraryPolicyAuditResponse> expectedReview = expectedReviewMap.get(AuditType.LIBRARY_POLICY);
+        assertThat(actualReview.size()).isEqualTo(1);
+        assertThat(actualReview.toArray()[0]).isEqualToComparingFieldByField(expectedReview.toArray()[0]);
+    }
+
+
+    @Test
+    public void runLegacyCodeReviewTests() throws AuditException, IOException {
         for (CollectorItem item : collectorItemRepository.findAll()) {
             Collector collector = collectorRepository.findOne(item.getCollectorId());
             if ((collector != null) && (collector.getCollectorType() == CollectorType.SCM)) {
                 String url = (String) item.getOptions().get("url");
                 String branch = (String) item.getOptions().get("branch");
-                LOGGER.info("Running Test: " + item.getOptions().get("url") + "/" + branch);
-
                 List<CodeReviewAuditResponse> actual = (List<CodeReviewAuditResponse>) codeReviewAuditService.getPeerReviewResponses(url, branch, "GitHub", 0L, System.currentTimeMillis());
-                List<CodeReviewAuditResponse> expected = (List<CodeReviewAuditResponse>) getExpected(url);
+                List<CodeReviewAuditResponse> expected = (List<CodeReviewAuditResponse>) getExpectedCodeReviewResponse(url);
                 assertThat(actual.size()).isEqualByComparingTo(expected.size());
 
                 IntStream.range(0, actual.size()).forEach(i -> {
@@ -126,25 +185,10 @@ public class DashboardAuditServiceTest {
                         List<Comment> lhsPRComments = lhsPR.getComments();
                         List<Comment> rhsPRComments = rhsPR.getComments();
                         compareComments(lhsPRComments, rhsPRComments);
-
                     }
                     compareCommits(lhsCommits, rhsCommits);
 
                 });
-            } else if ((collector != null) && (collector.getCollectorType() == CollectorType.StaticSecurityScan)) {
-                String title = "TestSSA";
-                String businessService = "TestBusServ";
-                String businessApplication = "confItem";
-                String url = (String) item.getOptions().get("reportUrl");
-
-                DashboardReviewResponse actual = dashboardAuditService.getDashboardReviewResponse(title, DashboardType.Team, businessService, businessApplication, 1519728000000L, 1523180525854L, Sets.newHashSet(AuditType.STATIC_SECURITY_ANALYSIS));
-                SecurityReviewAuditResponse expected = getExpectedSecurityReview(url);
-
-                Map<AuditType, Collection<AuditReviewResponse>> auditReviewResponse = actual.getReview();
-                Collection<AuditReviewResponse> auditResponse = auditReviewResponse.get(AuditType.STATIC_SECURITY_ANALYSIS);
-                Set<CodeQualityMetric> lhs = Sets.newHashSet(((SecurityReviewAuditResponse) ((ArrayList) auditResponse).get(0)).getCodeQuality().getMetrics());
-                Set<CodeQualityMetric> rhs = Sets.newHashSet(expected.getCodeQuality().getMetrics());
-                compareMetrics(lhs, rhs);
             }
         }
     }
@@ -176,59 +220,39 @@ public class DashboardAuditServiceTest {
         }
     }
 
-    private void compareMetrics(Set<CodeQualityMetric> lhs, Set<CodeQualityMetric> rhs) {
-        boolean bothNull = CollectionUtils.isEmpty(lhs) && CollectionUtils.isEmpty(rhs);
-        if (!bothNull) {
-            assertThat(lhs.size()).isEqualByComparingTo(rhs.size());
-            Integer lhsScore = null;
-            Integer lhsHigh = null;
-            Integer lhsCritical = null;
-            Integer rhsScore = null;
-            Integer rhsHigh = null;
-            Integer rhsCritical = null;
-
-            for (CodeQualityMetric metric : lhs) {
-                if (metric.getName().equalsIgnoreCase("Score"))
-                    lhsScore = Integer.parseInt(metric.getValue().toString());
-                else if (metric.getName().equalsIgnoreCase("High"))
-                    lhsHigh = Integer.parseInt(metric.getValue().toString());
-                else if (metric.getName().equalsIgnoreCase("Critical"))
-                    lhsCritical = Integer.parseInt(metric.getValue().toString());
-            }
-            for (CodeQualityMetric metric : rhs) {
-                if (metric.getName().equalsIgnoreCase("Score"))
-                    rhsScore = Integer.parseInt(metric.getValue().toString());
-                else if (metric.getName().equalsIgnoreCase("High"))
-                    rhsHigh = Integer.parseInt(metric.getValue().toString());
-                else if (metric.getName().equalsIgnoreCase("Critical"))
-                    rhsCritical = Integer.parseInt(metric.getValue().toString());
-            }
-            if (lhsScore != null && rhsScore != null)
-                assertThat(lhsScore).isEqualTo(rhsScore);
-            if (lhsHigh != null && rhsHigh != null)
-                assertThat(lhsHigh).isEqualTo(rhsHigh);
-            if (lhsCritical != null && rhsCritical != null)
-                assertThat(lhsCritical).isEqualTo(rhsCritical);
-        }
-    }
-
-    private Collection<CodeReviewAuditResponse> getExpected(String url) throws IOException {
+    public Collection<CodeReviewAuditResponse> getExpectedCodeReviewResponse(String url) throws IOException {
         String filename = "./expected/" + url.substring(url.lastIndexOf("/") + 1) + ".json";
-        CustomObjectMapper objectMapper = new CustomObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper();
+        SimpleModule module2 = new SimpleModule("ObjectIdModule");
+        module2.addSerializer(ObjectId.class, new ObjectIdSerializer());
+        objectMapper = objectMapper.registerModule(module2);
         URL fileUrl = Resources.getResource(filename);
-        LOGGER.info("Expected results json: " + fileUrl);
         String json = IOUtils.toString(fileUrl);
         return objectMapper.readValue(json, new TypeReference<List<CodeReviewAuditResponse>>() {
         });
     }
 
-    private SecurityReviewAuditResponse getExpectedSecurityReview(String url) throws IOException {
-        String filename = "./expected/" + url.substring(url.lastIndexOf("/") + 1) + ".json";
-        CustomObjectMapper objectMapper = new CustomObjectMapper();
-        URL fileUrl = Resources.getResource(filename);
-        LOGGER.info("Expected results json: " + fileUrl);
-        String json = IOUtils.toString(fileUrl);
-        return objectMapper.readValue(json, new TypeReference<SecurityReviewAuditResponse>() {
-        });
+    private String getExpectedJSON(String fileName) throws IOException {
+        String path = "./expected/" + fileName;
+        URL fileUrl = Resources.getResource(path);
+        return IOUtils.toString(fileUrl);
+    }
+
+    private <T extends AuditReviewResponse> DashboardReviewResponse getExpectedReviewResponse (String fileName, Class<T> anyType) throws IOException {
+        Gson gson = GsonUtil.getGson();
+        return gson.fromJson(getExpectedJSON(fileName), new TypeToken<DashboardReviewResponse<T>>(){}.getType());
+    }
+
+    private <T extends AuditReviewResponse> DashboardReviewResponse getActualReviewResponse (DashboardReviewResponse response, Class<T> anyType) {
+        Gson gson = GsonUtil.getGson();
+        return gson.fromJson(gson.toJson(response), new TypeToken<DashboardReviewResponse<T>>(){}.getType());
+    }
+
+    private void assertDashboardAudit(DashboardReviewResponse lhs, DashboardReviewResponse rhs) {
+        assertThat(lhs.getBusinessApplication()).isEqualTo(rhs.getBusinessApplication());
+        assertThat(lhs.getBusinessService()).isEqualTo(rhs.getBusinessService());
+        assertThat(lhs.getDashboardTitle()).isEqualTo(rhs.getDashboardTitle());
+        assertThat(lhs.getErrorMessage()).isEqualTo(rhs.getErrorMessage());
+        assertThat(lhs.getAuditStatuses().toArray()).isEqualTo(rhs.getAuditStatuses().toArray());
     }
 }
