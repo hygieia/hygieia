@@ -29,8 +29,6 @@ public class DefaultSonar56Client extends DefaultSonarClient {
     public List<SonarProject> getProjects(String instanceUrl) {
         List<SonarProject> projects = new ArrayList<>();
         String url = instanceUrl + URL_PROJECTS;
-        LOG.error("hitting " + url);
-        
         try {
 
             for (Object obj : parseAsArray(url)) {
