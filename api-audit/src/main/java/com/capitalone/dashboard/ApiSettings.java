@@ -18,6 +18,7 @@ public class ApiSettings {
     private String peerReviewContexts;
     private String peerReviewApprovalText;
     private String serviceAccountOU;
+    private String incrementVersionTagRegEx;
     @Value("${maxDaysRangeForQuery:60}") // 60 days max
     private long maxDaysRangeForQuery;
     private boolean logRequest;
@@ -85,4 +86,14 @@ public class ApiSettings {
     public void setServiceAccountOU(String serviceAccountOU) {
         this.serviceAccountOU = serviceAccountOU;
     }
+
+
+    public String getIncrementVersionTagRegEx() {
+        return incrementVersionTagRegEx;
+    }
+
+    public void setIncrementVersionTagRegEx(String incrementVersionTagRegEx) {
+        this.incrementVersionTagRegEx = incrementVersionTagRegEx;
+    }
+
 }
