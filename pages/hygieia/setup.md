@@ -10,6 +10,14 @@ folder: hygieia
 ---
 
 If you do not already have Hygieia installed, you can download or clone Hygieia from the [GitHub repo](https://github.com/capitalone/Hygieia). For information on cloning a repository, see [GitHub Documentation](https://help.github.com/articles/cloning-a-repository/).
+
+## Prerequisites
+
+The following are the prerequisites to set up Hygieia:
+
+- Install Git - Install Git for your platform. For installation steps, see the [Git documentation](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
+- Install Java - Version 1.8 is recommended
+- Install Maven - Version 3.3.9 and above are recommended
  
 ## Build Hygieia
 
