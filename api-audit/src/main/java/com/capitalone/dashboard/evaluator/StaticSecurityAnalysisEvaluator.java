@@ -1,11 +1,10 @@
 package com.capitalone.dashboard.evaluator;
 
 import com.capitalone.dashboard.model.AuditException;
+import com.capitalone.dashboard.model.CodeQuality;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.CodeQuality;
-import com.capitalone.dashboard.model.CodeQualityMetric;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
 import com.capitalone.dashboard.response.SecurityReviewAuditResponse;
 import com.capitalone.dashboard.status.CodeQualityAuditStatus;
@@ -48,9 +47,9 @@ public class StaticSecurityAnalysisEvaluator extends Evaluator<SecurityReviewAud
     /**
      * Reusable method for constructing the CodeQualityAuditResponse object
      *
-     * @param collectorItem
-     * @param beginDate
-     * @param endDate
+     * @param collectorItem Collector Item
+     * @param beginDate Begin Date
+     * @param endDate End Date
      * @return SecurityReviewAuditResponse
      */
     private SecurityReviewAuditResponse getStaticSecurityScanResponse(CollectorItem collectorItem, long beginDate, long endDate) {
@@ -69,7 +68,7 @@ public class StaticSecurityAnalysisEvaluator extends Evaluator<SecurityReviewAud
         securityReviewAuditResponse.setCodeQuality(returnQuality);
         securityReviewAuditResponse.setLastExecutionTime(returnQuality.getTimestamp());
 
-        for (CodeQualityMetric metric : returnQuality.getMetrics()) {
+        returnQuality.getMetrics().forEach(metric -> {
             if (metric.getName().equalsIgnoreCase("Score")) {
                 Integer value = Integer.parseInt(metric.getValue().toString());
                 if (value == 100) {
@@ -79,12 +78,12 @@ public class StaticSecurityAnalysisEvaluator extends Evaluator<SecurityReviewAud
                 } else {
                     securityReviewAuditResponse.addAuditStatus(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_FAIL);
                 }
-            }else if(metric.getName().equalsIgnoreCase("Critical")){
+            } else if (metric.getName().equalsIgnoreCase("Critical")) {
                 securityReviewAuditResponse.addAuditStatus(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_FOUND_CRITICAL);
-            }else if(metric.getName().equalsIgnoreCase("High")){
+            } else if (metric.getName().equalsIgnoreCase("High")) {
                 securityReviewAuditResponse.addAuditStatus(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_FOUND_HIGH);
             }
-        }
+        });
         return securityReviewAuditResponse;
     }
 
