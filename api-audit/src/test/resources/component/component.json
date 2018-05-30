@@ -52,9 +52,29 @@
         },
         "id": "5b4e524333ec296b81c3935f"
       }
+    ],
+    "LibraryPolicy" : [
+      {
+        "id": "5ad5f605c23b391cfa1c01a4",
+        "description": "myapplication:mycomponent",
+        "enabled": false,
+        "errors": [],
+        "pushed": false,
+        "collectorId": "5ad4c71841a34c9696cdfa2e",
+        "lastUpdated": 1524190250247,
+        "options": {
+          "applicationType": null,
+          "componentName": "mycomponent",
+          "applicationID": [
+            "SOMEAPPLICATION"
+          ],
+          "applicationName": "account-my-information",
+          "instanceUrl": "https://scan.com"
+        }
+      }
     ]
   },
-  "id": {
+      "id": {
     "timestamp": 1515645665,
     "machineIdentifier": 4693261,
     "processIdentifier": 6916,
