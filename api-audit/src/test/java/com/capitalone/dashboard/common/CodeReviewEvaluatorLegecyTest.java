@@ -76,9 +76,9 @@ public class CodeReviewEvaluatorLegecyTest {
         when(commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(any(ObjectId.class),any(Long.class), any(Long.class))).thenReturn(Stream.of(makeCommit("[Increment_Version_Tag] preparing 1.5.6")).collect(Collectors.toList()));
         when(apiSettings.getServiceAccountOU()).thenReturn("Service Accounts");
         when(apiSettings.getServiceAccountOU()).thenReturn("Service Accounts");
-        when(apiSettings.getIncrementVersionTagRegEx()).thenReturn("(.)*(Increment_Version_Tag)(.)*");
+        when(apiSettings.getCommitLogIgnoreAuditRegEx()).thenReturn("(.)*(Increment_Version_Tag)(.)*");
         List<CodeReviewAuditResponse> responseV2 =  codeReviewEvaluatorLegacy.evaluate(makeCollectorItem(1),125634536,6235263,null);
-        Assert.assertEquals(true, responseV2.get(1).getAuditStatuses().toString().contains("DIRECT_COMMIT_INCREMENT_VERSION_TAG_SERVICE_ACCOUNT"));
+        Assert.assertEquals(true, responseV2.get(1).getAuditStatuses().toString().contains("DIRECT_COMMIT_NONCODE_CHANGE_SERVICE_ACCOUNT"));
     }
 
     @Test
@@ -87,9 +87,9 @@ public class CodeReviewEvaluatorLegecyTest {
         when(commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(any(ObjectId.class),any(Long.class), any(Long.class))).thenReturn(Stream.of(makeCommit("[Increment_Version_Tag] preparing 1.5.6")).collect(Collectors.toList()));
         when(apiSettings.getServiceAccountOU()).thenReturn("User Accounts");
         when(apiSettings.getServiceAccountOU()).thenReturn("User Accounts");
-        when(apiSettings.getIncrementVersionTagRegEx()).thenReturn("(.)*(Increment_Version_Tag)(.)*");
+        when(apiSettings.getCommitLogIgnoreAuditRegEx()).thenReturn("(.)*(Increment_Version_Tag)(.)*");
         List<CodeReviewAuditResponse> responseV2 =  codeReviewEvaluatorLegacy.evaluate(makeCollectorItem(1),125634536,6235263,null);
-        Assert.assertEquals(true, responseV2.get(1).getAuditStatuses().toString().contains("DIRECT_COMMIT_INCREMENT_VERSION_TAG_NON_SERVICE_ACCOUNT"));
+        Assert.assertEquals(true, responseV2.get(1).getAuditStatuses().toString().contains("DIRECT_COMMIT_NONCODE_CHANGE_USER_ACCOUNT"));
     }
 
 

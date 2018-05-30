@@ -18,7 +18,7 @@ public class ApiSettings {
     private String peerReviewContexts;
     private String peerReviewApprovalText;
     private String serviceAccountOU;
-    private String incrementVersionTagRegEx;
+    private String commitLogIgnoreAuditRegEx;
     @Value("${maxDaysRangeForQuery:60}") // 60 days max
     private long maxDaysRangeForQuery;
     private boolean logRequest;
@@ -88,12 +88,12 @@ public class ApiSettings {
     }
 
 
-    public String getIncrementVersionTagRegEx() {
-        return incrementVersionTagRegEx;
+    public String getCommitLogIgnoreAuditRegEx() {
+        return commitLogIgnoreAuditRegEx;
     }
 
-    public void setIncrementVersionTagRegEx(String incrementVersionTagRegEx) {
-        this.incrementVersionTagRegEx = incrementVersionTagRegEx;
+    public void setCommitLogIgnoreAuditRegEx(String commitLogIgnoreAuditRegEx) {
+        this.commitLogIgnoreAuditRegEx = commitLogIgnoreAuditRegEx;
     }
 
 }

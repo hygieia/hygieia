@@ -191,8 +191,6 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
                 commitsNotDirectlyTiedToPr.add(commit);
                 // auditServiceAccountChecks includes - check for service account and increment version tag for service account on direct commits.
                 auditServiceAccountChecks(reviewAuditResponseV2, commit);
-                // check for increment version tag and flag Direct commit by Non Service account
-                auditNonServiceAccountChecks(reviewAuditResponseV2, commit);
             }
         });
 
@@ -200,25 +198,15 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
     }
 
     private void auditServiceAccountChecks(CodeReviewAuditResponseV2 reviewAuditResponseV2, Commit commit) {
-        if (isServiceAccount(commit)) {
+        if (!StringUtils.isEmpty(commit.getScmAuthorLDAPDN()) && CommonCodeReview.checkForServiceAccount(commit.getScmAuthorLDAPDN(), settings)) {
             reviewAuditResponseV2.addAuditStatus(CodeReviewAuditStatus.COMMITAUTHOR_EQ_SERVICEACCOUNT);
-            auditIncrementVersionTag(reviewAuditResponseV2, commit,CodeReviewAuditStatus.DIRECT_COMMIT_INCREMENT_VERSION_TAG_SERVICE_ACCOUNT);
+            auditIncrementVersionTag(reviewAuditResponseV2, commit, CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_SERVICE_ACCOUNT);
+        } else {
+            auditIncrementVersionTag(reviewAuditResponseV2, commit, CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_USER_ACCOUNT);
         }
-
     }
 
-    private boolean isServiceAccount(Commit commit) {
-        return !StringUtils.isEmpty(commit.getScmAuthorLDAPDN()) && CommonCodeReview.checkForServiceAccount(commit.getScmAuthorLDAPDN(), settings);
-    }
-
-    private void auditNonServiceAccountChecks(CodeReviewAuditResponseV2 reviewAuditResponseV2, Commit commit) {
-        if (!isServiceAccount(commit)) {
-            auditIncrementVersionTag(reviewAuditResponseV2, commit,CodeReviewAuditStatus.DIRECT_COMMIT_INCREMENT_VERSION_TAG_NON_SERVICE_ACCOUNT);
-        }
-
-    }
-
-    private void auditIncrementVersionTag(CodeReviewAuditResponseV2 reviewAuditResponseV2, Commit commit,CodeReviewAuditStatus directCommitIncrementVersionTagStatus) {
+    private void auditIncrementVersionTag(CodeReviewAuditResponseV2 reviewAuditResponseV2, Commit commit, CodeReviewAuditStatus directCommitIncrementVersionTagStatus) {
         if (CommonCodeReview.matchIncrementVersionTag(commit.getScmCommitLog(), settings)) {
             reviewAuditResponseV2.addAuditStatus(directCommitIncrementVersionTagStatus);
         }

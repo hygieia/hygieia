@@ -267,8 +267,8 @@ public class CommonCodeReview {
     }
 
     public static boolean matchIncrementVersionTag(String commitMessage,ApiSettings settings) {
-        if (StringUtils.isEmpty(settings.getIncrementVersionTagRegEx())) return false;
-        Pattern pattern = Pattern.compile(settings.getIncrementVersionTagRegEx());
+        if (StringUtils.isEmpty(settings.getCommitLogIgnoreAuditRegEx())) return false;
+        Pattern pattern = Pattern.compile(settings.getCommitLogIgnoreAuditRegEx());
         return pattern.matcher(commitMessage).matches();
     }
 
