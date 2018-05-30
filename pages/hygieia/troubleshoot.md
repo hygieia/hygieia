@@ -20,6 +20,31 @@ To pass the GitHub authentication information in the `application.properties` fi
 ResponseEntity<String> response = makeRestCall(queryUrlPage, settings.getUserId(), settings.getKey());
 ```
 
+#### Using the properties ```github.key``` and ```github.personalAccessToken``` for encrypting private GitHub repositories
+
+**github.key**
+
+```github.key``` is the value generated from the core module. You can generate this key from the UI as an **admin** user. The steps are as follows:
+
+1. Create an admin user in Hygieia with useername **admin** and password of your choice. For detailed instructions, see [Create Admin User](../product1/signup.md#create-admin-user).
+2. Navigate to Admin Settings -> Generate Api Token, and create a new key by setting a name and expiration date. For detailed instructions, see [Generate API Token](../product1/signup.md#generate-api-token).
+3. Copy the generated key to github.properties file as ```github.key="generated key"```.
+4. In the api.properties file, add the property, ```key="generated key"```.
+
+The generated key is used to encrypt the password when you configure the GitHub repository for accessing private repos. 
+	
+**Note**: Public repos do not require values for ```github.key``` and ```github.personalAccessToken```.
+
+**github.personalAccessToken**
+
+The value of the property ```github.personalAccessToken``` is directly taken from GitHub -> Developer Settings-> personalAccessToken. For detailed instructions, see [GitHub](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) documentation.
+
+This token is also used for accessing the private repos.
+
+You can either set the value for ```github.key``` or ```github.personalAccesstoken``` in order to access private repos.
+
+In addition, please refer [Encryption for Provate Repos](setup.md#encryption-for-private-repos).
+
 #### How to change the UI port to a port other than 3000?
 
 By default, the UI uses port 3000 to display the dashboard. To change the port, make the following changes to the `gulpfile.js`:
