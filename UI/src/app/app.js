@@ -1,4 +1,3 @@
-
 // test to see if local storage is supported functionality
 var localStorageSupported = (function () {
     try {
@@ -17,9 +16,9 @@ var localStorageSupported = (function () {
     var theme = 'dash';
 
     // get theme from storage
-    if(localStorageSupported) {
+    if (localStorageSupported) {
         var tempTheme = localStorage.getItem('theme');
-        if(tempTheme && tempTheme != 'undefined' ) {
+        if (tempTheme && tempTheme != 'undefined') {
             theme = tempTheme;
         }
     }
@@ -37,104 +36,106 @@ var localStorageSupported = (function () {
     angular.module(HygieiaConfig.module, [
         'ngAnimate',
         'ngSanitize',
-        'ngRoute',
+        'ui.router',
         HygieiaConfig.module + '.core',
         'ui.bootstrap',
         'fitText',
         'angular-chartist',
+        'chart.js',
         'gridstack-angular',
         'ngCookies',
         'validation.match',
         'as.sortable',
         'ui.select',
-        'angular-jwt'
+        'angular-jwt',
+        'angularUtils.directives.dirPagination',
+        'ngRateIt'
     ])
 
-    .config(['$httpProvider', 'jwtOptionsProvider',
-        // intercepting the http provider allows us to use relative routes
-        // in data providers and then redirect them to a remote api if
-        // necessary
-        function ($httpProvider, jwtOptionsProvider) {
-            jwtOptionsProvider.config({
-              tokenGetter: ['tokenService', function(tokenService) {
-                return tokenService.getToken();
-              }]
-            });
-            $httpProvider.interceptors.push('jwtInterceptor');
-            $httpProvider.interceptors.push('authInterceptor');
-            $httpProvider.interceptors.push(function () {
-                return {
-                    request: function (config) {
-                        var path = config.url;
-                        if(config.url.substr(0, 1) != '/') {
-                            path = '/' + config.url;
-                        }
+        .config(['$httpProvider', 'jwtOptionsProvider',
+            // intercepting the http provider allows us to use relative routes
+            // in data providers and then redirect them to a remote api if
+            // necessary
+            function ($httpProvider, jwtOptionsProvider) {
+                jwtOptionsProvider.config({
+                    tokenGetter: ['tokenService', function (tokenService) {
+                        return tokenService.getToken();
+                    }]
+                });
+                $httpProvider.interceptors.push('jwtInterceptor');
+                $httpProvider.interceptors.push('authInterceptor');
+                $httpProvider.interceptors.push(function () {
+                    return {
+                        request: function (config) {
+                            var path = config.url;
+                            if (config.url.substr(0, 1) != '/') {
+                                path = '/' + config.url;
+                            }
 
-                        if(!!HygieiaConfig.api && path.substr(0, 5) == '/api/') {
-                            config.url = HygieiaConfig.api + path;
-                        }
+                            if (!!HygieiaConfig.api && path.substr(0, 5) == '/api/') {
+                                config.url = HygieiaConfig.api + path;
+                            }
 
-                        return config;
-                    },
-                };
-            });
-        }])
-    .config(function ($routeProvider) {
-            $routeProvider
-                // main dashboard page
-                .when('/dashboard/:id', {
-                    templateUrl: 'app/dashboard/views/dashboard.html',
-                    controller: 'DashboardController',
-                    controllerAs: 'ctrl',
+                            return config;
+                        },
+                    };
+                });
+            }])
+        .config(function ($stateProvider, $urlRouterProvider) {
+
+            $urlRouterProvider.otherwise('/');
+
+            $stateProvider
+                .state('login', {
+                    url: '/login',
+                    controller: 'LoginController as login',
+                    templateUrl: 'app/dashboard/views/login.html'
+                })
+
+                .state('site', {
+                    url: '/',
+                    controller: 'SiteController as ctrl',
+                    templateUrl: 'app/dashboard/views/site.html',
                     resolve: {
-                        dashboard: function ($route, dashboardData) {
-                            return dashboardData.detail($route.current.params.id);
+                    	user: function (Session) {
+                    		return Session.updateSession();
+                    	}
+                    }
+                })
+
+                .state('signup', {
+                    url: '/signup',
+                    controller: 'SignupController as signup',
+                    templateUrl: 'app/dashboard/views/signup.html'
+                })
+
+                .state('adminState', {
+                    url: '/admin',
+                    controller: 'AdminController as ctrl',
+                    templateUrl: 'app/dashboard/views/admin.html'
+                })
+
+                .state('dashboardState', {
+                    url: '/dashboard/:id?delete&reset',
+                    controller: 'DashboardController as ctrl',
+                    templateUrl: 'app/dashboard/views/dashboard.html',
+                    resolve: {
+                        dashboard: function ($stateParams, dashboardData) {
+                            return dashboardData.detail($stateParams.id);
                         }
                     }
                 })
-                // administrative functionality
-                .when('/admin', {
-                    templateUrl: 'app/dashboard/views/admin.html',
-                    controller: 'AdminController',
-                    controllerAs: 'ctrl'
-                })
-                // dashboard selection/creation
-                .when('/', {
-                    templateUrl: 'app/dashboard/views/site.html',
-                    controller: 'SiteController',
-                    controllerAs: 'ctrl'
-                })
-                // template management
-                .when('/templates', {
-                    templateUrl: 'app/dashboard/views/templates.html',
-                    controller: 'TemplateController',
-                    controllerAs: 'ctrl'
-                })
-                .when('/templates/create', {
-                    templateUrl: 'app/dashboard/views/templateManager.html',
-                    controller: 'TemplateController',
-                    controllerAs: 'ctrl'
-                })
-                //login
 
-                .when('/login',{
-                  templateUrl: 'app/dashboard/views/login.html',
-                  controller: 'LoginController',
-                  controllerAs: 'login'
+                .state('templates', {
+                    url: '/templates',
+                    controller: 'TemplateController as ctrl',
+                    templateUrl: 'app/dashboard/views/templates.html'
                 })
 
-                .when('/signup',{
-                  templateUrl:'app/dashboard/views/signup.html',
-                  controller: 'SignupController',
-                  controllerAs: 'signup'
-                })
-                .otherwise({
-                    redirectTo: '/'
-                });
         })
         .run(function ($rootScope, loginRedirectService) {
-          $rootScope.$on('$locationChangeStart', function (event, nextPath, currentPath) {
-            loginRedirectService.saveCurrentPath(currentPath);
-          });
+            $rootScope.$on('$locationChangeStart', function (event, nextPath, currentPath) {
+                loginRedirectService.saveCurrentPath(currentPath);
+            });
         });
 })();

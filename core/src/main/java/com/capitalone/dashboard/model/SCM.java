@@ -13,10 +13,12 @@ public class SCM {
     protected String scmCommitLog;
     protected String scmAuthor;
     protected String scmAuthorLogin;
+    protected String scmAuthorLDAPDN;
     protected List<String> scmParentRevisionNumbers;
     protected long scmCommitTimestamp;
     protected long numberOfChanges;
     protected CommitType type;
+    protected String pullNumber;
 
     public SCM(){
 
@@ -128,5 +130,21 @@ public class SCM {
 
     public void setType(CommitType type) {
         this.type = type;
+    }
+
+    public String getPullNumber() {
+        return pullNumber;
+    }
+
+    public void setPullNumber(String pullNumber) {
+        this.pullNumber = pullNumber;
+    }
+
+    public String getScmAuthorLDAPDN() {
+        return scmAuthorLDAPDN;
+    }
+
+    public void setScmAuthorLDAPDN(String scmAuthorLDAPDN) {
+        this.scmAuthorLDAPDN = scmAuthorLDAPDN;
     }
 }

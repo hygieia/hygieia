@@ -9,7 +9,10 @@ import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Widget;
-
+import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.model.ScoreDisplayType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface DashboardService {
 
@@ -88,13 +91,29 @@ public interface DashboardService {
      */
     Widget updateWidget(Dashboard dashboard, Widget widget);
 
-    
+    /**
+     * Deletes an existing Widget.
+     *
+     * @param dashboard delete widget on this Dashboard
+     * @param widget Widget to delete
+     *
+     */
+    void deleteWidget(Dashboard dashboard, Widget widget,ObjectId componentId);
+
+
+
     /**
      * Gets all dashboard belonging to the authenticated user
      * @return List of dashboards
      */
     
     List<Dashboard> getOwnedDashboards();
+
+    /**
+     * Gets all dashboard ObjectIds belonging to the authenticated user
+     * @return List of dashboard ObjectIds
+     */
+    List<ObjectId> getOwnedDashboardsObjectIds();
 
     /**
      * Get the set of owners for a given dashboard
@@ -130,6 +149,58 @@ public interface DashboardService {
      */
 
     Component getComponent(ObjectId componentId);
+    /**
+     * Fetches a Dashboards.
+     *
+     * @param configItem dashboard unique identifier
+     * @return Dashboard instances
+     */
+    DataResponse<Iterable<Dashboard>> getByBusinessService(String configItem) throws HygieiaException;
+    /**
+     * Fetches a Dashboards.
+     *
+     * @param configItem dashboard unique identifier
+     * @return Dashboard instances
+     */
+    DataResponse<Iterable<Dashboard>> getByBusinessApplication(String configItem) throws HygieiaException;
+    /**
+     * Fetches a Dashboards.
+     *
+     * @param configItemApplication dashboard unique identifier
+     * @param configItemService dashboard unique identifier
+     * @return Dashboard instances
+     */
+    DataResponse<Iterable<Dashboard>> getByServiceAndApplication(String configItemService, String configItemApplication) throws HygieiaException;
+
+    /**
+     *  Updates Dashboard Business Items
+     * @param dashboardId
+     * @param dashboard
+     * @return dashboard instance
+     */
+    Dashboard updateDashboardBusinessItems(ObjectId dashboardId, Dashboard dashboard) throws HygieiaException;
+
+    Dashboard updateDashboardWidgets(ObjectId dashboardId, Dashboard request) throws HygieiaException;
+
+    Page<Dashboard> findDashboardsByPage(String type, Pageable page);
+
+    Page<Dashboard> getDashboardByTitleWithFilter(String title, String type, Pageable pageable);
+
+    long count(String type);
+
+    Integer getAllDashboardsByTitleCount(String title, String type);
+
+    int getPageSize();
+
+    Page<Dashboard> findMyDashboardsByPage(String type, Pageable page);
+
+    long myDashboardsCount(String type);
+
+    int getMyDashboardsByTitleCount(String title, String type);
+
+    Page<Dashboard> getMyDashboardByTitleWithFilter(String title, String type, Pageable pageable);
+
+    Dashboard updateScoreSettings(ObjectId dashboardId, boolean scoreEnabled, ScoreDisplayType scoreDisplay);
 
 }
 

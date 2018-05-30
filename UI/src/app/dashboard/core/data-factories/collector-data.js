@@ -14,6 +14,7 @@
         var itemsByTypeRoute = '/api/collector/item/type/';
         var collectorsByTypeRoute = '/api/collector/type/';
         var encryptRoute = "/api/encrypt/";
+        var collectorByIdRoute = "/api/collector/collectorId/";
 
         return {
             itemsByType: itemsByType,
@@ -21,7 +22,8 @@
             getCollectorItem : getCollectorItem,
             collectorsByType: collectorsByType,
             encrypt: encrypt,
-            getCollectorItemById:getCollectorItemById
+            getCollectorItemById:getCollectorItemById,
+            collectorsById:collectorsById
 
         };
 
@@ -54,8 +56,17 @@
             });
         }
 
+        function collectorsById(id) {
+            return $http.get(collectorByIdRoute + id).then(function (response) {
+                return response.data;
+            });
+        }
+
         function encrypt(message) {
-            return $http.get(encryptRoute + message).then(function (response) {
+            var submitData = {
+                message : message
+            }
+            return $http.post(encryptRoute ,submitData).then(function (response) {
                 return response.data;
             });
         }

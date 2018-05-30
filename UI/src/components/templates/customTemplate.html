@@ -1,0 +1,64 @@
+<div ng-controller="CustomTemplateController as template" data-ng-init="init(ctrl.dashboard)">
+    <div id="header">
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container-fluid">
+                <a ng-href="#/" class="dashboard-logo"></a>
+                {{::ctrl.dashboard.title}}
+                <div class="pipeline-toggle btn-group">
+                    <span class="btn" ng-repeat="tab in template.tabs" ng-click="template.toggleView($index)"
+                          ng-class="tab.name == template.widgetView ? 'btn-primary' : 'btn-default'">
+                        <span ng-class="tab.name === 'Widget' ? 'fa fa-th' : tab.name === 'Pipeline' ? 'fa fa-task' : 'fa fa-cloud'"></span>
+                        {{tab.name}}
+                    </span>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <div class="dashboard-widgets container-fluid" widget-container dashboard="ctrl.dashboard"
+         ng-if="template.widgetView == 'Widget'">
+        <div ng-if="ctrl.scoreHeaderEnabled">
+            <score-view-header dashboard-id="{{ctrl.dashboard.id}}" rate-it-options="ctrl.scoreRateItOptionsHeader"></score-view-header>
+        </div>
+        <div class="row">
+            <div ng-repeat="widgetChunk in template.widgetsOrder">
+                <div class="row">
+                    <div class="col-md-4" ng-repeat="widgetName in widgetChunk track by $index">
+                        <div class="col-sm-4 col-md-12" ng-if="$index==0 && widgetName=='score'">
+                            <score-view-widget dashboard-id="{{ctrl.dashboard.id}}" rate-it-options="ctrl.scoreRateItOptionsWidget">
+                            </score-view-widget>
+                        </div>
+                        <div class="col-sm-4 col-md-12" ng-if="$index==0 && widgetName!=='score'">
+                            <widget name="{{widgetName}}"
+                                    widget-title="{{template.widgetDisplay[widgetName]}}"></widget>
+                        </div>
+                        <div class="col-sm-4 col-md-12" ng-if="$index==1">
+                            <widget name="{{widgetName}}"
+                                    widget-title="{{template.widgetDisplay[widgetName]}}"></widget>
+                        </div>
+                        <div class="col-sm-4  col-md-12" ng-if="$index==2">
+                            <widget name="{{widgetName}}"
+                                    widget-title="{{template.widgetDisplay[widgetName]}}"></widget>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.widgetView == 'Pipeline'">
+        <div class="row">
+            <div class="col-xs-12">
+                <widget name="pipeline" widget-title="Delivery Pipeline"></widget>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.widgetView == 'Cloud'">
+        <div class="row">
+            <div class="col-xs-12">
+                <widget name="cloud" widget-title="Cloud"></widget>
+            </div>
+        </div>
+    </div>
+</div>

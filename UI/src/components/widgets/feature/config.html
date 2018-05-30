@@ -1,7 +1,9 @@
 <widget-modal widget-modal-title="Configure Feature Widget">
 	<form name="configForm"
 		  ng-submit="ctrl.submit(configForm.$valid, configForm)"
-		  novalidate="novalidate">
+		  novalidate="novalidate"
+			ng-hide="ctrl.collectorId.value === 'GitlabFeature'"
+			>
 		<div class="form-group clearfix"
 			 ng-class="{'has-error': (configForm.collectorItemId.$invalid || configForm.selectedProject.$invalid) && ctrl.submitted}">
 
@@ -54,6 +56,89 @@
 						autocomplete="off"
 						typeahead-no-results="noResults"
 						required>
+			</form-group>
+
+			<form-group input="estimateMetricType" ng-hide="ctrl.hideEstimateMetricDropDown" class="col-sm-push-2 col-sm-8" errors="{required:'Please select a valid estimate metric'}">
+				<label class="modal-label">Estimate Metric:</label>
+				<select
+						name="estimateMetricType" class="form-control"
+						ng-model="ctrl.estimateMetricType"
+						ng-options="item.type as item.value for item in ctrl.estimateMetrics"
+						ng-disabled="ctrl.estimateMetricDropdownDisabled"
+						required>
+				</select>
+			</form-group>
+
+			<form-group input="sprintType" ng-hide="ctrl.hideSprintTypeDropDown" class="col-sm-push-2 col-sm-8" errors="{required:'Please select a valid sprint type'}">
+				<label class="modal-label">Sprint Type:</label>
+				<select
+						name="sprintType" class="form-control"
+						ng-model="ctrl.sprintType"
+						ng-options="item.type as item.value for item in ctrl.sprintTypes"
+						required>
+				</select>
+			</form-group>
+
+			<form-group input="listType" ng-hide="ctrl.hideListTypeDropDown" class="col-sm-push-2 col-sm-8" errors="{required:'Please select a valid feature type to list'}">
+				<label class="modal-label">List Feature Type:</label> <select
+					name="listType" class="form-control"
+					ng-model="ctrl.listType"
+					ng-options="item.type as item.value for item in ctrl.listTypes"
+					required>
+			</select>
+			</form-group>
+		</div>
+
+		<div class="button-row row text-center">
+			<button type="submit" class="btn btn-primary btn-wide">Save</button>
+		</div>
+	</form>
+
+
+	<form name="configFormGitlab"
+		  ng-submit="ctrl.submit(configFormGitlab.$valid, configFormGitlab)"
+		  novalidate="novalidate"
+			ng-show="ctrl.collectorId.value === 'GitlabFeature'"
+			>
+		<div class="form-group clearfix"
+			 ng-class="{'has-error': (configForm.collectorItemId.$invalid || configForm.selectedProject.$invalid) && ctrl.submitted}">
+
+			<form-group input="collectorId" class="col-sm-push-2 col-sm-8" errors="{required:'Please select a valid feature data source'}">
+				<label class="modal-label">Agile Content Tool Type:</label>
+				<select
+						name="collectorId" class="form-control" ng-model="ctrl.collectorId"
+						ng-init="ctrl.collectorId"
+						ng-change="ctrl.evaluateTypeSelection()"
+						ng-options="featureTypeOption.value for featureTypeOption in ctrl.featureTypeOptions | orderBy: 'value' track by featureTypeOption.id"
+						required>
+					<option value="">{{ctrl.typeDropdownPlaceholder}}</option>
+				</select>
+				<p class="help-block"
+				   ng-if="configForm.collectorItemId.$error.required || configForm.selectedProject.$error.required">Please select
+					a valid feature data source</p>
+			</form-group>
+
+			<form-group input="teamName" ng-hide="ctrl.hideTeamDropDown"  class="col-sm-push-2 col-sm-8" errors="{required:'Please enter a valid team name',teamError:'Team is required'}">
+				<label class="modal-label">Team Name (required):</label>
+				<input
+						type="text"
+						name="teamName"
+						class="form-control"
+						placeholder="Please enter your team/group name"
+						ng-model="ctrl.teamId"
+						autocomplete="off"
+						required>
+			</form-group>
+			<form-group input="projectName" ng-hide="ctrl.hideProjectDropDown" class="col-sm-push-2 col-sm-8"  errors="{required:'Please select a valid project',anyError:'Team is required'}" >
+				<label class="modal-label">Project Name (optional):</label>
+				<input
+						type="text"
+						name="projectName"
+						class="form-control"
+						placeholder="Please enter your project name"
+						ng-model="ctrl.projectId"
+						autocomplete="off"
+						>
 			</form-group>
 
 			<form-group input="estimateMetricType" ng-hide="ctrl.hideEstimateMetricDropDown" class="col-sm-push-2 col-sm-8" errors="{required:'Please select a valid estimate metric'}">

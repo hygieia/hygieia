@@ -2,24 +2,27 @@ package com.capitalone.dashboard.model;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-/**
- * A specific commit in a version control repository.
- *
- * Possible collectors:
- *  Subversion (in scope)
- *  Git (in scope)
- *  GitHub
- *  TFS
- *  BitBucket
- *  Unfuddle
- *
- */
+
 @Document(collection="gitrequests")
-public class GitRequest extends SCM {
+public class GitRequest  {
+
+    // fields added from SCM class that we are not extending anymore
+    private String scmUrl;
+    private String scmBranch;
+    private String scmRevisionNumber;
+    //squash merge commit may be different from pr commit
+    private String scmMergeEventRevisionNumber;
+    private String scmCommitLog;
+    private long scmCommitTimestamp;
+    private String scmAuthor;
+    private long numberOfChanges;
+    // fields added above are from SCM class that we are not extending anymore
+
     @Id
     private ObjectId id;
     private String orgName;
@@ -29,20 +32,92 @@ public class GitRequest extends SCM {
     private String targetRepo;
     private String targetBranch;
     private String number;
+    @Indexed
     private ObjectId collectorItemId;
+    private long updatedAt;
     private long createdAt;
     private long closedAt;
     private String state;
     private long mergedAt;
+    private String mergeAuthor;
+    private String mergeAuthorLDAPDN;
     private long timestamp;
     private long resolutiontime;
     private String userId = null;
     private String commentsUrl;
     private String reviewCommentsUrl;
     private List<Comment> comments;
-    private List<Comment> reviewComments;
+    private List<Review> reviews;
+    private List<CommitStatus> commitStatuses;
     private String headSha;
     private String baseSha;
+    private String requestType;
+    private List<Commit> commits;
+
+
+    public long getNumberOfChanges() {
+        return numberOfChanges;
+    }
+
+    public void setNumberOfChanges(long numberOfChanges) {
+        this.numberOfChanges = numberOfChanges;
+    }
+
+    public String getScmAuthor() {
+        return scmAuthor;
+    }
+
+    public void setScmAuthor(String scmAuthor) {
+        this.scmAuthor = scmAuthor;
+    }
+
+    public long getScmCommitTimestamp() {
+        return scmCommitTimestamp;
+    }
+
+    public void setScmCommitTimestamp(long scmCommitTimestamp) {
+        this.scmCommitTimestamp = scmCommitTimestamp;
+    }
+
+    public String getScmBranch() {
+        return scmBranch;
+    }
+
+    public void setScmBranch(String scmBranch) {
+        this.scmBranch = scmBranch;
+    }
+
+    public String getScmCommitLog() {
+        return scmCommitLog;
+    }
+
+    public void setScmCommitLog(String scmCommitLog) {
+        this.scmCommitLog = scmCommitLog;
+    }
+
+    public String getScmUrl() {
+        return scmUrl;
+    }
+
+    public void setScmUrl(String scmUrl) {
+        this.scmUrl = scmUrl;
+    }
+
+    public String getScmRevisionNumber() {
+        return scmRevisionNumber;
+    }
+
+    public void setScmRevisionNumber(String scmRevisionNumber) {
+        this.scmRevisionNumber = scmRevisionNumber;
+    }
+
+    public String getScmMergeEventRevisionNumber() {
+        return scmMergeEventRevisionNumber;
+    }
+
+    public void setScmMergeEventRevisionNumber(String scmMergeEventRevisionNumber) {
+        this.scmMergeEventRevisionNumber = scmMergeEventRevisionNumber;
+    }
 
     public String getRequestType() {
         return requestType;
@@ -52,7 +127,6 @@ public class GitRequest extends SCM {
         this.requestType = requestType;
     }
 
-    private String requestType;
 
     public ObjectId getId() {
         return id;
@@ -206,12 +280,28 @@ public class GitRequest extends SCM {
         this.comments = comments;
     }
 
-    public List<Comment> getReviewComments() {
-        return reviewComments;
+    public List<Review> getReviews() {
+        return reviews;
     }
 
-    public void setReviewComments(List<Comment> reviewComments) {
-        this.reviewComments = reviewComments;
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
+    }
+
+    public List<CommitStatus> getCommitStatuses() {
+        return commitStatuses;
+    }
+
+    public void setCommitStatuses(List<CommitStatus> commitStatuses) {
+        this.commitStatuses = commitStatuses;
+    }
+
+    public List<Commit> getCommits() {
+        return commits;
+    }
+
+    public void setCommits(List<Commit> commits) {
+        this.commits = commits;
     }
 
     public String getHeadSha() {
@@ -228,5 +318,29 @@ public class GitRequest extends SCM {
 
     public void setBaseSha(String baseSha) {
         this.baseSha = baseSha;
+    }
+
+    public long getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(long updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public String getMergeAuthor() {
+        return mergeAuthor;
+    }
+
+    public void setMergeAuthor(String mergeAuthor) {
+        this.mergeAuthor = mergeAuthor;
+    }
+
+    public String getMergeAuthorLDAPDN() {
+        return mergeAuthorLDAPDN;
+    }
+
+    public void setMergeAuthorLDAPDN(String mergeAuthorLDAPDN) {
+        this.mergeAuthorLDAPDN = mergeAuthorLDAPDN;
     }
 }

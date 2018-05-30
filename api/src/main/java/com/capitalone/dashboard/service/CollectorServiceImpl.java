@@ -6,6 +6,7 @@ import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.MultiSearchFilter;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
@@ -15,6 +16,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,6 +27,8 @@ import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class CollectorServiceImpl implements CollectorService {
@@ -52,17 +56,40 @@ public class CollectorServiceImpl implements CollectorService {
     }
 
     @Override
-    public Page<CollectorItem> collectorItemsByTypeWithFilter(CollectorType collectorType, String descriptionFilter, Pageable pageable) {
+    public List<Collector> collectorsById(ObjectId id) {
+        return collectorRepository.findById(id);
+    }
+
+    @Override
+    public Page<CollectorItem> collectorItemsByTypeWithFilter(CollectorType collectorType, String searchFilterValue, Pageable pageable) {
         List<Collector> collectors = collectorRepository.findByCollectorType(collectorType);
-
         List<ObjectId> collectorIds = Lists.newArrayList(Iterables.transform(collectors, new ToCollectorId()));
-
-        Page<CollectorItem> collectorItems = collectorItemRepository.findByCollectorIdInAndDescriptionContainingIgnoreCase(collectorIds, descriptionFilter, pageable);
-
+        Page<CollectorItem> collectorItems;
+        MultiSearchFilter searchFilter = new MultiSearchFilter(searchFilterValue).invoke();
+        List<String> criteria = getSearchFields(collectors);
+        String defaultSearchField = getDefaultSearchField(criteria);
+        // multiple search criteria
+        if(!StringUtils.isEmpty(searchFilter.getAdvancedSearchKey()) && criteria.size()>1){
+            String advSearchField = getAdvSearchField(criteria);
+            collectorItems = collectorItemRepository.findByCollectorIdAndSearchFields(collectorIds,defaultSearchField,searchFilter.getSearchKey(),advSearchField,searchFilter.getAdvancedSearchKey(),pageable);
+        }else{
+            // single search criteria
+            collectorItems = collectorItemRepository.findByCollectorIdAndSearchField(collectorIds,defaultSearchField,searchFilterValue,pageable);
+        }
+        removeJobUrlAndInstanceUrl(collectorItems);
         for (CollectorItem options : collectorItems) {
             options.setCollector(collectorById(options.getCollectorId(), collectors));
         }
 
+        return collectorItems;
+    }
+
+    // method to remove jobUrl and instanceUrl from build collector items.
+    private Page<CollectorItem> removeJobUrlAndInstanceUrl(Page<CollectorItem> collectorItems) {
+        for (CollectorItem cItem : collectorItems) {
+            if(cItem.getOptions().containsKey("jobUrl")) cItem.getOptions().remove("jobUrl");
+            if(cItem.getOptions().containsKey("instanceUrl")) cItem.getOptions().remove("instanceUrl");
+        }
         return collectorItems;
     }
 
@@ -114,16 +141,21 @@ public class CollectorServiceImpl implements CollectorService {
     // This is to handle scenarios where the option contains user credentials etc. We do not want to create a new collector item -
     // just update the new credentials.
     @Override
-    public CollectorItem createCollectorItemSelectOptions(CollectorItem item, Map<String, Object> allOptions, Map<String, Object> selecOptions) {
+    public CollectorItem createCollectorItemSelectOptions(CollectorItem item, Map<String, Object> allOptions, Map<String, Object> uniqueOptions) {
+        Collector collector =  collectorRepository.findOne(item.getCollectorId());
+        Map<String,Object> uniqueFieldsFromCollector = collector.getUniqueFields();
         List<CollectorItem> existing = customRepositoryQuery.findCollectorItemsBySubsetOptions(
-                item.getCollectorId(), allOptions, selecOptions);
+                item.getCollectorId(), allOptions, uniqueOptions,uniqueFieldsFromCollector);
 
         if (!CollectionUtils.isEmpty(existing)) {
-            item.setId(existing.get(0).getId());   //
+            CollectorItem existingItem = existing.get(0);
+            existingItem.getOptions().clear();
+            existingItem.getOptions().putAll(item.getOptions());
+            return collectorItemRepository.save(existingItem);
         }
-
         return collectorItemRepository.save(item);
     }
+
 
     @Override
     public CollectorItem createCollectorItemByNiceNameAndProjectId(CollectorItem item, String projectId) throws HygieiaException {
@@ -194,6 +226,26 @@ public class CollectorServiceImpl implements CollectorService {
         @Override
         public ObjectId apply(Collector input) {
             return input.getId();
+        }
+    }
+
+    private String getAdvSearchField(List<String> searchList) {
+        return searchList!=null && searchList.size()>1?searchList.get(1):null;
+    }
+
+    private String getDefaultSearchField(List<String> searchList) {
+        return searchList!=null?searchList.get(0):null;
+    }
+
+    private List<String> getSearchFields(List<Collector> collectors){
+        List<List<String>> searchList  = Lists.newArrayList(Iterables.transform(collectors, new ToCollectorSearchFields()));
+        return (!searchList.isEmpty() && searchList.get(0)!=null)? searchList.stream().flatMap(List::stream).collect(Collectors.toList()): null;
+    }
+
+    private static class ToCollectorSearchFields implements Function<Collector, List<String>> {
+        @Override
+        public List<String> apply(Collector input) {
+            return input.getSearchFields();
         }
     }
 }

@@ -8,6 +8,7 @@
 @import 'commit-blocks';
 
 @import 'site';
+@import 'score';
 
 // TODO: remove
 #__bs_notify__ { display: none !important;}
@@ -693,6 +694,18 @@ tr.dash-row > td {
         line-height: 1.75rem;
         .border-radius(50%);
     }
+
+    .dash-status-critical {
+        display: inline-block;
+        font-weight: bold;
+        width: 2rem;
+        height: 2rem;
+        background: black;
+        border: .2rem solid @dash-status-fail-border;
+        color: @dash-status-fail;
+        line-height: 1.75rem;
+        .border-radius(50%);
+    }
 }
 
 .dash-status-lg {
@@ -755,6 +768,33 @@ tr.dash-row > td {
         position: absolute;
         top: 5rem;
         right: 2rem;
+    }
+    .cssConfigOdd{
+     background-color: #e4e4e4;
+    }
+    .cssConfigEven{
+     background-color: #e8e8e8;
+    }
+    .configApplyPadd{
+        padding: 10px 0px 0px 0px;
+    }
+    .inputBoxStyle{
+        border: 1px solid #0078d2;
+    }
+    .confHeaderIcon{
+        cursor: pointer;
+        width: 20px;
+        height: 20px;
+    }
+    ul.tooltipList {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+    ul.tooltipList li{
+        margin: 0;
+        padding: 0;
+        text-align: left;
     }
 }
 

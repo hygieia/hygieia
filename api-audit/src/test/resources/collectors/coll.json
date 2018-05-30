@@ -1,0 +1,83 @@
+[
+  {
+    "name": "GitHub",
+    "collectorType": "SCM",
+    "enabled": true,
+    "online": true,
+    "errors": [],
+    "uniqueFields": {
+      "branch": "",
+      "url": ""
+    },
+    "allFields": {
+      "password": "",
+      "branch": "",
+      "userID": "",
+      "url": ""
+    },
+    "lastExecuted": 1516222026477,
+    "id": {
+      "timestamp": 1456084265,
+      "machineIdentifier": 8366972,
+      "processIdentifier": 26815,
+      "counter": 14369292
+    }
+  },
+  {
+    "name": "Eratocode",
+    "collectorType": "StaticSecurityScan",
+    "enabled": true,
+    "online": false,
+    "errors": [],
+    "uniqueFields": {
+      "applicationID": "",
+      "projectName": "",
+      "applicationName": "",
+      "instanceUrl": ""
+    },
+    "allFields": {
+      "applicationType": "",
+      "reportUrl": "",
+      "applicationID": "",
+      "projectName": "",
+      "applicationName": "",
+      "instanceUrl": ""
+    },
+    "lastExecuted": 1523562531181,
+    "id": {
+      "timestamp": 1456084266,
+      "machineIdentifier": 8366972,
+      "processIdentifier": 26815,
+      "counter": 14369292
+    }
+  },
+  {
+    "id": "5af9ed53cba7165e8cc1069e",
+    "_class": "com.capitalone.dashboard.model.EratocodeOSSCollector",
+    "eratocodeServers": [
+      "https://scan.com"
+    ],
+    "niceNames": [],
+    "name": "EratocodeOSS",
+    "collectorType": "LibraryPolicy",
+    "enabled": true,
+    "online": false,
+    "errors": [],
+    "uniqueFields": {
+      "componentName": "",
+      "applicationName": "",
+      "instanceUrl": ""
+    },
+    "allFields": {
+      "applicationType": "",
+      "componentName": "",
+      "applicationID": "",
+      "applicationName": "",
+      "instanceUrl": ""
+    },
+    "lastExecuted": 1518986735128,
+    "searchFields": [
+      "description"
+    ]
+  }
+]

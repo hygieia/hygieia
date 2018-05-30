@@ -1,0 +1,1046 @@
+[
+  {
+    "scmUrl": "https://mygithub.com/compliance-scenario/2-unreviewed-merge",
+    "scmBranch": "master",
+    "scmRevisionNumber": "f0ba1758050c55c8bb13fd2e71df2a850ceb00a2",
+    "scmCommitLog": "merging commit to dev into master",
+    "scmCommitTimestamp": 1510954679000,
+    "numberOfChanges": 0,
+    "id": {
+      "timestamp": 1516222001,
+      "machineIdentifier": 7316410,
+      "processIdentifier": 31420,
+      "counter": 12328663
+    },
+    "orgName": "compliance-scenario",
+    "repoName": "2-unreviewed-merge",
+    "sourceRepo": "compliance-scenario/2-unreviewed-merge",
+    "sourceBranch": "dev",
+    "targetRepo": "compliance-scenario/2-unreviewed-merge",
+    "targetBranch": "master",
+    "number": "1",
+    "collectorItemId": {
+      "timestamp": 1515082392,
+      "machineIdentifier": 3402793,
+      "processIdentifier": 27521,
+      "counter": 12817258
+    },
+    "updatedAt": 1510954679000,
+    "createdAt": 1510954673000,
+    "closedAt": 0,
+    "state": "merged",
+    "mergedAt": 1510954679000,
+    "timestamp": 1510954673000,
+    "resolutiontime": 0,
+    "userId": "ghone",
+    "comments": [],
+    "reviews": [],
+    "headSha": "b7e2a7b6610d044a560ffa450789728a5ff24206",
+    "baseSha": "f0ba1758050c55c8bb13fd2e71df2a850ceb00a2",
+    "requestType": "pull",
+    "commits": [
+      {
+        "timestamp": 0,
+        "firstEverCommit": false,
+        "scmRevisionNumber": "b7e2a7b6610d044a560ffa450789728a5ff24206",
+        "scmCommitLog": "a commit to dev",
+        "scmAuthor": "Author, One",
+        "scmAuthorLogin": "ghone",
+        "scmParentRevisionNumbers": [
+          "3913c72e49a7247c617607d5da2089be6a85dc6a"
+        ],
+        "scmCommitTimestamp": 1510954634000,
+        "numberOfChanges": 0
+      }
+    ]
+  },
+  {
+    "scmUrl": "https://mygithub.com/compliance-scenario/3-github-comment-merge",
+    "scmBranch": "master",
+    "scmRevisionNumber": "70cd0959030cfbe1bf41259f4db9708997393504",
+    "scmCommitLog": "merging a commit to dev into master with only a github comment review (no approval)",
+    "scmCommitTimestamp": 1511190522000,
+    "numberOfChanges": 0,
+    "id": {
+      "timestamp": 1516222001,
+      "machineIdentifier": 7316410,
+      "processIdentifier": 31420,
+      "counter": 12328667
+    },
+    "orgName": "compliance-scenario",
+    "repoName": "3-github-comment-merge",
+    "sourceRepo": "compliance-scenario/3-github-comment-merge",
+    "sourceBranch": "dev",
+    "targetRepo": "compliance-scenario/3-github-comment-merge",
+    "targetBranch": "master",
+    "number": "1",
+    "collectorItemId": {
+      "timestamp": 1515082428,
+      "machineIdentifier": 3402793,
+      "processIdentifier": 27521,
+      "counter": 12817263
+    },
+    "updatedAt": 1511190522000,
+    "createdAt": 1510955074000,
+    "closedAt": 0,
+    "state": "merged",
+    "mergedAt": 1511190522000,
+    "timestamp": 1510955074000,
+    "resolutiontime": 2,
+    "userId": "ghone",
+    "comments": [],
+    "reviews": [
+      {
+        "body": "some random comment",
+        "state": "COMMENTED",
+        "author": "ghtwo",
+        "createdAt": 1511190486000,
+        "updatedAt": 1511190486000
+      }
+    ],
+    "headSha": "8ac97dd222290b4c31d9c119ca7e42b632802068",
+    "baseSha": "70cd0959030cfbe1bf41259f4db9708997393504",
+    "requestType": "pull",
+    "commits": [
+      {
+        "timestamp": 0,
+        "firstEverCommit": false,
+        "scmRevisionNumber": "8ac97dd222290b4c31d9c119ca7e42b632802068",
+        "scmCommitLog": "a commit to dev",
+        "scmAuthor": "Author, One",
+        "scmAuthorLogin": "ghone",
+        "scmParentRevisionNumbers": [
+          "91dc75834718320ae7ee14a6455d0402ad066026"
+        ],
+        "scmCommitTimestamp": 1510954840000,
+        "numberOfChanges": 0
+      }
+    ]
+  },
+  {
+    "scmUrl": "https://mygithub.com/compliance-scenario/4-github-review-merge",
+    "scmBranch": "master",
+    "scmRevisionNumber": "c346f79cdcd5c9430b2f3c119d04c0c4fa922455",
+    "scmCommitLog": "merging a commit to dev into master with a github review approval",
+    "scmCommitTimestamp": 1511190544000,
+    "numberOfChanges": 0,
+    "id": {
+      "timestamp": 1516222001,
+      "machineIdentifier": 7316410,
+      "processIdentifier": 31420,
+      "counter": 12328671
+    },
+    "orgName": "compliance-scenario",
+    "repoName": "4-github-review-merge",
+    "sourceRepo": "compliance-scenario/4-github-review-merge",
+    "sourceBranch": "dev",
+    "targetRepo": "compliance-scenario/4-github-review-merge",
+    "targetBranch": "master",
+    "number": "1",
+    "collectorItemId": {
+      "timestamp": 1515082480,
+      "machineIdentifier": 3402793,
+      "processIdentifier": 27521,
+      "counter": 12817268
+    },
+    "updatedAt": 1511190544000,
+    "createdAt": 1510955164000,
+    "closedAt": 0,
+    "state": "merged",
+    "mergedAt": 1511190544000,
+    "timestamp": 1510955164000,
+    "resolutiontime": 2,
+    "userId": "ghone",
+    "comments": [],
+    "reviews": [
+      {
+        "body": "some random comment",
+        "state": "APPROVED",
+        "author": "ghtwo",
+        "createdAt": 1511190508000,
+        "updatedAt": 1511190508000
+      }
+    ],
+    "headSha": "936072cc3a494c2ba1f72f27e2cfa28efb762b6b",
+    "baseSha": "c346f79cdcd5c9430b2f3c119d04c0c4fa922455",
+    "requestType": "pull",
+    "commits": [
+      {
+        "timestamp": 0,
+        "firstEverCommit": false,
+        "scmRevisionNumber": "936072cc3a494c2ba1f72f27e2cfa28efb762b6b",
+        "scmCommitLog": "a commit to dev",
+        "scmAuthor": "Author, One",
+        "scmAuthorLogin": "ghone",
+        "scmParentRevisionNumbers": [
+          "4c0574a19cdd44b88ce9ca729309e81af2abb875"
+        ],
+        "scmCommitTimestamp": 1510955126000,
+        "numberOfChanges": 0
+      }
+    ]
+  },
+  {
+    "scmUrl": "https://mygithub.com/compliance-scenario/5-lgtm-self-merge",
+    "scmBranch": "master",
+    "scmRevisionNumber": "3381055da77c47dd8420cad210bac61a42e3adbd",
+    "scmCommitLog": "merging a commit to dev into master with an LGTM self review",
+    "scmCommitTimestamp": 1510956337000,
+    "numberOfChanges": 0,
+    "id": {
+      "timestamp": 1516222002,
+      "machineIdentifier": 7316410,
+      "processIdentifier": 31420,
+      "counter": 12328680
+    },
+    "orgName": "compliance-scenario",
+    "repoName": "5-lgtm-self-merge",
+    "sourceRepo": "compliance-scenario/5-lgtm-self-merge",
+    "sourceBranch": "dev",
+    "targetRepo": "compliance-scenario/5-lgtm-self-merge",
+    "targetBranch": "master",
+    "number": "3",
+    "collectorItemId": {
+      "timestamp": 1515082524,
+      "machineIdentifier": 3402793,
+      "processIdentifier": 27521,
+      "counter": 12817274
+    },
+    "updatedAt": 1510956337000,
+    "createdAt": 1510956102000,
+    "closedAt": 0,
+    "state": "merged",
+    "mergedAt": 1510956337000,
+    "timestamp": 1510956102000,
+    "resolutiontime": 0,
+    "userId": "ghone",
+    "comments": [
+      {
+        "user": "ghone",
+        "createdAt": 1510956198000,
+        "updatedAt": 1510956198000,
+        "body": "lgtm",
+        "status": ""
+      },
+      {
+        "user": "ghone",
+        "createdAt": 1510956257000,
+        "updatedAt": 1510956257000,
+        "body": "take two - lgtm",
+        "status": ""
+      },
+      {
+        "user": "ghone",
+        "createdAt": 1510956281000,
+        "updatedAt": 1510956281000,
+        "body": "LGTM",
+        "status": ""
+      }
+    ],
+    "reviews": [],
+    "commitStatuses": [
+      {
+        "state": "SUCCESS",
+        "context": "approvals/lgtmeow",
+        "description": "approved by ghone"
+      }
+    ],
+    "headSha": "88686c457f96ed1383e66a0f36e4942d091992ae",
+    "baseSha": "3381055da77c47dd8420cad210bac61a42e3adbd",
+    "requestType": "pull",
+    "commits": [
+      {
+        "timestamp": 0,
+        "firstEverCommit": false,
+        "scmRevisionNumber": "f76291ec81860eb046f7ab3789f7730c5e9b3548",
+        "scmCommitLog": "a commit to dev",
+        "scmAuthor": "Author, One",
+        "scmAuthorLogin": "ghone",
+        "scmParentRevisionNumbers": [
+          "2572585fce792204731df381071b4e3950c372a8"
+        ],
+        "scmCommitTimestamp": 1510955202000,
+        "numberOfChanges": 0
+      },
+      {
+        "timestamp": 0,
+        "firstEverCommit": false,
+        "scmRevisionNumber": "1f36ad7ad6ae547cd9e683786c0dd26bd4ad2839",
+        "scmCommitLog": "Merge branch \u0027master\u0027 into dev",
+        "scmAuthor": "Author, One",
+        "scmAuthorLogin": "ghone",
+        "scmParentRevisionNumbers": [
+          "f76291ec81860eb046f7ab3789f7730c5e9b3548",
+          "cd3a16a119085e8394c240653911c350029a5210"
+        ],
+        "scmCommitTimestamp": 1510956167000,
+        "numberOfChanges": 0
+      },
+      {
+        "timestamp": 0,
+        "firstEverCommit": false,
+        "scmRevisionNumber": "88686c457f96ed1383e66a0f36e4942d091992ae",
+        "scmCommitLog": "Merge branch \u0027master\u0027 into dev",
+        "scmAuthor": "Author, One",
+        "scmAuthorLogin": "ghone",
+        "scmParentRevisionNumbers": [
+          "1f36ad7ad6ae547cd9e683786c0dd26bd4ad2839",
+          "af6044794953ffdcb7e973b8db53ee79b5e1e807"
+        ],
+        "scmCommitTimestamp": 1510956239000,
+        "numberOfChanges": 0
+      }
+    ]
+  },
+  {
+    "scmUrl": "https://mygithub.com/compliance-scenario/5-lgtm-self-merge",
+    "scmBranch": "master",
+    "scmRevisionNumber": "",
+    "scmCommitLog": "merging a commit to dev into master with an LGTM self review",
+    "scmCommitTimestamp": 0,
+    "numberOfChanges": 0,
+    "id": {
+      "timestamp": 1516222002,
+      "machineIdentifier": 7316410,
+      "processIdentifier": 31420,
+      "counter": 12328681
+    },
+    "orgName": "compliance-scenario",
+    "repoName": "5-lgtm-self-merge",
+    "sourceRepo": "compliance-scenario/5-lgtm-self-merge",
+    "sourceBranch": "dev",
+    "targetRepo": "compliance-scenario/5-lgtm-self-merge",
+    "targetBranch": "master",
+    "number": "2",
+    "collectorItemId": {
+      "timestamp": 1515082524,
+      "machineIdentifier": 3402793,
+      "processIdentifier": 27521,
+      "counter": 12817274
+    },
+    "updatedAt": 1510956087000,
+    "createdAt": 1510955911000,
+    "closedAt": 0,
+    "state": "closed",
+    "mergedAt": 0,
+    "timestamp": 1510955911000,
+    "resolutiontime": -17487,
+    "userId": "ghone",
+    "comments": [],
+    "reviews": [],
+    "headSha": "88686c457f96ed1383e66a0f36e4942d091992ae",
+    "baseSha": "3381055da77c47dd8420cad210bac61a42e3adbd",
+    "requestType": "pull",
+    "commits": [
+      {
+        "timestamp": 0,
+        "firstEverCommit": false,
+        "scmRevisionNumber": "f76291ec81860eb046f7ab3789f7730c5e9b3548",
+        "scmCommitLog": "a commit to dev",
+        "scmAuthor": "Author, One",
+        "scmAuthorLogin": "ghone",
+        "scmParentRevisionNumbers": [
+          "2572585fce792204731df381071b4e3950c372a8"
+        ],
+        "scmCommitTimestamp": 1510955202000,
+        "numberOfChanges": 0
+      }
+    ]
+  },
+  {
+    "scmUrl": "https://mygithub.com/compliance-scenario/5-lgtm-self-merge",
+    "scmBranch": "master",
+    "scmRevisionNumber": "",
+    "scmCommitLog": "merging a commit to dev into master with an LGTM review",
+    "scmCommitTimestamp": 0,
+    "numberOfChanges": 0,
+    "id": {
+      "timestamp": 1516222002,
+      "machineIdentifier": 7316410,
+      "processIdentifier": 31420,
+      "counter": 12328682
+    },
+    "orgName": "compliance-scenario",
+    "repoName": "5-lgtm-self-merge",
+    "sourceRepo": "compliance-scenario/5-lgtm-self-merge",
+    "sourceBranch": "dev",
+    "targetRepo": "compliance-scenario/5-lgtm-self-merge",
+    "targetBranch": "master",
+    "number": "1",
+    "collectorItemId": {
+      "timestamp": 1515082524,
+      "machineIdentifier": 3402793,
+      "processIdentifier": 27521,
+      "counter": 12817274
+    },
+    "updatedAt": 1510955881000,
+    "createdAt": 1510955232000,
+    "closedAt": 0,
+    "state": "closed",
+    "mergedAt": 0,
+    "timestamp": 1510955232000,
+    "resolutiontime": -17487,
+    "userId": "ghone",
+    "comments": [],
+    "reviews": [],
+    "headSha": "88686c457f96ed1383e66a0f36e4942d091992ae",
+    "baseSha": "3381055da77c47dd8420cad210bac61a42e3adbd",
+    "requestType": "pull",
+    "commits": [
+      {
+        "timestamp": 0,
+        "firstEverCommit": false,
+        "scmRevisionNumber": "f76291ec81860eb046f7ab3789f7730c5e9b3548",
+        "scmCommitLog": "a commit to dev",
+        "scmAuthor": "Author, One",
+        "scmAuthorLogin": "ghone",
+        "scmParentRevisionNumbers": [
+          "2572585fce792204731df381071b4e3950c372a8"
+        ],
+        "scmCommitTimestamp": 1510955202000,
+        "numberOfChanges": 0
+      }
+    ]
+  },
+  {
+    "scmUrl": "https://mygithub.com/compliance-scenario/6-lgtm-merge",
+    "scmBranch": "master",
+    "scmRevisionNumber": "957f1c8453289826c52cdbed266937f1c892718d",
+    "scmCommitLog": "merging a commit to dev into master after an LGTM peer review",
+    "scmCommitTimestamp": 1511190554000,
+    "numberOfChanges": 0,
+    "id": {
+      "timestamp": 1516222002,
+      "machineIdentifier": 7316410,
+      "processIdentifier": 31420,
+      "counter": 12328688
+    },
+    "orgName": "compliance-scenario",
+    "repoName": "6-lgtm-merge",
+    "sourceRepo": "compliance-scenario/6-lgtm-merge",
+    "sourceBranch": "dev",
+    "targetRepo": "compliance-scenario/6-lgtm-merge",
+    "targetBranch": "master",
+    "number": "1",
+    "collectorItemId": {
+      "timestamp": 1515082558,
+      "machineIdentifier": 3402793,
+      "processIdentifier": 27521,
+      "counter": 12817279
+    },
+    "updatedAt": 1511190554000,
+    "createdAt": 1510956733000,
+    "closedAt": 0,
+    "state": "merged",
+    "mergedAt": 1511190554000,
+    "timestamp": 1510956733000,
+    "resolutiontime": 2,
+    "userId": "ghone",
+    "comments": [
+      {
+        "user": "ghtwo",
+        "createdAt": 1511190526000,
+        "updatedAt": 1511190526000,
+        "body": "LGTM",
+        "status": ""
+      }
+    ],
+    "reviews": [],
+    "commitStatuses": [
+      {
+        "state": "SUCCESS",
+        "context": "approvals/lgtmeow",
+        "description": "approved by ghthree"
+      }
+    ],
+    "headSha": "d49647538a83c16c2fbb6ac796f03ce31bba43ae",
+    "baseSha": "957f1c8453289826c52cdbed266937f1c892718d",
+    "requestType": "pull",
+    "commits": [
+      {
+        "timestamp": 0,
+        "firstEverCommit": false,
+        "scmRevisionNumber": "d49647538a83c16c2fbb6ac796f03ce31bba43ae",
+        "scmCommitLog": "a commit to dev",
+        "scmAuthor": "Author, One",
+        "scmAuthorLogin": "ghone",
+        "scmParentRevisionNumbers": [
+          "af139cb3f030a26d4201106948b46285413e2b0a"
+        ],
+        "scmCommitTimestamp": 1510956604000,
+        "numberOfChanges": 0
+      }
+    ]
+  },
+  {
+    "scmUrl": "https://mygithub.com/Devopscode/NormalMerge",
+    "scmBranch": "master",
+    "scmRevisionNumber": "6a5c56e4f5c9e72702af77c4d69030f44188a80b",
+    "scmCommitLog": "pr from fork",
+    "scmCommitTimestamp": 1513102179000,
+    "numberOfChanges": 0,
+    "id": {
+      "timestamp": 1516222002,
+      "machineIdentifier": 7316410,
+      "processIdentifier": 31420,
+      "counter": 12328695
+    },
+    "orgName": "Devopscode",
+    "repoName": "NormalMerge",
+    "sourceRepo": "ghtwo/NormalMerge",
+    "sourceBranch": "master",
+    "targetRepo": "Devopscode/NormalMerge",
+    "targetBranch": "master",
+    "number": "1",
+    "collectorItemId": {
+      "timestamp": 1515082910,
+      "machineIdentifier": 3402793,
+      "processIdentifier": 27521,
+      "counter": 12817291
+    },
+    "updatedAt": 1513102179000,
+    "createdAt": 1513102167000,
+    "closedAt": 0,
+    "state": "merged",
+    "mergedAt": 1513102179000,
+    "timestamp": 1513102167000,
+    "resolutiontime": 0,
+    "userId": "ghtwo",
+    "comments": [],
+    "reviews": [],
+    "headSha": "204a0983489cf263e0cf6e058e630a74498f9e34",
+    "baseSha": "ee72b85052566d33a83dd57f22137ddcd9285dfd",
+    "requestType": "pull",
+    "commits": [
+      {
+        "timestamp": 0,
+        "firstEverCommit": false,
+        "scmRevisionNumber": "613330d0d6482f9e56d09051ff4cd082238c8f21",
+        "scmCommitLog": "Third fork commit",
+        "scmAuthor": "Author, Two",
+        "scmAuthorLogin": "ghtwo",
+        "scmParentRevisionNumbers": [
+          "1ca6c08c7435be134b51f44325527667982afee1"
+        ],
+        "scmCommitTimestamp": 1513102119000,
+        "numberOfChanges": 0
+      },
+      {
+        "timestamp": 0,
+        "firstEverCommit": false,
+        "scmRevisionNumber": "204a0983489cf263e0cf6e058e630a74498f9e34",
+        "scmCommitLog": "Fourth fork commit",
+        "scmAuthor": "Author, Two",
+        "scmAuthorLogin": "ghtwo",
+        "scmParentRevisionNumbers": [
+          "613330d0d6482f9e56d09051ff4cd082238c8f21"
+        ],
+        "scmCommitTimestamp": 1513102135000,
+        "numberOfChanges": 0
+      }
+    ]
+  },
+  {
+    "scmUrl": "https://mygithub.com/Devopscode/SquashMerge",
+    "scmBranch": "master",
+    "scmRevisionNumber": "451145cb358eb78b9d2e12051c48fe8d5219ba1e",
+    "scmCommitLog": "pr from fork",
+    "scmCommitTimestamp": 1513102363000,
+    "numberOfChanges": 0,
+    "id": {
+      "timestamp": 1516222003,
+      "machineIdentifier": 7316410,
+      "processIdentifier": 31420,
+      "counter": 12328701
+    },
+    "orgName": "Devopscode",
+    "repoName": "SquashMerge",
+    "sourceRepo": "ghtwo/SquashMerge",
+    "sourceBranch": "master",
+    "targetRepo": "Devopscode/SquashMerge",
+    "targetBranch": "master",
+    "number": "1",
+    "collectorItemId": {
+      "timestamp": 1515082938,
+      "machineIdentifier": 3402793,
+      "processIdentifier": 27521,
+      "counter": 12817296
+    },
+    "updatedAt": 1513102363000,
+    "createdAt": 1513102349000,
+    "closedAt": 0,
+    "state": "merged",
+    "mergedAt": 1513102363000,
+    "timestamp": 1513102349000,
+    "resolutiontime": 0,
+    "userId": "ghtwo",
+    "comments": [],
+    "reviews": [],
+    "headSha": "2df478075f504813ec52a0750a5ab58aa06a543d",
+    "baseSha": "0a9404e92b613c30e7a30606faf4cc1e69fd684d",
+    "requestType": "pull",
+    "commits": [
+      {
+        "timestamp": 0,
+        "firstEverCommit": false,
+        "scmRevisionNumber": "abdca9410a861d28ee0772433c1946d066577454",
+        "scmCommitLog": "Third fork commit",
+        "scmAuthor": "Author, Two",
+        "scmAuthorLogin": "ghtwo",
+        "scmParentRevisionNumbers": [
+          "b45d5a45765b83886e953ac4198d10145a42bdf4"
+        ],
+        "scmCommitTimestamp": 1513102320000,
+        "numberOfChanges": 0
+      },
+      {
+        "timestamp": 0,
+        "firstEverCommit": false,
+        "scmRevisionNumber": "2df478075f504813ec52a0750a5ab58aa06a543d",
+        "scmCommitLog": "Fourth fork commit",
+        "scmAuthor": "Author, Two",
+        "scmAuthorLogin": "ghtwo",
+        "scmParentRevisionNumbers": [
+          "abdca9410a861d28ee0772433c1946d066577454"
+        ],
+        "scmCommitTimestamp": 1513102333000,
+        "numberOfChanges": 0
+      }
+    ]
+  },
+  {
+    "scmUrl": "https://mygithub.com/Devopscode/RebaseMerge",
+    "scmBranch": "master",
+    "scmRevisionNumber": "716f74018129a5a3b2578b773f27bef0892c962a",
+    "scmCommitLog": "pr from fork",
+    "scmCommitTimestamp": 1513102525000,
+    "numberOfChanges": 0,
+    "id": {
+      "timestamp": 1516222003,
+      "machineIdentifier": 7316410,
+      "processIdentifier": 31420,
+      "counter": 12328708
+    },
+    "orgName": "Devopscode",
+    "repoName": "RebaseMerge",
+    "sourceRepo": "ghtwo/RebaseMerge",
+    "sourceBranch": "master",
+    "targetRepo": "Devopscode/RebaseMerge",
+    "targetBranch": "master",
+    "number": "1",
+    "collectorItemId": {
+      "timestamp": 1515082968,
+      "machineIdentifier": 3402793,
+      "processIdentifier": 27521,
+      "counter": 12817301
+    },
+    "updatedAt": 1513102525000,
+    "createdAt": 1513102516000,
+    "closedAt": 0,
+    "state": "merged",
+    "mergedAt": 1513102525000,
+    "timestamp": 1513102516000,
+    "resolutiontime": 0,
+    "userId": "ghtwo",
+    "comments": [],
+    "reviews": [],
+    "headSha": "7c70c98b6cd93dcab57700a45302c1f7048c637c",
+    "baseSha": "abbe21353249014eeda459130be9bfb5a66994b5",
+    "requestType": "pull",
+    "commits": [
+      {
+        "timestamp": 0,
+        "firstEverCommit": false,
+        "scmRevisionNumber": "cc4f007049ad2110e57b0a74b37c051d907040e6",
+        "scmCommitLog": "Third fork commit",
+        "scmAuthor": "Author, Two",
+        "scmAuthorLogin": "ghtwo",
+        "scmParentRevisionNumbers": [
+          "baeee8676685fcf6b979b88a26f4f2c8c980c4ae"
+        ],
+        "scmCommitTimestamp": 1513102488000,
+        "numberOfChanges": 0
+      },
+      {
+        "timestamp": 0,
+        "firstEverCommit": false,
+        "scmRevisionNumber": "7c70c98b6cd93dcab57700a45302c1f7048c637c",
+        "scmCommitLog": "Fourth fork commit",
+        "scmAuthor": "Author, Two",
+        "scmAuthorLogin": "ghtwo",
+        "scmParentRevisionNumbers": [
+          "cc4f007049ad2110e57b0a74b37c051d907040e6"
+        ],
+        "scmCommitTimestamp": 1513102501000,
+        "numberOfChanges": 0
+      }
+    ]
+  },
+  {
+    "scmUrl": "https://mygithub.com/Devopscode/OpenForkPr",
+    "scmBranch": "master",
+    "scmRevisionNumber": "",
+    "scmCommitLog": "pr from fork",
+    "scmCommitTimestamp": 0,
+    "numberOfChanges": 0,
+    "id": {
+      "timestamp": 1516222003,
+      "machineIdentifier": 7316410,
+      "processIdentifier": 31420,
+      "counter": 12328713
+    },
+    "orgName": "Devopscode",
+    "repoName": "OpenForkPr",
+    "sourceRepo": "ghtwo/OpenForkPr",
+    "sourceBranch": "master",
+    "targetRepo": "Devopscode/OpenForkPr",
+    "targetBranch": "master",
+    "number": "1",
+    "collectorItemId": {
+      "timestamp": 1515082998,
+      "machineIdentifier": 3402793,
+      "processIdentifier": 27521,
+      "counter": 12817306
+    },
+    "updatedAt": 1513103250000,
+    "createdAt": 1513103250000,
+    "closedAt": 0,
+    "state": "open",
+    "mergedAt": 0,
+    "timestamp": 1513103250000,
+    "resolutiontime": -17512,
+    "userId": "ghtwo",
+    "comments": [],
+    "reviews": [],
+    "headSha": "5778be2d97000c3f5beb28cab25e9c905317f924",
+    "baseSha": "d0a5c26c3d5cfdff3cf8f925be933e0e936c533b",
+    "requestType": "pull",
+    "commits": [
+      {
+        "timestamp": 0,
+        "firstEverCommit": false,
+        "scmRevisionNumber": "c91d42f07664b473a179f4bc7701fba6531511c6",
+        "scmCommitLog": "Third fork commit",
+        "scmAuthor": "Author, Two",
+        "scmAuthorLogin": "ghtwo",
+        "scmParentRevisionNumbers": [
+          "b2a0fd195a5322161e72cdcea66729d8b94da4f6"
+        ],
+        "scmCommitTimestamp": 1513103212000,
+        "numberOfChanges": 0
+      },
+      {
+        "timestamp": 0,
+        "firstEverCommit": false,
+        "scmRevisionNumber": "5778be2d97000c3f5beb28cab25e9c905317f924",
+        "scmCommitLog": "Fourth fork commit",
+        "scmAuthor": "Author, Two",
+        "scmAuthorLogin": "ghtwo",
+        "scmParentRevisionNumbers": [
+          "c91d42f07664b473a179f4bc7701fba6531511c6"
+        ],
+        "scmCommitTimestamp": 1513103223000,
+        "numberOfChanges": 0
+      }
+    ]
+  },
+  {
+    "scmUrl": "https://mygithub.com/Devopscode/OpenBranchPr",
+    "scmBranch": "master",
+    "scmRevisionNumber": "",
+    "scmCommitLog": "Dev",
+    "scmCommitTimestamp": 0,
+    "numberOfChanges": 0,
+    "id": {
+      "timestamp": 1516222003,
+      "machineIdentifier": 7316410,
+      "processIdentifier": 31420,
+      "counter": 12328718
+    },
+    "orgName": "Devopscode",
+    "repoName": "OpenBranchPr",
+    "sourceRepo": "Devopscode/OpenBranchPr",
+    "sourceBranch": "dev",
+    "targetRepo": "Devopscode/OpenBranchPr",
+    "targetBranch": "master",
+    "number": "1",
+    "collectorItemId": {
+      "timestamp": 1515083026,
+      "machineIdentifier": 3402793,
+      "processIdentifier": 27521,
+      "counter": 12817311
+    },
+    "updatedAt": 1513103644000,
+    "createdAt": 1513103644000,
+    "closedAt": 0,
+    "state": "open",
+    "mergedAt": 0,
+    "timestamp": 1513103644000,
+    "resolutiontime": -17512,
+    "userId": "ghtwo",
+    "comments": [],
+    "reviews": [],
+    "headSha": "45c702bc167e8316ff06f407e58c9d2c45cbf16b",
+    "baseSha": "ea0a0eb5000ecf21a067ce4fa7a1f1d3881b4efa",
+    "requestType": "pull",
+    "commits": [
+      {
+        "timestamp": 0,
+        "firstEverCommit": false,
+        "scmRevisionNumber": "c65ee02012f12c3819d0961faab942406fe40e33",
+        "scmCommitLog": "Third branch commit",
+        "scmAuthor": "Author, Two",
+        "scmAuthorLogin": "ghtwo",
+        "scmParentRevisionNumbers": [
+          "cf17e1bfb82f815023b28e002aef85f54058ad11"
+        ],
+        "scmCommitTimestamp": 1513103623000,
+        "numberOfChanges": 0
+      },
+      {
+        "timestamp": 0,
+        "firstEverCommit": false,
+        "scmRevisionNumber": "45c702bc167e8316ff06f407e58c9d2c45cbf16b",
+        "scmCommitLog": "Fourth branch commit",
+        "scmAuthor": "Author, Two",
+        "scmAuthorLogin": "ghtwo",
+        "scmParentRevisionNumbers": [
+          "c65ee02012f12c3819d0961faab942406fe40e33"
+        ],
+        "scmCommitTimestamp": 1513103634000,
+        "numberOfChanges": 0
+      }
+    ]
+  },
+  {
+    "id" : "5a678cfcb5d5dc509425d00f",
+    "scmUrl" : "https://mygithub.com/Devopscode/MultipleAuthorsLGTM",
+    "scmBranch" : "master",
+    "scmRevisionNumber" : "6375888315f3233e50a56aa6650227dfee7bdd9f",
+    "scmCommitLog" : "Merge TestFile into master from dev",
+    "scmCommitTimestamp" : 1516734773000,
+    "numberOfChanges" : 0,
+    "orgName" : "Devopscode",
+    "repoName" : "MultipleAuthorsLGTM",
+    "sourceRepo" : "Devopscode/MultipleAuthorsLGTM",
+    "sourceBranch" : "dev",
+    "targetRepo" : "Devopscode/MultipleAuthorsLGTM",
+    "targetBranch" : "master",
+    "number" : "1",
+    "collectorItemId" : "5a678a032b7af20c95e7b146",
+    "updatedAt" : 1516734773000,
+    "createdAt" : 1516734459000,
+    "closedAt" : 0,
+    "state" : "merged",
+    "mergedAt" : 1516734773000,
+    "timestamp" : 1516734459000,
+    "resolutiontime" : 0,
+    "userId" : "ghone",
+    "comments": [
+      {
+        "user": "ghtwo",
+        "createdAt": 1511190526000,
+        "updatedAt": 1511190526000,
+        "body": "LGTM",
+        "status": ""
+      }
+    ],
+    "reviews": [],
+    "commitStatuses": [
+      {
+        "state": "SUCCESS",
+        "context": "approvals/lgtmeow",
+        "description": "approved by ghtwo"
+      }
+    ],
+    "headSha" : "263cabbeb0d00023c3fb6e46c1b9654b56a29ec0",
+    "baseSha" : "6375888315f3233e50a56aa6650227dfee7bdd9f",
+    "requestType" : "pull",
+    "commits" : [
+      {
+        "timestamp" : 0,
+        "firstEverCommit" : false,
+        "scmRevisionNumber" : "60fef0c4c4b1a0b8dcba7a8d88c54348f75ef5d6",
+        "scmCommitLog" : "Create TestFile",
+        "scmAuthor" : "Author, One",
+        "scmAuthorLogin" : "ghone",
+        "scmCommitTimestamp" : 1516734408000,
+        "numberOfChanges" : 0
+      },
+      {
+        "timestamp" : 0,
+        "firstEverCommit" : false,
+        "scmRevisionNumber" : "8331321b9552b2ca3f612b2642c178635d9fa08c",
+        "scmCommitLog" : "Update TestFile",
+        "scmAuthor" : "Author, One",
+        "scmAuthorLogin" : "ghone",
+        "scmCommitTimestamp" : 1516734422000,
+        "numberOfChanges" : 0
+      },
+      {
+        "timestamp" : 0,
+        "firstEverCommit" : false,
+        "scmRevisionNumber" : "263cabbeb0d00023c3fb6e46c1b9654b56a29ec0",
+        "scmCommitLog" : "Create testadd",
+        "scmAuthor" : "Author, Two",
+        "scmAuthorLogin" : "ghtwo",
+        "scmCommitTimestamp" : 1516734591000,
+        "numberOfChanges" : 0
+      }
+    ]
+  },
+  {
+    "id" : "5a6c06b2f5fb7848d2820e57",
+    "scmUrl" : "https://mygithub.com/Devopscode/MultipleAuthorsGHR",
+    "scmBranch" : "master",
+    "scmRevisionNumber" : "b957f24c0506d96042a5bb698d0933184af7bcc3",
+    "scmCommitLog" : "second pr from dev to master",
+    "scmCommitTimestamp" : 1517026496000,
+    "numberOfChanges" : 0,
+    "orgName" : "Devopscode",
+    "repoName" : "MultipleAuthorsGHR",
+    "sourceRepo" : "Devopscode/MultipleAuthorsGHR",
+    "sourceBranch" : "dev",
+    "targetRepo" : "Devopscode/MultipleAuthorsGHR",
+    "targetBranch" : "master",
+    "number" : "2",
+    "collectorItemId" : "5a4e524333ec296b81c3935f",
+    "updatedAt" : 1517026496000,
+    "createdAt" : 1517025951000,
+    "closedAt" : 0,
+    "state" : "merged",
+    "mergedAt" : 1517026496000,
+    "timestamp" : 1517029041962,
+    "resolutiontime" : 0,
+    "userId" : "ghone",
+    "comments" : [
+      {
+        "user" : "ghone",
+        "createdAt" : 1517026436000,
+        "updatedAt" : 1517026436000,
+        "body" : "LGTM whose code ?",
+        "status" : ""
+      }
+    ],
+    "reviews" : [
+      {
+        "body" : "Yes! Approving my own change!",
+        "state" : "APPROVED",
+        "author" : "ghtwo",
+        "createdAt" : 1517026233000,
+        "updatedAt" : 1517026233000
+      }
+    ],
+    "headSha" : "27ceabaca1453809410bb0a40d14a201a5076c5b",
+    "baseSha" : "b957f24c0506d96042a5bb698d0933184af7bcc3",
+    "requestType" : "pull",
+    "commits" : [
+      {
+        "id" : null,
+        "timestamp" : 0,
+        "firstEverCommit" : false,
+        "scmRevisionNumber" : "46c3bc434c935df51a350439d0faae0fd03a5e64",
+        "scmCommitLog" : "Create Anotherfile.txt",
+        "scmAuthor" : "Author One",
+        "scmAuthorLogin" : "ghone",
+        "scmCommitTimestamp" : 1517025913000,
+        "numberOfChanges" : 0
+      },
+      {
+        "id" : null,
+        "timestamp" : 0,
+        "firstEverCommit" : false,
+        "scmRevisionNumber" : "2f98b1cc6cfcf47e2b69a642d73c7e6c8ca1962a",
+        "scmCommitLog" : "Update Anotherfile.txt",
+        "scmAuthor" : "Author One",
+        "scmAuthorLogin" : "ghone",
+        "scmCommitTimestamp" : 1517025926000,
+        "numberOfChanges" : 0
+      },
+      {
+        "id" : null,
+        "timestamp" : 0,
+        "firstEverCommit" : false,
+        "scmRevisionNumber" : "27ceabaca1453809410bb0a40d14a201a5076c5b",
+        "scmCommitLog" : "Update Anotherfile.txt",
+        "scmAuthor" : "Author Two",
+        "scmAuthorLogin" : "ghtwo",
+        "scmCommitTimestamp" : 1517026133000,
+        "numberOfChanges" : 0
+      }
+    ]
+  },
+  {
+    "id" : "5a6c06b2f5fb7848d2820e58",
+    "scmUrl" : "https://mygithub.com/Devopscode/MultipleAuthorsGHR",
+    "scmBranch" : "master",
+    "scmRevisionNumber" : "d24f42ee7c706fefcc7c71e49f39e686f0d87f77",
+    "scmCommitLog" : "pr from dev to master",
+    "scmCommitTimestamp" : 1517025797000,
+    "numberOfChanges" : 0,
+    "orgName" : "Devopscode",
+    "repoName" : "MultipleAuthorsGHR",
+    "sourceRepo" : "Devopscode/MultipleAuthorsGHR",
+    "sourceBranch" : "dev",
+    "targetRepo" : "Devopscode/MultipleAuthorsGHR",
+    "targetBranch" : "master",
+    "number" : "1",
+    "collectorItemId" : "5a4e524333ec296b81c3935f",
+    "updatedAt" : 1517025810000,
+    "createdAt" : 1517025396000,
+    "closedAt" : 0,
+    "state" : "merged",
+    "mergedAt" : 1517025797000,
+    "timestamp" : 1517029041967,
+    "resolutiontime" : 0,
+    "userId" : "ghone",
+    "comments" : [],
+    "reviews" : [
+      {
+        "body" : "Good stuff.",
+        "state" : "APPROVED",
+        "author" : "ghtwo",
+        "createdAt" : 1517025723000,
+        "updatedAt" : 1517025723000
+      }
+    ],
+    "headSha" : "27ceabaca1453809410bb0a40d14a201a5076c5b",
+    "baseSha" : "b957f24c0506d96042a5bb698d0933184af7bcc3",
+    "requestType" : "pull",
+    "commits" : [
+      {
+        "id" : null,
+        "timestamp" : 0,
+        "firstEverCommit" : false,
+        "scmRevisionNumber" : "88b1e10723154f0ff0ae942e5243c225cf95f235",
+        "scmCommitLog" : "Create somefile.txt",
+        "scmAuthor" : "Author One",
+        "scmAuthorLogin" : "ghone",
+        "scmCommitTimestamp" : 1517025349000,
+        "numberOfChanges" : 0
+      },
+      {
+        "id" : null,
+        "timestamp" : 0,
+        "firstEverCommit" : false,
+        "scmRevisionNumber" : "1ffbaeb80b6f90e84d5bd1ceb9d8d256202becb7",
+        "scmCommitLog" : "Update somefile.txt",
+        "scmAuthor" : "Author One",
+        "scmAuthorLogin" : "ghone",
+        "scmCommitTimestamp" : 1517025365000,
+        "numberOfChanges" : 0
+      },
+      {
+        "id" : null,
+        "timestamp" : 0,
+        "firstEverCommit" : false,
+        "scmRevisionNumber" : "d8bb61c9fb5342a6488f2796dcf4ded2e056d6ae",
+        "scmCommitLog" : "Update README.md",
+        "scmAuthor" : "Author Two",
+        "scmAuthorLogin" : "ghtwo",
+        "scmCommitTimestamp" : 1517025629000,
+        "numberOfChanges" : 0
+      }
+    ]
+  }
+]

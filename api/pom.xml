@@ -14,7 +14,7 @@
 
     <properties>
         <jackson.version>2.5.0</jackson.version>
-        <guava.version>16.0.1</guava.version>
+        <guava.version>18.0</guava.version>
         <application.version.number>${version}</application.version.number>
     </properties>
 
@@ -97,6 +97,11 @@
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-ldap</artifactId>
 	</dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-aop</artifactId>
+    </dependency>
     
 
     <dependency>

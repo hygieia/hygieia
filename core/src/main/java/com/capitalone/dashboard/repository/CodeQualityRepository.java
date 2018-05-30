@@ -1,6 +1,9 @@
 package com.capitalone.dashboard.repository;
 
 import com.capitalone.dashboard.model.CodeQuality;
+
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
@@ -15,8 +18,20 @@ public interface CodeQualityRepository extends CrudRepository<CodeQuality, Objec
      * {@link com.capitalone.dashboard.model.CollectorItem}.
      *
      * @param collectorItemId collector item id
-     * @param timestamp timstamp
+     * @param timestamp timestamp
      * @return a {@link CodeQuality}
      */
     CodeQuality findByCollectorItemIdAndTimestamp(ObjectId collectorItemId, long timestamp);
+    
+    List<CodeQuality> findByCollectorItemIdAndVersionOrderByTimestampDesc (ObjectId collectorItemId,String version);
+
+    List<CodeQuality> findByCollectorItemIdAndNameAndVersionOrderByTimestampDesc (ObjectId collectorItemId,String name,String version);
+    
+    List<CodeQuality> findByCollectorItemIdOrderByTimestampDesc (ObjectId collectorItemId);
+    
+    List<CodeQuality> findByNameAndVersion(String name,String version);
+
+    List<CodeQuality> findByNameAndVersionOrderByTimestampDesc(String name,String version);
+
+    List<CodeQuality> findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(ObjectId collectorItemId, long beginDate, long endDate);
 }

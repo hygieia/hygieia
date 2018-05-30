@@ -1,0 +1,17 @@
+<p class="input-group">
+    <input type="text"
+           name="{{dpName}}"
+           class="form-control date-picker" uib-datepicker-popup="{{format}}" ng-model="dt"
+           is-open="status.opened"
+           show-weeks="false"
+           min-date="minDate"
+           max-date="maxDate"
+           datepicker-options="dateOptions"
+           ng-required="true"
+           close-text="Close" />
+    <span class="input-group-btn">
+        <button type="button" class="btn btn-default" ng-click="open()">
+            <i class="glyphicon glyphicon-calendar"></i>
+        </button>
+    </span>
+</p>

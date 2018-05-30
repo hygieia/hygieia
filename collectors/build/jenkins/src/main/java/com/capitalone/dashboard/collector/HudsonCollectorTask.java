@@ -1,16 +1,15 @@
 package com.capitalone.dashboard.collector;
 
 
-import com.capitalone.dashboard.model.Build;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.HudsonCollector;
-import com.capitalone.dashboard.model.HudsonJob;
-import com.capitalone.dashboard.repository.BaseCollectorRepository;
-import com.capitalone.dashboard.repository.BuildRepository;
-import com.capitalone.dashboard.repository.ComponentRepository;
-import com.capitalone.dashboard.repository.HudsonCollectorRepository;
-import com.capitalone.dashboard.repository.HudsonJobRepository;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +18,22 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestClientException;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.capitalone.dashboard.model.BaseModel;
+import com.capitalone.dashboard.model.Build;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorItemConfigHistory;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Configuration;
+import com.capitalone.dashboard.model.HudsonCollector;
+import com.capitalone.dashboard.model.HudsonJob;
+import com.capitalone.dashboard.repository.BaseCollectorRepository;
+import com.capitalone.dashboard.repository.BuildRepository;
+import com.capitalone.dashboard.repository.CollItemConfigHistoryRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.repository.ConfigurationRepository;
+import com.capitalone.dashboard.repository.HudsonCollectorRepository;
+import com.capitalone.dashboard.repository.HudsonJobRepository;
+import com.google.common.collect.Lists;
 
 
 /**
@@ -37,29 +47,55 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
     private final HudsonCollectorRepository hudsonCollectorRepository;
     private final HudsonJobRepository hudsonJobRepository;
     private final BuildRepository buildRepository;
+    private final CollItemConfigHistoryRepository configRepository;
     private final HudsonClient hudsonClient;
     private final HudsonSettings hudsonSettings;
     private final ComponentRepository dbComponentRepository;
+	private final ConfigurationRepository configurationRepository;
 
     @Autowired
     public HudsonCollectorTask(TaskScheduler taskScheduler,
                                HudsonCollectorRepository hudsonCollectorRepository,
                                HudsonJobRepository hudsonJobRepository,
-                               BuildRepository buildRepository, HudsonClient hudsonClient,
+                               BuildRepository buildRepository, CollItemConfigHistoryRepository configRepository, HudsonClient hudsonClient,
                                HudsonSettings hudsonSettings,
-                               ComponentRepository dbComponentRepository) {
+                               ComponentRepository dbComponentRepository, 
+                               ConfigurationRepository configurationRepository) {
         super(taskScheduler, "Hudson");
         this.hudsonCollectorRepository = hudsonCollectorRepository;
         this.hudsonJobRepository = hudsonJobRepository;
         this.buildRepository = buildRepository;
+        this.configRepository = configRepository;
         this.hudsonClient = hudsonClient;
         this.hudsonSettings = hudsonSettings;
         this.dbComponentRepository = dbComponentRepository;
+		this.configurationRepository = configurationRepository;
     }
 
     @Override
     public HudsonCollector getCollector() {
-        return HudsonCollector.prototype(hudsonSettings.getServers(), hudsonSettings.getNiceNames());
+    	Configuration config = configurationRepository.findByCollectorName("Hudson");
+		if (config != null ) {
+			config.decryptOrEncrptInfo();
+			// To clear the username and password from existing run and
+			// pick the latest
+			if(hudsonSettings.getServers() == null) {
+				hudsonSettings.setUsernames(new ArrayList<>());
+				hudsonSettings.setApiKeys(new ArrayList<>());
+				hudsonSettings.setServers(new ArrayList<>());
+			} else {
+				hudsonSettings.getUsernames().clear();
+				hudsonSettings.getServers().clear();
+				hudsonSettings.getApiKeys().clear();
+			}
+			for (Map<String, String> jenkinsServer : config.getInfo()) {
+				hudsonSettings.getServers().add(jenkinsServer.get("url"));
+				hudsonSettings.getUsernames().add(jenkinsServer.get("userName"));
+				hudsonSettings.getApiKeys().add(jenkinsServer.get("password"));
+			}
+		}
+        return HudsonCollector.prototype(hudsonSettings.getServers(), hudsonSettings.getNiceNames(),
+                hudsonSettings.getEnvironments());
     }
 
     @Override
@@ -87,12 +123,13 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
         for (String instanceUrl : collector.getBuildServers()) {
             logBanner(instanceUrl);
             try {
-                Map<HudsonJob, Set<Build>> buildsByJob = hudsonClient
+                Map<HudsonJob, Map<HudsonClient.jobData, Set<BaseModel>>> dataByJob = hudsonClient
                         .getInstanceJobs(instanceUrl);
                 log("Fetched jobs", start);
-                activeJobs.addAll(buildsByJob.keySet());
-                addNewJobs(buildsByJob.keySet(), existingJobs, collector);
-                addNewBuilds(enabledJobs(collector, instanceUrl), buildsByJob);
+                activeJobs.addAll(dataByJob.keySet());
+                addNewJobs(dataByJob.keySet(), existingJobs, collector);
+                addNewBuilds(enabledJobs(collector, instanceUrl), dataByJob);
+                addNewConfigs(enabledJobs(collector, instanceUrl), dataByJob);
                 log("Finished", start);
             } catch (RestClientException rce) {
                 activeServers.remove(instanceUrl); // since it was a rest exception, we will not delete this job  and wait for
@@ -143,6 +180,7 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
 
     /**
      * Delete orphaned job collector items
+     *
      * @param activeJobs
      * @param existingJobs
      * @param activeServers
@@ -160,7 +198,7 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
             }
 
             //if the collector id of the collector item for the job in the repo does not match with the collector ID, delete it.
-            if (!job.getCollectorId().equals(collector.getId())) {
+            if (!Objects.equals(job.getCollectorId(), collector.getId())) {
                 deleteJobList.add(job);
             }
 
@@ -179,18 +217,29 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
      * Iterates over the enabled build jobs and adds new builds to the database.
      *
      * @param enabledJobs list of enabled {@link HudsonJob}s
-     * @param buildsByJob maps a {@link HudsonJob} to a set of {@link Build}s.
+     * @param dataByJob maps a {@link HudsonJob} to a map of data with {@link Build}s.
      */
     private void addNewBuilds(List<HudsonJob> enabledJobs,
-                              Map<HudsonJob, Set<Build>> buildsByJob) {
+                              Map<HudsonJob, Map<HudsonClient.jobData, Set<BaseModel>>> dataByJob) {
         long start = System.currentTimeMillis();
         int count = 0;
 
         for (HudsonJob job : enabledJobs) {
             if (job.isPushed()) continue;
-            for (Build buildSummary : nullSafe(buildsByJob.get(job))) {
-                if (isNewBuild(job, buildSummary)) {
-                    Build build = hudsonClient.getBuildDetails(buildSummary
+            // process new builds in the order of their build numbers - this has implication to handling of commits in BuildEventListener
+
+            Map<HudsonClient.jobData, Set<BaseModel>> jobDataSetMap = dataByJob.get(job);
+            if (jobDataSetMap == null) {
+                continue;
+            }
+            Set<BaseModel> buildsSet = jobDataSetMap.get(HudsonClient.jobData.BUILD);
+
+            ArrayList<BaseModel> builds = Lists.newArrayList(nullSafe(buildsSet));
+
+            builds.sort(Comparator.comparingInt(b -> Integer.valueOf(((Build) b).getNumber())));
+            for (BaseModel buildSummary : builds) {
+                if (isNewBuild(job, (Build)buildSummary)) {
+                    Build build = hudsonClient.getBuildDetails(((Build)buildSummary)
                             .getBuildUrl(), job.getInstanceUrl());
                     if (build != null) {
                         build.setCollectorItemId(job.getId());
@@ -203,8 +252,38 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
         log("New builds", start, count);
     }
 
-    private Set<Build> nullSafe(Set<Build> builds) {
-        return builds == null ? new HashSet<Build>() : builds;
+    private void addNewConfigs(List<HudsonJob> enabledJobs,
+                              Map<HudsonJob, Map<HudsonClient.jobData, Set<BaseModel>>> dataByJob) {
+        long start = System.currentTimeMillis();
+        int count = 0;
+
+        for (HudsonJob job : enabledJobs) {
+            if (job.isPushed()) continue;
+            // process new builds in the order of their build numbers - this has implication to handling of commits in BuildEventListener
+
+            Map<HudsonClient.jobData, Set<BaseModel>> jobDataSetMap = dataByJob.get(job);
+            if (jobDataSetMap == null) {
+                continue;
+            }
+            Set<BaseModel> configsSet = jobDataSetMap.get(HudsonClient.jobData.CONFIG);
+
+            ArrayList<BaseModel> configs = Lists.newArrayList(nullSafe(configsSet));
+
+            configs.sort(Comparator.comparing(b -> new Date(((CollectorItemConfigHistory) b).getTimestamp())));
+
+            for (BaseModel config : configs) {
+                if (config != null && isNewConfig(job, (CollectorItemConfigHistory)config)) {
+                    ((CollectorItemConfigHistory)config).setCollectorItemId(job.getId());
+                    configRepository.save((CollectorItemConfigHistory)config);
+                    count++;
+                }
+            }
+        }
+        log("New configs", start, count);
+    }
+
+    private Set<BaseModel> nullSafe(Set<BaseModel> builds) {
+        return builds == null ? new HashSet<>() : builds;
     }
 
     /**
@@ -226,6 +305,7 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
             }
 
             String niceName = getNiceName(job, collector);
+            String environment = getEnvironment(job, collector);
             if (existing == null) {
                 job.setCollectorId(collector.getId());
                 job.setEnabled(false); // Do not enable for collection. Will be enabled when added to dashboard
@@ -233,11 +313,24 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
                 if (StringUtils.isNotEmpty(niceName)) {
                     job.setNiceName(niceName);
                 }
+                if (StringUtils.isNotEmpty(environment)) {
+                    job.setEnvironment(environment);
+                }
                 newJobs.add(job);
                 count++;
-            } else if (StringUtils.isEmpty(existing.getNiceName()) && StringUtils.isNotEmpty(niceName)) {
-                existing.setNiceName(niceName);
-                hudsonJobRepository.save(existing);
+            } else {
+                if (StringUtils.isEmpty(existing.getNiceName()) && StringUtils.isNotEmpty(niceName)) {
+                    existing.setNiceName(niceName);
+                    hudsonJobRepository.save(existing);
+                }
+                if (StringUtils.isEmpty(existing.getEnvironment()) && StringUtils.isNotEmpty(environment)) {
+                    existing.setEnvironment(environment);
+                    hudsonJobRepository.save(existing);
+                }
+                if (StringUtils.isEmpty(existing.getInstanceUrl())) {
+                    existing.setInstanceUrl(job.getInstanceUrl());
+                    hudsonJobRepository.save(existing);
+                }
             }
         }
         //save all in one shot
@@ -260,6 +353,19 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
         return "";
     }
 
+    private String getEnvironment(HudsonJob job, HudsonCollector collector) {
+        if (CollectionUtils.isEmpty(collector.getBuildServers())) return "";
+        List<String> servers = collector.getBuildServers();
+        List<String> environments = collector.getEnvironments();
+        if (CollectionUtils.isEmpty(environments)) return "";
+        for (int i = 0; i < servers.size(); i++) {
+            if (servers.get(i).equalsIgnoreCase(job.getInstanceUrl()) && (environments.size() > i)) {
+                return environments.get(i);
+            }
+        }
+        return "";
+    }
+
     private List<HudsonJob> enabledJobs(HudsonCollector collector,
                                         String instanceUrl) {
         return hudsonJobRepository.findEnabledJobs(collector.getId(),
@@ -267,7 +373,7 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
     }
 
     @SuppressWarnings("unused")
-	private HudsonJob getExistingJob(HudsonCollector collector, HudsonJob job) {
+    private HudsonJob getExistingJob(HudsonCollector collector, HudsonJob job) {
         return hudsonJobRepository.findJob(collector.getId(),
                 job.getInstanceUrl(), job.getJobName());
     }
@@ -275,5 +381,9 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
     private boolean isNewBuild(HudsonJob job, Build build) {
         return buildRepository.findByCollectorItemIdAndNumber(job.getId(),
                 build.getNumber()) == null;
+    }
+
+    private boolean isNewConfig(HudsonJob job, CollectorItemConfigHistory config) {
+        return configRepository.findByCollectorItemIdAndTimestamp(job.getId(),config.getTimestamp()) == null;
     }
 }

@@ -9,8 +9,8 @@
         .controller('AdminController', AdminController);
 
 
-    AdminController.$inject = ['$scope', 'dashboardData', '$location','$uibModal', 'userService', 'authService', 'userData'];
-    function AdminController($scope, dashboardData, $location, $uibModal, userService, authService, userData) {
+    AdminController.$inject = ['$scope', 'dashboardData', '$location', '$uibModal', 'userService', 'authService', 'userData', 'dashboardService', 'templateMangerData', 'paginationWrapperService','$sce'];
+    function AdminController($scope, dashboardData, $location, $uibModal, userService, authService, userData, dashboardService, templateMangerData, paginationWrapperService,$sce) {
         var ctrl = this;
         if (userService.isAuthenticated() && userService.isAdmin()) {
             $location.path('/admin');
@@ -29,8 +29,19 @@
         ctrl.logout = logout;
         ctrl.editDashboard = editDashboard;
         ctrl.generateToken = generateToken;
+        ctrl.goToManager = goToManager;
+        ctrl.deleteTemplate = deleteTemplate;
+        ctrl.viewTemplateDetails = viewTemplateDetails;
+        ctrl.editTemplate = editTemplate;
+        ctrl.deleteToken = deleteToken;
+        ctrl.editToken = editToken;
 
-        $scope.tab="dashboards";
+        ctrl.pageChangeHandler = pageChangeHandler;
+        ctrl.totalItems = totalItems;
+        ctrl.currentPage = currentPage;
+        ctrl.pageSize = pageSize;
+
+        $scope.tab = "dashboards";
 
         // list of available themes. Must be updated manually
         ctrl.themes = [
@@ -52,10 +63,9 @@
             }];
 
         // used to only show themes option if local storage is available
-        if(localStorageSupported) {
+        if (localStorageSupported) {
             ctrl.theme = localStorage.getItem('theme');
         }
-
 
         // ctrl.dashboards = []; don't default since it's used to determine loading
 
@@ -63,12 +73,30 @@
         ctrl.deleteDashboard = deleteDashboard;
         ctrl.applyTheme = applyTheme;
 
-
         // request dashboards
         dashboardData.search().then(processResponse);
         userData.getAllUsers().then(processUserResponse);
         userData.apitokens().then(processTokenResponse);
+        templateMangerData.getAllTemplates().then(processTemplateResponse);
 
+        function pageChangeHandler(pageNumber) {
+            paginationWrapperService.pageChangeHandler(pageNumber)
+                .then(function() {
+                    ctrl.dashboards = paginationWrapperService.getDashboards();
+                });
+        }
+
+        function totalItems() {
+            return paginationWrapperService.getTotalItems();
+        }
+
+        function currentPage() {
+            return paginationWrapperService.getCurrentPage();
+        }
+
+        function pageSize() {
+            return paginationWrapperService.getPageSize();
+        }
 
         //implementation of logout
         function logout() {
@@ -77,73 +105,88 @@
         }
 
         function login() {
-          $location.path("/login")
+            $location.path("/login")
         }
 
         // method implementations
         function applyTheme(filename) {
-            if(localStorageSupported) {
+            if (localStorageSupported) {
                 localStorage.setItem('theme', filename);
                 location.reload();
             }
         }
 
         function deleteDashboard(id) {
-            dashboardData.delete(id).then(function() {
+            dashboardData.delete(id).then(function () {
                 _.remove(ctrl.dashboards, {id: id});
             });
+            paginationWrapperService.calculateTotalItems();
         }
 
-        function editDashboard(item)
-        {
+        function editDashboard(item) {
             console.log("Edit Dashboard in Admin");
 
-            var mymodalInstance=$uibModal.open({
+            var mymodalInstance = $uibModal.open({
                 templateUrl: 'app/dashboard/views/editDashboard.html',
                 controller: 'EditDashboardController',
                 controllerAs: 'ctrl',
                 resolve: {
-                    dashboardId: function() {
-                        return item.id;
-                    },
-                    dashboardName: function() {
-                        return item.name;
+                    dashboardItem: function () {
+                        return item;
                     }
                 }
             });
 
-            mymodalInstance.result.then(function(condition) {
-                window.location.reload(false);
+            mymodalInstance.result.then(function success() {
+                dashboardData.search().then(processResponse);
+                userData.getAllUsers().then(processUserResponse);
+                userData.apitokens().then(processTokenResponse);
+                templateMangerData.getAllTemplates().then(processTemplateResponse);
             });
-
         }
 
-        function generateToken()
-        {
-            console.log("Generate token in Admin");
+        function editToken(item) {
+            console.log("Edit token in Admin");
 
             var mymodalInstance=$uibModal.open({
-                templateUrl: 'app/dashboard/views/generateApiToken.html',
-                controller: 'GenerateApiTokenController',
+                templateUrl: 'app/dashboard/views/editApiToken.html',
+                controller: 'EditApiTokenController',
                 controllerAs: 'ctrl',
                 resolve: {
+                    tokenItem: function() {
+                        return item;
+                    }
                 }
             });
 
-            mymodalInstance.result.then(function(condition) {
-                window.location.reload(false);
+            mymodalInstance.result.then(function() {
+                userData.apitokens().then(processTokenResponse);
+            });
+        }
+
+        function deleteToken(id) {
+            userData.deleteToken(id).then(function() {
+                _.remove( $scope.apitokens , {id: id});
+            });
+        }
+
+        function generateToken() {
+            console.log("Generate token in Admin");
+
+            var mymodalInstance = $uibModal.open({
+                templateUrl: 'app/dashboard/views/generateApiToken.html',
+                controller: 'GenerateApiTokenController',
+                controllerAs: 'ctrl',
+                resolve: {}
             });
 
+            mymodalInstance.result.then(function (condition) {
+                window.location.reload(false);
+            });
         }
 
         function processResponse(data) {
-            ctrl.dashboards = [];
-            for (var x = 0; x < data.length; x++) {
-                ctrl.dashboards.push({
-                    id: data[x].id,
-                    name: data[x].title
-                });
-            }
+            ctrl.dashboards = paginationWrapperService.processDashboardResponse({"data" : data});
         }
 
         function processUserResponse(response) {
@@ -154,39 +197,188 @@
             $scope.apitokens = response.data;
         }
 
-        $scope.navigateToTab = function(tab) {
-          $scope.tab=tab;
+        function processTemplateResponse(data) {
+            ctrl.templates = data;
         }
 
-        $scope.isActiveUser = function(user) {
-          if(user.authType === ctrl.authType && user.username === ctrl.username) {
-            return true;
-          }
-          return false;
+        // navigate to create template modal
+        function goToManager() {
+            var modalInstance = $uibModal.open({
+                templateUrl: 'app/dashboard/views/templateManager.html',
+                controller: 'TemplateController',
+                controllerAs: 'ctrl',
+                size: 'lg',
+                resolve: {}
+            }).result.then(function (config) {
+                window.location.reload(true);
+            });
         }
 
-        $scope.promoteUserToAdmin = function(user) {
-          userData.promoteUserToAdmin(user).then(
-            function(response) {
-              var index = $scope.users.indexOf(user);
-              $scope.users[index] = response.data;
-            },
-            function(error) {
-              $scope.error = error;
+        // Edit template
+        function editTemplate(item) {
+            console.log("Edit Template in Admin");
+            var mymodalInstance = $uibModal.open({
+                templateUrl: 'app/dashboard/views/editTemplate.html',
+                controller: 'EditTemplateController',
+                controllerAs: 'ctrl',
+                size: 'md',
+                resolve: {
+                    templateObject: function () {
+                        return item;
+                    }
+                }
+            });
+
+            mymodalInstance.result.then(function success() {
+                dashboardData.search().then(processResponse);
+                userData.getAllUsers().then(processUserResponse);
+                userData.apitokens().then(processTokenResponse);
+                templateMangerData.getAllTemplates().then(processTemplateResponse);
+            });
+        }
+
+        //Delete template
+        function deleteTemplate(item) {
+            var id = item.id;
+            var dashboardsList = [];
+            dashboardData.search().then(function (response) {
+                _(response).forEach(function (dashboard) {
+                    if (dashboard.template == item.template) {
+                        dashboardsList.push(dashboard.title);
+                    }
+                });
+                if (dashboardsList.length > 0) {
+                    var dash = '';
+                    for (var dashboardTitle in dashboardsList) {
+                        dash = dash + '\n' + dashboardsList[dashboardTitle];
+                    }
+                    swal({
+                        title: 'Template used in existing dashboards',
+                        text: dash,
+                        html: true,
+                        type: "warning",
+                        showConfirmButton: true,
+                        closeOnConfirm: true
+                    });
+                } else {
+                    templateMangerData.deleteTemplate(id).then(function () {
+                        _.remove(ctrl.templates, {id: id});
+                    }, function (response) {
+                        var msg = 'An error occurred while deleting the Template';
+                        swal(msg);
+                    });
+                }
+            });
+        }
+
+        //View template details
+        function viewTemplateDetails(myitem) {
+            ctrl.templateName = myitem.template;
+            templateMangerData.search(myitem.template).then(function (response) {
+                ctrl.templateDetails = response;
+                $uibModal.open({
+                    templateUrl: 'app/dashboard/views/templateDetails.html',
+                    controller: 'TemplateDetailsController',
+                    controllerAs: 'ctrl',
+                    size: 'lg',
+                    resolve: {
+                        modalData: function () {
+                            return {
+                                templateDetails: ctrl.templateDetails
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
+        $scope.navigateToTab = function (tab) {
+            $scope.tab = tab;
+        }
+
+        $scope.isActiveUser = function (user) {
+            if (user.authType === ctrl.authType && user.username === ctrl.username) {
+                return true;
             }
-        );
+            return false;
         }
 
-        $scope.demoteUserFromAdmin = function(user) {
-          userData.demoteUserFromAdmin(user).then(
-            function(response) {
-              var index = $scope.users.indexOf(user);
-              $scope.users[index] = response.data;
-            },
-            function(error) {
-              $scope.error = error;
+        $scope.promoteUserToAdmin = function (user) {
+            userData.promoteUserToAdmin(user).then(
+                function (response) {
+                    var index = $scope.users.indexOf(user);
+                    $scope.users[index] = response.data;
+                },
+                function (error) {
+                    $scope.error = error;
+                }
+            );
+        }
+
+        $scope.demoteUserFromAdmin = function (user) {
+            userData.demoteUserFromAdmin(user).then(
+                function (response) {
+                    var index = $scope.users.indexOf(user);
+                    $scope.users[index] = response.data;
+                },
+                function (error) {
+                    $scope.error = error;
+                }
+            );
+        }
+ 
+//Configuration settings functionality starts here
+        dashboardData.getGeneralConfig().then(processGeneralConfigResponse);
+        function processGeneralConfigResponse(data){
+                $scope.choices = data;
+        }
+
+        $scope.oneAtATime = false;
+        $scope.configTooltip = $sce.trustAsHtml("<ul class='tooltipList'><li>Url Should be the  server URL along with port, from where the jobs/appications have to be fetched.</li><li>Username Should be the functional username which has access to all the jobs/applications</li><li>Password Should be the corresponding password for the functional account</li></ul>");
+        $scope.status = {
+            isCustomHeaderOpen: true,
+            open:true
+        };
+        $scope.showpassword = false;
+        $scope.changePassIcon = function(){
+            $scope.showpassword = !$scope.showpassword;
+        }
+        $scope.addNewConfig = function(objKey) {
+            $scope.choices[objKey].info.push({}); 
+        };
+
+        $scope.removeNewConfig = function(item,objKey) {
+            $scope.choices[objKey].info.splice(item,1);
+
+        };
+        $scope.removeConfigHead = function(e, objKey){
+        e.preventDefault()
+        $scope.choices.splice(objKey,1);
+        }
+        $scope.generalConfigFormSave =function(form, obj){
+
+            if(form.$valid){
+                  dashboardData.generalConfigSave(obj).then(
+                    function(response) {
+                        swal('Configuration saved successfully!!');
+                    },
+                    function(error) {
+                        swal('Configuration not saved !!');
+                    }
+                );
+           }else{
+            $scope.status.open = true;
+           }
+        }
+        $scope.togglePasswordType = function(idKey,classKey){
+            var inputType = document.getElementById(idKey).type;
+            if(inputType=="password"){
+                document.getElementById(idKey).type="text";
+                document.getElementById(classKey).className="fa fa-eye-slash";
+            }else{
+                document.getElementById(idKey).type="password";
+                document.getElementById(classKey).className="fa fa-eye";                
             }
-        );
         }
 
     }

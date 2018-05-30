@@ -27,24 +27,7 @@
             <div class="row">
 
                 <div class="col-xs-offset-3 col-xs-6">
-                    <p class="input-group">
-                        <input type="text"
-                               name="expDt"
-                               class="form-control date-picker" uib-datepicker-popup="{{format}}" ng-model="dt"
-                               is-open="status.opened"
-                               show-weeks="false"
-                               min-date="minDate"
-                               max-date="maxDate"
-                               datepicker-options="dateOptions"
-                               date-disabled="disabled(date, mode)"
-                               ng-required="true"
-                               close-text="Close" />
-                        <span class="input-group-btn">
-                        <button type="button" class="btn btn-default" ng-click="open()">
-                            <i class="glyphicon glyphicon-calendar"></i>
-                        </button>
-                    </span>
-                    </p>
+                    <date-picker disable-before-today="true" dp-Name="expDt"></date-picker>
                 </div>
 
             </div>

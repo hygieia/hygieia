@@ -1,8 +1,11 @@
 package com.capitalone.dashboard.collector;
 
+import com.capitalone.dashboard.model.BaseModel;
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.BuildStatus;
+import com.capitalone.dashboard.model.ConfigHistOperationType;
 import com.capitalone.dashboard.model.HudsonJob;
+import com.capitalone.dashboard.model.HudsonJobConfig;
 import com.capitalone.dashboard.model.RepoBranch;
 import com.capitalone.dashboard.model.SCM;
 import com.capitalone.dashboard.util.Supplier;
@@ -34,15 +37,18 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 
 /**
@@ -57,7 +63,8 @@ public class DefaultHudsonClient implements HudsonClient {
     private final HudsonSettings settings;
 
     private static final String API_SUFFIX = "api/json?tree=";
-    private static final String JOB_QUERY = "jobs[name,url,builds[number,url],lastSuccessfulBuild[timestamp,builtOn],lastBuild[timestamp,builtOn]]";
+    //private static final String JOB_QUERY = "jobs[name,url,builds[number,url],lastSuccessfulBuild[timestamp,builtOn],lastBuild[timestamp,builtOn]]";
+    private static final String JOB_QUERY = "jobs[name,url,builds[number,url],lastSuccessfulBuild[timestamp,builtOn],lastBuild[timestamp,builtOn],actions[jobConfigHistory[currentName,date,hasConfig,job,oldName,operation,user,userID]]]";
 
     private static final String JOBS_URL_SUFFIX = "/api/json?tree=jobs";
 
@@ -89,6 +96,8 @@ public class DefaultHudsonClient implements HudsonClient {
 
     private static final String BUILD_DETAILS_URL_SUFFIX = "/api/json?tree=" + StringUtils.join(BUILD_DETAILS_TREE, ",");
 
+    private static final String DATE_FORMAT = "yyyy-MM-dd_HH-mm-ss";
+
     @Autowired
     public DefaultHudsonClient(Supplier<RestOperations> restOperationsSupplier, HudsonSettings settings) {
         this.rest = restOperationsSupplier.get();
@@ -96,9 +105,10 @@ public class DefaultHudsonClient implements HudsonClient {
     }
 
     @Override
-    public Map<HudsonJob, Set<Build>> getInstanceJobs(String instanceUrl) {
+    public Map<HudsonJob, Map<jobData, Set<BaseModel>>> getInstanceJobs(String instanceUrl) {
         LOG.debug("Enter getInstanceJobs");
-        Map<HudsonJob, Set<Build>> result = new LinkedHashMap<>();
+        //Map<HudsonJob, Set<Build>> result = new LinkedHashMap<>();
+        Map<HudsonJob, Map<jobData, Set<BaseModel>>> result = new LinkedHashMap<>();
         
         int jobsCount = getJobsCount(instanceUrl);
         LOG.debug("Number of jobs " + jobsCount);
@@ -109,8 +119,10 @@ public class DefaultHudsonClient implements HudsonClient {
         	pageSize = 1000;
         }
         while (i < jobsCount) {
+        	LOG.info("Fetching jobs " + i + "/" + jobsCount + " pageSize " + settings.getPageSize() + "...");
+        	
 	        try {
-                String url = joinURL(instanceUrl, API_SUFFIX + buildJobQueryString() + URLEncoder.encode("{" + i + "," + (i + pageSize) + "}", "UTF-8"));
+                String url = joinURL(instanceUrl, new String[]{API_SUFFIX + buildJobQueryString() + URLEncoder.encode("{" + i + "," + (i + pageSize) + "}", "UTF-8")});
 	            ResponseEntity<String> responseEntity = makeRestCall(url);
 	            if (responseEntity == null) {
 	            	break;
@@ -145,8 +157,6 @@ public class DefaultHudsonClient implements HudsonClient {
 	        } catch (RestClientException rce) {
 	            LOG.error("client exception loading jobs details", rce);
 	            throw rce;
-	        } catch (MalformedURLException mfe) {
-	            LOG.error("malformed url for loading jobs details", mfe);
 	        } catch (UnsupportedEncodingException uee) {
 	        	LOG.error("unsupported encoding for loading jobs details", uee);
 			} catch (URISyntaxException e1) {
@@ -158,14 +168,14 @@ public class DefaultHudsonClient implements HudsonClient {
         return result;
     }
 
-    public String buildJobQueryString () {
+    private String buildJobQueryString() {
         StringBuilder query = new StringBuilder(JOB_QUERY);
         int depth = settings.getFolderDepth();
-        for (int i = 1; i < depth; i++) {
-            query.insert((query.length()-i), ",");
-            query.insert((query.length()-i), JOB_QUERY.substring(0,JOB_QUERY.length()-1));
-            query.insert((query.length()-i), "]");
-        }
+        IntStream.range(1, depth).forEach(i -> {
+            query.insert((query.length() - i), ",");
+            query.insert((query.length() - i), JOB_QUERY.substring(0, JOB_QUERY.length() - 1));
+            query.insert((query.length() - i), "]");
+        });
         return query.toString();
     }
     
@@ -179,7 +189,7 @@ public class DefaultHudsonClient implements HudsonClient {
     	int result = 0;
     	
     	try {
-            String url = joinURL(instanceUrl, JOBS_URL_SUFFIX);
+            String url = joinURL(instanceUrl, new String[]{JOBS_URL_SUFFIX});
             ResponseEntity<String> responseEntity = makeRestCall(url);
             if (responseEntity == null) {
             	return result;
@@ -199,26 +209,28 @@ public class DefaultHudsonClient implements HudsonClient {
         } catch (RestClientException rce) {
             LOG.error("client exception loading jobs", rce);
             throw rce;
-        } catch (MalformedURLException mfe) {
-            LOG.error("malformed url for loading jobs", mfe);
         } catch (URISyntaxException e1) {
         	LOG.error("wrong syntax url for loading jobs", e1);
 		}
     	return result;
     }
-    
+
+    @SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength","PMD.AvoidBranchingStatementAsLastInLoop","PMD.EmptyIfStmt"})
     private void recursiveGetJobDetails(JSONObject jsonJob, String jobName, String jobURL, String instanceUrl, 
-            JSONParser parser, Map<HudsonJob, Set<Build>> result) {        
+            JSONParser parser, Map<HudsonJob, Map<jobData, Set<BaseModel>>> result) {
         LOG.debug("recursiveGetJobDetails: jobName " + jobName + " jobURL: " + jobURL);
+
+        Map<jobData, Set<BaseModel>> jobDataMap = new HashMap();
+
+        HudsonJob hudsonJob = new HudsonJob();
+        hudsonJob.setInstanceUrl(instanceUrl);
+        hudsonJob.setJobName(jobName);
+        hudsonJob.setJobUrl(jobURL);
 
         JSONArray jsonBuilds = getJsonArray(jsonJob, "builds");
         if (!jsonBuilds.isEmpty()) {
-            HudsonJob hudsonJob = new HudsonJob();
-            hudsonJob.setInstanceUrl(instanceUrl);
-            hudsonJob.setJobName(jobName);
-            hudsonJob.setJobUrl(jobURL);
     
-            Set<Build> builds = new LinkedHashSet<>();       
+            Set<BaseModel> builds = new LinkedHashSet<>();
             for (Object build : jsonBuilds) {
                 JSONObject jsonBuild = (JSONObject) build;
     
@@ -242,10 +254,45 @@ public class DefaultHudsonClient implements HudsonClient {
                     hudsonBuild.setBuildUrl(buildURL);
                     builds.add(hudsonBuild);
                 }
-            }        
-            // add the builds to the job
-            result.put(hudsonJob, builds);
+            }
+            jobDataMap.put(jobData.BUILD, builds);
         }
+
+        JSONArray jsonActions = getJsonArray(jsonJob, "actions");
+        for (Object jsonAction : jsonActions) {
+            JSONObject jsonActionJob = (JSONObject) jsonAction;
+            JSONArray jsonConfigs = null;
+            if (jsonActionJob != null) {
+                jsonConfigs = getJsonArray(jsonActionJob, "jobConfigHistory");
+            }
+
+            if (jsonConfigs != null && jsonConfigs.size() > 0) {
+                Set<BaseModel> configs = new LinkedHashSet<>();
+                for (Object config : jsonConfigs) {
+                    JSONObject jsonConfig = (JSONObject) config;
+
+                    HudsonJobConfig hudsonConfig = new HudsonJobConfig();
+                    hudsonConfig.setCurrentJobName(getString(jsonConfig, "currentName"));
+                    hudsonConfig.setTimestamp(timestamp(jsonConfig, "date"));
+                    hudsonConfig.setHasConfig((getBoolean(jsonConfig, "hasConfig")));
+                    hudsonConfig.setJobUrl(getString(jsonConfig, "job"));
+                    hudsonConfig.setOldJobName(getString(jsonConfig, "oldName"));
+                    hudsonConfig.setOperation(ConfigHistOperationType.fromString(getString(jsonConfig, "operation")));
+                    hudsonConfig.setUserName(getString(jsonConfig, "user"));
+                    hudsonConfig.setUserID(getString(jsonConfig, "userID"));
+                    hudsonConfig.setJobUrl(jobURL);
+
+                    configs.add(hudsonConfig);
+                }
+                jobDataMap.put(jobData.CONFIG, configs);
+            }
+        }
+
+        if (jobDataMap.containsKey(jobData.BUILD) || jobDataMap.containsKey(jobData.CONFIG)) {
+            // add the builds and configs to the job
+            result.put(hudsonJob, jobDataMap);
+        }
+
         JSONArray subJobs = getJsonArray(jsonJob, "jobs");
 
         for (Object subJob : subJobs) {
@@ -262,7 +309,7 @@ public class DefaultHudsonClient implements HudsonClient {
     public Build getBuildDetails(String buildUrl, String instanceUrl) {
         try {
             String newUrl = rebuildJobUrl(buildUrl, instanceUrl);
-            String url = joinURL(newUrl, BUILD_DETAILS_URL_SUFFIX);
+            String url = joinURL(newUrl, new String[]{BUILD_DETAILS_URL_SUFFIX});
             ResponseEntity<String> result = makeRestCall(url);
             String resultJSON = result.getBody();
             if (StringUtils.isEmpty(resultJSON)) {
@@ -417,7 +464,7 @@ public class DefaultHudsonClient implements HudsonClient {
                 	lastBuiltRevision = (JSONObject) jsonAction.get("lastBuiltRevision");
                 }
                 if (lastBuiltRevision != null) {
-                	branches = getJsonArray ((JSONObject) lastBuiltRevision, "branch");
+                	branches = getJsonArray (lastBuiltRevision, "branch");
                 }
                 // As of git plugin 3.0.0, when multiple repos are configured in the git plugin itself instead of MultiSCM plugin, 
             	// they are stored unordered in a HashSet. So it's buggy and we cannot associate the correct branch information.
@@ -499,6 +546,22 @@ public class DefaultHudsonClient implements HudsonClient {
         return (String) json.get(key);
     }
 
+    private Boolean getBoolean(JSONObject json, String key) {
+        return (Boolean) json.get(key);
+    }
+
+    private long timestamp(JSONObject json, String key) {
+        Object obj = json.get(key);
+        if (obj != null) {
+            try {
+                return new SimpleDateFormat(DATE_FORMAT).parse(obj.toString()).getTime();
+            } catch (java.text.ParseException e) {
+                LOG.warn(obj + " is not in expected format " + DATE_FORMAT + e);
+            }
+        }
+        return 0;
+    }
+
     private String getRevision(JSONObject jsonItem) {
         // Use revision if provided, otherwise use id
         Long revision = (Long) jsonItem.get("revision");
@@ -546,7 +609,7 @@ public class DefaultHudsonClient implements HudsonClient {
     }
     
     @SuppressWarnings("PMD")
-    protected ResponseEntity<String> makeRestCall(String sUrl) throws MalformedURLException, URISyntaxException {
+    protected ResponseEntity<String> makeRestCall(String sUrl) throws URISyntaxException {
         LOG.debug("Enter makeRestCall " + sUrl);
         URI thisuri = URI.create(sUrl);
         String userInfo = thisuri.getUserInfo();
@@ -562,7 +625,7 @@ public class DefaultHudsonClient implements HudsonClient {
 	        		if ((servers.get(i) != null)) {
 	        			String domain1 = getDomain(sUrl);
 	        			String domain2 = getDomain(servers.get(i));
-	        			if (StringUtils.isNotEmpty(domain1) && StringUtils.isNotEmpty(domain2) && domain1.equals(domain2)
+	        			if (StringUtils.isNotEmpty(domain1) && StringUtils.isNotEmpty(domain2) && Objects.equals(domain1, domain2)
 	        					&& getPort(sUrl) == getPort(servers.get(i))) {
 	                		exactMatchFound = true;	
 	        			}
@@ -596,8 +659,7 @@ public class DefaultHudsonClient implements HudsonClient {
     
     private String getDomain(String url) throws URISyntaxException {
         URI uri = new URI(url);
-        String domain = uri.getHost();
-        return domain;
+        return uri.getHost();
     }
     
     private int getPort(String url) throws URISyntaxException {
@@ -617,9 +679,7 @@ public class DefaultHudsonClient implements HudsonClient {
 
     protected String getLog(String buildUrl) {
         try {
-            return makeRestCall(joinURL(buildUrl, "consoleText")).getBody();
-        } catch (MalformedURLException mfe) {
-            LOG.error("malformed url for build log", mfe);
+            return makeRestCall(joinURL(buildUrl, new String[]{"consoleText"})).getBody();
         } catch (URISyntaxException e) {
         	LOG.error("wrong syntax url for build log", e);
 		}
@@ -628,15 +688,14 @@ public class DefaultHudsonClient implements HudsonClient {
     }
 
     // join a base url to another path or paths - this will handle trailing or non-trailing /'s
-    public static String joinURL(String base, String... paths) throws MalformedURLException {
+    public static String joinURL(String base, String[] paths) {
         StringBuilder result = new StringBuilder(base);
-        for (String path : paths) {
-            String p = path.replaceFirst("^(\\/)+", "");
+        Arrays.stream(paths).map(path -> path.replaceFirst("^(\\/)+", "")).forEach(p -> {
             if (result.lastIndexOf("/") != result.length() - 1) {
                 result.append('/');
             }
             result.append(p);
-        }
+        });
         return result.toString();
     }
 }

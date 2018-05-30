@@ -1,0 +1,83 @@
+{
+  "name": "TestAudit",
+  "collectorItems": {
+    "SCM": [
+      {
+        "enabled": true,
+        "errors": [],
+        "pushed": false,
+        "collectorId": {
+          "timestamp": 1514425811,
+          "machineIdentifier": 1084966,
+          "processIdentifier": 27772,
+          "counter": 16289003
+        },
+        "lastUpdated": 0,
+        "options": {
+          "password": "",
+          "scm": "Github",
+          "branch": "master",
+          "userID": "",
+          "url": "https://mygithub.com/one/two"
+        },
+        "id": {
+          "timestamp": 1515646073,
+          "machineIdentifier": 4693261,
+          "processIdentifier": 6916,
+          "counter": 3010191
+        }
+      }
+    ],
+    "StaticSecurityScan": [
+      {
+        "enabled": true,
+        "errors": [],
+        "pushed": false,
+        "collectorId": {
+          "timestamp": 1522773350945,
+          "machineIdentifier": 1084966,
+          "processIdentifier": 27772,
+          "counter": 16289003
+        },
+        "lastUpdated": 1522773350945,
+        "options": {
+          "applicationType": "Desktop",
+          "reportUrl": "https://appsec.com",
+          "applicationID": [
+            "TestBusServ"
+          ],
+          "projectName": "cust-service",
+          "applicationName": "customer-service",
+          "instanceUrl": "https://appsec.com"
+        },
+        "id": "5b4e524333ec296b81c3935f"
+      }
+    ],
+    "LibraryPolicy" : [
+      {
+        "id": "5ad5f605c23b391cfa1c01a4",
+        "description": "myapplication:mycomponent",
+        "enabled": false,
+        "errors": [],
+        "pushed": false,
+        "collectorId": "5ad4c71841a34c9696cdfa2e",
+        "lastUpdated": 1524190250247,
+        "options": {
+          "applicationType": null,
+          "componentName": "mycomponent",
+          "applicationID": [
+            "SOMEAPPLICATION"
+          ],
+          "applicationName": "account-my-information",
+          "instanceUrl": "https://scan.com"
+        }
+      }
+    ]
+  },
+      "id": {
+    "timestamp": 1515645665,
+    "machineIdentifier": 4693261,
+    "processIdentifier": 6916,
+    "counter": 3010182
+  }
+}

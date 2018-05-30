@@ -29,6 +29,7 @@
 
     <!-- Package as an executable jar -->
     <build>
+        <finalName>appdynamics-collector</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -43,7 +44,7 @@
                     <dockerDirectory>${project.basedir}/docker</dockerDirectory>
                     <resources>
                         <resource>
-                            <targetPath>/</targetPath>
+                            <targetPath>/hygieia</targetPath>
                             <directory>${project.build.directory}</directory>
                             <include>${project.build.finalName}.jar</include>
                         </resource>
@@ -115,7 +116,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.3.2</version>
+            <version>3.6</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>

@@ -1,13 +1,16 @@
 package com.capitalone.dashboard.model;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * <p>
@@ -27,6 +30,7 @@ public class CollectorItem extends BaseModel {
 
     private String description;
     private String niceName;
+    private String environment;
     private boolean enabled;
     private List<CollectionError> errors = new ArrayList<>();
     private boolean pushed;
@@ -97,10 +101,39 @@ public class CollectorItem extends BaseModel {
         this.niceName = niceName;
     }
 
+    public String getEnvironment() {
+        return environment;
+    }
+
+    public void setEnvironment(String environment) {
+        this.environment = environment;
+    }
+
     public List<CollectionError> getErrors() {
         return errors;
     }
     public int getErrorCount() {
         return errors.size();
+    }
+
+    /**
+     * Checks for collector items error threshold and resets it if window is met
+     * @param resetWindow - long time in milliseconds after which errors can be reset
+     * @param errorThreshold - number of errors to cross threshold
+     * @return true if (a) errors are within threshold and (b) reset if window is passed.
+     */
+    public boolean checkErrorOrReset (long resetWindow, int errorThreshold) {
+        Optional<CollectionError> lastErrorOptional = errors.stream().max(Comparator.comparingLong(CollectionError::getTimestamp));
+        long lastErrorTimestamp = lastErrorOptional.isPresent() ? lastErrorOptional.get().getTimestamp() : System.currentTimeMillis();
+        if ((System.currentTimeMillis() - lastErrorTimestamp) >= resetWindow) {
+            //clear the oldest error so errors count drops below threshold
+            if (!CollectionUtils.isEmpty(errors)) {
+                errors.sort(Comparator.comparing(CollectionError::getTimestamp));
+                errors.remove(0);
+            }
+            return true;
+        } else {
+            return (errors.size() <= errorThreshold);
+        }
     }
 }

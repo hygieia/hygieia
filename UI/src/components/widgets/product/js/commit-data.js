@@ -44,10 +44,6 @@
 
         function processLastRequestResponse(lastRequest) {
             // if we already have made a request, just get the delta
-            if (lastRequest) {
-                dateBegins = lastRequest.timestamp;
-            }
-
             pipelineData
                 .commits(dateBegins, nowTimestamp, collectorItemId)
                 .then(function (response) {
@@ -102,7 +98,7 @@
 
         function processPipelineCommitData(team) {
             db.prodCommit.where('[collectorItemId+timestamp]').between([collectorItemId, ninetyDaysAgo], [collectorItemId, dateEnds]).toArray(function (rows) {
-                var uniqueRows = _.uniq(rows,'scmRevisionNumber');
+                var uniqueRows = _.uniqBy(rows,'scmRevisionNumber');
                 team.stages[prodStage] = _(uniqueRows).sortBy('timestamp').reverse().value();
 
                 var teamStageData = {},
@@ -305,11 +301,8 @@
                         return num + commits;
                     });
                 if(!angular.isUndefined(commitArray)){
-                    commitTimeToProd = _(commitArray).filter(function (commit) {
-                        return commit.processedTimestamps && commit.processedTimestamps[prodStage];
-                    })
                     // calculate their time to prod
-                        .map(function (commit) {
+                    commitTimeToProd = commitArray.map(function (commit) {
                             return {
                                 duration: commit.processedTimestamps[prodStage] - commit.scmCommitTimestamp,
                                 commitTimestamp: commit.scmCommitTimestamp
@@ -325,7 +318,7 @@
                 teamProdData.totalCommits = !angular.isUndefined(commitTimeToProd)?commitTimeToProd.length:0;
 
                 if (!angular.isUndefined(commitTimeToProd)?commitTimeToProd.length:0 > 1) {
-                    var averageDuration = _(commitTimeToProd).pluck('duration').reduce(function (a, b) {
+                    var averageDuration = _(commitTimeToProd).map('duration').reduce(function (a, b) {
                             return a + b;
                         }) / commitTimeToProd.length;
 

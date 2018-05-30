@@ -22,6 +22,8 @@ public class AuthenticationUtil {
 		Authentication authentication = getAuthentication();
 		if (authentication != null && authentication.getDetails() instanceof String) {
 			return AuthType.valueOf((String)authentication.getDetails());
+		} else if (authentication != null && authentication.getDetails() instanceof AuthType) {
+			return (AuthType)authentication.getDetails();
 		}
 		
 		return null;

@@ -31,6 +31,18 @@ public class AuthProperties {
 	private String adDomain;
 	private String adRootDn;
 	private String adUrl;
+
+	private String ldapBindUser;
+	private String ldapBindPass;
+	
+	// -- SSO properties
+	private String userEid;
+	private String userEmail; 
+	private String userFirstName;
+	private String userLastName;
+	private String userMiddelInitials;
+	private String userDisplayName;
+	//-- end SSO properties
 	
 	public void setExpirationTime(Long expirationTime) {
 		this.expirationTime = expirationTime;
@@ -96,6 +108,22 @@ public class AuthProperties {
         this.adUrl = adUrl;
     }
 
+	public String getLdapBindUser() {
+		return ldapBindUser;
+	}
+
+	public void setLdapBindUser(String ldapBindUser) {
+		this.ldapBindUser = ldapBindUser;
+	}
+
+	public String getLdapBindPass() {
+		return ldapBindPass;
+	}
+
+	public void setLdapBindPass(String ldapBindPass) {
+		this.ldapBindPass = ldapBindPass;
+	}
+
 	@PostConstruct
 	public void applyDefaultsIfNeeded() {
 		if (getSecret() == null) {
@@ -111,6 +139,54 @@ public class AuthProperties {
 		if (CollectionUtils.isEmpty(authenticationProviders)) {
 		    authenticationProviders.add(AuthType.STANDARD);
 		}
+	}
+
+	public String getUserEid() {
+		return userEid;
+	}
+
+	public void setUserEid(String userEid) {
+		this.userEid = userEid;
+	}
+
+	public String getUserEmail() {
+		return userEmail;
+	}
+
+	public void setUserEmail(String userEmail) {
+		this.userEmail = userEmail;
+	}
+
+	public String getUserFirstName() {
+		return userFirstName;
+	}
+
+	public void setUserFirstName(String userFirstName) {
+		this.userFirstName = userFirstName;
+	}
+
+	public String getUserLastName() {
+		return userLastName;
+	}
+
+	public void setUserLastName(String userLastName) {
+		this.userLastName = userLastName;
+	}
+
+	public String getUserMiddelInitials() {
+		return userMiddelInitials;
+	}
+
+	public void setUserMiddelInitials(String userMiddelInitials) {
+		this.userMiddelInitials = userMiddelInitials;
+	}
+
+	public String getUserDisplayName() {
+		return userDisplayName;
+	}
+
+	public void setUserDisplayName(String userDisplayName) {
+		this.userDisplayName = userDisplayName;
 	}
 
 }

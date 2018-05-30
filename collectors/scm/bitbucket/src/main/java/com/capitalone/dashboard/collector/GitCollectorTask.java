@@ -20,8 +20,10 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -62,6 +64,20 @@ public class GitCollectorTask extends CollectorTask<Collector> {
         protoType.setCollectorType(CollectorType.SCM);
         protoType.setOnline(true);
         protoType.setEnabled(true);
+
+        Map<String, Object> allOptions = new HashMap<>();
+        allOptions.put(GitRepo.REPO_URL, "");
+        allOptions.put(GitRepo.BRANCH, "");
+        allOptions.put(GitRepo.USER_ID, "");
+        allOptions.put(GitRepo.PASSWORD, "");
+        allOptions.put(GitRepo.LAST_UPDATE_TIME, new Date());
+        allOptions.put(GitRepo.LAST_UPDATE_COMMIT, "");
+        protoType.setAllFields(allOptions);
+
+        Map<String, Object> uniqueOptions = new HashMap<>();
+        uniqueOptions.put(GitRepo.REPO_URL, "");
+        uniqueOptions.put(GitRepo.BRANCH, "");
+        protoType.setUniqueFields(uniqueOptions);
         return protoType;
     }
 
@@ -128,14 +144,14 @@ public class GitCollectorTask extends CollectorTask<Collector> {
             boolean firstRun = false;
             if (repo.getLastUpdateTime() == null) firstRun = true;
             LOG.debug(repo.getOptions().toString() + "::" + repo.getBranch());
-            
+
             List<Commit> commits = gitClient.getCommits(repo, firstRun);
             List<Commit> newCommits = new ArrayList<>();
             for (Commit commit : commits) {
-            	if (LOG.isDebugEnabled()) {
-            		LOG.debug(commit.getTimestamp() + ":::" + commit.getScmCommitLog());
-            	}
-            	
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug(commit.getTimestamp() + ":::" + commit.getScmCommitLog());
+                }
+
                 if (isNewCommit(repo, commit)) {
                     commit.setCollectorItemId(repo.getId());
                     newCommits.add(commit);
@@ -143,13 +159,13 @@ public class GitCollectorTask extends CollectorTask<Collector> {
             }
             commitRepository.save(newCommits);
             commitCount += newCommits.size();
-            
+
             repo.setLastUpdateTime(Calendar.getInstance().getTime());
             if (!commits.isEmpty()) {
-            	// It appears that the first commit in the list is the HEAD of the branch
-            	repo.setLastUpdateCommit(commits.get(0).getScmRevisionNumber());
+                // It appears that the first commit in the list is the HEAD of the branch
+                repo.setLastUpdateCommit(commits.get(0).getScmRevisionNumber());
             }
-            
+
             gitRepoRepository.save(repo);
 
             repoCount++;

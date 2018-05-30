@@ -1,0 +1,116 @@
+{
+  "template": "widgets",
+  "title": "TestSSA",
+  "widgets": [
+    {
+      "id": {
+        "timestamp": 1515646073,
+        "machineIdentifier": 4693261,
+        "processIdentifier": 6916,
+        "counter": 3010193
+      },
+      "name": "codeanalysis",
+      "componentId": {
+        "timestamp": 1515645665,
+        "machineIdentifier": 4693261,
+        "processIdentifier": 6916,
+        "counter": 3010182
+      },
+      "options": {
+        "testJobNames": [],
+        "id": "codeanalysis0"
+      }
+    },
+    {
+      "id": {
+        "timestamp": 1515646073,
+        "machineIdentifier": 4693261,
+        "processIdentifier": 6916,
+        "counter": 3010193
+      },
+      "name": "repo",
+      "componentId": {
+        "timestamp": 1515645665,
+        "machineIdentifier": 4693261,
+        "processIdentifier": 6916,
+        "counter": 3010182
+      },
+      "options": {
+        "password": "",
+        "id": "repo0",
+        "scm": {
+          "name": "GitHub",
+          "value": "GitHub"
+        },
+        "branch": "master",
+        "userID": "",
+        "url": "https://mygithub.com/compliance-scenario/6-lgtm-merge"
+      }
+    }
+  ],
+  "owners": [
+    {
+      "username": "topopal",
+      "authType": "STANDARD"
+    }
+  ],
+  "type": "Team",
+  "application": {
+    "name": "TestAudit",
+    "components": [
+      {
+        "name": "TestAudit",
+        "collectorItems": {
+          "SCM": [
+            {
+              "enabled": true,
+              "errors": [],
+              "pushed": false,
+              "collectorId": {
+                "timestamp": 1514425811,
+                "machineIdentifier": 1084966,
+                "processIdentifier": 27772,
+                "counter": 16289003
+              },
+              "lastUpdated": 0,
+              "options": {
+                "password": "",
+                "scm": "Github",
+                "branch": "master",
+                "userID": "",
+                "url": "https://mygithub.com/compliance-scenario/6-lgtm-merge"
+              },
+              "id": {
+                "timestamp": 1515646073,
+                "machineIdentifier": 4693261,
+                "processIdentifier": 6916,
+                "counter": 3010191
+              }
+            }
+          ]
+        },
+        "id": {
+          "timestamp": 1515645665,
+          "machineIdentifier": 4693261,
+          "processIdentifier": 6916,
+          "counter": 3010182
+        }
+      }
+    ]
+  },
+  "validServiceName": true,
+  "validAppName": true,
+  "remoteCreated": false,
+  "configurationItemBusServName": "TestBusServ",
+  "configurationItemBusAppName": "confItem",
+  "activeWidgets": [
+    "repo"
+  ],
+  "errorCode": 0,
+  "id": {
+    "timestamp": 1515645665,
+    "machineIdentifier": 4693261,
+    "processIdentifier": 6916,
+    "counter": 3010183
+  }
+}

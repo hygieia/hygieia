@@ -48,27 +48,49 @@
 
 	</form-group>
 
+	<hr/>
+
 	<form-group ng-if="repoConfig.repoOption.name != 'Gitlab'" input="repouser"
 				errors="{}">
 
-		<label class="modal-label">Credentials (Optional)</label>
+		<label class="modal-label">Credentials (Optional, required for private repos)</label>
 
-		<input type="text"
+
+		<strong class="pull-left">Username&nbsp;:&nbsp; </strong> <input type="text"
 			   name="repouser"
-			   class="form-control text-center"
+			   class="form-control-inline text-center"
 			   ng-model="repoConfig.repouser"
 			   maxlength="25"
 			   autocomplete="off"
-			   placeholder="Enter your repo username"/>
+			   placeholder="Enter your repo username"
+				size="55"/>
 	</form-group>
 	<form-group ng-if="repoConfig.repoOption.name != 'Gitlab'" input="repopass"
 				errors="{errorEncryptingPassword: 'Error encrypting password.'}">
-		<input type="password"
+		<strong class="pull-left">Password&nbsp;:&nbsp; </strong> <input type="password"
 			   name="repopass"
-			   class="form-control text-center"
+			   class="form-control-inline text-center"
 			   ng-model="repoConfig.repopass"
 			   maxlength="100"
-			   placeholder="Enter your repo password" />
+				autocomplete="new-password"
+			   placeholder="Enter your repo password"
+		size="55"/>
+	</form-group>
+
+	<label ng-if="repoConfig.repoOption.name == 'GitHub'" class="modal-label">(OR)</label>
+
+	<form-group ng-if="repoConfig.repoOption.name == 'GitHub'" input="repoPersonalAccessToken"
+				errors="{}">
+
+		<label class="modal-label">Personal Access Token</label>
+
+		<input type="password"
+			   name="repoPersonalAccessToken"
+			   class="form-control text-center"
+			   ng-model="repoConfig.repoPersonalAccessToken"
+			   maxlength="100"
+			   autocomplete="new-password"
+			   placeholder="Enter your Github personal access token"/>
 	</form-group>
 
 	<form-group ng-if="repoConfig.repoOption.name == 'Gitlab'" input="repokey"
@@ -81,7 +103,7 @@
 			   class="form-control text-center"
 			   ng-model="repoConfig.repouser"
 			   maxlength="25"
-			   autocomplete="off"
+			   autocomplete="new-password"
 			   placeholder="Enter your api key"/>
 	</form-group>
 

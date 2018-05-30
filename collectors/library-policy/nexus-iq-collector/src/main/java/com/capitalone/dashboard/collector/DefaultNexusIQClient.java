@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 
 import com.capitalone.dashboard.model.LibraryPolicyReport;
@@ -43,19 +44,14 @@ public class DefaultNexusIQClient implements NexusIQClient {
     private static final String ID = "id";
     private static final String NAME = "name";
     private static final String PUBLIC_ID = "publicId";
-    private static final String STATUS_WARN = "WARN";
-    private static final String STATUS_ALERT = "ALERT";
+
 
 
     private final RestOperations rest;
-    private final HttpEntity<String> httpHeaders;
     private final NexusIQSettings nexusIQSettings;
 
     @Autowired
     public DefaultNexusIQClient(Supplier<RestOperations> restOperationsSupplier, NexusIQSettings settings) {
-        this.httpHeaders = new HttpEntity<>(
-                this.createHeaders(settings.getUsername(), settings.getPassword())
-        );
         this.rest = restOperationsSupplier.get();
         this.nexusIQSettings = settings;
     }
@@ -128,6 +124,8 @@ public class DefaultNexusIQClient implements NexusIQClient {
      * @param url url of the report
      * @return LibraryPolicyResult
      */
+    @SuppressWarnings({"PMD.AvoidDeeplyNestedIfStmts","PMD.NPathComplexity"}) // agreed PMD, fixme
+
     @Override
     public LibraryPolicyResult getDetailedReport(String url) {
         LibraryPolicyResult policyResult = null;
@@ -202,7 +200,7 @@ public class DefaultNexusIQClient implements NexusIQClient {
         String format = str(identifier, "format");
         if (format == null) return unknown;
         String componentName;
-        switch (format.toLowerCase()) {
+        switch (format.toLowerCase(Locale.ENGLISH)) {
             case "maven":
                 componentName = String.format("%s:%s-%s.%s",
                         str(coordinate, "groupId"),
@@ -239,12 +237,12 @@ public class DefaultNexusIQClient implements NexusIQClient {
 
 
     private JSONArray parseAsArray(String url) throws ParseException {
-        ResponseEntity<String> response = rest.exchange(url, HttpMethod.GET, this.httpHeaders, String.class);
+        ResponseEntity<String> response = rest.exchange(url, HttpMethod.GET, createHeaders(url), String.class);
         return (JSONArray) new JSONParser().parse(response.getBody());
     }
 
     private JSONObject parseAsObject(String url) throws ParseException {
-        ResponseEntity<String> response = rest.exchange(url, HttpMethod.GET, this.httpHeaders, String.class);
+        ResponseEntity<String> response = rest.exchange(url, HttpMethod.GET, createHeaders(url), String.class);
         return (JSONObject) new JSONParser().parse(response.getBody());
     }
 
@@ -288,8 +286,17 @@ public class DefaultNexusIQClient implements NexusIQClient {
         return obj == null ? null : Boolean.valueOf(obj.toString());
     }
 
-    private HttpHeaders createHeaders(String username, String password) {
+    private HttpEntity<String> createHeaders(String url) {
+    	String username = null;
+    	String password = null;
         HttpHeaders headers = new HttpHeaders();
+
+    	for(int i=0;i<nexusIQSettings.getServers().size();i++) {
+    		if(url.contains(nexusIQSettings.getServers().get(i))){
+        		username = nexusIQSettings.getUsernames().get(i);
+        		password = nexusIQSettings.getPasswords().get(i);
+    		}
+    	}
         if (username != null && !username.isEmpty() &&
                 password != null && !password.isEmpty()) {
             String auth = username + ":" + password;
@@ -299,6 +306,7 @@ public class DefaultNexusIQClient implements NexusIQClient {
             String authHeader = "Basic " + new String(encodedAuth);
             headers.set("Authorization", authHeader);
         }
-        return headers;
+        return new HttpEntity<>(headers);
+
     }
 }

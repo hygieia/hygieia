@@ -111,10 +111,10 @@
                             }
                         });
 
-                        var totalSuccess = lastRunResults.pluck('success').reduce(function (a, b) {
+                        var totalSuccess = lastRunResults.map('success').reduce(function (a, b) {
                                 return a + b
                             }),
-                            totalResults = lastRunResults.pluck('total').reduce(function (a, b) {
+                            totalResults = lastRunResults.map('total').reduce(function (a, b) {
                                 return a + b
                             });
 

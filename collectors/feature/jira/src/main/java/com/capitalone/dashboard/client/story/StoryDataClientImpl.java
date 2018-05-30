@@ -38,6 +38,8 @@ import com.capitalone.dashboard.util.FeatureSettings;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -314,8 +316,13 @@ public class StoryDataClientImpl implements StoryDataClient {
 		// sStoryPoints
 		IssueField storyPointsField = fields.get(featureSettings.getJiraStoryPointsFieldName());
 		if (storyPointsField != null && storyPointsField.getValue() != null && !TOOLS.sanitizeResponse(storyPointsField.getValue()).isEmpty()) {
-			Double value = Double.parseDouble(TOOLS.sanitizeResponse(storyPointsField.getValue()));
-			feature.setsEstimate(String.valueOf(value.intValue()));
+			try {
+				Double value = Double.parseDouble(TOOLS.sanitizeResponse(storyPointsField.getValue()));
+				feature.setsEstimate(String.valueOf(value.intValue()));
+			} catch (NumberFormatException nfe) {
+				LOGGER.error ("Issue: " +issue.getKey()+ " :The story points field value '" +storyPointsField.getValue()+ "' is not a valid number. Setting the estimate to '0'");
+				feature.setsEstimate("0");
+			}
 		} else {
 			feature.setsEstimate("0");
 		}
@@ -353,9 +360,25 @@ public class StoryDataClientImpl implements StoryDataClient {
 
 		IssueField team = fields.get(featureSettings.getJiraTeamFieldName());
 		if (team != null && team.getValue() != null && !TOOLS.sanitizeResponse(team.getValue()).isEmpty()) {
-			String teamID = TOOLS.sanitizeResponse(team.getValue());
+			Object teamObj = team.getValue();
 
-			Team scopeOwner = teamRepository.findByTeamId(teamID);
+			String teamID = "";
+			Team scopeOwner = null;
+			if (teamObj instanceof JSONObject) {
+				try {
+					String teamName = (String)((JSONObject)teamObj).get("value");
+					scopeOwner = teamRepository.findByName(teamName);
+					if (scopeOwner != null) {
+						teamID = scopeOwner.getTeamId();
+					}
+				} catch (JSONException e) {
+					LOGGER.error("Unable to parse value for " + teamObj);
+				}
+			} else {
+				teamID = TOOLS.sanitizeResponse(team.getValue());
+				scopeOwner = teamRepository.findByTeamId(teamID);
+			}
+
 			// sTeamID
 			feature.setsTeamID(teamID);
 			if (scopeOwner != null && StringUtils.isNotEmpty(scopeOwner.getName())) {

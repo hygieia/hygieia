@@ -19,7 +19,7 @@
 
         <div class="widget-detail-body">
 
-            <div class="dash-row" data-ng-init="levels=['High','Medium','Low']">
+            <div class="dash-row" data-ng-init="levels=['Critical','High','Medium','Low']">
                 <div ng-repeat="level in levels">
                     <span class="pull-left widget-font-bold widget-heading"></span>
                     <span class="pull-left widget-font-bold">{{level}} (Total Count: {{libraryPolicyDetails.getLevelCount(level)}})</span>

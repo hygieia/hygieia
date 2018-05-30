@@ -10,8 +10,8 @@
         }});
 
 
-    productViewController.$inject = ['$scope', '$document', '$uibModal', '$location', '$q', '$routeParams', '$timeout', 'buildData', 'codeAnalysisData', 'collectorData', 'dashboardData', 'pipelineData', 'testSuiteData', 'productBuildData', 'productCodeAnalysisData', 'productCommitData', 'productSecurityAnalysisData', 'productTestSuiteData', 'cicdGatesData'];
-    function productViewController($scope, $document, $uibModal, $location, $q, $routeParams, $timeout, buildData, codeAnalysisData, collectorData, dashboardData, pipelineData, testSuiteData, productBuildData, productCodeAnalysisData, productCommitData, productSecurityAnalysisData, productTestSuiteData, cicdGatesData) {
+    productViewController.$inject = ['$scope', '$document', '$uibModal', '$location', '$q', '$stateParams', '$timeout', 'buildData', 'codeAnalysisData', 'collectorData', 'dashboardData', 'pipelineData', 'testSuiteData', 'productBuildData', 'productCodeAnalysisData', 'productCommitData', 'productSecurityAnalysisData', 'productTestSuiteData', 'cicdGatesData'];
+    function productViewController($scope, $document, $uibModal, $location, $q, $stateParams, $timeout, buildData, codeAnalysisData, collectorData, dashboardData, pipelineData, testSuiteData, productBuildData, productCodeAnalysisData, productCommitData, productSecurityAnalysisData, productTestSuiteData, cicdGatesData) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -49,15 +49,15 @@
         db.open();
 
         // clear out any collection data if there is a reset parameter
-        if($routeParams.delete) {
+        if($stateParams.delete) {
             db.delete().then(function() {
                 // redirect to this page without the parameter
-                window.location.href = '/#/dashboard/' + $routeParams.id;
+                window.location.href = '/#/dashboard/' + $stateParams.id;
             });
         }
 
         // remove any data from the existing tables
-        if($routeParams.reset || HygieiaConfig.local) {
+        if($stateParams.reset || HygieiaConfig.local) {
             db.lastRequest.clear();
             db.codeAnalysis.clear();
             db.testSuite.clear();
@@ -247,7 +247,7 @@
                     // prompt a message if team is already added or add to prod dashboard otherwise.
                     if(itemInd){
                         swal(config.name+' dashboard added already');
-                    }else if(widgets==null ||(!buildInd && !repoInd)){
+                    }else if(widgets==null || !buildInd || !repoInd){
                         swal('Configure Build and Code Repository for '+config.name+' before adding to Product Dashboard');
                     }else{
                         // add our new config to the array
