@@ -43,7 +43,7 @@ This token is also used for accessing the private repos.
 
 You can either set the value for ```github.key``` or ```github.personalAccesstoken``` in order to access private repos.
 
-In addition, please refer [Encryption for Provate Repos](setup.md#encryption-for-private-repos).
+In addition, please refer [Encryption for Private Repos](setup.md#encryption-for-private-repos).
 
 #### How to change the UI port to a port other than 3000?
 
