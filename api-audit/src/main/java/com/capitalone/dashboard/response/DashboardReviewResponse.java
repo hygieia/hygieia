@@ -7,12 +7,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DashboardReviewResponse extends AuditReviewResponse <DashboardAuditStatus> {
+public class DashboardReviewResponse<T extends AuditReviewResponse> extends AuditReviewResponse <DashboardAuditStatus> {
     private String dashboardTitle;
     private String businessService;
     private String businessApplication;
 
-    private Map<AuditType, Collection<AuditReviewResponse>> review = new HashMap<>();
+    private Map<AuditType, Collection<T>> review = new HashMap<>();
 
 
 	public String getBusinessService() {
@@ -39,12 +39,12 @@ public class DashboardReviewResponse extends AuditReviewResponse <DashboardAudit
         this.dashboardTitle = dashboardTitle;
     }
 
-	public Map<AuditType, Collection<AuditReviewResponse>> getReview() {
+	public Map<AuditType, Collection<T>> getReview() {
 		return review;
 	}
 
 
-	public void addReview(AuditType type, Collection<AuditReviewResponse> audit) {
+	public void addReview(AuditType type, Collection<T> audit) {
 		if (review.get(type) != null) {
 			review.get(type).addAll(audit);
 		} else {
@@ -52,7 +52,7 @@ public class DashboardReviewResponse extends AuditReviewResponse <DashboardAudit
 		}
 	}
 
-	public void setReview(Map<AuditType, Collection<AuditReviewResponse>> review) {
+	public void setReview(Map<AuditType, Collection<T>> review) {
 		this.review = review;
 	}
 }
