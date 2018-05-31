@@ -26,18 +26,18 @@ ResponseEntity<String> response = makeRestCall(queryUrlPage, settings.getUserId(
 
 ```github.key``` is the value generated from the core module. You can generate this key from the UI as an **admin** user. The steps are as follows:
 
-1. Create an admin user in Hygieia with useername **admin** and password of your choice. For detailed instructions, see [Create Admin User](../product1/signup.md#create-admin-user).
+1. Create an admin user in Hygieia with username **admin** and password of your choice. For detailed instructions, see [Create Admin User](../product1/signup.md#create-admin-user).
 2. Navigate to Admin Settings -> Generate Api Token, and create a new key by setting a name and expiration date. For detailed instructions, see [Generate API Token](../product1/signup.md#generate-api-token).
 3. Copy the generated key to github.properties file as ```github.key="generated key"```.
 4. In the api.properties file, add the property, ```key="generated key"```.
 
-The generated key is used to encrypt the password when you configure the GitHub repository for accessing private repos. 
+The generated key is used to encrypt the password when you configure the GitHub repository for accessing private repos. Provide credentials when configuring private GitHub repos.
 	
 **Note**: Public repos do not require values for ```github.key``` and ```github.personalAccessToken```.
 
 **github.personalAccessToken**
 
-The value of the property ```github.personalAccessToken``` is directly taken from GitHub -> Developer Settings-> personalAccessToken. For detailed instructions, see [GitHub](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) documentation.
+The value of the property ```github.personalAccessToken``` is directly taken from GitHub -> Developer Settings-> Personal access token. For detailed instructions, see the [GitHub](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) documentation.
 
 This token is also used for accessing the private repos.
 
