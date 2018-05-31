@@ -32,6 +32,7 @@ notifications:
     recipients:
       - tapabrata.pal@capitalone.com
       - nireesh.thiruveedula@capitalone.com
+      - Stephen.Hughes@capitalone.com
       - Prashant.Parekh@capitalone.com
       - Matthew.Beasley@capitalone.com
       - Subodh.Battina@capitalone.com
