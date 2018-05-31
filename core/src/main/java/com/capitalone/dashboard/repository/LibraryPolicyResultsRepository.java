@@ -6,6 +6,8 @@ import org.bson.types.ObjectId;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
+
 /**
  * Repository for {@link CodeQuality} data.
  */
@@ -14,4 +16,6 @@ public interface LibraryPolicyResultsRepository extends CrudRepository<LibraryPo
 
     LibraryPolicyResult findByCollectorItemIdAndTimestamp(ObjectId collectorItemId, long timestamp);
     LibraryPolicyResult findByCollectorItemId(ObjectId collectorItemId);
+    List<LibraryPolicyResult> findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(ObjectId collectorItemId, long beginDate, long endDate);
+    List<LibraryPolicyResult> findByCollectorItemIdAndEvaluationTimestampIsBetweenOrderByTimestampDesc(ObjectId collectorItemId, long beginDate, long endDate);
 }
