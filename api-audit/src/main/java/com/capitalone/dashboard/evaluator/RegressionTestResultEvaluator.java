@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.evaluator;
 
+import com.capitalone.dashboard.ApiSettings;
 import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
@@ -38,6 +39,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
 
     private final TestResultRepository testResultRepository;
     private final FeatureRepository featureRepository;
+    private ApiSettings apiSettings;
 
     @Autowired
     public RegressionTestResultEvaluator(TestResultRepository testResultRepository, FeatureRepository featureRepository) {
@@ -82,7 +84,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                 .findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(testItem.getId(), beginDate-1, endDate+1);
 
         TestResultsAuditResponse testResultsAuditResponse = new TestResultsAuditResponse();
-        int traceabilityThreshold = settings.getThreshold();
+        int traceabilityThreshold = apiSettings.getThreshold();
         List<StoryIndicator> totalStoryIndicatorList = new ArrayList<>();
 
         for (TestResult testResult : testResults) {
@@ -140,7 +142,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
      */
     private List<StoryIndicator> getStoryIndicatorsInGivenDateRange(Dashboard dashboard, TestResultsAuditResponse testResultsAuditResponse, TestCase testCase, Long beginDate, Long endDate) {
 
-        final String REGEX_ANY_STRING_MATCHING_FEATURE_ID = settings.getFeatureIDPattern();
+        final String REGEX_ANY_STRING_MATCHING_FEATURE_ID = apiSettings.getFeatureIDPattern();
         List<StoryIndicator> storyIndicatorList = new ArrayList<>();
         Set<String> tags = testCase.getTags();
 
