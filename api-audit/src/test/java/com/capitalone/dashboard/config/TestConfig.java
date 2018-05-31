@@ -1,9 +1,6 @@
 package com.capitalone.dashboard.config;
 
 import com.capitalone.dashboard.ApiSettings;
-import com.capitalone.dashboard.evaluator.CodeReviewEvaluatorLegacy;
-import com.capitalone.dashboard.service.DashboardAuditService;
-import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

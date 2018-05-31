@@ -166,11 +166,12 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
             if (!allPrCommitShas.contains(commit.getScmRevisionNumber()) &&
                     StringUtils.isEmpty(commit.getPullNumber()) && commit.getType() == CommitType.New) {
                 commitsNotDirectlyTiedToPr.add(commit);
-                if (!StringUtils.isEmpty(commit.getScmAuthorLDAPDN()) && CommonCodeReview.checkForServiceAccount(commit.getScmAuthorLDAPDN(), settings))  {
-                    codeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.COMMITAUTHOR_EQ_SERVICEACCOUNT);
-                }
+                // auditServiceAccountChecks includes - check for service account and increment version tag for service account on direct commits.
+                auditServiceAccountChecks(codeReviewAuditResponse, commit);
                 codeReviewAuditResponse.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
-            }
+                // check for increment version tag and flag Direct commit by Non Service account
+                auditServiceAccountChecks(codeReviewAuditResponse,commit);
+               }
         });
         if (!commitsNotDirectlyTiedToPr.isEmpty()) {
             codeReviewAuditResponse.setCommits(commitsNotDirectlyTiedToPr);
@@ -192,6 +193,22 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
             peerReviewResponseList.setScmUrl(parsedUrl);
         });
         return allPeerReviews;
+    }
+
+    private void auditIncrementVersionTag(CodeReviewAuditResponse codeReviewAuditResponse, Commit commit, CodeReviewAuditStatus directCommitIncrementVersionTagStatus) {
+        if (CommonCodeReview.matchIncrementVersionTag(commit.getScmCommitLog(), settings)) {
+            codeReviewAuditResponse.addAuditStatus(directCommitIncrementVersionTagStatus);
+        }
+    }
+
+    private void auditServiceAccountChecks(CodeReviewAuditResponse codeReviewAuditResponse, Commit commit) {
+        if (!StringUtils.isEmpty(commit.getScmAuthorLDAPDN()) && CommonCodeReview.checkForServiceAccount(commit.getScmAuthorLDAPDN(), settings)) {
+            codeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.COMMITAUTHOR_EQ_SERVICEACCOUNT);
+            // check for increment version tag and flag Direct commit by Service account
+            auditIncrementVersionTag(codeReviewAuditResponse, commit, CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_SERVICE_ACCOUNT);
+        } else {
+            auditIncrementVersionTag(codeReviewAuditResponse, commit, CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_USER_ACCOUNT);
+        }
     }
 
 
