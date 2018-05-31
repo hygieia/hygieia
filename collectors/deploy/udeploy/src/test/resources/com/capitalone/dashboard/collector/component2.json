@@ -1,0 +1,126 @@
+[
+    {
+        "security": {
+            "Create Resources": true,
+            "Delete": true,
+            "write": true,
+            "Edit Basic Settings": true,
+            "Manage Children": true,
+            "Manage Impersonation": true,
+            "Manage Properties": true,
+            "Manage Teams": true,
+            "Map to Environments": true,
+            "read": true,
+            "View Resources": true
+        },
+        "id": "4bf56c33-90ad-483f-b4ca-646df030bcf1",
+        "securityResourceId": "eac9e578-8f8f-4d94-8f96-1cef98e153a4",
+        "name": "AA-JPetstore_Comp1.war",
+        "path": "\/App-Infra\/DEV16\/APP\/udagent-app\/msp_16\/AA-JPetstore_Comp1.war",
+        "active": true,
+        "inheritTeam": true,
+        "discoveryFailed": false,
+        "prototype": false,
+        "impersonationPassword": "****",
+        "impersonationUseSudo": false,
+        "impersonationForce": false,
+        "type": "subresource",
+        "status": "ONLINE",
+        "hasAgent": true,
+        "tags": [],
+        "parent": {
+            "security": {
+                "Create Resources": false,
+                "Delete": false,
+                "write": false,
+                "Edit Basic Settings": false,
+                "Manage Children": false,
+                "Manage Impersonation": false,
+                "Manage Properties": false,
+                "Manage Teams": false,
+                "Map to Environments": false,
+                "read": false,
+                "View Resources": false
+            },
+            "id": "70f3334a-4e76-4581-958b-c29867015250",
+            "securityResourceId": "44ea5148-5f2f-4dc9-9730-1f9d7b89e63c",
+            "name": "msp_16",
+            "path": "\/App-Infra\/DEV16\/APP\/udagent-app\/msp_16",
+            "active": true,
+            "inheritTeam": true,
+            "discoveryFailed": false,
+            "prototype": false,
+            "impersonationPassword": "****",
+            "impersonationUseSudo": false,
+            "impersonationForce": false,
+            "type": "subresource",
+            "status": "ONLINE",
+            "hasAgent": true,
+            "tags": [],
+            "parent": {
+                "security": {
+                    "Create Resources": false,
+                    "Delete": false,
+                    "write": false,
+                    "Edit Basic Settings": false,
+                    "Manage Children": false,
+                    "Manage Impersonation": false,
+                    "Manage Properties": false,
+                    "Manage Teams": false,
+                    "Map to Environments": false,
+                    "read": false,
+                    "View Resources": false
+                },
+                "id": "93552fc9-8b2b-4220-ac66-83b4b1bd6db7",
+                "securityResourceId": "48598164-df17-409e-b370-725a6e882367",
+                "name": "udagent-web",
+                "path": "\/App-Infra\/DEV16\/WEB\/udagent-web",
+                "active": true,
+                "inheritTeam": true,
+                "discoveryFailed": false,
+                "prototype": false,
+                "impersonationPassword": "****",
+                "impersonationUseSudo": false,
+                "impersonationForce": false,
+                "type": "agent",
+                "status": "ONLINE",
+                "hasAgent": true,
+                "tags": [],
+                "agent": {
+                    "id": "c8fdec76-13b8-4268-a27e-c227c3d7b19b",
+                    "securityResourceId": "278f6ed6-0596-45b6-b544-1ae22af06da3",
+                    "name": "udagent-web",
+                    "active": true,
+                    "licensed": true,
+                    "licenseType": "AUTHORIZED",
+                    "status": "ONLINE",
+                    "version": "6.1.1.4.665694",
+                    "workingDirectory": "\/opt\/udeploy\/udagent-web\/var\/work\/",
+                    "impersonationPassword": "****",
+                    "impersonationUseSudo": false,
+                    "impersonationForce": false
+                }
+            }
+        },
+        "role": {
+            "id": "e5a5a9ea-0762-4ee9-b806-d8ce0287d147",
+            "name": "AA-JPetstore_Comp1.war",
+            "specialType": "COMPONENT"
+        },
+        "resource": {
+            "id": "eac9e578-8f8f-4d94-8f96-1cef98e153a4"
+        },
+        "versions": [
+            {
+                "id": "b9f9ccee-8f08-4c0f-bc22-c68cf4e2089a",
+                "name": "2.11.3b854a6a.1049",
+                "type": "FULL",
+                "created": 1445471883410,
+                "active": true,
+                "archived": false,
+                "sizeOnDisk": 297304064
+            }
+        ],
+        "hasChildren": false
+    }
+]
