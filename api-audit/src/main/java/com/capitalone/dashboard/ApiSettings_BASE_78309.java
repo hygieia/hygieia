@@ -18,13 +18,9 @@ public class ApiSettings {
     private String peerReviewContexts;
     private String peerReviewApprovalText;
     private String serviceAccountOU;
-    private String commitLogIgnoreAuditRegEx;
     @Value("${maxDaysRangeForQuery:60}") // 60 days max
     private long maxDaysRangeForQuery;
     private boolean logRequest;
-
-    private String featureIDPattern;
-    private int threshold;
     
     public String getKey() {
         return key;
@@ -89,29 +85,4 @@ public class ApiSettings {
     public void setServiceAccountOU(String serviceAccountOU) {
         this.serviceAccountOU = serviceAccountOU;
     }
-
-    public String getFeatureIDPattern() {
-        return featureIDPattern;
-    }
-
-    public void setFeatureIDPattern(String featureIDPattern) {
-        this.featureIDPattern = featureIDPattern;
-    }
-
-    public int getThreshold() {
-        return threshold;
-    }
-
-    public void setThreshold(int threshold) {
-        this.threshold = threshold;
-    }
-
-    public String getCommitLogIgnoreAuditRegEx() {
-        return commitLogIgnoreAuditRegEx;
-    }
-
-    public void setCommitLogIgnoreAuditRegEx(String commitLogIgnoreAuditRegEx) {
-        this.commitLogIgnoreAuditRegEx = commitLogIgnoreAuditRegEx;
-    }
-
 }

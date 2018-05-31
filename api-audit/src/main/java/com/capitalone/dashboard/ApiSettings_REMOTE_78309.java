@@ -22,9 +22,6 @@ public class ApiSettings {
     @Value("${maxDaysRangeForQuery:60}") // 60 days max
     private long maxDaysRangeForQuery;
     private boolean logRequest;
-
-    private String featureIDPattern;
-    private int threshold;
     
     public String getKey() {
         return key;
@@ -90,21 +87,6 @@ public class ApiSettings {
         this.serviceAccountOU = serviceAccountOU;
     }
 
-    public String getFeatureIDPattern() {
-        return featureIDPattern;
-    }
-
-    public void setFeatureIDPattern(String featureIDPattern) {
-        this.featureIDPattern = featureIDPattern;
-    }
-
-    public int getThreshold() {
-        return threshold;
-    }
-
-    public void setThreshold(int threshold) {
-        this.threshold = threshold;
-    }
 
     public String getCommitLogIgnoreAuditRegEx() {
         return commitLogIgnoreAuditRegEx;

@@ -1,0 +1,70 @@
+{
+  "dashboardTitle": "TestSSA",
+  "businessService": "TestBusServ",
+  "businessApplication": "confItem",
+  "review": {
+    "STATIC_SECURITY_ANALYSIS": [
+      {
+        "url": "https://appsec.com/StaticSecurityAnalysis",
+        "lastExecutionTime": 1522855896054,
+        "codeQuality": {
+          "collectorItemId": {
+            "timestamp": 1531859523,
+            "machineIdentifier": 3402793,
+            "processIdentifier": 27521,
+            "counter": 12817247
+          },
+          "timestamp": 1522855896054,
+          "type": "SecurityAnalysis",
+          "metrics": [
+            {
+              "name": "Score",
+              "value": "89",
+              "formattedValue": "89"
+            },
+            {
+              "name": "Low",
+              "value": "1",
+              "formattedValue": "1",
+              "status": "Ok"
+            },
+            {
+              "name": "Medium",
+              "value": "4",
+              "formattedValue": "4",
+              "status": "Warning"
+            },
+            {
+              "name": "Critical",
+              "value": "3",
+              "formattedValue": "3",
+              "status": "Alert"
+            },
+            {
+              "name": "High",
+              "value": "21",
+              "formattedValue": "21",
+              "status": "Alert"
+            }
+          ],
+          "id": {
+            "timestamp": 1526399918,
+            "machineIdentifier": 13385268,
+            "processIdentifier": 31400,
+            "counter": 6939768
+          }
+        },
+        "auditStatuses": [
+          "STATIC_SECURITY_SCAN_FOUND_HIGH",
+          "STATIC_SECURITY_SCAN_FOUND_CRITICAL",
+          "STATIC_SECURITY_SCAN_OK"
+        ],
+        "lastUpdated": 0
+      }
+    ]
+  },
+  "auditStatuses": [
+    "DASHBOARD_STATIC_SECURITY_ANALYSIS_CONFIGURED"
+  ],
+  "lastUpdated": 0
+}

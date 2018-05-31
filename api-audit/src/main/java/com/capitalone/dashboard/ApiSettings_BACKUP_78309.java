@@ -90,6 +90,7 @@ public class ApiSettings {
         this.serviceAccountOU = serviceAccountOU;
     }
 
+<<<<<<< HEAD
     public String getFeatureIDPattern() {
         return featureIDPattern;
     }
@@ -105,6 +106,7 @@ public class ApiSettings {
     public void setThreshold(int threshold) {
         this.threshold = threshold;
     }
+=======
 
     public String getCommitLogIgnoreAuditRegEx() {
         return commitLogIgnoreAuditRegEx;
@@ -114,4 +116,5 @@ public class ApiSettings {
         this.commitLogIgnoreAuditRegEx = commitLogIgnoreAuditRegEx;
     }
 
+>>>>>>> upstream/master
 }
