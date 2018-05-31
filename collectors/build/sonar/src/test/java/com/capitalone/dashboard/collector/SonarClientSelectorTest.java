@@ -19,11 +19,19 @@ public class SonarClientSelectorTest {
     private DefaultSonarClient defaultSonarClient;
     @Mock
     private DefaultSonar6Client defaultSonar6Client;
+    @Mock
+    private DefaultSonar56Client defaultSonar56Client;
 
     @Test
     public void getSonarClient4() throws Exception {
         SonarClient sonarClient = selector.getSonarClient((double) 4);
         assertThat(sonarClient, instanceOf(DefaultSonarClient.class));
+    }
+
+    @Test
+    public void getSonarClient56() throws Exception {
+        SonarClient sonarClient = selector.getSonarClient((double) 5.6);
+        assertThat(sonarClient, instanceOf(DefaultSonar56Client.class));
     }
 
     @Test
