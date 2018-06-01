@@ -103,6 +103,20 @@ To view a template:
 
 - Click on the template name to view a list of all the widgets in the template.
 
+### General Configurations for Property Management
+
+In this tab, you can manage the application properties for all the collectors in Hygieia by specifying the server URL and account details for each application. In the Admin screen, the **General Configurations** tab displays a list of all the collectors in Hygieia. To manage the application properties for a specific application, such as GitHub, enter the following details:
+
+- **Url** - Enter the server URL along with the port from where the jobs/applications have to be fetched.
+ 
+- **Username** - Enter the functional username which has access to all jobs/applications.
+
+- **Password** - Enter the password corresponding to the functional username.
+
+Click the **Add** icon to include details of additional server instances for an application. Click **Delete** icon to remove server instances for an application.
+
+Once you finish entering the application details, click **Save**.
+
 ## User Signup and Login Instructions
 
 To create an account for a new user:
