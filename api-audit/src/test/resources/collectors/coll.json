@@ -50,5 +50,34 @@
       "processIdentifier": 26815,
       "counter": 14369292
     }
+  },
+  {
+    "id": "5af9ed53cba7165e8cc1069e",
+    "_class": "com.capitalone.dashboard.model.EratocodeOSSCollector",
+    "eratocodeServers": [
+      "https://scan.com"
+    ],
+    "niceNames": [],
+    "name": "EratocodeOSS",
+    "collectorType": "LibraryPolicy",
+    "enabled": true,
+    "online": false,
+    "errors": [],
+    "uniqueFields": {
+      "componentName": "",
+      "applicationName": "",
+      "instanceUrl": ""
+    },
+    "allFields": {
+      "applicationType": "",
+      "componentName": "",
+      "applicationID": "",
+      "applicationName": "",
+      "instanceUrl": ""
+    },
+    "lastExecuted": 1518986735128,
+    "searchFields": [
+      "description"
+    ]
   }
 ]
