@@ -6,29 +6,33 @@ import com.amazonaws.services.cloudwatch.AmazonCloudWatchClient;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsRequest;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
 import com.amazonaws.services.ec2.AmazonEC2Client;
+import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.DescribeVolumesResult;
+import com.amazonaws.services.ec2.model.Filter;
 import com.capitalone.dashboard.model.CloudInstance;
 import com.capitalone.dashboard.model.CloudVolumeStorage;
 import com.capitalone.dashboard.model.NameValue;
 import com.capitalone.dashboard.repository.CloudInstanceRepository;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
+import org.hamcrest.Matchers;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import javax.annotation.processing.Filer;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.isNotNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -311,5 +315,65 @@ public class DefaultAWSCloudClientTest {
         defaultAWSCloudClient.setCloudWatchClient(cloudWatchClient);
         when(cloudWatchClient.getMetricStatistics(any())).thenReturn(diskOutMetric);
         assertEquals(defaultAWSCloudClient.getLastInstanceHourDiskWrite("i-12345678"), new Double(0));
+    }
+
+    @Test
+    public void canUseFiltersIfDefined() throws Exception {
+
+        when(settings.getProxyHost()).thenReturn("http://myproxy.com");
+        when(settings.getProxyPort()).thenReturn("8080");
+        when(settings.getProfile()).thenReturn("ABCDEG");
+        when(settings.getNonProxy()).thenReturn("localhost");
+
+        Map<String,List<String>> filterProperties = new HashMap<String,List<String>>();
+        filterProperties.put("tag: myTag", Arrays.asList("tagValue"));
+        filterProperties.put("instance-state-name", Arrays.asList("running","pending"));
+        when(settings.getFilters()).thenReturn(filterProperties);
+
+        defaultAWSCloudClient = new DefaultAWSCloudClient(settings);
+        defaultAWSCloudClient.setEc2Client(ec2Client);
+
+        when(autoScalingClient.describeAutoScalingInstances()).thenReturn(new DescribeAutoScalingInstancesResult());
+        defaultAWSCloudClient.setAutoScalingClient(autoScalingClient);
+
+        when(ec2Client.describeInstances(any(DescribeInstancesRequest.class))).thenReturn(new DescribeInstancesResult());
+
+        //do the test
+        defaultAWSCloudClient.getCloudInstances(cloudInstanceRepository);
+
+        // verify
+        ArgumentCaptor<DescribeInstancesRequest> captor = ArgumentCaptor.forClass(DescribeInstancesRequest.class);
+        verify(ec2Client).describeInstances(captor.capture());
+
+        assertThat(captor.getValue().getFilters(), hasSize(2));
+        assertThat(captor.getValue().getFilters(), containsInAnyOrder(
+                new Filter("tag: myTag").withValues("tagValue"),
+                new Filter("instance-state-name").withValues("running","pending")));
+
+    }
+
+    @Test
+    public void ignoresFiltersIfNull() throws Exception {
+
+        when(settings.getProxyHost()).thenReturn("http://myproxy.com");
+        when(settings.getProxyPort()).thenReturn("8080");
+        when(settings.getProfile()).thenReturn("ABCDEG");
+        when(settings.getNonProxy()).thenReturn("localhost");
+
+        when(settings.getFilters()).thenReturn(null);
+
+        defaultAWSCloudClient = new DefaultAWSCloudClient(settings);
+        defaultAWSCloudClient.setEc2Client(ec2Client);
+
+        when(autoScalingClient.describeAutoScalingInstances()).thenReturn(new DescribeAutoScalingInstancesResult());
+        defaultAWSCloudClient.setAutoScalingClient(autoScalingClient);
+
+        when(ec2Client.describeInstances()).thenReturn(new DescribeInstancesResult());
+
+        //do the test
+        defaultAWSCloudClient.getCloudInstances(cloudInstanceRepository);
+
+        // verify.. should not throw exception;
+
     }
 }

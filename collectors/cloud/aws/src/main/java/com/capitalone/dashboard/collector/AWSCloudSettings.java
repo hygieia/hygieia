@@ -4,6 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Bean to hold settings specific to the Cloud collector.
@@ -24,7 +25,9 @@ public class AWSCloudSettings {
 
     private int historyDays;
 
-	public List<String> getValidTagKey() {
+    private Map<String,List<String>> filters;
+
+    public List<String> getValidTagKey() {
 		return validTagKey;
 	}
 
@@ -82,5 +85,13 @@ public class AWSCloudSettings {
 
     public List<String> getProtectedFields() {
         return protectedFields;
+    }
+
+    public Map<String, List<String>> getFilters() {
+        return filters;
+    }
+
+    public void setFilters(Map<String, List<String>> filters) {
+        this.filters = filters;
     }
 }
