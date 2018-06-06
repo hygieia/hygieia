@@ -36,7 +36,7 @@ import java.util.List;
 public class DefaultSonar6Client implements SonarClient {
     private static final Log LOG = LogFactory.getLog(DefaultSonar6Client.class);
 
-    private static final String URL_RESOURCES = "/api/components/search?qualifiers=TRK&ps=10000";
+    private static final String URL_RESOURCES = "/api/components/search?qualifiers=TRK&ps=500";
     private static final String URL_RESOURCE_DETAILS = "/api/measures/component?format=json&componentId=%s&metricKeys=%s&includealerts=true";
     private static final String URL_PROJECT_ANALYSES = "/api/project_analyses/search?project=%s";
     private static final String URL_QUALITY_PROFILES = "/api/qualityprofiles/search";
@@ -64,6 +64,7 @@ public class DefaultSonar6Client implements SonarClient {
     private static final String HOURS_FORMAT = "%sh";
     private static final String DAYS_FORMAT = "%sd";
     private static final int HOURS_IN_DAY = 8;
+    private static final int PAGE_SIZE=500;
 
     @Autowired
     public DefaultSonar6Client(Supplier<RestOperations> restOperationsSupplier, SonarSettings settings) {
@@ -80,7 +81,8 @@ public class DefaultSonar6Client implements SonarClient {
 
         try {
             String key = "components";
-            for (Object obj : parseAsArray(url, key)) {
+            JSONArray jsonArray = getProjectsForAllPages(url, key);
+            for (Object obj : jsonArray) {
                 JSONObject prjData = (JSONObject) obj;
 
                 SonarProject project = new SonarProject();
@@ -97,6 +99,31 @@ public class DefaultSonar6Client implements SonarClient {
         }
 
         return projects;
+    }
+
+    private JSONArray getProjectsForAllPages(String url, String key) throws ParseException {
+        Long totalRecords = getTotalCount(parseJsonObject(url, "paging"));
+        int pages = getNumberOfPages(totalRecords);
+        JSONArray jsonArray = new JSONArray();
+        jsonArray = totalRecords > PAGE_SIZE ? getProjectsPage(url, key, pages, jsonArray): getAllProjects(url, key, jsonArray);
+        return jsonArray;
+    }
+
+    private JSONArray getAllProjects(String url, String key, JSONArray jsonArray) throws ParseException {
+        jsonArray.addAll(parseAsArray(url, key));
+        return jsonArray;
+    }
+
+    private JSONArray getProjectsPage(String url, String key, int pages, JSONArray jsonArray) throws ParseException {
+       for (int start=1;start<=pages;start++){
+            getPagedProjects(url, key, jsonArray, start);
+        }
+        return  jsonArray;
+    }
+
+    private void getPagedProjects(String url, String key, JSONArray jsonArray, int pageNumber) throws ParseException {
+        String urlFinal = url+"&p="+pageNumber;
+        jsonArray.addAll(parseAsArray(urlFinal, key));
     }
 
     @Override
@@ -213,11 +240,21 @@ public class DefaultSonar6Client implements SonarClient {
     }
 
     private JSONArray parseAsArray(String url, String key) throws ParseException {
+        JSONObject jsonObject = getResponse(url);
+        return (JSONArray) jsonObject.get(key);
+    }
+
+    private JSONObject parseJsonObject(String url, String key) throws ParseException {
+        JSONObject jsonObject = getResponse(url);
+        return (JSONObject)jsonObject.get(key);
+    }
+
+    private JSONObject getResponse(String url) throws ParseException {
         ResponseEntity<String> response = rest.exchange(url, HttpMethod.GET, this.httpHeaders, String.class);
         JSONParser jsonParser = new JSONParser();
         JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
         LOG.debug(url);
-        return (JSONArray) jsonObject.get(key);
+        return jsonObject;
     }
 
     private long timestamp(JSONObject json, String key) {
@@ -334,4 +371,17 @@ public class DefaultSonar6Client implements SonarClient {
         }
         return headers;
     }
+
+    private long roundUp(long num, long divisor) {
+        return (num + divisor - 1) / divisor;
+    }
+
+    private int getNumberOfPages(Long totalRecords) {
+        return (int)roundUp(totalRecords,PAGE_SIZE);
+    }
+
+    private Long getTotalCount(JSONObject pagingObject) {
+        return (Long) pagingObject.get("total");
+    }
+
 }
