@@ -96,6 +96,13 @@ entries:
       url: /audit_apis.html
       output: web, pdf
  
+  - title: Database Schema
+    output: web, pdf
+    folderitems:
+    - title: Database Collections
+      url: /dbschema.html
+      output: web, pdf
+      
   - title: Troubleshooting
     output: web, pdf
     folderitems:
