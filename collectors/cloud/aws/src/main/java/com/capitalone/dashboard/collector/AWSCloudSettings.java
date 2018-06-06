@@ -3,6 +3,7 @@ package com.capitalone.dashboard.collector;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ public class AWSCloudSettings {
 
     private int historyDays;
 
-    private Map<String,List<String>> filters;
+    private Map<String,List<String>> filters= new HashMap<>();
 
     public List<String> getValidTagKey() {
 		return validTagKey;
