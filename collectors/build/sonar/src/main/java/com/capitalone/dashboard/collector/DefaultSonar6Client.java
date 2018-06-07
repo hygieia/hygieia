@@ -81,7 +81,7 @@ public class DefaultSonar6Client implements SonarClient {
 
         try {
             String key = "components";
-            JSONArray jsonArray = getProjectsForAllPages(url, key);
+            JSONArray jsonArray = getProjects(url, key);
             for (Object obj : jsonArray) {
                 JSONObject prjData = (JSONObject) obj;
 
@@ -101,27 +101,27 @@ public class DefaultSonar6Client implements SonarClient {
         return projects;
     }
 
-    private JSONArray getProjectsForAllPages(String url, String key) throws ParseException {
+    private JSONArray getProjects(String url, String key) throws ParseException {
         Long totalRecords = getTotalCount(parseJsonObject(url, "paging"));
-        int pages = getNumberOfPages(totalRecords);
+        int pages = (int) Math.ceil((double)totalRecords / PAGE_SIZE);
         JSONArray jsonArray = new JSONArray();
-        jsonArray = totalRecords > PAGE_SIZE ? getProjectsPage(url, key, pages, jsonArray): getAllProjects(url, key, jsonArray);
+        jsonArray = totalRecords > PAGE_SIZE ? getProjects(url, key, pages, jsonArray): getProjects(url, key, jsonArray);
         return jsonArray;
     }
 
-    private JSONArray getAllProjects(String url, String key, JSONArray jsonArray) throws ParseException {
+    private JSONArray getProjects(String url, String key, JSONArray jsonArray) throws ParseException {
         jsonArray.addAll(parseAsArray(url, key));
         return jsonArray;
     }
 
-    private JSONArray getProjectsPage(String url, String key, int pages, JSONArray jsonArray) throws ParseException {
+    private JSONArray getProjects(String url, String key, int pages, JSONArray jsonArray) throws ParseException {
        for (int start=1;start<=pages;start++){
-            getPagedProjects(url, key, jsonArray, start);
+            getProjects(url, key, jsonArray, start);
         }
         return  jsonArray;
     }
 
-    private void getPagedProjects(String url, String key, JSONArray jsonArray, int pageNumber) throws ParseException {
+    private void getProjects(String url, String key, JSONArray jsonArray, int pageNumber) throws ParseException {
         String urlFinal = url+"&p="+pageNumber;
         jsonArray.addAll(parseAsArray(urlFinal, key));
     }
@@ -370,14 +370,6 @@ public class DefaultSonar6Client implements SonarClient {
             headers.set("Authorization", authHeader);
         }
         return headers;
-    }
-
-    private long roundUp(long num, long divisor) {
-        return (num + divisor - 1) / divisor;
-    }
-
-    private int getNumberOfPages(Long totalRecords) {
-        return (int)roundUp(totalRecords,PAGE_SIZE);
     }
 
     private Long getTotalCount(JSONObject pagingObject) {
