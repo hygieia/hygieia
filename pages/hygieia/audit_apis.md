@@ -28,13 +28,62 @@ The audit API logic adds various audit flags depending on the data. For a detail
 
 For instructions on installing and running the audit APIs, see the [Setup Instructions](api-audit/api-audit.md) documentation.
 
-For detailed information on audit APIs, see the Swagger documentation, which is generated as part of your build. You can view Swagger documentation on your web browser using the URL,  http://localhost:<port>/apiaudit/swagger/index.html#/.
+For detailed information on audit APIs, see the Swagger documentation, which is generated as part of your build. You can view Swagger documentation on your web browser using the URL,  ```http://localhost:<port>/apiaudit/swagger/index.html#/```.
 
 The following audit APIs support code quality checks:
 
+- Remote Create and Update 
+- Dashboard Review
 - Peer review
 - Static Code Analysis
 - Performance Analysis
+
+## Remote Create and Update
+
+These endpoints are used to post (either create or update) SCA data.
+
+**Input Parameters**
+
+- Build entries
+- Code repo entries
+- Deployment entries
+- Feature entries
+- Functional test entries
+- Library scan entries
+- Dashboard metadata
+- Security scan entries
+- Static code entries
+
+**Sample Request**
+
+```
+{"codeRepoEntries":[{"toolName":"GitHub","description":"brief description","options":{"branch":"master","url":"https://github.com/link/to/microservice","personalAccessToken":"apitokenvalue"}},{"toolName":"GitHub","description":"brief description","options":{"branch":"master","url":"https://github.com/link/to/microservice-infrastructure","personalAccessToken":"apitokenvalue"}},{"toolName":"GitHub","description":"brief description","options":{"branch":"master","url":"https://github.com/link/to/microservice-infrastructure","personalAccessToken":"2w+Hcpf9r6ufxj5sPuRjdpLRgxnxEdFdGBomsRTjhdJvIsZNjn/XsdCknWBC6t/X"}}],"staticCodeEntries":[{"toolName":"Sonar","description":"api","options":{"projectName":"synapse_org_api","instanceUrl":"https://sonar/instance-url.com/"}}],"metaData":{"applicationName":"APPNAME","businessApplication":"CINum","businessService":"Value","componentName":"Value","owner":{"authType":"LDAP","username":"username"},"template":"Template","title":"title","type":"Team"}}
+```
+
+**API Response**
+
+- SCA data created or updated.
+
+## Dashboard Review Audit API
+
+This endpoint validates that your artifact is meeting the quality gate threshold established in Sonar and returns an appropriate audit status based on whether the threshold has been met or not.
+
+**Input Parameters**
+
+- Date Range (begin date and end date)
+- Repo
+- Branch Name
+
+**Sample Request**
+
+```
+http://localhost:8090/apiaudit/dashboardReview?title=testSCA&beginDate=1524501989477&endDate=1527598806000&auditType=ALL
+```
+
+** API Response**
+
+Passed Validation – The quality gate threshold is met.
+Failed Validation – The quality gate threshold is either not met or is missing.
 
 ## Peer Review Audit API
 
@@ -49,6 +98,12 @@ The peer review audit API returns the audit status as passed or failed for the p
 - Repo 
 - SCM Name
 - Branch Name
+
+**Sample request**
+
+```
+https://hygieiaapiaudit.cloud.capitalone.com/apiaudit/peerReview?repo=https://github.com&branch=master&beginDate=0&endDate=1519415217000
+```
 
 **API Response**
  
@@ -72,7 +127,7 @@ Code Quality Audit validates that the Static Code Analysis threshold (set by an 
 
 **Input Parameters**
 
-- Business Application 
+- Business Application
 - Business Service
 - Jenkins Sonar Job link
 - Project name
@@ -110,8 +165,8 @@ Periodic performance testing is important to assess the resiliency of an applica
 
 This API performs the following requirement checks:
 
--	Must execute automated performance test suite for each release build
--	Performance test results must meet the pass threshold for each release build
+- Must execute automated performance test suite for each release build
+- Performance test results must meet the pass threshold for each release build
 
 **Input Parameters**
 
