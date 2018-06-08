@@ -57,7 +57,7 @@ These endpoints are used to post (either create or update) SCA data.
 **Sample Request**
 
 ```
-{"codeRepoEntries":[{"toolName":"GitHub","description":"Brief description","options":{"branch":"master","url":"","personalAccessToken":""}}],"staticCodeEntries":[{"toolName":"Sonar","description":"api","options":{"projectName":"","instanceUrl":""}}],"metaData":{"applicationName":"","businessApplication":"","businessService":"","componentName":"","owner":{"authType":"LDAP","username":"username"},"template":"Template","title":"title","type":"Team"}}
+{"codeRepoEntries":[{"toolName":"GitHub","description":"Brief description","options":{"branch":"master","url":"","personalAccessToken":""}}],"staticCodeEntries":[{"toolName":"Sonar","description":"","options":{"projectName":"","projectId":"","instanceUrl":""}}],"metaData":{"applicationName":"","businessApplication":"","businessService":"","componentName":"","owner":{"authType":"LDAP","username":"username"},"template":"Template","title":"title","type":"Team"}}
 ```
 
 **API Response**
