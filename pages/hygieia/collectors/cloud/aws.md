@@ -99,7 +99,7 @@ The sample `application.properties` file lists parameters with sample values to 
 You can optionally add to the same properties file
 ```properties
    # instance scanning filtering
-   aws.filters['tag\:\ tagName'][0]=myTagValue
+   aws.filters['tag\:tagName'][0]=myTagValue
    aws.filters['instance-state-name'][0]=pending
    aws.filters['instance-state-name'][1]=running
 ```
