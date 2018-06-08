@@ -77,7 +77,7 @@ This endpoint validates that your artifact is meeting the quality gate threshold
 **Sample Request**
 
 ```
-http://../apiaudit/dashboardReview?title=testSCA&beginDate=1524501989477&endDate=1527598806000&auditType=ALL
+/apiaudit/dashboardReview?title=testSCA&beginDate=1524501989477&endDate=1527598806000&auditType=ALL
 
 #Values for auditType
 auditType="ALL" or "CODE_REVIEW" or "BUILD_REVIEW" or "CODE_QUALITY" or "TEST_RESULT" or "PERF_TEST"
@@ -105,7 +105,7 @@ The peer review audit API returns the audit status as passed or failed for the p
 **Sample request**
 
 ```
-https://../apiaudit/peerReview?repo=https://github.com&branch=master&beginDate=0&endDate=1519415217000
+/apiaudit/peerReview?repo=https://github.com&branch=master&beginDate=0&endDate=1519415217000
 ```
 
 **API Response**
