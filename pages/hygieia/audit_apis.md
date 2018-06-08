@@ -57,7 +57,7 @@ These endpoints are used to post (either create or update) SCA data.
 **Sample Request**
 
 ```
-{"codeRepoEntries":[{"toolName":"GitHub","description":"Brief description","options":{"branch":"master","url":"","personalAccessToken":""}},{"toolName":"GitHub","description":"Brief description","options":{"branch":"master","url":"","personalAccessToken":""}},{"toolName":"GitHub","description":"Brief description","options":{"branch":"master","url":"","personalAccessToken":""}}],"staticCodeEntries":[{"toolName":"Sonar","description":"api","options":{"projectName":"","instanceUrl":""}}],"metaData":{"applicationName":"APPNAME","businessApplication":"CINumber","businessService":"Value","componentName":"Value","owner":{"authType":"LDAP","username":"username"},"template":"Template","title":"title","type":"Team"}}
+{"codeRepoEntries":[{"toolName":"GitHub","description":"Brief description","options":{"branch":"master","url":"","personalAccessToken":""}}],"staticCodeEntries":[{"toolName":"Sonar","description":"api","options":{"projectName":"","instanceUrl":""}}],"metaData":{"applicationName":"","businessApplication":"","businessService":"","componentName":"","owner":{"authType":"LDAP","username":"username"},"template":"Template","title":"title","type":"Team"}}
 ```
 
 **API Response**
@@ -77,7 +77,10 @@ This endpoint validates that your artifact is meeting the quality gate threshold
 **Sample Request**
 
 ```
-http://localhost:8090/apiaudit/dashboardReview?title=testSCA&beginDate=1524501989477&endDate=1527598806000&auditType=ALL
+http://../apiaudit/dashboardReview?title=testSCA&beginDate=1524501989477&endDate=1527598806000&auditType=ALL
+
+#Values for auditType
+auditType="ALL" or "CODE_REVIEW" or "BUILD_REVIEW" or "CODE_QUALITY" or "TEST_RESULT" or "PERF_TEST"
 ```
 
 ** API Response**
@@ -102,7 +105,7 @@ The peer review audit API returns the audit status as passed or failed for the p
 **Sample request**
 
 ```
-https://hygieiaapiaudit.cloud.capitalone.com/apiaudit/peerReview?repo=https://github.com&branch=master&beginDate=0&endDate=1519415217000
+https://../apiaudit/peerReview?repo=https://github.com&branch=master&beginDate=0&endDate=1519415217000
 ```
 
 **API Response**
