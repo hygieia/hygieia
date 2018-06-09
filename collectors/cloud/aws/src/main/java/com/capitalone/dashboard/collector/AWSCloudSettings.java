@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.collector;
 
+import com.amazonaws.regions.Regions;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +28,8 @@ public class AWSCloudSettings {
     private int historyDays;
 
     private Map<String,List<String>> filters= new HashMap<>();
+
+    private Regions region;
 
     public List<String> getValidTagKey() {
 		return validTagKey;
@@ -94,5 +97,13 @@ public class AWSCloudSettings {
 
     public void setFilters(Map<String, List<String>> filters) {
         this.filters = filters;
+    }
+
+    public Regions getRegion() {
+        return region;
+    }
+
+    public void setRegion(Regions region) {
+        this.region = region;
     }
 }

@@ -3,7 +3,6 @@ package com.capitalone.dashboard.collector;
 import com.amazonaws.auth.AWSCredentialsProviderChain;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
-import com.amazonaws.services.autoscaling.AmazonAutoScaling;
 import com.amazonaws.services.autoscaling.AmazonAutoScalingClient;
 import com.amazonaws.services.autoscaling.model.AutoScalingInstanceDetails;
 import com.amazonaws.services.autoscaling.model.DescribeAutoScalingInstancesResult;
@@ -59,7 +58,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
     private final AWSCloudSettings settings;
     private static AmazonEC2Client ec2Client;
     private static AmazonCloudWatchClient cloudWatchClient;
-    private static AmazonAutoScaling autoScalingClient;
+    private static AmazonAutoScalingClient autoScalingClient;
     private static final String NO_ACCOUNT = "NOACCOUNT";
 
 
@@ -79,11 +78,16 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 
         ec2Client = new AmazonEC2Client(new AWSCredentialsProviderChain(new ProfileCredentialsProvider(settings.getProfile()),
                 new InstanceProfileCredentialsProvider()));
-
         cloudWatchClient = new AmazonCloudWatchClient(new AWSCredentialsProviderChain(new ProfileCredentialsProvider(settings.getProfile()),
                 new InstanceProfileCredentialsProvider()));
         autoScalingClient = new AmazonAutoScalingClient(new AWSCredentialsProviderChain(new ProfileCredentialsProvider(settings.getProfile()),
                 new InstanceProfileCredentialsProvider()));
+
+        if (null != settings.getRegion()) {
+            ec2Client.withRegion(settings.getRegion());
+            cloudWatchClient.withRegion(settings.getRegion());
+            autoScalingClient.withRegion(settings.getRegion());
+        }
     }
 
     /**
@@ -495,7 +499,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
         DefaultAWSCloudClient.cloudWatchClient = cloudWatchClient;
     }
 
-    public  void setAutoScalingClient(AmazonAutoScaling autoScalingClient) {
+    public  void setAutoScalingClient(AmazonAutoScalingClient autoScalingClient) {
         DefaultAWSCloudClient.autoScalingClient = autoScalingClient;
     }
 }
