@@ -94,7 +94,7 @@
           </execution>
 
           <execution>
-            <id>bower install</id>
+            <id>bower install --allow-root</id>
             <goals>
               <goal>bower</goal>
             </goals>
