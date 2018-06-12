@@ -19,6 +19,10 @@ import java.util.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyCollection;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyVararg;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -34,6 +38,7 @@ public class HpsmCollectorTaskTest {
     @Mock private HpsmSettings hpsmSettings;
     @Mock private IncidentRepository incidentRepository;
     @Mock private ChangeOrderRepository changeOrderRepository;
+    @Mock private CollectorItemRepository collectorItemRepository;
 
     @Mock private Cmdb cmdb1;
     @Mock private Cmdb cmdb2;
@@ -49,12 +54,18 @@ public class HpsmCollectorTaskTest {
         assertTrue(collector.isEnabled());
     }
 
-    private void testCollectorAction(String collectorAction){
+    private void testCollectorAction(String collectorAction) {
+        CollectorType collectorType = null;
+        if ("HpsmIncident".equalsIgnoreCase(collectorAction)) {
+            collectorType = CollectorType.Incident;
+        } else {
+            collectorType = CollectorType.CMDB;
+        }
         System.setProperty("collector.action", collectorAction);
         Collector collector = collector(collectorAction);
 
         assertEquals(collectorAction, collector.getName());
-        assertEquals(CollectorType.CMDB, collector.getCollectorType());
+        assertEquals(collectorType, collector.getCollectorType());
         assertTrue(collector.isOnline());
         assertTrue(collector.isEnabled());
     }
@@ -199,14 +210,19 @@ public class HpsmCollectorTaskTest {
     }
 
     @Test
-    public void collect_testCollectIncidents() throws HygieiaException{
+    public <T extends CollectorItem> void collect_testCollectIncidents() throws HygieiaException {
+
         String collectorAction = "HpsmIncident";
         System.setProperty("collector.action", collectorAction);
 
+        CollectorItem collectorItem = new CollectorItem();
+        collectorItem.setId(new ObjectId("56ca1a5c7fab7c3eac031a89"));
+
         when(hpsmClient.getIncidents()).thenReturn(getMockIncidentList());
         when(incidentRepository.findAll()).thenReturn(getMockIncidentList());
+        when(collectorItemRepository.save((T)anyObject())).thenReturn((T)collectorItem);
 
-        HpsmCollector collector =collector(collectorAction);
+        HpsmCollector collector = collector(collectorAction);
         collector.setId(new ObjectId(createGuid()));
 
         task.setCollectorAction(collectorAction);
@@ -217,13 +233,14 @@ public class HpsmCollectorTaskTest {
 
     }
 
-    public ArrayList<Incident> getMockIncidentList(){
+    public ArrayList<Incident> getMockIncidentList() {
         ObjectId collectorItemId = new ObjectId(createGuid());
         ArrayList<Incident> mockList = new ArrayList<>();
         Incident incident = new Incident();
 
         incident.setId(new ObjectId(createGuid()));
         incident.setIncidentID("IR01234");
+        incident.setAffectedItem("Component-IR01234");
         incident.setCollectorItemId(collectorItemId);
         incident.setPrimaryAssignmentGroup("HYGIEIA");
         mockList.add(incident);
@@ -231,6 +248,7 @@ public class HpsmCollectorTaskTest {
         incident = new Incident();
         incident.setId(new ObjectId(createGuid()));
         incident.setIncidentID("IR01235");
+        incident.setAffectedItem("Component-IR01235");
         incident.setCollectorItemId(collectorItemId);
         incident.setPrimaryAssignmentGroup("JENKINS");
         mockList.add(incident);
@@ -238,6 +256,7 @@ public class HpsmCollectorTaskTest {
         incident = new Incident();
         incident.setId(new ObjectId(createGuid()));
         incident.setIncidentID("IR01236");
+        incident.setAffectedItem("Component-IR01236");
         incident.setCollectorItemId(collectorItemId);
         incident.setPrimaryAssignmentGroup("ARTIFACTORY");
         mockList.add(incident);
@@ -245,6 +264,7 @@ public class HpsmCollectorTaskTest {
         incident = new Incident();
         incident.setId(new ObjectId(createGuid()));
         incident.setIncidentID("IR01237");
+        incident.setAffectedItem("Component-IR01237");
         incident.setCollectorItemId(collectorItemId);
         incident.setPrimaryAssignmentGroup("GITHUB");
         mockList.add(incident);
@@ -274,5 +294,4 @@ public class HpsmCollectorTaskTest {
         }
         return new String(hexChars);
     }
-
 }

@@ -3,21 +3,26 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.ChangeOrder;
 import com.capitalone.dashboard.model.Cmdb;
+import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.HpsmCollector;
 import com.capitalone.dashboard.model.Incident;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.ChangeOrderRepository;
 import com.capitalone.dashboard.repository.CmdbRepository;
+import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.HpsmRepository;
 import com.capitalone.dashboard.repository.IncidentRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * CollectorTask that fetches configuration item data from HPSM
@@ -30,6 +35,7 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
     private final CmdbRepository cmdbRepository;
     private final ChangeOrderRepository changeOrderRepository;
     private final IncidentRepository incidentRepository;
+    private final CollectorItemRepository collectorItemRepository;
     private final HpsmClient hpsmClient;
     private final HpsmSettings hpsmSettings;
 
@@ -48,6 +54,7 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
                                 CmdbRepository cmdbRepository,
                                 ChangeOrderRepository changeOrderRepository,
                                 IncidentRepository incidentRepository,
+                                CollectorItemRepository collectorItemRepository,
                                 HpsmClient hpsmClient) {
 
             super(taskScheduler, (System.getProperty(COLLECTOR_ACTION_PROPERTY_KEY) == null) ? DEFAULT_COLLECTOR_ACTION_NAME : System.getProperty(COLLECTOR_ACTION_PROPERTY_KEY));
@@ -58,6 +65,7 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
             this.cmdbRepository = cmdbRepository;
             this.changeOrderRepository = changeOrderRepository;
             this.incidentRepository = incidentRepository;
+            this.collectorItemRepository = collectorItemRepository;
             this.hpsmClient = hpsmClient;
     }
 
@@ -101,8 +109,7 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
 
         cmdbList = hpsmClient.getApps();
 
-        for(Cmdb cmdb: cmdbList){
-
+        for(Cmdb cmdb: cmdbList) {
             String configItem = cmdb.getConfigurationItem();
             Cmdb cmdbDbItem =  cmdbRepository.findByConfigurationItem(configItem);
             configurationItemNameList.add(configItem);
@@ -162,7 +169,6 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
     }
 
     private void collectIncidents(HpsmCollector collector) throws HygieiaException {
-
         long lastExecuted = collector.getLastExecuted();
         long incidentCount = incidentRepository.count();
 
@@ -176,23 +182,48 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
         incidentList = hpsmClient.getIncidents();
 
         for (Incident incident : incidentList) {
-
             String incidentId = incident.getIncidentID();
-            Incident incidentDbItem = incidentRepository.findByIncidentID(incidentId);
-            if (incidentDbItem != null && !incident.equals(incidentDbItem)) {
-                incident.setId(incidentDbItem.getId());
-                incident.setCollectorItemId(collector.getId());
-                incidentRepository.save(incident);
-                updatedCount++;
-            } else if (incidentDbItem == null) {
-                incident.setCollectorItemId(collector.getId());
-                incidentRepository.save(incident);
-                insertCount++;
-            }
-        }
+            String itemName = incident.getAffectedItem();
+            if (StringUtils.isEmpty(itemName)) { continue; }
 
+            // Create a CollectorItem for the incident.
+            CollectorItem collectorItem = createCollectorItem(itemName, collector);
+            if (collectorItem == null) { continue; }
+
+            incident.setCollectorItemId(collectorItem.getId());
+            Incident incidentDbItem = incidentRepository.findByIncidentID(incidentId);
+            if (incidentDbItem != null) {
+                incident.setId(incidentDbItem.getId());
+                incident.setCollectorItemId(incident.getCollectorItemId());
+                updatedCount++;
+            } else { insertCount++; }
+            incidentRepository.save(incident);
+        }
         LOG.info("Inserted Incident Item Count: " + insertCount);
         LOG.info("Updated Incident Item Count: " + updatedCount);
+    }
+
+    private CollectorItem createCollectorItem(String itemName, HpsmCollector collector) {
+        CollectorItem collectorItem = new CollectorItem();
+        Cmdb cmdb = cmdbRepository.findByConfigurationItem(itemName);
+        if (cmdb != null) {
+            ObjectId cmdbId = cmdb.getId();
+            collectorItem.setId(cmdbId);
+        }
+        collectorItem.setCollector(collector);
+        collectorItem.setCollectorId(collector.getId());
+        Map<String,Object> options = collectorItem.getOptions();
+        options.put("affectedItem", itemName);
+
+        CollectorItem existing
+        = collectorItemRepository.findByCollectorAndOptions(collectorItem.getCollectorId(), collectorItem.getOptions());
+
+        if (existing != null) {
+            collectorItem.setId(existing.getId());
+        }
+        CollectorItem collectorItemSaved = collectorItemRepository.save(collectorItem);
+
+        return collectorItemSaved;
     }
 
     @Override
@@ -211,7 +242,7 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
                     break;
                 case INCIDENT_ACTION_NAME:
                     log("Collecting Incidents");
-                    collectIncidents(collector);
+                     collectIncidents(collector);
                     break;
                 default:
                     log("Unknown value passed to -D" + COLLECTOR_ACTION_PROPERTY_KEY + ": " + collectorAction);
@@ -242,5 +273,4 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
         }
         return inValidCount;
     }
-
 }
