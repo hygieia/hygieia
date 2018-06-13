@@ -92,6 +92,18 @@ public class CodeReviewEvaluatorLegecyTest {
         Assert.assertEquals(true, responseV2.get(1).getAuditStatuses().toString().contains("DIRECT_COMMIT_NONCODE_CHANGE_USER_ACCOUNT"));
     }
 
+    @Test
+    public void evaluate_DIRECT_COMMIT_TO_BASE() {
+        when(gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(any(ObjectId.class),any(Long.class), any(Long.class))).thenReturn(new ArrayList<GitRequest>());
+        when(commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(any(ObjectId.class),any(Long.class), any(Long.class))).thenReturn(Stream.of(makeCommitWithNoLDAP("[Increment_Version_Tag] preparing 1.5.6")).collect(Collectors.toList()));
+        when(apiSettings.getServiceAccountOU()).thenReturn("User Accounts");
+        when(apiSettings.getServiceAccountOU()).thenReturn("User Accounts");
+        when(apiSettings.getCommitLogIgnoreAuditRegEx()).thenReturn("(.)*(Increment_Version_Tag)(.)*");
+        List<CodeReviewAuditResponse> responseV2 =  codeReviewEvaluatorLegacy.evaluate(makeCollectorItem(1),125634536,6235263,null);
+        Assert.assertEquals(true, responseV2.get(1).getAuditStatuses().toString().contains("DIRECT_COMMITS_TO_BASE"));
+    }
+
+
 
     private CollectorItem makeCollectorItem(int lastUpdated){
         CollectorItem item = new CollectorItem();
@@ -113,5 +125,15 @@ public class CodeReviewEvaluatorLegecyTest {
         c.setType(CommitType.New);
         return c;
     }
+
+    private Commit makeCommitWithNoLDAP(String message){
+        Commit c = new Commit();
+        c.setId(ObjectId.get());
+        c.setScmCommitLog(message);
+        c.setScmRevisionNumber("scmRevisionNumber1");
+        c.setType(CommitType.New);
+        return c;
+    }
+
 
 }
