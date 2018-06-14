@@ -21,25 +21,17 @@ entries:
   - title: Getting Started
     output: web, pdf
     folderitems:
-    - title: Introduction
+    - title: What is the Macro View of Hygieia?
       url: /getting_started.html
       output: web, pdf
       type: homepage
-    - title: Architecture
-      url: /architecture.html
-      output: web, pdf
-      type: homepage
       
-  - title: Installation/Setup Instructions
+  - title: Installing Hygieia
     output: web, pdf
     folderitems:
     - title: Setup Instructions
       url: /setup.html
       output: web, pdf
- 
-  - title: Configuration Procedure
-    output: web, pdf
-    folderitems:
     - title: Database Configuration
       url: /database.html
       output: web, pdf
@@ -52,50 +44,44 @@ entries:
     - title: UI Configuration
       url: /ui.html
       output: web, pdf
-    - title: Collectors
+    - title: Collectors' Configuration
       url: /collectors.html
-      output: web, pdf
-     
-  - title: Additional Configuration
+      output: web, pdf 
+      
+  - title: Additional Configuration Procedures
     output: web, pdf
     folderitems:
-    - title: Plugins/Webhook
+    - title: Hygieia-Jenkins Plugin
       url: /hygieia-jenkins-plugin.html
       output: web, pdf
+    - title: GitHub Webhook
+      url: /proxyauthentication.html
+      output: web, pdf  
     - title: Proxy Authentication
       url: /proxyauthentication.html
       output: web, pdf     
      
-  - title: Build 
+  - title: Docker Image 
     output: web, pdf
     folderitems:
-    - title: Build Docker
+    - title: Build Docker Image
       url: /builddocker.html
       output: web, pdf
-    - title: Build Hygieia
-      url: /buildhygieia.html
-      output: web, pdf
       
-  - title: Test the Installation
+  - title: Testing the Installation
     output: web, pdf
     folderitems:
-    - title: Set up Git
+    - title: How to Test the Installation?
       url: /gitsetup.html
       output: web, pdf
-    - title: Set up Sonar
-      url: /sonarsetup.html
-      output: web, pdf
-    - title: Set up Jenkins
-      url: /jenkinssetup.html
-      output: web, pdf    
- 
+  
   - title: Audit APIs
     output: web, pdf
     folderitems:
     - title: About Audit APIs
       url: /audit_apis.html
       output: web, pdf
- 
+  
   - title: Database Schema
     output: web, pdf
     folderitems:
@@ -109,22 +95,13 @@ entries:
     - title: FAQs
       url: /troubleshoot.html
       output: web, pdf
-
- 
-#  - title: WhiteSource
-#    output: web, pdf
-#    folderitems:
-#    - title: Getting Started with WhiteSource
-#      url: /whitesource_getting_started.html
-#      output: web, pdf
-#    - title: Jenkins Plugin
-#      external_url: http://docs.whitesourcesoftware.com/display/serviceDocs/Jenkins+plugin
-#      output: web, pdf
-#
-#      subfolders:
-#      - title: WhiteSource Plugins
-#        output: web, pdf
-#        subfolderitems:
-#           - title: Which Plugin Should I Use?
-#             external_url: http://docs.whitesourcesoftware.com/pages/viewpage.action?pageId=16908870
-#             output: web, pdf
+  
+  - title: Contribution Guidelines
+    output: web, pdf
+    folderitems:
+    - title: Contribute Custom Collectors
+      url: /create_collector.html
+      output: web, pdf  
+    - title: Contribution Agreement
+      url: /contribute.html
+      output: web, pdf           

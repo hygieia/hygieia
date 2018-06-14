@@ -2,6 +2,7 @@
 title: UI Configuration
 tags:
 keywords:
+toc: true
 summary: Learn how to build and run the Hygieia UI layer
 sidebar: hygieia_sidebar
 permalink: ui.html
@@ -100,7 +101,7 @@ If you do not already have NodeJS installed, download and install the [NodeJS MS
 
 *	**Step 2: Run the UI**
 
-	To run the dashboard, in the command prompt, navigate to `\Hygieia\UI`, and then execute the following command:
+	To run the dashboard, in the command prompt, go to `\Hygieia\UI`, and then execute the following command:
 
 	```bash
 	gulp serve
@@ -113,18 +114,19 @@ If you do not already have NodeJS installed, download and install the [NodeJS MS
 	gulp serve:ghost-mode
 	```
 
-	To run using Maven, navigate to `\Hygieia\UI`, and then execute the following command:
+	To run using Maven, go to `\Hygieia\UI`, and then execute the following command:
 
 	```bash
 	mvn clean package integration-test
 	```
+#### Test UI Layer Locally
 
-**Note**: To test Hygieia's UI layer locally using mock test data, execute the following command:
+To test Hygieia's UI layer locally using mock test data, execute the following command:
 
 ```bash
 gulp serve --local true
 ```
-API is not required since data currently comes from the test-data directory.
+In this case, API is not required since data currently comes from the test-data directory.
 
 ### Docker Image for UI Layer
 
