@@ -13,13 +13,13 @@ folder: hygieia
 
 The following are the prerequisites to set up Hygieia:
 
-- Install Git - Install Git for your platform. For installation steps, see the [**Installing Git** section](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) of Git's documentation.
+- Install Git - Install Git for your platform. For installation steps, see the [**Installing Git**](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) section of Git's documentation.
 - Install Java - Version 1.8 is recommended
 - Install Maven - Version 3.3.9 and above are recommended
 
 ## Download or Clone Hygieia
 
-If you do not already have Hygieia installed, you can download or clone Hygieia from the [GitHub repo](https://github.com/capitalone/Hygieia). For information on cloning a repository, see the [**Cloning** section](https://help.github.com/articles/cloning-a-repository/) of GitHub's Documentation.
+If you do not already have Hygieia installed, you can download or clone Hygieia from the [GitHub repo](https://github.com/capitalone/Hygieia). For information on cloning a repository, see the [**Cloning a Repository**](https://help.github.com/articles/cloning-a-repository/) section of GitHub's Documentation.
  
 ## Build Hygieia
 
@@ -86,4 +86,4 @@ To configure Hygieia, execute the following steps:
 	java -jar <Path to collector-name.jar> --spring.config.name=<prefix for properties> --spring.config.location=<path to properties file location>
 	```
 	
-	The detailed instructions for installing each component of Hygieia is described in the 'Configuration Procedure' section.
+	For detailed instructions on installing each component of Hygieia, see the documentation corresponding to each component.

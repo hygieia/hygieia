@@ -48,14 +48,14 @@ entries:
       url: /collectors.html
       output: web, pdf 
       
-  - title: Additional Configuration Procedures
+  - title: Additional Configuration
     output: web, pdf
     folderitems:
     - title: Hygieia-Jenkins Plugin
       url: /hygieia-jenkins-plugin.html
       output: web, pdf
     - title: GitHub Webhook
-      url: /proxyauthentication.html
+      url: /webhook.html
       output: web, pdf  
     - title: Proxy Authentication
       url: /proxyauthentication.html
