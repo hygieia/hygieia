@@ -1,5 +1,5 @@
 ---
-title: Other User
+title: Other Users
 tags: 
 homepage: 
 toc: true
