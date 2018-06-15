@@ -1,5 +1,5 @@
 ---
-title: Signup and Login
+title: Admin User
 tags: 
 homepage: 
 toc: true
@@ -7,22 +7,7 @@ sidebar: product1_sidebar
 permalink: signup.html
 ---
 
-## User Authentication
-
-Hygieia dashboards provide the following options for user authentication:
-
-- LDAP allows you to use your LDAP server to authenticate users. To enable SSO (Single Sign On) authentication, you must configure Hygieia with your LDAP server to authenticate users. 
-- Standard authentication uses an internal database of users and passwords. If you choose to create an internal database, the user names and passwords will not be in sync with the LDAP server.
-
-To modify the user authentication type for the dashboard, see the [API Properties](../hygieia/api/api.md#api-properties-file) file.
-
-Before you login to the Hygieia dashboard, choose a login type:
-- Standard Login
-- LDAP Login
-
-If Single Sign On (SSO) authentication is enabled, then the user is automatically authenticated and logged-in to Hygieia.
-
-## Create and Manage Admin Users
+## About Admin Users
 
 Hygieia dashboards provide administrator and user access through various views. An admin user can:
 
@@ -33,36 +18,55 @@ Hygieia dashboards provide administrator and user access through various views. 
 
 ### Create Admin User
 
-Once you have installed the UI layer in Hygieia, create a user with username 'admin'. This allows the admin user to manage and maintain a level of control on the dashboard users. For each instance, there can only be one 'admin' user.
+Once you have installed the UI layer in Hygieia, create a user with username **admin**. This allows the admin user to manage and maintain a level of control on the dashboard users. For each instance, there can only be one **admin** user.
 
-To create an account for an admin user:
+**Note**: You must create an **admin** user in Hygieia to manage and maintain other dashboard users.
+
+To create an account for an **admin** user:
 1. Click **Signup** on the login page.
-2. Enter 'admin' as the username, specify and confirm the password, and then click **Signup**.
+2. Enter **admin** as the username, specify and confirm the password, and then click **Signup**.
 
-The 'admin' user is created for the dashboard.
+The **admin** user is created for the dashboard.
 
-### Manage Administrators
+### Admin Settings
 
-In the Admin screen, the 'Manage Admins' tab displays a list of all users. To add additional dashboard administrators:
+Click the Settings wheel at the top-right corner of the screen to manage the users and dashboard settings. The settings are categorized in to the following tabs:
 
-- In the 'Users' column, select a user, and then click the right-arrow button.
-  The username is displayed in the 'Admin' column.
+- Edit Dashboards
+- Manage Admins
+- Generate Api Tokens
+- Manage Templates
+- General Configurations 
+
+#### Edit Dashboards
+
+This tab lists all the dashboards in Hygieia. As an admin user, you can edit or delete dashboards from this tab as follows:
+
+- To edit a dashboard, click the **Edit** icon to the right of the dashboard name. This invokes the **Administer your Dashboard** screen. For information on this screen, see the [Dashboard Administration](dashboard_administration.md) documentation.
+- To delete a dashboard, click the **Delete** icon to the right of the dashboard name, and then confirm deletion by clicking **Delete**.  
+
+#### Manage Administrators
+
+In the **Admin** screen, the **Manage Admins** tab displays a list of all users. To add additional dashboard administrators:
+
+- In the **Users** column, select a user, and then click the right-arrow button.
+  The username is displayed in the **Admin** column.
 
 To find users, filter the list by entering all or part of a user name in the 'Search' field.
 
 To remove an admin:
 
-- In the 'Admin' column, select an admin, and then click the right-arrow button.
-  The username is displayed in the 'Admin' column.
+- In the **Admin** column, select an admin, and then click the right-arrow button.
+  The username is displayed in the **Admin** column.
 
 ### Generate API Token
 
 Generate an API token for basic authentication to secure APIs. To generate an API token:
 
-1. Click 'New'. The 'Generate API Token' dialog box in invoked.
+1. Click **New**. The **Generate API Token** dialog box in invoked.
 2. Enter the API User name.
 3. Select an Expiration Date using the calendar button.
-4. Click 'Create'. The generated API key is displayed.
+4. Click **Create**. The generated API key is displayed.
 
 **Note:** The API key is visible only until the 'Generate API Token' dialog box is open.
 
@@ -116,14 +120,3 @@ In this tab, you can manage the application properties for all the collectors in
 Click the **Add** icon to include details of additional server instances for an application. Click **Delete** icon to remove server instances for an application.
 
 Once you finish entering the application details, click **Save**.
-
-## User Signup and Login Instructions
-
-To create an account for a new user:
-
-1.	Click **Signup** in the login page to create a user account.
-2.	Enter a username, password, confirm the password, and then click **Signup**.
-
-If you already have your login credentials, enter the username and password, and then click **Login**.
-
-**Note:** If SSO authentication is enabled, then on successful authentication, you are automatically logged-in to Hygieia.

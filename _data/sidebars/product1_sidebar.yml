@@ -27,21 +27,31 @@ entries:
       url: /Introduction.html
       output: web, pdf
       
-  - title: Hygieia Dashboard
+  - title: Signup and Login
     output: web, pdf
     folderitems:
-    - title: Signup and Login
+    - title: Admin User
       url: signup.html
       output: web, pdf
-    - title: Select Your Dashboard
-      url: select_dashboard.html
+    - title: Other Users
+      url: user_signup.html
       output: web, pdf
-    
-  - title: Configure the Dashboard
+          
+  - title: Select your Dashboard
     output: web, pdf
     folderitems:
-    - title: Dashboard Views
-      url: dashboard_views.html
+    - title: Selecting Dashboards
+      url: select_dashboard.html
+      output: web, pdf
+      
+  - title: Team Dashboard
+    output: web, pdf
+    folderitems:
+    - title: Introduction
+      url: team_dashboard_intro.html
+      output: web, pdf
+    - title: Create a Team Dashboard
+      url: create_team_dashboard.html
       output: web, pdf
     - title: Widget View
       url: widget_view.html
@@ -49,20 +59,27 @@ entries:
     - title: Dashboard Gamification
       url: keeping_score.html
       output: web, pdf
-    - title: Product View
-      url: product_view.html
-      output: web, pdf
     - title: Pipeline View
       url: pipeline_view.html
       output: web, pdf
     - title: Cloud View
       url: cloud_view.html
-      output: web, pdf   
-
-  - title: Dashboard Administration
+      output: web, pdf  
+  
+  - title: Team Dashboard
     output: web, pdf
     folderitems:
-    - title: Administration Options
+    - title: Introduction
+      url: product_dashboard_intro.html
+      output: web, pdf  
+    - title: Create a Product Dashboard
+      url: product_view.html
+      output: web, pdf
+
+  - title: Administer your Dashboard
+    output: web, pdf
+    folderitems:
+    - title: Dashboard Administration
       url: dashboard_administration.html
       output: web, pdf
     
