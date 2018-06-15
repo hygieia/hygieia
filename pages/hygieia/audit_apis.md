@@ -83,7 +83,7 @@ This endpoint validates that your artifact is meeting the quality gate threshold
 auditType="ALL" or "CODE_REVIEW" or "BUILD_REVIEW" or "CODE_QUALITY" or "TEST_RESULT" or "PERF_TEST"
 ```
 
-** API Response**
+**API Response**
 
 Passed Validation – The quality gate threshold is met.
 Failed Validation – The quality gate threshold is either not met or is missing.

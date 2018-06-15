@@ -11,7 +11,7 @@ This document contains Frequently Asked Questions (FAQs) about Hygieia.
 
 #### How to configure the GitHub Collector for a Private Repo?
 
-To configure the GitHub collector for a private repository, generate a secret key and add the secret key and your user ID to the API properties file. For detailed instructions, see [Encryption for Private Repos](setup.md#encryption-for-private-repos).
+To configure the GitHub collector for a private repository, generate a secret key and add the secret key and your user ID to the API properties file. For detailed instructions, see [Encryption for Private Repos](collectors/collectors.md#encryption-for-private-repos).
 
 To pass the GitHub authentication information in the `application.properties` file, modify DefaultGitHubClient.java and force the response string to fetch the password from  the properties file:
 
@@ -43,7 +43,7 @@ This token is also used for accessing the private repos.
 
 You can either set the value for ```github.key``` or ```github.personalAccesstoken``` in order to access private repos.
 
-In addition, please refer [Encryption for Private Repos](setup.md#encryption-for-private-repos).
+In addition, please refer [Encryption for Private Repos](collectors/collectors.md#encryption-for-private-repos).
 
 #### How to change the UI port to a port other than 3000?
 

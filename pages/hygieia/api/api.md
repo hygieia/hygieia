@@ -2,22 +2,22 @@
 title: All About Hygieia API
 tags:
 keywords:
+toc: true
 summary: Learn how to install and configure Hygieia API
 sidebar: hygieia_sidebar
 permalink: api.html
 ---
+
 [![Docker Stars](https://img.shields.io/docker/stars/capitalone/hygieia-api.svg)](https://hub.docker.com/r/capitalone/hygieia-api/)
 [![Docker Stars](https://img.shields.io/docker/pulls/capitalone/hygieia-api.svg)](https://hub.docker.com/r/capitalone/hygieia-api/)
 
-Hygieia API layer contains all common REST API services that work with the source system data (collected by service tasks). The Hygieia API layer is an abstraction of the local and source system data layer. All REST controllers should be generic to their purpose, and should not be specific to any given source system.
+Hygieia API layer contains all the typical REST API services that work with the source system data (collected by service tasks). The Hygieia API layer is an abstraction of the local and source system data layer. All API REST controllers are generic to their purpose - they are not specific to any given source system.
 
-For detailed information on APIs, see the Swagger documentation.
+For detailed information on APIs, see the Swagger documentation available at `http://[your-doman].com/api/swagger/index.html#`.
 
 Hygieia uses Spring Boot to package the API as an executable JAR file with dependencies.
 
 ## Setup Instructions
-
-If you do not already have Hygieia installed, you can download or clone Hygieia from the [GitHub repo](https://github.com/capitalone/Hygieia). For information on cloning a repository, see [GitHub Documentation](https://help.github.com/articles/cloning-a-repository/).
 
 To configure the Hygieia API layer, execute the following steps:
 
@@ -45,7 +45,7 @@ To configure the Hygieia API layer, execute the following steps:
 	java -jar api.jar --spring.config.location=C:\[path to]\Hygieia\api\api.properties -Djasypt.encryptor.password=hygieiasecret
 	```
 
-	Verify API access from the web browser using the url: http://localhost:8080/api/ping. 
+	Verify API access from the web browser using the url: http://localhost:8080/api/ping.
 
 	By default, the server starts at port `8080` and uses the context path `\api`. You can configure these values in the `api.properties` file for the following properties:
 
@@ -118,15 +118,15 @@ auth.userMiddelInitials=[name of the header containing user's middle name]
 auth.userDisplayName=[name of the header containing user's display name]
 ```
 
-All the above values are optional. If you have MongoDB installed with no authorization, you must be able to run the API even without the properties file.
+All values in the `api.properties` file are optional. For instance, if you have MongoDB installed with no authorization, you must be able to run the API even without the properties file.
 
 Note the following:
 
- * If the value of `dbusername` is empty, then system skips MongoDB authorization.
- * Expiration time is mandatory for users to see any content. If you do not specify the expiration time, then the token can be considered as permanently expired. Leaving this value blank will not terminate the application start up. However, users will not be able to see any content. 
- * If the secret is left blank, a random key is generated. To allow multiple instances of the API to validate the same JWT token, provide the same key to each running instance of the API.  
- * If both LDAP parameters are not provided, then LDAP is not available as an authentication provider.
- * When enabling proxy support for the monitor widget, if the host is not supplied, the rest of the monitor.proxy args are ignored. If running with Docker, then by default, the port and type is 80 and HTTP respectively. When running locally, you must specify the values for these properties.
+ * in the `api.properties` file, if you do not define the value of `dbusername`, then Hygieia skips the MongoDB authorization process.
+ * Specify the **Expiration Time** to see content on your dashboard. If you do not specify a value for **Expiration Time**, then the token permanently expires, and users will not be able to see any content on the dashboard. However, the application start-up is not impacted by this action.
+ * If you do not enter a value for the secret password, then the system generates a random key. To allow multiple instances of the API to validate the same JWT token, provide the same key for each running instance of the API.
+ * If you do not provide values for the LDAP parameters, then LDAP is not available as an authentication provider for your application.
+ * When enabling proxy support for the monitor widget, if you do not specify, then system ignores the rest of the monitor.proxy arguments. If you are using Docker, then by default, the port is 80 and the type is HTTP. When you run the application locally, you must specify the values for these properties (i.e., for the port and the type).
 
 ## Docker Image for API
 
@@ -145,7 +145,7 @@ To create a Docker image for Hygieia's API layer, execute the following steps:
 	```
 *	**Step 2: Start MongoDB Docker Container**
 
-	Execute the following commands to start MongoDB, switch to db dashbaord, and then add dashboard user:
+	Execute the following commands to start MongoDB, switch to dashbaord with name `dashboarddb`, and then add dashboard user:
 
 	``` bash
 	docker run -d -p 27017:27017 --name mongodb -v ./mongo:/data/db mongo:latest  mongod --smallfiles
@@ -191,7 +191,9 @@ To create a Docker image for Hygieia's API layer, execute the following steps:
 	docker ps
 	```
 
-### Secure APIs Basic Authentication
+### Basic Authentication for Secure APIs
+
+To carry out basic authentication for secure APIs, execute the following steps:
 
 1. From the admin menu, generate an 'apiToken' for an 'apiUser'.
 
@@ -258,8 +260,7 @@ For the required fields, if the methods to locate values is exhausted, the webho
 The API module fails to launch with the following error:
 
 ```
-Error creating bean with name 'dashboardRepository': Invocation of init method failed; nested exception is
-org.springframework.dao.DuplicateKeyException: Write failed with error code 11000 and error message 'null'
+Error creating bean with name 'dashboardRepository': Invocation of init method failed; nested exception is org.springframework.dao.DuplicateKeyException: Write failed with error code 11000 and error message 'null'
 ```
 In this case, execute the following steps:
 
