@@ -59,7 +59,7 @@ To remove an admin:
 - In the **Admin** column, select an admin, and then click the right-arrow button.
   The username is displayed in the **Admin** column.
 
-### Generate API Token
+#### Generate API Token
 
 Generate an API token for basic authentication to secure APIs. To generate an API token:
 
@@ -72,9 +72,9 @@ Generate an API token for basic authentication to secure APIs. To generate an AP
 
 Copy the API token to the [API properties](../hygieia/api/api.md#api-properties-file) file.
 
-To know more about securing basic authentication for APIs, see ['Secure APIs Basic Authentication'](../hygieia/api/api.md#secure-apis-basic-authentication).
+To know more about securing basic authentication for APIs, see [Secure APIs Basic Authentication](../hygieia/api/api.md#secure-apis-basic-authentication).
 
-### Select a Dashboard Theme
+#### Select a Dashboard Theme
 
 Select one of the following themes for the dashboard:
 - Dash
@@ -84,17 +84,17 @@ Select one of the following themes for the dashboard:
 
 By default, the Dash theme is selected.
 
-### Manage Dashboard Templates
+#### Manage Dashboard Templates
 
-1. Click 'Create a new template'. The 'Create Custom Templates' dialog box is invoked.
+1. Click **Create a new template**. The **Create Custom Templates** dialog box is invoked.
 2. Enter the template name, and then select the widgets for your dashboard.
-3. Click 'Create'. The dashboard template is created.
+3. Click **Create**. The dashboard template is created.
 
 To edit the template:
 
-1. Click the edit icon beside the template name. The 'Edit Template Details' screen is invoked.
+1. Click the edit icon beside the template name. The **Edit Template Details** screen is invoked.
 2. Check/uncheck the widget options to add/delete widgets from the dashboard.
-3. Click Save.
+3. Click **Save**.
 
 To delete a template:
 
@@ -107,7 +107,7 @@ To view a template:
 
 - Click on the template name to view a list of all the widgets in the template.
 
-### General Configurations for Property Management
+#### General Configurations for Property Management
 
 In this tab, you can manage the application properties for all the collectors in Hygieia by specifying the server URL and account details for each application. In the Admin screen, the **General Configurations** tab displays a list of all the collectors in Hygieia. To manage the application properties for a specific application, such as GitHub, enter the following details:
 

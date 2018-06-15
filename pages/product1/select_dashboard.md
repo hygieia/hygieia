@@ -29,21 +29,13 @@ In this tab, you can view a list of all the dashboards created by all dashboard 
 
 This tab displays a list of all product dashboards created in Hygieia.
 
-To create a new team dashboard, click **Create a new dashboard**. For detailed instructions, see [Create a Team Dashboard](#create-a-team-dashboard).
+To create a new team dashboard, click **Create a new dashboard**. For detailed instructions, see [Create a Team Dashboard](create_team_dashboard.md).
 
 #### Product Dashboards Tab
 
 This tab displays all the products for a team.
 
-To create a new product dashboard, click **Create a new dashboard**. For detailed instructions, see [Create a Product Dashboard](#create-a-product-dashboard).
-
-## Create a New Dashboard
-
-You can create a new dashboard for the following dashboard types:
-   
-     - Team Dashboard - For details on creating and configuring the product dashboard, see the [Team Dashboard](create_team_dashboard.md) documentation.
-
-     - Product Dashboard - For details on creating and configuring the product dashboard, see the [Product Dashboard](product_view.md) documentation.
+To create a new product dashboard, click **Create a new dashboard**. For detailed instructions, see [Create a Product Dashboard](product_view.md).
 
 **Screenshots:**
 
