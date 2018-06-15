@@ -4,7 +4,7 @@ tags:
 keywords:
 summary:
 toc: true
-sidebar: hygieia_sidebar
+sidebar: product1_sidebar
 permalink: team_dashboard_intro.html
 ---
 
