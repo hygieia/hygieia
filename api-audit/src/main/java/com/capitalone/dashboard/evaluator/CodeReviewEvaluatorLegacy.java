@@ -30,7 +30,7 @@ import static com.capitalone.dashboard.status.CodeReviewAuditStatus.COLLECTOR_IT
 @Component
 public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
 
-//    private final CustomRepositoryQuery customRepositoryQuery;
+    //    private final CustomRepositoryQuery customRepositoryQuery;
     private final CommitRepository commitRepository;
     private final GitRequestRepository gitRequestRepository;
     protected final ApiSettings settings;
@@ -68,7 +68,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
     }
 
     private List<CodeReviewAuditResponse> getPeerReviewResponses(CollectorItem repoItem,
-                                                                 long beginDt, long endDt) {
+        long beginDt, long endDt) {
 
         List<CodeReviewAuditResponse> allPeerReviews = new ArrayList<>();
 
@@ -136,7 +136,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
                 mergeOptionalCommit = commits.stream().filter(c -> Objects.equals(c.getScmRevisionNumber(), pr.getScmMergeEventRevisionNumber())).findFirst();
                 mergeCommit = mergeOptionalCommit.orElse(null);
             }
-            
+
             List<Commit> commitsRelatedToPr = pr.getCommits();
             commitsRelatedToPr.sort(Comparator.comparing(e -> (e.getScmCommitTimestamp())));
             if (mergeCommit == null) {
@@ -164,7 +164,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
         List<Commit> commitsNotDirectlyTiedToPr = new ArrayList<>();
         commits.forEach(commit -> {
             if (!allPrCommitShas.contains(commit.getScmRevisionNumber()) &&
-                    StringUtils.isEmpty(commit.getPullNumber()) && commit.getType() == CommitType.New) {
+                StringUtils.isEmpty(commit.getPullNumber()) && commit.getType() == CommitType.New) {
                 commitsNotDirectlyTiedToPr.add(commit);
                 // auditServiceAccountChecks includes - check for service account and increment version tag for service account on direct commits.
                 auditServiceAccountChecks(codeReviewAuditResponse, commit);
@@ -192,14 +192,6 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
         return allPeerReviews;
     }
 
-    private void auditIncrementVersionTag(CodeReviewAuditResponse codeReviewAuditResponse, Commit commit, CodeReviewAuditStatus directCommitIncrementVersionTagStatus) {
-        if (CommonCodeReview.matchIncrementVersionTag(commit.getScmCommitLog(), settings)) {
-            codeReviewAuditResponse.addAuditStatus(directCommitIncrementVersionTagStatus);
-        }else{
-            codeReviewAuditResponse.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
-        }
-    }
-
     private void auditServiceAccountChecks(CodeReviewAuditResponse codeReviewAuditResponse, Commit commit) {
         if (StringUtils.isEmpty(commit.getScmAuthorLDAPDN())) {
             codeReviewAuditResponse.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
@@ -211,12 +203,16 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
     private void auditDirectCommits(CodeReviewAuditResponse codeReviewAuditResponse, Commit commit) {
         if (CommonCodeReview.checkForServiceAccount(commit.getScmAuthorLDAPDN(), settings)) {
             codeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.COMMITAUTHOR_EQ_SERVICEACCOUNT);
-            // check for increment version tag and flag Direct commit by Service account
-            auditIncrementVersionTag(codeReviewAuditResponse, commit, CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_SERVICE_ACCOUNT);
+            if (CommonCodeReview.matchIncrementVersionTag(commit.getScmCommitLog(), settings)) {
+                codeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_SERVICE_ACCOUNT);
+            } else {
+                codeReviewAuditResponse.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
+            }
         } else {
-            auditIncrementVersionTag(codeReviewAuditResponse, commit, CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_USER_ACCOUNT);
+            if (CommonCodeReview.matchIncrementVersionTag(commit.getScmCommitLog(), settings)) {
+                codeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_USER_ACCOUNT);
+            }
+            codeReviewAuditResponse.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
         }
     }
-
-
 }

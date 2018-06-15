@@ -94,7 +94,7 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
     }
 
     private CodeReviewAuditResponseV2 getPeerReviewResponses(CollectorItem repoItem,
-                                                             long beginDt, long endDt) {
+        long beginDt, long endDt) {
 
         CodeReviewAuditResponseV2 reviewAuditResponseV2 = new CodeReviewAuditResponseV2();
 
@@ -187,7 +187,7 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
         List<Commit> commitsNotDirectlyTiedToPr = new ArrayList<>();
         commits.forEach(commit -> {
             if (!allPrCommitShas.contains(commit.getScmRevisionNumber()) &&
-                    StringUtils.isEmpty(commit.getPullNumber()) && commit.getType() == CommitType.New) {
+                StringUtils.isEmpty(commit.getPullNumber()) && commit.getType() == CommitType.New) {
                 commitsNotDirectlyTiedToPr.add(commit);
                 // auditServiceAccountChecks includes - check for service account and increment version tag for service account on direct commits.
                 auditServiceAccountChecks(reviewAuditResponseV2, commit);
@@ -206,19 +206,17 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
     }
 
     private void auditDirectCommits(CodeReviewAuditResponseV2 reviewAuditResponseV2, Commit commit) {
-        if ( CommonCodeReview.checkForServiceAccount(commit.getScmAuthorLDAPDN(), settings)) {
+        if (CommonCodeReview.checkForServiceAccount(commit.getScmAuthorLDAPDN(), settings)) {
             reviewAuditResponseV2.addAuditStatus(CodeReviewAuditStatus.COMMITAUTHOR_EQ_SERVICEACCOUNT);
-            auditIncrementVersionTag(reviewAuditResponseV2, commit, CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_SERVICE_ACCOUNT);
+            if (CommonCodeReview.matchIncrementVersionTag(commit.getScmCommitLog(), settings)) {
+                reviewAuditResponseV2.addAuditStatus(CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_SERVICE_ACCOUNT);
+            } else {
+                reviewAuditResponseV2.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
+            }
         } else {
-            auditIncrementVersionTag(reviewAuditResponseV2, commit, CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_USER_ACCOUNT);
-
-        }
-    }
-
-    private void auditIncrementVersionTag(CodeReviewAuditResponseV2 reviewAuditResponseV2, Commit commit, CodeReviewAuditStatus directCommitIncrementVersionTagStatus) {
-        if (CommonCodeReview.matchIncrementVersionTag(commit.getScmCommitLog(), settings)) {
-            reviewAuditResponseV2.addAuditStatus(directCommitIncrementVersionTagStatus);
-        }else{
+            if (CommonCodeReview.matchIncrementVersionTag(commit.getScmCommitLog(), settings)) {
+                reviewAuditResponseV2.addAuditStatus(CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_USER_ACCOUNT);
+            }
             reviewAuditResponseV2.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
         }
     }
