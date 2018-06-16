@@ -1,6 +1,6 @@
 package com.capitalone.dashboard.collector;
 
-import com.amazonaws.services.autoscaling.AmazonAutoScaling;
+import com.amazonaws.services.autoscaling.AmazonAutoScalingClient;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchClient;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.capitalone.dashboard.model.CloudInstance;
@@ -29,7 +29,7 @@ public interface AWSCloudClient {
     void setEc2Client(AmazonEC2Client ec2Client);
     void setCloudWatchClient(AmazonCloudWatchClient cloudWatchClient);
 
-    void setAutoScalingClient(AmazonAutoScaling autoScalingClient) ;
+    void setAutoScalingClient(AmazonAutoScalingClient autoScalingClient) ;
 
     /* Averages CPUUtil every minute for the last hour */
     @SuppressWarnings("PMD.UnusedFormalParameter")
