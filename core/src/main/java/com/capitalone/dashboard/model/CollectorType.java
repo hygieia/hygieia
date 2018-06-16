@@ -25,7 +25,8 @@ public enum CollectorType {
     Product,
     AppPerformance,
     InfraPerformance,
-    Score;
+    Score,
+    Log;
 
     public static CollectorType fromString(String value) {
         for (CollectorType collectorType : values()) {

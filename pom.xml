@@ -191,6 +191,7 @@
         <module>collectors/build/jenkins-codequality</module>
         <module>collectors/build/sonar</module>
         <module>collectors/cloud/aws</module>
+        <module>collectors/cloud/cloudwatch</module>
         <module>collectors/deploy/udeploy</module>
         <module>collectors/deploy/xldeploy</module>
         <module>collectors/feature/jira</module>
