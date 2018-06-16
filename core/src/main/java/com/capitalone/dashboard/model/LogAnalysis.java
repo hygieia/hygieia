@@ -1,7 +1,6 @@
 package com.capitalone.dashboard.model;
 
-import org.bson.types.ObjectId;
-
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,12 +8,9 @@ import java.util.List;
  */
 public class LogAnalysis extends BaseModel {
 
-    private ObjectId collectorItemId;
-    private long timestamp;
+    private List<LogAnalysisMetric> metrics = new ArrayList<>();
 
-    private String name;
-    private String url;
-    private String version;
-    private ObjectId buildId;
-    private List<LogAnalysisMetric> metrics;
+    public List<LogAnalysisMetric> getMetrics() {
+        return metrics;
+    }
 }
