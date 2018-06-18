@@ -18,6 +18,7 @@ import com.capitalone.dashboard.repository.TestResultRepository;
 import com.capitalone.dashboard.response.TestResultsAuditResponse;
 import com.capitalone.dashboard.status.TestResultAuditStatus;
 import org.apache.commons.collections.CollectionUtils;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +40,8 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
 
     private final TestResultRepository testResultRepository;
     private final FeatureRepository featureRepository;
-    private ApiSettings apiSettings;
+
+    private final ApiSettings apiSettings = new ApiSettings();
 
     @Autowired
     public RegressionTestResultEvaluator(TestResultRepository testResultRepository, FeatureRepository featureRepository) {
@@ -142,7 +144,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
      */
     private List<StoryIndicator> getStoryIndicatorsInGivenDateRange(Dashboard dashboard, TestResultsAuditResponse testResultsAuditResponse, TestCase testCase, Long beginDate, Long endDate) {
 
-        final String REGEX_ANY_STRING_MATCHING_FEATURE_ID = apiSettings.getFeatureIDPattern();
+        String REGEX_ANY_STRING_MATCHING_FEATURE_ID = apiSettings.getFeatureIDPattern();
         List<StoryIndicator> storyIndicatorList = new ArrayList<>();
         Set<String> tags = testCase.getTags();
 
