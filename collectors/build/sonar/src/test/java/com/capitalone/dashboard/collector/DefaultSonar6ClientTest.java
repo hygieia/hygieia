@@ -38,7 +38,7 @@ public class DefaultSonar6ClientTest {
     private SonarSettings settings;
     private DefaultSonar6Client defaultSonar6Client;
 
-    private static final String URL_RESOURCES = "/api/components/search?qualifiers=TRK&ps=10000";
+    private static final String URL_RESOURCES = "/api/components/search?qualifiers=TRK&ps=500";
     private static final String URL_RESOURCE_DETAILS = "/api/measures/component?format=json&componentId=%s&metricKeys=%s&includealerts=true";
     private static final String URL_PROJECT_ANALYSES = "/api/project_analyses/search?project=%s";
     private static final String SONAR_URL = "http://sonar.com";
@@ -63,6 +63,27 @@ public class DefaultSonar6ClientTest {
         assertThat(projects.get(1).getProjectName(), is("com.capitalone.test:AnotherTestProject"));
         assertThat(projects.get(0).getProjectId(), is("AVu3b-MAphY78UZXuYHp"));
         assertThat(projects.get(1).getProjectId(), is("BVx3b-MAphY78UZXuYHp"));
+    }
+
+    @Test
+    public void getProjects500() throws Exception {
+        String projectJson500 = getJson("sonar6projects500.json");
+        String projectJson1000 = getJson("sonar6projects1000.json");
+        String projectJson1500 = getJson("sonar6projects1500.json");
+        String projectJson2000 = getJson("sonar6projects2000.json");
+        String projectsUrl = SONAR_URL + URL_RESOURCES;
+        String projectsUrl1 = SONAR_URL + URL_RESOURCES+"&p=1";
+        String projectsUrl2 = SONAR_URL + URL_RESOURCES+"&p=2";
+        String projectsUrl3 = SONAR_URL + URL_RESOURCES+"&p=3";
+        String projectsUrl4 = SONAR_URL + URL_RESOURCES+"&p=4";
+        doReturn(new ResponseEntity<>(projectJson500, HttpStatus.OK)).when(rest).exchange(eq(projectsUrl), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        doReturn(new ResponseEntity<>(projectJson500, HttpStatus.OK)).when(rest).exchange(eq(projectsUrl1), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        doReturn(new ResponseEntity<>(projectJson1000, HttpStatus.OK)).when(rest).exchange(eq(projectsUrl2), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        doReturn(new ResponseEntity<>(projectJson1500, HttpStatus.OK)).when(rest).exchange(eq(projectsUrl3), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        doReturn(new ResponseEntity<>(projectJson2000, HttpStatus.OK)).when(rest).exchange(eq(projectsUrl4), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+
+        List<SonarProject> projects = defaultSonar6Client.getProjects(SONAR_URL);
+        assertThat(projects.size(), is(2000));
     }
 
     @Test
