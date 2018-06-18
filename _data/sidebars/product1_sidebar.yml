@@ -24,6 +24,7 @@ entries:
     - title: Overview
       url: /Introduction.html
       output: web, pdf
+      type: homepage
       
   - title: Signup and Login
     output: web, pdf
