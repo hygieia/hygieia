@@ -22,7 +22,7 @@ cat > $PROP_FILE <<EOF
 dbname=${SPRING_DATA_MONGODB_DATABASE:-dashboarddb}
 
 #Database HostName - default is localhost
-dbhost=${SPRING_DATA_MONGODB_HOST:-db}
+dbhost=${SPRING_DATA_MONGODB_HOST:-127.0.0.1}
 
 #Database Port - default is 27017
 dbport=${SPRING_DATA_MONGODB_PORT:-27017}
@@ -31,7 +31,7 @@ dbport=${SPRING_DATA_MONGODB_PORT:-27017}
 dbusername=${SPRING_DATA_MONGODB_USERNAME:-dashboarduser}
 
 #Database Password - default is blank
-dbpassword=${SPRING_DATA_MONGODB_PASSWORD:-dbpassword}
+dbpassword=${SPRING_DATA_MONGODB_PASSWORD:-admin}
 
 #API encryption key. Optional. See http://capitalone.github.io/Hygieia/setup.html#encryption-for-private-repos	
 key=${KEY:-}
