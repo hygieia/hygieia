@@ -144,7 +144,16 @@ public class HygieiaUtils {
         return run.getParent().getDisplayName();
     }
 
-
+    public static String getJobPath(AbstractBuild<?, ?> build){
+        String jobUrl = getJobUrl(build);
+        String jobPath = jobUrl.substring(jobUrl.indexOf("job/") , jobUrl.length());
+        return jobPath;
+    }
+    public static String getJobPath(Run<?, ?> run){
+        String jobUrl = getJobUrl(run);
+        String jobPath = jobUrl.substring(jobUrl.indexOf("job/") , jobUrl.length());
+        return jobPath;
+    }
 
     public static String getInstanceUrl(AbstractBuild<?, ?> build, TaskListener listener) {
         String envValue = getEnvironmentVariable(build, listener, "JENKINS_URL");
