@@ -89,6 +89,13 @@ entries:
       url: /dbschema.html
       output: web, pdf
       
+  - title: Architecture
+    output: web, pdf
+    folderitems:
+    - title: A Diagram of Hygieia
+      url: /architecture.html
+      output: web, pdf
+      
   - title: Troubleshooting
     output: web, pdf
     folderitems:
