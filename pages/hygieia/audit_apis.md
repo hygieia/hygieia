@@ -161,6 +161,11 @@ Code Quality Profile audit API validates that the change author of the quality p
 Passed validation – The commit author has not made changes to the SCA Sonar profile (quality profile).
 Failed validation – The commit author has modified the SCA Sonar profile (quality profile) during the specified time duration (date range).
 
+**Sample Request for SCA**
+
+```
+"staticCodeEntries":[{"toolName":"Sonar","description":"","options":{"projectName":"","projectId":"","instanceUrl":""}}]
+```
 
 ## Performance Analysis
 
