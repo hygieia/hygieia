@@ -61,7 +61,7 @@
     <dependencies>
         <dependency>
             <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-cloudwatch</artifactId>
+            <artifactId>aws-java-sdk-logs</artifactId>
         </dependency>
         <dependency>
             <groupId>com.capitalone.dashboard</groupId>

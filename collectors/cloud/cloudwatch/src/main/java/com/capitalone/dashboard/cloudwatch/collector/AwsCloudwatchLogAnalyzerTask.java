@@ -12,11 +12,13 @@ import org.springframework.stereotype.Component;
 public class AwsCloudwatchLogAnalyzerTask extends CollectorTask<AwsCloudwatchLogAnalyzer>{
 
     private final BaseCollectorRepository<AwsCloudwatchLogAnalyzer> repository;
+    private final AwsCloudWatchClientFactory factory;
     private final AwsCloudwatchLogAnalyzerSettings settings;
 
-    public AwsCloudwatchLogAnalyzerTask(TaskScheduler taskScheduler, BaseCollectorRepository<AwsCloudwatchLogAnalyzer> repository, AwsCloudwatchLogAnalyzerSettings settings){
+    public AwsCloudwatchLogAnalyzerTask(TaskScheduler taskScheduler, BaseCollectorRepository<AwsCloudwatchLogAnalyzer> repository, AwsCloudWatchClientFactory factory, AwsCloudwatchLogAnalyzerSettings settings){
         super(taskScheduler,"AwsCloudwatchAnalyzerTask");
         this.repository = repository;
+        this.factory = factory;
         this.settings = settings;
     }
 
