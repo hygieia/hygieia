@@ -29,4 +29,8 @@ public class AwsCloudwatchLogAnalyzerSettings {
     public void addJob(CloudWatchJob job) {
         this.jobs.add(job);
     }
+
+    public List<CloudWatchJob> getJobs() {
+        return jobs;
+    }
 }

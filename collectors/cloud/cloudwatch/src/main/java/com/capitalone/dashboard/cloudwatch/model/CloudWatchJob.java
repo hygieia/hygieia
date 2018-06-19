@@ -15,7 +15,15 @@ public class CloudWatchJob {
         this.name = name;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public void addSeries(Series series) {
         this.series.add(series);
+    }
+
+    public List<Series> getSeries() {
+        return series;
     }
 }
