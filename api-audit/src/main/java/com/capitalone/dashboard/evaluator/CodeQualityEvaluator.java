@@ -101,21 +101,7 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
         for (CodeQualityMetric metric : returnQuality.getMetrics()) {
             //TODO: This is sonar specific - need to move this to api settings via properties file
             if (metric.getName().equalsIgnoreCase("quality_gate_details")) {
-                TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
-                };
-                Map<String, String> values;
-                try {
-                    values = mapper.readValue((String) metric.getValue(), typeRef);
-                    if (MapUtils.isNotEmpty(values) && values.containsKey("level")) {
-                        String level = values.get("level");
-                        codeQualityAuditResponse.addAuditStatus(level.equalsIgnoreCase("ok") ? CodeQualityAuditStatus.CODE_QUALITY_AUDIT_OK : CodeQualityAuditStatus.CODE_QUALITY_AUDIT_FAIL);
-                    }
-                    break;
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-
+                codeQualityAuditResponse.addAuditStatus("ok".equalsIgnoreCase(metric.getStatus().toString()) ? CodeQualityAuditStatus.CODE_QUALITY_AUDIT_OK : CodeQualityAuditStatus.CODE_QUALITY_AUDIT_FAIL);
             }
         }
 
