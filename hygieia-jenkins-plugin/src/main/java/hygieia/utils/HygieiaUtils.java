@@ -133,7 +133,6 @@ public class HygieiaUtils {
     }
 
     public static String getJobUrl(Run<?, ?> run) {
-
         return run.getParent().getAbsoluteUrl();
     }
 
