@@ -63,7 +63,7 @@ public class BuildBuilder {
     private void createBuildRequestFromRun() {
         request = new BuildDataCreateRequest();
         request.setNiceName(jenkinsName);
-        request.setJobName(HygieiaUtils.getJobName(run));
+        request.setJobName(HygieiaUtils.getJobPath(run));
         request.setBuildUrl(HygieiaUtils.getBuildUrl(run));
         request.setJobUrl(HygieiaUtils.getJobUrl(run));
         request.setInstanceUrl(HygieiaUtils.getInstanceUrl(run, listener));
@@ -85,7 +85,7 @@ public class BuildBuilder {
     private void createBuildRequest() {
         request = new BuildDataCreateRequest();
         request.setNiceName(jenkinsName);
-        request.setJobName(HygieiaUtils.getJobName(build));
+        request.setJobName(HygieiaUtils.getJobPath(build));
         request.setBuildUrl(HygieiaUtils.getBuildUrl(build));
         request.setJobUrl(HygieiaUtils.getJobUrl(build));
         request.setInstanceUrl(HygieiaUtils.getInstanceUrl(build, listener));
