@@ -783,9 +783,7 @@ public class DefaultHpsmClient implements HpsmClient {
 		String closedTime = getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_CLOSE_TIME);
 		if (!StringUtils.isEmpty(closedTime)) {
 			incident.setClosedTime(closedTime);
-		} else {
-            incident.setClosedTime("0");
-        }
+		}
 		incident.setOpenedBy(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_OPEN_BY));
 		incident.setUpdatedTime(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_UPDATE_TIME));
 		incident.setSeverity(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_SEVERITY));
