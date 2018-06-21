@@ -495,7 +495,12 @@ public class DashboardServiceImpl implements DashboardService {
         }
         return new DataResponse<>(rt, System.currentTimeMillis());
     }
+    @Override
+    public  List<Dashboard> getByTitle(String title) {
+        List<Dashboard> dashboard = dashboardRepository.findByTitle(title);
 
+        return dashboard;
+    }
 
     @Override
     public Dashboard updateDashboardWidgets(ObjectId dashboardId, Dashboard request) throws HygieiaException {
@@ -616,13 +621,17 @@ public class DashboardServiceImpl implements DashboardService {
         if(appName != null && !"".equals(appName)){
 
             Cmdb cmdb =  cmdbService.configurationItemByConfigurationItem(appName);
-            dashboard.setConfigurationItemBusServName(cmdb.getConfigurationItem());
-            dashboard.setValidServiceName(cmdb.isValidConfigItem());
+            if(cmdb !=null) {
+                dashboard.setConfigurationItemBusServName(cmdb.getConfigurationItem());
+                dashboard.setValidServiceName(cmdb.isValidConfigItem());
+            }
         }
         if(compName != null && !"".equals(compName)){
             Cmdb cmdb = cmdbService.configurationItemByConfigurationItem(compName);
-            dashboard.setConfigurationItemBusAppName(cmdb.getConfigurationItem());
-            dashboard.setValidAppName(cmdb.isValidConfigItem());
+            if(cmdb !=null) {
+                dashboard.setConfigurationItemBusAppName(cmdb.getConfigurationItem());
+                dashboard.setValidAppName(cmdb.isValidConfigItem());
+            }
         }
     }
 

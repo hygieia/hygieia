@@ -117,19 +117,11 @@ public class DashboardController {
             return ResponseEntity.ok("Unchanged");
         }
 
-        Iterable<Dashboard> allDashboard = dashboards();
-        boolean titleExist = false;
 
-        for(Dashboard l :allDashboard)
-        {
-            if (id.compareTo(l.getId()) == 0) {
-                //skip the current dashboard
-                continue;
-            }
-            if(l.getTitle().equals(request.getTitle()))
-            {
-                titleExist=true;
-            }
+        boolean titleExist = false;
+        List<Dashboard> existingDashboardList = dashboardService.getByTitle(newTitle);
+        if( existingDashboardList != null && existingDashboardList.size() > 0){
+            titleExist=true;
         }
 
         LOGGER.info("Existing Title:" + titleExist);
