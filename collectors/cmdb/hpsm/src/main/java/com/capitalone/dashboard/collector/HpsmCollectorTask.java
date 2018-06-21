@@ -45,10 +45,7 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
 
     private String collectorAction;
 
-    // private static final String DEFAULT_COLLECTOR_ACTION_NAME = APP_ACTION_NAME;
-
-    // DEBUG STATEMENT: For local testing
-    private static final String DEFAULT_COLLECTOR_ACTION_NAME = INCIDENT_ACTION_NAME;
+    private static final String DEFAULT_COLLECTOR_ACTION_NAME = APP_ACTION_NAME;
     private static final String COLLECTOR_ACTION_PROPERTY_KEY="collector.action";
 
     @Autowired
@@ -184,9 +181,6 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
         hpsmClient.setIncidentCount(incidentCount);
         incidentList = hpsmClient.getIncidents();
 
-        // DEBUG STATEMENT
-        LOG.info("Incidents Fetched = "+incidentList.size());
-
         for (Incident incident : incidentList) {
             String incidentId = incident.getIncidentID();
             String itemName = incident.getAffectedItem();
@@ -248,7 +242,7 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
                     break;
                 case INCIDENT_ACTION_NAME:
                     log("Collecting Incidents");
-                     collectIncidents(collector);
+                    collectIncidents(collector);
                     break;
                 default:
                     log("Unknown value passed to -D" + COLLECTOR_ACTION_PROPERTY_KEY + ": " + collectorAction);
