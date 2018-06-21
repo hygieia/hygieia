@@ -120,7 +120,7 @@ public class DashboardController {
 
         boolean titleExist = false;
         List<Dashboard> existingDashboardList = dashboardService.getByTitle(newTitle);
-        if( existingDashboardList != null && existingDashboardList.size() > 0){
+        if( existingDashboardList != null && !existingDashboardList.isEmpty()){
             titleExist=true;
         }
 
