@@ -197,18 +197,7 @@ public class DefaultNexusIQClient implements NexusIQClient {
         } catch (RestClientException rce) {
             LOG.error("RestClientException from: " + url + ". Error code=" + rce.getMessage());
         }
-        
-        /*Set<String> securityAffectedComponents = new HashSet<>();
-		for (Threat threat : policyResult.getThreats().get(LibraryPolicyType.Security)) {
-			securityAffectedComponents.addAll(threat.getComponents());
-			securityAlertCount += threat.getCount();
-		}
-
-		policyResult.setAffectingComponentCount(securityAffectedComponents.size());
-		policyResult.setSecurityAlertCount(securityAlertCount);
-		policyResult.setLicenseAlertCount(policyResult.getThreats().get(LibraryPolicyType.License).stream()
-				.collect(Collectors.summingInt(Threat::getCount)));*/
-        
+                   
         return policyResult;
     }
     
