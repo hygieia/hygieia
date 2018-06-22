@@ -194,7 +194,6 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
             Incident incidentDbItem = incidentRepository.findByIncidentID(incidentId);
             if (incidentDbItem != null) {
                 incident.setId(incidentDbItem.getId());
-                incident.setCollectorItemId(incident.getCollectorItemId());
                 updatedCount++;
             } else { insertCount++; }
             incidentRepository.save(incident);
