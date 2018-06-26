@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.util.DashboardUtils;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,9 +48,6 @@ import com.capitalone.dashboard.repository.ServiceRepository;
 import com.capitalone.dashboard.repository.UserInfoRepository;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-
-import javax.validation.constraints.AssertTrue;
-
 
 @RunWith(MockitoJUnitRunner.class)
 public class DashboardServiceTest {
@@ -178,6 +176,10 @@ public class DashboardServiceTest {
 
     @Test
     public void associateCollectorToComponent() {
+        DashboardUtils dashboardUtils
+         = new DashboardUtils(collectorItemRepository, collectorRepository, componentRepository, customRepositoryQuery);
+        dashboardService.setDashboardUtils(dashboardUtils);
+
         ObjectId compId = ObjectId.get();
         ObjectId collId = ObjectId.get();
         ObjectId collItemId = ObjectId.get();
@@ -204,6 +206,10 @@ public class DashboardServiceTest {
 
     @Test
     public void associateCollectorToComponentWithDisabledCollectorItem() {
+        DashboardUtils dashboardUtils
+        = new DashboardUtils(collectorItemRepository, collectorRepository, componentRepository, customRepositoryQuery);
+        dashboardService.setDashboardUtils(dashboardUtils);
+
         ObjectId compId = ObjectId.get();
         ObjectId collId = ObjectId.get();
         ObjectId collItemId = ObjectId.get();
@@ -232,6 +238,10 @@ public class DashboardServiceTest {
 
     @Test
     public void associateCollectorToComponent_Item_with_two_components() {
+        DashboardUtils dashboardUtils
+        = new DashboardUtils(collectorItemRepository, collectorRepository, componentRepository, customRepositoryQuery);
+        dashboardService.setDashboardUtils(dashboardUtils);
+
         ObjectId compId = ObjectId.get();
         ObjectId collId = ObjectId.get();
         ObjectId collItemId = ObjectId.get();
@@ -264,6 +274,10 @@ public class DashboardServiceTest {
 
     @Test
     public void associateCollectorToComponent_collectorItemDisabled_willBecomeEnabled() {
+        DashboardUtils dashboardUtils
+        = new DashboardUtils(collectorItemRepository, collectorRepository, componentRepository, customRepositoryQuery);
+        dashboardService.setDashboardUtils(dashboardUtils);
+
         ObjectId compId = ObjectId.get();
         ObjectId collId = ObjectId.get();
         ObjectId collItemId = ObjectId.get();
@@ -294,6 +308,10 @@ public class DashboardServiceTest {
 
     @Test
     public void associateCollectorToComponent_switch_Item1_with_Item2() {
+        DashboardUtils dashboardUtils
+        = new DashboardUtils(collectorItemRepository, collectorRepository, componentRepository, customRepositoryQuery);
+        dashboardService.setDashboardUtils(dashboardUtils);
+
         ObjectId compId = ObjectId.get();
         ObjectId collId = ObjectId.get();
 
@@ -338,6 +356,10 @@ public class DashboardServiceTest {
 
     @Test
     public void associateCollectorToComponent_switch_Item1_with_Item2_Multiple_Components() {
+        DashboardUtils dashboardUtils
+        = new DashboardUtils(collectorItemRepository, collectorRepository, componentRepository, customRepositoryQuery);
+        dashboardService.setDashboardUtils(dashboardUtils);
+
         ObjectId compId = ObjectId.get();
         ObjectId collId = ObjectId.get();
 
@@ -388,6 +410,10 @@ public class DashboardServiceTest {
 
     @Test
     public void associateCollectorToComponent_replace_Item1_with_Item2_and_3() {
+        DashboardUtils dashboardUtils
+        = new DashboardUtils(collectorItemRepository, collectorRepository, componentRepository, customRepositoryQuery);
+        dashboardService.setDashboardUtils(dashboardUtils);
+
         ObjectId compId = ObjectId.get();
         ObjectId collId = ObjectId.get();
 
@@ -439,6 +465,10 @@ public class DashboardServiceTest {
 
     @Test
     public void associateCollectorToComponent_replace_Item1_and_2_with_Item3() {
+        DashboardUtils dashboardUtils
+        = new DashboardUtils(collectorItemRepository, collectorRepository, componentRepository, customRepositoryQuery);
+        dashboardService.setDashboardUtils(dashboardUtils);
+
         ObjectId compId = ObjectId.get();
         ObjectId collId = ObjectId.get();
 
