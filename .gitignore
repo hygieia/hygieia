@@ -1,6 +1,9 @@
 .DS_Store
 *.class
 
+#java certificates
+*.crt
+
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
