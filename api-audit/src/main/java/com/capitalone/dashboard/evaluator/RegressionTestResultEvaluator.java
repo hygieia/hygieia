@@ -1,6 +1,5 @@
 package com.capitalone.dashboard.evaluator;
 
-import com.capitalone.dashboard.ApiSettings;
 import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
@@ -11,14 +10,13 @@ import com.capitalone.dashboard.model.TestSuiteType;
 import com.capitalone.dashboard.model.TestCapability;
 import com.capitalone.dashboard.model.TestSuite;
 import com.capitalone.dashboard.model.TestCase;
-import com.capitalone.dashboard.model.StoryIndicator;
 import com.capitalone.dashboard.model.Feature;
+import com.capitalone.dashboard.model.StoryIndicator;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
 import com.capitalone.dashboard.response.TestResultsAuditResponse;
 import com.capitalone.dashboard.status.TestResultAuditStatus;
 import org.apache.commons.collections.CollectionUtils;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -40,8 +38,6 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
 
     private final TestResultRepository testResultRepository;
     private final FeatureRepository featureRepository;
-
-    private final ApiSettings apiSettings = new ApiSettings();
 
     @Autowired
     public RegressionTestResultEvaluator(TestResultRepository testResultRepository, FeatureRepository featureRepository) {
@@ -86,7 +82,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                 .findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(testItem.getId(), beginDate-1, endDate+1);
 
         TestResultsAuditResponse testResultsAuditResponse = new TestResultsAuditResponse();
-        int traceabilityThreshold = apiSettings.getThreshold();
+        int traceabilityThreshold = settings.getThreshold();
         List<StoryIndicator> totalStoryIndicatorList = new ArrayList<>();
 
         for (TestResult testResult : testResults) {
@@ -144,7 +140,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
      */
     private List<StoryIndicator> getStoryIndicatorsInGivenDateRange(Dashboard dashboard, TestResultsAuditResponse testResultsAuditResponse, TestCase testCase, Long beginDate, Long endDate) {
 
-        String REGEX_ANY_STRING_MATCHING_FEATURE_ID = apiSettings.getFeatureIDPattern();
+        String REGEX_ANY_STRING_MATCHING_FEATURE_ID = settings.getFeatureIDPattern();
         List<StoryIndicator> storyIndicatorList = new ArrayList<>();
         Set<String> tags = testCase.getTags();
 

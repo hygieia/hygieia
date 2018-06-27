@@ -1,199 +1,127 @@
-[
-  {
-    "template": "widgets",
-    "title": "TestSSA",
-    "widgets": [
-      {
-        "id": {
-          "timestamp": 1515646073,
-          "machineIdentifier": 4693261,
-          "processIdentifier": 6916,
-          "counter": 3010193
-        },
-        "name": "codeanalysis",
-        "componentId": {
-          "timestamp": 1515645665,
-          "machineIdentifier": 4693261,
-          "processIdentifier": 6916,
-          "counter": 3010182
-        },
-        "options": {
-          "testJobNames": [],
-          "id": "codeanalysis0"
-        }
+{
+  "template": "widgets",
+  "title": "TestSSA",
+  "widgets": [
+    {
+      "id": {
+        "timestamp": 1515646073,
+        "machineIdentifier": 4693261,
+        "processIdentifier": 6916,
+        "counter": 3010193
       },
-      {
-        "id": {
-          "timestamp": 1515646073,
-          "machineIdentifier": 4693261,
-          "processIdentifier": 6916,
-          "counter": 3010193
-        },
-        "name": "repo",
-        "componentId": {
-          "timestamp": 1515645665,
-          "machineIdentifier": 4693261,
-          "processIdentifier": 6916,
-          "counter": 3010182
-        },
-        "options": {
-          "password": "",
-          "id": "repo0",
-          "scm": {
-            "name": "GitHub",
-            "value": "GitHub"
-          },
-          "branch": "master",
-          "userID": "",
-          "url": "https://mygithub.com/compliance-scenario/6-lgtm-merge"
-        }
+      "name": "codeanalysis",
+      "componentId": "57f29d143b55670a9e06d624",
+      "options": {
+        "testJobNames": [],
+        "id": "codeanalysis0"
       }
-    ],
-    "owners": [
-      {
-        "username": "topopal",
-        "authType": "STANDARD"
-      }
-    ],
-    "type": "Team",
-    "application": {
-      "name": "TestAudit",
-      "components": [
-        {
-          "name": "TestAudit",
-          "collectorItems": {
-            "SCM": [
-              {
-                "enabled": true,
-                "errors": [],
-                "pushed": false,
-                "collectorId": {
-                  "timestamp": 1514425811,
-                  "machineIdentifier": 1084966,
-                  "processIdentifier": 27772,
-                  "counter": 16289003
-                },
-                "lastUpdated": 0,
-                "options": {
-                  "password": "",
-                  "scm": "Github",
-                  "branch": "master",
-                  "userID": "",
-                  "url": "https://mygithub.com/compliance-scenario/6-lgtm-merge"
-                },
-                "id": {
-                  "timestamp": 1515646073,
-                  "machineIdentifier": 4693261,
-                  "processIdentifier": 6916,
-                  "counter": 3010191
-                }
-              }
-            ]
-          },
-          "id": {
-            "timestamp": 1515645665,
-            "machineIdentifier": 4693261,
-            "processIdentifier": 6916,
-            "counter": 3010182
-          }
-        }
-      ]
     },
-    "validServiceName": true,
-    "validAppName": true,
-    "remoteCreated": false,
-    "configurationItemBusServName": "TestBusServ",
-    "configurationItemBusAppName": "confItem",
-    "activeWidgets": [
-      "repo"
-    ],
-    "errorCode": 0,
-    "id": {
-      "timestamp": 1515645665,
-      "machineIdentifier": 4693261,
-      "processIdentifier": 6916,
-      "counter": 3010183
+    {
+      "name" : "feature",
+      "componentId" : "57f29d143b55670a9e06d624",
+      "options" : {
+        "sprintType" : "kanban",
+        "featureTool" : "Jira",
+        "showStatus" : {
+          "kanban" : true,
+          "scrum" : false
+        },
+        "id" : "feature0",
+        "estimateMetricType" : "storypoints",
+        "listType" : "epics",
+        "teamId" : "Team:26967234"
+      }
+    },
+    {
+      "id": {
+        "timestamp": 1515646073,
+        "machineIdentifier": 4693261,
+        "processIdentifier": 6916,
+        "counter": 3010193
+      },
+      "name": "repo",
+      "componentId": {
+        "timestamp": 1515645665,
+        "machineIdentifier": 4693261,
+        "processIdentifier": 6916,
+        "counter": 3010182
+      },
+      "options": {
+        "password": "",
+        "id": "repo0",
+        "scm": {
+          "name": "GitHub",
+          "value": "GitHub"
+        },
+        "branch": "master",
+        "userID": "",
+        "url": "https://mygithub.com/compliance-scenario/6-lgtm-merge"
+      }
     }
-  },
-
-  {
-    "id" : "57f29d143b55670a9e06d625",
-    "template" : "capone",
-    "title" : "FS_COAF_DS_Slate",
-    "widgets" : [
+  ],
+  "owners": [
+    {
+      "username": "topopal",
+      "authType": "STANDARD"
+    }
+  ],
+  "type": "Team",
+  "application": {
+    "name": "TestAudit",
+    "components": [
       {
-        "id" : "57f3413bedb9650aa33d1705",
-        "name" : "codeanalysis",
-        "componentId" : "57f29d143b55670a9e06d624",
-        "options" : {
-          "id" : "codeanalysis0",
-          "testJobNames" : [
-            "Name1",
-            "Name2",
-            "Name3"
+        "name": "TestAudit",
+        "collectorItems": {
+          "SCM": [
+            {
+              "enabled": true,
+              "errors": [],
+              "pushed": false,
+              "collectorId": {
+                "timestamp": 1514425811,
+                "machineIdentifier": 1084966,
+                "processIdentifier": 27772,
+                "counter": 16289003
+              },
+              "lastUpdated": 0,
+              "options": {
+                "password": "",
+                "scm": "Github",
+                "branch": "master",
+                "userID": "",
+                "url": "https://mygithub.com/compliance-scenario/6-lgtm-merge"
+              },
+              "id": {
+                "timestamp": 1515646073,
+                "machineIdentifier": 4693261,
+                "processIdentifier": 6916,
+                "counter": 3010191
+              }
+            }
           ]
-        }
-      },
-      {
-        "id" : "5ad7809a7cb0f570a56ce58e",
-        "name" : "build",
-        "componentId" : "57f29d143b55670a9e06d624",
-        "options" : {
-          "buildDurationThreshold" : 3,
-          "id" : "build0",
-          "consecutiveFailureThreshold" : 5
-        }
-      },
-      {
-        "id" : "5ad780ba7cb0f570a56ce58f",
-        "name" : "repo",
-        "componentId" : "57f29d143b55670a9e06d624",
-        "options" : {
-          "password" : "",
-          "id" : "repo0",
-          "personalAccessToken" : "",
-          "branch" : "master",
-          "userID" : "",
-          "url" : "https://github.com/capitalone/Hygieia"
-        }
-      },
-      {
-        "id" : "5ade52bf0ca7754a81d60282",
-        "name" : "feature",
-        "componentId" : "57f29d143b55670a9e06d624",
-        "options" : {
-          "sprintType" : "kanban",
-          "featureTool" : "Jira",
-          "showStatus" : {
-            "kanban" : true,
-            "scrum" : false
-          },
-          "id" : "feature0",
-          "estimateMetricType" : "storypoints",
-          "listType" : "epics",
-          "teamId" : "Team:26967234"
+        },
+        "id": {
+          "timestamp": 1515645665,
+          "machineIdentifier": 4693261,
+          "processIdentifier": 6916,
+          "counter": 3010182
         }
       }
-    ],
-    "owner" : "slq2cq",
-    "owners" : [],
-    "type" : "Team",
-    "application" : {
-      "name" : "EASE",
-      "components" : [
-        {
-          "$ref" : "components",
-          "$id" : "57f29d143b55670a9e06d624"
-        }
-      ]
-    },
-    "validServiceName" : true,
-    "validAppName" : true,
-    "remoteCreated" : false,
-    "configurationItemBusServName": "TestBusServ",
-    "configurationItemBusAppName": "confItem",
-    "scoreEnabled" : false,
-    "scoreDisplay" : "HEADER"
+    ]
+  },
+  "validServiceName": true,
+  "validAppName": true,
+  "remoteCreated": false,
+  "configurationItemBusServName": "TestBusServ",
+  "configurationItemBusAppName": "confItem",
+  "activeWidgets": [
+    "repo"
+  ],
+  "errorCode": 0,
+  "id": {
+    "timestamp": 1515645665,
+    "machineIdentifier": 4693261,
+    "processIdentifier": 6916,
+    "counter": 3010183
   }
-
-]
+}

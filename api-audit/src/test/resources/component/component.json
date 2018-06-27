@@ -1,600 +1,96 @@
-[
-  {
-    "name": "TestAudit",
-    "collectorItems": {
-      "SCM": [
-        {
-          "enabled": true,
-          "errors": [],
-          "pushed": false,
-          "collectorId": {
-            "timestamp": 1514425811,
-            "machineIdentifier": 1084966,
-            "processIdentifier": 27772,
-            "counter": 16289003
-          },
-          "lastUpdated": 0,
-          "options": {
-            "password": "",
-            "scm": "Github",
-            "branch": "master",
-            "userID": "",
-            "url": "https://mygithub.com/one/two"
-          },
-          "id": {
-            "timestamp": 1515646073,
-            "machineIdentifier": 4693261,
-            "processIdentifier": 6916,
-            "counter": 3010191
-          }
+{
+  "name": "TestAudit",
+  "id": "57f29d143b55670a9e06d624",
+  "collectorItems": {
+    "SCM": [
+      {
+        "enabled": true,
+        "errors": [],
+        "pushed": false,
+        "collectorId": {
+          "timestamp": 1514425811,
+          "machineIdentifier": 1084966,
+          "processIdentifier": 27772,
+          "counter": 16289003
+        },
+        "lastUpdated": 0,
+        "options": {
+          "password": "",
+          "scm": "Github",
+          "branch": "master",
+          "userID": "",
+          "url": "https://mygithub.com/one/two"
+        },
+        "id": {
+          "timestamp": 1515646073,
+          "machineIdentifier": 4693261,
+          "processIdentifier": 6916,
+          "counter": 3010191
         }
-      ],
-      "StaticSecurityScan": [
-        {
-          "enabled": true,
-          "errors": [],
-          "pushed": false,
-          "collectorId": {
-            "timestamp": 1522773350945,
-            "machineIdentifier": 1084966,
-            "processIdentifier": 27772,
-            "counter": 16289003
-          },
-          "lastUpdated": 1522773350945,
-          "options": {
-            "applicationType": "Desktop",
-            "reportUrl": "https://appsec.com",
-            "applicationID": [
-              "TestBusServ"
-            ],
-            "projectName": "cust-service",
-            "applicationName": "customer-service",
-            "instanceUrl": "https://appsec.com"
-          },
-          "id": "5b4e524333ec296b81c3935f"
-        }
-      ],
-      "LibraryPolicy" : [
-        {
-          "id": "5ad5f605c23b391cfa1c01a4",
-          "description": "myapplication:mycomponent",
-          "enabled": false,
-          "errors": [],
-          "pushed": false,
-          "collectorId": "5ad4c71841a34c9696cdfa2e",
-          "lastUpdated": 1524190250247,
-          "options": {
-            "applicationType": null,
-            "componentName": "mycomponent",
-            "applicationID": [
-              "SOMEAPPLICATION"
-            ],
-            "applicationName": "account-my-information",
-            "instanceUrl": "https://scan.com"
-          }
-        }
-      ]
-    },
-    "id": {
-      "timestamp": 1515645665,
-      "machineIdentifier": 4693261,
-      "processIdentifier": 6916,
-      "counter": 3010182
-    }
-  },
-  
-  {
-    "id" : "5a4c20908ac4ac69af860a96",
-    "name" : "CodeRepoWidgetApp",
-    "collectorItems" : {}
-  },
-
-  {
-    "id" : "5a4c20d68ac4ac69af860a99",
-    "name" : "FeatureWidgetApp",
-    "collectorItems" : {}
-  },
-
-  {
-    "id" : "5a4d62c08ac4ac69af860aa3",
-    "name" : "test template app",
-    "collectorItems" : {
-      "SCM" : [
-        {
-          "id" : "5a53d7928ac4ac69af860aa6",
-          "enabled" : true,
-          "errors" : [],
-          "pushed" : false,
-          "collectorId" : "5a4d67788ac4accd5ed049f0",
-          "lastUpdated" : 0,
-          "options" : {
-            "password" : "",
-            "scm" : "Github",
-            "branch" : "master",
-            "userID" : "",
-            "url" : "https://github.com/capitalone/Hygieia"
-          }
-        }
-      ]
-    }
-  },
-
-  {
-    "id" : "5a67b22ba369abf5421c7ae8",
-    "name" : "apiApp",
-    "collectorItems" : {
-      "AgileTool" : [
-        {
-          "id" : "5a95f60ae5a6a2ec300b7e93",
-          "enabled" : true,
-          "errors" : [],
-          "pushed" : false,
-          "collectorId" : "5a95f5b5e5a6a2ede1646800",
-          "lastUpdated" : 0,
-          "options" : {
-            "featureTool" : "Jira"
-          }
-        }
-      ]
-    }
-  },
-
-  {
-    "id" : "5a9efb515bcf7d3ceac69486",
-    "name" : "Test Results App",
-    "collectorItems" : {
-      "Build" : [
-        {
-          "id" : "5a9f2b445bcf7d54556ee180",
-          "description" : "Public_ClairScanning/ArtifactoryClairScan",
-          "enabled" : true,
-          "errors" : [],
-          "pushed" : false,
-          "collectorId" : "5a9f27fc5bcf7d532b533749",
-          "lastUpdated" : 0,
-          "options" : {
-            "jobName" : "Public_ClairScanning/ArtifactoryClairScan",
-            "jobUrl" : "https://sharedtechjenkins.clouddqt.capitalone.com/job/Public_ClairScanning/job/ArtifactoryClairScan/",
-            "instanceUrl" : "https://sharedtechjenkins.clouddqt.capitalone.com/"
-          }
-        }
-      ]
-    }
-  },
-
-  {
-    "id" : "57f29d143b55670a9e06d624",
-    "name" : "EASE",
-    "collectorItems" : {
-      "Build" : [
-        {
-          "id" : "5a9f2b445bcf7d54556ee180",
-          "description" : "Public_ClairScanning/ArtifactoryClairScan",
-          "enabled" : true,
-          "errors" : [],
-          "pushed" : false,
-          "collectorId" : "5a9f27fc5bcf7d532b533749",
-          "lastUpdated" : 0,
-          "options" : {
-            "jobName" : "Public_ClairScanning/ArtifactoryClairScan",
-            "jobUrl" : "https://sharedtechjenkins.clouddqt.capitalone.com/job/Public_ClairScanning/job/ArtifactoryClairScan/",
-            "instanceUrl" : "https://sharedtechjenkins.clouddqt.capitalone.com/"
-          }
-        }
-      ],
-      "SCM" : [
-        {
-          "id" : "5a53d7928ac4ac69af860aa6",
-          "enabled" : true,
-          "errors" : [
-            {
-              "errorCode" : "Unreachable",
-              "errorMessage" : "https://github.com/capitalone/Hygieia",
-              "timestamp" : 1515444300589
-            }
+      }
+    ],
+    "StaticSecurityScan": [
+      {
+        "enabled": true,
+        "errors": [],
+        "pushed": false,
+        "collectorId": {
+          "timestamp": 1522773350945,
+          "machineIdentifier": 1084966,
+          "processIdentifier": 27772,
+          "counter": 16289003
+        },
+        "lastUpdated": 1522773350945,
+        "options": {
+          "applicationType": "Desktop",
+          "reportUrl": "https://appsec.com",
+          "applicationID": [
+            "TestBusServ"
           ],
-          "pushed" : false,
-          "collectorId" : "5a4d67788ac4accd5ed049f0",
-          "lastUpdated" : 0,
-          "options" : {
-            "password" : "",
-            "personalAccessToken" : "",
-            "branch" : "master",
-            "userID" : "",
-            "url" : "https://github.com/capitalone/Hygieia"
-          }
-        }
-      ],
-      "Test" : [
-        {
-          "id" : "57f2a0193b55670a9e06d63a",
-          "description" : "ease-COAF-UI-ATDD-Functional-SLATE",
-          "niceName" : "COAF",
-          "enabled" : true,
-          "errors" : [],
-          "pushed" : true,
-          "collectorId" : "56df29df7fab7c3ec3c432ea",
-          "lastUpdated" : 1513106044147,
-          "options" : {
-            "jobName" : "ease-COAF-UI-ATDD-Functional-SLATE",
-            "jobUrl" : "https://coafjenkins.test.com/coafjenkins/job/ease-COAF-UI-ATDD-Functional-SLATE/",
-            "instanceUrl" : "https://coafjenkins.test.com/coafjenkins/"
-          }
+          "projectName": "cust-service",
+          "applicationName": "customer-service",
+          "instanceUrl": "https://appsec.com"
         },
-        {
-          "id" : "58091241edb9650aa33d288e",
-          "description" : "ease-COAF-eAPI-ATDD-Functional-SLATE",
-          "niceName" : "COAF",
-          "enabled" : true,
-          "errors" : [],
-          "pushed" : true,
-          "collectorId" : "56df29df7fab7c3ec3c432ea",
-          "lastUpdated" : 1476989505898,
-          "options" : {
-            "jobName" : "ease-COAF-eAPI-ATDD-Functional-SLATE",
-            "jobUrl" : "https://coafjenkins.test.com/coafjenkins/job/ease-COAF-eAPI-ATDD-Functional-SLATE/",
-            "instanceUrl" : "https://coafjenkins.test.com/coafjenkins/"
-          }
-        },
-        {
-          "id" : "56df29df7fab7c3ec3c432eb",
-          "description" : "cos-ui-mock-test-hygieia-chrome",
-          "niceName" : "Grayskull",
-          "enabled" : true,
-          "errors" : [],
-          "pushed" : true,
-          "collectorId" : "56df29df7fab7c3ec3c432ea",
-          "lastUpdated" : 1462401522892,
-          "options" : {
-            "jobName" : "cos-ui-mock-test-hygieia-chrome",
-            "jobUrl" : "http://ip-205-78-56.dqa.capitalone.com:8080/job/cos-ui-mock-test-hygieia-chrome/",
-            "instanceUrl" : "http://ip-205-78-56.dqa.capitalone.com:8080/"
-          }
+        "id": "5b4e524333ec296b81c3935f"
+      }
+    ],
+    "LibraryPolicy" : [
+      {
+        "id": "5ad5f605c23b391cfa1c01a4",
+        "description": "myapplication:mycomponent",
+        "enabled": false,
+        "errors": [],
+        "pushed": false,
+        "collectorId": "5ad4c71841a34c9696cdfa2e",
+        "lastUpdated": 1524190250247,
+        "options": {
+          "applicationType": null,
+          "componentName": "mycomponent",
+          "applicationID": [
+            "SOMEAPPLICATION"
+          ],
+          "applicationName": "account-my-information",
+          "instanceUrl": "https://scan.com"
         }
-      ],
-      "AgileTool" : [
-        {
-          "id" : "5a95f60ae5a6a2ec300b7e93",
-          "enabled" : true,
-          "errors" : [],
-          "pushed" : false,
-          "collectorId" : "5a95f5b5e5a6a2ede1646800",
-          "lastUpdated" : 0,
-          "options" : {
-            "featureTool" : "Jira"
-          }
+      }
+    ],
+    "Test" : [
+      {
+        "id" : "57f2a0193b55670a9e06d63a",
+        "description" : "ease-COAF-UI-ATDD-Functional-SLATE",
+        "niceName" : "COAF",
+        "enabled" : true,
+        "errors" : [
+        ],
+        "pushed" : true,
+        "collectorId" : "56df29df7fab7c3ec3c432ea",
+        "lastUpdated" : 1513106044147,
+        "options" : {
+          "jobName" : "ease-COAF-UI-ATDD-Functional-SLATE",
+          "jobUrl" : "https://coafjenkins.kdc.capitalone.com/coafjenkins/job/ease-COAF-UI-ATDD-Functional-SLATE/",
+          "instanceUrl" : "https://coafjenkins.kdc.capitalone.com/coafjenkins/"
         }
-      ]
-    }
-  },
-
-  {
-    "id" : "58af528e214613243ae5bacd",
-    "name" : "Saturn",
-    "collectorItems" : {
-      "AgileTool" : [
-        {
-          "id" : "58af880d214613243ae5bbae",
-          "enabled" : true,
-          "errors" : [],
-          "pushed" : false,
-          "collectorId" : "589febd0a65ce715e611a02d",
-          "lastUpdated" : 0,
-          "options" : {
-            "teamName" : "Laguna",
-            "featureTool" : "VersionOne",
-            "projectName" : "Kanban Board - Laguna",
-            "projectId" : "Scope:17482903",
-            "teamId" : "Team:17422499"
-          }
-        }
-      ],
-      "Deployment" : [
-        {
-          "id" : "56d825bd7fab7c76a14530f7",
-          "description" : "Correspondence-Batch-Scripts",
-          "enabled" : true,
-          "errors" : [],
-          "pushed" : false,
-          "collectorId" : "56d825ba7fab7c76a14530a8",
-          "lastUpdated" : 0,
-          "options" : {
-            "applicationId" : "21400150-9ffc-463f-9eca-0179a94f2414",
-            "applicationName" : "Correspondence-Batch-Scripts",
-            "instanceUrl" : "https://udeploy.test.com/"
-          }
-        }
-      ],
-      "SCM" : [
-        {
-          "id" : "593ae5142ccd1711ed5bf34d",
-          "enabled" : true,
-          "errors" : [],
-          "pushed" : false,
-          "collectorId" : "56ca15297fab7c68bfdb420c",
-          "lastUpdated" : 0,
-          "options" : {
-            "password" : "",
-            "scm" : "Github",
-            "branch" : "master",
-            "userID" : "",
-            "url" : "https://github.test.com/hlsaturn/saturnweb.git"
-          }
-        }
-      ],
-      "Build" : [
-        {
-          "id" : "58af884f214613243ae5bbb0",
-          "description" : "GIT_HLSaturn_Release_Build",
-          "niceName" : "HomeLoan",
-          "enabled" : true,
-          "errors" : [],
-          "pushed" : true,
-          "collectorId" : "56ca5b387fab7c05d45a20ce",
-          "lastUpdated" : 1496686019427,
-          "options" : {
-            "jobName" : "GIT_HLSaturn_Release_Build",
-            "jobUrl" : "https://homeloansjenkins.test.com/homeloansjenkins/job/GIT_HLSaturn_Release_Build/",
-            "instanceUrl" : "https://homeloansjenkins.test.com/homeloansjenkins/"
-          }
-        }
-      ],
-      "CodeQuality" : [
-        {
-          "id" : "589fe4c9a65ce715c271965a",
-          "description" : "saturn service parent",
-          "niceName" : "HomeLoan",
-          "enabled" : true,
-          "errors" : [],
-          "pushed" : true,
-          "collectorId" : "56cb5bde7fab7c548551410e",
-          "lastUpdated" : 1509481667503,
-          "options" : {
-            "projectName" : "saturn service parent",
-            "projectId" : "14677",
-            "instanceUrl" : "https://sonaraws.test.com"
-          }
-        }
-      ],
-      "StaticSecurityScan" : [
-        {
-          "id" : "56de24387fab7c017e93d261",
-          "description" : "HLSaturnUI",
-          "enabled" : true,
-          "errors" : [],
-          "pushed" : false,
-          "collectorId" : "56de24237fab7c017e93d1c0",
-          "lastUpdated" : 0,
-          "options" : {
-            "projectversion" : "dev",
-            "projectName" : "HLSaturnUI",
-            "projectId" : "10245",
-            "instanceUrl" : "http://jad0015k.test.com:11400/ssc"
-          }
-        }
-      ],
-      "LibraryPolicy" : [
-        {
-          "id" : "595fcd2492e2d1940581bac1",
-          "description" : "APICARDACCOUNTPIN",
-          "enabled" : true,
-          "errors" : [],
-          "pushed" : false,
-          "collectorId" : "595fcb8092e2d1926b7b203e",
-          "lastUpdated" : 1499450660414,
-          "options" : {
-            "applicationId" : "3935b522e0f3413396194448abe96e1b",
-            "applicationName" : "APICARDACCOUNTPIN",
-            "publicId" : "APICARDACCOUNTPIN",
-            "instanceUrl" : "https://clm.test.com"
-          }
-        }
-      ],
-      "Test" : [
-        {
-          "id" : "580fb8d6edb9650aa33d2f36",
-          "description" : "SMOKE_TEST_FS_HLServicing_Saturn",
-          "niceName" : "HomeLoan",
-          "enabled" : true,
-          "errors" : [],
-          "pushed" : true,
-          "collectorId" : "56df29df7fab7c3ec3c432ea",
-          "lastUpdated" : 1481831396270,
-          "options" : {
-            "jobName" : "SMOKE_TEST_FS_HLServicing_Saturn",
-            "jobUrl" : "https://homeloansjenkins.test.com/homeloansjenkins/job/SMOKE_TEST_FS_HLServicing_Saturn/",
-            "instanceUrl" : "https://homeloansjenkins.test.com/homeloansjenkins/"
-          }
-        },
-        {
-          "id" : "57e15a398a48fa4aeb6d779e",
-          "description" : "QA_Saturn-UI_CICD",
-          "niceName" : "HomeLoan",
-          "enabled" : true,
-          "errors" : [],
-          "pushed" : true,
-          "collectorId" : "56df29df7fab7c3ec3c432ea",
-          "lastUpdated" : 1499706689125,
-          "options" : {
-            "jobName" : "QA_Saturn-UI_CICD",
-            "jobUrl" : "https://homeloansjenkins.test.com/homeloansjenkins/job/QA_Saturn-UI_CICD/",
-            "instanceUrl" : "https://homeloansjenkins.test.com/homeloansjenkins/"
-          }
-        }
-      ]
-    }
-  },
-
-  {
-    "id" : "5838c1a23ed9f209ca29dfc6",
-    "name" : "DemoAppName",
-    "collectorItems" : {
-      "SCM" : [
-        {
-          "id" : "5838c4b63ed9f209ca29dfcd",
-          "enabled" : true,
-          "pushed" : false,
-          "collectorId" : "583883e13ed9f209dbad32ef",
-          "lastUpdated" : 0,
-          "options" : {
-            "scm" : "Github",
-            "branch" : "master",
-            "url" : "https://github.test.com/kmv629/hygtest_public"
-          }
-        }
-      ],
-      "Build" : [
-        {
-          "id" : "5838c5253ed9f209ca29dfcf",
-          "description" : "JenkinsHygProj",
-          "niceName" : "HygieiaReInventJenkins",
-          "enabled" : true,
-          "pushed" : true,
-          "collectorId" : "583884543ed9f209d3d76fd7",
-          "lastUpdated" : 1480115555530,
-          "options" : {
-            "jobName" : "JenkinsHygProj",
-            "jobUrl" : "http://hygieia-reinvent-tools.cloud.capitalone.com/jenkins/job/JenkinsHygProj/",
-            "instanceUrl" : "http://hygieia-reinvent-tools.cloud.capitalone.com/jenkins/"
-          }
-        }
-      ],
-      "ScopeOwner" : [
-        {
-          "id" : "583883ed3ed9f209f3c747ca",
-          "description" : "Make It or Break It",
-          "enabled" : true,
-          "pushed" : false,
-          "collectorId" : "583883e23ed9f209f3c74688",
-          "lastUpdated" : 0,
-          "options" : {
-            "isDeleted" : "False",
-            "teamId" : "Team:4520248",
-            "changeDate" : "2016-03-01T13:55:55.4300000",
-            "assetState" : "Active"
-          },
-          "_class" : "com.capitalone.dashboard.model.ScopeOwnerCollectorItem"
-        }
-      ],
-      "Deployment" : [
-        {
-          "id" : "5838cdc63ed9f209ca29dfdb",
-          "description" : "DemoApp",
-          "niceName" : "HygieiaReInventJenkins",
-          "enabled" : true,
-          "pushed" : true,
-          "collectorId" : "5838cdc63ed9f209ca29dfda",
-          "lastUpdated" : 1480117874151,
-          "options" : {
-            "applicationName" : "DemoApp",
-            "instanceUrl" : "http://hygieia-reinvent-tools.cloud.capitalone.com/jenkins/"
-          }
-        }
-      ],
-      "CodeQuality" : [
-        {
-          "id" : "583883e33ed9f209e5512960",
-          "description" : "com.capitalone.dashboard:Hygieia",
-          "enabled" : true,
-          "pushed" : false,
-          "collectorId" : "583883e23ed9f209e551295e",
-          "lastUpdated" : 0,
-          "options" : {
-            "projectName" : "com.capitalone.dashboard:Hygieia",
-            "projectId" : "6",
-            "instanceUrl" : "http://hygieia-reinvent-tools.cloud.capitalone.com/sonar"
-          }
-        }
-      ],
-      "Test" : [
-        {
-          "id" : "5838cf3d3ed9f209ca29dff0",
-          "description" : "JenkinsHygTest",
-          "niceName" : "HygieiaReInventJenkins",
-          "enabled" : true,
-          "pushed" : true,
-          "collectorId" : "5838cf3d3ed9f209ca29dfef",
-          "lastUpdated" : 1480118077303,
-          "options" : {
-            "jobName" : "JenkinsHygTest",
-            "jobUrl" : "http://hygieia-reinvent-tools.cloud.capitalone.com/jenkins/job/JenkinsHygTest/",
-            "instanceUrl" : "http://hygieia-reinvent-tools.cloud.capitalone.com/jenkins/"
-          }
-        }
-      ],
-      "AgileTool" : [
-        {
-          "id" : "58bdcbb690e46b24c431a845",
-          "enabled" : true,
-          "pushed" : false,
-          "collectorId" : "583883e23ed9f209f3c74688",
-          "lastUpdated" : 0,
-          "options" : {
-            "teamName" : "Cloud Tools Engineering",
-            "featureTool" : "VersionOne",
-            "projectName" : "Kanban Board - Shared Tools Engineering",
-            "projectId" : "Scope:24289483",
-            "teamId" : "Team:26967234"
-          }
-        }
-      ]
-    }
-  },
-
-  {
-    "id" : "5838d0073ed9f209ca29dff5",
-    "name" : "DemoProductAppName",
-    "collectorItems" : {
-      "Product" : [
-        {
-          "id" : "5838c1a23ed9f209ca29dfc8",
-          "description" : "DemoDashTitle",
-          "enabled" : true,
-          "pushed" : false,
-          "collectorId" : "583883e73ed9f209ca29dfbe",
-          "lastUpdated" : 0,
-          "options" : {
-            "dashboardId" : "5838c1a23ed9f209ca29dfc7"
-          }
-        }
-      ]
-    }
-  },
-
-  {
-    "id" : "590b5329b1135309394ef420",
-    "name" : "Open Test",
-    "collectorItems" : {
-      "AgileTool" : [
-        {
-          "id" : "590b5344b1135309394ef423",
-          "enabled" : true,
-          "pushed" : false,
-          "collectorId" : "58b7a6d090e46b265a4d1300",
-          "lastUpdated" : 0,
-          "options" : {
-            "teamName" : "Any",
-            "featureTool" : "Jira",
-            "projectName" : "EA - Open Source Office",
-            "projectId" : "26801",
-            "teamId" : "Any"
-          }
-        }
-      ],
-      "SCM" : [
-        {
-          "id" : "590b5362b1135309394ef425",
-          "enabled" : true,
-          "pushed" : false,
-          "collectorId" : "583883e13ed9f209dbad32ef",
-          "lastUpdated" : 0,
-          "options" : {
-            "scm" : "Github",
-            "branch" : "master",
-            "url" : "https://github.test.com/OpenSourceOffice/Innersourcing"
-          }
-        }
-      ]
-    }
+      }
+    ]
   }
-]
+}

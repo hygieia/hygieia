@@ -3,28 +3,15 @@
         "DASHBOARD_TEST_CONFIGURED"
     ],
     "lastUpdated": 0,
-    "dashboardTitle": "FS_COAF_DS_Slate",
-    "businessService": "unknown",
-    "businessApplication": "unknown",
+    "dashboardTitle": "TestSSA",
+    "businessService": "TestBusServ",
+    "businessApplication": "confItem",
     "review": {
         "TEST_RESULT": [
             {
-                "auditStatuses": [],
-                "lastUpdated": 0,
-                "lastExecutionTime": 0,
-                "totalStoryCount": 0,
-                "threshold": 0,
-                "percentTraceability": 0,
-                "totalCompletedStories": [],
-                "totalStories": []
-            },
-            {
                 "auditStatuses": [
                     "TEST_RESULT_AUDIT_OK",
-                    "TEST_RESULTS_TRACEABILITY_NOT_FOUND",
-                    "TEST_RESULTS_TRACEABILITY_STORY_NOT_FOUND",
-                    "TEST_RESULT_AUDIT_MISSING"
-                ],
+                    "TEST_RESULTS_TRACEABILITY_STORY_MATCH"],
                 "lastUpdated": 0,
                 "lastExecutionTime": 1476643852954,
                 "testCapabilities": [
@@ -136,12 +123,7 @@
                                             }
                                         ],
                                         "tags": [
-                                            "@B-1334544",
-                                            "@B-1626822",
-                                            "@TEART-11998",
-                                            "@B-1234567",
-                                            "@regression",
-                                            "@B-1521515"
+                                            "@B-1626822"
                                         ],
                                         "storyIndicators": [
                                             {
@@ -156,32 +138,6 @@
                                                 "projectName": "Web PI-8",
                                                 "teamName": "Slate",
                                                 "sprintName": "Sprint 8.5 (9/1 - 9/14)"
-                                            },
-                                            {
-                                                "storyId": "Story:25440803",
-                                                "storyNumber": "TEART-11998",
-                                                "storyName": "Combine the Json response to include Artemis PAR Quality Check 4.3 and 4.6",
-                                                "storyStatus": "Accepted",
-                                                "storyState": "Closed",
-                                                "storyType": "Story",
-                                                "epicNumber": "TEART-11900",
-                                                "epicName": "PAR 2.0: Traceability Endpoint for Hygieia Audit API",
-                                                "projectName": "Traceability 1.0",
-                                                "teamName": "Hygieia",
-                                                "sprintName": "TEART Sprint 11.2"
-                                            },
-                                            {
-                                                "storyId": "Story:23686951",
-                                                "storyNumber": "B-1521515",
-                                                "storyName": "AWS - Confirm null-ASV cloud custodian is working as expected",
-                                                "storyStatus": "",
-                                                "storyState": "Closed",
-                                                "storyType": "Story",
-                                                "epicNumber": "E-126986",
-                                                "epicName": "HL General",
-                                                "projectName": "Kanban Board - Laguna",
-                                                "teamName": "Laguna",
-                                                "sprintName": ""
                                             }
                                         ],
                                         "before": [
@@ -208,113 +164,17 @@
                                                     "duration": 42169376799
                                                 }
                                             }
-                                        ],
-                                        "unknownStatusCount": 0
-                                    },
-                                    {
-                                        "id": "validate-auto-loan-account-details;validate-the-nick-name-on-l1",
-                                        "description": "Scenario:Validate the Nick Name on L1",
-                                        "duration": 1,
-                                        "totalTestStepCount": 4,
-                                        "failedTestStepCount": 0,
-                                        "successTestStepCount": 4,
-                                        "skippedTestStepCount": 0,
-                                        "unknownStatusTestStepCount": 0,
-                                        "status": "Success",
-                                        "testSteps": [
-                                            {
-                                                "id": "1174",
-                                                "description": "Given :I do the following manual action to validate below",
-                                                "duration": 1,
-                                                "status": "Success"
-                                            },
-                                            {
-                                                "id": "1177",
-                                                "description": "When :I do the following manual action to validate below",
-                                                "duration": 0,
-                                                "status": "Success"
-                                            },
-                                            {
-                                                "id": "1180",
-                                                "description": "And :I do the following manual action to validate below",
-                                                "duration": 0,
-                                                "status": "Success"
-                                            },
-                                            {
-                                                "id": "1183",
-                                                "description": "Then :I do the following manual action to validate below",
-                                                "duration": 0,
-                                                "status": "Success"
-                                            }
-                                        ],
-                                        "tags": [],
-                                        "storyIndicators": [],
-                                        "before": [
-                                            {
-                                                "condition": "Match: Hooks.shutdownHook()",
-                                                "result": {
-                                                    "status": "Success",
-                                                    "duration": 850300
-                                                }
-                                            }
-                                        ],
-                                        "after": [
-                                            {
-                                                "condition": "Match: AccountDetailsStepDef.embedScreenshot(Scenario)",
-                                                "result": {
-                                                    "status": "Success",
-                                                    "duration": 173027
-                                                }
-                                            },
-                                            {
-                                                "condition": "Match: Hooks.logout()",
-                                                "result": {
-                                                    "status": "Success",
-                                                    "duration": 135056
-                                                }
-                                            }
-                                        ],
-                                        "unknownStatusCount": 0
+                                        ]
                                     }
                                 ]
                             }
                         ]
                     }
                 ],
-                "totalStoryCount": 3,
+                "totalStoryCount": 4,
                 "threshold": 80,
-                "percentTraceability": 100,
-                "totalCompletedStories": [
-                    "B-1626822",
-                    "TEART-11998",
-                    "B-1521515"
-                ],
-                "totalStories": [
-                    {
-                        "TEART-11998": {
-                            "auditStatus": "TEST_RESULTS_TRACEABILITY_STORY_MATCH"
-                        },
-                        "B-1521515": {
-                            "auditStatus": "TEST_RESULTS_TRACEABILITY_STORY_MATCH"
-                        },
-                        "B-1234567": {
-                            "auditStatus": "TEST_RESULTS_TRACEABILITY_STORY_STATUS_INVALID"
-                        },
-                        "B-1626822": {
-                            "auditStatus": "TEST_RESULTS_TRACEABILITY_STORY_MATCH"
-                        }
-                    }
-                ]
-            },
-            {
-                "auditStatuses": [],
-                "lastUpdated": 0,
-                "lastExecutionTime": 0,
-                "totalStoryCount": 0,
-                "threshold": 0,
-                "percentTraceability": 0,
-                "totalCompletedStories": [],
-                "totalStories": []
+                "percentTraceability": 25,
+                "totalStories":["B-1626822","JIRA-11998","B-1488671", "B-1521515"]
             }
         ]
     }

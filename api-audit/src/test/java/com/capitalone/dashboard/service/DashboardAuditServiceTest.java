@@ -56,6 +56,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.IntStream;
@@ -160,23 +161,22 @@ public class DashboardAuditServiceTest {
 
     @Test
     public void runTestResultsAuditTests() throws AuditException, IOException {
-        DashboardReviewResponse actual = getActualReviewResponse(dashboardAuditService.getDashboardReviewResponse("FS_COAF_DS_Slate",
+        DashboardReviewResponse actual = getActualReviewResponse(dashboardAuditService.getDashboardReviewResponse("TestSSA",
                 DashboardType.Team,
                 "TestBusServ",
                 "confItem",
-                1473987943000L, 1479078698000L,
+                1473885606000L, 1478983206000L,
                 Sets.newHashSet(AuditType.TEST_RESULT)), TestResultsAuditResponse.class);
         DashboardReviewResponse expected = getExpectedReviewResponse("TestResults.json", TestResultsAuditResponse.class);
-
         assertDashboardAudit(actual, expected);
         assertThat(actual.getReview()).isNotEmpty();
         assertThat(actual.getReview().get(AuditType.TEST_RESULT)).isNotNull();
-        Map<AuditType, Collection<LibraryPolicyAuditResponse>> actualReviewMap = actual.getReview();
-        Collection<LibraryPolicyAuditResponse> actualReview = actualReviewMap.get(AuditType.TEST_RESULT);
-        Map<AuditType, Collection<LibraryPolicyAuditResponse>> expectedReviewMap = expected.getReview();
-        Collection<LibraryPolicyAuditResponse> expectedReview = expectedReviewMap.get(AuditType.TEST_RESULT);
+        Map<AuditType, Collection<TestResultsAuditResponse>> actualReviewMap = actual.getReview();
+        Collection<TestResultsAuditResponse> actualReview = actualReviewMap.get(AuditType.TEST_RESULT);
+        Map<AuditType, Collection<TestResultsAuditResponse>> expectedReviewMap = expected.getReview();
+        Collection<TestResultsAuditResponse> expectedReview = expectedReviewMap.get(AuditType.TEST_RESULT);
         assertThat(actualReview.size()).isEqualTo(1);
-        assertThat(actualReview.toArray()[0]).isEqualToComparingFieldByField(expectedReview.toArray()[0]);
+        assertThat((actualReview.toArray()[0])).isEqualToComparingFieldByFieldRecursively(expectedReview.toArray()[0]);
     }
 
 
