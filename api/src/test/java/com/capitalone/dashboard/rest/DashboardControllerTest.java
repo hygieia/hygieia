@@ -220,7 +220,7 @@ public class DashboardControllerTest {
         DashboardRequestTitle request = makeDashboardRequestTitle("new title");
 
         when(dashboardService.get(objectId)).thenReturn(orig);
-        when(dashboardService.all()).thenReturn(allDashboards);
+        when(dashboardService.getByTitle("new title")).thenReturn(allDashboards);
 
         mockMvc.perform(put("/dashboard/rename/" + objectId.toString())
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
