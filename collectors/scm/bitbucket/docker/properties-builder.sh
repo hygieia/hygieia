@@ -18,6 +18,13 @@ fi
 echo "MONGODB_HOST: $MONGODB_HOST"
 echo "MONGODB_PORT: $MONGODB_PORT"
 
+if [ -d "/certs/" ]; then
+    for f in /certs/*.crt; do
+	  [ -f "$f" ] || break
+	  alias=$(echo $(basename -- "$f") | cut -f 1 -d '.')
+	  keytool -noprompt -storepass changeit -import -alias $alias -keystore ${CACERTS} -file $f
+	done
+fi
 
 cat > $PROP_FILE <<EOF
 #Database Name
@@ -53,6 +60,9 @@ git.pageSize=${BITBUCKET_PAGE_SIZE:-25}
 # Set to "server" to use Bitbucket Server (formerly known as Stash)
 # More information can be found here: href="https://github.com/capitalone/Hygieia/issues/609
 git.product=${BITBUCKET_PRODUCT:-cloud}
+
+#API encryption key. Optional. See http://capitalone.github.io/Hygieia/setup.html#encryption-for-private-repos	
+git.key=${BITBUCKET_KEY:-}
 
 EOF
 

@@ -1,13 +1,13 @@
 package com.capitalone.dashboard.common;
 
-import com.capitalone.dashboard.config.GsonUtil;
+import com.capitalone.dashboard.model.CodeQuality;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.GitRequest;
-import com.capitalone.dashboard.repository.BuildRepository;
+import com.capitalone.dashboard.model.LibraryPolicyResult;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
@@ -16,19 +16,13 @@ import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.repository.LibraryPolicyResultsRepository;
-import com.capitalone.dashboard.repository.TestResultRepository;
+import com.capitalone.dashboard.testutil.GsonUtil;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
 import org.apache.commons.io.IOUtils;
-import org.bson.types.ObjectId;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.List;
 
 public class TestUtils {
@@ -44,7 +38,8 @@ public class TestUtils {
     public static void loadCollector (CollectorRepository collectorRepository) throws IOException {
         Gson gson = GsonUtil.getGson();
         String json = IOUtils.toString(Resources.getResource("./collectors/coll.json"));
-        Collector collector = gson.fromJson(json, Collector.class);
+       // List<Collector> collector = gson.fromJson(json, Collector.class);
+        List<Collector> collector = gson.fromJson(json, new TypeToken<List<Collector>>(){}.getType());
         collectorRepository.save(collector);
     }
 
@@ -74,6 +69,20 @@ public class TestUtils {
         String json = IOUtils.toString(Resources.getResource("./gitrequests/prs.json"));
         List<GitRequest> prs = gson.fromJson(json, new TypeToken<List<GitRequest>>(){}.getType());
         gitRequestRepository.save(prs);
+    }
+
+    public static void loadSSCRequests(CodeQualityRepository codeQualityRepository) throws IOException {
+        Gson gson = GsonUtil.getGson();
+        String json = IOUtils.toString(Resources.getResource("./securityscan/securityscan.json"));
+        List<CodeQuality> ssa = gson.fromJson(json, new TypeToken<List<CodeQuality>>(){}.getType());
+        codeQualityRepository.save(ssa);
+    }
+
+    public static void loadLibraryPolicy(LibraryPolicyResultsRepository libraryPolicyResultsRepository) throws IOException {
+        Gson gson = GsonUtil.getGson();
+        String json = IOUtils.toString(Resources.getResource("./librarypolicy/librarypolicy.json"));
+        List<LibraryPolicyResult> ssa = gson.fromJson(json, new TypeToken<List<LibraryPolicyResult>>(){}.getType());
+        libraryPolicyResultsRepository.save(ssa);
     }
 
 }

@@ -33,6 +33,9 @@ dbusername=${SPRING_DATA_MONGODB_USERNAME:-dashboarduser}
 #Database Password - default is blank
 dbpassword=${SPRING_DATA_MONGODB_PASSWORD:-dbpassword}
 
+#API encryption key. Optional. See http://capitalone.github.io/Hygieia/setup.html#encryption-for-private-repos	
+key=${KEY:-}
+
 logRequest=${LOG_REQUEST:-false}
 logSplunkRequest=${LOG_SPLUNK_REQUEST:-false}
 

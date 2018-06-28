@@ -167,3 +167,4 @@ services:
 
 volumes:
   db-data:
+  certs:

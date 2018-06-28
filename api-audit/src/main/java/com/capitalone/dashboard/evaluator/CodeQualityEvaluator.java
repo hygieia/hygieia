@@ -90,7 +90,6 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
         CodeQualityAuditResponse codeQualityAuditResponse = new CodeQualityAuditResponse();
 
         if (CollectionUtils.isEmpty(codeQualities)) {
-            codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_DETAIL_MISSING);
             return codeQualityAuditResponse;
         }
 
@@ -102,7 +101,6 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
             //TODO: This is sonar specific - need to move this to api settings via properties file
 
             if (metric.getName().equalsIgnoreCase("quality_gate_details")) {
-                codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_GATES_FOUND);
                 TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
                 };
                 Map<String, String> values;
