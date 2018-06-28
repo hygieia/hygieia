@@ -3,6 +3,9 @@
 .tern-project
 .classpath
 
+# npm files
+package-lock.json
+
 # Logs
 logs
 *.log

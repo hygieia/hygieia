@@ -10,12 +10,12 @@ import java.util.List;
 @Component
 @ConfigurationProperties(prefix = "appdynamics")
 public class AppdynamicsSettings {
-    private String username;//="srvHygieiaPerf";
-    private String password;//="Capital1";
+    private String username;
+    private String password;
     private String account;
     private String cron;//="1 * * * * *";
     private Integer timeWindow = 15; //default to 15 minutes
-    private String instanceUrls;//="http://appdyn-hqa-c01.kdc.capitalone.com,http://appdyn-hqa-c01.kdc.capitalone.com,http://appdyn-hqa-c01.kdc.capitalone.com";
+    private String instanceUrls;
 
     public String getInstanceUrls() {
         return instanceUrls;
