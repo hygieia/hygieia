@@ -55,7 +55,7 @@ public class Incident extends BaseModel {
 
     public void setOpenTime(Long openTime) { this.openTime = openTime; }
 
-    public void setOpenTime(String openTime) { this.openTime = DATE_FORMATTER.parseMillis(openTime); }
+    public void setOpenTime(String openTime) { this.setOpenTime(DATE_FORMATTER.parseMillis(openTime)); }
 
     public String getOpenedBy() { return openedBy; }
 
@@ -83,7 +83,7 @@ public class Incident extends BaseModel {
 
     public void setClosedTime(Long closedTime) { this.closedTime = closedTime; }
 
-    public void setClosedTime(String closedTime) { this.closedTime = DATE_FORMATTER.parseMillis(closedTime); }
+    public void setClosedTime(String closedTime) { this.setClosedTime(DATE_FORMATTER.parseMillis(closedTime)); }
 
     public String getClosedBy() { return closedBy; }
 
