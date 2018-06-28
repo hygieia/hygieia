@@ -37,7 +37,6 @@ public class CollectorController {
     private CollectorService collectorService;
     private PaginationHeaderUtility paginationHeaderUtility;
 
-
     @Autowired
     public CollectorController(CollectorService collectorService, PaginationHeaderUtility paginationHeaderUtility) {
         this.collectorService = collectorService;
