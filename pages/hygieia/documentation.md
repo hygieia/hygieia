@@ -1,5 +1,5 @@
 ---
-title: Create and Edit the Documentation
+title:  Contribute to the Documentation
 tags:
 keywords:
 toc: true
@@ -7,6 +7,8 @@ summary: Brief instructions to help you create new content or edit the existing 
 sidebar: hygieia_sidebar
 permalink: documentation.html
 ---
+
+## Create or Edit the Documents
 
 To create and edit markdown files for Hygieia documentation, follow the instructions given below:
 
@@ -35,7 +37,7 @@ To create and edit markdown files for Hygieia documentation, follow the instruct
 	  ---
       title: Create and Edit the Documentation
       toc: true
-      summary: Contribute to Hygieia Documentation to creating new content or editing the existing documentation.
+      summary: Contribute to Hygieia Documentation by creating new content or editing the existing documentation.
       sidebar: hygieia_sidebar
       permalink: documentation.html
       ---
