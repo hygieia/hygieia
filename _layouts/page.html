@@ -43,7 +43,7 @@ layout: default
 
     {% if site.github_editme_path %}
     {% unless page.editme == false %}
-    <a target="_blank" href="https://github.kdc.capitalone.com/{{site.github_editme_path}}{{page.folder}}{{page.url | remove: ".html" | append: ".md"}}" class="btn btn-default githubEditButton" role="button"><i class="fa fa-github fa-lg"></i> Edit me</a>
+    <a target="_blank" href="https://github.com/{{site.github_editme_path}}{{page.folder}}{{page.url | remove: ".html" | append: ".md"}}" class="btn btn-default githubEditButton" role="button"><i class="fa fa-github fa-lg"></i> Edit me</a>
     {% endunless %}
     {% endif %}
 

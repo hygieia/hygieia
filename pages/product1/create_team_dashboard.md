@@ -11,6 +11,9 @@ permalink: create_team_dashboard.html
 To create a new team dashboard:
 
 1. In the **Team Dashboards** tab, click **Create a new dashboard**. This invokes the **Create a New Dashboard** screen.
+
+![Image](http://capitalone.github.io/Hygieia/media/images/create_team_dashboard.png)
+
 2. Enter the following details:
    - Select the dashboard type as **Team Dashboard** from the dropdown list.
    - Choose **Select Widgets** radio button to customize the dashboard layout while creating a new dashboard.
@@ -37,7 +40,11 @@ To create a new team dashboard:
 	 
 3. Click **Create**.
 
-If you have chosen **Select Widgets** radio button, then the **Widget Management** screen in invoked. In this screen, choose widgets from the list of widgets, and then click **Create**. The team dashboard is created.
+If you have chosen **Select Widgets** radio button, then this option invokes the **Widget Management** screen. 
+
+![Image](http://capitalone.github.io/Hygieia/media/images/widget_management.png)
+
+In this screen, choose widgets from the list of widgets, and then click **Create**. The team dashboard is created.
 
 If you have chosen **Select Template** radio button, then the team dashboard is created based on the template you have selected.
 
