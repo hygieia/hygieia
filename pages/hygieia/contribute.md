@@ -1,5 +1,5 @@
 ---
-title: Contribution Guidelines
+title: Contribution Agreement
 tags: 
 toc: false
 sidebar: hygieia_sidebar
