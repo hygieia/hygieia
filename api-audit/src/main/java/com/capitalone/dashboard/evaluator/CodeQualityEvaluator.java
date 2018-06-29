@@ -92,6 +92,8 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
 
         if (CollectionUtils.isEmpty(codeQualities)) {
             return codeQualityAuditResponse;
+        } else {
+            codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_CHECK_IS_CURRENT);
         }
 
         CodeQuality returnQuality = codeQualities.get(0);
@@ -136,6 +138,9 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
                     metric.getStatus().equals(CodeQualityMetricStatus.Ok)) {
                 codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_UNIT_TEST_MET);
             }
+
+            // TODO: CODE_QUALITY_THRESHOLDS_FOUND audit status needs clarity as there are several metrics with Threshold
+
         }
 
         List<CollectorItemConfigHistory> configHistories = getProfileChanges(returnQuality, beginDate, endDate);
