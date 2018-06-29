@@ -109,6 +109,12 @@ entries:
     - title: Contribute Custom Collectors
       url: /create_collector.html
       output: web, pdf  
+    - title: Contribute Widgets
+      url: /create_widget.html
+      output: web, pdf 
+    - title: Contribute to the Documentation
+      url: /documentation.html
+      output: web, pdf    
     - title: Contribution Agreement
       url: /contribute.html
       output: web, pdf           

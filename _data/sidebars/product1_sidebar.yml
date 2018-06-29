@@ -43,7 +43,7 @@ entries:
       url: select_dashboard.html
       output: web, pdf
       
-  - title: Team Dashboard
+  - title: The Team Dashboard
     output: web, pdf
     folderitems:
     - title: Introduction
@@ -65,7 +65,7 @@ entries:
       url: cloud_view.html
       output: web, pdf  
   
-  - title: Product Dashboard
+  - title: The Product Dashboard
     output: web, pdf
     folderitems:
     - title: Introduction
