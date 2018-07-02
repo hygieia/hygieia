@@ -409,22 +409,39 @@
     }
   },
   {
-  "id" : "5ad5f605c23b391cfa1c01a4",
-  "_class" : "com.capitalone.dashboard.model.EratocodeComponent",
-  "description" : "myapplication:mycomponent",
-  "enabled" : false,
-  "errors" : [],
-  "pushed" : false,
-  "collectorId" : "5af9ed53cba7165e8cc1069e",
-  "lastUpdated" : 1524190250247,
-  "options" : {
-    "applicationType" : null,
-    "componentName" : "mycomponent",
-    "applicationID" : [
-      "SOMEAPPLICATION"
-    ],
-    "applicationName" : "account-my-information",
-    "instanceUrl" : "https://scan.com"
+    "id": "5ad5f605c23b391cfa1c01a4",
+    "_class": "com.capitalone.dashboard.model.EratocodeComponent",
+    "description": "myapplication:mycomponent",
+    "enabled": false,
+    "errors": [],
+    "pushed": false,
+    "collectorId": "5af9ed53cba7165e8cc1069e",
+    "lastUpdated": 1524190250247,
+    "options": {
+      "applicationType": null,
+      "componentName": "mycomponent",
+      "applicationID": [
+        "SOMEAPPLICATION"
+      ],
+      "applicationName": "account-my-information",
+      "instanceUrl": "https://scan.com"
+    }
+  },
+  {
+    "id" : "56e5919d7fab7c0244e33341",
+    "_class" : "com.capitalone.dashboard.model.CollectorItem",
+    "description" : "openupf-hldirect service parent",
+    "niceName" : "HomeLoan",
+    "enabled" : true,
+    "errors" : [],
+    "pushed" : true,
+    "collectorId" : "56cb5bde7fab7c548551410e",
+    "lastUpdated" : 1460387608894,
+    "options" : {
+      "projectName" : "openupf-hldirect service parent",
+      "projectId" : "111955",
+      "instanceUrl" : "http://vantage.kdc.capitalone.com:11300/sonar"
+    }
   }
-}
+
 ]
