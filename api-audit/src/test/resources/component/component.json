@@ -1,5 +1,6 @@
 {
   "name": "TestAudit",
+  "id": "57f29d143b55670a9e06d624",
   "collectorItems": {
     "SCM": [
       {
@@ -70,6 +71,22 @@
           ],
           "applicationName": "account-my-information",
           "instanceUrl": "https://scan.com"
+        }
+      }
+    ],
+    "CodeQuality" : [
+      {
+        "id" : "56e5919d7fab7c0244e33341",
+        "description" : "openupf-hldirect service parent",
+        "niceName" : "HomeLoan",
+        "enabled" : true,
+        "pushed" : true,
+        "collectorId" : "56cb5bde7fab7c548551410e",
+        "lastUpdated" : 1458247537167,
+        "options" : {
+          "projectName" : "openupf-hldirect service parent",
+          "projectId" : "111955",
+          "instanceUrl" : "http://vantage.kdc.capitalone.com:11300/sonar"
         }
       }
     ]

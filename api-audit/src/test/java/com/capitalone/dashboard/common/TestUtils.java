@@ -85,4 +85,11 @@ public class TestUtils {
         libraryPolicyResultsRepository.save(ssa);
     }
 
+    public static void loadCodeQuality(CodeQualityRepository codeQualityRepository) throws IOException {
+        Gson gson = GsonUtil.getGson();
+        String json = IOUtils.toString(Resources.getResource("./codequality/codequality.json"));
+        List<CodeQuality> codeQuality = gson.fromJson(json, new TypeToken<List<CodeQuality>>(){}.getType());
+        codeQualityRepository.save(codeQuality);
+    }
+
 }
