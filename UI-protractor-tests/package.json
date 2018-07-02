@@ -4,7 +4,7 @@
   "description": "Serenity reports with classic Protractor and Cucumber setup",
   "main": "index.js",
   "scripts": {
-    "preprotractor": "webdriver-manager update --standalone --versions.chrome=2.33",
+    "preprotractor": "webdriver-manager update --standalone --versions.chrome=2.37",
     "protractor": "protractor ./protractor.conf.js",
     "test": "npm run protractor --silent",
     "pretest": "serenity update",
