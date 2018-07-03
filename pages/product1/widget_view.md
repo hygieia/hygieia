@@ -52,7 +52,7 @@ To clear a configured widget:
 - Click the Delete icon beside the template name. System prompts a message to confirm or cancel deletion. Click Delete to confirm deletion.
   The widget configuration is cleared.
 
-### Feature Widget
+### The Feature Widget
 
 #### How to Configure the Widget?
 
