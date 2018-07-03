@@ -3,7 +3,7 @@ title: Other Users
 tags: 
 homepage: 
 toc: true
-sidebar: product1_sidebar
+sidebar: hygieia_sidebar
 permalink: user_signup.html
 ---
 

@@ -4,7 +4,7 @@ tags:
 type: 
 summary: Process to create a Product Dashboard in Hygieia
 toc: true
-sidebar: product1_sidebar
+sidebar: hygieia_sidebar
 permalink: product_view.html
 ---
 

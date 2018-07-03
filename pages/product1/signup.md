@@ -3,7 +3,7 @@ title: Admin User
 tags: 
 homepage: 
 toc: true
-sidebar: product1_sidebar
+sidebar: hygieia_sidebar
 permalink: signup.html
 ---
 
