@@ -410,7 +410,6 @@
   },
   {
     "id": "5ad5f605c23b391cfa1c01a4",
-    "_class": "com.capitalone.dashboard.model.EratocodeComponent",
     "description": "myapplication:mycomponent",
     "enabled": false,
     "errors": [],
@@ -429,7 +428,6 @@
   },
   {
     "id" : "56e5919d7fab7c0244e33341",
-    "_class" : "com.capitalone.dashboard.model.CollectorItem",
     "description" : "openupf-hldirect service parent",
     "niceName" : "HomeLoan",
     "enabled" : true,
