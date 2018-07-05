@@ -144,7 +144,7 @@ public class PerformanceServiceImpl implements PerformanceService {
     private Collector createCollector(String collectorName) {
         CollectorRequest collectorReq = new CollectorRequest();
         collectorReq.setName(collectorName);  //for now hardcode it.
-        collectorReq.setCollectorType(CollectorType.CodeQuality);
+        collectorReq.setCollectorType(CollectorType.AppPerformance);
         Collector col = collectorReq.toCollector();
         col.setEnabled(true);
         col.setOnline(true);
@@ -177,12 +177,14 @@ public class PerformanceServiceImpl implements PerformanceService {
         if (performance == null) {
             performance = new Performance();
         }
+        ObjectId hygieiaId = request.getHygieiaId() != null && !request.getHygieiaId().isEmpty() ? new ObjectId(request.getHygieiaId()) : new ObjectId();
         performance.setCollectorItemId(collectorItem.getId());
-        performance.setExecutionId(new ObjectId(request.getHygieiaId()));
+        performance.setExecutionId(hygieiaId);
         performance.setType(PerformanceType.ApplicationPerformance);
         performance.setUrl(request.getProjectUrl());
         performance.setVersion(request.getProjectVersion());
         performance.setTimestamp(System.currentTimeMillis());
+        performance.setMetrics(new HashMap<>(request.getMetrics()));
         return performanceRepository.save(performance); // Save = Update (if ID present) or Insert (if ID not there)
     }
 
