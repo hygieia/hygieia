@@ -104,7 +104,7 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
             //TODO: This is sonar specific - need to move this to api settings via properties file
 
             if (metric.getName().equalsIgnoreCase("quality_gate_details")) {
-                //codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_GATES_FOUND);
+                codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_GATES_FOUND);
                 TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
                 };
                 Map<String, String> values;
@@ -122,10 +122,7 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
                 }
             }
 
-            if (metric.getName().equalsIgnoreCase("alert_status") &&
-                    metric.getStatus().equals(CodeQualityMetricStatus.Ok)) {
-                codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_GATES_FOUND);
-            } else if (metric.getName().equalsIgnoreCase("blocker_violations") &&
+            if (metric.getName().equalsIgnoreCase("blocker_violations") &&
                     metric.getStatus().equals(CodeQualityMetricStatus.Ok)) {
                 codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_BLOCKER_MET);
             } else if (metric.getName().equalsIgnoreCase("critical_violations") &&
