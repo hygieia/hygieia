@@ -1,6 +1,5 @@
 package com.capitalone.dashboard.response;
 
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -15,7 +14,7 @@ public class AuditReviewResponse<T> {
         auditStatuses.add(status);
     }
 
-    public Set<T> getAuditStatuses() {
+    public SortedSet<T> getAuditStatuses() {
         return auditStatuses;
     }
 
