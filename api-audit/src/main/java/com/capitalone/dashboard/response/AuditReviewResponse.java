@@ -1,10 +1,11 @@
 package com.capitalone.dashboard.response;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class AuditReviewResponse<T> {
-    private Set<T> auditStatuses = new HashSet<>();
+    private SortedSet<T> auditStatuses = new TreeSet<>();
 
     private String errorMessage;
 
