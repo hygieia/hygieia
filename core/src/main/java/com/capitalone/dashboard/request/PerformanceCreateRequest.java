@@ -27,6 +27,10 @@ public class PerformanceCreateRequest {
 
     private String niceName;
 
+    private String targetAppName;
+
+    private String targetEnvName;
+
     private Map<String,Object> metrics = new HashMap<>();
 
 
@@ -114,5 +118,21 @@ public class PerformanceCreateRequest {
 
     public void setCollectorName(String collectorName) {
         this.collectorName = collectorName;
+    }
+
+    public String getTargetAppName() {
+        return targetAppName;
+    }
+
+    public void setTargetAppName(String targetAppName) {
+        this.targetAppName = targetAppName;
+    }
+
+    public String getTargetEnvName() {
+        return targetEnvName;
+    }
+
+    public void setTargetEnvName(String targetEnvName) {
+        this.targetEnvName = targetEnvName;
     }
 }
