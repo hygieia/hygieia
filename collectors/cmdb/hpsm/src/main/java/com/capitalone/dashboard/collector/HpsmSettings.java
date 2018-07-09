@@ -51,6 +51,49 @@ public class HpsmSettings {
 	private String incidentReturnLimit;
 	private String changeOrderReturnLimit;
 
+	private String incidentUpdatesRequestType;
+	private String incidentUpdatesSoapAction;
+	private int incidentUpdatesPageSize;
+	private int incidentUpdatesDaysBack;
+	private String incidentUpdatesCron;
+	private String incidentUpdatesSeverity;
+
+	public String getIncidentUpdatesRequestType() { return incidentUpdatesRequestType; }
+
+	public void setIncidentUpdatesRequestType(String incidentUpdatesRequestType) {
+		this.incidentUpdatesRequestType = incidentUpdatesRequestType;
+	}
+
+	public String getIncidentUpdatesSoapAction() { return incidentUpdatesSoapAction; }
+
+	public void setIncidentUpdatesSoapAction(String incidentUpdatesSoapAction) {
+		this.incidentUpdatesSoapAction = incidentUpdatesSoapAction;
+	}
+
+	public int getIncidentUpdatesPageSize() { return incidentUpdatesPageSize; }
+
+	public void setIncidentUpdatesPageSize(int incidentUpdatesPageSize) {
+		this.incidentUpdatesPageSize = incidentUpdatesPageSize;
+	}
+
+	public int getIncidentUpdatesDaysBack() { return incidentUpdatesDaysBack; }
+
+	public void setIncidentUpdatesDaysBack(int incidentUpdatesDaysBack) {
+		this.incidentUpdatesDaysBack = incidentUpdatesDaysBack;
+	}
+
+	public String getIncidentUpdatesCron() { return incidentUpdatesCron; }
+
+	public void setIncidentUpdatesCron(String incidentUpdatesCron) {
+		this.incidentUpdatesCron = incidentUpdatesCron;
+	}
+
+	public String getIncidentUpdatesSeverity() { return incidentUpdatesSeverity; }
+
+	public void setIncidentUpdatesSeverity(String incidentUpdatesSeverity) {
+		this.incidentUpdatesSeverity = incidentUpdatesSeverity;
+	}
+
 	public String getServer() {
 		return server;
 	}
