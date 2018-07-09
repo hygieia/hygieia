@@ -4,7 +4,7 @@ tags:
 type: 
 homepage: 
 toc: true
-sidebar: product1_sidebar
+sidebar: hygieia_sidebar
 permalink: widget_view.html
 ---
 
@@ -52,7 +52,9 @@ To clear a configured widget:
 - Click the Delete icon beside the template name. System prompts a message to confirm or cancel deletion. Click Delete to confirm deletion.
   The widget configuration is cleared.
 
-### Configure Feature Widget
+### The Feature Widget
+
+#### How to Configure the Widget?
 
 1. Click **Configure widget** to invoke the **Configure Feature Widget** screen. In this screen, enter the following details:
    - Agile Content Tool Type - Select one of the following feature data source:
@@ -75,6 +77,8 @@ To clear a configured widget:
 
 2. Click **Save** to save and view the Feature-related details in the widget.
 
+#### What Information is Displayed on the Widget?
+
 For a configured sprint type and the number of days remaining for that sprint type, this widget displays the following information:
 
 - Total number of features in a sprint type
@@ -82,7 +86,9 @@ For a configured sprint type and the number of days remaining for that sprint ty
 - Total number of features that have been completed for a sprint
 - The list of features or epics that are moving forward with their corresponding number of issues either in backlog or in progress
 
-### Configure the Code Repo Widget
+### The Code Repo Widget
+
+#### How to Configure the Widget?
 
 1. Click **Configure widget** to invoke the **Configure Repo Widget** screen. In this screen, enter the following details:
    - Select the **Repo Type** from the dropdown list:
@@ -98,12 +104,16 @@ For a configured sprint type and the number of days remaining for that sprint ty
    
 2. Click **Save**. The Code Repo widget is configured for the selected repo.
 
+#### What Information is Displayed on the Widget?
+
 This widget displays code contribution data as follows:
 
 - A graphical representation of the number of issues, pulls, and commits per day versus time intervals (i.e., starting with the current day and going back the previous 14 days)
 - A summary of all the commits, pulls, and issues. This area also shows how many commitors, contributors, and ideators are involved. Moreover, for all six of these categories they align with the days last worked on, beginning with today and going back the previous 14 days.
 
-### Configure Build Widget
+### The Build Widget
+
+#### How to Configure the Widget?
 
 The Jenkins collector displays build-related details in the build widget. To configure the build widget:
 
@@ -113,13 +123,17 @@ The Jenkins collector displays build-related details in the build widget. To con
    - Alert Takeover Criteria indicates the number of consecutive build fails. The default number is 5.
 2. Click **Save**. The Build Widget is configured for the selected repo.
 
+#### What Information is Displayed on the Widget?
+
 This widget displays the following build information, beginning with the current day and going back the previous 14 days:
 
 - A graphical representation of the number of builds per day
 - A summary of the total number of builds for the application
 - A graphical depiction of the average build duration
 
-### Configure Quality and Performance Widget
+### The Quality and Performance Widget
+
+#### How to Configure the Widget?
 
 Code quality related details for functional and unit tests are displayed in this widget based on your configuration of Sonar, Fortify, or Nexus IQ collectors. To configure the quality widget on the dashboard:
 
@@ -132,6 +146,8 @@ Code quality related details for functional and unit tests are displayed in this
 2. To configure functional tests:
    - Click the add button, enter a name for the test, and then select a functional test from the drop-down list.
 3. Click **Save**. The code quality widget is configured for the selected code analysis job.
+
+#### What Information is Displayed on the Widget?
 
 The quality widget displays code quality details in the following tabs:
 
@@ -149,7 +165,9 @@ The AppDynamics collector displays performance-related details in this widget. T
    
 The performance widget displays the performance matrix of the application. That means, this widget tracks the overall health of business transactions, node health, and the health of HTTP traffic in the application. This includes the overall business transaction health, node health, and HTTP traffic being tracked for the application. 
    
-### Configure Deploy Widget
+### The Deploy Widget
+
+#### How to Configure the Widget?
 
 Code deployment details are displayed in this widget based on your configuration of UDeploy, XLDeploy, or Jenkins collectors. To configure the deploy widget on the dashboard:
 
@@ -159,6 +177,8 @@ Code deployment details are displayed in this widget based on your configuration
    - Enter the criteria to ignore the environment failures pattern.
    - Check the 'Aggregate servers' box to avoid server duplication.
 2. Click **Save**.
+
+#### What Information is Displayed on the Widget?
 
 Hygieia displays the following details in the Deploy widget:
 
@@ -177,7 +197,9 @@ Click an application environment to view additional artifact details from your a
 
 Click **View in [deployment tool name]** to view the application environment details in the deployment tool.
 
-### Configure Monitor Widget
+### The Monitor Widget
+
+#### How to Configure the Widget?
 
 1. Click **Configure widget** to invoke the **Monitor Configuration** screen. In this screen, enter the following details:
    - In **Our Services** section, enter the service name to appear on the widget.
@@ -187,15 +209,21 @@ Click **View in [deployment tool name]** to view the application environment det
      Click the add button to add any additional services.
 2. Click **Save**.
 
+#### What Information is Displayed on the Widget?
+
 The monitor widget displays a list of services with the service status. Click **ICON LEGEND** to view the icon description and the corresponding HTTP code.
 Click on each service listed in the widget to add or modify the service status.
 
-### Configure ChatOps Widget
+### The ChatOps Widget
+
+#### How to Configure the Widget?
 
 1. Click **Configure widget** to invoke the **Configure ChatOps Widget** screen. In this screen, enter the following details:
    - Select HipChat as the chat engine from the drop-down list.
    - Enter the URL to the ChatOps Server.
    - Enter Room Name and Room Auth Token to connect to the chat engine.
 2. Click **Save**.
+
+#### What Information is Displayed on the Widget?
 
 This widget displays collaborative details from the chat engine.

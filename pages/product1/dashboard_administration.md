@@ -4,7 +4,7 @@ tags:
 type: 
 homepage: 
 toc: true
-sidebar: product1_sidebar
+sidebar: hygieia_sidebar
 permalink: dashboard_administration.html
 ---
 

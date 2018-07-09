@@ -37,18 +37,18 @@ exclude:
   - .gitignore
 # these are the files and directories that jekyll will exclude from the build
 
-feedback_subject_line: Hygieia Documentation
+#feedback_subject_line: Hygieia Documentation
 
-feedback_email: hygieia@capitalone.com
+#feedback_email: hygieia@capitalone.com
 # used as a contact email for the Feedback link in the top navigation bar
 
 #feedback_disable: true
 # if you uncomment the previous line, the Feedback link gets removed
 
-#feedback_text: "Feedback"
+feedback_text: "Contact Us"
 # if you uncomment the previous line, it changes the Feedback text
 
-#feedback_link: "https://gitter.im/capitalone/Hygieia"
+feedback_link: "https://gitter.im/capitalone/Hygieia"
 # if you uncomment the previous line, it changes where the feedback link points to
 
 highlighter: rouge
@@ -102,7 +102,7 @@ defaults:
 
 sidebars:
 - hygieia_sidebar
-- product1_sidebar
+
 
 description: "Intended as a documentation theme based on Jekyll for technical writers documenting software and other technical products, this theme has all the elements you would need to handle multiple products with both multi-level sidebar navigation, tags, and other documentation features."
 # the description is used in the feed.xml file
