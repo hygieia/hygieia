@@ -1,11 +1,10 @@
 package com.capitalone.dashboard.request;
 
-import com.capitalone.dashboard.model.PerformanceMetric;
 import com.capitalone.dashboard.model.PerformanceType;
 
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PerformanceCreateRequest {
     private String hygieiaId;
@@ -28,7 +27,11 @@ public class PerformanceCreateRequest {
 
     private String niceName;
 
-    private List<PerformanceMetric> metrics = new ArrayList<>();
+    private String targetAppName;
+
+    private String targetEnvName;
+
+    private Map<String,Object> metrics = new HashMap<>();
 
 
 
@@ -97,7 +100,7 @@ public class PerformanceCreateRequest {
         this.serverUrl = serverUrl;
     }
 
-    public List<PerformanceMetric> getMetrics() {
+    public Map<String, Object> getMetrics() {
         return metrics;
     }
 
@@ -115,5 +118,21 @@ public class PerformanceCreateRequest {
 
     public void setCollectorName(String collectorName) {
         this.collectorName = collectorName;
+    }
+
+    public String getTargetAppName() {
+        return targetAppName;
+    }
+
+    public void setTargetAppName(String targetAppName) {
+        this.targetAppName = targetAppName;
+    }
+
+    public String getTargetEnvName() {
+        return targetEnvName;
+    }
+
+    public void setTargetEnvName(String targetEnvName) {
+        this.targetEnvName = targetEnvName;
     }
 }
