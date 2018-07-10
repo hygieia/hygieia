@@ -5,10 +5,12 @@ import com.capitalone.dashboard.evaluator.Evaluator;
 import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.AuditType;
 import com.capitalone.dashboard.model.Cmdb;
+import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardAuditModel;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.repository.CmdbRepository;
+import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.response.AuditReviewResponse;
 import com.capitalone.dashboard.response.DashboardReviewResponse;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 
@@ -30,17 +33,20 @@ public class DashboardAuditServiceImpl implements DashboardAuditService {
     private final CmdbRepository cmdbRepository;
     private final DashboardAuditModel auditModel;
     private final ApiSettings apiSettings;
+    private final CollectorItemRepository collectorItemRepository;
 
 
 //    private static final Log LOGGER = LogFactory.getLog(DashboardAuditServiceImpl.class);
 
     @Autowired
-    public DashboardAuditServiceImpl(DashboardRepository dashboardRepository, CmdbRepository cmdbRepository, DashboardAuditModel auditModel, ApiSettings apiSettings) {
+    public DashboardAuditServiceImpl(DashboardRepository dashboardRepository, CmdbRepository cmdbRepository, DashboardAuditModel auditModel,
+                                     CollectorItemRepository collectorItemRepository,ApiSettings apiSettings) {
 
         this.dashboardRepository = dashboardRepository;
         this.cmdbRepository = cmdbRepository;
         this.auditModel = auditModel;
         this.apiSettings = apiSettings;
+        this.collectorItemRepository = collectorItemRepository;
     }
 
     /**
@@ -71,8 +77,8 @@ public class DashboardAuditServiceImpl implements DashboardAuditService {
         }
 
         dashboardReviewResponse.setDashboardTitle(dashboard.getTitle());
-        dashboardReviewResponse.setBusinessApplication(StringUtils.isEmpty(businessApp) ? "unknown" : businessApp);
-        dashboardReviewResponse.setBusinessService(StringUtils.isEmpty(businessService) ? "unknown" : businessService);
+        dashboardReviewResponse.setBusinessApplication(StringUtils.isEmpty(businessApp) ? dashboard.getConfigurationItemBusAppName() : businessApp);
+        dashboardReviewResponse.setBusinessService(StringUtils.isEmpty(businessService) ? dashboard.getConfigurationItemBusServName() : businessService);
 
 
         if (auditTypes.contains(AuditType.ALL)) {
@@ -93,6 +99,12 @@ public class DashboardAuditServiceImpl implements DashboardAuditService {
             }
         });
         return dashboardReviewResponse;
+    }
+
+    @Override
+    public List<CollectorItem> getSonarProjects(String description) {
+
+        return collectorItemRepository.findByDescription(description);
     }
 
     private void validateParameters(String dashboardTitle, DashboardType dashboardType, String businessService, String businessApp, long beginDate, long endDate) throws AuditException{
