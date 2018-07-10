@@ -17,7 +17,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.StringUtils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,6 +39,7 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
     private final CodeQualityRepository codeQualityRepository;
     private final CommitRepository commitRepository;
     private final CollItemConfigHistoryRepository collItemConfigHistoryRepository;
+    private static final Logger LOGGER = LoggerFactory.getLogger(CodeQualityEvaluator.class);
 
 
     @Autowired
@@ -116,7 +119,7 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
                         }
                         break;
                     } catch (IOException e) {
-                        // TODO Auto-generated catch block
+                        LOGGER.error("Error in CodeQualityEvaluator.getStaticAnalysisResponse() - Unable to parse quality_gate metrics - "+ e.getMessage());
                         e.printStackTrace();
                     }
 
