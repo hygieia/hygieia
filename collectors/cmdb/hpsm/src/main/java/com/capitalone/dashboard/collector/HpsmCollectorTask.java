@@ -4,33 +4,29 @@ import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.ChangeOrder;
 import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.HpsmCollector;
 import com.capitalone.dashboard.model.Incident;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.ChangeOrderRepository;
 import com.capitalone.dashboard.repository.CmdbRepository;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.HpsmRepository;
 import com.capitalone.dashboard.repository.IncidentRepository;
-import com.capitalone.dashboard.repository.IncidentUpdatesRepository;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * CollectorTask that fetches configuration item data from HPSM
@@ -43,8 +39,8 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
     private final CmdbRepository cmdbRepository;
     private final ChangeOrderRepository changeOrderRepository;
     private final IncidentRepository incidentRepository;
-    private final IncidentUpdatesRepository incidentUpdatesRepository;
     private final CollectorItemRepository collectorItemRepository;
+    private final ComponentRepository componentRepository;
     private final HpsmClient hpsmClient;
     private final HpsmIncidentUpdateClient incidentUpdateClient;
     private final HpsmSettings hpsmSettings;
@@ -53,7 +49,6 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
     private static final String CHANGE_ACTION_NAME = "HpsmChange";
     private static final String INCIDENT_ACTION_NAME = "HpsmIncident";
     private static final String INCIDENT_UPDATES_ACTION_NAME = "HpsmIncidentUpdate";
-    private static final String INCIDENT_UPDATES = "incident_updates";
 
     private String collectorAction;
 
@@ -68,9 +63,9 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
                                 ChangeOrderRepository changeOrderRepository,
                                 IncidentRepository incidentRepository,
                                 CollectorItemRepository collectorItemRepository,
+                                ComponentRepository componentRepository,
                                 HpsmClient hpsmClient,
-                                HpsmIncidentUpdateClient incidentUpdateClient,
-                                IncidentUpdatesRepository incidentUpdatesRepository) {
+                                HpsmIncidentUpdateClient incidentUpdateClient) {
 
             super(taskScheduler, (System.getProperty(COLLECTOR_ACTION_PROPERTY_KEY) == null) ? DEFAULT_COLLECTOR_ACTION_NAME : System.getProperty(COLLECTOR_ACTION_PROPERTY_KEY));
             collectorAction = (System.getProperty(COLLECTOR_ACTION_PROPERTY_KEY) == null) ? DEFAULT_COLLECTOR_ACTION_NAME : System.getProperty(COLLECTOR_ACTION_PROPERTY_KEY);
@@ -80,8 +75,8 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
             this.cmdbRepository = cmdbRepository;
             this.changeOrderRepository = changeOrderRepository;
             this.incidentRepository = incidentRepository;
-            this.incidentUpdatesRepository = incidentUpdatesRepository;
             this.collectorItemRepository = collectorItemRepository;
+            this.componentRepository = componentRepository;
             this.hpsmClient = hpsmClient;
             this.incidentUpdateClient = incidentUpdateClient;
     }
@@ -263,65 +258,42 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
                     break;
                 case INCIDENT_UPDATES_ACTION_NAME:
                     log("Begin: Updating Incidents");
-
-                    // Fetch the latest info on the incidents and update them
-                    long totalIterations = updateIncidents();
-                    if (totalIterations > 0) {
-                        moveIncidentsUpdatedToIncidents();
-                    }
+                    updateIncidents();
                     log("End: Update Incidents");
                     break;
                 default:
                     log("Unknown value passed to -D" + COLLECTOR_ACTION_PROPERTY_KEY + ": " + collectorAction);
                     break;
             }
-
         }catch (HygieiaException he){
             LOG.error(he);
         }
         log("Finished", start);
     }
 
-    private long updateIncidents() {
-        String severity = hpsmSettings.getIncidentUpdatesSeverity();
-        String[] severityValues = severity.split(",");
+    private void updateIncidents() {
+        List<ObjectId> collectorItemIdList = getCollectorItemIdList();
+        List<Incident> incidentList = incidentRepository.findByCollectorItemId(collectorItemIdList);
 
-        int days = (-1*hpsmSettings.getIncidentUpdatesDaysBack())-1;
+        processIncidentList(incidentList);
+    }
 
-        // Get current date/time
-        Date today = new Date();
-        Date tomorrow = addDays(today, 1);
-        long tomorrowMillis = tomorrow.getTime();
+    protected List<ObjectId> getCollectorItemIdList () {
+        List<com.capitalone.dashboard.model.Component> componentList
+                = componentRepository.findByIncidentCollectorItems(true);
 
-        // Date x days back
-        Date daysBack = addDays(today, days);
-        long daysBackMillis = daysBack.getTime();
+        List<ObjectId> collectorItemIdList = new ArrayList<>();
 
-        long totalIterations = getTotalIterations(severityValues, daysBackMillis, tomorrowMillis);
-        int pageSize = hpsmSettings.getIncidentUpdatesPageSize();
+        Optional.ofNullable(componentList)
+        .orElseGet(Collections::emptyList)
+        .forEach(component -> {
+            List<CollectorItem> collectorItemsList = component.getCollectorItems(CollectorType.Incident);
+            Optional.ofNullable(collectorItemsList)
+            .orElseGet(Collections::emptyList)
+            .forEach(collectorItem -> { collectorItemIdList.add(collectorItem.getId()); });
+        });
 
-        LOG.info("Total Iterations = "+totalIterations);
-
-        if (totalIterations > 0) {
-            incidentUpdatesRepository.dropCollection(INCIDENT_UPDATES);
-        }
-
-        for (int iterationCount=0; iterationCount<totalIterations; iterationCount++) {
-            LOG.info("--------------------------------------------------------------------------------------------");
-            LOG.info("Iteration : "+(iterationCount+1));
-
-            Pageable pageable = new PageRequest(iterationCount, pageSize);
-            Page<Incident> incidentPageList
-                    = incidentRepository.findIncidentsBySeverityAndOpenTimeBetween(severityValues, daysBackMillis, tomorrowMillis, pageable);
-
-            if (incidentPageList == null) { continue; }
-
-            List<Incident> incidentList = incidentPageList.getContent();
-            if (!CollectionUtils.isEmpty(incidentList)) {
-                processIncidentList(incidentList);
-            }
-        }
-        return totalIterations;
+        return collectorItemIdList;
     }
 
     private void processIncidentList(List<Incident> incidentIdList) {
@@ -338,69 +310,12 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
 
                     incidentLatest.setId(incident.getId());
                     incidentLatest.setCollectorItemId(incident.getCollectorItemId());
-                    incidentUpdatesRepository.save(incidentLatest, INCIDENT_UPDATES);
+                    incidentRepository.save(incidentLatest);
                 }
             } catch (HygieiaException he) {
                 LOG.error("Exception when processing incident: "+incidentId,he);
             }
         }
-    }
-
-    private void moveIncidentsUpdatedToIncidents() {
-        long totalIterations = getTotalIterations();
-        int pageSize = hpsmSettings.getIncidentUpdatesPageSize();
-
-        LOG.info("Total iterations to move updated incidents = "+totalIterations);
-
-        for (int iterationCount=0; iterationCount<totalIterations; iterationCount++) {
-            LOG.info("--------------------------------------------------------------------------------------------");
-            LOG.info("Moving Updated Incidents, Iteration : "+(iterationCount+1));
-
-            Pageable pageable = new PageRequest(iterationCount, pageSize);
-            List<Incident> incidentList = incidentUpdatesRepository.fetchIncidents(INCIDENT_UPDATES, pageable);
-            if (!CollectionUtils.isEmpty(incidentList)) {
-                for (Incident incident : incidentList) {
-                    String incidentId = incident.getIncidentID();
-
-                    LOG.info("Moving Incident : "+incidentId);
-
-                    incidentRepository.save(incident);
-                }
-            }
-        }
-    }
-
-    private long getTotalIterations() {
-        long totalCount = incidentUpdatesRepository.count(INCIDENT_UPDATES);
-        int pageSize = hpsmSettings.getIncidentUpdatesPageSize();
-
-        LOG.info("Total Incidents Updated = "+totalCount+"; Page Size = "+pageSize);
-
-        long quotient = totalCount/pageSize;
-        long remainder = totalCount % pageSize;
-
-        return (quotient + ((remainder > 0)?1:0));
-    }
-
-    private long getTotalIterations (String[] severityValues, long startDateMillis, long endDateMillis) {
-        long totalCount
-                = incidentRepository.countIncidentsBySeverityAndOpenTimeBetween(severityValues, startDateMillis, endDateMillis);
-        int pageSize = hpsmSettings.getIncidentUpdatesPageSize();
-
-        LOG.info("Total Incidents = "+totalCount+"; Page Size = "+pageSize);
-
-        long quotient = totalCount/pageSize;
-        long remainder = totalCount % pageSize;
-
-        return (quotient + ((remainder > 0)?1:0));
-    }
-
-    private Date addDays(Date date, int days) {
-        GregorianCalendar cal = new GregorianCalendar();
-        cal.setTime(date);
-        cal.add(Calendar.DATE, days);
-
-        return cal.getTime();
     }
 
     /**
