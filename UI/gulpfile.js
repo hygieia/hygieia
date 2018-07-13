@@ -22,7 +22,7 @@ var browserSync = require('browser-sync'),
     httpProxy = require('http-proxy'),
     glob = require('glob'),
     runSequence = require('run-sequence'),
-    wiredep = require('wiredep'),
+    wiredep = require('npm-wiredep'),
     argv = require('yargs').argv,
 
 
@@ -261,8 +261,8 @@ gulp.task('html', function() {
             wiredep({
                 exclude: [/bootstrap\.js/, /bootstrap\.css/, /bootstrap\.css/, /foundation\.css/]
             }).js)
-            .pipe(concat('bower.js'))
-            .pipe(gulp.dest(hygieia.dist + 'bower_components')),
+            //.pipe(concat('bower.js'))
+            .pipe(gulp.dest(hygieia.dist + 'node_modules')),
             { name: 'bower', ignorePath: hygieia.dist, addRootSlash: false })
         )
         .pipe(gulp.dest(hygieia.dist))
