@@ -72,34 +72,37 @@
     "node": ">=0.10.0"
   },
   "dependencies": {
-    "modernizr": "3.6.0",
-    "jquery": "~3.3.1",
-    "jquery-ui": "~1.12.1",
     "angular": "~1.5.9",
     "angular-animate": "~1.5.9",
-    "angular-sanitize": "~1.5.9",
+    "angular-chart.js": "^1.1.1",
+    "angular-chartist.js": "^3.3.13",
     "angular-cookies": "~1.5.9",
-    "angular-ui-router": "~0.4.2",
-    "angular-ui-bootstrap": "~2.3.2",
-    "angular-validation-match": "~1.5.2",
-    "bootstrap-sweetalert": "~0.4.2",
-    "operative": "~0.4.6",
-    "chartist": "~0.9.5",
-    "angular-chartist.js": "~3.3.13",
-    "moment": "~2.9.0",
-    "lodash": "~4.17.10",
-    "components-font-awesome": "~4.2.0",
-    "bootstrap": "~3.3.7",
-    "dexie": "~1.2.0",
-    "ng-sortable": "~1.3.2",
-    "regression": "~1.2.0",
-    "json-logic-js": "^1.2.2",
-    "ui-select": "^0.19.8",
-    "angular-rateit": "4.0.2",
-    "angular-tablesort": "~1.4.1",
     "angular-jwt": "~0.1.10",
+    "angular-rateit": "^4.0.3",
+    "angular-sanitize": "~1.5.9",
+    "angular-tablesort": "~1.4.1",
+    "angular-ui-bootstrap": "~2.3.2",
+    "angular-ui-router": "~0.4.2",
+    "angular-utils-pagination": "~0.11.1",
+    "angular-validation-match": "~1.5.2",
+    "bootstrap": "~3.3.2",
+    "bootstrap-sweetalert": "~0.4.2",
+    "chart.js": "~2.3.0",
+    "chartist": "~0.9.5",
+    "components-font-awesome": "~4.2.0",
+    "dexie": "~1.2.0",
     "gridstack": "~0.2.6",
-    "angular-utils-pagination": "~0.11.1"
+    "jquery": "~3.3.1",
+    "jquery-ui": "~1.12.1",
+    "json-logic-js": "^1.2.2",
+    "jstz": "~2.0.0",
+    "lodash": "~2.4.1",
+    "modernizr": "~3.6.0",
+    "moment": "~2.9.0",
+    "ng-sortable": "~1.3.2",
+    "operative": "~0.4.6",
+    "regression": "~1.2.0",
+    "ui-select": "^0.19.8"
   },
   "overrides": {
     "modernizr": {
@@ -124,6 +127,12 @@
       "dependencies": {}
     },
     "angular-chartist.js": {
+      "dependencies": {}
+    },
+    "chart.js": {
+      "files": [
+        "dist/Chart.min.js"
+      ],
       "dependencies": {}
     },
     "dexie": {
@@ -168,6 +177,13 @@
         "lib/sweet-alert.css",
         "lib/sweet-alert.less",
         "lib/sweet-alert-animations.less"
+      ],
+      "dependencies": {}
+    },
+    "angular-ui-select": {
+      "files": [
+        "dist/select.js",
+        "dist/select.css"
       ],
       "dependencies": {}
     },
@@ -244,8 +260,8 @@
     },
     "gridstack": {
       "files": [
-        "dist/gridstack.js",
-        "dist/gridstack.css"
+        "dist/gridstack.min.js",
+        "dist/gridstack.min.css"
       ],
       "dependencies": {}
     },
@@ -253,6 +269,18 @@
       "files": [
         "dirPagination.js",
         "dirPagination.tpl.html"
+      ],
+      "dependencies": {}
+    },
+    "jstz": {
+      "files": [
+        "dist/jstz.min.js"
+      ],
+      "dependencies": {}
+    },
+    "gridstack-angular": {
+      "files": [
+        "dist/angular-gridstack.js"
       ],
       "dependencies": {}
     }
