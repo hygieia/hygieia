@@ -3,7 +3,6 @@ package com.capitalone.dashboard.collector;
 import com.amazonaws.auth.AWSCredentialsProviderChain;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
-import com.amazonaws.services.autoscaling.AmazonAutoScaling;
 import com.amazonaws.services.autoscaling.AmazonAutoScalingClient;
 import com.amazonaws.services.autoscaling.model.AutoScalingInstanceDetails;
 import com.amazonaws.services.autoscaling.model.DescribeAutoScalingInstancesResult;
@@ -13,8 +12,10 @@ import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsRequest;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
 import com.amazonaws.services.ec2.AmazonEC2Client;
+import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.DescribeVolumesResult;
+import com.amazonaws.services.ec2.model.Filter;
 import com.amazonaws.services.ec2.model.GroupIdentifier;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceState;
@@ -57,7 +58,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
     private final AWSCloudSettings settings;
     private static AmazonEC2Client ec2Client;
     private static AmazonCloudWatchClient cloudWatchClient;
-    private static AmazonAutoScaling autoScalingClient;
+    private static AmazonAutoScalingClient autoScalingClient;
     private static final String NO_ACCOUNT = "NOACCOUNT";
 
 
@@ -77,11 +78,16 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 
         ec2Client = new AmazonEC2Client(new AWSCredentialsProviderChain(new ProfileCredentialsProvider(settings.getProfile()),
                 new InstanceProfileCredentialsProvider()));
-
         cloudWatchClient = new AmazonCloudWatchClient(new AWSCredentialsProviderChain(new ProfileCredentialsProvider(settings.getProfile()),
                 new InstanceProfileCredentialsProvider()));
         autoScalingClient = new AmazonAutoScalingClient(new AWSCredentialsProviderChain(new ProfileCredentialsProvider(settings.getProfile()),
                 new InstanceProfileCredentialsProvider()));
+
+        if (null != settings.getRegion()) {
+            ec2Client.withRegion(settings.getRegion());
+            cloudWatchClient.withRegion(settings.getRegion());
+            autoScalingClient.withRegion(settings.getRegion());
+        }
     }
 
     /**
@@ -92,7 +98,12 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
      */
     @Override
     public Map<String, List<CloudInstance>> getCloudInstances(CloudInstanceRepository repository) {
-        DescribeInstancesResult instanceResult = ec2Client.describeInstances();
+        DescribeInstancesResult instanceResult;
+        if (null == settings.getFilters() || settings.getFilters().isEmpty() ) {
+            instanceResult = ec2Client.describeInstances();
+        } else {
+            instanceResult = ec2Client.describeInstances(buildFilterRequest(settings.getFilters()));
+        }
         DescribeAutoScalingInstancesResult autoScaleResult = autoScalingClient.describeAutoScalingInstances();
         List<AutoScalingInstanceDetails> autoScalingInstanceDetails = autoScaleResult.getAutoScalingInstances();
         Map<String, String> autoScaleMap = new HashMap<>();
@@ -456,6 +467,16 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
         return (instanceState.getName().equals("stopped"));
     }
 
+    private DescribeInstancesRequest buildFilterRequest(Map<String,List<String>> filters) {
+        DescribeInstancesRequest instancesRequest = new DescribeInstancesRequest();
+        List<Filter> allFilters = new ArrayList<>(filters.size());
+        for (Map.Entry<String,List<String>> entry: filters.entrySet()) {
+            allFilters.add(new Filter(entry.getKey(),entry.getValue()));
+        }
+        instancesRequest.setFilters(allFilters);
+        return instancesRequest;
+    }
+
 
     @Override
     public CloudVirtualNetwork getCloudVPC(CloudVirtualNetworkRepository repository) {
@@ -478,7 +499,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
         DefaultAWSCloudClient.cloudWatchClient = cloudWatchClient;
     }
 
-    public  void setAutoScalingClient(AmazonAutoScaling autoScalingClient) {
+    public  void setAutoScalingClient(AmazonAutoScalingClient autoScalingClient) {
         DefaultAWSCloudClient.autoScalingClient = autoScalingClient;
     }
 }

@@ -31,32 +31,32 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+@Component("DefaultSonarClient")
 public class DefaultSonarClient implements SonarClient {
     private static final Log LOG = LogFactory.getLog(DefaultSonarClient.class);
 
-    private static final String URL_RESOURCES = "/api/resources?format=json";
-    private static final String URL_RESOURCE_DETAILS = "/api/resources?format=json&resource=%s&metrics=%s&includealerts=true";
-    private static final String URL_QUALITY_PROFILES = "/api/qualityprofiles/search";
-    private static final String URL_QUALITY_PROFILE_PROJECT_DETAILS = "/api/qualityprofiles/projects?key=";
-    private static final String URL_QUALITY_PROFILE_CHANGES = "/api/qualityprofiles/changelog?profileKey=";
+    protected static final String URL_RESOURCES = "/api/resources?format=json";
+    protected static final String URL_RESOURCE_DETAILS = "/api/resources?format=json&resource=%s&metrics=%s&includealerts=true";
+    protected static final String URL_QUALITY_PROFILES = "/api/qualityprofiles/search";
+    protected static final String URL_QUALITY_PROFILE_PROJECT_DETAILS = "/api/qualityprofiles/projects?key=";
+    protected static final String URL_QUALITY_PROFILE_CHANGES = "/api/qualityprofiles/changelog?profileKey=";
 
-    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
-    private static final String ID = "id";
-    private static final String NAME = "name";
-    private static final String KEY = "key";
-    private static final String VERSION = "version";
-    private static final String MSR = "msr";
-    private static final String ALERT = "alert";
-    private static final String ALERT_TEXT = "alert_text";
-    private static final String VALUE = "val";
-    private static final String FORMATTED_VALUE = "frmt_val";
-    private static final String STATUS_WARN = "WARN";
-    private static final String STATUS_ALERT = "ALERT";
-    private static final String DATE = "date";
+    protected static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
+    protected static final String ID = "id";
+    protected static final String NAME = "name";
+    protected static final String KEY = "key";
+    protected static final String VERSION = "version";
+    protected static final String MSR = "msr";
+    protected static final String ALERT = "alert";
+    protected static final String ALERT_TEXT = "alert_text";
+    protected static final String VALUE = "val";
+    protected static final String FORMATTED_VALUE = "frmt_val";
+    protected static final String STATUS_WARN = "WARN";
+    protected static final String STATUS_ALERT = "ALERT";
+    protected static final String DATE = "date";
 
-    private final RestOperations rest;
-    private final HttpEntity<String> httpHeaders;
+    protected final RestOperations rest;
+    protected final HttpEntity<String> httpHeaders;
 
     @Autowired
     public DefaultSonarClient(Supplier<RestOperations> restOperationsSupplier, SonarSettings settings) {
@@ -185,12 +185,12 @@ public class DefaultSonarClient implements SonarClient {
 	   }
    }
 
-    private JSONArray parseAsArray(String url) throws ParseException {
+    protected JSONArray parseAsArray(String url) throws ParseException {
         ResponseEntity<String> response = rest.exchange(url, HttpMethod.GET, this.httpHeaders, String.class);
         return (JSONArray) new JSONParser().parse(response.getBody());
     }
-    
-    private JSONArray parseAsArray(String url, String key) throws ParseException {
+
+    protected JSONArray parseAsArray(String url, String key) throws ParseException {
         ResponseEntity<String> response = rest.exchange(url, HttpMethod.GET, this.httpHeaders, String.class);
         JSONParser jsonParser = new JSONParser();
         JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
@@ -198,7 +198,7 @@ public class DefaultSonarClient implements SonarClient {
         return (JSONArray) jsonObject.get(key);
     }
 
-    private long timestamp(JSONObject json, String key) {
+    protected long timestamp(JSONObject json, String key) {
         Object obj = json.get(key);
         if (obj != null) {
             try {
@@ -210,29 +210,29 @@ public class DefaultSonarClient implements SonarClient {
         return 0;
     }
 
-    private String str(JSONObject json, String key) {
+    protected String str(JSONObject json, String key) {
         Object obj = json.get(key);
         return obj == null ? null : obj.toString();
     }
     @SuppressWarnings("unused")
-    private Integer integer(JSONObject json, String key) {
+    protected Integer integer(JSONObject json, String key) {
         Object obj = json.get(key);
         return obj == null ? null : (Integer) obj;
     }
 
     @SuppressWarnings("unused")
-    private BigDecimal decimal(JSONObject json, String key) {
+    protected BigDecimal decimal(JSONObject json, String key) {
         Object obj = json.get(key);
         return obj == null ? null : new BigDecimal(obj.toString());
     }
 
     @SuppressWarnings("unused")
-    private Boolean bool(JSONObject json, String key) {
+    protected Boolean bool(JSONObject json, String key) {
         Object obj = json.get(key);
         return obj == null ? null : Boolean.valueOf(obj.toString());
     }
 
-    private CodeQualityMetricStatus metricStatus(String status) {
+    protected CodeQualityMetricStatus metricStatus(String status) {
         if (StringUtils.isBlank(status)) {
             return CodeQualityMetricStatus.Ok;
         }
@@ -244,7 +244,7 @@ public class DefaultSonarClient implements SonarClient {
         }
     }
 
-    private HttpHeaders createHeaders(String username, String password){
+    private final HttpHeaders createHeaders(String username, String password){
         HttpHeaders headers = new HttpHeaders();
         if (username != null && !username.isEmpty() &&
             password != null && !password.isEmpty()) {

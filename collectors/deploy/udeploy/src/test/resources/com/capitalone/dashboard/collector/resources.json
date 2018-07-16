@@ -258,7 +258,7 @@
         },
         "role": {
           "id": "e5a5a9ea-0762-4ee9-b806-d8ce0287d147",
-          "name": "AA-JPetstore-Comp1.war",
+          "name": "AA-JPetstore_Comp1.war",
           "specialType": "COMPONENT"
         },
         "security": {

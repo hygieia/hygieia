@@ -30,8 +30,13 @@ notifications:
     on_start: always   # options: [always|never|change] default: always
   email:
     recipients:
-      - amit.mawkin@capitalone.com
       - tapabrata.pal@capitalone.com
+      - nireesh.thiruveedula@capitalone.com
+      - Stephen.Hughes@capitalone.com
+      - Prashant.Parekh@capitalone.com
+      - Matthew.Beasley@capitalone.com
+      - Subodh.Battina@capitalone.com
+      - Ragha.Vema@capitalone.com
     on_success: always #[always|never|change] # default: change
     on_failure: always # [always|never|change] # default: always
 

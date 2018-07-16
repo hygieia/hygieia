@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.rest;
 
 import com.capitalone.dashboard.model.AuditException;
+import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.request.DashboardAuditRequest;
 import com.capitalone.dashboard.response.DashboardReviewResponse;
@@ -16,6 +17,8 @@ import javax.validation.Valid;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import io.swagger.annotations.ApiOperation;
+
+import java.util.List;
 
 @RestController
 public class DashboardAuditController {
@@ -44,5 +47,17 @@ public class DashboardAuditController {
 
         return ResponseEntity.ok().body(dashboardReviewResponse);
     }
+
+
+    @RequestMapping(value = "/sonarComponent", method = GET, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Sonar Component", notes = "This endpoint gets component Id for sonar project name", response = CollectorItem.class, responseContainer = "List")
+    public ResponseEntity<List<CollectorItem>> sonarComponent(@Valid String projectName) throws AuditException {
+
+        List<CollectorItem> sonarProjects = dashboardAuditService.getSonarProjects(projectName);
+        return ResponseEntity
+                .ok()
+                .body(sonarProjects);
+    }
+
 }
 
