@@ -149,7 +149,6 @@ public class CollectorServiceImpl implements CollectorService {
 
         if (!CollectionUtils.isEmpty(existing)) {
             CollectorItem existingItem = existing.get(0);
-            existingItem.getOptions().clear();
             existingItem.getOptions().putAll(item.getOptions());
             return collectorItemRepository.save(existingItem);
         }
