@@ -91,12 +91,12 @@
     "chartist": "~0.9.5",
     "components-font-awesome": "~4.2.0",
     "dexie": "~1.2.0",
-    "gridstack": "~0.2.6",
+    "gridstack": "^0.3.0",
     "jquery": "~3.3.1",
     "jquery-ui": "~1.12.1",
     "json-logic-js": "^1.2.2",
     "jstz": "~2.0.0",
-    "lodash": "~2.4.1",
+    "lodash": "~3.5.0",
     "modernizr": "~3.6.0",
     "moment": "~2.9.0",
     "ng-sortable": "~1.3.2",
@@ -109,6 +109,9 @@
       "dependencies": {}
     },
     "jquery": {
+      "files": [
+        "dist/jquery.min.js"
+      ],
       "dependencies": {}
     },
     "jquery-ui": {
@@ -260,8 +263,9 @@
     },
     "gridstack": {
       "files": [
-        "dist/gridstack.min.js",
-        "dist/gridstack.min.css"
+        "dist/gridstack.all.js",
+        "dist/gridstack.min.css",
+        "dist/gridstack-extra.min.css"
       ],
       "dependencies": {}
     },

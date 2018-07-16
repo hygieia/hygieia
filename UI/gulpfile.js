@@ -237,7 +237,7 @@ gulp.task('views', function() {
 gulp.task('fonts', function() {
     return gulp
         .src([
-            'bower_components/**/*'
+            'node_modules/**/*'
         ])
         .pipe(filter('**/*.{eot,ttf,woff,woff2}'))
         .pipe(flatten())
