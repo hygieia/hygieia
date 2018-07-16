@@ -33,11 +33,6 @@ public abstract class Evaluator<T> {
     @Autowired
     protected CollectorItemRepository collectorItemRepository;
 
-
-    @Autowired
-    protected ApiSettings settings;
-
-
     public  abstract Collection<T> evaluate(Dashboard dashboard, long beginDate, long endDate, Map<?, ?> data) throws AuditException;
 
 

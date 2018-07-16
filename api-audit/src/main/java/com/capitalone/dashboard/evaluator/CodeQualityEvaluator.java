@@ -17,6 +17,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,6 +39,7 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
     private final CodeQualityRepository codeQualityRepository;
     private final CommitRepository commitRepository;
     private final CollItemConfigHistoryRepository collItemConfigHistoryRepository;
+    private static final Logger LOGGER = LoggerFactory.getLogger(CodeQualityEvaluator.class);
 
 
     @Autowired
@@ -101,19 +105,24 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
         for (CodeQualityMetric metric : returnQuality.getMetrics()) {
             //TODO: This is sonar specific - need to move this to api settings via properties file
             if (metric.getName().equalsIgnoreCase("quality_gate_details")) {
-                TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
-                };
-                Map<String, String> values;
-                try {
-                    values = mapper.readValue((String) metric.getValue(), typeRef);
-                    if (MapUtils.isNotEmpty(values) && values.containsKey("level")) {
-                        String level = values.get("level");
-                        codeQualityAuditResponse.addAuditStatus(level.equalsIgnoreCase("ok") ? CodeQualityAuditStatus.CODE_QUALITY_AUDIT_OK : CodeQualityAuditStatus.CODE_QUALITY_AUDIT_FAIL);
+                if(metric.getStatus()!=null){
+                    codeQualityAuditResponse.addAuditStatus("ok".equalsIgnoreCase(metric.getStatus().toString()) ? CodeQualityAuditStatus.CODE_QUALITY_AUDIT_OK : CodeQualityAuditStatus.CODE_QUALITY_AUDIT_FAIL);
+                }else{
+                    TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
+                    };
+                    Map<String, String> values;
+                    try {
+                        values = mapper.readValue((String) metric.getValue(), typeRef);
+                        if (MapUtils.isNotEmpty(values) && values.containsKey("level")) {
+                            String level = values.get("level");
+                            codeQualityAuditResponse.addAuditStatus(level.equalsIgnoreCase("ok") ? CodeQualityAuditStatus.CODE_QUALITY_AUDIT_OK : CodeQualityAuditStatus.CODE_QUALITY_AUDIT_FAIL);
+                        }
+                        break;
+                    } catch (IOException e) {
+                        LOGGER.error("Error in CodeQualityEvaluator.getStaticAnalysisResponse() - Unable to parse quality_gate metrics - "+ e.getMessage());
+                        e.printStackTrace();
                     }
-                    break;
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+
                 }
 
             }

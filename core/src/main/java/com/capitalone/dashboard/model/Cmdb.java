@@ -33,6 +33,7 @@ public class Cmdb {
     private String itemType;
     private boolean validConfigItem;
     private List<String> components;
+    private List<String> environments;
 
     public ObjectId getId() {
         return id;
@@ -194,6 +195,14 @@ public class Cmdb {
     public void setComponents(List<String> components) { this.components = components; }
 
     public List<String> getComponents(){ return components; }
+
+    public List<String> getEnvironments() {
+        return environments;
+    }
+
+    public void setEnvironments(List<String> environments) {
+        this.environments = environments;
+    }
 
     @Override
     public int hashCode()

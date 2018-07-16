@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class CommonCodeReview {
@@ -264,4 +265,11 @@ public class CommonCodeReview {
         });
         return authors;
     }
+
+    public static boolean matchIncrementVersionTag(String commitMessage,ApiSettings settings) {
+        if (StringUtils.isEmpty(settings.getCommitLogIgnoreAuditRegEx())) return false;
+        Pattern pattern = Pattern.compile(settings.getCommitLogIgnoreAuditRegEx());
+        return pattern.matcher(commitMessage).matches();
+    }
+
 }
