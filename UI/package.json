@@ -146,25 +146,25 @@
     },
     "angular-animate": {
       "files": [
-        "./angular-animate.js"
+        "./angular-animate.min.js"
       ],
       "dependencies": {}
     },
     "angular-sanitize": {
       "files": [
-        "./angular-sanitize.js"
+        "./angular-sanitize.min.js"
       ],
       "dependencies": {}
     },
     "angular-cookies": {
       "files": [
-        "./angular-cookies.js"
+        "./angular-cookies.min.js"
       ],
       "dependencies": {}
     },
     "angular": {
       "files": [
-        "./angular.js"
+        "./angular.min.js"
       ],
       "dependencies": {}
     },
@@ -185,8 +185,8 @@
     },
     "angular-ui-select": {
       "files": [
-        "dist/select.js",
-        "dist/select.css"
+        "dist/select.min.js",
+        "dist/select.min.css"
       ],
       "dependencies": {}
     },
@@ -217,14 +217,14 @@
     },
     "chartist": {
       "files": [
-        "./dist/chartist.js"
+        "./dist/chartist.min.js"
       ],
       "dependencies": {}
     },
     "ng-sortable": {
       "files": [
-        "dist/ng-sortable.js",
-        "dist/ng-sortable.css"
+        "dist/ng-sortable.min.js",
+        "dist/ng-sortable.min.css"
       ],
       "dependencies": {}
     },
@@ -236,14 +236,14 @@
     },
     "ui-select": {
       "files": [
-        "dist/select.js",
-        "dist/select.css"
+        "dist/select.min.js",
+        "dist/select.min.css"
       ],
       "dependencies": {}
     },
     "angular-rateit": {
       "files": [
-        "dist/ng-rateit.js",
+        "dist/ng-rateit.min.js",
         "dist/ng-rateit.css"
       ],
       "dependencies": {}
@@ -257,7 +257,7 @@
     },
     "angular-jwt": {
       "files": [
-        "dist/angular-jwt.js"
+        "dist/angular-jwt.min.js"
       ],
       "dependencies": {}
     },
