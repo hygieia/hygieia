@@ -16,7 +16,7 @@ echo "SPRING_DATA_MONGODB_HOST: $SPRING_DATA_MONGODB_HOST"
 echo "SPRING_DATA_MONGODB_PORT: $SPRING_DATA_MONGODB_PORT"
 
 
-cat > config/hygieia-api-audit.properties <<EOF
+cat > $PROP_FILE <<EOF
 #Database Name - default is test
 dbname=${SPRING_DATA_MONGODB_DATABASE:-dashboarddb}
 

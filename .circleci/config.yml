@@ -1,0 +1,115 @@
+# Java Maven CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-java/ for more details
+#
+version: 2
+jobs:
+  package:
+    docker:
+      # specify the version you desire here
+      - image: circleci/openjdk:8-jdk
+
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # - image: circleci/postgres:9.4
+
+    working_directory: ~/repo
+
+    environment:
+      MAVEN_OPTS: -Xmx3200m 
+
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "pom.xml" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
+      - run: mvn -s .circleci/.circleci.settings.xml clean package -DskipTests
+      #Why save the cache twice?  In case the mvn test didn't pull everything correctly, we have a second go.
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v1-dependencies-{{ checksum "pom.xml" }}      
+      - run: mkdir -p /tmp/workspace/ && cp -r target /tmp/workspace && cp Dockerfile /tmp/workspace/target/
+      - persist_to_workspace:
+          root: /tmp/workspace/target
+          paths:
+            - ./*
+            - ./*.jar
+            - ./Dockerfile
+  test:
+    docker:
+      # specify the version you desire here
+      - image: circleci/openjdk:8-jdk
+    working_directory: ~/repo
+    environment:
+      # Customize the JVM maximum heap limit
+      MAVEN_OPTS: -Xmx3200m 
+    steps:
+      - checkout    
+      # Download and cache dependencies
+      - run: mvn -s .circleci/.circleci.settings.xml test
+      - store_test_results:          
+          path: target/surefire-reports      
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v1-dependencies-{{ checksum "pom.xml" }}
+  deploy:
+    docker:
+      # specify the version you desire here
+      - image: circleci/openjdk:8-jdk
+    working_directory: ~/repo
+    environment:
+      # Customize the JVM maximum heap limit
+      MAVEN_OPTS: -Xmx3200m 
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "pom.xml" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+      - run: VERSION_NUM=($CIRCLE_BUILD_NUM + 1) && sed -i "s/BUILDNUMBER/$VERSION_NUM/g" pom.xml
+      - run: mvn -s .circleci/.circleci.settings.xml deploy -DskipTests
+  publish:
+    machine:
+      enabled: true
+    working_directory: ~/repo
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - run: ls -lart /tmp/workspace
+      - run: mkdir target && mv /tmp/workspace/*.jar target/hygieia.jar && mv /tmp/workspace/Dockerfile ./Dockerfile
+      - run: |
+          TAG=1.1.$CIRCLE_BUILD_NUM
+          docker build -t sredna/hygieia:$TAG .
+          docker tag sredna/hygieia:$TAG sredna/hygieia:latest
+          docker login -u $DOCKER_USER -p $DOCKER_PASS
+          docker push sredna/hygieia:$TAG
+          docker push sredna/hygieia:latest
+workflows:
+  version: 2
+  full_boat:
+    jobs: 
+      - test
+      - package:
+          requires:
+            - test      
+      - deploy:
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
+      - publish:
+          requires:
+            - package
+          filters:
+            branches:
+              only:
+                - master                

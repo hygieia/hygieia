@@ -1,10 +1,12 @@
 
-FROM docker.io/openjdk:8-jre
+FROM docker.io/openjdk:8-jre-alpine
 
 MAINTAINER Hygieia@capitalone.com
 
+RUN apk add --no-cache bash
+
 RUN \
-  mkdir /hygieia
+  mkdir /hygieia /hygieia/config
 
 COPY *.jar /hygieia/
 COPY properties-builder.sh /hygieia/
