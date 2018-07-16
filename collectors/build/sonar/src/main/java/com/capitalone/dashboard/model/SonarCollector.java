@@ -46,7 +46,6 @@ public class SonarCollector extends Collector {
         Map<String, Object> uniqueOptions = new HashMap<>();
         uniqueOptions.put(SonarProject.INSTANCE_URL,"");
         uniqueOptions.put(SonarProject.PROJECT_NAME,"");
-        uniqueOptions.put(SonarProject.PROJECT_ID, "");
         protoType.setUniqueFields(uniqueOptions);
         return protoType;
     }
