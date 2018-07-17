@@ -130,6 +130,9 @@
       "dependencies": {}
     },
     "angular-chartist.js": {
+      "files": [
+        "dist/angular-chartist.js"
+      ],
       "dependencies": {}
     },
     "chart.js": {
@@ -164,7 +167,7 @@
     },
     "angular": {
       "files": [
-        "./angular.min.js"
+        "./angular.js"
       ],
       "dependencies": {}
     },

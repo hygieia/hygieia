@@ -35,7 +35,7 @@ var browserSync = require('browser-sync'),
 
     // list of where our js files come from
     jsFiles = [
-        'src/{app,components}/**/*.js'
+        'src/{app,components,etc}/**/*.js'
     ],
 
     // list of theme files for less processing
@@ -271,7 +271,7 @@ gulp.task('html', function() {
         // replace inject:js with script references to all the files in the following sources
         .pipe(inject(gulp.src(
     		!!argv.prod ? ['src/app/app.js'] : jsFiles)
-    		.pipe(order(['app/app.js', 'app/dashboard/core/module.js', 'app/**/*.js', 'components/**/*.js'])),
+    		.pipe(order(['etc/gridstack-angular.js','app/app.js', 'app/dashboard/core/module.js', 'app/**/*.js', 'components/**/*.js'])),
     		{ name: 'hygieia', ignorePath: 'src', addRootSlash: false }))
 
         // replace custom placeholders with our configured values
