@@ -35,4 +35,6 @@ public interface CollectorItemRepository extends BaseCollectorItemRepository<Col
     @Query(value="{ 'collectorId': { $in: ?0 }, ?1 : {$regex : '.*?2.*', $options: 'i'} ,  ?3 : {$regex : '.*?4.*', $options: 'i'}}")
     Page<CollectorItem> findByCollectorIdAndSearchFields(List<ObjectId> collectorId,String searchField1, String searchFieldValue1, String searchField2,String searchFieldValue2,  Pageable pageable);
 
+    List<CollectorItem> findByDescription(String description);
+
 }
