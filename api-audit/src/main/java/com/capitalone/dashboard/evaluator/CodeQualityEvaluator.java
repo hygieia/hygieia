@@ -5,6 +5,7 @@ import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.CodeQuality;
 import com.capitalone.dashboard.model.CodeQualityMetric;
 import com.capitalone.dashboard.model.CodeQualityMetricStatus;
+import com.capitalone.dashboard.model.CodeQualityGates;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorItemConfigHistory;
 import com.capitalone.dashboard.model.CollectorType;
@@ -33,6 +34,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.Iterator;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.*;
 
 @Component
 public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
@@ -109,6 +115,39 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
             //TODO: This is sonar specific - need to move this to api settings via properties file
             if (metric.getName().equalsIgnoreCase("quality_gate_details")) {
                 codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_GATES_FOUND);
+                System.out.print("\n QUALITY GATE DETAILS: " + metric.getValue());
+
+                try {
+                    JSONObject qualityGateDetails = (JSONObject) new JSONParser().parse(metric.getValue().toString());
+                    System.out.print("\n LEVEL: " + qualityGateDetails.get("level"));
+
+                    JSONArray conditions = (JSONArray) qualityGateDetails.get("conditions");
+                    Iterator itr = conditions.iterator();
+
+                    // Iterate through the quality_gate conditions
+                    while(itr.hasNext()) {
+                        Map condition = ((Map) itr.next());
+
+                        if(condition.get("metric").toString().equalsIgnoreCase("blocker_violations") &&
+                                condition.containsKey("error")) {
+                            System.out.println("\n op : " + condition.get("op"));
+                            System.out.println("\n warning : " + condition.get("warning"));
+                            System.out.println("\n error : " + condition.get("error"));
+                        }
+
+//                        Iterator<Map.Entry> itr1 = condition.entrySet().iterator();
+//
+//                        // Iterate through the key, value pairs of the condition
+//                        while (itr1.hasNext()) {
+//                            Map.Entry pair = itr1.next();
+//                            System.out.println("\n" + pair.getKey() + " : " + pair.getValue());
+//                        }
+                    }
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
                 if (metric.getStatus() != null) {
                     codeQualityAuditResponse.addAuditStatus("ok".equalsIgnoreCase(metric.getStatus().toString()) ? CodeQualityAuditStatus.CODE_QUALITY_AUDIT_OK : CodeQualityAuditStatus.CODE_QUALITY_AUDIT_FAIL);
                 } else {
