@@ -4,12 +4,14 @@ import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.ChangeOrder;
 import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.HpsmCollector;
 import com.capitalone.dashboard.model.Incident;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.ChangeOrderRepository;
 import com.capitalone.dashboard.repository.CmdbRepository;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.HpsmRepository;
 import com.capitalone.dashboard.repository.IncidentRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -21,8 +23,10 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * CollectorTask that fetches configuration item data from HPSM
@@ -36,12 +40,15 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
     private final ChangeOrderRepository changeOrderRepository;
     private final IncidentRepository incidentRepository;
     private final CollectorItemRepository collectorItemRepository;
+    private final ComponentRepository componentRepository;
     private final HpsmClient hpsmClient;
+    private final HpsmIncidentUpdateClient incidentUpdateClient;
     private final HpsmSettings hpsmSettings;
 
     private static final String APP_ACTION_NAME = "Hpsm";
     private static final String CHANGE_ACTION_NAME = "HpsmChange";
     private static final String INCIDENT_ACTION_NAME = "HpsmIncident";
+    private static final String INCIDENT_UPDATES_ACTION_NAME = "HpsmIncidentUpdate";
 
     private String collectorAction;
 
@@ -49,13 +56,16 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
     private static final String COLLECTOR_ACTION_PROPERTY_KEY="collector.action";
 
     @Autowired
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public HpsmCollectorTask(TaskScheduler taskScheduler, HpsmSettings hpsmSettings,
                                 HpsmRepository hpsmRepository,
                                 CmdbRepository cmdbRepository,
                                 ChangeOrderRepository changeOrderRepository,
                                 IncidentRepository incidentRepository,
                                 CollectorItemRepository collectorItemRepository,
-                                HpsmClient hpsmClient) {
+                                ComponentRepository componentRepository,
+                                HpsmClient hpsmClient,
+                                HpsmIncidentUpdateClient incidentUpdateClient) {
 
             super(taskScheduler, (System.getProperty(COLLECTOR_ACTION_PROPERTY_KEY) == null) ? DEFAULT_COLLECTOR_ACTION_NAME : System.getProperty(COLLECTOR_ACTION_PROPERTY_KEY));
             collectorAction = (System.getProperty(COLLECTOR_ACTION_PROPERTY_KEY) == null) ? DEFAULT_COLLECTOR_ACTION_NAME : System.getProperty(COLLECTOR_ACTION_PROPERTY_KEY);
@@ -66,7 +76,9 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
             this.changeOrderRepository = changeOrderRepository;
             this.incidentRepository = incidentRepository;
             this.collectorItemRepository = collectorItemRepository;
+            this.componentRepository = componentRepository;
             this.hpsmClient = hpsmClient;
+            this.incidentUpdateClient = incidentUpdateClient;
     }
 
     /**
@@ -88,9 +100,10 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
 
         if(collectorAction.equals(CHANGE_ACTION_NAME)) {
             cron = hpsmSettings.getChangeOrderCron();
-        }
-        else if(collectorAction.equals(INCIDENT_ACTION_NAME)) {
+        } else if(collectorAction.equals(INCIDENT_ACTION_NAME)) {
             cron = hpsmSettings.getIncidentCron();
+        } else if(collectorAction.equals(INCIDENT_UPDATES_ACTION_NAME)) {
+            cron = hpsmSettings.getIncidentUpdatesCron();
         }
         return cron;
     }
@@ -243,15 +256,66 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
                     log("Collecting Incidents");
                     collectIncidents(collector);
                     break;
+                case INCIDENT_UPDATES_ACTION_NAME:
+                    log("Begin: Updating Incidents");
+                    updateIncidents();
+                    log("End: Update Incidents");
+                    break;
                 default:
                     log("Unknown value passed to -D" + COLLECTOR_ACTION_PROPERTY_KEY + ": " + collectorAction);
                     break;
             }
-
         }catch (HygieiaException he){
             LOG.error(he);
         }
         log("Finished", start);
+    }
+
+    private void updateIncidents() {
+        List<ObjectId> collectorItemIdList = getCollectorItemIdList();
+        List<Incident> incidentList = incidentRepository.findByCollectorItemId(collectorItemIdList);
+
+        processIncidentList(incidentList);
+    }
+
+    protected List<ObjectId> getCollectorItemIdList () {
+        List<com.capitalone.dashboard.model.Component> componentList
+                = componentRepository.findByIncidentCollectorItems(true);
+
+        List<ObjectId> collectorItemIdList = new ArrayList<>();
+
+        Optional.ofNullable(componentList)
+        .orElseGet(Collections::emptyList)
+        .forEach(component -> {
+            List<CollectorItem> collectorItemsList = component.getCollectorItems(CollectorType.Incident);
+            Optional.ofNullable(collectorItemsList)
+            .orElseGet(Collections::emptyList)
+            .forEach(collectorItem -> { collectorItemIdList.add(collectorItem.getId()); });
+        });
+
+        return collectorItemIdList;
+    }
+
+    private void processIncidentList(List<Incident> incidentIdList) {
+        for (Incident incident : incidentIdList) {
+            String incidentId = incident.getIncidentID();
+            String severity = incident.getSeverity();
+
+            LOG.info("Fetching Incident : "+incidentId+" ; Severity : "+severity);
+            try {
+                Incident incidentLatest = incidentUpdateClient.getIncident(incidentId);
+                if (incidentLatest != null) {
+                    String updatedSeverity = incidentLatest.getSeverity();
+                    LOG.info("Updating Incident : "+incidentId+" ; latest severity from hpsm : "+updatedSeverity);
+
+                    incidentLatest.setId(incident.getId());
+                    incidentLatest.setCollectorItemId(incident.getCollectorItemId());
+                    incidentRepository.save(incidentLatest);
+                }
+            } catch (HygieiaException he) {
+                LOG.error("Exception when processing incident: "+incidentId,he);
+            }
+        }
     }
 
     /**
