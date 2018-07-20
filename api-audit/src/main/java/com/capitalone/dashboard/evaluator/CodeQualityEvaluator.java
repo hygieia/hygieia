@@ -5,7 +5,6 @@ import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.CodeQuality;
 import com.capitalone.dashboard.model.CodeQualityMetric;
 import com.capitalone.dashboard.model.CodeQualityMetricStatus;
-import com.capitalone.dashboard.model.CodeQualityGates;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorItemConfigHistory;
 import com.capitalone.dashboard.model.CollectorType;
@@ -115,12 +114,8 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
             //TODO: This is sonar specific - need to move this to api settings via properties file
             if (metric.getName().equalsIgnoreCase("quality_gate_details")) {
                 codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_GATES_FOUND);
-                System.out.print("\n QUALITY GATE DETAILS: " + metric.getValue());
-
                 try {
                     JSONObject qualityGateDetails = (JSONObject) new JSONParser().parse(metric.getValue().toString());
-                    System.out.print("\n LEVEL: " + qualityGateDetails.get("level"));
-
                     JSONArray conditions = (JSONArray) qualityGateDetails.get("conditions");
                     Iterator itr = conditions.iterator();
 
@@ -128,22 +123,21 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
                     while(itr.hasNext()) {
                         Map condition = ((Map) itr.next());
 
+                        // Set audit statuses for Thresholds found if they are defined in quality_gate_details metric
                         if(condition.get("metric").toString().equalsIgnoreCase("blocker_violations") &&
                                 condition.containsKey("error")) {
-                            System.out.println("\n op : " + condition.get("op"));
-                            System.out.println("\n warning : " + condition.get("warning"));
-                            System.out.println("\n error : " + condition.get("error"));
+                            codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_BLOCKER_FOUND);
+                        } else if(condition.get("metric").toString().equalsIgnoreCase("critical_violations") &&
+                                condition.containsKey("error")) {
+                            codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_CRITICAL_FOUND);
+                        } else if(condition.get("metric").toString().equalsIgnoreCase("test_success_density") &&
+                                condition.containsKey("error")) {
+                            codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_UNIT_TEST_FOUND);
+                        } else if(condition.get("metric").toString().equalsIgnoreCase("new_coverage") &&
+                                condition.containsKey("error")) {
+                            codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_CODE_COVERAGE_FOUND);
                         }
-
-//                        Iterator<Map.Entry> itr1 = condition.entrySet().iterator();
-//
-//                        // Iterate through the key, value pairs of the condition
-//                        while (itr1.hasNext()) {
-//                            Map.Entry pair = itr1.next();
-//                            System.out.println("\n" + pair.getKey() + " : " + pair.getValue());
-//                        }
                     }
-
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -168,13 +162,14 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
                 }
             }
 
+            // Set audit statuses if the threshold is met based on the status field of code_quality metric
             if (metric.getName().equalsIgnoreCase("blocker_violations") &&
                     metric.getStatus().equals(CodeQualityMetricStatus.Ok)) {
                 codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_BLOCKER_MET);
             } else if (metric.getName().equalsIgnoreCase("critical_violations") &&
                     metric.getStatus().equals(CodeQualityMetricStatus.Ok)) {
                 codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_CRITICAL_MET);
-            } else if (metric.getName().equalsIgnoreCase("coverage") &&
+            } else if (metric.getName().equalsIgnoreCase("new_coverage") &&
                     metric.getStatus().equals(CodeQualityMetricStatus.Ok)) {
                 codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_CODE_COVERAGE_MET);
             } else if (metric.getName().equalsIgnoreCase("test_success_density") &&
