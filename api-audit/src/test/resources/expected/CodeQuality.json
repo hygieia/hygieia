@@ -17,7 +17,11 @@
           "CODE_QUALITY_THRESHOLD_BLOCKER_MET",
           "CODE_QUALITY_THRESHOLD_CRITICAL_MET",
           "CODE_QUALITY_THRESHOLD_UNIT_TEST_MET",
-          "CODE_QUALITY_THRESHOLD_CODE_COVERAGE_MET"
+          "CODE_QUALITY_THRESHOLD_CODE_COVERAGE_MET",
+          "CODE_QUALITY_THRESHOLD_BLOCKER_FOUND",
+          "CODE_QUALITY_THRESHOLD_CRITICAL_FOUND",
+          "CODE_QUALITY_THRESHOLD_UNIT_TEST_FOUND",
+          "CODE_QUALITY_THRESHOLD_CODE_COVERAGE_FOUND"
         ],
         "lastUpdated": 0,
         "url": "http://vantage.kdc.capitalone.com:11300/sonar/dashboard/index/111955",
@@ -32,7 +36,7 @@
           "version": "16.10.00.01-SNAPSHOT",
           "metrics": [
             {
-              "name": "coverage",
+              "name": "new_coverage",
               "value": 90.8,
               "formattedValue": "90.8%",
               "status": "Ok",
@@ -116,8 +120,8 @@
             },
             {
               "name": "quality_gate_details",
-              "value": "{\"level\":\"OK\",\"conditions\":[{\"metric\":\"new_security_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"1\",\"level\":\"OK\"},{\"metric\":\"new_reliability_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"1\",\"level\":\"OK\"},{\"metric\":\"new_maintainability_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"1\",\"level\":\"OK\"},{\"metric\":\"new_duplicated_lines_density\",\"op\":\"GT\",\"period\":1,\"error\":\"3\",\"actual\":\"0.0\",\"level\":\"OK\"}],\"ignoredConditions\":false}",
-              "formattedValue": "{\"level\":\"OK\",\"conditions\":[{\"metric\":\"new_security_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"1\",\"level\":\"OK\"},{\"metric\":\"new_reliability_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"1\",\"level\":\"OK\"},{\"metric\":\"new_maintainability_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"1\",\"level\":\"OK\"},{\"metric\":\"new_duplicated_lines_density\",\"op\":\"GT\",\"period\":1,\"error\":\"3\",\"actual\":\"0.0\",\"level\":\"OK\"}],\"ignoredConditions\":false}%"
+              "value" : "{\"level\":\"OK\",\"conditions\":[{\"metric\":\"new_coverage\",\"op\":\"LT\",\"warning\":\"\",\"error\":\"80\",\"period\":1},{\"metric\":\"test_success_density\",\"op\":\"LT\",\"warning\":\"\",\"error\":\"100\"},{\"metric\":\"blocker_violations\",\"op\":\"GT\",\"warning\":\"\",\"error\":\"0\"},{\"metric\":\"critical_violations\",\"op\":\"GT\",\"warning\":\"\",\"error\":\"0\"}]}",
+              "formattedValue" : "{\"level\":\"OK\",\"conditions\":[{\"metric\":\"new_coverage\",\"op\":\"LT\",\"warning\":\"\",\"error\":\"80\",\"period\":1},{\"metric\":\"test_success_density\",\"op\":\"LT\",\"warning\":\"\",\"error\":\"100\"},{\"metric\":\"blocker_violations\",\"op\":\"GT\",\"warning\":\"\",\"error\":\"0\"},{\"metric\":\"critical_violations\",\"op\":\"GT\",\"warning\":\"\",\"error\":\"0\"}]}"
             }
           ]
         },
