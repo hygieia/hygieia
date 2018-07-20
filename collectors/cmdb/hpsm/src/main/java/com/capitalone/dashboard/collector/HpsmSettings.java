@@ -51,6 +51,28 @@ public class HpsmSettings {
 	private String incidentReturnLimit;
 	private String changeOrderReturnLimit;
 
+	private String incidentUpdatesRequestType;
+	private String incidentUpdatesSoapAction;
+	private String incidentUpdatesCron;
+
+	public String getIncidentUpdatesRequestType() { return incidentUpdatesRequestType; }
+
+	public void setIncidentUpdatesRequestType(String incidentUpdatesRequestType) {
+		this.incidentUpdatesRequestType = incidentUpdatesRequestType;
+	}
+
+	public String getIncidentUpdatesSoapAction() { return incidentUpdatesSoapAction; }
+
+	public void setIncidentUpdatesSoapAction(String incidentUpdatesSoapAction) {
+		this.incidentUpdatesSoapAction = incidentUpdatesSoapAction;
+	}
+
+	public String getIncidentUpdatesCron() { return incidentUpdatesCron; }
+
+	public void setIncidentUpdatesCron(String incidentUpdatesCron) {
+		this.incidentUpdatesCron = incidentUpdatesCron;
+	}
+
 	public String getServer() {
 		return server;
 	}
