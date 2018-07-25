@@ -5,7 +5,7 @@ package com.capitalone.dashboard.model;
  */
 public class CodeQualityMetric {
     private String name;
-    private String value;
+    private Object value;
     private String formattedValue;
     private CodeQualityMetricStatus status;
     private String statusMessage;
@@ -14,7 +14,8 @@ public class CodeQualityMetric {
         this.name = name;
     }
 
-    public CodeQualityMetric() {}
+    public CodeQualityMetric() {
+    }
 
     public void setName(String name) {
         this.name = name;
@@ -24,9 +25,13 @@ public class CodeQualityMetric {
         return name;
     }
 
-    public String getValue() { return value; }
+    public Object getValue() {
+        return value;
+    }
 
-    public void setValue(String value) { this.value = value; }
+    public void setValue(Object value) {
+        this.value = value;
+    }
 
     public String getFormattedValue() {
         return formattedValue;

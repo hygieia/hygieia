@@ -33,10 +33,10 @@ public class CodeQualityMetricsConverterTest {
 
         Set<CodeQualityMetric> codeQualityMetrics = producedQuality.getMetrics();
         assertThat(codeQualityMetrics).extracting("name", "formattedValue", "value", "status")
-                .contains(tuple("test_failures", "1", "1", CodeQualityMetricStatus.Warning),
-                        tuple("test_errors", "2", "2", CodeQualityMetricStatus.Alert),
-                        tuple("tests", "14", "14", CodeQualityMetricStatus.Ok),
-                        tuple("test_success_density", "11", "11", CodeQualityMetricStatus.Ok));
+                .contains(tuple("test_failures", "1", 1, CodeQualityMetricStatus.Warning),
+                        tuple("test_errors", "2", 2, CodeQualityMetricStatus.Alert),
+                        tuple("tests", "14", 14, CodeQualityMetricStatus.Ok),
+                        tuple("test_success_density", "11", 11, CodeQualityMetricStatus.Ok));
     }
 
     @Test
@@ -54,10 +54,10 @@ public class CodeQualityMetricsConverterTest {
 
         Set<CodeQualityMetric> codeQualityMetrics = producedQuality.getMetrics();
         assertThat(codeQualityMetrics).extracting("name", "formattedValue", "value", "status")
-                .contains(tuple("test_failures", "0", "0", CodeQualityMetricStatus.Ok),
-                        tuple("test_errors", "0", "0", CodeQualityMetricStatus.Ok),
-                        tuple("tests", "14", "14", CodeQualityMetricStatus.Ok),
-                        tuple("test_success_density", "14", "14", CodeQualityMetricStatus.Ok));
+                .contains(tuple("test_failures", "0", 0, CodeQualityMetricStatus.Ok),
+                        tuple("test_errors", "0", 0, CodeQualityMetricStatus.Ok),
+                        tuple("tests", "14", 14, CodeQualityMetricStatus.Ok),
+                        tuple("test_success_density", "14", 14, CodeQualityMetricStatus.Ok));
     }
 
     @Test
@@ -85,10 +85,10 @@ public class CodeQualityMetricsConverterTest {
         AssertionsForInterfaceTypes.assertThat(calculatedCodeQuality.getMetrics())
                 .extracting("name", "formattedValue", "value", "status")
                 .contains(
-                        tuple("test_success_density", "11", "11", CodeQualityMetricStatus.Ok),
-                        tuple("test_failures", "1", "1", CodeQualityMetricStatus.Warning),
-                        tuple("test_errors", "2", "2", CodeQualityMetricStatus.Alert),
-                        tuple("tests", "14", "14", CodeQualityMetricStatus.Ok));
+                        tuple("test_success_density", "11", 11, CodeQualityMetricStatus.Ok),
+                        tuple("test_failures", "1", 1, CodeQualityMetricStatus.Warning),
+                        tuple("test_errors", "2", 2, CodeQualityMetricStatus.Alert),
+                        tuple("tests", "14", 14, CodeQualityMetricStatus.Ok));
 
         // it should have got the maximum time available
         AssertionsForClassTypes.assertThat(calculatedCodeQuality.getTimestamp()).isEqualTo(DatatypeFactory.newInstance().newXMLGregorianCalendar(1990, 11, 11, 11, 11, 11, 11, 0).toGregorianCalendar().getTimeInMillis());
@@ -107,10 +107,10 @@ public class CodeQualityMetricsConverterTest {
         AssertionsForInterfaceTypes.assertThat(calculatedCodeQuality.getMetrics())
                 .extracting("name", "formattedValue", "value", "status")
                 .contains(
-                        tuple("test_success_density", "0", "0", CodeQualityMetricStatus.Ok),
-                        tuple("test_failures", "0", "0", CodeQualityMetricStatus.Ok),
-                        tuple("test_errors", "0", "0", CodeQualityMetricStatus.Ok),
-                        tuple("tests", "0", "0", CodeQualityMetricStatus.Ok));
+                        tuple("test_success_density", "0", 0, CodeQualityMetricStatus.Ok),
+                        tuple("test_failures", "0", 0, CodeQualityMetricStatus.Ok),
+                        tuple("test_errors", "0", 0, CodeQualityMetricStatus.Ok),
+                        tuple("tests", "0", 0, CodeQualityMetricStatus.Ok));
     }
 
     @Test
@@ -128,10 +128,10 @@ public class CodeQualityMetricsConverterTest {
         AssertionsForInterfaceTypes.assertThat(calculatedCodeQuality.getMetrics())
                 .extracting("name", "formattedValue", "value", "status")
                 .contains(
-                        tuple("blocker_violations", "2", "2", CodeQualityMetricStatus.Alert),
-                        tuple("critical_violations", "1", "1", CodeQualityMetricStatus.Alert),
-                        tuple("major_violations", "1", "1", CodeQualityMetricStatus.Warning),
-                        tuple("violations", "1", "1", CodeQualityMetricStatus.Warning));
+                        tuple("blocker_violations", "2", 2, CodeQualityMetricStatus.Alert),
+                        tuple("critical_violations", "1", 1, CodeQualityMetricStatus.Alert),
+                        tuple("major_violations", "1", 1, CodeQualityMetricStatus.Warning),
+                        tuple("violations", "1", 1, CodeQualityMetricStatus.Warning));
 
     }
 
@@ -175,10 +175,10 @@ public class CodeQualityMetricsConverterTest {
         AssertionsForInterfaceTypes.assertThat(calculatedCodeQuality.getMetrics())
                 .extracting("name", "formattedValue", "value", "status")
                 .contains(
-                        tuple("blocker_violations", "0", "0", CodeQualityMetricStatus.Ok),
-                        tuple("critical_violations", "0", "0", CodeQualityMetricStatus.Ok),
-                        tuple("major_violations", "0", "0", CodeQualityMetricStatus.Ok),
-                        tuple("violations", "0", "0", CodeQualityMetricStatus.Ok));
+                        tuple("blocker_violations", "0", 0, CodeQualityMetricStatus.Ok),
+                        tuple("critical_violations", "0", 0, CodeQualityMetricStatus.Ok),
+                        tuple("major_violations", "0", 0, CodeQualityMetricStatus.Ok),
+                        tuple("violations", "0", 0, CodeQualityMetricStatus.Ok));
     }
 
     @Test
@@ -198,10 +198,10 @@ public class CodeQualityMetricsConverterTest {
         AssertionsForInterfaceTypes.assertThat(calculatedCodeQuality.getMetrics())
                 .extracting("name", "formattedValue", "value", "status")
                 .contains(
-                        tuple("blocker_violations", "4", "4", CodeQualityMetricStatus.Alert),
-                        tuple("critical_violations", "2", "2", CodeQualityMetricStatus.Alert),
-                        tuple("major_violations", "2", "2", CodeQualityMetricStatus.Warning),
-                        tuple("violations", "2", "2", CodeQualityMetricStatus.Warning));
+                        tuple("blocker_violations", "4", 4, CodeQualityMetricStatus.Alert),
+                        tuple("critical_violations", "2", 2, CodeQualityMetricStatus.Alert),
+                        tuple("major_violations", "2", 2, CodeQualityMetricStatus.Warning),
+                        tuple("violations", "2", 2, CodeQualityMetricStatus.Warning));
     }
 
     private FindBugsXmlReport.BugInstance createBugInstance(FindBugsXmlReport.BugPriority priority) {
@@ -225,10 +225,10 @@ public class CodeQualityMetricsConverterTest {
 
         assertThat(calculatedCodeQuality.getMetrics()).extracting("name", "formattedValue", "value", "status")
                 .contains(
-                        tuple("total_lines_covered", "15", "15", CodeQualityMetricStatus.Ok),
-                        tuple("total_lines_missed", "6", "6", CodeQualityMetricStatus.Ok),
-                        tuple("total_instructions_covered", "10", "10", CodeQualityMetricStatus.Ok),
-                        tuple("total_instructions_missed", "1", "1", CodeQualityMetricStatus.Ok));
+                        tuple("total_lines_covered", "15", 15, CodeQualityMetricStatus.Ok),
+                        tuple("total_lines_missed", "6", 6, CodeQualityMetricStatus.Ok),
+                        tuple("total_instructions_covered", "10", 10, CodeQualityMetricStatus.Ok),
+                        tuple("total_instructions_missed", "1", 1, CodeQualityMetricStatus.Ok));
 
         boolean coverageDone = false;
         boolean lineCoverageDone = false;
@@ -236,16 +236,17 @@ public class CodeQualityMetricsConverterTest {
             if (codeQuality.getName().equals("coverage")) {
                 assertThat(codeQuality.getFormattedValue()).isEqualTo("90.909");
                 assertThat(codeQuality.getStatus()).isEqualTo(CodeQualityMetricStatus.Ok);
-                assertThat(Double.parseDouble(codeQuality.getValue())).isCloseTo(90.0909, Percentage.withPercentage(1));
+                assertThat(((Double) codeQuality.getValue()).doubleValue()).isCloseTo(90.0909, Percentage.withPercentage(1));
                 coverageDone = true;
             }
 
             if (codeQuality.getName().equals("line_coverage")) {
                 assertThat(codeQuality.getFormattedValue()).isEqualTo("71.429");
                 assertThat(codeQuality.getStatus()).isEqualTo(CodeQualityMetricStatus.Ok);
-                assertThat(Double.parseDouble(codeQuality.getValue())).isCloseTo(71.429, Percentage.withPercentage(1));
+                assertThat(((Double) codeQuality.getValue()).doubleValue()).isCloseTo(71.429, Percentage.withPercentage(1));
                 lineCoverageDone=true;
             }
+
         }
 
         assertThat(coverageDone).isTrue();
@@ -266,10 +267,10 @@ public class CodeQualityMetricsConverterTest {
 
         assertThat(calculatedCodeQuality.getMetrics()).extracting("name", "formattedValue", "value", "status")
                 .contains(
-                        tuple("total_lines_covered", "30", "30", CodeQualityMetricStatus.Ok),
-                        tuple("total_lines_missed", "12", "12", CodeQualityMetricStatus.Ok),
-                        tuple("total_instructions_covered", "20", "20", CodeQualityMetricStatus.Ok),
-                        tuple("total_instructions_missed", "2", "2", CodeQualityMetricStatus.Ok));
+                        tuple("total_lines_covered", "30", 30, CodeQualityMetricStatus.Ok),
+                        tuple("total_lines_missed", "12", 12, CodeQualityMetricStatus.Ok),
+                        tuple("total_instructions_covered", "20", 20, CodeQualityMetricStatus.Ok),
+                        tuple("total_instructions_missed", "2", 2, CodeQualityMetricStatus.Ok));
 
         boolean coverageDone = false;
         boolean lineCoverageDone = false;
@@ -277,16 +278,17 @@ public class CodeQualityMetricsConverterTest {
             if (codeQuality.getName().equals("coverage")) {
                 assertThat(codeQuality.getFormattedValue()).isEqualTo("90.909");
                 assertThat(codeQuality.getStatus()).isEqualTo(CodeQualityMetricStatus.Ok);
-                assertThat(Double.parseDouble(codeQuality.getValue())).isCloseTo(90.0909, Percentage.withPercentage(1));
+                assertThat(((Double) codeQuality.getValue()).doubleValue()).isCloseTo(90.0909, Percentage.withPercentage(1));
                 coverageDone = true;
             }
 
             if (codeQuality.getName().equals("line_coverage")) {
                 assertThat(codeQuality.getFormattedValue()).isEqualTo("71.429");
                 assertThat(codeQuality.getStatus()).isEqualTo(CodeQualityMetricStatus.Ok);
-                assertThat(Double.parseDouble(codeQuality.getValue())).isCloseTo(71.429, Percentage.withPercentage(1));
+                assertThat(((Double) codeQuality.getValue()).doubleValue()).isCloseTo(71.429, Percentage.withPercentage(1));
                 lineCoverageDone=true;
             }
+
         }
 
         assertThat(coverageDone).isTrue();
@@ -342,10 +344,10 @@ public class CodeQualityMetricsConverterTest {
 
         assertThat(codeQualityMetrics.getMetrics()).extracting("name", "formattedValue", "value", "status")
                 .contains(
-                        tuple("blocker_violations", "10", "10", CodeQualityMetricStatus.Alert),
-                        tuple("critical_violations", "12", "12", CodeQualityMetricStatus.Alert),
-                        tuple("major_violations", "2", "2", CodeQualityMetricStatus.Warning),
-                        tuple("violations", "2", "2", CodeQualityMetricStatus.Warning));
+                        tuple("blocker_violations", "10", 10, CodeQualityMetricStatus.Alert),
+                        tuple("critical_violations", "12", 12, CodeQualityMetricStatus.Alert),
+                        tuple("major_violations", "2", 2, CodeQualityMetricStatus.Warning),
+                        tuple("violations", "2", 2, CodeQualityMetricStatus.Warning));
     }
 
     @Test
@@ -361,10 +363,10 @@ public class CodeQualityMetricsConverterTest {
 
         assertThat(codeQualityMetrics.getMetrics()).extracting("name", "formattedValue", "value", "status")
                 .contains(
-                        tuple("blocker_violations", "20", "20", CodeQualityMetricStatus.Alert),
-                        tuple("critical_violations", "24", "24", CodeQualityMetricStatus.Alert),
-                        tuple("major_violations", "4", "4", CodeQualityMetricStatus.Warning),
-                        tuple("violations", "4", "4", CodeQualityMetricStatus.Warning));
+                        tuple("blocker_violations", "20", 20, CodeQualityMetricStatus.Alert),
+                        tuple("critical_violations", "24", 24, CodeQualityMetricStatus.Alert),
+                        tuple("major_violations", "4", 4, CodeQualityMetricStatus.Warning),
+                        tuple("violations", "4", 4, CodeQualityMetricStatus.Warning));
     }
 
     @Test
@@ -378,10 +380,10 @@ public class CodeQualityMetricsConverterTest {
 
         assertThat(calculatedCodeQuality.getMetrics()).extracting("name", "formattedValue", "value", "status")
                 .contains(
-                        tuple("total_lines_covered", "0", "0", CodeQualityMetricStatus.Ok),
-                        tuple("total_lines_missed", "0", "0", CodeQualityMetricStatus.Ok),
-                        tuple("total_instructions_covered", "0", "0", CodeQualityMetricStatus.Ok),
-                        tuple("total_instructions_missed", "0", "0", CodeQualityMetricStatus.Ok));
+                        tuple("total_lines_covered", "0", 0, CodeQualityMetricStatus.Ok),
+                        tuple("total_lines_missed", "0", 0, CodeQualityMetricStatus.Ok),
+                        tuple("total_instructions_covered", "0", 0, CodeQualityMetricStatus.Ok),
+                        tuple("total_instructions_missed", "0", 0, CodeQualityMetricStatus.Ok));
 
         boolean coverageDone = false;
         boolean lineCoverageDone = false;
@@ -389,14 +391,14 @@ public class CodeQualityMetricsConverterTest {
             if (codeQuality.getName().equals("coverage")) {
                 assertThat(codeQuality.getFormattedValue()).isEqualTo("100.000");
                 assertThat(codeQuality.getStatus()).isEqualTo(CodeQualityMetricStatus.Ok);
-                assertThat(Double.parseDouble(codeQuality.getValue())).isCloseTo(100, Percentage.withPercentage(1));
+                assertThat(((Double) codeQuality.getValue()).doubleValue()).isCloseTo(100, Percentage.withPercentage(1));
                 coverageDone = true;
             }
 
             if (codeQuality.getName().equals("line_coverage")) {
                 assertThat(codeQuality.getFormattedValue()).isEqualTo("100.000");
                 assertThat(codeQuality.getStatus()).isEqualTo(CodeQualityMetricStatus.Ok);
-                assertThat(Double.parseDouble(codeQuality.getValue())).isCloseTo(100, Percentage.withPercentage(1));
+                assertThat(((Double) codeQuality.getValue()).doubleValue()).isCloseTo(100, Percentage.withPercentage(1));
                 lineCoverageDone=true;
             }
 
@@ -446,10 +448,10 @@ public class CodeQualityMetricsConverterTest {
 
         assertThat(codeQualityMetrics.getMetrics()).extracting("name", "formattedValue", "value", "status")
                 .contains(
-                        tuple("blocker_violations", "9", "9", CodeQualityMetricStatus.Alert),
-                        tuple("critical_violations", "11", "11", CodeQualityMetricStatus.Alert),
-                        tuple("major_violations", "2", "2", CodeQualityMetricStatus.Warning),
-                        tuple("violations", "1", "1", CodeQualityMetricStatus.Warning));
+                        tuple("blocker_violations", "9", 9, CodeQualityMetricStatus.Alert),
+                        tuple("critical_violations", "11", 11, CodeQualityMetricStatus.Alert),
+                        tuple("major_violations", "2", 2, CodeQualityMetricStatus.Warning),
+                        tuple("violations", "1", 1, CodeQualityMetricStatus.Warning));
     }
 
     private CheckstyleReport produceCheckStyleReport() {

@@ -115,7 +115,7 @@ public class DefaultSonarClient implements SonarClient {
                     JSONObject metricJson = (JSONObject) metricObj;
 
                     CodeQualityMetric metric = new CodeQualityMetric(str(metricJson, KEY));
-                    metric.setValue(str(metricJson, VALUE));
+                    metric.setValue(metricJson.get(VALUE));
                     metric.setFormattedValue(str(metricJson, FORMATTED_VALUE));
                     metric.setStatus(metricStatus(str(metricJson, ALERT)));
                     metric.setStatusMessage(str(metricJson, ALERT_TEXT));

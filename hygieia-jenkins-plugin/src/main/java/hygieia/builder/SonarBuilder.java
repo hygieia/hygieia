@@ -234,18 +234,18 @@ public class SonarBuilder {
                 // this usually happens for custom metrics
                 if (metricJson.get("data") != null) {
                     metric.setFormattedValue(metricJson.get("data").toString());
-                    metric.setValue(str(metricJson,"data"));
+                    metric.setValue(metricJson.get("data"));
                 } else if (metric.getName().startsWith("new_")) {
                     // for new  metrics- use var2 and fvar2
                     // this is because var2 and fvar2 represents values since
                     // last analysis
                     if (metricJson.get("var2") != null || metricJson.get("fvar2") != null) {
-                        metric.setValue(str(metricJson,"var2"));
+                        metric.setValue(metricJson.get("var2"));
                         metric.setFormattedValue(str(metricJson, "fvar2"));
                     }
                 } else {
                     // for other regular metrics - use default fields
-                    metric.setValue(str(metricJson, VALUE));
+                    metric.setValue(metricJson.get(VALUE));
                     metric.setFormattedValue(str(metricJson, FORMATTED_VALUE));
                 }
                 metric.setStatus(metricStatus(str(metricJson, ALERT)));

@@ -225,7 +225,7 @@ public class CodeQualityControllerTest {
 		metric.setFormattedValue("10");
 		metric.setStatus(CodeQualityMetricStatus.Ok);
 		metric.setStatusMessage("Ok");
-		metric.setValue("0");
+		metric.setValue(new Integer(0));
 		return metric;
 	}
 

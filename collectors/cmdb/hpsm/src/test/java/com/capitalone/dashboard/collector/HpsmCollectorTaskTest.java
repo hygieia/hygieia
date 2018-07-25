@@ -6,20 +6,15 @@ import com.capitalone.dashboard.repository.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.internal.matchers.Any;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 
 import java.util.*;
-import java.util.regex.Matcher;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -27,7 +22,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyCollection;
 import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.anyVararg;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -43,7 +37,6 @@ public class HpsmCollectorTaskTest {
     @Mock private HpsmClient hpsmClient;
     @Mock private HpsmSettings hpsmSettings;
     @Mock private IncidentRepository incidentRepository;
-    @Mock private ComponentRepository componentRepository;
     @Mock private ChangeOrderRepository changeOrderRepository;
     @Mock private CollectorItemRepository collectorItemRepository;
 
@@ -51,7 +44,6 @@ public class HpsmCollectorTaskTest {
     @Mock private Cmdb cmdb2;
 
     @InjectMocks private HpsmCollectorTask task;
-
     @Test
     public void shouldGetCollector() {
         Collector collector = collector();
@@ -109,7 +101,7 @@ public class HpsmCollectorTaskTest {
         assertNull(cmdbRepository.findByConfigurationItem("test213"));
     }
 
-    public ArrayList<Cmdb> getMockList() {
+    public ArrayList<Cmdb> getMockList(){
         ArrayList<Cmdb> mockList = new ArrayList<>();
 
         Cmdb cmdb = new Cmdb();
@@ -239,39 +231,6 @@ public class HpsmCollectorTaskTest {
         verify(incidentRepository).findByIncidentID("IR01234");
         assertNull(incidentRepository.findByIncidentID("IR02468"));
 
-    }
-
-    @Test
-    public void getCollectorItemIdList_Test () {
-        List<Component> componentList = getComponentList();
-        when(componentRepository.findByIncidentCollectorItems(true)).thenReturn(componentList);
-
-        List<ObjectId> expectedObjectIdList = new ArrayList<>();
-        expectedObjectIdList.add(new ObjectId("1c1ca42a258ad365fbb64ecf"));
-        expectedObjectIdList.add(new ObjectId("111ca42a258ad365fbb64ecc"));
-
-
-        List<ObjectId> objectIdList = task.getCollectorItemIdList();
-
-        Assert.assertArrayEquals(expectedObjectIdList.toArray(), objectIdList.toArray());
-    }
-
-    private List<Component> getComponentList() {
-        Component comp1 = new Component();
-        CollectorItem collectorItem1 = new CollectorItem();
-        collectorItem1.setId(new ObjectId("1c1ca42a258ad365fbb64ecf"));
-        comp1.addCollectorItem(CollectorType.Incident, collectorItem1);
-
-        Component comp2 = new Component();
-        CollectorItem collectorItem2 = new CollectorItem();
-        collectorItem2.setId(new ObjectId("111ca42a258ad365fbb64ecc"));
-        comp2.addCollectorItem(CollectorType.Incident, collectorItem2);
-
-        List<Component> componentList = new ArrayList<>();
-        componentList.add(comp1);
-        componentList.add(comp2);
-
-        return componentList;
     }
 
     public ArrayList<Incident> getMockIncidentList() {
