@@ -91,7 +91,7 @@
     "chartist": "~0.9.5",
     "components-font-awesome": "~4.2.0",
     "dexie": "~1.2.0",
-    "gridstack": "^0.3.0",
+    "gridstack": "~0.2.6",
     "jquery": "~3.3.1",
     "jquery-ui": "~1.12.1",
     "json-logic-js": "^1.2.2",
@@ -266,7 +266,7 @@
     },
     "gridstack": {
       "files": [
-        "dist/gridstack.all.js",
+        "dist/gridstack.js",
         "dist/gridstack.min.css",
         "dist/gridstack-extra.min.css"
       ],
