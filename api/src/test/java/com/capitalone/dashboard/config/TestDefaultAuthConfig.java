@@ -244,9 +244,6 @@ import com.capitalone.dashboard.util.PaginationHeaderUtility;
 		 return Mockito.mock(ScoreDashboardService.class);
 	 }
 
-	 @Bean
-	 public TIRService tirService() {
-		 return Mockito.mock(TIRService.class);
-	 }
+
  }
 
