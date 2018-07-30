@@ -72,7 +72,7 @@ import com.capitalone.dashboard.util.PaginationHeaderUtility;
 
 	 @Bean
 	 public ApiTokenService apiTokenService() {
-		 return new ApiTokenServiceImpl(apiTokenRepository());
+		 return new ApiTokenServiceImpl(apiTokenRepository(),userInfoRepository());
 	 }
  	
  	@Bean
@@ -242,6 +242,11 @@ import com.capitalone.dashboard.util.PaginationHeaderUtility;
 	 @Bean
 	 public ScoreDashboardService scoreDashboardService() {
 		 return Mockito.mock(ScoreDashboardService.class);
+	 }
+
+	 @Bean
+	 public TIRService tirService() {
+		 return Mockito.mock(TIRService.class);
 	 }
  }
 
