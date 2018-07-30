@@ -11,8 +11,6 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Component
 public class CodeQualityMetricsConverter implements CodeQualityVisitor {
@@ -128,21 +126,20 @@ public class CodeQualityMetricsConverter implements CodeQualityVisitor {
                 CodeQualityMetric codeQualityMetric = new CodeQualityMetric();
                 codeQualityMetric.setName(key);
                 codeQualityMetric.setFormattedValue(String.valueOf(value.getLeft()));
-                codeQualityMetric.setValue(value.getLeft());
+                codeQualityMetric.setValue(Integer.toString(value.getLeft()));
                 codeQualityMetric.setStatus(value.getRight());
                 newValue = codeQualityMetric;
             } else {
                 // do the sum
                 quality.getMetrics().remove(currentValue);
                 newValue = new CodeQualityMetric(key);
-                newValue.setValue((int) currentValue.getValue() + value.getLeft());
-                newValue.setFormattedValue(String.valueOf((int) currentValue.getValue() + value.getLeft()));
+                newValue.setValue(Integer.toString(Integer.parseInt(currentValue.getValue()) + value.getLeft()));
+                newValue.setFormattedValue(String.valueOf(Integer.parseInt(currentValue.getValue()) + value.getLeft()));
                 int newOrdinal = Math.max(value.getRight().ordinal(), currentValue.getStatus().ordinal());
                 newValue.setStatus(CodeQualityMetricStatus.values()[newOrdinal]);
             }
             quality.addMetric(newValue);
         }
-        ;
     }
 
     @Override
@@ -194,12 +191,13 @@ public class CodeQualityMetricsConverter implements CodeQualityVisitor {
 
     private CodeQualityMetric computeCoveragePercent(String metricName, CodeQualityMetric covered, CodeQualityMetric missed) {
         double percentageCovered = 100.0;
-        if ( ((Integer)covered.getValue()).intValue() + ((Integer)missed.getValue()).intValue() >0) {
-            percentageCovered = ((Integer) covered.getValue()).doubleValue() * 100.0 / (((Integer) covered.getValue()).doubleValue() + ((Integer) missed.getValue()).doubleValue());
+        if ( (Integer.parseInt(covered.getValue()) + Integer.parseInt(missed.getValue())) > 0) {
+            percentageCovered
+            = Double.parseDouble(covered.getValue()) * 100.0 / (Double.parseDouble(covered.getValue()) + Double.parseDouble(missed.getValue()));
         }
         CodeQualityMetric metric = new CodeQualityMetric(metricName);
         metric.setFormattedValue(String.format("%.3f", percentageCovered));
-        metric.setValue(percentageCovered);
+        metric.setValue(Double.toString(percentageCovered));
         metric.setStatus(CodeQualityMetricStatus.Ok);
         return metric;
     }
