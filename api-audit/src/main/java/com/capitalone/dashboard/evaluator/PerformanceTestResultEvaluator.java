@@ -79,11 +79,34 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
                             int j = 0;
                             for (TestCaseStep testCaseStep : testSteps) {
                                 String value = testCaseStep.getDescription();
-                                if (j == 0) kpi.setTarget(Double.parseDouble(value));
+                                if (j == 0) {
+                                    kpi.setTarget(Double.parseDouble(value));
+                                    if(testCase.getDescription().equalsIgnoreCase("KPI : Avg response times") && !value.isEmpty()){
+                                        perfReviewResponse.addAuditStatus(PerformanceTestAuditStatus.PERFORMANCE_THRESHOLDS_RESPONSE_TIME_FOUND);
+                                        }else if((testCase.getDescription().equalsIgnoreCase("KPI : Transaction Per Second") && !value.isEmpty())) {
+                                        perfReviewResponse.addAuditStatus(PerformanceTestAuditStatus.PERFORMANCE_THRESHOLDS_TRANSACTIONS_PER_SECOND_FOUND);
+                                    }else if(testCase.getDescription().equalsIgnoreCase("KPI : Error Rate Threshold") && !value.isEmpty() ){
+                                        perfReviewResponse.addAuditStatus(PerformanceTestAuditStatus.PERFORMANCE_THRESHOLDS_ERROR_RATE_FOUND);
+                                    }
+                                }
+
                                 if (j == 1) kpi.setAchieved(Double.parseDouble(value));
                                 j++;
-                            }
+
+                                }
                             kpilist.add(kpi);
+                            if(kpi.getType().equalsIgnoreCase("KPI : Avg response times")&& (kpi.getTarget() > kpi.getAchieved()))
+                            {
+                                perfReviewResponse.addAuditStatus(PerformanceTestAuditStatus.PERFORMANCE_THRESHOLD_RESPONSE_TIME_MET);
+                            }else if(kpi.getType().equalsIgnoreCase("KPI : Transaction Per Second")&& (kpi.getTarget() <= kpi.getAchieved())){
+                                perfReviewResponse.addAuditStatus(PerformanceTestAuditStatus.PERFORMANCE_THRESHOLD_TRANSACTIONS_PER_SECOND_MET);
+                            }else if(kpi.getType().equalsIgnoreCase("KPI : Error Rate Threshold")&& (kpi.getTarget() >= kpi.getAchieved())){
+                                perfReviewResponse.addAuditStatus(PerformanceTestAuditStatus.PERFORMANCE_THRESHOLD_ERROR_RATE_MET);
+                            }
+
+                        }
+                        if(testResult.getDescription().equalsIgnoreCase("success")){
+                            perfReviewResponse.addAuditStatus(PerformanceTestAuditStatus.PERFORMANCE_MET);
                         }
                         test.setRunId(testResult.getExecutionId());
                         test.setStartTime(testResult.getStartTime());
@@ -93,14 +116,20 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
                         test.setTestName(testSuite.getDescription());
                         test.setTimeStamp(testResult.getTimestamp());
                         testlist.add(test);
+
                     }
+
                 }
+
             }
         }
         if (CollectionUtils.isEmpty(testlist)) {
             perfReviewResponse.addAuditStatus(PerformanceTestAuditStatus.PERF_RESULT_AUDIT_MISSING);
             return perfReviewResponse;
+        }else {
+            perfReviewResponse.addAuditStatus(PerformanceTestAuditStatus.PERFORMANCE_COMMIT_IS_CURRENT);
         }
+
         testlist.sort(Comparator.comparing(PerfTest::getStartTime).reversed());
         perfReviewResponse.setLastExecutionTime(testlist.get(0).getStartTime());
         perfReviewResponse.setResult(testlist);
