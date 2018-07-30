@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.Iterator;
@@ -97,9 +98,12 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
      * @return CodeQualityAuditResponse
      */
     private CodeQualityAuditResponse getStaticAnalysisResponse(CollectorItem collectorItem, List<CollectorItem> repoItems, long beginDate, long endDate) {
+        CodeQualityAuditResponse codeQualityAuditResponse = new CodeQualityAuditResponse();
+        if(collectorItem==null) return getNotConfigured();
+        if(!isProjectIdValid(collectorItem))return getErrorResponse(collectorItem);
         List<CodeQuality> codeQualities = codeQualityRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(collectorItem.getId(), beginDate-1, endDate+1);
         ObjectMapper mapper = new ObjectMapper();
-        CodeQualityAuditResponse codeQualityAuditResponse = new CodeQualityAuditResponse();
+
 
         if (CollectionUtils.isEmpty(codeQualities)) {
             codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_DETAIL_MISSING);
@@ -198,5 +202,25 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
     private List<CollectorItemConfigHistory> getProfileChanges(CodeQuality codeQuality, long beginDate, long endDate) {
         return collItemConfigHistoryRepository
                 .findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(codeQuality.getCollectorItemId(), beginDate - 1, endDate + 1);
+    }
+
+    private CodeQualityAuditResponse getErrorResponse(CollectorItem codeQualityCollectorItem){
+        CodeQualityAuditResponse missingInputResponse = new CodeQualityAuditResponse();
+        missingInputResponse.addAuditStatus(CodeQualityAuditStatus.COLLECTOR_ITEM_ERROR);
+        missingInputResponse.setLastUpdated(codeQualityCollectorItem.getLastUpdated());
+        missingInputResponse.setUrl((String)codeQualityCollectorItem.getOptions().get("instanceUrl"));
+        return  missingInputResponse;
+        }
+
+    private CodeQualityAuditResponse getNotConfigured(){
+        CodeQualityAuditResponse notConfigured = new CodeQualityAuditResponse();
+        notConfigured.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_NOT_CONFIGURED);
+       return  notConfigured;
+    }
+
+
+    private boolean isProjectIdValid(CollectorItem codeQualityCollectorItem) {
+        return Optional.ofNullable(codeQualityCollectorItem.getOptions().get("projectId")).isPresent();
+
     }
 }
