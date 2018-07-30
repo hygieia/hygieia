@@ -37,84 +37,84 @@
           "metrics": [
             {
               "name": "new_coverage",
-              "value": 90.8,
+              "value": "90.8",
               "formattedValue": "90.8%",
               "status": "Ok",
               "statusMessage": "Coverage < 90"
             },
             {
               "name": "violations_density",
-              "value": 95.7,
+              "value": "95.7",
               "formattedValue": "95.7%",
               "status": "Ok"
             },
             {
               "name": "violations",
-              "value": 2358,
+              "value": "2358.0",
               "formattedValue": "2,358",
               "status": "Ok"
             },
             {
               "name": "sqale_index",
-              "value": 18720,
+              "value": "18720.0",
               "formattedValue": "39d",
               "status": "Ok"
             },
             {
               "name": "critical_violations",
-              "value": 0,
+              "value": "0.0",
               "formattedValue": "0",
               "status": "Ok",
               "statusMessage": "Critical Issues > 0"
             },
             {
               "name": "blocker_violations",
-              "value": 0,
+              "value": "0.0",
               "formattedValue": "0",
               "status": "Ok",
               "statusMessage": "Blocker Issues > 0"
             },
             {
               "name": "test_failures",
-              "value": 0,
+              "value": "0.0",
               "formattedValue": "0",
               "status": "Ok"
             },
             {
               "name": "test_success_density",
-              "value": 100,
+              "value": "100.0",
               "formattedValue": "100.0%",
               "status": "Ok",
               "statusMessage": "Test Success Density < 100"
             },
             {
               "name": "tests",
-              "value": 224,
+              "value": "224.0",
               "formattedValue": "224",
               "status": "Ok"
             },
             {
               "name": "major_violations",
-              "value": 109,
+              "value": "109.0",
               "formattedValue": "109",
               "status": "Ok",
               "statusMessage": "Major issues > 43"
             },
             {
               "name": "ncloc",
-              "value": 55671,
+              "value": "55671.0",
               "formattedValue": "55,671",
               "status": "Ok"
             },
             {
               "name": "line_coverage",
-              "value": 31.6,
+              "value": "31.6",
               "formattedValue": "31.6%",
               "status": "Ok"
             },
             {
               "name": "test_errors",
-              "value": 0,
+              "value": "0.0",
               "formattedValue": "0",
               "status": "Ok"
             },
