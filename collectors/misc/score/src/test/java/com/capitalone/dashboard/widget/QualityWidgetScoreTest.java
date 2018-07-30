@@ -131,7 +131,7 @@ public class QualityWidgetScoreTest {
 
     for (CodeQualityMetric codeQualityMetric : qualityResult.get(0).getMetrics()) {
       if (codeQualityMetric.getName().equals("test_success_density")) {
-        codeQualityMetric.setValue(99d);
+        codeQualityMetric.setValue("99.0");
         break;
       }
     }
