@@ -111,15 +111,14 @@ jobs:
     steps:
       - attach_workspace:
           at: /tmp/workspace
-      - run: ls -lart /tmp/workspace/target
-      - run: mkdir analysis-target && mv /tmp/workspace/exec-analysis/target/exec-analysis-*.jar analysis-target/exec-analysis.jar && mv /tmp/workspace/exec-analysis/Dockerfile ./Dockerfile
+      - run: ls -lart /tmp/workspace/
       - run: |
           TAG=1.1.$CIRCLE_BUILD_NUM
-          docker build -t sredna/hygieia-exec-analysis:$TAG .
-          docker tag sredna/hygieia-exec-analysis:$TAG sredna/hygieia-exec-analysis:latest
+          docker build -t sredna/hygieia-2.0:$TAG .
+          docker tag sredna/hygieia-2.0:$TAG sredna/hygieia-2.0:latest
           docker login -u $DOCKER_USER -p $DOCKER_PASS
-          docker push sredna/hygieia-exec-analysis:$TAG
-          docker push sredna/hygieia-exec-analysis:latest
+          docker push sredna/hygieia-2.0:$TAG
+          docker push sredna/hygieia-2.0:latest
 workflows:
   version: 2
   full_boat:
@@ -140,10 +139,10 @@ workflows:
 #            branches:
 #              only:
 #                - master
-#      - publish:
-#          requires:
-#            - package
-#          filters:
-#            branches:
-#              only:
-#                - master
+      - publish:
+          requires:
+            - package
+          filters:
+            branches:
+              only:
+                - master
