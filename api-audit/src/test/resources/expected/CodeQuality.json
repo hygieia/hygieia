@@ -10,6 +10,7 @@
     "CODE_QUALITY": [
       {
         "auditStatuses": [
+          
           "QUALITY_PROFILE_VALIDATION_AUDIT_NO_CHANGE",
           "CODE_QUALITY_AUDIT_OK",
           "CODE_QUALITY_GATES_FOUND",
