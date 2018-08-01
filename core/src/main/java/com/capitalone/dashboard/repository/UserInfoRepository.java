@@ -17,4 +17,6 @@ public interface UserInfoRepository extends CrudRepository<UserInfo, ObjectId>{
 
     Iterable<UserInfo> findByOrderByUsernameAsc();
 
+    UserInfo findByUsername(String userName);
+
 }
