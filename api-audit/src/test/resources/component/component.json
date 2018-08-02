@@ -77,8 +77,8 @@
         "lastUpdated" : 1513106044147,
         "options" : {
           "jobName" : "ease-COAF-UI-ATDD-Functional-SLATE",
-          "jobUrl" : "https://coafjenkins.kdc.capitalone.com/coafjenkins/job/ease-COAF-UI-ATDD-Functional-SLATE/",
-          "instanceUrl" : "https://coafjenkins.kdc.capitalone.com/coafjenkins/"
+          "jobUrl" : "https://myjenkins.com/jenkins/job/ease-COAF-UI-ATDD-Functional-SLATE/",
+          "instanceUrl" : "https://myjenkins.com/jenkins/"
         }
       }
     ],
@@ -94,7 +94,7 @@
         "options" : {
           "projectName" : "openupf-hldirect service parent",
           "projectId" : "111955",
-          "instanceUrl" : "http://vantage.kdc.capitalone.com:11300/sonar"
+          "instanceUrl" : "http://mysonar.com/sonar"
         }
       }
     ]
