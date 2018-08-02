@@ -5,7 +5,7 @@
     "timestamp" : 1523505798000,
     "executionId" : "60c8133f-7886-4908-8aea-f9c9162bee19",
     "description" : "Success",
-    "url" : "https://hercules.cloud.capitalone.com/api/core/tests/f79be402-b1db-414e-bb3e-821cd1f520a0",
+    "url" : "https://hercules.com/api/core/tests",
     "startTime" : 1522623841000,
     "endTime" : 1526505798000,
     "duration" : 1203,
