@@ -5,7 +5,7 @@
   "collectorItemId" : "56e5919d7fab7c0244e33341",
   "timestamp" : 1476472229000,
   "name" : "openupf-hldirect service parent",
-  "url" : "http://vantage.kdc.capitalone.com:11300/sonar/dashboard/index/111955",
+  "url" : "http://myjenkins.com/sonar/dashboard/index/111955",
   "type" : "StaticAnalysis",
   "version" : "16.10.00.01-SNAPSHOT",
   "metrics" : [

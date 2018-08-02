@@ -24,14 +24,14 @@
           "CODE_QUALITY_THRESHOLD_CODE_COVERAGE_FOUND"
         ],
         "lastUpdated": 0,
-        "url": "http://vantage.kdc.capitalone.com:11300/sonar/dashboard/index/111955",
+        "url": "http://myjenkins.com/sonar/dashboard/index/111955",
         "lastExecutionTime": 1476472229000,
         "codeQuality": {
           "id": "58012f01edb9650abaf8d9a2",
           "collectorItemId": "56e5919d7fab7c0244e33341",
           "timestamp": 1476472229000,
           "name": "openupf-hldirect service parent",
-          "url": "http://vantage.kdc.capitalone.com:11300/sonar/dashboard/index/111955",
+          "url": "http://myjenkins.com/sonar/dashboard/index/111955",
           "type": "StaticAnalysis",
           "version": "16.10.00.01-SNAPSHOT",
           "metrics": [
