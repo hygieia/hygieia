@@ -1,0 +1,26 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: sonarqube-build-collector
+  name: sonarqube-build-collector
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: sonarqube-build-collector
+    spec:
+      containers:
+      - env:
+        - name: SONAR_PASSWORD
+          value: kde8*)idEEw2
+        - name: SONAR_URL
+          value: https://alm-latam.accenture.com/fs-rec-brdsco-sonarqube
+        - name: SONAR_USERNAME
+          value: cambiosonar
+        - name: SONAR_VERSION
+          value: "6.31"
+        image: ikarofsantos/hygieia-sonarqube-build-collector
+        name: sonarqube-build-collector
+      restartPolicy: Always
