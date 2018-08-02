@@ -165,10 +165,10 @@ public class DashboardAuditServiceTest {
         assertDashboardAudit(actual, expected);
         assertThat(actual.getReview()).isNotEmpty();
         assertThat(actual.getReview().get(AuditType.PERF_TEST)).isNotNull();
-        Map<AuditType, Collection<LibraryPolicyAuditResponse>> actualReviewMap = actual.getReview();
-        Collection<LibraryPolicyAuditResponse> actualReview = actualReviewMap.get(AuditType.PERF_TEST);
-        Map<AuditType, Collection<LibraryPolicyAuditResponse>> expectedReviewMap = expected.getReview();
-        Collection<LibraryPolicyAuditResponse> expectedReview = expectedReviewMap.get(AuditType.PERF_TEST);
+        Map<AuditType, Collection<PerformanceTestAuditResponse>> actualReviewMap = actual.getReview();
+        Collection<PerformanceTestAuditResponse> actualReview = actualReviewMap.get(AuditType.PERF_TEST);
+        Map<AuditType, Collection<PerformanceTestAuditResponse>> expectedReviewMap = expected.getReview();
+        Collection<PerformanceTestAuditResponse> expectedReview = expectedReviewMap.get(AuditType.PERF_TEST);
         assertThat(actualReview.size()).isEqualTo(1);
         assertThat(actualReview.toArray()[0]).isEqualToComparingFieldByFieldRecursively(expectedReview.toArray()[0]);
     }

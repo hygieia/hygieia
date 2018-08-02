@@ -89,10 +89,8 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
                                         perfReviewResponse.addAuditStatus(PerformanceTestAuditStatus.PERFORMANCE_THRESHOLDS_ERROR_RATE_FOUND);
                                     }
                                 }
-
                                 if (j == 1) kpi.setAchieved(Double.parseDouble(value));
                                 j++;
-
                                 }
                             kpilist.add(kpi);
                             if(kpi.getType().equalsIgnoreCase("KPI : Avg response times")&& (kpi.getTarget() > kpi.getAchieved()))
@@ -116,11 +114,8 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
                         test.setTestName(testSuite.getDescription());
                         test.setTimeStamp(testResult.getTimestamp());
                         testlist.add(test);
-
                     }
-
                 }
-
             }
         }
         if (CollectionUtils.isEmpty(testlist)) {
