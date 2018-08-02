@@ -1,0 +1,191 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: api
+  name: api
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+      - image: ikarofsantos/hygieia-api
+        name: api
+        ports:
+        - containerPort: 8080
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: api
+  name: api
+spec:
+  ports:
+  - name: "8080"
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: api
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: db
+  name: db
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+      - env:
+        - name: MONGODB_DATABASE
+          value: dashboarddb
+        - name: MONGODB_PASSWORD
+          value: dbpassword
+        - name: MONGODB_USERNAME
+          value: dashboarduser
+        image: japm/mongodb:latest
+        name: db
+        ports:
+        - containerPort: 27017
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: db
+  name: db
+spec:
+  ports:
+  - name: "27017"
+    port: 27017
+    targetPort: 27017
+  selector:
+    app: db
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: jenkins-build-collector
+  name: jenkins-build-collector
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: jenkins-build-collector
+    spec:
+      containers:
+      - env:
+        - name: JENKINS_API_KEY
+          value: 17072cb8cc3e5b1b94a4f2d4cc442acf
+        - name: JENKINS_CRON
+          value: 0 * * * * *
+        - name: JENKINS_MASTER
+          value: https://alm-latam.accenture.com/fs-rec-brdsco-jenkins
+        - name: JENKINS_USERNAME
+          value: admin
+        - name: MONGO_PORT
+          value: tcp://db:27017
+        image: ikarofsantos/hygieia-jenkins-build-collector
+        name: jenkins-build-collector
+      restartPolicy: Always
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: phabricator-collector
+  name: phabricator-collector
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: phabricator-collector
+    spec:
+      containers:
+      - env:
+        - name: MONGO_PORT
+          value: tcp://db:27017
+        - name: PHABRICATOR_HOST
+          value: pb-dc.alm-latam.accenture.com
+        - name: PHABRICATOR_TOKEN
+          value: api-ddh64pznhpx2wqgjluhgm5cedbvv
+        image: japm/hygieia-phabricator-scm-collector
+        name: phabricator-collector
+      restartPolicy: Always
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: sonarqube-build-collector
+  name: sonarqube-build-collector
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: sonarqube-build-collector
+    spec:
+      containers:
+      - env:
+        - name: SONAR_PASSWORD
+          value: kde8*)idEEw2
+        - name: SONAR_URL
+          value: https://alm-latam.accenture.com/fs-rec-brdsco-sonarqube
+        - name: SONAR_USERNAME
+          value: cambiosonar
+        - name: SONAR_VERSION
+          value: "6.31"
+        image: ikarofsantos/hygieia-sonarqube-build-collector
+        name: sonarqube-build-collector
+      restartPolicy: Always
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: ui
+  name: ui
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ui
+    spec:
+      containers:
+      - image: japm/hygieia-ui
+        name: ui
+        ports:
+        - containerPort: 80
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ui
+  name: ui
+spec:
+  ports:
+  - name: "3000"
+    port: 3000
+    targetPort: 80
+  selector:
+    app: ui
