@@ -1,7 +1,6 @@
 [
   {
   "id" : "58012f01edb9650abaf8d9a2",
-  "class" : "com.capitalone.dashboard.model.CodeQuality",
   "collectorItemId" : "56e5919d7fab7c0244e33341",
   "timestamp" : 1476472229000,
   "name" : "openupf-hldirect service parent",
