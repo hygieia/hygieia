@@ -1,5 +1,8 @@
+
 {
   "name": "TestAudit",
+  "id": "57f29d143b55670a9e06d624",
+
   "collectorItems": {
     "SCM": [
       {
@@ -72,12 +75,28 @@
           "instanceUrl": "https://scan.com"
         }
       }
+    ],
+    "Test" : [
+      {
+        "id" : "57f2a0193b55670a9e06d63a",
+        "description" : "ease-COAF-UI-ATDD-Functional-SLATE",
+        "niceName" : "COAF",
+        "enabled" : true,
+        "errors" : [
+
+        ],
+        "pushed" : true,
+        "collectorId" : "56df29df7fab7c3ec3c432ea",
+        "lastUpdated" : 1513106044147,
+        "options" : {
+          "jobName" : "ease-COAF-UI-ATDD-Functional-SLATE",
+          "jobUrl" : "https://coafjenkins.kdc.capitalone.com/coafjenkins/job/ease-COAF-UI-ATDD-Functional-SLATE/",
+          "instanceUrl" : "https://coafjenkins.kdc.capitalone.com/coafjenkins/"
+        }
+      }
     ]
-  },
-      "id": {
-    "timestamp": 1515645665,
-    "machineIdentifier": 4693261,
-    "processIdentifier": 6916,
-    "counter": 3010182
   }
+
 }
+
+
