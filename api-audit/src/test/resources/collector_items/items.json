@@ -456,5 +456,24 @@
       "projectId" : "111955",
       "instanceUrl" : "http://mysonar.com:11300/sonar"
     }
+  },
+
+  {
+    "id" : "57f2a0193b55670a9e06d63a",
+    "description" : "TEST-UI",
+    "niceName" : "TEST",
+    "enabled" : true,
+    "errors" : [],
+    "pushed" : true,
+    "collectorId" : "56df29df7fab7c3ec3c432ea",
+    "lastUpdated" : 1513106044147,
+    "options" : {
+      "jobName" : "TEST-UI",
+      "jobUrl" : "https://myjenkins.com/myjenkins/job/TEST-UI/",
+      "instanceUrl" : "https://myjenkins.com/myjenkins/",
+      "applicationID": [
+        "TestBusServ"
+      ]
+    }
   }
 ]
