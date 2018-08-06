@@ -1,5 +1,41 @@
 [
   {
+    "id" : "56cb5bde7fab7c548551410e",
+    "sonarVersions" : [
+      4.3,
+      5.3,
+      5.6,
+      6.7,
+      6.7
+    ],
+    "sonarMetrics" : [
+      "ncloc,line_coverage,violations,critical_violations,major_violations,blocker_violations,violations_density,sqale_index,test_success_density,test_failures,test_errors,tests",
+      "ncloc,line_coverage,violations,critical_violations,major_violations,blocker_violations,violations_density,sqale_index,test_success_density,test_failures,test_errors,tests",
+      "ncloc,violations,new_vulnerabilities,critical_violations,major_violations,blocker_violations,tests,test_success_density,test_errors,test_failures,coverage,line_coverage,sqale_index,alert_status,quality_gate_details",
+      "ncloc,violations,new_vulnerabilities,critical_violations,major_violations,blocker_violations,tests,test_success_density,test_errors,test_failures,coverage,line_coverage,sqale_index,alert_status,quality_gate_details",
+      "ncloc,violations,new_vulnerabilities,critical_violations,major_violations,blocker_violations,tests,test_success_density,test_errors,test_failures,coverage,line_coverage,sqale_index,alert_status,quality_gate_details"
+    ],
+    "name" : "Sonar",
+    "collectorType" : "CodeQuality",
+    "enabled" : true,
+    "online" : true,
+    "errors" : [
+    ],
+    "uniqueFields" : {
+      "projectName" : "",
+      "instanceUrl" : ""
+    },
+    "allFields" : {
+      "projectName" : "",
+      "projectId" : "",
+      "instanceUrl" : ""
+    },
+    "lastExecuted" : 1528709375907,
+    "searchFields" : [
+      "description"
+    ]
+  },
+  {
     "name": "GitHub",
     "collectorType": "SCM",
     "enabled": true,
@@ -53,7 +89,9 @@
   },
   {
     "id": "5af9ed53cba7165e8cc1069e",
-    "eratocodeServers": "",
+    "eratocodeServers": [
+      "https://scan.com"
+    ],
     "niceNames": [],
     "name": "EratocodeOSS",
     "collectorType": "LibraryPolicy",
@@ -79,7 +117,6 @@
   },
   {
     "_id" : "5a9efef85bcf7d3eb7d4bf85",
-    "buildServers" : "",
     "name" : "JenkinsCucumberTest",
     "collectorType" : "Test",
     "enabled" : true,
@@ -149,5 +186,28 @@
       "jobUrl" : "",
       "instanceUrl" : ""
     }
+  },
+  {
+    "id" : "56ca15297fab7c68bfdb420c",
+    "name" : "GitHub",
+    "enabled" : true,
+    "online" : true,
+    "errors" : [
+    ],
+    "uniqueFields" : {
+      "branch" : "",
+      "url" : ""
+    },
+    "allFields" : {
+      "password" : "",
+      "personalAccessToken" : "",
+      "branch" : "",
+      "userID" : "",
+      "url" : ""
+    },
+    "lastExecuted" : 1528709433703,
+    "searchFields" : [
+      "description"
+    ]
   }
 ]
