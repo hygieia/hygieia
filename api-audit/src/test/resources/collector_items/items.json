@@ -1,20 +1,5 @@
 [
   {
-    "id" : "56e301107fab7c3ec3c43397",
-    "enabled" : true,
-    "errors" : [
-
-    ],
-    "pushed" : false,
-    "collectorId" : "56ca15297fab7c68bfdb420c",
-    "lastUpdated" : 1528709104212,
-    "options" : {
-      "scm" : "Github",
-      "branch" : "develop",
-      "url" : "https://mygithub.com/COHL-HLTechOriginations/openupf-hldirect"
-    }
-  },
-  {
     "description": "Registered by Remote Call.",
     "enabled": true,
     "errors": [],
@@ -488,7 +473,7 @@
     "errors" : [
       {
         "errorCode" : "Unreachable",
-        "errorMessage" : "https://github.com/Hygieia",
+        "errorMessage" : "https://github.com/capitalone/Hygieia",
         "timestamp" : 1515444300589
       }
     ],
@@ -500,7 +485,7 @@
       "personalAccessToken" : "",
       "branch" : "master",
       "userID" : "",
-      "url" : "https://github.com/Hygieia"
+      "url" : "https://github.com/capitalone/Hygieia"
     }
   },
 
@@ -544,14 +529,14 @@
 
   {
     "id" : "5a9f2b445bcf7d54556ee180",
-    "description" : "Public_ClairScanning/ArtifactoryClairScan",
+    "description" : "Public_Clair",
     "enabled" : true,
     "errors" : [],
     "pushed" : false,
     "collectorId" : "5a9f27fc5bcf7d532b533749",
     "lastUpdated" : 0,
     "options" : {
-      "jobName" : "Public_ClairScanning/ArtifactoryClairScan",
+      "jobName" : "Public_Clair",
       "jobUrl" : "https://myjenkins.com/job/Public_ClairScanning/job/ArtifactoryClairScan/",
       "instanceUrl" : "https://myjenkins.com/"
     }
@@ -559,7 +544,7 @@
 
   {
     "id" : "56df29df7fab7c3ec3c432eb",
-    "description" : "cos-ui-mock-test-hygieia-chrome",
+    "description" : "mock_test",
     "niceName" : "Grayskull",
     "enabled" : true,
     "errors" : [],
@@ -567,32 +552,15 @@
     "collectorId" : "56df29df7fab7c3ec3c432ea",
     "lastUpdated" : 1462401522892,
     "options" : {
-      "jobName" : "cos-ui-mock-test-hygieia-chrome",
-      "jobUrl" : "http://myjenkins.com:8080/job/cos-ui-mock-test-hygieia-chrome/",
+      "jobName" : "mock_test",
+      "jobUrl" : "http://myjenkins.com:8080/job/mock_test/",
       "instanceUrl" : "http://myjenkins.com:8080/"
-    }
-  },
-  {
-    "id" : "56e5919d7fab7c0244e33341",
-    "description" : "openupf-hldirect service parent",
-    "niceName" : "HomeLoan",
-    "enabled" : true,
-    "errors" : [
-
-    ],
-    "pushed" : true,
-    "collectorId" : "56cb5bde7fab7c548551410e",
-    "lastUpdated" : 1460387608894,
-    "options" : {
-      "projectName" : "openupf-hldirect service parent",
-      "projectId" : "111955",
-      "instanceUrl" : "http://mysonar.com:11300/sonar"
     }
   },
 
   {
     "id" : "57f2a0193b55670a9e06d63a",
-    "description" : "ease-TEST-UI-ATDD-Functional-SLATE",
+    "description" : "TEST",
     "niceName" : "TEST",
     "enabled" : true,
     "errors" : [],
@@ -600,8 +568,8 @@
     "collectorId" : "56df29df7fab7c3ec3c432ea",
     "lastUpdated" : 1513106044147,
     "options" : {
-      "jobName" : "ease-TEST-UI-ATDD-Functional-SLATE",
-      "jobUrl" : "https://myjenkins.com/myjenkins/job/ease-TEST-UI-ATDD-Functional-SLATE/",
+      "jobName" : "TEST",
+      "jobUrl" : "https://myjenkins.com/myjenkins/job/TEST/",
       "instanceUrl" : "https://myjenkins.com/myjenkins/",
       "applicationID": [
         "TestBusServ"
@@ -611,7 +579,7 @@
 
   {
     "id" : "58091241edb9650aa33d288e",
-    "description" : "ease-TEST-eAPI-ATDD-Functional-SLATE",
+    "description" : "TEST",
     "niceName" : "TEST",
     "enabled" : true,
     "errors" : [],
@@ -619,15 +587,15 @@
     "collectorId" : "56df29df7fab7c3ec3c432ea",
     "lastUpdated" : 1476989505898,
     "options" : {
-      "jobName" : "ease-TEST-eAPI-ATDD-Functional-SLATE",
-      "jobUrl" : "https://myjenkins.com/myjenkins/job/ease-TEST-eAPI-ATDD-Functional-SLATE/",
+      "jobName" : "TEST",
+      "jobUrl" : "https://myjenkins.com/myjenkins/job/TEST/",
       "instanceUrl" : "https://myjenkins.com/myjenkins/"
     }
   },
 
   {
     "id" : "5ac5485c05f7c07b37c5ea8f",
-    "description" : "FS_TEST_DS_Slate",
+    "description" : "FS_TEST",
     "enabled" : false,
     "errors" : [],
     "pushed" : false,
@@ -718,7 +686,7 @@
 
   {
     "id" : "580fb8d6edb9650aa33d2f36",
-    "description" : "SMOKE_TEST_FS_HLServicing_Saturn",
+    "description" : "SMOKE_TEST",
     "niceName" : "HomeLoan",
     "enabled" : true,
     "errors" : [],
@@ -726,15 +694,15 @@
     "collectorId" : "56df29df7fab7c3ec3c432ea",
     "lastUpdated" : 1481831396270,
     "options" : {
-      "jobName" : "SMOKE_TEST_FS_HLServicing_Saturn",
-      "jobUrl" : "https://homeloansjenkins.test.com/homeloansjenkins/job/SMOKE_TEST_FS_HLServicing_Saturn/",
-      "instanceUrl" : "https://homeloansjenkins.test.com/homeloansjenkins/"
+      "jobName" : "SMOKE_TEST",
+      "jobUrl" : "https://loans.test.com/loans/job/SMOKE_TEST/",
+      "instanceUrl" : "https://loans.test.com/loans/"
     }
   },
 
   {
     "id" : "57e15a398a48fa4aeb6d779e",
-    "description" : "QA_Saturn-UI_CICD",
+    "description" : "QA_UI",
     "niceName" : "HomeLoan",
     "enabled" : true,
     "errors" : [],
@@ -742,9 +710,9 @@
     "collectorId" : "56df29df7fab7c3ec3c432ea",
     "lastUpdated" : 1499706689125,
     "options" : {
-      "jobName" : "QA_Saturn-UI_CICD",
-      "jobUrl" : "https://homeloansjenkins.test.com/homeloansjenkins/job/QA_Saturn-UI_CICD/",
-      "instanceUrl" : "https://homeloansjenkins.test.com/homeloansjenkins/"
+      "jobName" : "QA_UI",
+      "jobUrl" : "https://loans.test.com/loans/job/QA_UI/",
+      "instanceUrl" : "https://loans.test.com/loans/"
     }
   },
 
@@ -759,8 +727,8 @@
     "lastUpdated" : 1496686019427,
     "options" : {
       "jobName" : "GIT_HLSaturn_Release_Build",
-      "jobUrl" : "https://homeloansjenkins.test.com/homeloansjenkins/job/GIT_HLSaturn_Release_Build/",
-      "instanceUrl" : "https://homeloansjenkins.test.com/homeloansjenkins/"
+      "jobUrl" : "https://loans.test.com/loans/job/Release_Build",
+      "instanceUrl" : "https://loans.test.com/loans/"
     }
   },
 
@@ -858,7 +826,7 @@
     "options" : {
       "teamName" : "Cloud Tools Engineering",
       "featureTool" : "VersionOne",
-      "projectName" : "Kanban Board - Shared Tools Engineering",
+      "projectName" : " Tools Engineering",
       "projectId" : "Scope:24289483",
       "teamId" : "Team:26967234"
     }
@@ -903,5 +871,39 @@
       "url" : "https://github.test.com/OpenSourceOffice/Innersourcing"
     }
 
+  },
+
+  {
+    "id" : "56e301107fab7c3ec3c43397",
+    "enabled" : true,
+    "errors" : [
+
+    ],
+    "pushed" : false,
+    "collectorId" : "56ca15297fab7c68bfdb420c",
+    "lastUpdated" : 1528709104212,
+    "options" : {
+      "scm" : "Github",
+      "branch" : "develop",
+      "url" : "https://mygithub.com/TechOriginations/openupf"
+    }
+  },
+
+  {
+    "id" : "56e5919d7fab7c0244e33341",
+    "description" : "openupf service parent",
+    "niceName" : "HomeLoan",
+    "enabled" : true,
+    "errors" : [
+
+    ],
+    "pushed" : true,
+    "collectorId" : "56cb5bde7fab7c548551410e",
+    "lastUpdated" : 1460387608894,
+    "options" : {
+      "projectName" : "openupf service parent",
+      "projectId" : "111955",
+      "instanceUrl" : "http://mysonar.com:11300/sonar"
+    }
   }
 ]
