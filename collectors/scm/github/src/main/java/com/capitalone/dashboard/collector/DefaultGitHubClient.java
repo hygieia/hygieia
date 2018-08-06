@@ -32,9 +32,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -552,14 +550,7 @@ public class DefaultGitHubClient implements GitHubClient {
                                 nextPageUrl = parts[i].split(";")[0];
                                 nextPageUrl = nextPageUrl.replaceFirst("<","");
                                 nextPageUrl = nextPageUrl.replaceFirst(">","").trim();
-                                // Github Link headers for 'next' and 'last' are URL Encoded
-                                String decodedPageUrl;
-                                try {
-                                    decodedPageUrl = URLDecoder.decode(nextPageUrl, StandardCharsets.UTF_8.name());
-                                } catch (UnsupportedEncodingException e) {
-                                    decodedPageUrl = URLDecoder.decode(nextPageUrl);
-                                }
-                                return decodedPageUrl;
+                                return nextPageUrl;
                             }
                         }
                     }

@@ -1,0 +1,712 @@
+[
+  {
+    "id" : "589fee7ca65ce715e612c8b2",
+    "collectorId" : "589febd0a65ce715e611a02d",
+    "sId" : "Story:25440803",
+    "sNumber" : "B-1626822",
+    "sName" : "Stop calling Account Summary from L2 - Performance Improvements",
+    "sTypeId" : "",
+    "sTypeName" : "Story",
+    "sStatus" : "Accepted",
+    "sState" : "Closed",
+    "sEstimate" : "2",
+    "changeDate" : "2016-10-16T13:54:58.8200000",
+    "isDeleted" : "False",
+    "sOwnersID" : [
+      "Member:19042006"
+    ],
+    "sOwnersIsDeleted" : [
+      "False"
+    ],
+    "sOwnersChangeDate" : [
+      "2016-08-21T07:18:28.2530000"
+    ],
+    "sOwnersState" : [
+      "Active"
+    ],
+    "sOwnersUsername" : [
+      "LDX411"
+    ],
+    "sOwnersFullName" : [
+      "Shashikanth Enamanagandla"
+    ],
+    "sOwnersShortName" : [
+      "Shashikanth Enamanagandla"
+    ],
+    "sTeamIsDeleted" : "False",
+    "sTeamAssetState" : "Active",
+    "sTeamChangeDate" : "2014-07-11T08:00:16.7670000",
+    "sTeamName" : "Slate",
+    "sTeamID" : "Team:26967234",
+    "sSprintIsDeleted" : "False",
+    "sSprintChangeDate" : "2016-06-07T14:54:04.7830000",
+    "sSprintAssetState" : "Active",
+    "sSprintEndDate" : "2016-09-15T00:00:00.0000000",
+    "sSprintBeginDate" : "2016-09-01T00:00:00.0000000",
+    "sSprintName" : "Sprint 8.5 (9/1 - 9/14)",
+    "sSprintID" : "Timebox:23317533",
+    "sEpicIsDeleted" : "False",
+    "sEpicChangeDate" : "2014-06-30T00:48:05.1470000",
+    "sEpicAssetState" : "Active",
+    "sEpicType" : "",
+    "sEpicEndDate" : "",
+    "sEpicBeginDate" : "",
+    "sEpicName" : "Continuous Improvement",
+    "sEpicNumber" : "E-51172",
+    "sEpicID" : "Epic:5423883",
+    "sProjectPath" : "All-->Enterprise-->EASE Web-->Test-->Release Folders-->Enterprise EASE Platform-->Web PI-8",
+    "sProjectIsDeleted" : "False",
+    "sProjectState" : "Active",
+    "sProjectChangeDate" : "2016-09-16T09:45:31.4530000",
+    "sProjectEndDate" : "",
+    "sProjectBeginDate" : "2016-06-07T00:00:00.0000000",
+    "sProjectName" : "Web PI-8",
+    "sProjectID" : "Scope:23316970"
+  },
+
+  {
+    "id" : "589fee7ca65ce715e612c8b3",
+    "collectorId" : "589febd0a65ce715e611a02d",
+    "sId" : "Story:25440803",
+    "sNumber" : "JIRA-11998",
+    "sName" : "Combine the Json response to include Artemis PAR Quality Check 4.3 and 4.6",
+    "sTypeId" : "",
+    "sTypeName" : "Story",
+    "sStatus" : "Accepted",
+    "sState" : "Closed",
+    "sEstimate" : "2",
+    "changeDate" : "2016-09-16T13:54:58.8200000",
+    "isDeleted" : "False",
+    "sOwnersID" : [
+      "Member:19042006"
+    ],
+    "sOwnersIsDeleted" : [
+      "False"
+    ],
+    "sOwnersChangeDate" : [
+      "2016-08-21T07:18:28.2530000"
+    ],
+    "sOwnersState" : [
+      "Active"
+    ],
+    "sOwnersUsername" : [
+      "EMB235"
+    ],
+    "sOwnersFullName" : [
+      "Varun Mukka"
+    ],
+    "sOwnersShortName" : [
+      "vmukka"
+    ],
+    "sTeamIsDeleted" : "False",
+    "sTeamAssetState" : "Active",
+    "sTeamChangeDate" : "2014-07-11T08:00:16.7670000",
+    "sTeamName" : "Hygieia",
+    "sTeamID" : "Team:26967234",
+    "sSprintIsDeleted" : "False",
+    "sSprintChangeDate" : "2016-06-07T14:54:04.7830000",
+    "sSprintAssetState" : "Active",
+    "sSprintEndDate" : "2016-09-15T00:00:00.0000000",
+    "sSprintBeginDate" : "2016-09-01T00:00:00.0000000",
+    "sSprintName" : "JIRA Sprint 11.2",
+    "sSprintID" : "Timebox:23317533",
+    "sEpicIsDeleted" : "False",
+    "sEpicChangeDate" : "2014-06-30T00:48:05.1470000",
+    "sEpicAssetState" : "Active",
+    "sEpicType" : "",
+    "sEpicEndDate" : "",
+    "sEpicBeginDate" : "",
+    "sEpicName" : "PAR 2.0: Traceability Endpoint for Hygieia Audit API",
+    "sEpicNumber" : "JIRA-11900",
+    "sEpicID" : "Epic:5423883",
+    "sProjectPath" : "All-->Enterprise-->EASE Web-->Test-->Release Folders-->Enterprise EASE Platform-->Web PI-8",
+    "sProjectIsDeleted" : "False",
+    "sProjectState" : "Active",
+    "sProjectChangeDate" : "2016-09-16T09:45:31.4530000",
+    "sProjectEndDate" : "",
+    "sProjectBeginDate" : "2016-06-07T00:00:00.0000000",
+    "sProjectName" : "Traceability 1.0",
+    "sProjectID" : "Scope:23316970"
+  },
+
+  {
+    "id" : "589fece2a65ce715e6121cbf",
+    "collectorId" : "589febd0a65ce715e611a02d",
+    "sId" : "Story:23029864",
+    "sNumber" : "B-1488671",
+    "sName" : "AWS - Chronos Deployment Through CHEF Scripts",
+    "sTypeId" : "",
+    "sTypeName" : "Story",
+    "sStatus" : "",
+    "sState" : "Closed",
+    "sEstimate" : "",
+    "changeDate" : "2016-11-01T13:47:48.7600000",
+    "isDeleted" : "False",
+    "sOwnersID" : [
+      "Member:14556423"
+    ],
+    "sOwnersIsDeleted" : [
+      "False"
+    ],
+    "sOwnersChangeDate" : [
+      "2015-08-07T12:15:25.4200000"
+    ],
+    "sOwnersState" : [
+      "Active"
+    ],
+    "sOwnersUsername" : [
+      "LGV805"
+    ],
+    "sOwnersFullName" : [
+      "Navin Chaudhary"
+    ],
+    "sOwnersShortName" : [
+      "Navin Chaudhary"
+    ],
+    "sTeamIsDeleted" : "False",
+    "sTeamAssetState" : "Active",
+    "sTeamChangeDate" : "2015-11-12T10:46:07.6970000",
+    "sTeamName" : "Laguna",
+    "sTeamID" : "Team:26967234",
+    "sSprintAssetState" : "Active",
+    "sSprintEndDate" : "",
+    "sSprintBeginDate" : "",
+    "sSprintName" : "",
+    "sSprintID" : "",
+    "sEpicIsDeleted" : "False",
+    "sEpicChangeDate" : "2015-12-02T15:55:25.9000000",
+    "sEpicAssetState" : "Active",
+    "sEpicType" : "",
+    "sEpicEndDate" : "",
+    "sEpicBeginDate" : "",
+    "sEpicName" : "HL Saturn",
+    "sEpicNumber" : "E-128386",
+    "sEpicID" : "Epic:17985239",
+    "sProjectPath" : "All-->Test-->STS (Shared Technology Services-->STS EDS Enterprise-->STS Enterprise Data Services (EDS-->Kanban Board - Laguna",
+    "sProjectIsDeleted" : "False",
+    "sProjectState" : "Active",
+    "sProjectChangeDate" : "2017-01-06T11:37:37.4800000",
+    "sProjectEndDate" : "",
+    "sProjectBeginDate" : "2015-11-13T00:00:00.0000000",
+    "sProjectName" : "Kanban Board - Laguna",
+    "sProjectID" : "Scope:17482903"
+  },
+
+  {
+    "id" : "589fecf8a65ce715e61227ca",
+    "collectorId" : "589febd0a65ce715e611a02d",
+    "sId" : "Story:23442599",
+    "sNumber" : "B-1509111",
+    "sName" : "AWS - Create CP for IPS handling Rehydration",
+    "sTypeId" : "",
+    "sTypeName" : "Story",
+    "sStatus" : "",
+    "sState" : "Closed",
+    "sEstimate" : "",
+    "changeDate" : "2016-12-16T12:15:14.0200000",
+    "isDeleted" : "False",
+    "sOwnersID" : [
+      "Member:2183918"
+    ],
+    "sOwnersIsDeleted" : [
+      "False"
+    ],
+    "sOwnersChangeDate" : [
+      "2016-05-19T11:19:11.7000000"
+    ],
+    "sOwnersState" : [
+      "Active"
+    ],
+    "sOwnersUsername" : [
+      "BTP534"
+    ],
+    "sOwnersFullName" : [
+      "Justin Johnson"
+    ],
+    "sOwnersShortName" : [
+      "Justin Johnson"
+    ],
+    "sTeamIsDeleted" : "False",
+    "sTeamAssetState" : "Active",
+    "sTeamChangeDate" : "2015-11-12T10:46:07.6970000",
+    "sTeamName" : "Laguna",
+    "sTeamID" : "Team:26967234",
+    "sSprintAssetState" : "Active",
+    "sSprintEndDate" : "",
+    "sSprintBeginDate" : "",
+    "sSprintName" : "",
+    "sSprintID" : "",
+    "sEpicIsDeleted" : "False",
+    "sEpicChangeDate" : "2015-11-18T11:33:44.4470000",
+    "sEpicAssetState" : "Active",
+    "sEpicType" : "",
+    "sEpicEndDate" : "",
+    "sEpicBeginDate" : "",
+    "sEpicName" : "HL General",
+    "sEpicNumber" : "E-126986",
+    "sEpicID" : "Epic:17610344",
+    "sProjectPath" : "All-->Test-->STS (Shared Technology Services-->STS EDS Enterprise-->STS Enterprise Data Services (EDS-->Kanban Board - Laguna",
+    "sProjectIsDeleted" : "False",
+    "sProjectState" : "Active",
+    "sProjectChangeDate" : "2017-01-06T11:37:37.4800000",
+    "sProjectEndDate" : "",
+    "sProjectBeginDate" : "2015-11-13T00:00:00.0000000",
+    "sProjectName" : "Kanban Board - Laguna",
+    "sProjectID" : "Scope:17482903"
+  },
+
+  {
+    "id" : "589fecf8a65ce715e61227cb",
+    "collectorId" : "589febd0a65ce715e611a02d",
+    "sId" : "Story:23442698",
+    "sNumber" : "B-1509115",
+    "sName" : "AWS - Create CP for IPS handling Linux EC2 Instances",
+    "sTypeId" : "",
+    "sTypeName" : "Story",
+    "sStatus" : "",
+    "sState" : "Deleted",
+    "sEstimate" : "",
+    "changeDate" : "2016-12-14T15:21:02.2930000",
+    "isDeleted" : "True",
+    "sOwnersID" : [
+      "Member:2183918"
+    ],
+    "sOwnersIsDeleted" : [
+      "False"
+    ],
+    "sOwnersChangeDate" : [
+      "2016-05-19T11:19:11.7000000"
+    ],
+    "sOwnersState" : [
+      "Active"
+    ],
+    "sOwnersUsername" : [
+      "BTP534"
+    ],
+    "sOwnersFullName" : [
+      "Justin Johnson"
+    ],
+    "sOwnersShortName" : [
+      "Justin Johnson"
+    ],
+    "sTeamIsDeleted" : "False",
+    "sTeamAssetState" : "Active",
+    "sTeamChangeDate" : "2015-11-12T10:46:07.6970000",
+    "sTeamName" : "Laguna",
+    "sTeamID" : "Team:26967234",
+    "sSprintAssetState" : "Active",
+    "sSprintEndDate" : "",
+    "sSprintBeginDate" : "",
+    "sSprintName" : "",
+    "sSprintID" : "",
+    "sEpicIsDeleted" : "False",
+    "sEpicChangeDate" : "2015-11-18T11:33:44.4470000",
+    "sEpicAssetState" : "Active",
+    "sEpicType" : "",
+    "sEpicEndDate" : "",
+    "sEpicBeginDate" : "",
+    "sEpicName" : "HL General",
+    "sEpicNumber" : "E-126986",
+    "sEpicID" : "Epic:17610344",
+    "sProjectPath" : "All-->Test-->STS (Shared Technology Services-->STS EDS Enterprise-->STS Enterprise Data Services (EDS-->Kanban Board - Laguna",
+    "sProjectIsDeleted" : "False",
+    "sProjectState" : "Active",
+    "sProjectChangeDate" : "2017-01-06T11:37:37.4800000",
+    "sProjectEndDate" : "",
+    "sProjectBeginDate" : "2015-11-13T00:00:00.0000000",
+    "sProjectName" : "Kanban Board - Laguna",
+    "sProjectID" : "Scope:17482903"
+  },
+
+  {
+    "id" : "589fecf8a65ce715e61227cc",
+    "collectorId" : "589febd0a65ce715e611a02d",
+    "sId" : "Story:23442710",
+    "sNumber" : "B-1509116",
+    "sName" : "AWS - Create CP for IPS handling Windows EC2 Instances",
+    "sTypeId" : "",
+    "sTypeName" : "Story",
+    "sStatus" : "",
+    "sState" : "Closed",
+    "sEstimate" : "",
+    "changeDate" : "2016-12-16T12:15:02.7900000",
+    "isDeleted" : "False",
+    "sOwnersID" : [
+      "Member:2183918"
+    ],
+    "sOwnersIsDeleted" : [
+      "False"
+    ],
+    "sOwnersChangeDate" : [
+      "2016-05-19T11:19:11.7000000"
+    ],
+    "sOwnersState" : [
+      "Active"
+    ],
+    "sOwnersUsername" : [
+      "BTP534"
+    ],
+    "sOwnersFullName" : [
+      "Justin Johnson"
+    ],
+    "sOwnersShortName" : [
+      "Justin Johnson"
+    ],
+    "sTeamIsDeleted" : "False",
+    "sTeamAssetState" : "Active",
+    "sTeamChangeDate" : "2015-11-12T10:46:07.6970000",
+    "sTeamName" : "Laguna",
+    "sTeamID" : "Team:17422499",
+    "sSprintAssetState" : "Active",
+    "sSprintEndDate" : "",
+    "sSprintBeginDate" : "",
+    "sSprintName" : "",
+    "sSprintID" : "",
+    "sEpicIsDeleted" : "False",
+    "sEpicChangeDate" : "2015-11-18T11:33:44.4470000",
+    "sEpicAssetState" : "Active",
+    "sEpicType" : "",
+    "sEpicEndDate" : "",
+    "sEpicBeginDate" : "",
+    "sEpicName" : "HL General",
+    "sEpicNumber" : "E-126986",
+    "sEpicID" : "Epic:17610344",
+    "sProjectPath" : "All-->Test-->STS (Shared Technology Services-->STS EDS Enterprise-->STS Enterprise Data Services (EDS-->Kanban Board - Laguna",
+    "sProjectIsDeleted" : "False",
+    "sProjectState" : "Active",
+    "sProjectChangeDate" : "2017-01-06T11:37:37.4800000",
+    "sProjectEndDate" : "",
+    "sProjectBeginDate" : "2015-11-13T00:00:00.0000000",
+    "sProjectName" : "Kanban Board - Laguna",
+    "sProjectID" : "Scope:17482903"
+  },
+
+  {
+    "id" : "589fecfaa65ce715e6122a25",
+    "collectorId" : "589febd0a65ce715e611a02d",
+    "sId" : "Story:23487484",
+    "sNumber" : "B-1511604",
+    "sName" : "AWS - Dev & Pre-Prod | EDE Qxxx | Verify access to S3 bucket /hlstatim-servicing/Correspondence folders | Complete Date: 06/xx/16",
+    "sTypeId" : "",
+    "sTypeName" : "Story",
+    "sStatus" : "Accepted",
+    "sState" : "Closed",
+    "sEstimate" : "",
+    "changeDate" : "2016-10-11T14:54:54.6630000",
+    "isDeleted" : "False",
+    "sOwnersID" : [
+      "Member:3681943"
+    ],
+    "sOwnersIsDeleted" : [
+      "False"
+    ],
+    "sOwnersChangeDate" : [
+      "2016-03-09T00:00:20.9930000"
+    ],
+    "sOwnersState" : [
+      "Active"
+    ],
+    "sOwnersUsername" : [
+      "YJT578"
+    ],
+    "sOwnersFullName" : [
+      "Gohar Butt"
+    ],
+    "sOwnersShortName" : [
+      "Gohar Butt"
+    ],
+    "sTeamIsDeleted" : "False",
+    "sTeamAssetState" : "Active",
+    "sTeamChangeDate" : "2015-11-12T10:46:07.6970000",
+    "sTeamName" : "Laguna",
+    "sTeamID" : "Team:17422499",
+    "sSprintAssetState" : "Active",
+    "sSprintEndDate" : "",
+    "sSprintBeginDate" : "",
+    "sSprintName" : "",
+    "sSprintID" : "",
+    "sEpicIsDeleted" : "False",
+    "sEpicChangeDate" : "2015-11-19T15:45:41.9730000",
+    "sEpicAssetState" : "Active",
+    "sEpicType" : "",
+    "sEpicEndDate" : "",
+    "sEpicBeginDate" : "",
+    "sEpicName" : "HLStatim",
+    "sEpicNumber" : "E-127207",
+    "sEpicID" : "Epic:17686843",
+    "sProjectPath" : "All-->Test-->STS (Shared Technology Services-->STS EDS Enterprise-->STS Enterprise Data Services (EDS-->Kanban Board - Laguna",
+    "sProjectIsDeleted" : "False",
+    "sProjectState" : "Active",
+    "sProjectChangeDate" : "2017-01-06T11:37:37.4800000",
+    "sProjectEndDate" : "",
+    "sProjectBeginDate" : "2015-11-13T00:00:00.0000000",
+    "sProjectName" : "Kanban Board - Laguna",
+    "sProjectID" : "Scope:17482903"
+  },
+
+  {
+    "id" : "589fed08a65ce715e6122bdb",
+    "collectorId" : "589febd0a65ce715e611a02d",
+    "sId" : "Story:23520945",
+    "sNumber" : "B-1513736",
+    "sName" : "AWS - Add Zabbix to QA HL Monitoring",
+    "sTypeId" : "",
+    "sTypeName" : "Story",
+    "sStatus" : "",
+    "sState" : "Closed",
+    "sEstimate" : "",
+    "changeDate" : "2016-09-24T17:58:53.5400000",
+    "isDeleted" : "False",
+    "sOwnersID" : [
+      "Member:9660925",
+      "Member:2183918",
+      "Member:14556423"
+    ],
+    "sOwnersIsDeleted" : [
+      "False",
+      "False",
+      "False"
+    ],
+    "sOwnersChangeDate" : [
+      "2016-05-19T11:19:11.7000000",
+      "2015-08-07T12:15:25.4200000",
+      "2015-10-13T10:24:16.6770000"
+    ],
+    "sOwnersState" : [
+      "Active",
+      "Active",
+      "Active"
+    ],
+    "sOwnersUsername" : [
+      "BTP534",
+      "LGV805",
+      "UZN252"
+    ],
+    "sOwnersFullName" : [
+      "Justin Johnson",
+      "Navin Chaudhary",
+      "Daniel Turner"
+    ],
+    "sOwnersShortName" : [
+      "Justin Johnson",
+      "Navin Chaudhary",
+      "Daniel Turner"
+    ],
+    "sTeamIsDeleted" : "False",
+    "sTeamAssetState" : "Active",
+    "sTeamChangeDate" : "2015-11-12T10:46:07.6970000",
+    "sTeamName" : "Laguna",
+    "sTeamID" : "Team:17422499",
+    "sSprintAssetState" : "Active",
+    "sSprintEndDate" : "",
+    "sSprintBeginDate" : "",
+    "sSprintName" : "",
+    "sSprintID" : "",
+    "sEpicIsDeleted" : "False",
+    "sEpicChangeDate" : "2016-04-18T17:28:13.9930000",
+    "sEpicAssetState" : "Active",
+    "sEpicType" : "",
+    "sEpicEndDate" : "",
+    "sEpicBeginDate" : "",
+    "sEpicName" : "HL Monitoring",
+    "sEpicNumber" : "E-148849",
+    "sEpicID" : "Epic:21922640",
+    "sProjectPath" : "All-->STS (Shared Technology Services-->Test-->STS EDS Enterprise-->STS Enterprise Data Services (EDS-->Kanban Board - Laguna",
+    "sProjectIsDeleted" : "False",
+    "sProjectState" : "Active",
+    "sProjectChangeDate" : "2017-01-06T11:37:37.4800000",
+    "sProjectEndDate" : "",
+    "sProjectBeginDate" : "2015-11-13T00:00:00.0000000",
+    "sProjectName" : "Kanban Board - Laguna",
+    "sProjectID" : "Scope:17482903"
+  },
+
+  {
+    "id" : "589fed0ca65ce715e61231c0",
+    "collectorId" : "589febd0a65ce715e611a02d",
+    "sId" : "Story:23686951",
+    "sNumber" : "B-1521515",
+    "sName" : "AWS - Confirm null-ASV cloud custodian is working as expected",
+    "sTypeId" : "",
+    "sTypeName" : "Story",
+    "sStatus" : "",
+    "sState" : "Closed",
+    "sEstimate" : "",
+    "changeDate" : "2016-10-17T11:03:59.5330000",
+    "isDeleted" : "False",
+    "sOwnersID" : [
+      "Member:2183918",
+      "Member:637587"
+    ],
+    "sOwnersIsDeleted" : [
+      "False",
+      "False"
+    ],
+    "sOwnersChangeDate" : [
+      "2016-07-31T12:18:00.0270000",
+      "2016-05-19T11:19:11.7000000"
+    ],
+    "sOwnersState" : [
+      "Closed",
+      "Active"
+    ],
+    "sOwnersUsername" : [
+      "ZLP192",
+      "BTP534"
+    ],
+    "sOwnersFullName" : [
+      "Austin Blythe",
+      "Justin Johnson"
+    ],
+    "sOwnersShortName" : [
+      "Austin Blythe",
+      "Justin Johnson"
+    ],
+    "sTeamIsDeleted" : "False",
+    "sTeamAssetState" : "Active",
+    "sTeamChangeDate" : "2015-11-12T10:46:07.6970000",
+    "sTeamName" : "Laguna",
+    "sTeamID" : "Team:26967234",
+    "sSprintAssetState" : "Active",
+    "sSprintEndDate" : "",
+    "sSprintBeginDate" : "",
+    "sSprintName" : "",
+    "sSprintID" : "",
+    "sEpicIsDeleted" : "False",
+    "sEpicChangeDate" : "2015-11-18T11:33:44.4470000",
+    "sEpicAssetState" : "Active",
+    "sEpicType" : "",
+    "sEpicEndDate" : "",
+    "sEpicBeginDate" : "",
+    "sEpicName" : "HL General",
+    "sEpicNumber" : "E-126986",
+    "sEpicID" : "Epic:17610344",
+    "sProjectPath" : "All-->STS (Shared Technology Services-->Test-->STS EDS Enterprise-->STS Enterprise Data Services (EDS-->Kanban Board - Laguna",
+    "sProjectIsDeleted" : "False",
+    "sProjectState" : "Active",
+    "sProjectChangeDate" : "2017-01-06T11:37:37.4800000",
+    "sProjectEndDate" : "",
+    "sProjectBeginDate" : "2015-11-13T00:00:00.0000000",
+    "sProjectName" : "Kanban Board - Laguna",
+    "sProjectID" : "Scope:17482903"
+  },
+
+  {
+    "id" : "589fed55a65ce715e6124de8",
+    "collectorId" : "589febd0a65ce715e611a02d",
+    "sId" : "Story:24301217",
+    "sNumber" : "B-1556441",
+    "sName" : "AWS - Gather HL Blaze Requirements",
+    "sTypeId" : "",
+    "sTypeName" : "Story",
+    "sStatus" : "",
+    "sState" : "Closed",
+    "sEstimate" : "",
+    "changeDate" : "2016-12-16T12:15:50.0130000",
+    "isDeleted" : "False",
+    "sOwnersID" : [],
+    "sOwnersIsDeleted" : [],
+    "sOwnersChangeDate" : [],
+    "sOwnersState" : [],
+    "sOwnersUsername" : [],
+    "sOwnersFullName" : [],
+    "sOwnersShortName" : [],
+    "sTeamIsDeleted" : "False",
+    "sTeamAssetState" : "Active",
+    "sTeamChangeDate" : "2015-11-12T10:46:07.6970000",
+    "sTeamName" : "Laguna",
+    "sTeamID" : "Team:26967234",
+    "sSprintAssetState" : "Active",
+    "sSprintEndDate" : "",
+    "sSprintBeginDate" : "",
+    "sSprintName" : "",
+    "sSprintID" : "",
+    "sEpicIsDeleted" : "False",
+    "sEpicChangeDate" : "2015-11-18T11:33:44.4470000",
+    "sEpicAssetState" : "Active",
+    "sEpicType" : "",
+    "sEpicEndDate" : "",
+    "sEpicBeginDate" : "",
+    "sEpicName" : "HL General",
+    "sEpicNumber" : "E-126986",
+    "sEpicID" : "Epic:17610344",
+    "sProjectPath" : "All-->Test-->STS (Shared Technology Services-->STS EDS Enterprise-->STS Enterprise Data Services (EDS-->Kanban Board - Laguna",
+    "sProjectIsDeleted" : "False",
+    "sProjectState" : "Active",
+    "sProjectChangeDate" : "2017-01-06T11:37:37.4800000",
+    "sProjectEndDate" : "",
+    "sProjectBeginDate" : "2015-11-13T00:00:00.0000000",
+    "sProjectName" : "Kanban Board - Laguna",
+    "sProjectID" : "Scope:17482903"
+  },
+
+  {
+    "id" : "589fed55a65ce715e6124de9",
+    "collectorId" : "589febd0a65ce715e611a02d",
+    "sId" : "Story:24301218",
+    "sNumber" : "B-1556442",
+    "sName" : "AWS - Gather New Correspondence Requirements",
+    "sTypeId" : "",
+    "sTypeName" : "Story",
+    "sStatus" : "",
+    "sState" : "Closed",
+    "sEstimate" : "",
+    "changeDate" : "2016-11-15T12:12:54.3830000",
+    "isDeleted" : "False",
+    "sOwnersID" : [
+      "Member:3681943",
+      "Member:5537340"
+    ],
+    "sOwnersIsDeleted" : [
+      "False",
+      "False"
+    ],
+    "sOwnersChangeDate" : [
+      "2016-05-23T10:28:38.0370000",
+      "2016-03-09T00:00:20.9930000"
+    ],
+    "sOwnersState" : [
+      "Active",
+      "Active"
+    ],
+    "sOwnersUsername" : [
+      "DAL511",
+      "YJT578"
+    ],
+    "sOwnersFullName" : [
+      "Jason Highfield",
+      "Gohar Butt"
+    ],
+    "sOwnersShortName" : [
+      "Jason",
+      "Gohar Butt"
+    ],
+    "sTeamIsDeleted" : "False",
+    "sTeamAssetState" : "Active",
+    "sTeamChangeDate" : "2015-11-12T10:46:07.6970000",
+    "sTeamName" : "Laguna",
+    "sTeamID" : "Team:26967234",
+    "sSprintAssetState" : "Active",
+    "sSprintEndDate" : "",
+    "sSprintBeginDate" : "",
+    "sSprintName" : "",
+    "sSprintID" : "",
+    "sEpicIsDeleted" : "False",
+    "sEpicChangeDate" : "2016-05-04T11:48:54.9470000",
+    "sEpicAssetState" : "Active",
+    "sEpicType" : "",
+    "sEpicEndDate" : "",
+    "sEpicBeginDate" : "",
+    "sEpicName" : "HL Correspondence",
+    "sEpicNumber" : "E-151430",
+    "sEpicID" : "Epic:22392294",
+    "sProjectPath" : "All-->Test-->STS (Shared Technology Services-->STS EDS Enterprise-->STS Enterprise Data Services (EDS-->Kanban Board - Laguna",
+    "sProjectIsDeleted" : "False",
+    "sProjectState" : "Active",
+    "sProjectChangeDate" : "2017-01-06T11:37:37.4800000",
+    "sProjectEndDate" : "",
+    "sProjectBeginDate" : "2015-11-13T00:00:00.0000000",
+    "sProjectName" : "Kanban Board - Laguna",
+    "sProjectID" : "Scope:17482903"
+  }
+]

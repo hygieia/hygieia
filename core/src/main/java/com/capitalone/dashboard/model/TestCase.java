@@ -47,6 +47,11 @@ public class TestCase {
 
     private Set<String> tags = new HashSet<>();
 
+    /**
+     * Jira story information for traceability
+     */
+    private Collection<StoryIndicator> storyIndicators = new ArrayList<>();
+
     private Collection<TestCaseCondition> before = new ArrayList<>();
 
     private Collection<TestCaseCondition> after = new ArrayList<>();
@@ -151,4 +156,13 @@ public class TestCase {
     public Collection<TestCaseCondition> getAfter() {
         return after;
     }
+
+    public Collection<StoryIndicator> getStoryIndicators() {
+        return storyIndicators;
+    }
+
+    public void setStoryIndicators(Collection<StoryIndicator> storyIndicators) {
+        this.storyIndicators = storyIndicators;
+    }
+
 }

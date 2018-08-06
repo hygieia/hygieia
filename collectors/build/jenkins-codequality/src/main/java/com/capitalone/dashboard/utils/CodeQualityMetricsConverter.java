@@ -115,21 +115,22 @@ public class CodeQualityMetricsConverter implements CodeQualityVisitor {
         final Map<String, CodeQualityMetric> mapOfExistingMetrics = existingMetrics.stream().collect(Collectors.toMap(CodeQualityMetric::getName, Function.identity()));
 
         metricsMap.forEach((key, value) -> {
+
             CodeQualityMetric currentValue = mapOfExistingMetrics.get(key);
             CodeQualityMetric newValue = null;
             if (null == currentValue) {
                 CodeQualityMetric codeQualityMetric = new CodeQualityMetric();
                 codeQualityMetric.setName(key);
                 codeQualityMetric.setFormattedValue(String.valueOf(value.getLeft()));
-                codeQualityMetric.setValue(Integer.toString(value.getLeft()));
+                codeQualityMetric.setValue(value.getLeft());
                 codeQualityMetric.setStatus(value.getRight());
                 newValue = codeQualityMetric;
             } else {
                 // do the sum
                 quality.getMetrics().remove(currentValue);
                 newValue = new CodeQualityMetric(key);
-                newValue.setValue(Integer.toString(Integer.parseInt(currentValue.getValue()) + value.getLeft()));
-                newValue.setFormattedValue(String.valueOf(Integer.parseInt(currentValue.getValue()) + value.getLeft()));
+                newValue.setValue((int) currentValue.getValue() + value.getLeft());
+                newValue.setFormattedValue(String.valueOf((int) currentValue.getValue() + value.getLeft()));
                 int newOrdinal = Math.max(value.getRight().ordinal(), currentValue.getStatus().ordinal());
                 newValue.setStatus(CodeQualityMetricStatus.values()[newOrdinal]);
             }
@@ -181,10 +182,10 @@ public class CodeQualityMetricsConverter implements CodeQualityVisitor {
     }
 
     private CodeQualityMetric computeCoveragePercent(String metricName, CodeQualityMetric covered,CodeQualityMetric missed) {
-        double percentageCovered = Double.parseDouble(covered.getValue())*100.0/(Double.parseDouble(covered.getValue()) + Double.parseDouble(missed.getValue()));
+        double percentageCovered = ((Integer)covered.getValue()).doubleValue()*100.0/(((Integer)covered.getValue()).doubleValue() + ((Integer)missed.getValue()).doubleValue());
         CodeQualityMetric metric = new CodeQualityMetric(metricName);
         metric.setFormattedValue(String.format("%.3f",percentageCovered));
-        metric.setValue(Double.toString(percentageCovered));
+        metric.setValue(percentageCovered);
         metric.setStatus(CodeQualityMetricStatus.Ok);
         return metric;
     }

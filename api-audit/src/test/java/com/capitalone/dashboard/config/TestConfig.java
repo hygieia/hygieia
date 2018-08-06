@@ -19,6 +19,8 @@ public class TestConfig {
     public ApiSettings settings() {
         ApiSettings settings = new ApiSettings();
         settings.setPeerReviewContexts("approvals/lgtmeow");
+        settings.setFeatureIDPattern("((?<!([A-Za-z]{1,10})-?)[A-Z]+-\\\\d+)");
+        settings.setThreshold(80);
         return settings;
     }
 

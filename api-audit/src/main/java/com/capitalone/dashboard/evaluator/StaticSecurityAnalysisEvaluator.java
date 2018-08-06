@@ -70,7 +70,7 @@ public class StaticSecurityAnalysisEvaluator extends Evaluator<SecurityReviewAud
 
         returnQuality.getMetrics().forEach(metric -> {
             if (metric.getName().equalsIgnoreCase("Score")) {
-                Integer value = Integer.parseInt(metric.getValue());
+                Integer value = Integer.parseInt(metric.getValue().toString());
                 if (value == 100) {
                     securityReviewAuditResponse.addAuditStatus(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_NO_CLOSED_FINDINGS);
                 } else if (value > 0) {

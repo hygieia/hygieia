@@ -31,6 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Component
 public class DefaultSonar6Client implements SonarClient {
     private static final Log LOG = LogFactory.getLog(DefaultSonar6Client.class);
@@ -162,7 +163,7 @@ public class DefaultSonar6Client implements SonarClient {
                     JSONObject metricJson = (JSONObject) metricObj;
 
                     CodeQualityMetric metric = new CodeQualityMetric(str(metricJson, METRIC));
-                    metric.setValue(str(metricJson, VALUE));
+                    metric.setValue(metricJson.get(VALUE));
                     if (metric.getName().equals("sqale_index")) {
                         metric.setFormattedValue(format(str(metricJson, VALUE)));
                     } else if (strSafe(metricJson, VALUE).indexOf(".") > 0) {

@@ -26,7 +26,7 @@ import org.springframework.data.repository.CrudRepository;
 import com.capitalone.dashboard.model.Feature;
 
 /**
- * Repository for {@link FeatureCollector}.
+ * Repository for {@link Feature}.
  */
 public interface FeatureRepository extends CrudRepository<Feature, ObjectId>,
 		QueryDslPredicateExecutor<Feature>, FeatureRepositoryCustom {
@@ -50,4 +50,7 @@ public interface FeatureRepository extends CrudRepository<Feature, ObjectId>,
 
 	@Query(value = " {'sNumber' : ?0 }")
 	List<Feature> getStoryByNumber(String sNumber);
+
+	@Query(value = " {'sTeamID' : ?0 }")
+	List<Feature> getStoryByTeamID(String sTeamID);
 }
