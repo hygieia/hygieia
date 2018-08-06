@@ -426,5 +426,28 @@
     "applicationName" : "account-my-information",
     "instanceUrl" : "https://scan.com"
   }
-}
+},
+  {
+    "id" : "57f2a0193b55670a9e06d63a",
+    "_class" : "com.capitalone.dashboard.model.CollectorItem",
+    "description" : "my application",
+    "niceName" : "COAF",
+    "enabled" : true,
+    "errors" : [
+
+    ],
+    "pushed" : true,
+    "collectorId" : "56df29df7fab7c3ec3c432ea",
+    "lastUpdated" : 1513106044147,
+    "options" : {
+      "applicationType" : null,
+      "componentName" : "mycomponent",
+      "applicationID" : [
+        "SOMEAPPLICATION"
+      ],
+      "applicationName" : "account-my-information",
+      "instanceUrl" : "https://scan.com"
+    }
+
+  }
 ]
