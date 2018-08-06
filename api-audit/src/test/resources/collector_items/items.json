@@ -429,138 +429,38 @@
   },
 
   {
-    "id" : "5a4c20908ac4ac69af860a98",
-    "description" : "CodeRepoWidgetDashboard",
-    "enabled" : false,
-    "errors" : [],
-    "pushed" : false,
-    "collectorId" : "5a4c1d768ac4ac69af860a89",
-    "lastUpdated" : 0,
-    "options" : {
-      "dashboardId" : "5a4c20908ac4ac69af860a97"
-    }
-  },
-
-  {
-    "id" : "5a4c20d68ac4ac69af860a9b",
-    "description" : "FeatureWidgetDashboard",
-    "enabled" : false,
-    "errors" : [],
-    "pushed" : false,
-    "collectorId" : "5a4c1d768ac4ac69af860a89",
-    "lastUpdated" : 0,
-    "options" : {
-      "dashboardId" : "5a4c20d68ac4ac69af860a9a"
-    }
-  },
-
-  {
-    "id" : "5a4d62c08ac4ac69af860aa5",
-    "description" : "test template dashboard",
-    "enabled" : false,
-    "errors" : [],
-    "pushed" : false,
-    "collectorId" : "5a4c1d768ac4ac69af860a89",
-    "lastUpdated" : 0,
-    "options" : {
-      "dashboardId" : "5a4d62c08ac4ac69af860aa4"
-    }
-  },
-
-  {
-    "id" : "5a53d7928ac4ac69af860aa6",
-    "enabled" : true,
-    "errors" : [
-      {
-        "errorCode" : "Unreachable",
-        "errorMessage" : "https://github.com/capitalone/Hygieia",
-        "timestamp" : 1515444300589
-      }
-    ],
-    "pushed" : false,
-    "collectorId" : "5a4d67788ac4accd5ed049f0",
-    "lastUpdated" : 0,
-    "options" : {
-      "password" : "",
-      "personalAccessToken" : "",
-      "branch" : "master",
-      "userID" : "",
-      "url" : "https://github.com/capitalone/Hygieia"
-    }
-  },
-
-  {
-    "id" : "5a67b22ba369abf5421c7aea",
-    "description" : "apiDashboard",
-    "enabled" : false,
-    "errors" : [],
-    "pushed" : false,
-    "collectorId" : "5a4c1d768ac4ac69af860a89",
-    "lastUpdated" : 0,
-    "options" : {
-      "dashboardId" : "5a67b22ba369abf5421c7ae9"
-    }
-  },
-
-  {
-    "id" : "5a95f60ae5a6a2ec300b7e93",
+    "id" : "56e301107fab7c3ec3c43397",
     "enabled" : true,
     "errors" : [],
     "pushed" : false,
-    "collectorId" : "5a95f5b5e5a6a2ede1646800",
-    "lastUpdated" : 0,
+    "collectorId" : "56ca15297fab7c68bfdb420c",
+    "lastUpdated" : 1528709104212,
     "options" : {
-      "featureTool" : "Jira"
+      "scm" : "Github",
+      "branch" : "develop",
+      "url" : "https://mygithub.com/TechOriginations/openupf"
     }
   },
 
   {
-    "id" : "5a9efb525bcf7d3ceac69488",
-    "description" : "Test Results Dashboard",
-    "enabled" : false,
-    "errors" : [],
-    "pushed" : false,
-    "collectorId" : "5a4c1d768ac4ac69af860a89",
-    "lastUpdated" : 0,
-    "options" : {
-      "dashboardId" : "5a9efb525bcf7d3ceac69487"
-    }
-  },
-
-  {
-    "id" : "5a9f2b445bcf7d54556ee180",
-    "description" : "Public_Clair",
-    "enabled" : true,
-    "errors" : [],
-    "pushed" : false,
-    "collectorId" : "5a9f27fc5bcf7d532b533749",
-    "lastUpdated" : 0,
-    "options" : {
-      "jobName" : "Public_Clair",
-      "jobUrl" : "https://myjenkins.com/job/Public_ClairScanning/job/ArtifactoryClairScan/",
-      "instanceUrl" : "https://myjenkins.com/"
-    }
-  },
-
-  {
-    "id" : "56df29df7fab7c3ec3c432eb",
-    "description" : "mock_test",
-    "niceName" : "Grayskull",
+    "id" : "56e5919d7fab7c0244e33341",
+    "description" : "openupf service parent",
+    "niceName" : "HomeLoan",
     "enabled" : true,
     "errors" : [],
     "pushed" : true,
-    "collectorId" : "56df29df7fab7c3ec3c432ea",
-    "lastUpdated" : 1462401522892,
+    "collectorId" : "56cb5bde7fab7c548551410e",
+    "lastUpdated" : 1460387608894,
     "options" : {
-      "jobName" : "mock_test",
-      "jobUrl" : "http://myjenkins.com:8080/job/mock_test/",
-      "instanceUrl" : "http://myjenkins.com:8080/"
+      "projectName" : "openupf service parent",
+      "projectId" : "111955",
+      "instanceUrl" : "http://mysonar.com:11300/sonar"
     }
   },
 
   {
     "id" : "57f2a0193b55670a9e06d63a",
-    "description" : "TEST",
+    "description" : "TEST-UI",
     "niceName" : "TEST",
     "enabled" : true,
     "errors" : [],
@@ -568,308 +468,12 @@
     "collectorId" : "56df29df7fab7c3ec3c432ea",
     "lastUpdated" : 1513106044147,
     "options" : {
-      "jobName" : "TEST",
-      "jobUrl" : "https://myjenkins.com/myjenkins/job/TEST/",
+      "jobName" : "TEST-UI",
+      "jobUrl" : "https://myjenkins.com/myjenkins/job/TEST-UI/",
       "instanceUrl" : "https://myjenkins.com/myjenkins/",
       "applicationID": [
         "TestBusServ"
       ]
     }
-  },
-
-  {
-    "id" : "58091241edb9650aa33d288e",
-    "description" : "TEST",
-    "niceName" : "TEST",
-    "enabled" : true,
-    "errors" : [],
-    "pushed" : true,
-    "collectorId" : "56df29df7fab7c3ec3c432ea",
-    "lastUpdated" : 1476989505898,
-    "options" : {
-      "jobName" : "TEST",
-      "jobUrl" : "https://myjenkins.com/myjenkins/job/TEST/",
-      "instanceUrl" : "https://myjenkins.com/myjenkins/"
-    }
-  },
-
-  {
-    "id" : "5ac5485c05f7c07b37c5ea8f",
-    "description" : "FS_TEST",
-    "enabled" : false,
-    "errors" : [],
-    "pushed" : false,
-    "collectorId" : "5a4c1d768ac4ac69af860a89",
-    "lastUpdated" : 0,
-    "options" : {
-      "dashboardId" : "57f29d143b55670a9e06d625"
-    }
-  },
-
-  {
-    "id" : "58af880d214613243ae5bbae",
-    "enabled" : true,
-    "pushed" : false,
-    "collectorId" : "589febd0a65ce715e611a02d",
-    "lastUpdated" : 0,
-    "options" : {
-      "teamName" : "Laguna",
-      "featureTool" : "VersionOne",
-      "projectName" : "Kanban Board - Laguna",
-      "projectId" : "Scope:17482903",
-      "teamId" : "Team:17422499"
-    }
-  },
-
-  {
-    "id" : "56d825bd7fab7c76a14530f7",
-    "description" : "Correspondence-Batch-Scripts",
-    "enabled" : true,
-    "errors" : [],
-    "pushed" : false,
-    "collectorId" : "56d825ba7fab7c76a14530a8",
-    "lastUpdated" : 0,
-    "options" : {
-      "applicationId" : "21400150-9ffc-463f-9eca-0179a94f2414",
-      "applicationName" : "Correspondence-Batch-Scripts",
-      "instanceUrl" : "https://udeploy.test.com/"
-    }
-  },
-
-  {
-    "id" : "589fe4c9a65ce715c271965a",
-    "description" : "saturn service parent",
-    "niceName" : "HomeLoan",
-    "enabled" : true,
-    "errors" : [],
-    "pushed" : true,
-    "collectorId" : "56cb5bde7fab7c548551410e",
-    "lastUpdated" : 1509481667503,
-    "options" : {
-      "projectName" : "saturn service parent",
-      "projectId" : "14677",
-      "instanceUrl" : "https://sonaraws.test.com"
-    }
-  },
-
-  {
-    "id" : "56de24387fab7c017e93d261",
-    "description" : "HLSaturnUI",
-    "enabled" : true,
-    "errors" : [],
-    "pushed" : false,
-    "collectorId" : "56de24237fab7c017e93d1c0",
-    "lastUpdated" : 0,
-    "options" : {
-      "projectversion" : "dev",
-      "projectName" : "HLSaturnUI",
-      "projectId" : "10245",
-      "instanceUrl" : "http://jad0015k.test.com:11400/ssc"
-    }
-  },
-
-  {
-    "id" : "595fcd2492e2d1940581bac1",
-    "description" : "APICARDACCOUNTPIN",
-    "enabled" : true,
-    "errors" : [],
-    "pushed" : false,
-    "collectorId" : "595fcb8092e2d1926b7b203e",
-    "lastUpdated" : 1499450660414,
-    "options" : {
-      "applicationId" : "3935b522e0f3413396194448abe96e1b",
-      "applicationName" : "APICARDACCOUNTPIN",
-      "publicId" : "APICARDACCOUNTPIN",
-      "instanceUrl" : "https://clm.test.com"
-    }
-  },
-
-  {
-    "id" : "580fb8d6edb9650aa33d2f36",
-    "description" : "SMOKE_TEST",
-    "niceName" : "HomeLoan",
-    "enabled" : true,
-    "errors" : [],
-    "pushed" : true,
-    "collectorId" : "56df29df7fab7c3ec3c432ea",
-    "lastUpdated" : 1481831396270,
-    "options" : {
-      "jobName" : "SMOKE_TEST",
-      "jobUrl" : "https://loans.test.com/loans/job/SMOKE_TEST/",
-      "instanceUrl" : "https://loans.test.com/loans/"
-    }
-  },
-
-  {
-    "id" : "57e15a398a48fa4aeb6d779e",
-    "description" : "QA_UI",
-    "niceName" : "HomeLoan",
-    "enabled" : true,
-    "errors" : [],
-    "pushed" : true,
-    "collectorId" : "56df29df7fab7c3ec3c432ea",
-    "lastUpdated" : 1499706689125,
-    "options" : {
-      "jobName" : "QA_UI",
-      "jobUrl" : "https://loans.test.com/loans/job/QA_UI/",
-      "instanceUrl" : "https://loans.test.com/loans/"
-    }
-  },
-
-  {
-    "id" : "58af884f214613243ae5bbb0",
-    "description" : "GIT_HLSaturn_Release_Build",
-    "niceName" : "HomeLoan",
-    "enabled" : true,
-    "errors" : [],
-    "pushed" : true,
-    "collectorId" : "56ca5b387fab7c05d45a20ce",
-    "lastUpdated" : 1496686019427,
-    "options" : {
-      "jobName" : "GIT_HLSaturn_Release_Build",
-      "jobUrl" : "https://loans.test.com/loans/job/Release_Build",
-      "instanceUrl" : "https://loans.test.com/loans/"
-    }
-  },
-
-  {
-    "id" : "5ae2477630e4a3de59dcd02a",
-    "description" : "HLSaturnCICD16Gates",
-    "enabled" : false,
-    "errors" : [],
-    "pushed" : false,
-    "collectorId" : "5a4c1d768ac4ac69af860a89",
-    "lastUpdated" : 0,
-    "options" : {
-      "dashboardId" : "58af528e214613243ae5bace"
-    }
-  },
-
-  {
-    "id" : "5838c4b63ed9f209ca29dfcd",
-    "enabled" : true,
-    "pushed" : false,
-    "collectorId" : "583883e13ed9f209dbad32ef",
-    "lastUpdated" : 1493924700014,
-    "options" : {
-      "scm" : "Github",
-      "branch" : "master",
-      "url" : "https://github.test.com/kmv629/hygtest_public"
-    }
-  },
-
-  {
-    "id" : "5838c5253ed9f209ca29dfcf",
-    "description" : "JenkinsHygProj",
-    "niceName" : "HygieiaReInventJenkins",
-    "enabled" : true,
-    "pushed" : true,
-    "collectorId" : "583884543ed9f209d3d76fd7",
-    "lastUpdated" : 1493914716341,
-    "options" : {
-      "jobName" : "JenkinsHygProj",
-      "jobUrl" : "http://myjenkins.com/jenkins/job/JenkinsHygProj/",
-      "instanceUrl" : "http://myjenkins.com/jenkins/"
-    }
-  },
-
-  {
-    "id" : "583883ed3ed9f209f3c747ca",
-    "description" : "Make It or Break It",
-    "enabled" : false,
-    "pushed" : false,
-    "collectorId" : "583883e23ed9f209f3c74688",
-    "lastUpdated" : 0,
-    "options" : {
-      "isDeleted" : "False",
-      "teamId" : "Team:4520248",
-      "changeDate" : "2016-03-01T13:55:55.4300000",
-      "assetState" : "Active"
-    }
-  },
-
-  {
-    "id" : "5838cdc63ed9f209ca29dfdb",
-    "description" : "DemoApp",
-    "niceName" : "HygieiaReInventJenkins",
-    "enabled" : false,
-    "pushed" : true,
-    "collectorId" : "5838cdc63ed9f209ca29dfda",
-    "lastUpdated" : 1480118745468,
-    "options" : {
-      "applicationName" : "DemoApp",
-      "instanceUrl" : "http://myjenkins.com/jenkins/"
-    }
-  },
-
-  {
-    "id" : "5838cf3d3ed9f209ca29dff0",
-    "description" : "JenkinsHygTest",
-    "niceName" : "HygieiaReInventJenkins",
-    "enabled" : false,
-    "pushed" : true,
-    "collectorId" : "5838cf3d3ed9f209ca29dfef",
-    "lastUpdated" : 1493914645379,
-    "options" : {
-      "jobName" : "JenkinsHygTest",
-      "jobUrl" : "http://myjenkins.com/jenkins/job/JenkinsHygTest/",
-      "instanceUrl" : "http://myjenkins.com/jenkins/"
-    }
-  },
-
-  {
-    "id" : "58bdcbb690e46b24c431a845",
-    "enabled" : true,
-    "pushed" : false,
-    "collectorId" : "583883e23ed9f209f3c74688",
-    "lastUpdated" : 0,
-    "options" : {
-      "teamName" : "Cloud Tools Engineering",
-      "featureTool" : "VersionOne",
-      "projectName" : " Tools Engineering",
-      "projectId" : "Scope:24289483",
-      "teamId" : "Team:26967234"
-    }
-  },
-
-  {
-    "id" : "5838c1a23ed9f209ca29dfc8",
-    "description" : "DemoDashTitle",
-    "enabled" : true,
-    "pushed" : false,
-    "collectorId" : "583883e73ed9f209ca29dfbe",
-    "lastUpdated" : 0,
-    "options" : {
-      "dashboardId" : "5838c1a23ed9f209ca29dfc7"
-    }
-  },
-
-  {
-    "id" : "590b5344b1135309394ef423",
-    "enabled" : true,
-    "pushed" : false,
-    "collectorId" : "58b7a6d090e46b265a4d1300",
-    "lastUpdated" : 0,
-    "options" : {
-      "teamName" : "Any",
-      "featureTool" : "Jira",
-      "projectName" : "EA - Open Source Office",
-      "projectId" : "26801",
-      "teamId" : "Any"
-    }
-  },
-
-  {
-    "id" : "590b5362b1135309394ef425",
-    "enabled" : true,
-    "pushed" : false,
-    "collectorId" : "583883e13ed9f209dbad32ef",
-    "lastUpdated" : 1493924700051,
-    "options" : {
-      "scm" : "Github",
-      "branch" : "master",
-      "url" : "https://github.test.com/OpenSourceOffice/Innersourcing"
-    }
-
   }
 ]
