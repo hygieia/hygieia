@@ -220,7 +220,11 @@ public class TestResultServiceImpl implements TestResultService {
         allOptions.put("instanceUrl", "");
         allOptions.put("jobName","");
         col.setAllFields(allOptions);
-        col.setUniqueFields(allOptions);
+        //Combination of jobName and jobUrl should be unique always.
+        Map<String, Object> uniqueOptions = new HashMap<>();
+        uniqueOptions.put("jobUrl", "");
+        uniqueOptions.put("jobName","");
+        col.setUniqueFields(uniqueOptions);
         return collectorService.createCollector(col);
     }
 
