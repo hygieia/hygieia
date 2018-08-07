@@ -221,5 +221,5 @@ public class TestCapability {
     public String getToolType() { return toolType; }
 
     public void setToolType(String toolType) { this.toolType = toolType; }
-    
+
 }
