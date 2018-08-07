@@ -79,15 +79,16 @@ public class TestCapability {
      * Name of the Test Set
      */
     private String testSetName;
+
     /**
      * Tool Type for the Test Capability
      */
     private String toolType;
+
     /**
      * Tags of the Test Capability
      */
     private Collection<String> tags = new ArrayList<>();
-
 
     public TestCaseStatus getStatus() {
         return status;
@@ -208,12 +209,17 @@ public class TestCapability {
     public void setType(TestSuiteType type) {
         this.type = type;
     }
+
     public String getTestSetName() { return testSetName; }
+
     public void setTestSetName(String testSetName) { this.testSetName = testSetName; }
+
     public Collection<String> getTags() { return tags; }
+
     public void setTags(Collection<String> tags) { this.tags = tags; }
+
     public String getToolType() { return toolType; }
+
     public void setToolType(String toolType) { this.toolType = toolType; }
-
-
+    
 }
