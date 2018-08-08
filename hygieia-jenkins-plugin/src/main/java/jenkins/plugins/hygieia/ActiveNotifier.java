@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 @SuppressWarnings("rawtypes")
 public class ActiveNotifier implements FineGrainedNotifier {
 
-    private static final Logger logger = Logger.getLogger(HygieiaListener.class.getName());
+    private static final Logger logger = Logger.getLogger(ActiveNotifier.class.getName());
 
     private HygieiaPublisher publisher;
     private BuildListener listener;
@@ -79,6 +79,9 @@ public class ActiveNotifier implements FineGrainedNotifier {
     public void completed(AbstractBuild r) {
         boolean publishBuild = (publisher.getHygieiaArtifact() != null) || (publisher.getHygieiaSonar() != null) ||
                 (publisher.getHygieiaBuild() != null) || (publisher.getHygieiaTest() != null) || (publisher.getHygieiaDeploy() != null);
+
+        //Don't publish is we are globally publishing build data.
+        publishBuild = publishBuild && !publisher.getDescriptor().isHygieiaPublishBuildData();
 
         if (publishBuild) {
             BuildBuilder builder = new BuildBuilder(r, publisher.getDescriptor().getHygieiaJenkinsName(), listener, true, true);

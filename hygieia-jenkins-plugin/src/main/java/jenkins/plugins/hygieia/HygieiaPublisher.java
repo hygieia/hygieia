@@ -317,6 +317,7 @@ public class HygieiaPublisher extends Notifier {
         private String hygieiaToken;
         private String hygieiaJenkinsName;
         private boolean useProxy;
+        private boolean hygieiaPublishBuildData;
         private Set<String> deployAppNames = new HashSet<>();
         private Set<String> deployEnvNames = new HashSet<>();
 
@@ -347,6 +348,8 @@ public class HygieiaPublisher extends Notifier {
         public boolean isUseProxy() {
             return useProxy;
         }
+
+        public boolean isHygieiaPublishBuildData() { return hygieiaPublishBuildData;}
 
         public ListBoxModel doFillTestTypeItems(String testType) {
             ListBoxModel model = new ListBoxModel();
@@ -547,6 +550,7 @@ public class HygieiaPublisher extends Notifier {
             hygieiaToken = sr.getParameter("hygieiaToken");
             hygieiaJenkinsName = sr.getParameter("hygieiaJenkinsName");
             useProxy = "on".equals(sr.getParameter("useProxy"));
+            hygieiaPublishBuildData = "on".equals(sr.getParameter("hygieiaPublishBuildData"));
             save();
             return super.configure(sr, formData);
         }

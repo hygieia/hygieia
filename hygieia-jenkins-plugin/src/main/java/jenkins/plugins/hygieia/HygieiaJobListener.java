@@ -14,11 +14,11 @@ import java.util.logging.Logger;
 
 @Extension
 @SuppressWarnings("rawtypes")
-public class HygieiaListener extends RunListener<AbstractBuild> {
+public class HygieiaJobListener extends RunListener<AbstractBuild> {
 
-    private static final Logger logger = Logger.getLogger(HygieiaListener.class.getName());
+    private static final Logger logger = Logger.getLogger(HygieiaJobListener.class.getName());
 
-    public HygieiaListener() {
+    public HygieiaJobListener() {
         super(AbstractBuild.class);
     }
 
