@@ -20,7 +20,7 @@ public class HygieiaGlobalListener extends RunListener<AbstractBuild> {
     public void onCompleted(AbstractBuild build, TaskListener listener) {
         HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor = Jenkins.getInstance().getDescriptorByType(HygieiaPublisher.DescriptorImpl.class);
 
-        if (hygieiaGlobalListenerDescriptor.isHygieiaPublishBuildData()) {
+        if (hygieiaGlobalListenerDescriptor.isHygieiaPublishBuildDataGlobal()) {
             Jenkins jenkins = null;
             try {
                 jenkins = Jenkins.getInstance();

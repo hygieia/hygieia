@@ -81,7 +81,7 @@ public class ActiveNotifier implements FineGrainedNotifier {
                 (publisher.getHygieiaBuild() != null) || (publisher.getHygieiaTest() != null) || (publisher.getHygieiaDeploy() != null);
 
         //Don't publish is we are globally publishing build data.
-        publishBuild = publishBuild && !publisher.getDescriptor().isHygieiaPublishBuildData();
+        publishBuild = publishBuild && !publisher.getDescriptor().isHygieiaPublishBuildDataGlobal();
 
         if (publishBuild) {
             BuildBuilder builder = new BuildBuilder(r, publisher.getDescriptor().getHygieiaJenkinsName(), listener, true, true);
