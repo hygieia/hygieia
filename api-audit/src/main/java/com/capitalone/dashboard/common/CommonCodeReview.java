@@ -148,7 +148,6 @@ public class CommonCodeReview {
                 String userLdapDNParsed = LdapUtils.getStringValue(new LdapName(userLdapDN), "OU");
                 List<String> matches = serviceAccountOU.stream().filter(it -> it.contains(userLdapDNParsed)).collect(Collectors.toList());
                 return CollectionUtils.isNotEmpty(matches);
-                //return (settings.getServiceAccountOU().equalsIgnoreCase(LdapUtils.getStringValue(new LdapName(userLdapDN), "OU")));
             } catch (InvalidNameException e) {
                 LOGGER.error("Error parsing LDAP DN:" + userLdapDN);
             }
