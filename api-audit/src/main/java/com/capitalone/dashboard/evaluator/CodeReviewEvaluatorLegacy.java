@@ -194,7 +194,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
 
     private void auditIncrementVersionTag(CodeReviewAuditResponse codeReviewAuditResponse, Commit commit, CodeReviewAuditStatus directCommitIncrementVersionTagStatus) {
         if (CommonCodeReview.matchIncrementVersionTag(commit.getScmCommitLog(), settings)) {
-            codeReviewAuditResponse.addAuditStatus(directCommitIncrementVersionTagStatus);
+            codeReviewAuditResponse.addAuditStatus(StringUtils.equals("unknown", commit.getScmAuthorLogin()) ? CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_SCM_AUTHOR_LOGIN_INVALID : directCommitIncrementVersionTagStatus);
         }else{
             codeReviewAuditResponse.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
         }
@@ -202,7 +202,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
 
     private void auditServiceAccountChecks(CodeReviewAuditResponse codeReviewAuditResponse, Commit commit) {
         if (StringUtils.isEmpty(commit.getScmAuthorLDAPDN())) {
-            codeReviewAuditResponse.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
+            codeReviewAuditResponse.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : (StringUtils.equals("unknown", commit.getScmAuthorLogin()) ? CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_SCM_AUTHOR_LOGIN_INVALID : CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE));
         } else {
             auditDirectCommits(codeReviewAuditResponse, commit);
         }
@@ -214,6 +214,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
             // check for increment version tag and flag Direct commit by Service account
             auditIncrementVersionTag(codeReviewAuditResponse, commit, CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_SERVICE_ACCOUNT);
         } else {
+            //if the scmAuthorLogin is unknown then return error status.
             auditIncrementVersionTag(codeReviewAuditResponse, commit, CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_USER_ACCOUNT);
         }
     }
