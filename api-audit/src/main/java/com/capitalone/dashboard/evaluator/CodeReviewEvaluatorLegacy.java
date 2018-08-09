@@ -202,7 +202,10 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
 
     private void auditServiceAccountChecks(CodeReviewAuditResponse codeReviewAuditResponse, Commit commit) {
         if (StringUtils.isEmpty(commit.getScmAuthorLDAPDN())) {
-            codeReviewAuditResponse.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : (StringUtils.equals("unknown", commit.getScmAuthorLogin()) ? CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_SCM_AUTHOR_LOGIN_INVALID : CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE));
+            if(StringUtils.equals("unknown", commit.getScmAuthorLogin()) {
+             codeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_SCM_AUTHOR_LOGIN_INVALID);
+            }
+            codeReviewAuditResponse.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
         } else {
             auditDirectCommits(codeReviewAuditResponse, commit);
         }
