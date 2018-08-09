@@ -7,7 +7,7 @@ import org.bson.types.ObjectId;
 import com.capitalone.dashboard.model.Feature;
 
 /**
- * Repository for {@link FeatureCollector} with custom methods.
+ * Repository for {@link Feature} with custom methods.
  */
 public interface FeatureRepositoryCustom {
     

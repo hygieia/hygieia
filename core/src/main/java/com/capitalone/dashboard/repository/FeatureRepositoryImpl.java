@@ -15,7 +15,7 @@ import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 
 /**
- * Repository for {@link FeatureCollector} with custom methods implementation.
+ * Repository for {@link Feature} with custom methods implementation.
  */
 public class FeatureRepositoryImpl implements FeatureRepositoryCustom {
 
