@@ -194,7 +194,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
 
     private void auditIncrementVersionTag(CodeReviewAuditResponse codeReviewAuditResponse, Commit commit, CodeReviewAuditStatus directCommitIncrementVersionTagStatus) {
         if (CommonCodeReview.matchIncrementVersionTag(commit.getScmCommitLog(), settings)) {
-            codeReviewAuditResponse.addAuditStatus(StringUtils.equals("unknown", commit.getScmAuthorLogin()) ? CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_SCM_AUTHOR_LOGIN_INVALID : directCommitIncrementVersionTagStatus);
+            codeReviewAuditResponse.addAuditStatus(directCommitIncrementVersionTagStatus);
         }else{
             codeReviewAuditResponse.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
         }
