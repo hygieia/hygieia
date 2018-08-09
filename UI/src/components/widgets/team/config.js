@@ -1,5 +1,5 @@
 /**
- * Rally widget configuration
+ * Team widget configuration
  */
 (function() {
     'use strict';

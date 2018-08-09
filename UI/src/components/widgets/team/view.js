@@ -7,15 +7,6 @@
     function TeamViewController($q, $scope, $uibModal, collectorData,teamInventoryData) {
         var ctrl = this;
 
-        ctrl.pieOptions = {
-            donut: false,
-            donutWidth: 20,
-            startAngle: 270,
-            total: 200,
-            showLabel: true
-        };
-
-
         ctrl.teamTitle = $scope.widgetConfig.options.teamName;
         ctrl.lastUpdated = "";
         ctrl.load = function() {
