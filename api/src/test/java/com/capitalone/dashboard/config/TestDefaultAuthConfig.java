@@ -244,6 +244,10 @@ import com.capitalone.dashboard.util.PaginationHeaderUtility;
 		 return Mockito.mock(ScoreDashboardService.class);
 	 }
 
+	 @Bean
+	 public TeamInventoryService teamInventoryService() {
+		 return Mockito.mock(TeamInventoryService.class);
+	 }
 
  }
 
