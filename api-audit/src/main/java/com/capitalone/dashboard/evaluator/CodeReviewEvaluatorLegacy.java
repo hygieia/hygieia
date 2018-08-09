@@ -202,6 +202,9 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
 
     private void auditServiceAccountChecks(CodeReviewAuditResponse codeReviewAuditResponse, Commit commit) {
         if (StringUtils.isEmpty(commit.getScmAuthorLDAPDN())) {
+            if(StringUtils.equals("unknown", commit.getScmAuthorLogin())) {
+                codeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_SCM_AUTHOR_LOGIN_INVALID);
+            }
             codeReviewAuditResponse.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
         } else {
             auditDirectCommits(codeReviewAuditResponse, commit);
@@ -214,6 +217,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
             // check for increment version tag and flag Direct commit by Service account
             auditIncrementVersionTag(codeReviewAuditResponse, commit, CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_SERVICE_ACCOUNT);
         } else {
+            //if the scmAuthorLogin is unknown then return error status.
             auditIncrementVersionTag(codeReviewAuditResponse, commit, CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_USER_ACCOUNT);
         }
     }
