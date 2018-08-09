@@ -265,5 +265,11 @@ public class TestAuthConfig {
     public ScoreDashboardService scoreDashboardService() {
         return Mockito.mock(ScoreDashboardService.class);
     }
+
+    @Bean
+    public TeamInventoryService teamInventoryService() {
+        return Mockito.mock(TeamInventoryService.class);
+    }
+
 }
 
