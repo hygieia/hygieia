@@ -1,0 +1,42 @@
+<widget-modal widget-modal-title="Configure Team Widget" class="team-config">
+   <form name="teamConfigForm" role="form"
+         ng-submit="teamConfig.submit(teamConfigForm.$valid)" novalidate="novalidate">
+      <div class="box">
+         <form-group input="teamCollectorItem" class="text-center">
+
+            <div class="text-center modal-label">Team Name:</div>
+            <input
+                    type="text"
+                    name="teamCollectorItem"
+                    class="form-control"
+                    placeholder="Search for a team name"
+                    ng-model="teamConfig.teamCollectorItem"
+                    uib-typeahead="suspect.description as suspect.description for suspect in teamConfig.getTeamNames($viewValue)"
+                    typeahead-focus
+                    typeahead-on-select="teamConfig.onSelectTeam($item,configForm)"
+                    typeahead-min-length="0"
+                    typeahead-wait-ms="250"
+                    autocomplete="off"
+                    typeahead-no-results="noResults"
+            >
+            <div class="form-control" ng-show="noResults">
+               No Results Found
+            </div>
+
+         </form-group>
+      </div>
+
+      <form-group class="text-center">
+         <div class="form group text-center">
+            <label></label>
+            <button type="submit" class="btn btn-primary btn-wide">Save</button>
+         </div>
+      </form-group>
+   </form>
+
+</widget-modal>
+<script type="text/ng-template" id="deploymentsUrlTemplate.html">
+   <a title={{match.model.group}}>
+      <span ng-bind-html="match.model.name | uibTypeaheadHighlight:query"/>
+   </a>
+</script>
