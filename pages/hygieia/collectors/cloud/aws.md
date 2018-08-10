@@ -96,6 +96,24 @@ The sample `application.properties` file lists parameters with sample values to 
 		aws.profile=
 ```
 
+You can optionally add to the same properties file
+```properties
+   # instance scanning filtering
+   aws.filters['tag\:tagName'][0]=myTagValue
+   aws.filters['instance-state-name'][0]=pending
+   aws.filters['instance-state-name'][1]=running
+```
+if you want to filter the instances analysed by Hygieia. This is done by AWS before Hygieia gets it and reduces the numbers of
+instances under consideration by Hygieia. Please note the escape characters that are required if you need to use spaces or other special characters in your filters.
+For a full list of filters see [here](https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-instances.html)
+
+You can also optionally provide a region (note if you don't give it will will default to the java one)
+```properties
+  # aws region (e.g. eu-west-1)
+  aws.region=eu-west-1
+```
+A full list of regions can be found [here](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html)
+
 You don't need to provide credentials in the properties file, the preferred mechanism is using the Default credentials provider mechanism or through an IAM role, as described [here](http://docs.aws.amazon.com/AWSSdkDocsJava/latest/DeveloperGuide/credentials.html).
 
 In addition, you can create AWS credentials file using CLI:

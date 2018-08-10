@@ -1,5 +1,5 @@
 ---
-title: Introduction
+title: What is the Macro View of Hygieia?
 tags: 
 type: first_page
 homepage: true
@@ -11,22 +11,13 @@ redirect_from:
   - /hygieia/getting_started.html
 ---
 
-## Overview  
-Hygieia is a single, configurable, easy-to-use dashboard to visualize near real-time status of the entire delivery pipeline. The health of the continuous delivery pipeline, from code commit to production deployment, with all the necessary information around health and quality of the software, is essential for any DevOps Organization.
+Hygieia appears in two self-contained dashboards – one for engineers and another for executives - that visually depict CICD pipelines. In essence, Hygieia itself is an aggregator that pulls data from various DevOps tools that teams use in their CICD pipeline, making it easily digestible in dashboard view(s). Although it is an easily manipulated tool, Hygieia provides complex insights into the following areas: 
 
-## Objectives
-* Automate Development Environment Setup
-* Continuous Performance Measurement and Visualization
-* Unified DevOps Dashboard
+- **DevOps Maturity**: It offers fully automated CICD tracking quality and pipeline speed
+- **Risk Management and Investing**: It connects operational metrics to developmental metrics, offering a full understanding of where to invest in order to improve processes that reduce unnecessary risk taking in the future
+- **On-going Enhancements for Agile Environments**: It quantifies DevOps metrics to track and improve DevOps maturity
+- **Establishes and Raises Standards**: It sets and achieves a profile for maturity metrics and products. When products dip below the bar, it triggers an alert notification. In addition, this bar goes up incrementally to ensure that all products undergo simultaneous improvements
 
-## Features
-- **Visual Delivery Pipeline** - Use the pipeline view to visualize the status of the entire delivery pipeline and the components’ lifecycle progression.
-- **Team Dashboard** - Monitor work items, code repo, builds, quality items (unit tests, security coverage), and deployments in a single dashboard.
-- **Real-time Status** - Monitor quality, productivity, and work in process on a real-time basis within the dashboard.
-- **Configurable View** - Set the dashboard to display the widgets that matter most to your project, which in turn amplifies and shortens the feedback loop.
-- **Open Source** - Hygieia is open source and free for everyone to use. We encourage external users to contribute to the project.
+### What Makes Hygieia Important?
 
-## Audience  
-The Installation Plan provides installation and configuration procedures for every part of the Hygieia system. This document describes the correct order for installing the component/tier instances and performing basic configuration.
-
-This guide is intended for a technical audience to implement and support the application. The audience should have knowledge of Java, MongoDB, Javascript, Git, and RESTful APIs.
+Hygieia’s dashboards simplify the ability to view CICD pipelines in near real-time. The dashboards enable DevOps engineers and executives to monitor the health of code commit to deployment in final production. Between those two points – inception (commit) to completion (prod) – the dashboards also provide crucial information about the overall vitality and performance metrics of your software operations. 

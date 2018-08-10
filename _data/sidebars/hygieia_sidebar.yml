@@ -18,99 +18,169 @@ entries:
       output: pdf
       type: frontmatter
 
-  - title: Home/Getting Started
+  - title: Getting Started
     output: web, pdf
     folderitems:
-    - title: Introduction
+    - title: What is the Macro View of Hygieia?
       url: /getting_started.html
       output: web, pdf
       type: homepage
-    - title: Architecture
-      url: /architecture.html
-      output: web, pdf
-      type: homepage
       
-  - title: Installation/Setup Instructions
+  - title: Installing Hygieia
     output: web, pdf
     folderitems:
     - title: Setup Instructions
       url: /setup.html
       output: web, pdf
- 
-  - title: Configuration Procedure
-    output: web, pdf
-    folderitems:
-    - title: Database Configuration
+    - title: Database 
       url: /database.html
       output: web, pdf
-    - title: API Configuration
+    - title: API 
       url: /api.html
       output: web, pdf
-    - title: Audit API Configuration
+    - title: Audit API 
       url: /api-audit.html
       output: web, pdf
-    - title: UI Configuration
+    - title: UI 
       url: /ui.html
       output: web, pdf
-    - title: Collectors
+      
+  - title: Configuration 
+    output: web, pdf
+    folderitems:
+    - title: Collectors' Configuration
       url: /collectors.html
       output: web, pdf
-     
-  - title: Additional Configuration
+      
+      subfolders:
+      - title: Additional Configuration
+        output: web, pdf
+        subfolderitems:
+           - title: Hygieia-Jenkins Plugin
+             url: /hygieia-jenkins-plugin.html
+             output: web, pdf
+           - title: GitHub Webhook
+             url: /webhook.html
+             output: web, pdf  
+           - title: Proxy Authentication
+             url: /proxyauthentication.html
+             output: web, pdf 
+             
+  - title: Building Docker Image 
     output: web, pdf
     folderitems:
-    - title: Plugins/Webhook
-      url: /hygieia-jenkins-plugin.html
-      output: web, pdf
-    - title: Proxy Authentication
-      url: /proxyauthentication.html
-      output: web, pdf     
-     
-  - title: Build 
-    output: web, pdf
-    folderitems:
-    - title: Build Docker
+    - title: Setup Instructions
       url: /builddocker.html
       output: web, pdf
-    - title: Build Hygieia
-      url: /buildhygieia.html
-      output: web, pdf
       
-  - title: Test the Installation
+  - title: Testing the Installation
     output: web, pdf
     folderitems:
-    - title: Set up Git
+    - title: How to Test the Installation?
       url: /gitsetup.html
       output: web, pdf
-    - title: Set up Sonar
-      url: /sonarsetup.html
+  
+  - title: Configuring Dashboards
+    output: web, pdf
+    folderitems:
+    - title: What are the Different Dashboards?
+      url: /Introduction.html
       output: web, pdf
-    - title: Set up Jenkins
-      url: /jenkinssetup.html
+              
+      subfolders:
+      - title: Signup and Login
+        output: web, pdf
+        subfolderitems:
+           - title: Admin User
+             url: /signup.html
+             output: web, pdf
+           - title: Other Users
+             url: /user_signup.html
+             output: web, pdf
+      - title: Select your Dashboard
+        output: web, pdf
+        subfolderitems:
+           - title: Selecting Dashboards
+             url: /select_dashboard.html
+             output: web, pdf      
+      - title: The Team Dashboard
+        output: web, pdf
+        subfolderitems:
+           - title: Introduction
+             url: /team_dashboard_intro.html
+             output: web, pdf
+           - title: Create a Team Dashboard
+             url: /create_team_dashboard.html
+             output: web, pdf
+           - title: Widget View
+             url: /widget_view.html
+             output: web, pdf
+           - title: Dashboard Gamification
+             url: /keeping_score.html
+             output: web, pdf
+           - title: Pipeline View
+             url: /pipeline_view.html
+             output: web, pdf
+           - title: Cloud View
+             url: /cloud_view.html
+             output: web, pdf    
+      - title: The Product Dashboard
+        output: web, pdf
+        subfolderitems:
+           - title: Introduction
+             url: /product_dashboard_intro.html
+             output: web, pdf  
+           - title: Create a Product Dashboard
+             url: /product_view.html
+             output: web, pdf
+    
+    - title: The Executive Dashboard
+      external_url: https://hygieia.github.io/ExecDashboard/Introduction.html
       output: web, pdf    
-        
+    - title: Dashboard Administration
+      url: /dashboard_administration.html
+      output: web, pdf
+    
+  - title: Audit APIs
+    output: web, pdf
+    folderitems:
+    - title: About Audit APIs
+      url: /audit_apis.html
+      output: web, pdf
+  
+  - title: Database Schema
+    output: web, pdf
+    folderitems:
+    - title: Database Collections
+      url: /dbschema.html
+      output: web, pdf
+      
+  - title: Architecture
+    output: web, pdf
+    folderitems:
+    - title: A Diagram of Hygieia
+      url: /architecture.html
+      output: web, pdf
+    
   - title: Troubleshooting
     output: web, pdf
     folderitems:
     - title: FAQs
       url: /troubleshoot.html
       output: web, pdf
-
- 
-#  - title: WhiteSource
-#    output: web, pdf
-#    folderitems:
-#    - title: Getting Started with WhiteSource
-#      url: /whitesource_getting_started.html
-#      output: web, pdf
-#    - title: Jenkins Plugin
-#      external_url: http://docs.whitesourcesoftware.com/display/serviceDocs/Jenkins+plugin
-#      output: web, pdf
-#
-#      subfolders:
-#      - title: WhiteSource Plugins
-#        output: web, pdf
-#        subfolderitems:
-#           - title: Which Plugin Should I Use?
-#             external_url: http://docs.whitesourcesoftware.com/pages/viewpage.action?pageId=16908870
-#             output: web, pdf
+  
+  - title: Contribution Guidelines
+    output: web, pdf
+    folderitems:
+    - title: Contribute Custom Collectors
+      url: /create_collector.html
+      output: web, pdf  
+    - title: Contribute Widgets
+      url: /create_widget.html
+      output: web, pdf 
+    - title: Contribute to the Documentation
+      url: /documentation.html
+      output: web, pdf    
+    - title: Contribution Agreement
+      url: /contribute.html
+      output: web, pdf           

@@ -4,7 +4,7 @@ tags:
 type: 
 homepage: 
 toc: true
-sidebar: product1_sidebar
+sidebar: hygieia_sidebar
 permalink: dashboard_administration.html
 ---
 
@@ -30,4 +30,6 @@ To delete a dashboard:
 2.	In the **My Dashboards** section, select the dashboard you want to delete, click the **Delete** icon to the right of the dashboard name, and then confirm deletion by clicking **Delete**.  
  
 The dashboard is deleted.
+
+![Image](http://capitalone.github.io/Hygieia/media/images/dashboard_administration.png)
 

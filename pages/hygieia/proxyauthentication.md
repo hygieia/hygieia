@@ -2,12 +2,13 @@
 title: Configure Proxy Authentication
 tags:
 keywords:
+toc: true
 summary:
 sidebar: hygieia_sidebar
 permalink: proxyauthentication.html
 ---
 
-Hygieia supports proxy authentication to work with corporate firewalls. You can implement proxy authentication for Hygieia with the following settings:
+Hygieia supports proxy authentication to work around corporate firewalls. You may implement proxy authentication for Hygieia by using with the following settings:
 
 - Developer Settings
 - Deployment/Operations Settings
@@ -46,11 +47,11 @@ export JAVA_OPTS="$JAVA_OPTS -Dhttp.proxyHost=your.proxy.domain.name -Dhttp.prox
 export MAVEN_OPTS="$MAVEN_OPTS -Dhttp.proxyHost=your.proxy.domain.name -Dhttp.proxyPort=8080 -Dhttp.proxyUser=companyId999 -Dhttp.proxyPassword=yourPassword"
 ```
 
-You can now run/pass test cases when you build the project from behind a corporate proxy, including authenticated proxy.
+You can now run/pass test cases when you build the project from behind a corporate proxy, including an authenticated proxy.
 
-## Deployment/Operations Settings
+## Deployment or Operation Settings
 
-To implement proxy authentication for your deployment instance, set the non-authentication proxy settings on the deployment instance from the terminal/command prompt:
+To implement proxy authentication for your deployment instance, set the non-authentication proxy settings on the deployment instance from the terminal or command prompt:
 
 ```bash
 export HTTP_PROXY=http://companyId999:yourPassword@your.proxy.domain.name:8080

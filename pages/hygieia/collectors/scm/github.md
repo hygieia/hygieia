@@ -8,6 +8,8 @@ permalink: github.html
 ---
 Configure the GitHub Collector to display and monitor information (related to code contribution activities) on the Hygieia Dashboard, from the GitHub repository. Collect source code details from GitHub based on the repository URL and Branch for which you are configuring the collector. 
 
+The GitHub collector uses the GitHub REST API v3 for API requests.
+
 Hygieia uses Spring Boot to package the collector as an executable JAR file with dependencies.
 
 ### Setup Instructions
@@ -100,4 +102,4 @@ The sample `application.properties` file lists parameter values to configure the
     # Github repository Read Timeout value in milliseconds, default value is 20000 (20s) 
     github.readTimeout=
 ```
-**Note**: For information on generating your GitHub key for private repos, refer to [Encryption of Private Repos](../../setup.md#encryption-for-private-repos).
+**Note**: For information on generating your GitHub key for private repos, refer to [Encryption of Private Repos](../collectors.md#encryption-for-private-repos).

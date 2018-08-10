@@ -5,14 +5,13 @@ keywords:
 summary: Know the basics of installing and configuring the Database 
 sidebar: hygieia_sidebar
 permalink: database.html
-folder: kb
 ---
 
  <div class="row">
         <div class="col-lg-12">
             <h3 class="page-header">Database Setup for Supported Platforms</h3>
-			<p> Hygieia uses MongoDB (version 3.0 and above) as the database for storage and retrieval of data. 
-			It is recommended to download any MongoDB GUI client (for example, Robo 3T) to create the database dashboard and successfully connect to it.
+			<p> Hygieia uses MongoDB (versions 3.0 and above) as the database to store and retrieve data. 
+			Download any MongoDB GUI client, such as Robo 3T, to create the database dashboard and connect to it.
 			</p>
         </div>
         <div class="col-lg-12">
@@ -29,7 +28,7 @@ folder: kb
 				<div id="myTabContent" class="tab-content">
                 <div class="tab-pane fade active in" id="windows">
                     <h4>Download and Install Instructions</h4>
-					<p> If you do not already have MongoDB installed, download the Installation Package from <a href="https://www.mongodb.org/downloads#previous">MongoDB download 	page</a> and follow the installation instructions in the <a href="https://docs.mongodb.com/manual/">MongoDB manual</a>.
+					<p> If you do not already have MongoDB installed, download the Installation Package from <a href="https://www.mongodb.org/downloads#previous">MongoDB download 	page</a> and follow the installation instructions provided in the <a href="https://docs.mongodb.com/manual/">MongoDB manual</a>.
 					</p> 
 					<h4 class="page-header">Configuration Steps</h4>
 
@@ -37,9 +36,9 @@ folder: kb
 
 			<ul> 
 				<li> <b>Step 1: Create Data Directory</b></li>
-					<p>Create a data directory on the drive from which you start MongoDB to store your data files.</p> 
+					<p>Create a data directory on the drive you use to start MongoDB to store your data files.</p> 
 	
-					<p> For example, create the data directory in the following path:</p>
+					<p> Create the data directory (the C drive is used in this case):</p>
 					<code>C:\Users\[usernname]\dev\data\db</code> 
     
 				<li> <b>Step 2: Change Directory</b></li>
@@ -49,7 +48,7 @@ folder: kb
 				<li> <b>Step 3: Start MongoDB </b> </li>
 					<p>Specify the path to use as data directory:</p>
 					<code>mongod --dbpath [path to the data directory]</code>
-					<p> Execute the following commands to start MongoDB, switch to db dashbaord, and then add dashboard user:</p>
+					<p> Execute the following commands to start MongoDB, switch to dashboard with name <code>dashboarddb</code>, and then add a dashboard user:</p>
 	  <pre code>
 #Start mongo
 
@@ -88,7 +87,7 @@ Output:  Successfully added user: {
 				</div>
                 <div class="tab-pane fade" id="mac">
                     <h4>Download and Install Instructions</h4>
-					<p> If you do not already have MongoDB installed, download the Installation Package from <a href="https://www.mongodb.org/downloads#previous">MongoDB download 	page</a> and follow the installation instructions in the <a href="https://docs.mongodb.com/manual/">MongoDB manual</a>.
+					<p> If you do not already have MongoDB installed, download the Installation Package from <a href="https://www.mongodb.org/downloads#previous">MongoDB download 	page</a> and follow the installation instructions provided in the <a href="https://docs.mongodb.com/manual/">MongoDB manual</a>.
 					</p> 
 					<h4 class="page-header">Configuration Steps</h4>
 
@@ -98,17 +97,17 @@ Output:  Successfully added user: {
 				<li> <b>Step 1: Create Data Directory</b></li>
 					<p>Create a data directory on the drive from which you start MongoDB to store your data files.</p> 
 	
-					<p> For example, create the data directory in the following path:</p>
-					<code>cd C:/Users/[usernname]/dev/data/db</code> 
+					<p> Create the data directory as follows:</p>
+					<code>[path/to]/dev/data/db</code> 
     
 				<li> <b>Step 2: Change Directory</b></li>
 					<p>Change the current working directory to the <code>bin</code> directory of your MongoDB installation.</p>
 					<p> For example, in the Windows command prompt, run th following command:</p>
-					<code> cd C:/Program Files/MongoDB/Server/3.2/bin</code>
+					<code>cd [path/to]/Program Files/MongoDB/Server/3.2/bin</code>
 				<li> <b>Step 3: Start MongoDB </b> </li>
 					<p>Specify the path to use as data directory:</p>
 					<code>mongod --dbpath [path to the data directory]</code>
-					<p> Execute the following commands to start MongoDB, switch to db dashbaord, and then add dashboard user:</p>
+					<p> Execute the following commands to start MongoDB, switch to the dashboard with name <code>dashboarddb</code>, and then add a dashboard user:</p>
 	  <pre code>
 #Start mongo
 
@@ -147,7 +146,7 @@ Output:  Successfully added user: {
 </div>
                 <div class="tab-pane fade" id="linux">
                     <h4>Download and Install Instructions</h4>
-					<p> If you do not already have MongoDB installed, download the Installation Package from <a href="https://www.mongodb.org/downloads#previous">MongoDB download 	page</a> and follow the installation instructions in the <a href="https://docs.mongodb.com/manual/">MongoDB manual</a>.
+					<p> If you do not already have MongoDB installed, download the Installation Package from <a href="https://www.mongodb.org/downloads#previous">MongoDB download 	page</a> and follow the installation instructions provided in the <a href="https://docs.mongodb.com/manual/">MongoDB manual</a>.
 					</p> 
 					<h4 class="page-header">Configuration Steps</h4>
 
@@ -158,16 +157,16 @@ Output:  Successfully added user: {
 					<p>Create a data directory on the drive from which you start MongoDB to store your data files.</p> 
 	
 					<p> For example, in the Windows command prompt, run the following command:</p>
-					<code>C:/Users/[usernname]/dev/data/db</code> 
+					<code>[path/to]/dev/data/db</code> 
     
 				<li> <b>Step 2: Change Directory</b></li>
 					<p>Change the current working directory to the <code>bin</code> directory of your MongoDB installation.</p>
 					<p> For example, in the Windows command prompt, run th following command:</p>
-					<code> cd C:/Program Files/MongoDB/Server/3.2/bin</code>
+					<code>cd [path/to]//Program Files/MongoDB/Server/3.2/bin</code>
 				<li> <b>Step 3: Start MongoDB </b> </li>
 					<p>Specify the path to use as data directory:</p>
 					<code>mongod --dbpath [path to the data directory]</code>
-					<p> Execute the following commands to start MongoDB, switch to db dashbaord, and then add dashboard user:</p>
+					<p> Execute the following commands to start MongoDB, switch to the dashboard with name <code>dashboarddb</code>, and then add dashboard user:</p>
 	  <pre code>
 #Start mongo
 
@@ -207,6 +206,11 @@ Output:  Successfully added user: {
                 </div>
             </div>
 		</div>
+		<div class="col-lg-12">
+            <h3 class="page-header">Executing through a Script</h3>
+			<p> To execute the above via a script in an automated fashion, use <code>mongosrc.js</code>.</p>
+			<pre code> mongo < mongosrc.js </pre code>
+        </div>
 	</div>	
 				 
 

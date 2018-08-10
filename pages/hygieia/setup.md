@@ -1,21 +1,31 @@
 ---
-title: General Configuration and Concepts
+title: Initial Setup of Hygieia
 tags:
 keywords:
-summary: General Concepts about Hygieia Installation 
+summary: Instructions to install all components of Hygieia
 sidebar: hygieia_sidebar
 permalink: setup.html
 folder: hygieia
 
 ---
 
-If you do not already have Hygieia installed, you can download or clone Hygieia from the [GitHub repo](https://github.com/capitalone/Hygieia). For information on cloning a repository, see [GitHub Documentation](https://help.github.com/articles/cloning-a-repository/).
+## Prerequisites
+
+The following are the prerequisites to set up Hygieia:
+
+- Install Git - Install Git for your platform. For installation steps, see the [**Installing Git**](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) section of Git's documentation.
+- Install Java - Version 1.8 is recommended
+- Install Maven - Version 3.3.9 and above are recommended
+
+## Download or Clone Hygieia
+
+If you do not already have Hygieia installed, you can download or clone Hygieia from the [GitHub repo](https://github.com/capitalone/Hygieia). For information on cloning a repository, see the [**Cloning a Repository**](https://help.github.com/articles/cloning-a-repository/) section of GitHub's Documentation.
  
 ## Build Hygieia
 
-To package all components of Hygieia's source code into executable JAR files, run the maven build. Before you build Hygieia using Maven, make sure to configure the `settings.xml` file. For more details, see [Proxy Authentication](proxyauthentication.md). 
+To package all components of Hygieia's source code into executable JAR files, run the maven build. Before you build Hygieia using Maven, make sure to configure the `settings.xml` file. For more details, see [Proxy Authentication](proxyauthentication.md).
 
-Hygieia uses Spring Boot to package the components as an executable JAR file with dependencies. 
+Hygieia uses Spring Boot to package the components as an executable JAR file with dependencies.
 
 To configure Hygieia, execute the following steps:
 
@@ -33,6 +43,7 @@ To configure Hygieia, execute the following steps:
 	└── Hygieia
 		├── UI
 		├── API
+		├── AuditAPI
 		└── Collectors
 			├─ Feature
 			│    ├── JIRA
@@ -75,56 +86,4 @@ To configure Hygieia, execute the following steps:
 	java -jar <Path to collector-name.jar> --spring.config.name=<prefix for properties> --spring.config.location=<path to properties file location>
 	```
 	
-	The detailed instructions for installing each component of Hygieia is described in section, 'Configuration Procedure' in the Installation Guide.
-	
-## General Concepts
-
-### Encrypted Properties
-
-Properties that are recommended not to be stored in plain text can be encrypted/decrypted using jasypt.Encrypted properties are enclosed in keyword ENC(), that is, ENC(thisisanencryptedproperty).
-
-To generate an encrypted property, run the following command:
-
-```
-java -cp ~/.m2/repository/org/jasypt/jasypt/1.9.2/jasypt-1.9.2.jar  org.jasypt.intf.cli.JasyptPBEStringEncryptionCLI input="dbpassword" password=hygieiasecret algorithm=PBEWithMD5AndDES
-```
-
-where,
-
-dbpassword - Property value being encrypted, and 
-
-hygieiasecret - the secret.
-
-When you run the API, this secret should be passed as a system property using `-Djasypt.encryptor.password=hygieiasecret` to decrypt the property.
-
-When using Docker, pass the environment variable `docker run -t -p 8080:8080 -v ./logs:/hygieia/logs -e "SPRING_DATA_MONGODB_HOST=127.0.0.1" -e "JASYPT_ENCRYPTOR_PASSWORD=hygieiasecret" -i hygieia-api:latest`.
-
-For additional information, see jasypt spring boot [documentation](https://github.com/ulisesbocchio/jasypt-spring-boot/blob/master/README.md).
-
-**Tip**: When using GitLab CI Runner, specify the value for JASYPT_ENCRYPTOR_PASSWORD as a secure variable. To add secure variables to a GitLab project, navigate to Project Settings > Variables > Add Variable.
-
-By default, a secure variable's value is not visible in the build log and can only be configured by a project administrator.
-
-### Encryption for Private Repos
-
-1. From the core module, generate a secret key.
-
-   ```bash
-   java -jar <path-to-jar>/core-2.0.5-SNAPSHOT.jar com.capitalone.dashboard.util.Encryption
-   ```
-
-2. Add the generated key to the API properties file.
-
-   ```bash
-   #api.properties
-   key=<your-generated-key>
-   ```
-
-3. Add the same key to your repo settings file. This is required for the target collector to decrypt your saved repo password.
-
-   For example, if your repo is GitHub, add the following to the `github.properties` file:
-
-   ```bash
-   #github.properties
-   github.key=<your-generated-key>
-   ```
+	For detailed instructions on installing each component of Hygieia, see the documentation corresponding to each component.

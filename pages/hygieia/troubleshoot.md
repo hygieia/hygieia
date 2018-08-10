@@ -11,7 +11,7 @@ This document contains Frequently Asked Questions (FAQs) about Hygieia.
 
 #### How to configure the GitHub Collector for a Private Repo?
 
-To configure the GitHub collector for a private repository, generate a secret key and add the secret key and your user ID to the API properties file. For detailed instructions, see [Encryption for Private Repos](setup.md#encryption-for-private-repos).
+To configure the GitHub collector for a private repository, generate a secret key and add the secret key and your user ID to the API properties file. For detailed instructions, see [Encryption for Private Repos](collectors/collectors.md#encryption-for-private-repos).
 
 To pass the GitHub authentication information in the `application.properties` file, modify DefaultGitHubClient.java and force the response string to fetch the password from  the properties file:
 
@@ -19,6 +19,31 @@ To pass the GitHub authentication information in the `application.properties` fi
 //ResponseEntity<String> response = makeRestCall(queryUrlPage, settings.getUserId(), decryptedPassword);
 ResponseEntity<String> response = makeRestCall(queryUrlPage, settings.getUserId(), settings.getKey());
 ```
+
+#### Using the properties ```github.key``` and ```github.personalAccessToken``` for encrypting private GitHub repositories
+
+**github.key**
+
+```github.key``` is the value generated from the core module. You can generate this key from the UI as an **admin** user. The steps are as follows:
+
+1. Create an admin user in Hygieia with username **admin** and password of your choice. For detailed instructions, see [Create Admin User](../product1/signup.md#create-admin-user).
+2. Navigate to Admin Settings -> Generate Api Token, and create a new key by setting a name and expiration date. For detailed instructions, see [Generate API Token](../product1/signup.md#generate-api-token).
+3. Copy the generated key to github.properties file as ```github.key="generated key"```.
+4. In the api.properties file, add the property, ```key="generated key"```.
+
+The generated key is used to encrypt the password when you configure the GitHub repository for accessing private repos. Provide credentials when configuring private GitHub repos.
+	
+**Note**: Public repos do not require values for ```github.key``` and ```github.personalAccessToken```.
+
+**github.personalAccessToken**
+
+The value of the property ```github.personalAccessToken``` is directly taken from GitHub -> Developer Settings-> Personal access token. For detailed instructions, see the [GitHub](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) documentation.
+
+This token is also used for accessing the private repos.
+
+You can either set the value for ```github.key``` or ```github.personalAccesstoken``` in order to access private repos.
+
+In addition, please refer [Encryption for Private Repos](collectors/collectors.md#encryption-for-private-repos).
 
 #### How to change the UI port to a port other than 3000?
 

@@ -2,6 +2,7 @@
 title: Subversion Collector
 tags:
 keywords:
+toc: true
 summary:
 sidebar: hygieia_sidebar
 permalink: subversion.html

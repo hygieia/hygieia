@@ -2,6 +2,7 @@
 title: Hygieia Audit API
 tags:
 keywords:
+toc: true
 summary: Learn how to install and configure Hygieia audit APIs
 sidebar: hygieia_sidebar
 permalink: api-audit.html
@@ -9,13 +10,13 @@ permalink: api-audit.html
 [![Docker Stars](https://img.shields.io/docker/stars/capitalone/hygieia-api.svg)](https://hub.docker.com/r/capitalone/hygieia-api/)
 [![Docker Stars](https://img.shields.io/docker/pulls/capitalone/hygieia-api.svg)](https://hub.docker.com/r/capitalone/hygieia-api/)
 
-Hygieia audit API is a collection of API endpoints that serve to audit CI/CD data gathered by Hygieia collectors. The audit API provides endpoints to audit individual widgets on the Dashboard. In addition to these endpoints, Hygieia also provides a dashboard-level audit API. 
+Hygieia audit APIs are a collection of API endpoints that serve to audit CI/CD data gathered by Hygieia collectors. The audit API provides endpoints to audit individual widgets on the Dashboard. In addition to these endpoints, Hygieia also provides a dashboard-level audit API. 
 
 The audit API logic adds various audit flags depending on the data. For a  detailed listing of the audit flags, see the audit-api module's [model package](https://github.com/capitalone/Hygieia/blob/master/api-audit/src/main/java/com/capitalone/dashboard/model/AuditStatus.java).
 
-For detailed information on audit APIs, see the Swagger documentation. 
+For detailed information on audit APIs, see the Swagger documentation available at `http://[your-doman].com/apiaudit/swagger/index.html#`. 
 
-Hygieia project uses Spring Boot to package the API as an executable JAR file with dependencies.
+Hygieia uses Spring Boot to package the APIs as an executable JAR file with dependencies.
 
 ## Setup Instructions
 
@@ -73,9 +74,12 @@ server.port=[Web server port - default is 8080]
 logRequest=false
 logSplunkRequest=false
 serviceAccountOU=SAOU1,SAOU2 [comma separated list of OU setup in LDAP for whitelist of Service Accounts]
+
+# pattern to match the featureID/storyNumber (Jira ID, VersionOne ID, etc) for traceability
+featureIDPattern=((?<!([A-Za-z]{1,10})-?)[A-Z]+-\\d+)
 ```
 
-All the above values are optional. If you have MongoDB installed with no authorization, you must be able to run the API even without the properties file.
+All values in the `api-audit.properties` file are optional. If you have MongoDB installed with no authorization, you must be able to run the API even without the properties file.
 
 **Note**: If the value of `dbusername` is empty, then system skips MongoDB authorization.
 
@@ -139,7 +143,9 @@ To configure the Hygieia audit API layer, execute the following steps:
 	docker ps
 	```
 
-## Create New API
+## Create a New Audit API
+
+The steps to create a new audit API are as follows:
 
 1. Create a new rest controller or add to an existing controller.
 2. Create a new service interface and new service implementation.
