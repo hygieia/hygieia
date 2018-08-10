@@ -72,6 +72,7 @@ server.contextPath=[Web Context path, if any]
 server.port=[Web server port - default is 8080]
 logRequest=false
 logSplunkRequest=false
+serviceAccountOU=SAOU1,SAOU2 [comma separated list of OU setup in LDAP for whitelist of Service Accounts]
 ```
 
 All the above values are optional. If you have MongoDB installed with no authorization, you must be able to run the API even without the properties file.
