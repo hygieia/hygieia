@@ -231,4 +231,9 @@ public class TestConfig {
   public ScoreDashboardService scoreDashboardService() {
     return Mockito.mock(ScoreDashboardService.class);
   }
+
+  @Bean
+  public LogAnalysisService logAnalysisService() {
+    return Mockito.mock(LogAnalysisService.class);
+  }
 }

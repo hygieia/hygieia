@@ -1,0 +1,18 @@
+<widget-modal widget-modal-title="Configure Log Analysis Widget" class="ca-config">
+    <form name="configForm" role="form"
+          ng-submit="caWidget.submit(caWidget.logCollectorItem)"
+          novalidate="novalidate">
+
+        <div class="box">
+
+            <form-group input="logCollectorItem" class="text-center">
+
+                <div class="text-center modal-label">Log Analysis:</div>
+
+                <input type="text" name="logCollectorItem" class="form-control" placeholder="Search a Log Analysis Job"
+                       ng-model="caWidget.logCollectorItem">
+
+            </form-group>
+        </div>
+    </form>
+</widget-modal>
