@@ -84,7 +84,7 @@ public class CommonCodeReview {
                             auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_LGTM_SUCCESS);
 
                             String description = status.getDescription();
-                            if (!StringUtils.isEmpty(settings.getServiceAccountOU()) && !StringUtils.isEmpty(settings.getPeerReviewApprovalText()) && !StringUtils.isEmpty(description) &&
+                            if (!CollectionUtils.isEmpty(settings.getServiceAccountOU()) && !StringUtils.isEmpty(settings.getPeerReviewApprovalText()) && !StringUtils.isEmpty(description) &&
                                     description.startsWith(settings.getPeerReviewApprovalText())) {
                                 String user = description.replace(settings.getPeerReviewApprovalText(), "").trim();
                                 if (!StringUtils.isEmpty(actors.get(user)) && checkForServiceAccount(actors.get(user), settings)) {
@@ -133,18 +133,28 @@ public class CommonCodeReview {
         return false;
     }
 
-
+    /**
+     * Check if the passed in account is a Service Account or not by comparing
+     * against list of valid ServiceAccountOU in ApiSettings.
+     *
+     * @param userLdapDN
+     * @param settings
+     * @return
+     */
     public static boolean checkForServiceAccount(String userLdapDN, ApiSettings settings) {
-        if (!StringUtils.isEmpty(settings.getServiceAccountOU())) {
+        List<String> serviceAccountOU = settings.getServiceAccountOU();
+        if (!CollectionUtils.isEmpty(serviceAccountOU)) {
             try {
-                return (settings.getServiceAccountOU().equalsIgnoreCase(LdapUtils.getStringValue(new LdapName(userLdapDN), "OU")));
+                String userLdapDNParsed = LdapUtils.getStringValue(new LdapName(userLdapDN), "OU");
+                List<String> matches = serviceAccountOU.stream().filter(it -> it.contains(userLdapDNParsed)).collect(Collectors.toList());
+                return CollectionUtils.isNotEmpty(matches);
             } catch (InvalidNameException e) {
                 LOGGER.error("Error parsing LDAP DN:" + userLdapDN);
             }
         } else {
             LOGGER.info("API Settings missing service account RDN");
         }
-        return false;
+        return Boolean.FALSE;
     }
 
     /**
