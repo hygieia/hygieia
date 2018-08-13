@@ -19,6 +19,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,13 +131,13 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
 
                         // Set audit statuses for Thresholds found if they are defined in quality_gate_details metric
                         if(condition.containsKey("error")) {
-                            if(condition.get("metric").toString().equalsIgnoreCase(CodeQualityMetricType.BLOCKER_VIOLATIONS.getType())) {
+                            if(StringUtils.equalsIgnoreCase(condition.get("metric").toString(), CodeQualityMetricType.BLOCKER_VIOLATIONS.getType())) {
                                 codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_BLOCKER_FOUND);
-                            } else if(condition.get("metric").toString().equalsIgnoreCase(CodeQualityMetricType.CRITICAL_VIOLATIONS.getType())) {
+                            } else if(StringUtils.equalsIgnoreCase(condition.get("metric").toString(), CodeQualityMetricType.CRITICAL_VIOLATIONS.getType())) {
                                 codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_CRITICAL_FOUND);
-                            } else if(condition.get("metric").toString().equalsIgnoreCase(CodeQualityMetricType.UNIT_TEST.getType())) {
+                            } else if(StringUtils.equalsIgnoreCase(condition.get("metric").toString(), CodeQualityMetricType.UNIT_TEST.getType())) {
                                 codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_UNIT_TEST_FOUND);
-                            } else if(condition.get("metric").toString().equalsIgnoreCase(CodeQualityMetricType.NEW_COVERAGE.getType())) {
+                            } else if(StringUtils.equalsIgnoreCase(condition.get("metric").toString(), CodeQualityMetricType.NEW_COVERAGE.getType())) {
                                 codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_CODE_COVERAGE_FOUND);
                             }
                         }
@@ -167,13 +168,13 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
 
             // Set audit statuses if the threshold is met based on the status field of code_quality metric
             if (metric.getStatus().equals(CodeQualityMetricStatus.Ok)){
-                if (metric.getName().equalsIgnoreCase(CodeQualityMetricType.BLOCKER_VIOLATIONS.getType())) {
+                if (StringUtils.equalsIgnoreCase(metric.getName(), CodeQualityMetricType.BLOCKER_VIOLATIONS.getType())) {
                     codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_BLOCKER_MET);
-                } else if (metric.getName().equalsIgnoreCase(CodeQualityMetricType.CRITICAL_VIOLATIONS.getType())) {
+                } else if (StringUtils.equalsIgnoreCase(metric.getName(), CodeQualityMetricType.CRITICAL_VIOLATIONS.getType())) {
                     codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_CRITICAL_MET);
-                }  else if (metric.getName().equalsIgnoreCase(CodeQualityMetricType.UNIT_TEST.getType())) {
+                }  else if (StringUtils.equalsIgnoreCase(metric.getName(), CodeQualityMetricType.UNIT_TEST.getType())) {
                     codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_UNIT_TEST_MET);
-                } else if (metric.getName().equalsIgnoreCase(CodeQualityMetricType.NEW_COVERAGE.getType())) {
+                } else if (StringUtils.equalsIgnoreCase(metric.getName(), CodeQualityMetricType.NEW_COVERAGE.getType())) {
                     codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_CODE_COVERAGE_MET);
                 }
             }
