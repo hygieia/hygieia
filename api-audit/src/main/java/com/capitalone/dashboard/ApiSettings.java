@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @ConfigurationProperties
 public class ApiSettings {
@@ -17,7 +19,7 @@ public class ApiSettings {
     private String corsWhitelist;
     private String peerReviewContexts;
     private String peerReviewApprovalText;
-    private String serviceAccountOU;
+    private List<String> serviceAccountOU;
     private String commitLogIgnoreAuditRegEx;
     @Value("${maxDaysRangeForQuery:60}") // 60 days max
     private long maxDaysRangeForQuery;
@@ -82,11 +84,11 @@ public class ApiSettings {
         this.peerReviewApprovalText = peerReviewApprovalText;
     }
 
-    public String getServiceAccountOU() {
+    public List<String> getServiceAccountOU() {
         return serviceAccountOU;
     }
 
-    public void setServiceAccountOU(String serviceAccountOU) {
+    public void setServiceAccountOU(List<String> serviceAccountOU) {
         this.serviceAccountOU = serviceAccountOU;
     }
 
