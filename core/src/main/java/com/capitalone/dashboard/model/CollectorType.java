@@ -6,6 +6,7 @@ package com.capitalone.dashboard.model;
 public enum CollectorType {
     SCM,
     CMDB,
+    Incident,
     Build,
     Artifact,
     Deployment,
@@ -25,7 +26,8 @@ public enum CollectorType {
     Product,
     AppPerformance,
     InfraPerformance,
-    Score;
+    Score,
+    TEAM;
 
     public static CollectorType fromString(String value) {
         for (CollectorType collectorType : values()) {

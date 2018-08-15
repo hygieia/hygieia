@@ -17,6 +17,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +30,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,6 +40,7 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
     private final CodeQualityRepository codeQualityRepository;
     private final CommitRepository commitRepository;
     private final CollItemConfigHistoryRepository collItemConfigHistoryRepository;
+    private static final Logger LOGGER = LoggerFactory.getLogger(CodeQualityEvaluator.class);
 
 
     @Autowired
@@ -85,9 +90,12 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
      * @return CodeQualityAuditResponse
      */
     private CodeQualityAuditResponse getStaticAnalysisResponse(CollectorItem collectorItem, List<CollectorItem> repoItems, long beginDate, long endDate) {
+        CodeQualityAuditResponse codeQualityAuditResponse = new CodeQualityAuditResponse();
+        if(collectorItem==null) return getNotConfigured();
+        if(!isProjectIdValid(collectorItem))return getErrorResponse(collectorItem);
         List<CodeQuality> codeQualities = codeQualityRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(collectorItem.getId(), beginDate-1, endDate+1);
         ObjectMapper mapper = new ObjectMapper();
-        CodeQualityAuditResponse codeQualityAuditResponse = new CodeQualityAuditResponse();
+
 
         if (CollectionUtils.isEmpty(codeQualities)) {
             codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_DETAIL_MISSING);
@@ -101,19 +109,24 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
         for (CodeQualityMetric metric : returnQuality.getMetrics()) {
             //TODO: This is sonar specific - need to move this to api settings via properties file
             if (metric.getName().equalsIgnoreCase("quality_gate_details")) {
-                TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
-                };
-                Map<String, String> values;
-                try {
-                    values = mapper.readValue((String) metric.getValue(), typeRef);
-                    if (MapUtils.isNotEmpty(values) && values.containsKey("level")) {
-                        String level = values.get("level");
-                        codeQualityAuditResponse.addAuditStatus(level.equalsIgnoreCase("ok") ? CodeQualityAuditStatus.CODE_QUALITY_AUDIT_OK : CodeQualityAuditStatus.CODE_QUALITY_AUDIT_FAIL);
+                if(metric.getStatus()!=null){
+                    codeQualityAuditResponse.addAuditStatus("ok".equalsIgnoreCase(metric.getStatus().toString()) ? CodeQualityAuditStatus.CODE_QUALITY_AUDIT_OK : CodeQualityAuditStatus.CODE_QUALITY_AUDIT_FAIL);
+                }else{
+                    TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
+                    };
+                    Map<String, String> values;
+                    try {
+                        values = mapper.readValue((String) metric.getValue(), typeRef);
+                        if (MapUtils.isNotEmpty(values) && values.containsKey("level")) {
+                            String level = values.get("level");
+                            codeQualityAuditResponse.addAuditStatus(level.equalsIgnoreCase("ok") ? CodeQualityAuditStatus.CODE_QUALITY_AUDIT_OK : CodeQualityAuditStatus.CODE_QUALITY_AUDIT_FAIL);
+                        }
+                        break;
+                    } catch (IOException e) {
+                        LOGGER.error("Error in CodeQualityEvaluator.getStaticAnalysisResponse() - Unable to parse quality_gate metrics - "+ e.getMessage());
+                        e.printStackTrace();
                     }
-                    break;
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+
                 }
 
             }
@@ -135,5 +148,25 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
     private List<CollectorItemConfigHistory> getProfileChanges(CodeQuality codeQuality, long beginDate, long endDate) {
         return collItemConfigHistoryRepository
                 .findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(codeQuality.getCollectorItemId(), beginDate - 1, endDate + 1);
+    }
+
+    private CodeQualityAuditResponse getErrorResponse(CollectorItem codeQualityCollectorItem){
+        CodeQualityAuditResponse missingInputResponse = new CodeQualityAuditResponse();
+        missingInputResponse.addAuditStatus(CodeQualityAuditStatus.COLLECTOR_ITEM_ERROR);
+        missingInputResponse.setLastUpdated(codeQualityCollectorItem.getLastUpdated());
+        missingInputResponse.setUrl((String)codeQualityCollectorItem.getOptions().get("instanceUrl"));
+        return  missingInputResponse;
+        }
+
+    private CodeQualityAuditResponse getNotConfigured(){
+        CodeQualityAuditResponse notConfigured = new CodeQualityAuditResponse();
+        notConfigured.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_NOT_CONFIGURED);
+       return  notConfigured;
+    }
+
+
+    private boolean isProjectIdValid(CollectorItem codeQualityCollectorItem) {
+        return Optional.ofNullable(codeQualityCollectorItem.getOptions().get("projectId")).isPresent();
+
     }
 }

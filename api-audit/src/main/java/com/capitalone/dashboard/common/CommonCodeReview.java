@@ -59,12 +59,39 @@ public class CommonCodeReview {
 
         Map<String, String> actors = getActors(pr);
 
+        /**
+         * Native Github Reviews take Higher priority so check for GHR, if not found check for LGTM.
+         */
+
+        if (!CollectionUtils.isEmpty(reviews)) {
+            for (Review review : reviews) {
+                if (StringUtils.equalsIgnoreCase("approved", review.getState())) {
+                    if (!StringUtils.isEmpty(review.getAuthorLDAPDN()) && checkForServiceAccount(review.getAuthorLDAPDN(), settings)) {
+                        auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_BY_SERVICEACCOUNT);
+                    }
+                    //review done using GitHub Review workflow
+                    auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_GHR);
+                    if (!CollectionUtils.isEmpty(auditReviewResponse.getAuditStatuses()) &&
+                            !isPRReviewedInTimeScale(pr, auditReviewResponse, commits)) {
+                        auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_GHR_SELF_APPROVAL);
+                        return Boolean.FALSE;
+                    }
+                    return Boolean.TRUE;
+                }
+            }
+        }
+
+        /**
+         * If there are no Native Github reviews, Check for LGTM.
+         */
+
         if (!CollectionUtils.isEmpty(statuses)) {
             String contextString = settings.getPeerReviewContexts();
             Set<String> prContexts = StringUtils.isEmpty(contextString) ? new HashSet<>() : Sets.newHashSet(contextString.trim().split(","));
 
             boolean lgtmAttempted = false;
             boolean lgtmStateResult = false;
+
             for (CommitStatus status : statuses) {
                 if (status.getContext() != null && prContexts.contains(status.getContext())) {
                     //review done using LGTM workflow assuming its in the settings peerReviewContexts
@@ -84,7 +111,7 @@ public class CommonCodeReview {
                             auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_LGTM_SUCCESS);
 
                             String description = status.getDescription();
-                            if (!StringUtils.isEmpty(settings.getServiceAccountOU()) && !StringUtils.isEmpty(settings.getPeerReviewApprovalText()) && !StringUtils.isEmpty(description) &&
+                            if (!CollectionUtils.isEmpty(settings.getServiceAccountOU()) && !StringUtils.isEmpty(settings.getPeerReviewApprovalText()) && !StringUtils.isEmpty(description) &&
                                     description.startsWith(settings.getPeerReviewApprovalText())) {
                                 String user = description.replace(settings.getPeerReviewApprovalText(), "").trim();
                                 if (!StringUtils.isEmpty(actors.get(user)) && checkForServiceAccount(actors.get(user), settings)) {
@@ -112,39 +139,31 @@ public class CommonCodeReview {
         }
 
 
-        if (!CollectionUtils.isEmpty(reviews)) {
-            for (Review review : reviews) {
-                if ("approved".equalsIgnoreCase(review.getState())) {
-                    if (!StringUtils.isEmpty(review.getAuthorLDAPDN()) && checkForServiceAccount(review.getAuthorLDAPDN(), settings)) {
-                        auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_BY_SERVICEACCOUNT);
-                    }
-                    //review done using GitHub Review workflow
-                    auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_GHR);
-                    if (!CollectionUtils.isEmpty(auditReviewResponse.getAuditStatuses()) &&
-                            !isPRReviewedInTimeScale(pr, auditReviewResponse, commits)) {
-                        auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_GHR_SELF_APPROVAL);
-                        return false;
-                    }
-                    return true;
-                }
-            }
-        }
-
         return false;
     }
 
-
+    /**
+     * Check if the passed in account is a Service Account or not by comparing
+     * against list of valid ServiceAccountOU in ApiSettings.
+     *
+     * @param userLdapDN
+     * @param settings
+     * @return
+     */
     public static boolean checkForServiceAccount(String userLdapDN, ApiSettings settings) {
-        if (!StringUtils.isEmpty(settings.getServiceAccountOU())) {
+        List<String> serviceAccountOU = settings.getServiceAccountOU();
+        if (!CollectionUtils.isEmpty(serviceAccountOU)) {
             try {
-                return (settings.getServiceAccountOU().equalsIgnoreCase(LdapUtils.getStringValue(new LdapName(userLdapDN), "OU")));
+                String userLdapDNParsed = LdapUtils.getStringValue(new LdapName(userLdapDN), "OU");
+                List<String> matches = serviceAccountOU.stream().filter(it -> it.contains(userLdapDNParsed)).collect(Collectors.toList());
+                return CollectionUtils.isNotEmpty(matches);
             } catch (InvalidNameException e) {
                 LOGGER.error("Error parsing LDAP DN:" + userLdapDN);
             }
         } else {
             LOGGER.info("API Settings missing service account RDN");
         }
-        return false;
+        return Boolean.FALSE;
     }
 
     /**

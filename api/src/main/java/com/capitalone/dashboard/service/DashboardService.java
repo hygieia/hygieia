@@ -173,6 +173,13 @@ public interface DashboardService {
     DataResponse<Iterable<Dashboard>> getByServiceAndApplication(String configItemService, String configItemApplication) throws HygieiaException;
 
     /**
+     *  Fetches a list of dashboards by title
+     * @param title
+     * @return
+     */
+    List<Dashboard> getByTitle(String title);
+
+    /**
      *  Updates Dashboard Business Items
      * @param dashboardId
      * @param dashboard
