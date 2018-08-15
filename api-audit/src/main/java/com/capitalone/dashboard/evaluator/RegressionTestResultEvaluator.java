@@ -20,6 +20,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -39,6 +42,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
 
     private final TestResultRepository testResultRepository;
     private final FeatureRepository featureRepository;
+    private static final Logger LOGGER = LoggerFactory.getLogger(RegressionTestResultEvaluator.class);
 
     @Autowired
     public RegressionTestResultEvaluator(TestResultRepository testResultRepository, FeatureRepository featureRepository) {
@@ -183,10 +187,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                         featureDetails.stream()
                                 .forEach(feature -> {
                                     if (this.getEpochChangeDate(feature) >= beginDate && this.getEpochChangeDate(feature) <= endDate) {
-                                        if (feature.getsStatus().equalsIgnoreCase("ACCEPTED") ||
-                                                feature.getsStatus().equalsIgnoreCase("DONE") ||
-                                                feature.getsStatus().equalsIgnoreCase("RESOLVED") ||
-                                                feature.getsState().equalsIgnoreCase("CLOSED")) {
+                                        if (this.isValidStoryStatus(feature.getsStatus())) {
 
                                             StoryIndicator storyIndicator = new StoryIndicator();
 
@@ -226,9 +227,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
     private  List<String> getTotalCompletedStoriesInGivenDateRange(String dashboard, Long beginDate, Long endDate) {
 
         List<String> totalCompletedStories = new ArrayList<String>();
-        Dashboard dashboardDetails = dashboardRepository.findByTitleAndType(dashboard, DashboardType.Team);
-
-        dashboardDetails.getWidgets().forEach(widget ->
+        this.getDashboardDetails(dashboard, DashboardType.Team).getWidgets().forEach(widget ->
         {
             if (widget.getName().equals("feature")) {
                 List<Feature> featureDetails = featureRepository.getStoryByTeamID(widget.getOptions().get("teamId").toString());
@@ -236,13 +235,8 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                         .forEach(feature -> {
                             if (this.getEpochChangeDate(feature) >= beginDate && this.getEpochChangeDate(feature) <= endDate) {
 
-                                if (feature.getsStatus().equalsIgnoreCase("ACCEPTED") ||
-                                        feature.getsStatus().equalsIgnoreCase("DONE") ||
-                                        feature.getsStatus().equalsIgnoreCase("RESOLVED") ||
-                                        feature.getsState().equalsIgnoreCase("CLOSED")) {
-
+                                if (this.isValidStoryStatus(feature.getsStatus())) {
                                     totalCompletedStories.add(feature.getsNumber());
-
                                 }
                             }
                         });
@@ -263,18 +257,13 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
     private List<String> getTotalStoriesInGivenDateRange(String dashboard, Long beginDate, Long endDate) {
 
         List<String> totalStories = new ArrayList<>();
-        Dashboard dashboardDetails = dashboardRepository.findByTitleAndType(dashboard, DashboardType.Team);
-
-        dashboardDetails.getWidgets().forEach(widget ->
+        this.getDashboardDetails(dashboard, DashboardType.Team).getWidgets().forEach(widget ->
         {
             if (widget.getName().equals("feature")) {
                 List<Feature> featureDetails = featureRepository.getStoryByTeamID(widget.getOptions().get("teamId").toString());
                 featureDetails.stream()
                         .forEach(feature -> {
-
                             totalStories.add(feature.getsNumber());
-
-
                         });
             }
         });
@@ -298,6 +287,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
             changeDate = dt.getTime();
         } catch(ParseException e) {
             e.printStackTrace();
+            LOGGER.error("Error in RegressionTestResultEvaluator.getEpochChangeDate() - Unable to match date pattern - " + e.getMessage());
         }
 
         return changeDate;
@@ -314,19 +304,15 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
     private HashMap<String, String> getStoryAuditStatusInGivenDateRange(String title,  Long beginDate, Long endDate) {
 
         HashMap<String, String> storyAuditStatusMap = new HashMap<String,String>();
-        Dashboard dashboardDetails = dashboardRepository.findByTitleAndType(title, DashboardType.Team);
 
-        dashboardDetails.getWidgets().forEach(widget ->
+        this.getDashboardDetails(title, DashboardType.Team).getWidgets().forEach(widget ->
         {
             if (widget.getName().equals("feature")) {
                 List<Feature> featureDetails = featureRepository.getStoryByTeamID(widget.getOptions().get("teamId").toString());
                 featureDetails.stream()
                         .forEach(feature -> {
                             if (this.getEpochChangeDate(feature) >= beginDate && this.getEpochChangeDate(feature) <= endDate) {
-                                if (feature.getsStatus().equalsIgnoreCase("ACCEPTED") ||
-                                        feature.getsStatus().equalsIgnoreCase("DONE") ||
-                                        feature.getsStatus().equalsIgnoreCase("RESOLVED") ||
-                                        feature.getsState().equalsIgnoreCase("CLOSED")) {
+                                if (this.isValidStoryStatus(feature.getsStatus())) {
                                     storyAuditStatusMap.put(feature.getsNumber(), TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_STORY_MATCH.name());
                                 } else {
                                     storyAuditStatusMap.put(feature.getsNumber(), TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_STORY_STATUS_INVALID.name());
@@ -340,5 +326,23 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         });
 
         return storyAuditStatusMap;
+    }
+
+
+    private boolean isValidStoryStatus(String storyStatus) {
+        boolean result = false;
+        final List<String> validStatus = settings.getValidStoryStatus();
+
+        if (validStatus.contains(storyStatus.toUpperCase())) {
+            result = true;
+        }
+
+        return result;
+    }
+
+    private Dashboard getDashboardDetails(String title, DashboardType dashboardType) {
+        Dashboard dashboardDetails = dashboardRepository.findByTitleAndType(title, dashboardType);
+        
+        return dashboardDetails;
     }
 }

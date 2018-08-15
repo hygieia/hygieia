@@ -27,6 +27,7 @@ public class ApiSettings {
 
     private String featureIDPattern;
     private int threshold;
+    private List<String> validStoryStatus;
 
     public String getKey() {
         return key;
@@ -106,6 +107,14 @@ public class ApiSettings {
 
     public void setThreshold(int threshold) {
         this.threshold = threshold;
+    }
+
+    public List<String> getValidStoryStatus() {
+        return validStoryStatus;
+    }
+
+    public void setValidStoryStatus(List<String> validStoryStatus) {
+        this.validStoryStatus = validStoryStatus;
     }
 
     public String getCommitLogIgnoreAuditRegEx() {
