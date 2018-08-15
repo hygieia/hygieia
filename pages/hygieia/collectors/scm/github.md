@@ -95,5 +95,11 @@ The sample `application.properties` file lists parameter values to configure the
 
     # Personal access token generated from github and used for making authentiated calls
     github.personalAccessToken=
+    
+    # Github repository Connect Timeout value in milliseconds, default value is 20000 (20s)
+    github.connectTimeout=
+    
+    # Github repository Read Timeout value in milliseconds, default value is 20000 (20s) 
+    github.readTimeout=
 ```
 **Note**: For information on generating your GitHub key for private repos, refer to [Encryption of Private Repos](../collectors.md#encryption-for-private-repos).

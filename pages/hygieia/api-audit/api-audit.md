@@ -73,6 +73,7 @@ server.contextPath=[Web Context path, if any]
 server.port=[Web server port - default is 8080]
 logRequest=false
 logSplunkRequest=false
+serviceAccountOU=SAOU1,SAOU2 [comma separated list of OU setup in LDAP for whitelist of Service Accounts]
 
 # pattern to match the featureID/storyNumber (Jira ID, VersionOne ID, etc) for traceability
 featureIDPattern=((?<!([A-Za-z]{1,10})-?)[A-Z]+-\\d+)
