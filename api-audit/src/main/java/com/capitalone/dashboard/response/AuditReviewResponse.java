@@ -15,9 +15,7 @@ public class AuditReviewResponse<T> {
     }
 
     public Set<T> getAuditStatuses() {
-        Set<T> sortedAuditStatus = new HashSet<>();
-        auditStatuses.stream().sorted().forEach(status -> sortedAuditStatus.add(status));
-        return sortedAuditStatus;
+        return auditStatuses;
     }
 
     public String getErrorMessage() {
