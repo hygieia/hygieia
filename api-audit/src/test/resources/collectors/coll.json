@@ -53,7 +53,6 @@
   },
   {
     "id": "5af9ed53cba7165e8cc1069e",
-    "_class": "com.capitalone.dashboard.model.EratocodeOSSCollector",
     "eratocodeServers": [
       "https://scan.com"
     ],
