@@ -174,7 +174,23 @@
         "totalStoryCount": 4,
         "threshold": 80,
         "percentTraceability": 25,
-        "totalStories":["B-1626822","JIRA-11998","B-1488671", "B-1521515"]
+        "totalStories": [
+          {
+            "B-1488671": {
+              "auditStatus": "TEST_RESULTS_TRACEABILITY_STORY_STATUS_INVALID"
+            },
+            "B-1521515": {
+              "auditStatus": "TEST_RESULTS_TRACEABILITY_STORY_NOT_FOUND"
+            },
+            "B-1626822": {
+              "auditStatus": "TEST_RESULTS_TRACEABILITY_STORY_MATCH"
+            },
+            "JIRA-11998": {
+              "auditStatus": "TEST_RESULTS_TRACEABILITY_STORY_MATCH"
+            }
+          }
+        ]
+
       }
     ]
   }
