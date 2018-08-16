@@ -1658,5 +1658,45 @@
     "scmCommitTimestamp" : 1517025260000,
     "numberOfChanges" : 1,
     "type" : "New"
+  },
+  {
+    "id" : "5b72e8e4964ed8840546d27a",
+    "collectorItemId" : "5b72e8cf964ed88375851445",
+    "timestamp" : 1534257380557,
+    "firstEverCommit" : false,
+    "scmUrl" : "https://mygithub.com/Devopscode/MultipleAuthorsGHRLGTM",
+    "scmBranch" : "master",
+    "scmRevisionNumber" : "a0de0992e284f893da53b5e68bfbb2051a6159d1",
+    "scmCommitLog" : "Merge pull request #267 from Devopscode/dev\n\nJIRA DEV CC, JIRA QA CC, JIRA PT CC",
+    "scmAuthor" : "Author One",
+    "scmAuthorLogin" : "ghone",
+    "scmParentRevisionNumbers" : [
+      "c7e46107d9df0a652d4088c214b38dbec5f144ea",
+      "42d4dbb84bdbce8f7d105ef39a0b64a875707dd6"
+    ],
+    "scmCommitTimestamp" : 1533923201000,
+    "numberOfChanges" : 1,
+    "type" : "New",
+    "pullNumber" : "267"
+  },
+  {
+    "id" : "5b72e8e4964ed8840546d27d",
+    "collectorItemId" : "5b72e8cf964ed88375851445",
+    "timestamp" : 1534257380557,
+    "firstEverCommit" : false,
+    "scmUrl" : "https://mygithub.com/Devopscode/MultipleAuthorsGHRLGTM",
+    "scmBranch" : "master",
+    "scmRevisionNumber" : "c7e46107d9df0a652d4088c214b38dbec5f144ea",
+    "scmCommitLog" : "Merge pull request #266 from Devopscode/AMIUpdate\n\nAMI ID Update, DEV-QA-PT AMI Update",
+    "scmAuthor" : "Author One",
+    "scmAuthorLogin" : "ghone",
+    "scmParentRevisionNumbers" : [
+      "8e4f1cc4b5eb9d2b5a8ab79e14210a776d38eff3",
+      "e518f0444fcdb1ef26122e8da053e5b9655220a8"
+    ],
+    "scmCommitTimestamp" : 1533835517000,
+    "numberOfChanges" : 1,
+    "type" : "New",
+    "pullNumber" : "266"
   }
 ]

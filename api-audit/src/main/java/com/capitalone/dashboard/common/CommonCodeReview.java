@@ -59,12 +59,39 @@ public class CommonCodeReview {
 
         Map<String, String> actors = getActors(pr);
 
+        /**
+         * Native Github Reviews take Higher priority so check for GHR, if not found check for LGTM.
+         */
+
+        if (!CollectionUtils.isEmpty(reviews)) {
+            for (Review review : reviews) {
+                if (StringUtils.equalsIgnoreCase("approved", review.getState())) {
+                    if (!StringUtils.isEmpty(review.getAuthorLDAPDN()) && checkForServiceAccount(review.getAuthorLDAPDN(), settings)) {
+                        auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_BY_SERVICEACCOUNT);
+                    }
+                    //review done using GitHub Review workflow
+                    auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_GHR);
+                    if (!CollectionUtils.isEmpty(auditReviewResponse.getAuditStatuses()) &&
+                            !isPRReviewedInTimeScale(pr, auditReviewResponse, commits)) {
+                        auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_GHR_SELF_APPROVAL);
+                        return Boolean.FALSE;
+                    }
+                    return Boolean.TRUE;
+                }
+            }
+        }
+
+        /**
+         * If there are no Native Github reviews, Check for LGTM.
+         */
+
         if (!CollectionUtils.isEmpty(statuses)) {
             String contextString = settings.getPeerReviewContexts();
             Set<String> prContexts = StringUtils.isEmpty(contextString) ? new HashSet<>() : Sets.newHashSet(contextString.trim().split(","));
 
             boolean lgtmAttempted = false;
             boolean lgtmStateResult = false;
+
             for (CommitStatus status : statuses) {
                 if (status.getContext() != null && prContexts.contains(status.getContext())) {
                     //review done using LGTM workflow assuming its in the settings peerReviewContexts
@@ -111,24 +138,6 @@ public class CommonCodeReview {
             }
         }
 
-
-        if (!CollectionUtils.isEmpty(reviews)) {
-            for (Review review : reviews) {
-                if ("approved".equalsIgnoreCase(review.getState())) {
-                    if (!StringUtils.isEmpty(review.getAuthorLDAPDN()) && checkForServiceAccount(review.getAuthorLDAPDN(), settings)) {
-                        auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_BY_SERVICEACCOUNT);
-                    }
-                    //review done using GitHub Review workflow
-                    auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_GHR);
-                    if (!CollectionUtils.isEmpty(auditReviewResponse.getAuditStatuses()) &&
-                            !isPRReviewedInTimeScale(pr, auditReviewResponse, commits)) {
-                        auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_GHR_SELF_APPROVAL);
-                        return false;
-                    }
-                    return true;
-                }
-            }
-        }
 
         return false;
     }
