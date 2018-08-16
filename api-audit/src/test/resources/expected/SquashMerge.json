@@ -97,7 +97,7 @@
     },
     {
         "auditStatuses": [
-            "DIRECT_COMMITS_TO_BASE",
+            "DIRECT_COMMIT_NONCODE_CHANGE_SCM_AUTHOR_LOGIN_INVALID",
             "DIRECT_COMMITS_TO_BASE_FIRST_COMMIT"
         ],
         "lastUpdated": 1516207280261,
