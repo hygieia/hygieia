@@ -20,20 +20,20 @@ public class CommonCodeReviewTest {
     @Test
     public void testCheckForServiceAccount() {
 
-        apiSettings.setServiceAccountOU("Service Accounts");
+        apiSettings.setServiceAccountOU(TestConstants.SERVICE_ACCOUNTS);
         Assert.assertEquals(true, CommonCodeReview.checkForServiceAccount("CN=hygieiaUser,OU=Service Accounts,DC=basic,DC=ds,DC=industry,DC=com", apiSettings));
     }
 
     @Test
     public void testCheckForServiceAccountForAllUsers() {
-        apiSettings.setServiceAccountOU("Service Accounts");
+        apiSettings.setServiceAccountOU(TestConstants.SERVICE_ACCOUNTS);
         Assert.assertEquals(false, CommonCodeReview.checkForServiceAccount("CN=hygieiaUser,OU=Developers,OU=All Users,DC=basic,DC=ds,DC=industry,DC=com", apiSettings));
     }
 
 
     @Test
     public void testComputePeerReviewStatusForServiceAccount() {
-        apiSettings.setServiceAccountOU("Service Accounts");
+        apiSettings.setServiceAccountOU(TestConstants.SERVICE_ACCOUNTS);
         apiSettings.setPeerReviewContexts("context");
         apiSettings.setPeerReviewApprovalText("approved by");
         AuditReviewResponse<CodeReviewAuditStatus> codeReviewAuditRequestAuditReviewResponse = new AuditReviewResponse<>();
@@ -43,12 +43,14 @@ public class CommonCodeReviewTest {
 
     @Test
     public void testComputePeerReviewStatusForAllUsers() {
-        apiSettings.setServiceAccountOU("Service Accounts");
+        apiSettings.setServiceAccountOU(TestConstants.SERVICE_ACCOUNTS);
         apiSettings.setPeerReviewContexts("context");
         apiSettings.setPeerReviewApprovalText("approved by");
         AuditReviewResponse<CodeReviewAuditStatus> codeReviewAuditRequestAuditReviewResponse = new AuditReviewResponse<>();
         Assert.assertEquals(false, CommonCodeReview.computePeerReviewStatus(makeGitRequest("All Users"), apiSettings, codeReviewAuditRequestAuditReviewResponse, Stream.of(makeCommit()).collect(Collectors.toList())));
-        Assert.assertEquals(false, codeReviewAuditRequestAuditReviewResponse.getAuditStatuses().toString().contains("PEER_REVIEW_BY_SERVICEACCOUNT"));
+        Assert.assertEquals(Boolean.TRUE,codeReviewAuditRequestAuditReviewResponse.getAuditStatuses().contains(CodeReviewAuditStatus.PEER_REVIEW_GHR));
+        Assert.assertEquals(Boolean.TRUE,codeReviewAuditRequestAuditReviewResponse.getAuditStatuses().contains(CodeReviewAuditStatus.PEER_REVIEW_BY_SERVICEACCOUNT));
+        Assert.assertEquals(Boolean.TRUE,codeReviewAuditRequestAuditReviewResponse.getAuditStatuses().contains(CodeReviewAuditStatus.PEER_REVIEW_GHR_SELF_APPROVAL));
     }
 
     private GitRequest makeGitRequest(String userAccount) {
