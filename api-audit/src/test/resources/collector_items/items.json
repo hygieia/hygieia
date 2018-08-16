@@ -26,7 +26,7 @@
       "timestamp": 1456084266,
       "machineIdentifier": 8366972,
       "processIdentifier": 26815,
-      "counter": 1436929
+      "counter": 14369292
     },
     "lastUpdated": 1523562528850,
     "options": {
@@ -406,6 +406,39 @@
       "branch": "master",
       "userID": "",
       "url" : "https://mygithub.com/Devopscode/MultipleAuthorsGHR"
+    }
+  },
+  {
+    "id" : "5ad5f605c23b391cfa1c01a4",
+    "description" : "myapplication:mycomponent",
+    "enabled" : false,
+    "errors" : [],
+    "pushed" : false,
+    "collectorId" : "5af9ed53cba7165e8cc1069e",
+    "lastUpdated" : 1524190250247,
+    "options" : {
+      "applicationType": null,
+      "componentName": "mycomponent",
+      "applicationID": [
+        "SOMEAPPLICATION"
+      ],
+      "applicationName": "account-my-information",
+      "instanceUrl": "https://scan.com"
+    }
+  },
+  {
+    "id": "5b72e8cf964ed88375851445",
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": "56ca15297fab7c68bfdb420c",
+    "lastUpdated": 1534257790463,
+    "options": {
+      "password": "",
+      "personalAccessToken": "",
+      "branch": "master",
+      "userID": "",
+      "url": "https://mygithub.com/Devopscode/MultipleAuthorsGHRLGTM"
     }
   },
 
