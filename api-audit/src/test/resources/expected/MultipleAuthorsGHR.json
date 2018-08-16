@@ -122,8 +122,8 @@
     },
     {
         "auditStatuses": [
-            "COMMITAUTHOR_NE_MERGECOMMITER",
             "PEER_REVIEW_GHR",
+            "COMMITAUTHOR_NE_MERGECOMMITER",
             "PULLREQ_NOT_PEER_REVIEWED",
             "PEER_REVIEW_GHR_SELF_APPROVAL",
             "GIT_BRANCH_STRATEGY"

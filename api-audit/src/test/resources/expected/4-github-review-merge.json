@@ -2,9 +2,9 @@
     {
         "auditStatuses": [
             "PEER_REVIEW_GHR",
-            "GIT_BRANCH_STRATEGY",
+            "COMMITAUTHOR_EQ_MERGECOMMITER",
             "PULLREQ_REVIEWED_BY_PEER",
-            "COMMITAUTHOR_EQ_MERGECOMMITER"
+            "GIT_BRANCH_STRATEGY"
         ],
         "lastUpdated": 1516207278547,
         "pullRequest": {
