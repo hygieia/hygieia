@@ -318,6 +318,7 @@ public class HygieiaPublisher extends Notifier {
         private String hygieiaJenkinsName;
         private boolean useProxy;
         private boolean hygieiaPublishBuildDataGlobal;
+        private boolean hygieiaPublishSonarDataGlobal;
         private Set<String> deployAppNames = new HashSet<>();
         private Set<String> deployEnvNames = new HashSet<>();
 
@@ -350,6 +351,10 @@ public class HygieiaPublisher extends Notifier {
         }
 
         public boolean isHygieiaPublishBuildDataGlobal() { return hygieiaPublishBuildDataGlobal;}
+
+        public boolean isHygieiaPublishSonarDataGlobal() {
+            return hygieiaPublishSonarDataGlobal;
+        }
 
         public ListBoxModel doFillTestTypeItems(String testType) {
             ListBoxModel model = new ListBoxModel();
@@ -535,7 +540,6 @@ public class HygieiaPublisher extends Notifier {
 
         @Override
         public HygieiaPublisher newInstance(StaplerRequest sr, JSONObject json) {
-
             HygieiaBuild hygieiaBuild = sr.bindJSON(HygieiaBuild.class, (JSONObject) json.get("hygieiaBuild"));
             HygieiaArtifact hygieiaArtifact = sr.bindJSON(HygieiaArtifact.class, (JSONObject) json.get("hygieiaArtifact"));
             HygieiaTest hygieiaTest = sr.bindJSON(HygieiaTest.class, (JSONObject) json.get("hygieiaTest"));
@@ -551,6 +555,7 @@ public class HygieiaPublisher extends Notifier {
             hygieiaJenkinsName = sr.getParameter("hygieiaJenkinsName");
             useProxy = "on".equals(sr.getParameter("useProxy"));
             hygieiaPublishBuildDataGlobal = "on".equals(sr.getParameter("hygieiaPublishBuildDataGlobal"));
+            hygieiaPublishSonarDataGlobal =  "on".equals(sr.getParameter("hygieiaPublishSonarDataGlobal"));
             save();
             return super.configure(sr, formData);
         }

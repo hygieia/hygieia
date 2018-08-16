@@ -22,7 +22,10 @@
         <f:textbox field="hygieiaJenkinsName" name="hygieiaJenkinsName" value="${descriptor.getHygieiaJenkinsName()}" />
     </f:entry>
     <f:entry title="Publish all build data" help="/plugin/hygieia-publisher/help-globalConfig-hygieiaPublishBuildData.html">
-        <f:checkbox field="hygieiaPublishBuildDataGlobal" name="hygieiaPublishBuildData" checked="${descriptor.isHygieiaPublishBuildDataGlobal()}" />
+        <f:checkbox field="hygieiaPublishBuildDataGlobal" name="hygieiaPublishBuildDataGlobal" checked="${descriptor.isHygieiaPublishBuildDataGlobal()}" />
+    </f:entry>
+    <f:entry title="Publish all sonar scan data" help="/plugin/hygieia-publisher/help-globalConfig-hygieiaPublishBuildData.html">
+        <f:checkbox field="hygieiaPublishSonarDataGlobal" name="hygieiaPublishSonarDataGlobal" checked="${descriptor.isHygieiaPublishSonarDataGlobal()}" />
     </f:entry>
     <f:entry title="Use Proxy">
         <f:checkbox field="useProxy" name="useProxy" checked="${descriptor.isUseProxy()}" />

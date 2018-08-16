@@ -48,7 +48,7 @@ public class HygieiaJobListener extends RunListener<AbstractBuild> {
         Map<Descriptor<Publisher>, Publisher> map = project.getPublishersList().toMap();
         for (Publisher publisher : map.values()) {
             if (publisher instanceof HygieiaPublisher) {
-                return new ActiveNotifier((HygieiaPublisher) publisher, (BuildListener)listener);
+                return new ActiveJobNotifier((HygieiaPublisher) publisher, (BuildListener)listener);
             }
         }
         return new DisabledNotifier();

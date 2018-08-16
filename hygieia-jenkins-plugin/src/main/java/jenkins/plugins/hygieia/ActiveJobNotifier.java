@@ -1,44 +1,31 @@
 package jenkins.plugins.hygieia;
 
 import com.capitalone.dashboard.model.BuildStatus;
-import com.capitalone.dashboard.model.RepoBranch;
-import com.capitalone.dashboard.model.SCM;
 import com.capitalone.dashboard.request.BinaryArtifactCreateRequest;
-import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import com.capitalone.dashboard.request.DeployDataCreateRequest;
 import com.capitalone.dashboard.request.TestDataCreateRequest;
-import hudson.FilePath;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
-import hudson.model.Run;
-import hudson.model.TaskListener;
-import hudson.plugins.git.GitSCM;
-import hudson.scm.SubversionSCM;
 import hygieia.builder.*;
-import hygieia.utils.HygieiaUtils;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
-import org.jenkinsci.plugins.multiplescms.MultiSCM;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
 @SuppressWarnings("rawtypes")
-public class ActiveNotifier implements FineGrainedNotifier {
+public class ActiveJobNotifier implements FineGrainedNotifier {
 
-    private static final Logger logger = Logger.getLogger(ActiveNotifier.class.getName());
+    private static final Logger logger = Logger.getLogger(ActiveJobNotifier.class.getName());
 
     private HygieiaPublisher publisher;
     private BuildListener listener;
 
-    public ActiveNotifier(HygieiaPublisher publisher, BuildListener listener) {
+    public ActiveJobNotifier(HygieiaPublisher publisher, BuildListener listener) {
         super();
         this.publisher = publisher;
         this.listener = listener;
@@ -81,7 +68,7 @@ public class ActiveNotifier implements FineGrainedNotifier {
                 (publisher.getHygieiaBuild() != null) || (publisher.getHygieiaTest() != null) || (publisher.getHygieiaDeploy() != null);
 
         //Don't publish is we are globally publishing build data.
-        publishBuild = publishBuild && !publisher.getDescriptor().isHygieiaPublishBuildDataGlobal();
+        publishBuild = publishBuild && !publisher.getDescriptor().isHygieiaPublishBuildDataGlobal() && !publisher.getDescriptor().isHygieiaPublishSonarDataGlobal();
 
         if (publishBuild) {
             BuildBuilder builder = new BuildBuilder(r, publisher.getDescriptor().getHygieiaJenkinsName(), listener, true, true);
@@ -133,7 +120,7 @@ public class ActiveNotifier implements FineGrainedNotifier {
                 }
             }
 
-            boolean publishSonar = (publisher.getHygieiaSonar() != null) && successBuild;
+            boolean publishSonar = (publisher.getHygieiaSonar() != null) && successBuild && !publisher.getDescriptor().isHygieiaPublishSonarDataGlobal();
 
             if (publishSonar) {
                 try {
