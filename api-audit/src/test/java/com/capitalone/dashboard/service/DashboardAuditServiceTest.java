@@ -169,7 +169,7 @@ public class DashboardAuditServiceTest {
         Collection<CodeQualityAuditResponse> expectedReview = expectedReviewMap.get(AuditType.CODE_QUALITY);
         assertThat(actualReview.size()).isEqualTo(1);
         //TODO: FieldByField comparision fails as the order of 'auditStatuses' change for every run. Need to implement a Sorted version of FieldByField comparision
-        // assertThat(actualReview.toArray()[0]).isEqualToComparingFieldByFieldRecursively(expectedReview.toArray()[0]);
+         assertThat(actualReview.toArray()[0]).isEqualToComparingFieldByField(expectedReview.toArray()[0]);
     }
 
 
