@@ -167,7 +167,7 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
             }
 
             // Set audit statuses if the threshold is met based on the status field of code_quality metric
-            if (StringUtils.equals(metric.getStatus().toString(), CodeQualityMetricStatus.Ok.toString())){
+            if (CodeQualityMetricStatus.Ok.equals(metric.getStatus())){
                 if (StringUtils.equalsIgnoreCase(metric.getName(), CodeQualityMetricType.BLOCKER_VIOLATIONS.getType())) {
                     codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_BLOCKER_MET);
                 } else if (StringUtils.equalsIgnoreCase(metric.getName(), CodeQualityMetricType.CRITICAL_VIOLATIONS.getType())) {
