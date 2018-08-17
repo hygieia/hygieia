@@ -455,21 +455,36 @@
     }
   },
   {
-    "id" : "57f2a0193b55670a9e06d63a",
-    "description" : "TEST-UI",
-    "niceName" : "TEST",
-    "enabled" : true,
-    "errors" : [],
-    "pushed" : true,
-    "collectorId" : "56df29df7fab7c3ec3c432ea",
-    "lastUpdated" : 1513106044147,
-    "options" : {
-      "jobName" : "TEST-UI",
-      "jobUrl" : "https://myjenkins.com/myjenkins/job/TEST-UI/",
-      "instanceUrl" : "https://myjenkins.com/myjenkins/",
+    "id": "57f2a0193b55670a9e06d63a",
+    "description": "TEST-UI",
+    "niceName": "TEST",
+    "enabled": true,
+    "errors": [],
+    "pushed": true,
+    "collectorId": "56df29df7fab7c3ec3c432ea",
+    "lastUpdated": 1513106044147,
+    "options": {
+      "jobName": "TEST-UI",
+      "jobUrl": "https://myjenkins.com/myjenkins/job/TEST-UI/",
+      "instanceUrl": "https://myjenkins.com/myjenkins/",
       "applicationID": [
         "TestBusServ"
       ]
+    }
+  },
+  {
+    "id": "5b72e8cf964ed88375851445",
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": "56ca15297fab7c68bfdb420c",
+    "lastUpdated": 1534257790463,
+    "options": {
+      "password": "",
+      "personalAccessToken": "",
+      "branch": "master",
+      "userID": "",
+      "url": "https://mygithub.com/Devopscode/MultipleAuthorsGHRLGTM"
     }
   }
 ]
