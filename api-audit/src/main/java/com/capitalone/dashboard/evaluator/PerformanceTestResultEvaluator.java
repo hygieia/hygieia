@@ -17,6 +17,7 @@ import com.capitalone.dashboard.response.PerformanceTestAuditResponse;
 import com.capitalone.dashboard.response.TestResultsAuditResponse;
 import com.capitalone.dashboard.status.PerformanceTestAuditStatus;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -81,11 +82,11 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
                                 String value = testCaseStep.getDescription();
                                 if (j == 0) {
                                     kpi.setTarget(Double.parseDouble(value));
-                                    if(testCase.getDescription().equalsIgnoreCase("KPI : Avg response times") && !value.isEmpty()){
+                                    if(StringUtils.equalsIgnoreCase(testCase.getDescription(),"KPI : Avg response times") && !value.isEmpty()){
                                         perfReviewResponse.addAuditStatus(PerformanceTestAuditStatus.PERFORMANCE_THRESHOLDS_RESPONSE_TIME_FOUND);
-                                    }else if((testCase.getDescription().equalsIgnoreCase("KPI : Transaction Per Second") && !value.isEmpty())) {
+                                    }else if((StringUtils.equalsIgnoreCase(testCase.getDescription(),"KPI : Transaction Per Second") && !value.isEmpty())) {
                                         perfReviewResponse.addAuditStatus(PerformanceTestAuditStatus.PERFORMANCE_THRESHOLDS_TRANSACTIONS_PER_SECOND_FOUND);
-                                    }else if(testCase.getDescription().equalsIgnoreCase("KPI : Error Rate Threshold") && !value.isEmpty() ){
+                                    }else if(StringUtils.equalsIgnoreCase(testCase.getDescription(),"KPI : Error Rate Threshold") && !value.isEmpty() ){
                                         perfReviewResponse.addAuditStatus(PerformanceTestAuditStatus.PERFORMANCE_THRESHOLDS_ERROR_RATE_FOUND);
                                     }
                                 }
@@ -93,18 +94,19 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
                                 j++;
                             }
                             kpilist.add(kpi);
-                            if(kpi.getType().equalsIgnoreCase("KPI : Avg response times")&& (kpi.getTarget() > kpi.getAchieved()))
+                            if(StringUtils.equalsIgnoreCase(kpi.getType(),"KPI : Avg response times")&& (kpi.getTarget() > kpi.getAchieved()))
                             {
                                 perfReviewResponse.addAuditStatus(PerformanceTestAuditStatus.PERFORMANCE_THRESHOLD_RESPONSE_TIME_MET);
-                            }else if(kpi.getType().equalsIgnoreCase("KPI : Transaction Per Second")&& (kpi.getTarget() <= kpi.getAchieved())){
+                            }else if(StringUtils.equalsIgnoreCase(kpi.getType(),"KPI : Transaction Per Second")&& (kpi.getTarget() <= kpi.getAchieved())){
                                 perfReviewResponse.addAuditStatus(PerformanceTestAuditStatus.PERFORMANCE_THRESHOLD_TRANSACTIONS_PER_SECOND_MET);
-                            }else if(kpi.getType().equalsIgnoreCase("KPI : Error Rate Threshold")&& (kpi.getTarget() >= kpi.getAchieved())){
+                            }else if(StringUtils.equalsIgnoreCase(kpi.getType(),"KPI : Error Rate Threshold")&& (kpi.getTarget() >= kpi.getAchieved())){
                                 perfReviewResponse.addAuditStatus(PerformanceTestAuditStatus.PERFORMANCE_THRESHOLD_ERROR_RATE_MET);
                             }
 
                         }
-                        if(testResult.getDescription().equalsIgnoreCase("success")){
+                        if(StringUtils.equalsIgnoreCase(testResult.getDescription(),"Success")){
                             perfReviewResponse.addAuditStatus(PerformanceTestAuditStatus.PERFORMANCE_MET);
+
                         }
                         test.setRunId(testResult.getExecutionId());
                         test.setStartTime(testResult.getStartTime());
