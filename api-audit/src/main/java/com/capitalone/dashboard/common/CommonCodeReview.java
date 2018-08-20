@@ -152,7 +152,7 @@ public class CommonCodeReview {
      */
     public static boolean checkForServiceAccount(String userLdapDN, ApiSettings settings) {
         List<String> serviceAccountOU = settings.getServiceAccountOU();
-        if (!CollectionUtils.isEmpty(serviceAccountOU)) {
+        if (!CollectionUtils.isEmpty(serviceAccountOU) && StringUtils.isNotBlank(userLdapDN)) {
             try {
                 String userLdapDNParsed = LdapUtils.getStringValue(new LdapName(userLdapDN), "OU");
                 List<String> matches = serviceAccountOU.stream().filter(it -> it.contains(userLdapDNParsed)).collect(Collectors.toList());
