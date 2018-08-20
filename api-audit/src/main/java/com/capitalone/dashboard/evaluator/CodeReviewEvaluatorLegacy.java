@@ -198,16 +198,16 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
             codeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.SCM_AUTHOR_LOGIN_INVALID);
         }
 
-        if(commit.isFirstEverCommit()) {
-            codeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
-        }
-
-        // Proceed with other Audits.
         auditDirectCommits(codeReviewAuditResponse, commit);
     }
 
+    @SuppressWarnings("Duplicates")
     private void auditDirectCommits(CodeReviewAuditResponse codeReviewAuditResponse, Commit commit) {
-        if (CommonCodeReview.checkForServiceAccount(commit.getScmAuthorLDAPDN(), settings)) {
+
+        if (StringUtils.isBlank(commit.getScmAuthorLDAPDN())) {
+            // Status for commits without login information.
+            auditIncrementVersionTag(codeReviewAuditResponse, commit, CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE);
+        } else if (CommonCodeReview.checkForServiceAccount(commit.getScmAuthorLDAPDN(), settings)) {
             codeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.COMMITAUTHOR_EQ_SERVICEACCOUNT);
             // check for increment version tag and flag Direct commit by Service Account.
             auditIncrementVersionTag(codeReviewAuditResponse, commit, CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_SERVICE_ACCOUNT);
@@ -220,8 +220,8 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
     private void auditIncrementVersionTag(CodeReviewAuditResponse codeReviewAuditResponse, Commit commit, CodeReviewAuditStatus directCommitIncrementVersionTagStatus) {
         if (CommonCodeReview.matchIncrementVersionTag(commit.getScmCommitLog(), settings)) {
             codeReviewAuditResponse.addAuditStatus(directCommitIncrementVersionTagStatus);
-        }else if(!commit.isFirstEverCommit()){
-            codeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
+        } else {
+            codeReviewAuditResponse.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
         }
     }
 

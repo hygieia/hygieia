@@ -10,6 +10,7 @@ import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.response.CodeReviewAuditResponse;
 import com.capitalone.dashboard.response.CodeReviewAuditResponseV2;
+import com.capitalone.dashboard.status.CodeReviewAuditStatus;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Test;
@@ -100,7 +101,7 @@ public class CodeReviewEvaluatorTest {
         when(apiSettings.getServiceAccountOU()).thenReturn(TestConstants.USER_ACCOUNTS);
         when(apiSettings.getCommitLogIgnoreAuditRegEx()).thenReturn("(.)*(Increment_Version_Tag)(.)*");
         CodeReviewAuditResponseV2 responseV2 = codeReviewEvaluator.evaluate(makeCollectorItem(1), 125634536, 6235263, null);
-        Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("DIRECT_COMMITS_TO_BASE"));
+        Assert.assertEquals(Boolean.FALSE, responseV2.getAuditStatuses().contains(CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE));
     }
 
 
