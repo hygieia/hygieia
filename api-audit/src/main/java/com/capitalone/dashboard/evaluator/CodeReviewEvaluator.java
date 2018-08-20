@@ -199,18 +199,20 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
 
     private void auditServiceAccountChecks(CodeReviewAuditResponseV2 reviewAuditResponseV2, Commit commit) {
         if (StringUtils.isEmpty(commit.getScmAuthorLDAPDN())) {
-            reviewAuditResponseV2.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
-        } else {
-            auditDirectCommits(reviewAuditResponseV2, commit);
+            reviewAuditResponseV2.addAuditStatus(CodeReviewAuditStatus.SCM_AUTHOR_LOGIN_INVALID);
         }
+
+        auditDirectCommits(reviewAuditResponseV2, commit);
     }
 
     private void auditDirectCommits(CodeReviewAuditResponseV2 reviewAuditResponseV2, Commit commit) {
-        if ( CommonCodeReview.checkForServiceAccount(commit.getScmAuthorLDAPDN(), settings)) {
+        if (StringUtils.isBlank(commit.getScmAuthorLDAPDN())) {
+            auditIncrementVersionTag(reviewAuditResponseV2, commit, CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE);
+        } else if (CommonCodeReview.checkForServiceAccount(commit.getScmAuthorLDAPDN(), settings)) {
             reviewAuditResponseV2.addAuditStatus(CodeReviewAuditStatus.COMMITAUTHOR_EQ_SERVICEACCOUNT);
             auditIncrementVersionTag(reviewAuditResponseV2, commit, CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_SERVICE_ACCOUNT);
         } else {
-            auditIncrementVersionTag(reviewAuditResponseV2, commit, StringUtils.equals("unknown", commit.getScmAuthorLogin()) ? CodeReviewAuditStatus.SCM_AUTHOR_LOGIN_INVALID : CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_USER_ACCOUNT);
+            auditIncrementVersionTag(reviewAuditResponseV2, commit, CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_USER_ACCOUNT);
 
         }
     }
@@ -218,7 +220,7 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
     private void auditIncrementVersionTag(CodeReviewAuditResponseV2 reviewAuditResponseV2, Commit commit, CodeReviewAuditStatus directCommitIncrementVersionTagStatus) {
         if (CommonCodeReview.matchIncrementVersionTag(commit.getScmCommitLog(), settings)) {
             reviewAuditResponseV2.addAuditStatus(directCommitIncrementVersionTagStatus);
-        }else{
+        } else {
             reviewAuditResponseV2.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
         }
     }
