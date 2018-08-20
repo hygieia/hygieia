@@ -192,32 +192,37 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
         return allPeerReviews;
     }
 
-    private void auditIncrementVersionTag(CodeReviewAuditResponse codeReviewAuditResponse, Commit commit, CodeReviewAuditStatus directCommitIncrementVersionTagStatus) {
-        if (CommonCodeReview.matchIncrementVersionTag(commit.getScmCommitLog(), settings)) {
-            codeReviewAuditResponse.addAuditStatus(directCommitIncrementVersionTagStatus);
-        }else{
-            codeReviewAuditResponse.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
-        }
-    }
-
     private void auditServiceAccountChecks(CodeReviewAuditResponse codeReviewAuditResponse, Commit commit) {
+        // Check for improper login info and add appropriate status.
         if (StringUtils.isEmpty(commit.getScmAuthorLDAPDN())) {
-            codeReviewAuditResponse.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_SCM_AUTHOR_LOGIN_INVALID);
-        } else {
-            auditDirectCommits(codeReviewAuditResponse, commit);
+            codeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.SCM_AUTHOR_LOGIN_INVALID);
         }
+
+        auditDirectCommits(codeReviewAuditResponse, commit);
     }
 
+    @SuppressWarnings("Duplicates")
     private void auditDirectCommits(CodeReviewAuditResponse codeReviewAuditResponse, Commit commit) {
-        if (CommonCodeReview.checkForServiceAccount(commit.getScmAuthorLDAPDN(), settings)) {
+
+        if (StringUtils.isBlank(commit.getScmAuthorLDAPDN())) {
+            // Status for commits without login information.
+            auditIncrementVersionTag(codeReviewAuditResponse, commit, CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE);
+        } else if (CommonCodeReview.checkForServiceAccount(commit.getScmAuthorLDAPDN(), settings)) {
             codeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.COMMITAUTHOR_EQ_SERVICEACCOUNT);
-            // check for increment version tag and flag Direct commit by Service account
+            // check for increment version tag and flag Direct commit by Service Account.
             auditIncrementVersionTag(codeReviewAuditResponse, commit, CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_SERVICE_ACCOUNT);
         } else {
-            //if the scmAuthorLogin is unknown then return error status.
+            // check for increment version tag and flag Direct commit by User Account.
             auditIncrementVersionTag(codeReviewAuditResponse, commit, CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_USER_ACCOUNT);
         }
     }
 
+    private void auditIncrementVersionTag(CodeReviewAuditResponse codeReviewAuditResponse, Commit commit, CodeReviewAuditStatus directCommitIncrementVersionTagStatus) {
+        if (CommonCodeReview.matchIncrementVersionTag(commit.getScmCommitLog(), settings)) {
+            codeReviewAuditResponse.addAuditStatus(directCommitIncrementVersionTagStatus);
+        } else {
+            codeReviewAuditResponse.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
+        }
+    }
 
 }

@@ -98,7 +98,7 @@ public class CodeReviewEvaluatorLegecyTest {
         when(apiSettings.getServiceAccountOU()).thenReturn(TestConstants.USER_ACCOUNTS);
         when(apiSettings.getCommitLogIgnoreAuditRegEx()).thenReturn("(.)*(Increment_Version_Tag)(.)*");
         List<CodeReviewAuditResponse> responseV2 =  codeReviewEvaluatorLegacy.evaluate(makeCollectorItem(1),125634536,6235263,null);
-        Assert.assertEquals(true, responseV2.get(1).getAuditStatuses().contains(CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_SCM_AUTHOR_LOGIN_INVALID));
+        Assert.assertEquals(true, responseV2.get(1).getAuditStatuses().contains(CodeReviewAuditStatus.SCM_AUTHOR_LOGIN_INVALID));
     }
 
 
