@@ -169,11 +169,9 @@ public class DashboardAuditServiceTest {
         Map<AuditType, Collection<PerformanceTestAuditResponse>> expectedReviewMap = expected.getReview();
         Collection<PerformanceTestAuditResponse> expectedReview = expectedReviewMap.get(AuditType.PERF_TEST);
         assertThat(actualReview.size()).isEqualTo(1);
-        assertThat(actualReview.toArray()[0]).isEqualToComparingFieldByFieldRecursively(expectedReview.toArray()[0]);
+        assertThat(actualReview.toArray()[0]).isEqualToComparingFieldByField(expectedReview.toArray()[0]);
 
     }
-
-
     @Test
     public void runLegacyCodeReviewTests() throws AuditException, IOException {
         for (CollectorItem item : collectorItemRepository.findAll()) {

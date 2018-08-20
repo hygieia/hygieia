@@ -1,11 +1,11 @@
 [
     {
         "auditStatuses": [
-            "PEER_REVIEW_LGTM_SELF_APPROVAL",
-            "GIT_BRANCH_STRATEGY",
-            "COMMITAUTHOR_NE_MERGECOMMITER",
             "PEER_REVIEW_LGTM_SUCCESS",
-            "PULLREQ_NOT_PEER_REVIEWED"
+            "COMMITAUTHOR_NE_MERGECOMMITER",
+            "PEER_REVIEW_LGTM_SELF_APPROVAL",
+            "PULLREQ_NOT_PEER_REVIEWED",
+            "GIT_BRANCH_STRATEGY"
         ],
         "lastUpdated": 1516735761179,
         "pullRequest": {
@@ -122,7 +122,8 @@
     },
     {
         "auditStatuses": [
-            "DIRECT_COMMITS_TO_BASE_FIRST_COMMIT"
+            "DIRECT_COMMITS_TO_BASE_FIRST_COMMIT",
+            "SCM_AUTHOR_LOGIN_INVALID"
         ],
         "lastUpdated": 1516735761179,
         "commits": [
