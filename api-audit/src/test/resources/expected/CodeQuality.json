@@ -1,0 +1,133 @@
+{
+  "auditStatuses": [
+    "DASHBOARD_CODEQUALITY_CONFIGURED"
+  ],
+  "lastUpdated": 0,
+  "dashboardTitle": "TestSSA",
+  "businessService": "TestBusServ",
+  "businessApplication": "confItem",
+  "review": {
+    "CODE_QUALITY": [
+      {
+        "auditStatuses": [
+          "QUALITY_PROFILE_VALIDATION_AUDIT_NO_CHANGE",
+          "CODE_QUALITY_AUDIT_OK",
+          "CODE_QUALITY_GATES_FOUND",
+          "CODE_QUALITY_CHECK_IS_CURRENT",
+          "CODE_QUALITY_THRESHOLD_BLOCKER_MET",
+          "CODE_QUALITY_THRESHOLD_CRITICAL_MET",
+          "CODE_QUALITY_THRESHOLD_UNIT_TEST_MET",
+          "CODE_QUALITY_THRESHOLD_CODE_COVERAGE_MET",
+          "CODE_QUALITY_THRESHOLD_BLOCKER_FOUND",
+          "CODE_QUALITY_THRESHOLD_CRITICAL_FOUND",
+          "CODE_QUALITY_THRESHOLD_UNIT_TEST_FOUND",
+          "CODE_QUALITY_THRESHOLD_CODE_COVERAGE_FOUND"
+        ],
+        "lastUpdated": 0,
+        "url": "http://myjenkins.com/sonar/dashboard/index/111955",
+        "lastExecutionTime": 1476472229000,
+        "codeQuality": {
+          "id": "58012f01edb9650abaf8d9a2",
+          "collectorItemId": "56e5919d7fab7c0244e33341",
+          "timestamp": 1476472229000,
+          "name": "openupf-hldirect service parent",
+          "url": "http://myjenkins.com/sonar/dashboard/index/111955",
+          "type": "StaticAnalysis",
+          "version": "16.10.00.01-SNAPSHOT",
+          "metrics": [
+            {
+              "name": "new_coverage",
+              "value": "90.8",
+              "formattedValue": "90.8%",
+              "status": "Ok",
+              "statusMessage": "Coverage < 90"
+            },
+            {
+              "name": "violations_density",
+              "value": "95.7",
+              "formattedValue": "95.7%",
+              "status": "Ok"
+            },
+            {
+              "name": "violations",
+              "value": "2358.0",
+              "formattedValue": "2,358",
+              "status": "Ok"
+            },
+            {
+              "name": "sqale_index",
+              "value": "18720.0",
+              "formattedValue": "39d",
+              "status": "Ok"
+            },
+            {
+              "name": "critical_violations",
+              "value": "0.0",
+              "formattedValue": "0",
+              "status": "Ok",
+              "statusMessage": "Critical Issues > 0"
+            },
+            {
+              "name": "blocker_violations",
+              "value": "0.0",
+              "formattedValue": "0",
+              "status": "Ok",
+              "statusMessage": "Blocker Issues > 0"
+            },
+            {
+              "name": "test_failures",
+              "value": "0.0",
+              "formattedValue": "0",
+              "status": "Ok"
+            },
+            {
+              "name": "test_success_density",
+              "value": "100.0",
+              "formattedValue": "100.0%",
+              "status": "Ok",
+              "statusMessage": "Test Success Density < 100"
+            },
+            {
+              "name": "tests",
+              "value": "224.0",
+              "formattedValue": "224",
+              "status": "Ok"
+            },
+            {
+              "name": "major_violations",
+              "value": "109.0",
+              "formattedValue": "109",
+              "status": "Ok",
+              "statusMessage": "Major issues > 43"
+            },
+            {
+              "name": "ncloc",
+              "value": "55671.0",
+              "formattedValue": "55,671",
+              "status": "Ok"
+            },
+            {
+              "name": "line_coverage",
+              "value": "31.6",
+              "formattedValue": "31.6%",
+              "status": "Ok"
+            },
+            {
+              "name": "test_errors",
+              "value": "0.0",
+              "formattedValue": "0",
+              "status": "Ok"
+            },
+            {
+              "name": "quality_gate_details",
+              "value" : "{\"level\":\"OK\",\"conditions\":[{\"metric\":\"new_coverage\",\"op\":\"LT\",\"warning\":\"\",\"error\":\"80\",\"period\":1},{\"metric\":\"test_success_density\",\"op\":\"LT\",\"warning\":\"\",\"error\":\"100\"},{\"metric\":\"blocker_violations\",\"op\":\"GT\",\"warning\":\"\",\"error\":\"0\"},{\"metric\":\"critical_violations\",\"op\":\"GT\",\"warning\":\"\",\"error\":\"0\"}]}",
+              "formattedValue" : "{\"level\":\"OK\",\"conditions\":[{\"metric\":\"new_coverage\",\"op\":\"LT\",\"warning\":\"\",\"error\":\"80\",\"period\":1},{\"metric\":\"test_success_density\",\"op\":\"LT\",\"warning\":\"\",\"error\":\"100\"},{\"metric\":\"blocker_violations\",\"op\":\"GT\",\"warning\":\"\",\"error\":\"0\"},{\"metric\":\"critical_violations\",\"op\":\"GT\",\"warning\":\"\",\"error\":\"0\"}]}"
+            }
+          ]
+        },
+        "codeAuthors": [],
+        "configChanges": []
+      }
+    ]
+  }
+}
