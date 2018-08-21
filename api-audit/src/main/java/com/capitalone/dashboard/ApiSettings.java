@@ -25,7 +25,6 @@ public class ApiSettings {
     private long maxDaysRangeForQuery;
     private boolean logRequest;
 
-    @Value("${featureIDPattern:((?<!([A-Za-z]{1,10})-?)[A-Z]+-\\\\d+)}")
     private String featureIDPattern;
     @Value("${threshold:80}")
     private int threshold;
