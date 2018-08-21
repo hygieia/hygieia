@@ -1698,5 +1698,125 @@
     "numberOfChanges" : 1,
     "type" : "New",
     "pullNumber" : "266"
+  },
+  {
+    "id" : "5b7b4041b2ea1a56ce25c07b",
+    "collectorItemId" : "5b7b33d6b2ea1a4c58a61a2d",
+    "timestamp" : 1534804033453,
+    "firstEverCommit" : false,
+    "scmUrl" : "https://mygithub.com/Devopscode/HandleMisleadingSingleParentCommit",
+    "scmBranch" : "master",
+    "scmRevisionNumber" : "8a46eaec644870a087e9efc31a7fbd756ea09346",
+    "scmCommitLog" : "Set dry run settings off for preprod/prod release jobs (#84)",
+    "scmAuthor" : "Author One",
+    "scmAuthorLogin" : "ghone",
+    "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+    "scmParentRevisionNumbers" : [
+      "1a4e7c57c4b618b71799639de59c4caea0ecc550"
+    ],
+    "scmCommitTimestamp" : 1534199196000,
+    "numberOfChanges" : 1,
+    "type" : "New",
+    "pullNumber" : "84"
+  },
+  {
+    "id" : "5b7b4041b2ea1a56ce25c07c",
+    "collectorItemId" : "5b7b33d6b2ea1a4c58a61a2d",
+    "timestamp" : 1534804033453,
+    "firstEverCommit" : false,
+    "scmUrl" : "https://mygithub.com/Devopscode/HandleMisleadingSingleParentCommit",
+    "scmBranch" : "master",
+    "scmRevisionNumber" : "1a4e7c57c4b618b71799639de59c4caea0ecc550",
+    "scmCommitLog" : "Fix master build (#83)",
+    "scmAuthor" : "Author One",
+    "scmAuthorLogin" : "ghone",
+    "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+    "scmParentRevisionNumbers" : [
+      "ed70aa07814d879ef78f191cd68e97e082aaf63b"
+    ],
+    "scmCommitTimestamp" : 1533835030000,
+    "numberOfChanges" : 1,
+    "type" : "New",
+    "pullNumber" : "83"
+  },
+  {
+    "id" : "5b7b4041b2ea1a56ce25c07d",
+    "collectorItemId" : "5b7b33d6b2ea1a4c58a61a2d",
+    "timestamp" : 1534804033453,
+    "firstEverCommit" : false,
+    "scmUrl" : "https://mygithub.com/Devopscode/HandleMisleadingSingleParentCommit",
+    "scmBranch" : "master",
+    "scmRevisionNumber" : "ed70aa07814d879ef78f191cd68e97e082aaf63b",
+    "scmCommitLog" : "Switched app and wellmanaged logging to use new shared libs (#82)",
+    "scmAuthor" : "Author One",
+    "scmAuthorLogin" : "ghone",
+    "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+    "scmParentRevisionNumbers" : [
+      "0ea35b064cb67492c82a81ce6a26e95e81f2aaf4"
+    ],
+    "scmCommitTimestamp" : 1533832657000,
+    "numberOfChanges" : 1,
+    "type" : "New",
+    "pullNumber" : "82"
+  },
+  {
+    "id" : "5b7b4041b2ea1a56ce25c07e",
+    "collectorItemId" : "5b7b33d6b2ea1a4c58a61a2d",
+    "timestamp" : 1534804033453,
+    "firstEverCommit" : false,
+    "scmUrl" : "https://mygithub.com/Devopscode/HandleMisleadingSingleParentCommit",
+    "scmBranch" : "master",
+    "scmRevisionNumber" : "0ea35b064cb67492c82a81ce6a26e95e81f2aaf4",
+    "scmCommitLog" : "Default to using TLS and allow TLS mode to be configured via ECS task config (#81)",
+    "scmAuthor" : "Author One",
+    "scmAuthorLogin" : "ghone",
+    "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+    "scmParentRevisionNumbers" : [
+      "1775b0d58a523aa3f4905964b866776e38d96e19"
+    ],
+    "scmCommitTimestamp" : 1533742267000,
+    "numberOfChanges" : 1,
+    "type" : "New",
+    "pullNumber" : "81"
+  },
+  {
+    "id" : "5b7b4041b2ea1a56ce25c07f",
+    "collectorItemId" : "5b7b33d6b2ea1a4c58a61a2d",
+    "timestamp" : 1534804033453,
+    "firstEverCommit" : false,
+    "scmUrl" : "https://mygithub.com/Devopscode/HandleMisleadingSingleParentCommit",
+    "scmBranch" : "master",
+    "scmRevisionNumber" : "1775b0d58a523aa3f4905964b866776e38d96e19",
+    "scmCommitLog" : "[COFIUM-380] more cleanup for PAR (#80)",
+    "scmAuthor" : "Author Two",
+    "scmAuthorLogin" : "ghtwo",
+    "scmAuthorLDAPDN" : "CN=ghtwo,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+    "scmParentRevisionNumbers" : [
+      "94c9e02097b43a8068969cb66b279b81fd1d027f"
+    ],
+    "scmCommitTimestamp" : 1533054291000,
+    "numberOfChanges" : 1,
+    "type" : "New",
+    "pullNumber" : "80"
+  },
+  {
+    "id" : "5b7b4041b2ea1a56ce25c080",
+    "collectorItemId" : "5b7b33d6b2ea1a4c58a61a2d",
+    "timestamp" : 1534804033454,
+    "firstEverCommit" : false,
+    "scmUrl" : "https://mygithub.com/Devopscode/HandleMisleadingSingleParentCommit",
+    "scmBranch" : "master",
+    "scmRevisionNumber" : "94c9e02097b43a8068969cb66b279b81fd1d027f",
+    "scmCommitLog" : "[COFIUM-462] Added well managed logging and enhanced app logging (#79)",
+    "scmAuthor" : "Author One",
+    "scmAuthorLogin" : "ghone",
+    "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+    "scmParentRevisionNumbers" : [
+      "6168cc5ddabf6cd1bd789c6dcbab8cd98dd78beb"
+    ],
+    "scmCommitTimestamp" : 1532733367000,
+    "numberOfChanges" : 1,
+    "type" : "New",
+    "pullNumber" : "79"
   }
 ]
