@@ -24,7 +24,6 @@ public class TestConfig {
         settings.setPeerReviewContexts("approvals/lgtmeow");
         settings.setFeatureIDPattern("((?<!([A-Za-z]{1,10})-?)[A-Z]+-\\\\d+)");
         settings.setThreshold(80);
-
         List<String> validStoryStatus = Arrays.asList("ACCEPTED", "DONE" ,"RESOLVED" ,"CLOSED");
         settings.setValidStoryStatus(validStoryStatus);
         return settings;
