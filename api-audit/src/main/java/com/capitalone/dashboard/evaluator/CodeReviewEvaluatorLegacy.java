@@ -120,11 +120,11 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
             allPeerReviews.add(noPRsCodeReviewAuditResponse);
         }
 
-        //            Commit mergeCommit = commitRepository.findByScmRevisionNumberAndScmUrlIgnoreCase(mergeSha, pr.getUrl());
-//check for pr author <> pr merger
-//check to see if pr was reviewed
-//type of branching strategy
+        //check for pr author <> pr merger
+        //check to see if pr was reviewed
+        //type of branching strategy
         List<String> allPrCommitShas = new ArrayList<>();
+        List<String> mergeCommitShas = new ArrayList<>();
         pullRequests.stream().filter(pr -> "merged".equalsIgnoreCase(pr.getState())).forEach(pr -> {
             CodeReviewAuditResponse codeReviewAuditResponse = new CodeReviewAuditResponse();
             codeReviewAuditResponse.setPullRequest(pr);
@@ -136,12 +136,13 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
                 mergeOptionalCommit = commits.stream().filter(c -> Objects.equals(c.getScmRevisionNumber(), pr.getScmMergeEventRevisionNumber())).findFirst();
                 mergeCommit = mergeOptionalCommit.orElse(null);
             }
-            
+
             List<Commit> commitsRelatedToPr = pr.getCommits();
             commitsRelatedToPr.sort(Comparator.comparing(e -> (e.getScmCommitTimestamp())));
             if (mergeCommit == null) {
                 codeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.MERGECOMMITER_NOT_FOUND);
             } else {
+                mergeCommitShas.add(mergeCommit.getScmRevisionNumber());
                 codeReviewAuditResponse.addAuditStatus(pr.getUserId().equalsIgnoreCase(mergeCommit.getScmAuthorLogin()) ? CodeReviewAuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER : CodeReviewAuditStatus.COMMITAUTHOR_NE_MERGECOMMITER);
             }
             codeReviewAuditResponse.setCommits(commitsRelatedToPr);
@@ -153,7 +154,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
             String sourceRepo = pr.getSourceRepo();
             String targetRepo = pr.getTargetRepo();
             codeReviewAuditResponse.addAuditStatus(sourceRepo == null ? CodeReviewAuditStatus.GIT_FORK_STRATEGY : sourceRepo.equalsIgnoreCase(targetRepo) ? CodeReviewAuditStatus.GIT_BRANCH_STRATEGY : CodeReviewAuditStatus.GIT_FORK_STRATEGY);
-            if (!StringUtils.isEmpty(pr.getMergeAuthorLDAPDN()) && (CommonCodeReview.checkForServiceAccount(pr.getMergeAuthorLDAPDN(),settings))) {
+            if (!StringUtils.isEmpty(pr.getMergeAuthorLDAPDN()) && (CommonCodeReview.checkForServiceAccount(pr.getMergeAuthorLDAPDN(), settings))) {
                 codeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.MERGECOMMITER_EQ_SERVICEACCOUNT);
             }
             allPeerReviews.add(codeReviewAuditResponse);
@@ -164,7 +165,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
         List<Commit> commitsNotDirectlyTiedToPr = new ArrayList<>();
         commits.forEach(commit -> {
             if (!allPrCommitShas.contains(commit.getScmRevisionNumber()) &&
-                    StringUtils.isEmpty(commit.getPullNumber()) && commit.getType() == CommitType.New) {
+                    StringUtils.isEmpty(commit.getPullNumber()) && commit.getType() == CommitType.New && !mergeCommitShas.contains(commit.getScmRevisionNumber())) {
                 commitsNotDirectlyTiedToPr.add(commit);
                 // auditServiceAccountChecks includes - check for service account and increment version tag for service account on direct commits.
                 auditServiceAccountChecks(codeReviewAuditResponse, commit);

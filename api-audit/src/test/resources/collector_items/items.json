@@ -493,6 +493,21 @@
         "TestBusServ"
       ]
     }
+  },
+  {
+    "id": "5b7b33d6b2ea1a4c58a61a2d",
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": "56ca15297fab7c68bfdb420c",
+    "lastUpdated": 1534804146907,
+    "options": {
+      "password": "",
+      "personalAccessToken": "",
+      "branch": "master",
+      "userID": "",
+      "url": "https://mygithub.com/Devopscode/HandleMisleadingSingleParentCommit"
+    }
   }
 
 ]
