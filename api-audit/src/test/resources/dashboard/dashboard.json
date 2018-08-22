@@ -17,6 +17,22 @@
       }
     },
     {
+      "name" : "feature",
+      "componentId" : "57f29d143b55670a9e06d624",
+      "options" : {
+        "sprintType" : "kanban",
+        "featureTool" : "Jira",
+        "showStatus" : {
+          "kanban" : true,
+          "scrum" : false
+        },
+        "id" : "feature0",
+        "estimateMetricType" : "storypoints",
+        "listType" : "epics",
+        "teamId" : "Team:26967234"
+      }
+    },
+    {
       "id": {
         "timestamp": 1515646073,
         "machineIdentifier": 4693261,
