@@ -40,12 +40,7 @@
         "counter": 3010193
       },
       "name": "repo",
-      "componentId": {
-        "timestamp": 1515645665,
-        "machineIdentifier": 4693261,
-        "processIdentifier": 6916,
-        "counter": 3010182
-      },
+      "componentId": "57f29d143b55670a9e06d624" ,
       "options": {
         "password": "",
         "id": "repo0",

@@ -29,6 +29,7 @@ import com.capitalone.dashboard.response.DashboardReviewResponse;
 import com.capitalone.dashboard.response.LibraryPolicyAuditResponse;
 import com.capitalone.dashboard.response.SecurityReviewAuditResponse;
 import com.capitalone.dashboard.response.PerformanceTestAuditResponse;
+import com.capitalone.dashboard.response.CodeQualityAuditResponse;
 import com.capitalone.dashboard.testutil.GsonUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -110,6 +111,7 @@ public class DashboardAuditServiceTest {
         TestUtils.loadSSCRequests(codeQualityRepository);
         TestUtils.loadLibraryPolicy(libraryPolicyResultsRepository);
         TestUtils.loadTestResults(testResultsRepository);
+        TestUtils.loadCodeQuality(codeQualityRepository);
     }
 
     @Test
@@ -170,8 +172,30 @@ public class DashboardAuditServiceTest {
         Collection<PerformanceTestAuditResponse> expectedReview = expectedReviewMap.get(AuditType.PERF_TEST);
         assertThat(actualReview.size()).isEqualTo(1);
         assertThat(actualReview.toArray()[0]).isEqualToComparingFieldByField(expectedReview.toArray()[0]);
-
     }
+
+    @Test
+    public void runCodeQualityAuditTests() throws AuditException, IOException {
+        DashboardReviewResponse actual = getActualReviewResponse(dashboardAuditService.getDashboardReviewResponse("TestSSA",
+                DashboardType.Team,
+                "TestBusServ",
+                "confItem",
+                1473860406000L, 1478983206000L,
+                Sets.newHashSet(AuditType.CODE_QUALITY)), CodeQualityAuditResponse.class);
+        DashboardReviewResponse expected = getExpectedReviewResponse("CodeQuality.json", CodeQualityAuditResponse.class);
+
+        assertDashboardAudit(actual, expected);
+        assertThat(actual.getReview()).isNotEmpty();
+        assertThat(actual.getReview().get(AuditType.CODE_QUALITY)).isNotNull();
+        Map<AuditType, Collection<CodeQualityAuditResponse>> actualReviewMap = actual.getReview();
+        Collection<CodeQualityAuditResponse> actualReview = actualReviewMap.get(AuditType.CODE_QUALITY);
+        Map<AuditType, Collection<CodeQualityAuditResponse>> expectedReviewMap = expected.getReview();
+        Collection<CodeQualityAuditResponse> expectedReview = expectedReviewMap.get(AuditType.CODE_QUALITY);
+        assertThat(actualReview.size()).isEqualTo(1);
+        //TODO: FieldByField comparision fails as the order of 'auditStatuses' change for every run. Need to implement a Sorted version of FieldByField comparision
+         assertThat(actualReview.toArray()[0]).isEqualToComparingFieldByField(expectedReview.toArray()[0]);
+    }
+
     @Test
     public void runLegacyCodeReviewTests() throws AuditException, IOException {
         for (CollectorItem item : collectorItemRepository.findAll()) {

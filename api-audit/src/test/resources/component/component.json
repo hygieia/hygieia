@@ -1,19 +1,14 @@
 {
   "name": "TestAudit",
   "id": "57f29d143b55670a9e06d624",
-
   "collectorItems": {
     "SCM": [
       {
+        "id":"56e301107fab7c3ec3c43397",
         "enabled": true,
         "errors": [],
         "pushed": false,
-        "collectorId": {
-          "timestamp": 1514425811,
-          "machineIdentifier": 1084966,
-          "processIdentifier": 27772,
-          "counter": 16289003
-        },
+        "collectorId": "56ca15297fab7c68bfdb420c",
         "lastUpdated": 0,
         "options": {
           "password": "",
@@ -21,12 +16,6 @@
           "branch": "master",
           "userID": "",
           "url": "https://mygithub.com/one/two"
-        },
-        "id": {
-          "timestamp": 1515646073,
-          "machineIdentifier": 4693261,
-          "processIdentifier": 6916,
-          "counter": 3010191
         }
       }
     ],
@@ -78,19 +67,34 @@
     "Test" : [
       {
         "id" : "57f2a0193b55670a9e06d63a",
-        "description" : "ease-COAF-UI-ATDD-Functional-SLATE",
-        "niceName" : "COAF",
+        "description" : "Functional-SLATE",
+        "niceName" : "ABCD",
         "enabled" : true,
         "errors" : [
-
         ],
         "pushed" : true,
         "collectorId" : "56df29df7fab7c3ec3c432ea",
         "lastUpdated" : 1513106044147,
         "options" : {
-          "jobName" : "ease-Functional-SLATE",
-          "jobUrl" : "https://myjenkins.com//job/ease-Functional-SLATE/",
-          "instanceUrl" : "https://myjenkins.com//"
+          "jobName" : "Functional-SLATE",
+          "jobUrl" : "https://myjenkins.com/jenkins/job/Functional-SLATE/",
+          "instanceUrl" : "https://myjenkins.com/jenkins/"
+        }
+      }
+    ],
+    "CodeQuality" : [
+      {
+        "id" : "56e5919d7fab7c0244e33341",
+        "description" : "openupf-hldirect service parent",
+        "niceName" : "HomeLoan",
+        "enabled" : true,
+        "pushed" : true,
+        "collectorId" : "56cb5bde7fab7c548551410e",
+        "lastUpdated" : 1458247537167,
+        "options" : {
+          "projectName" : "openupf-hldirect service parent",
+          "projectId" : "111955",
+          "instanceUrl" : "http://mysonar.com/sonar"
         }
       }
     ]
