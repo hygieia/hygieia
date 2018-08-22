@@ -327,14 +327,9 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
 
 
     private boolean isValidStoryStatus(String storyStatus) {
-        boolean result = false;
         final List<String> validStatus = settings.getValidStoryStatus();
 
-        if (validStatus.contains(storyStatus.toUpperCase())) {
-            result = true;
-        }
-
-        return result;
+        return validStatus.contains(storyStatus.toUpperCase());
     }
 
     private Dashboard getDashboardDetails(String title, DashboardType dashboardType) {
