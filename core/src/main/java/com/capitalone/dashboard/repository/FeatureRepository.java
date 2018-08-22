@@ -26,14 +26,14 @@ import org.springframework.data.repository.CrudRepository;
 import com.capitalone.dashboard.model.Feature;
 
 /**
- * Repository for {@link FeatureCollector}.
+ * Repository for {@link Feature}.
  */
 public interface FeatureRepository extends CrudRepository<Feature, ObjectId>,
 		QueryDslPredicateExecutor<Feature>, FeatureRepositoryCustom {
 	/**
 	 * This essentially returns the max change date from the collection, based
 	 * on the last change date (or default delta change date property) available
-	 * 
+	 *
 	 * @param collectorId
 	 *            Collector ID of source system collector
 	 * @param changeDate
@@ -50,4 +50,7 @@ public interface FeatureRepository extends CrudRepository<Feature, ObjectId>,
 
 	@Query(value = " {'sNumber' : ?0 }")
 	List<Feature> getStoryByNumber(String sNumber);
+
+	@Query(value = " {'sTeamID' : ?0 }")
+	List<Feature> getStoryByTeamID(String sTeamID);
 }
