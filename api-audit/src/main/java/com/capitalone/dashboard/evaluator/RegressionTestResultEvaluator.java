@@ -182,7 +182,6 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                 if (tagMatch.find()) {
                     List<Feature> featureDetails = featureRepository.getStoryByNumber(tag.substring(1, tag.length()));
 
-
                     if (this.getTotalCompletedStoriesInGivenDateRange(dashboard.getTitle(), beginDate, endDate).contains(tag.substring(1, tag.length()))) {
                         featureDetails.stream()
                                 .forEach(feature -> {
@@ -207,8 +206,6 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                                     }
                                 });
                     }
-
-
                 }
             });
         }
