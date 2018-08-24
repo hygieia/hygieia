@@ -1,7 +1,26 @@
 package jenkins.plugins.hygieia.workflow;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+
+import javax.inject.Inject;
+import javax.servlet.ServletException;
+
+import org.apache.commons.httpclient.HttpStatus;
+import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
+import org.jenkinsci.plugins.workflow.steps.AbstractStepImpl;
+import org.jenkinsci.plugins.workflow.steps.AbstractSynchronousNonBlockingStepExecution;
+import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
+import org.kohsuke.stapler.QueryParameter;
+
 import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.request.DeployDataCreateRequest;
+
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.model.Run;
@@ -15,19 +34,6 @@ import jenkins.plugins.hygieia.DefaultHygieiaService;
 import jenkins.plugins.hygieia.HygieiaPublisher;
 import jenkins.plugins.hygieia.HygieiaResponse;
 import jenkins.plugins.hygieia.HygieiaService;
-import org.apache.commons.httpclient.HttpStatus;
-import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
-import org.jenkinsci.plugins.workflow.steps.AbstractStepImpl;
-import org.jenkinsci.plugins.workflow.steps.AbstractSynchronousNonBlockingStepExecution;
-import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.DataBoundSetter;
-import org.kohsuke.stapler.QueryParameter;
-
-import javax.inject.Inject;
-import javax.servlet.ServletException;
-import java.io.IOException;
-import java.util.Set;
 
 
 public class HygieiaDeployPublishStep extends AbstractStepImpl {
@@ -158,7 +164,7 @@ public class HygieiaDeployPublishStep extends AbstractStepImpl {
 
     }
 
-    public static class HygieiaDeployPublishStepExecution extends AbstractSynchronousNonBlockingStepExecution<Integer> {
+    public static class HygieiaDeployPublishStepExecution extends AbstractSynchronousNonBlockingStepExecution<List<Integer>> {
 
         private static final long serialVersionUID = 1L;
 
@@ -176,19 +182,24 @@ public class HygieiaDeployPublishStep extends AbstractStepImpl {
 
         // This run MUST return a non-Void object, otherwise it will be executed three times!!!! No idea why
         @Override
-        protected Integer run() throws Exception {
+        protected List<Integer> run()
+       throws Exception
+     {
 
             //default to global config values if not set in step, but allow step to override all global settings
-
             Jenkins jenkins;
             try {
                 jenkins = Jenkins.getInstance();
             } catch (NullPointerException ne) {
                 listener.error(ne.toString());
-                return -1;
+                return null;
             }
 
             HygieiaPublisher.DescriptorImpl hygieiaDesc = jenkins.getDescriptorByType(HygieiaPublisher.DescriptorImpl.class);
+ List<Integer> responseCodes = new ArrayList<Integer>();
+     List<String> hygieiaAPIUrls = Arrays.asList(hygieiaDesc.getHygieiaAPIUrl().split(";"));
+     for (String hygieiaAPIUrl : hygieiaAPIUrls) {
+      this.listener.getLogger().println("Publishing data for API " + hygieiaAPIUrl.toString());
             HygieiaService hygieiaService = getHygieiaService(hygieiaDesc.getHygieiaAPIUrl(), hygieiaDesc.getHygieiaToken(),
                     hygieiaDesc.getHygieiaJenkinsName(), hygieiaDesc.isUseProxy());
 
@@ -214,7 +225,9 @@ public class HygieiaDeployPublishStep extends AbstractStepImpl {
                     listener.getLogger().println("Hygieia: Failed Publishing Deploy Data:" + deployResponse.toString());
                 }
             }
-            return buildResponse.getResponseCode();
+			responseCodes.add(Integer.valueOf(buildResponse.getResponseCode()));
+       }
+            return responseCodes;
         }
 
 
