@@ -17,6 +17,7 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -191,11 +192,20 @@ public class DefaultBaseClient {
         incident.setSeverity(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_SEVERITY));
         incident.setPrimaryAssignmentGroup(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_PRIMARY_ASSIGNMENT_GROUP));
         incident.setStatus(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_STATUS));
-        incident.setAffectedItem(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_AFFECTED_ITEM));
-        incident.setIncidentDescription(getStringValueFromMap(map, HpsmCollectorConstants.INCIDENT_DESCRIPTION));
 
+        String affectedItem = getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_AFFECTED_ITEM);
+        String service = getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_SERVICE);
+
+        if (!StringUtils.isEmpty(affectedItem)) {
+            incident.setAffectedItem(affectedItem);
+        } else if (!StringUtils.isEmpty(service)) {
+            incident.setAffectedItem(service);
+        }
+
+        incident.setIncidentDescription(getStringValueFromMap(map, HpsmCollectorConstants.INCIDENT_DESCRIPTION));
         List<Incident> list = new ArrayList<>();
         list.add(incident);
+
         return list;
     }
 
@@ -204,5 +214,17 @@ public class DefaultBaseClient {
                 || map.get(key) == null
                 || "".equals(key)) return "";
         return map.get(key).toString();
+    }
+
+    /**
+     * Date utility
+     *
+     * @param dateInstance
+     * @param offsetDays
+     * @param offsetMinutes
+     * @return
+     */
+    protected static DateTime getDate(DateTime dateInstance, int offsetDays, int offsetMinutes) {
+        return dateInstance.minusDays(offsetDays).minusMinutes(offsetMinutes);
     }
 }

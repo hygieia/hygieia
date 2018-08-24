@@ -9,6 +9,9 @@ import com.capitalone.dashboard.util.HpsmCollectorConstants;
 import com.capitalone.dashboard.util.XmlUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -28,12 +31,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Date;
-import java.util.Calendar;
 
 /**
  * HpsmClient implementation that uses SVNKit to fetch information about
@@ -482,7 +482,6 @@ public class DefaultHpsmClient extends DefaultBaseClient implements HpsmClient {
 
 
 	private void handleIncidentSoapMessage(SOAPBodyElement keysTag) throws SOAPException{
-
 		QName query = new QName("query");
 
 		// Incidents can be queried based on time.  This code retrieves the incidents since
@@ -490,14 +489,13 @@ public class DefaultHpsmClient extends DefaultBaseClient implements HpsmClient {
 		// the number of days specified in hpsm.properties and retrieves those incidents.
 
 		// Get current date/time
-		Date nowDate = new Date();
-
+		DateTime nowDate = new DateTime();
 		// Get the last time this collector was run
-		Date previousDate = new Date(this.lastExecuted);
+		DateTime previousDate = getDate(new DateTime(this.lastExecuted),0, hpsmSettings.getIncidentOffsetMinutes());
 
 		// Convert the above times to milliseconds for comparison
-		long nowMillis = nowDate.getTime();
-		long previousMillis = previousDate.getTime();
+		long nowMillis = nowDate.getMillis();
+		long previousMillis = previousDate.getMillis();
 
 		// calculate the difference in days between the two dates by dividing the difference by the number of milliseconds in a day
 		int diffInDays = (int) (Math.abs((nowMillis - previousMillis)) / MILLISECONDS_IN_DAY);
@@ -509,16 +507,13 @@ public class DefaultHpsmClient extends DefaultBaseClient implements HpsmClient {
 		// OR if the times are reversed
 		// OR the number of days since collector last ran is greater than the requested number of days
 		// THEN the last time the collector ran is irrelevant so use the number of days in hpsm.properties
-		if((incidentCount < 1) || (previousMillis > nowMillis) || (diffInDays > incidentDays)){
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(nowDate);
-			cal.add(Calendar.DATE, - incidentDays);
-			previousDate = cal.getTime();
+		if((incidentCount < 1) || (previousMillis > nowMillis) || (diffInDays > incidentDays)) {
+			previousDate = nowDate.minusDays(incidentDays);
 		}
 
-		SimpleDateFormat dateFormat = new SimpleDateFormat(QUERY_DATE_FORMAT);
-		String now = dateFormat.format(nowDate);
-		String previous = dateFormat.format(previousDate);
+		DateTimeFormatter formatter = DateTimeFormat.forPattern(QUERY_DATE_FORMAT);
+		String now = nowDate.toString(formatter);
+		String previous = previousDate.toString(formatter);
 
 		String format = hpsmSettings.getIncidentQuery();
 		if(format == null || format.isEmpty()){
@@ -529,7 +524,6 @@ public class DefaultHpsmClient extends DefaultBaseClient implements HpsmClient {
 		String queryString = MessageFormat.format(format, args);
 
 		keysTag.addAttribute(query,  queryString);
-
 	}
 
 	private void handleChangeSoapMessage(SOAPBodyElement keysTag) throws SOAPException{
@@ -541,14 +535,13 @@ public class DefaultHpsmClient extends DefaultBaseClient implements HpsmClient {
 		// the number of days specified in hpsm.properties and retrieves those changes.
 
 		// Get current date/time
-		Date nowDate = new Date();
-
+		DateTime nowDate = new DateTime();
 		// Get the last time this collector was run
-		Date previousDate = new Date(this.lastExecuted);
+		DateTime previousDate = getDate(new DateTime(this.lastExecuted),0, hpsmSettings.getChangeOrderOffsetMinutes());
 
 		// Convert the above times to milliseconds for comparison
-		long nowMillis = nowDate.getTime();
-		long previousMillis = previousDate.getTime();
+		long nowMillis = nowDate.getMillis();
+		long previousMillis = previousDate.getMillis();
 
 		// calculate the difference in days between the two dates by dividing the difference by the number of milliseconds in a day
 		int diffInDays = (int) (Math.abs((nowMillis - previousMillis)) / MILLISECONDS_IN_DAY);
@@ -561,18 +554,15 @@ public class DefaultHpsmClient extends DefaultBaseClient implements HpsmClient {
 		// OR the number of days since collector last ran is greater than the requested number of days
 		// THEN the last time the collector ran is irrelevant so use the number of days in hpsm.properties
 		if((changeCount < 1) || (previousMillis > nowMillis) || (diffInDays > changeDays)){
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(nowDate);
-			cal.add(Calendar.DATE, - changeDays);
-			previousDate = cal.getTime();
+			previousDate = nowDate.minusDays(changeDays);
 		}
 
-		SimpleDateFormat dateFormat = new SimpleDateFormat(QUERY_DATE_FORMAT);
-		String now = dateFormat.format(nowDate);
-		String previous = dateFormat.format(previousDate);
+		DateTimeFormatter formatter = DateTimeFormat.forPattern(QUERY_DATE_FORMAT);
+		String now = nowDate.toString(formatter);
+		String previous = previousDate.toString(formatter);
 
 		String format = hpsmSettings.getChangeOrderQuery();
-		if(format == null || format.isEmpty()){
+		if(format == null || format.isEmpty()) {
 			format = DEFAULT_CHANGE_QUERY_FORMAT;
 		}
 
@@ -580,8 +570,8 @@ public class DefaultHpsmClient extends DefaultBaseClient implements HpsmClient {
 		String queryString = MessageFormat.format(format, args);
 
 		keysTag.addAttribute(query,  queryString);
-
 	}
+
 	private List<Cmdb> getCmdbItemFromXmlMap(Map map) {
 		if(map == null || map.isEmpty()) return new ArrayList<>();
 		if(getStringValueFromMap(map,HpsmCollectorConstants.CONFIGURATION_ITEM).isEmpty()) return new ArrayList<>();
