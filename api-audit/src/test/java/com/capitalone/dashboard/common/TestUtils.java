@@ -9,6 +9,9 @@ import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.LibraryPolicyResult;
 import com.capitalone.dashboard.model.TestResult;
+import com.capitalone.dashboard.model.Feature;
+import com.capitalone.dashboard.repository.TestResultRepository;
+import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
@@ -35,7 +38,6 @@ public class TestUtils {
         Dashboard dashboard = gson.fromJson(json, Dashboard.class);
         dashboardRepository.save(dashboard);
     }
-
 
     public static void loadCollector (CollectorRepository collectorRepository) throws IOException {
         Gson gson = GsonUtil.getGson();
@@ -98,6 +100,14 @@ public class TestUtils {
         String json = IOUtils.toString(Resources.getResource("./codequality/codequality.json"));
         List<CodeQuality> codeQuality = gson.fromJson(json, new TypeToken<List<CodeQuality>>(){}.getType());
         codeQualityRepository.save(codeQuality);
+    }
+
+
+    public static void loadFeature(FeatureRepository featureRepository) throws IOException {
+        Gson gson = GsonUtil.getGson();
+        String json = IOUtils.toString(Resources.getResource("./feature/feature.json"));
+        List<Feature> feature = gson.fromJson(json, new TypeToken<List<Feature>>(){}.getType());
+        featureRepository.save(feature);
     }
 
 }
