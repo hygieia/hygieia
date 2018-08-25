@@ -37,7 +37,6 @@ public class CollectorController {
     private CollectorService collectorService;
     private PaginationHeaderUtility paginationHeaderUtility;
 
-
     @Autowired
     public CollectorController(CollectorService collectorService, PaginationHeaderUtility paginationHeaderUtility) {
         this.collectorService = collectorService;
@@ -61,6 +60,13 @@ public class CollectorController {
     public List<Collector> collectorsByType(@PathVariable CollectorType collectorType) {
         return collectorService.collectorsByType(collectorType);
     }
+
+    @RequestMapping(value = "/collector/collectorId/{id}",
+            method = GET, produces = APPLICATION_JSON_VALUE)
+    public List<Collector> collectorsByType(@PathVariable ObjectId id) {
+        return collectorService.collectorsById(id);
+    }
+
 
     @RequestMapping(value = "/collector/item", method = POST,
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)

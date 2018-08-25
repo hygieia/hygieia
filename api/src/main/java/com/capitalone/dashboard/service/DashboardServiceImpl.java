@@ -59,6 +59,7 @@ public class DashboardServiceImpl implements DashboardService {
     private final UserInfoRepository userInfoRepository;
     private final ScoreDashboardService scoreDashboardService;
     private final CmdbService cmdbService;
+    private final String UNDEFINED = "undefined";
 
     @Autowired
     private ApiSettings settings;
@@ -494,7 +495,12 @@ public class DashboardServiceImpl implements DashboardService {
         }
         return new DataResponse<>(rt, System.currentTimeMillis());
     }
+    @Override
+    public  List<Dashboard> getByTitle(String title) {
+        List<Dashboard> dashboard = dashboardRepository.findByTitle(title);
 
+        return dashboard;
+    }
 
     @Override
     public Dashboard updateDashboardWidgets(ObjectId dashboardId, Dashboard request) throws HygieiaException {
@@ -615,13 +621,17 @@ public class DashboardServiceImpl implements DashboardService {
         if(appName != null && !"".equals(appName)){
 
             Cmdb cmdb =  cmdbService.configurationItemByConfigurationItem(appName);
-            dashboard.setConfigurationItemBusServName(cmdb.getConfigurationItem());
-            dashboard.setValidServiceName(cmdb.isValidConfigItem());
+            if(cmdb !=null) {
+                dashboard.setConfigurationItemBusServName(cmdb.getConfigurationItem());
+                dashboard.setValidServiceName(cmdb.isValidConfigItem());
+            }
         }
         if(compName != null && !"".equals(compName)){
             Cmdb cmdb = cmdbService.configurationItemByConfigurationItem(compName);
-            dashboard.setConfigurationItemBusAppName(cmdb.getConfigurationItem());
-            dashboard.setValidAppName(cmdb.isValidConfigItem());
+            if(cmdb !=null) {
+                dashboard.setConfigurationItemBusAppName(cmdb.getConfigurationItem());
+                dashboard.setValidAppName(cmdb.isValidConfigItem());
+            }
         }
     }
 
@@ -650,8 +660,14 @@ public class DashboardServiceImpl implements DashboardService {
      * @return Page<Dashboard>
      */
     @Override
-    public Page<Dashboard> getDashboardByTitleWithFilter(String title, Pageable pageable) {
-        Page<Dashboard> dashboardItems = dashboardRepository.findAllByTitleContainingIgnoreCase(title, pageable);
+    public Page<Dashboard> getDashboardByTitleWithFilter(String title, String type, Pageable pageable) {
+        Page<Dashboard> dashboardItems = null;
+        if ((type != null) && (!type.isEmpty()) && (!UNDEFINED.equalsIgnoreCase(type))) {
+            dashboardItems = dashboardRepository.findAllByTypeContainingIgnoreCaseAndTitleContainingIgnoreCase(type, title, pageable);
+        } else {
+            dashboardItems = dashboardRepository.findAllByTitleContainingIgnoreCase(title, pageable);
+        }
+
         return dashboardItems;
     }
 
@@ -662,20 +678,29 @@ public class DashboardServiceImpl implements DashboardService {
      * @return Integer
      */
     @Override
-    public Integer getAllDashboardsByTitleCount(String title) {
-        List<Dashboard> dashboards = dashboardRepository.findAllByTitleContainingIgnoreCase(title);
+    public Integer getAllDashboardsByTitleCount(String title, String type) {
+        List<Dashboard> dashboards = null;
+        if ((type != null) && (!type.isEmpty()) && (!UNDEFINED.equalsIgnoreCase(type))) {
+            dashboards = dashboardRepository.findAllByTypeContainingIgnoreCaseAndTitleContainingIgnoreCase(type, title);
+        } else {
+            dashboards = dashboardRepository.findAllByTitleContainingIgnoreCase(title);
+        }
         return dashboards != null ? dashboards.size() : 0;
     }
 
     /**
-     * Get count of all dashboards
+     * Get count of all dashboards, use dashboard type if supplied
      *
      * @param
      * @return long
      */
     @Override
-    public long count() {
-        return dashboardRepository.count();
+    public long count(String type) {
+        if ((type != null) && (!type.isEmpty()) && (!UNDEFINED.equalsIgnoreCase(type))) {
+            return dashboardRepository.countByTypeContainingIgnoreCase(type);
+        } else {
+            return dashboardRepository.count();
+        }
     }
 
     /**
@@ -685,7 +710,10 @@ public class DashboardServiceImpl implements DashboardService {
      * @return List of dashboards
      */
     @Override
-    public Page<Dashboard> findDashboardsByPage(Pageable page) {
+    public Page<Dashboard> findDashboardsByPage(String type, Pageable page) {
+        if ((type != null) && (!type.isEmpty()) && (!UNDEFINED.equalsIgnoreCase(type))) {
+            return dashboardRepository.findAllByTypeContainingIgnoreCase(type, page);
+        }
         return dashboardRepository.findAll(page);
     }
 
@@ -701,9 +729,15 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public Page<Dashboard> findMyDashboardsByPage(Pageable page){
+    public Page<Dashboard> findMyDashboardsByPage(String type, Pageable page){
         Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
-        Page<Dashboard> ownersList = dashboardRepository.findByOwners(owner,page);
+        Page<Dashboard> ownersList = null;
+
+        if ((type != null) && (!type.isEmpty()) && (!UNDEFINED.equalsIgnoreCase(type))) {
+            ownersList = dashboardRepository.findByOwnersAndTypeContainingIgnoreCase(owner, type, page);
+        } else {
+            ownersList = dashboardRepository.findByOwners(owner, page);
+        }
         for (Dashboard dashboard: ownersList) {
             String appName = dashboard.getConfigurationItemBusServName();
             String compName = dashboard.getConfigurationItemBusAppName();
@@ -713,23 +747,39 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public long myDashboardsCount(){
+    public long myDashboardsCount(String type){
         Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
-        List<Dashboard> ownersList = dashboardRepository.findByOwners(owner);
+        List<Dashboard> ownersList = null;
+        if ((type != null) && (!type.isEmpty()) && (!UNDEFINED.equalsIgnoreCase(type))) {
+            ownersList = dashboardRepository.findByOwnersAndTypeContainingIgnoreCase(owner, type);
+        } else {
+            ownersList = dashboardRepository.findByOwners(owner);
+        }
         return ownersList!=null?ownersList.size():0;
     }
 
     @Override
-    public int getMyDashboardsByTitleCount(String title){
+    public int getMyDashboardsByTitleCount(String title, String type){
         Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
-        List<Dashboard> dashboards = dashboardRepository.findByOwnersAndTitleContainingIgnoreCase(owner,title);
+        List<Dashboard> dashboards = null;
+        if ((type != null) && (!type.isEmpty()) && (!UNDEFINED.equalsIgnoreCase(type))) {
+            dashboards = dashboardRepository.findByOwnersAndTypeContainingIgnoreCaseAndTitleContainingIgnoreCase(owner,type,title);
+        } else {
+            dashboards = dashboardRepository.findByOwnersAndTitleContainingIgnoreCase(owner,title);
+        }
         return dashboards!=null?dashboards.size():0;
     }
 
     @Override
-    public Page<Dashboard> getMyDashboardByTitleWithFilter(String title, Pageable pageable){
+    public Page<Dashboard> getMyDashboardByTitleWithFilter(String title, String type, Pageable pageable) {
         Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
-        Page<Dashboard> ownersList = dashboardRepository.findByOwnersAndTitleContainingIgnoreCase(owner,title,pageable);
+        Page<Dashboard> ownersList = null;
+        if ((type != null) && (!type.isEmpty()) && (!UNDEFINED.equalsIgnoreCase(type))) {
+            ownersList = dashboardRepository.findByOwnersAndTypeContainingIgnoreCaseAndTitleContainingIgnoreCase(owner,type,title,pageable);
+        } else {
+            ownersList = dashboardRepository.findByOwnersAndTitleContainingIgnoreCase(owner,title,pageable);
+        }
+
         for (Dashboard dashboard: ownersList) {
             String appName = dashboard.getConfigurationItemBusServName();
             String compName = dashboard.getConfigurationItemBusAppName();
@@ -737,6 +787,7 @@ public class DashboardServiceImpl implements DashboardService {
         }
         return ownersList;
     }
+
 
     @Override
     public Dashboard updateScoreSettings(ObjectId dashboardId, boolean scoreEnabled, ScoreDisplayType scoreDisplay) {

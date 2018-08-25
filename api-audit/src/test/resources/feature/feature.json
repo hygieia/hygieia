@@ -1,0 +1,254 @@
+[
+  {
+    "id" : "589fee7ca65ce715e612c8b2",
+    "collectorId" : "589febd0a65ce715e611a02d",
+    "sId" : "Story:25440803",
+    "sNumber" : "B-1626822",
+    "sName" : "Stop calling Account Summary from L2 - Performance Improvements",
+    "sTypeId" : "",
+    "sTypeName" : "Story",
+    "sStatus" : "Accepted",
+    "sState" : "Closed",
+    "sEstimate" : "2",
+    "changeDate" : "2016-10-16T13:54:58.8200000",
+    "isDeleted" : "False",
+    "sOwnersID" : [
+      "Member:19042006"
+    ],
+    "sOwnersIsDeleted" : [
+      "False"
+    ],
+    "sOwnersChangeDate" : [
+      "2016-08-21T07:18:28.2530000"
+    ],
+    "sOwnersState" : [
+      "Active"
+    ],
+    "sOwnersUsername" : [
+      ""
+    ],
+    "sOwnersFullName" : [
+      ""
+    ],
+    "sOwnersShortName" : [
+      ""
+    ],
+    "sTeamIsDeleted" : "False",
+    "sTeamAssetState" : "Active",
+    "sTeamChangeDate" : "2014-07-11T08:00:16.7670000",
+    "sTeamName" : "Slate",
+    "sTeamID" : "Team:26967234",
+    "sSprintIsDeleted" : "False",
+    "sSprintChangeDate" : "2016-06-07T14:54:04.7830000",
+    "sSprintAssetState" : "Active",
+    "sSprintEndDate" : "2016-09-15T00:00:00.0000000",
+    "sSprintBeginDate" : "2016-09-01T00:00:00.0000000",
+    "sSprintName" : "Sprint 8.5 (9/1 - 9/14)",
+    "sSprintID" : "Timebox:23317533",
+    "sEpicIsDeleted" : "False",
+    "sEpicChangeDate" : "2014-06-30T00:48:05.1470000",
+    "sEpicAssetState" : "Active",
+    "sEpicType" : "",
+    "sEpicEndDate" : "",
+    "sEpicBeginDate" : "",
+    "sEpicName" : "Continuous Improvement",
+    "sEpicNumber" : "E-00000",
+    "sEpicID" : "Epic:00000",
+    "sProjectPath" : "",
+    "sProjectIsDeleted" : "False",
+    "sProjectState" : "Active",
+    "sProjectChangeDate" : "2016-09-16T09:45:31.4530000",
+    "sProjectEndDate" : "",
+    "sProjectBeginDate" : "2016-06-07T00:00:00.0000000",
+    "sProjectName" : "Web PI-8",
+    "sProjectID" : "Scope:23316970"
+  },
+  {
+    "id" : "589fee7ca65ce715e612c8b3",
+    "collectorId" : "589febd0a65ce715e611a02d",
+    "sId" : "Story:25440803",
+    "sNumber" : "JIRA-11998",
+    "sName" : "Combine the Json response to include Artemis PAR Quality Check 4.3 and 4.6",
+    "sTypeId" : "",
+    "sTypeName" : "Story",
+    "sStatus" : "Accepted",
+    "sState" : "Closed",
+    "sEstimate" : "2",
+    "changeDate" : "2016-09-16T13:54:58.8200000",
+    "isDeleted" : "False",
+    "sOwnersID" : [
+      "Member:19042006"
+    ],
+    "sOwnersIsDeleted" : [
+      "False"
+    ],
+    "sOwnersChangeDate" : [
+      "2016-08-21T07:18:28.2530000"
+    ],
+    "sOwnersState" : [
+      "Active"
+    ],
+    "sOwnersUsername" : [
+      ""
+    ],
+    "sOwnersFullName" : [
+      ""
+    ],
+    "sOwnersShortName" : [
+      ""
+    ],
+    "sTeamIsDeleted" : "False",
+    "sTeamAssetState" : "Active",
+    "sTeamChangeDate" : "2014-07-11T08:00:16.7670000",
+    "sTeamName" : "Hygieia",
+    "sTeamID" : "Team:26967234",
+    "sSprintIsDeleted" : "False",
+    "sSprintChangeDate" : "2016-06-07T14:54:04.7830000",
+    "sSprintAssetState" : "Active",
+    "sSprintEndDate" : "2016-09-15T00:00:00.0000000",
+    "sSprintBeginDate" : "2016-09-01T00:00:00.0000000",
+    "sSprintName" : "JIRA Sprint",
+    "sSprintID" : "Timebox:23317533",
+    "sEpicIsDeleted" : "False",
+    "sEpicChangeDate" : "2014-06-30T00:48:05.1470000",
+    "sEpicAssetState" : "Active",
+    "sEpicType" : "",
+    "sEpicEndDate" : "",
+    "sEpicBeginDate" : "",
+    "sEpicName" : "PAR 2.0: Traceability Endpoint for Hygieia Audit API",
+    "sEpicNumber" : "JIRA-11900",
+    "sEpicID" : "Epic:11111",
+    "sProjectPath" : "",
+    "sProjectIsDeleted" : "False",
+    "sProjectState" : "Active",
+    "sProjectChangeDate" : "2016-09-16T09:45:31.4530000",
+    "sProjectEndDate" : "",
+    "sProjectBeginDate" : "2016-06-07T00:00:00.0000000",
+    "sProjectName" : "Traceability 1.0",
+    "sProjectID" : "Scope:23316970"
+  },
+  {
+    "id" : "589fece2a65ce715e6121cbf",
+    "collectorId" : "589febd0a65ce715e611a02d",
+    "sId" : "Story:23029864",
+    "sNumber" : "B-1488671",
+    "sName" : "AWS - Chronos Deployment Through CHEF Scripts",
+    "sTypeId" : "",
+    "sTypeName" : "Story",
+    "sStatus" : "",
+    "sState" : "Closed",
+    "sEstimate" : "",
+    "changeDate" : "2016-11-01T13:47:48.7600000",
+    "isDeleted" : "False",
+    "sOwnersID" : [
+      "Member:14556423"
+    ],
+    "sOwnersIsDeleted" : [
+      "False"
+    ],
+    "sOwnersChangeDate" : [
+      "2015-08-07T12:15:25.4200000"
+    ],
+    "sOwnersState" : [
+      "Active"
+    ],
+    "sOwnersUsername" : [
+      ""
+    ],
+    "sOwnersFullName" : [
+      ""
+    ],
+    "sOwnersShortName" : [
+      ""
+    ],
+    "sTeamIsDeleted" : "False",
+    "sTeamAssetState" : "Active",
+    "sTeamChangeDate" : "2015-11-12T10:46:07.6970000",
+    "sTeamName" : "Laguna",
+    "sTeamID" : "Team:26967234",
+    "sSprintAssetState" : "Active",
+    "sSprintEndDate" : "",
+    "sSprintBeginDate" : "",
+    "sSprintName" : "",
+    "sSprintID" : "",
+    "sEpicIsDeleted" : "False",
+    "sEpicChangeDate" : "2015-12-02T15:55:25.9000000",
+    "sEpicAssetState" : "Active",
+    "sEpicType" : "",
+    "sEpicEndDate" : "",
+    "sEpicBeginDate" : "",
+    "sEpicName" : "HL Saturn",
+    "sEpicNumber" : "E-128386",
+    "sEpicID" : "Epic:222222",
+    "sProjectPath" : "",
+    "sProjectIsDeleted" : "False",
+    "sProjectState" : "Active",
+    "sProjectChangeDate" : "2017-01-06T11:37:37.4800000",
+    "sProjectEndDate" : "",
+    "sProjectBeginDate" : "2015-11-13T00:00:00.0000000",
+    "sProjectName" : "Kanban Board",
+    "sProjectID" : "Scope:17482903"
+  },
+  {
+    "id" : "589fecf8a65ce715e61227ca",
+    "collectorId" : "589febd0a65ce715e611a02d",
+    "sId" : "Story:23442599",
+    "sNumber" : "B-1521515",
+    "sName" : "AWS - Create CP for IPS handling Rehydration",
+    "sTypeId" : "",
+    "sTypeName" : "Story",
+    "sStatus" : "",
+    "sState" : "Closed",
+    "sEstimate" : "",
+    "changeDate" : "2016-12-16T12:15:14.0200000",
+    "isDeleted" : "False",
+    "sOwnersID" : [
+      "Member:2183918"
+    ],
+    "sOwnersIsDeleted" : [
+      "False"
+    ],
+    "sOwnersChangeDate" : [
+      "2016-05-19T11:19:11.7000000"
+    ],
+    "sOwnersState" : [
+      "Active"
+    ],
+    "sOwnersUsername" : [
+      ""
+    ],
+    "sOwnersFullName" : [
+      ""
+    ],
+    "sOwnersShortName" : [
+      ""
+    ],
+    "sTeamIsDeleted" : "False",
+    "sTeamAssetState" : "Active",
+    "sTeamChangeDate" : "2015-11-12T10:46:07.6970000",
+    "sTeamName" : "Laguna",
+    "sTeamID" : "Team:26967234",
+    "sSprintAssetState" : "Active",
+    "sSprintEndDate" : "",
+    "sSprintBeginDate" : "",
+    "sSprintName" : "",
+    "sSprintID" : "",
+    "sEpicIsDeleted" : "False",
+    "sEpicChangeDate" : "2015-11-18T11:33:44.4470000",
+    "sEpicAssetState" : "Active",
+    "sEpicType" : "",
+    "sEpicEndDate" : "",
+    "sEpicBeginDate" : "",
+    "sEpicName" : "HL General",
+    "sEpicNumber" : "E-126986",
+    "sEpicID" : "Epic:333333",
+    "sProjectPath" : "",
+    "sProjectIsDeleted" : "False",
+    "sProjectState" : "Active",
+    "sProjectChangeDate" : "2017-01-06T11:37:37.4800000",
+    "sProjectEndDate" : "",
+    "sProjectBeginDate" : "2015-11-13T00:00:00.0000000",
+    "sProjectName" : "Kanban Board",
+    "sProjectID" : "Scope:17482903"
+  }
+]

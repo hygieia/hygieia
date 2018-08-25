@@ -15,4 +15,15 @@
                 '</span>'
             };
         });
+    angular
+        .module(HygieiaConfig.module + '.core')
+        .directive('dashAdd', function () {
+            return {
+                transclude: true,
+                template: '<span class="clickable fa fa-stack">' +
+                    '<span class="fa-circle-thin fa-stack-2x text-success"></span>' +
+                    '<span class="fa-plus fa-stack-1x text-success"></span>' +
+                    '</span>'
+            };
+        });
 })();

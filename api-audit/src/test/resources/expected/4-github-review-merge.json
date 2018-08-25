@@ -2,9 +2,9 @@
     {
         "auditStatuses": [
             "PEER_REVIEW_GHR",
-            "GIT_BRANCH_STRATEGY",
+            "COMMITAUTHOR_EQ_MERGECOMMITER",
             "PULLREQ_REVIEWED_BY_PEER",
-            "COMMITAUTHOR_EQ_MERGECOMMITER"
+            "GIT_BRANCH_STRATEGY"
         ],
         "lastUpdated": 1516207278547,
         "pullRequest": {
@@ -80,7 +80,8 @@
     },
     {
         "auditStatuses": [
-            "DIRECT_COMMITS_TO_BASE_FIRST_COMMIT"
+            "DIRECT_COMMITS_TO_BASE_FIRST_COMMIT",
+            "SCM_AUTHOR_LOGIN_INVALID"
         ],
         "lastUpdated": 1516207278547,
         "commits": [
