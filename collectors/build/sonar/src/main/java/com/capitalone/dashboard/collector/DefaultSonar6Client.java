@@ -31,12 +31,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Component
 public class DefaultSonar6Client implements SonarClient {
     private static final Log LOG = LogFactory.getLog(DefaultSonar6Client.class);
 
-    private static final String URL_RESOURCES = "/api/components/search?qualifiers=TRK&ps=10000";
+    private static final String URL_RESOURCES = "/api/components/search?qualifiers=TRK&ps=500";
     private static final String URL_RESOURCE_DETAILS = "/api/measures/component?format=json&componentId=%s&metricKeys=%s&includealerts=true";
     private static final String URL_PROJECT_ANALYSES = "/api/project_analyses/search?project=%s";
     private static final String URL_QUALITY_PROFILES = "/api/qualityprofiles/search";
@@ -64,6 +63,7 @@ public class DefaultSonar6Client implements SonarClient {
     private static final String HOURS_FORMAT = "%sh";
     private static final String DAYS_FORMAT = "%sd";
     private static final int HOURS_IN_DAY = 8;
+    private static final int PAGE_SIZE=500;
 
     @Autowired
     public DefaultSonar6Client(Supplier<RestOperations> restOperationsSupplier, SonarSettings settings) {
@@ -80,7 +80,8 @@ public class DefaultSonar6Client implements SonarClient {
 
         try {
             String key = "components";
-            for (Object obj : parseAsArray(url, key)) {
+            JSONArray jsonArray = getProjects(url, key);
+            for (Object obj : jsonArray) {
                 JSONObject prjData = (JSONObject) obj;
 
                 SonarProject project = new SonarProject();
@@ -97,6 +98,31 @@ public class DefaultSonar6Client implements SonarClient {
         }
 
         return projects;
+    }
+
+    private JSONArray getProjects(String url, String key) throws ParseException {
+        Long totalRecords = getTotalCount(parseJsonObject(url, "paging"));
+        int pages = (int) Math.ceil((double)totalRecords / PAGE_SIZE);
+        JSONArray jsonArray = new JSONArray();
+        jsonArray = totalRecords > PAGE_SIZE ? getProjects(url, key, pages, jsonArray): getProjects(url, key, jsonArray);
+        return jsonArray;
+    }
+
+    private JSONArray getProjects(String url, String key, JSONArray jsonArray) throws ParseException {
+        jsonArray.addAll(parseAsArray(url, key));
+        return jsonArray;
+    }
+
+    private JSONArray getProjects(String url, String key, int pages, JSONArray jsonArray) throws ParseException {
+       for (int start=1;start<=pages;start++){
+            getProjects(url, key, jsonArray, start);
+        }
+        return  jsonArray;
+    }
+
+    private void getProjects(String url, String key, JSONArray jsonArray, int pageNumber) throws ParseException {
+        String urlFinal = url+"&p="+pageNumber;
+        jsonArray.addAll(parseAsArray(urlFinal, key));
     }
 
     @Override
@@ -136,7 +162,7 @@ public class DefaultSonar6Client implements SonarClient {
                     JSONObject metricJson = (JSONObject) metricObj;
 
                     CodeQualityMetric metric = new CodeQualityMetric(str(metricJson, METRIC));
-                    metric.setValue(metricJson.get(VALUE));
+                    metric.setValue(str(metricJson, VALUE));
                     if (metric.getName().equals("sqale_index")) {
                         metric.setFormattedValue(format(str(metricJson, VALUE)));
                     } else if (strSafe(metricJson, VALUE).indexOf(".") > 0) {
@@ -201,7 +227,7 @@ public class DefaultSonar6Client implements SonarClient {
     public JSONArray getQualityProfileConfigurationChanges(String instanceUrl,String qualityProfile) throws ParseException{
     	String url = instanceUrl + URL_QUALITY_PROFILE_CHANGES + qualityProfile;
     	try {
-    		JSONArray qualityProfileConfigChanges = this.parseAsArray(instanceUrl, "events");
+    		JSONArray qualityProfileConfigChanges = this.parseAsArray(url, "events");
     		return qualityProfileConfigChanges;
     	} catch (ParseException e) {
     		LOG.error("Could not parse response from: " + url, e);
@@ -213,11 +239,21 @@ public class DefaultSonar6Client implements SonarClient {
     }
 
     private JSONArray parseAsArray(String url, String key) throws ParseException {
+        JSONObject jsonObject = getResponse(url);
+        return (JSONArray) jsonObject.get(key);
+    }
+
+    private JSONObject parseJsonObject(String url, String key) throws ParseException {
+        JSONObject jsonObject = getResponse(url);
+        return (JSONObject)jsonObject.get(key);
+    }
+
+    private JSONObject getResponse(String url) throws ParseException {
         ResponseEntity<String> response = rest.exchange(url, HttpMethod.GET, this.httpHeaders, String.class);
         JSONParser jsonParser = new JSONParser();
         JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
         LOG.debug(url);
-        return (JSONArray) jsonObject.get(key);
+        return jsonObject;
     }
 
     private long timestamp(JSONObject json, String key) {
@@ -334,4 +370,9 @@ public class DefaultSonar6Client implements SonarClient {
         }
         return headers;
     }
+
+    private Long getTotalCount(JSONObject pagingObject) {
+        return (Long) pagingObject.get("total");
+    }
+
 }

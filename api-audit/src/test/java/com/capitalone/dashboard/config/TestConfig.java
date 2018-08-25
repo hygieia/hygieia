@@ -1,14 +1,14 @@
 package com.capitalone.dashboard.config;
 
 import com.capitalone.dashboard.ApiSettings;
-import com.capitalone.dashboard.evaluator.CodeReviewEvaluatorLegacy;
-import com.capitalone.dashboard.service.DashboardAuditService;
-import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.core.annotation.Order;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Spring context configuration for Testing purposes
@@ -22,11 +22,15 @@ public class TestConfig {
     public ApiSettings settings() {
         ApiSettings settings = new ApiSettings();
         settings.setPeerReviewContexts("approvals/lgtmeow");
+        settings.setFeatureIDPattern("((?<!([A-Za-z]{1,10})-?)[A-Z]+-\\\\d+)");
+        settings.setThreshold(80);
+        List<String> validStoryStatus = Arrays.asList("ACCEPTED", "DONE" ,"RESOLVED" ,"CLOSED");
+        settings.setValidStoryStatus(validStoryStatus);
         return settings;
     }
 
-    @Bean
+/*    @Bean
     public DashboardAuditService dashboardAuditService() {
         return Mockito.mock(DashboardAuditService.class);
-    }
+    }*/
 }

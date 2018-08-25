@@ -1,5 +1,47 @@
 [
   {
+    "description": "Registered by Remote Call.",
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": {
+      "timestamp": 1456084265,
+      "machineIdentifier": 8366972,
+      "processIdentifier": 26815,
+      "counter": 14369292
+    },
+    "lastUpdated": 1516222021186,
+    "options": {
+      "branch": "master",
+      "url": "https://mygithub.com/compliance-scenario/0-new-repo"
+    },
+    "id": "5a4e524333ec296b81c3936f"
+  },
+  {
+    "description": "card-customer-service:card-cust-service",
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": {
+      "timestamp": 1456084266,
+      "machineIdentifier": 8366972,
+      "processIdentifier": 26815,
+      "counter": 14369292
+    },
+    "lastUpdated": 1523562528850,
+    "options": {
+      "applicationType": null,
+      "reportUrl": "https://appsec.com/StaticSecurityAnalysis",
+      "applicationID": [
+        "TestBusServ"
+      ],
+      "projectName": "cust-service",
+      "applicationName": "customer-service",
+      "instanceUrl": "https://appsec.com"
+    },
+    "id": "5b4e524333ec296b81c3935f"
+  },
+  {
     "description": "TestAudit",
     "enabled": false,
     "errors": [],
@@ -365,5 +407,107 @@
       "userID": "",
       "url" : "https://mygithub.com/Devopscode/MultipleAuthorsGHR"
     }
+  },
+  {
+    "id" : "5ad5f605c23b391cfa1c01a4",
+    "description" : "myapplication:mycomponent",
+    "enabled" : false,
+    "errors" : [],
+    "pushed" : false,
+    "collectorId" : "5af9ed53cba7165e8cc1069e",
+    "lastUpdated" : 1524190250247,
+    "options" : {
+      "applicationType" : null,
+      "componentName" : "mycomponent",
+      "applicationID" : [
+        "SOMEAPPLICATION"
+      ],
+      "applicationName" : "account-my-information",
+      "instanceUrl" : "https://scan.com"
+    }
+  },
+
+  {
+    "id" : "5ad5f605c23b391cfa1c01a4",
+    "description" : "myapplication:mycomponent",
+    "enabled" : false,
+    "errors" : [],
+    "pushed" : false,
+    "collectorId" : "5af9ed53cba7165e8cc1069e",
+    "lastUpdated" : 1524190250247,
+    "options" : {
+      "applicationType" : null,
+      "componentName" : "mycomponent",
+      "applicationID" : [
+        "SOMEAPPLICATION"
+      ],
+      "applicationName" : "account-my-information",
+      "instanceUrl" : "https://scan.com"
+    }
+  },
+
+  {
+    "id" : "56e301107fab7c3ec3c43397",
+    "enabled" : true,
+    "errors" : [],
+    "pushed" : false,
+    "collectorId" : "56ca15297fab7c68bfdb420c",
+    "lastUpdated" : 1528709104212,
+    "options" : {
+      "scm" : "Github",
+      "branch" : "develop",
+      "url" : "https://mygithub.com/TechOriginations/openupf"
+    }
+  },
+
+  {
+    "id" : "56e5919d7fab7c0244e33341",
+    "description" : "openupf service parent",
+    "niceName" : "HomeLoan",
+    "enabled" : true,
+    "errors" : [],
+    "pushed" : true,
+    "collectorId" : "56cb5bde7fab7c548551410e",
+    "lastUpdated" : 1460387608894,
+    "options" : {
+      "projectName" : "openupf service parent",
+      "projectId" : "111955",
+      "instanceUrl" : "http://mysonar.com:11300/sonar"
+    }
+  },
+
+  {
+    "id" : "57f2a0193b55670a9e06d63a",
+    "description" : "TEST-UI",
+    "niceName" : "TEST",
+    "enabled" : true,
+    "errors" : [],
+    "pushed" : true,
+    "collectorId" : "56df29df7fab7c3ec3c432ea",
+    "lastUpdated" : 1513106044147,
+    "options" : {
+      "jobName" : "TEST-UI",
+      "jobUrl" : "https://myjenkins.com/myjenkins/job/TEST-UI/",
+      "instanceUrl" : "https://myjenkins.com/myjenkins/",
+      "applicationID": [
+        "TestBusServ"
+      ]
+    }
+  },
+  {
+    "id": "5b7b33d6b2ea1a4c58a61a2d",
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": "56ca15297fab7c68bfdb420c",
+    "lastUpdated": 1534804146907,
+    "options": {
+      "password": "",
+      "personalAccessToken": "",
+      "branch": "master",
+      "userID": "",
+      "url": "https://mygithub.com/Devopscode/HandleMisleadingSingleParentCommit"
+    }
   }
+
 ]

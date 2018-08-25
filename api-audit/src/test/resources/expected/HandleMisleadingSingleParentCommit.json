@@ -1,0 +1,469 @@
+[
+  {
+    "auditStatuses": [
+      "COMMITAUTHOR_EQ_MERGECOMMITER",
+      "PULLREQ_REVIEWED_BY_PEER",
+      "PEER_REVIEW_GHR",
+      "GIT_BRANCH_STRATEGY"
+    ],
+    "lastUpdated": 1534804146907,
+    "pullRequest": {
+      "scmUrl": "https://mygithub.com/Devopscode/HandleMisleadingSingleParentCommit",
+      "scmBranch": "master",
+      "scmRevisionNumber": "94c9e02097b43a8068969cb66b279b81fd1d027f",
+      "scmMergeEventRevisionNumber": "94c9e02097b43a8068969cb66b279b81fd1d027f",
+      "scmCommitLog": "[COFIUM-462] Added well managed logging and enhanced app logging",
+      "scmCommitTimestamp": 1532733370000,
+      "numberOfChanges": 16,
+      "id": "5b7b4042b2ea1a56ce25c0a0",
+      "orgName": "Devopscode",
+      "repoName": "HandleMisleadingSingleParentCommit",
+      "sourceRepo": "Devopscode/HandleMisleadingSingleParentCommit",
+      "sourceBranch": "ft-metalogging",
+      "targetRepo": "Devopscode/HandleMisleadingSingleParentCommit",
+      "targetBranch": "master",
+      "number": "79",
+      "collectorItemId": "5b7b33d6b2ea1a4c58a61a2d",
+      "updatedAt": 1532733375000,
+      "createdAt": 1532713668000,
+      "closedAt": 0,
+      "state": "merged",
+      "mergedAt": 1532733370000,
+      "mergeAuthor": "ghone",
+      "mergeAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+      "timestamp": 1534804033405,
+      "resolutiontime": 19702000,
+      "userId": "ghone",
+      "comments": [],
+      "reviews": [
+        {
+          "body": "",
+          "state": "COMMENTED",
+          "author": "ghtwo",
+          "authorLDAPDN": "CN=ghtwo,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+          "createdAt": 1532714040000,
+          "updatedAt": 1532714227000
+        },
+        {
+          "body": "",
+          "state": "COMMENTED",
+          "author": "ghone",
+          "authorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+          "createdAt": 1532714913000,
+          "updatedAt": 1532714913000
+        },
+        {
+          "body": "",
+          "state": "COMMENTED",
+          "author": "ghone",
+          "authorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+          "createdAt": 1532715781000,
+          "updatedAt": 1532715781000
+        },
+        {
+          "body": "",
+          "state": "COMMENTED",
+          "author": "ghtwo",
+          "authorLDAPDN": "CN=ghtwo,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+          "createdAt": 1532729248000,
+          "updatedAt": 1532729373000
+        },
+        {
+          "body": "",
+          "state": "APPROVED",
+          "author": "ghtwo",
+          "authorLDAPDN": "CN=ghtwo,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+          "createdAt": 1532732313000,
+          "updatedAt": 1532732313000
+        }
+      ],
+      "commitStatuses": [
+        {
+          "state": "SUCCESS",
+          "context": "continuous-integration/jenkins/pr-merge",
+          "description": "This commit looks good"
+        },
+        {
+          "state": "SUCCESS",
+          "context": "PREPARE",
+          "description": "Stage built successfully"
+        },
+        {
+          "state": "SUCCESS",
+          "context": "DEPLOY/TEST",
+          "description": "Stage built successfully"
+        },
+        {
+          "state": "SUCCESS",
+          "context": "PUBLISH",
+          "description": "Stage built successfully"
+        },
+        {
+          "state": "SUCCESS",
+          "context": "BUILD/TEST",
+          "description": "Stage built successfully"
+        }
+      ],
+      "baseSha": "8a46eaec644870a087e9efc31a7fbd756ea09346",
+      "requestType": "pull",
+      "commits": [
+        {
+          "scmRevisionNumber": "193f6a6966553c43966cf5bdc2a7f798c33556d2",
+          "scmCommitLog": "Added correlation ids to app logging and added app debugging config",
+          "scmAuthor": "ghone",
+          "scmAuthorLogin": "ghone",
+          "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+          "scmCommitTimestamp": 1532409906000,
+          "numberOfChanges": 0,
+          "timestamp": 0,
+          "firstEverCommit": false
+        },
+        {
+          "scmRevisionNumber": "0c55922d36d4e5871c816b4cb11ccfd1d47dc62b",
+          "scmCommitLog": "Refactored to depart from package logger and added integration test to verify app logging",
+          "scmAuthor": "ghone",
+          "scmAuthorLogin": "ghone",
+          "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+          "scmCommitTimestamp": 1532651603000,
+          "numberOfChanges": 0,
+          "timestamp": 0,
+          "firstEverCommit": false
+        },
+        {
+          "scmRevisionNumber": "f2e9de17e89150065718655c6688d6322ade9627",
+          "scmCommitLog": "Added silly trap to ignore testify wiring in vscode",
+          "scmAuthor": "ghone",
+          "scmAuthorLogin": "ghone",
+          "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+          "scmCommitTimestamp": 1532659800000,
+          "numberOfChanges": 0,
+          "timestamp": 0,
+          "firstEverCommit": false
+        },
+        {
+          "scmRevisionNumber": "d8f955aef5036ae957614a8f1964bbdb4772bd4d",
+          "scmCommitLog": "Use testify and reorg for wellmanaged logging",
+          "scmAuthor": "ghone",
+          "scmAuthorLogin": "ghone",
+          "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+          "scmCommitTimestamp": 1532666060000,
+          "numberOfChanges": 0,
+          "timestamp": 0,
+          "firstEverCommit": false
+        },
+        {
+          "scmRevisionNumber": "e4d14895bca9845872ac33af01b1f85a4c6e4a7a",
+          "scmCommitLog": "Use testify and reorg for wellmanaged logging",
+          "scmAuthor": "ghone",
+          "scmAuthorLogin": "ghone",
+          "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+          "scmCommitTimestamp": 1532666104000,
+          "numberOfChanges": 0,
+          "timestamp": 0,
+          "firstEverCommit": false
+        },
+        {
+          "scmRevisionNumber": "6f0275e52c612220dd9157fd5038344d659ade83",
+          "scmCommitLog": "Added well manage logging",
+          "scmAuthor": "ghone",
+          "scmAuthorLogin": "ghone",
+          "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+          "scmCommitTimestamp": 1532676017000,
+          "numberOfChanges": 0,
+          "timestamp": 0,
+          "firstEverCommit": false
+        },
+        {
+          "scmRevisionNumber": "7a7a078b792dcc416f14e143eaf77b515e28a0c4",
+          "scmCommitLog": "Removed nested json escaping in marshaling",
+          "scmAuthor": "ghone",
+          "scmAuthorLogin": "ghone",
+          "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+          "scmCommitTimestamp": 1532701410000,
+          "numberOfChanges": 0,
+          "timestamp": 0,
+          "firstEverCommit": false
+        },
+        {
+          "scmRevisionNumber": "a857ac84c027058efa512f9e6c7d4e96c7636d61",
+          "scmCommitLog": "Baked out wmlogging test",
+          "scmAuthor": "ghone",
+          "scmAuthorLogin": "ghone",
+          "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+          "scmCommitTimestamp": 1532705484000,
+          "numberOfChanges": 0,
+          "timestamp": 0,
+          "firstEverCommit": false
+        },
+        {
+          "scmRevisionNumber": "800608fea39680518a65edf9d5778484c03b204a",
+          "scmCommitLog": "Made dgaID optional",
+          "scmAuthor": "ghone",
+          "scmAuthorLogin": "ghone",
+          "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+          "scmCommitTimestamp": 1532711068000,
+          "numberOfChanges": 0,
+          "timestamp": 0,
+          "firstEverCommit": false
+        },
+        {
+          "scmRevisionNumber": "74e8dfb729fc5f2c3c24ab1ec015dfa6a021f44f",
+          "scmCommitLog": "Fixed main compilation bug",
+          "scmAuthor": "ghone",
+          "scmAuthorLogin": "ghone",
+          "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+          "scmCommitTimestamp": 1532713242000,
+          "numberOfChanges": 0,
+          "timestamp": 0,
+          "firstEverCommit": false
+        },
+        {
+          "scmRevisionNumber": "631e98c29960cb307b6b7ea3de1fcbd8f67f56ae",
+          "scmCommitLog": "fixed broken tests",
+          "scmAuthor": "ghone",
+          "scmAuthorLogin": "ghone",
+          "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+          "scmCommitTimestamp": 1532715537000,
+          "numberOfChanges": 0,
+          "timestamp": 0,
+          "firstEverCommit": false
+        },
+        {
+          "scmRevisionNumber": "1bd942fd5fecf1cd0c161b79909c983a9b9a19cd",
+          "scmCommitLog": "Config file cleanup",
+          "scmAuthor": "ghone",
+          "scmAuthorLogin": "ghone",
+          "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+          "scmCommitTimestamp": 1532717602000,
+          "numberOfChanges": 0,
+          "timestamp": 0,
+          "firstEverCommit": false
+        },
+        {
+          "scmRevisionNumber": "6710513b1918e60fe4eb7b54eedff7dc27eb0f49",
+          "scmCommitLog": "Removed weird vscode debug setup",
+          "scmAuthor": "ghone",
+          "scmAuthorLogin": "ghone",
+          "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+          "scmCommitTimestamp": 1532726911000,
+          "numberOfChanges": 0,
+          "timestamp": 0,
+          "firstEverCommit": false
+        },
+        {
+          "scmRevisionNumber": "b5173cd5b8d05d0899e77fa6afe366ca08fe0fd3",
+          "scmCommitLog": "Fixed broken cucumber setup",
+          "scmAuthor": "ghone",
+          "scmAuthorLogin": "ghone",
+          "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+          "scmCommitTimestamp": 1532727730000,
+          "numberOfChanges": 0,
+          "timestamp": 0,
+          "firstEverCommit": false
+        },
+        {
+          "scmRevisionNumber": "8503871ac48d6bca6a8f63223b1461809b0567d9",
+          "scmCommitLog": "Updated per PR feedback",
+          "scmAuthor": "ghone",
+          "scmAuthorLogin": "ghone",
+          "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+          "scmCommitTimestamp": 1532729643000,
+          "numberOfChanges": 0,
+          "timestamp": 0,
+          "firstEverCommit": false
+        },
+        {
+          "scmRevisionNumber": "31291f81a8b25d24af11443b9529098bdce7b905",
+          "scmCommitLog": "Added .envdebug file",
+          "scmAuthor": "ghone",
+          "scmAuthorLogin": "ghone",
+          "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+          "scmCommitTimestamp": 1532731704000,
+          "numberOfChanges": 0,
+          "timestamp": 0,
+          "firstEverCommit": false
+        }
+      ]
+    },
+    "commits": [
+      {
+        "scmRevisionNumber": "193f6a6966553c43966cf5bdc2a7f798c33556d2",
+        "scmCommitLog": "Added correlation ids to app logging and added app debugging config",
+        "scmAuthor": "ghone",
+        "scmAuthorLogin": "ghone",
+        "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+        "scmCommitTimestamp": 1532409906000,
+        "numberOfChanges": 0,
+        "timestamp": 0,
+        "firstEverCommit": false
+      },
+      {
+        "scmRevisionNumber": "0c55922d36d4e5871c816b4cb11ccfd1d47dc62b",
+        "scmCommitLog": "Refactored to depart from package logger and added integration test to verify app logging",
+        "scmAuthor": "ghone",
+        "scmAuthorLogin": "ghone",
+        "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+        "scmCommitTimestamp": 1532651603000,
+        "numberOfChanges": 0,
+        "timestamp": 0,
+        "firstEverCommit": false
+      },
+      {
+        "scmRevisionNumber": "f2e9de17e89150065718655c6688d6322ade9627",
+        "scmCommitLog": "Added silly trap to ignore testify wiring in vscode",
+        "scmAuthor": "ghone",
+        "scmAuthorLogin": "ghone",
+        "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+        "scmCommitTimestamp": 1532659800000,
+        "numberOfChanges": 0,
+        "timestamp": 0,
+        "firstEverCommit": false
+      },
+      {
+        "scmRevisionNumber": "d8f955aef5036ae957614a8f1964bbdb4772bd4d",
+        "scmCommitLog": "Use testify and reorg for wellmanaged logging",
+        "scmAuthor": "ghone",
+        "scmAuthorLogin": "ghone",
+        "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+        "scmCommitTimestamp": 1532666060000,
+        "numberOfChanges": 0,
+        "timestamp": 0,
+        "firstEverCommit": false
+      },
+      {
+        "scmRevisionNumber": "e4d14895bca9845872ac33af01b1f85a4c6e4a7a",
+        "scmCommitLog": "Use testify and reorg for wellmanaged logging",
+        "scmAuthor": "ghone",
+        "scmAuthorLogin": "ghone",
+        "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+        "scmCommitTimestamp": 1532666104000,
+        "numberOfChanges": 0,
+        "timestamp": 0,
+        "firstEverCommit": false
+      },
+      {
+        "scmRevisionNumber": "6f0275e52c612220dd9157fd5038344d659ade83",
+        "scmCommitLog": "Added well manage logging",
+        "scmAuthor": "ghone",
+        "scmAuthorLogin": "ghone",
+        "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+        "scmCommitTimestamp": 1532676017000,
+        "numberOfChanges": 0,
+        "timestamp": 0,
+        "firstEverCommit": false
+      },
+      {
+        "scmRevisionNumber": "7a7a078b792dcc416f14e143eaf77b515e28a0c4",
+        "scmCommitLog": "Removed nested json escaping in marshaling",
+        "scmAuthor": "ghone",
+        "scmAuthorLogin": "ghone",
+        "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+        "scmCommitTimestamp": 1532701410000,
+        "numberOfChanges": 0,
+        "timestamp": 0,
+        "firstEverCommit": false
+      },
+      {
+        "scmRevisionNumber": "a857ac84c027058efa512f9e6c7d4e96c7636d61",
+        "scmCommitLog": "Baked out wmlogging test",
+        "scmAuthor": "ghone",
+        "scmAuthorLogin": "ghone",
+        "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+        "scmCommitTimestamp": 1532705484000,
+        "numberOfChanges": 0,
+        "timestamp": 0,
+        "firstEverCommit": false
+      },
+      {
+        "scmRevisionNumber": "800608fea39680518a65edf9d5778484c03b204a",
+        "scmCommitLog": "Made dgaID optional",
+        "scmAuthor": "ghone",
+        "scmAuthorLogin": "ghone",
+        "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+        "scmCommitTimestamp": 1532711068000,
+        "numberOfChanges": 0,
+        "timestamp": 0,
+        "firstEverCommit": false
+      },
+      {
+        "scmRevisionNumber": "74e8dfb729fc5f2c3c24ab1ec015dfa6a021f44f",
+        "scmCommitLog": "Fixed main compilation bug",
+        "scmAuthor": "ghone",
+        "scmAuthorLogin": "ghone",
+        "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+        "scmCommitTimestamp": 1532713242000,
+        "numberOfChanges": 0,
+        "timestamp": 0,
+        "firstEverCommit": false
+      },
+      {
+        "scmRevisionNumber": "631e98c29960cb307b6b7ea3de1fcbd8f67f56ae",
+        "scmCommitLog": "fixed broken tests",
+        "scmAuthor": "ghone",
+        "scmAuthorLogin": "ghone",
+        "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+        "scmCommitTimestamp": 1532715537000,
+        "numberOfChanges": 0,
+        "timestamp": 0,
+        "firstEverCommit": false
+      },
+      {
+        "scmRevisionNumber": "1bd942fd5fecf1cd0c161b79909c983a9b9a19cd",
+        "scmCommitLog": "Config file cleanup",
+        "scmAuthor": "ghone",
+        "scmAuthorLogin": "ghone",
+        "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+        "scmCommitTimestamp": 1532717602000,
+        "numberOfChanges": 0,
+        "timestamp": 0,
+        "firstEverCommit": false
+      },
+      {
+        "scmRevisionNumber": "6710513b1918e60fe4eb7b54eedff7dc27eb0f49",
+        "scmCommitLog": "Removed weird vscode debug setup",
+        "scmAuthor": "ghone",
+        "scmAuthorLogin": "ghone",
+        "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+        "scmCommitTimestamp": 1532726911000,
+        "numberOfChanges": 0,
+        "timestamp": 0,
+        "firstEverCommit": false
+      },
+      {
+        "scmRevisionNumber": "b5173cd5b8d05d0899e77fa6afe366ca08fe0fd3",
+        "scmCommitLog": "Fixed broken cucumber setup",
+        "scmAuthor": "ghone",
+        "scmAuthorLogin": "ghone",
+        "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+        "scmCommitTimestamp": 1532727730000,
+        "numberOfChanges": 0,
+        "timestamp": 0,
+        "firstEverCommit": false
+      },
+      {
+        "scmRevisionNumber": "8503871ac48d6bca6a8f63223b1461809b0567d9",
+        "scmCommitLog": "Updated per PR feedback",
+        "scmAuthor": "ghone",
+        "scmAuthorLogin": "ghone",
+        "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+        "scmCommitTimestamp": 1532729643000,
+        "numberOfChanges": 0,
+        "timestamp": 0,
+        "firstEverCommit": false
+      },
+      {
+        "scmRevisionNumber": "31291f81a8b25d24af11443b9529098bdce7b905",
+        "scmCommitLog": "Added .envdebug file",
+        "scmAuthor": "ghone",
+        "scmAuthorLogin": "ghone",
+        "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
+        "scmCommitTimestamp": 1532731704000,
+        "numberOfChanges": 0,
+        "timestamp": 0,
+        "firstEverCommit": false
+      }
+    ],
+    "scmUrl": "https://mygithub.com/Devopscode/HandleMisleadingSingleParentCommit",
+    "scmBranch": "master"
+  }
+]

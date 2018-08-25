@@ -33,8 +33,8 @@
         var myDashboardFilterRoutePage = '/api/dashboard/mydashboard/page/filter';
         var myDashboardCountRoute = '/api/dashboard/mydashboard/count';
         var myDashboardFilterCountRoute = '/api/dashboard/mydashboard/filter/count';
+        var dashboardGenconfigRoute = '/api/dashboard/generalConfig';
         var updateDashboardScoreSettingsRoute = '/api/dashboard/updateScoreSettings';
-
         return {
             search: search,
             mydashboard: mydashboard,
@@ -60,6 +60,8 @@
             searchMyDashboardsByPage:searchMyDashboardsByPage,
             filterMyDashboardsByTitle:filterMyDashboardsByTitle,
             filterMyDashboardCount:filterMyDashboardCount,
+            getGeneralConfig: getGeneralConfig,
+            generalConfigSave: generalConfigSave,
             updateDashboardScoreSettings: updateDashboardScoreSettings
         };
 
@@ -116,8 +118,7 @@
                     return null;
                 });
         }
-
-
+        
         // renames a dashboard
 
         function renameDashboard(id,newDashboardName){
@@ -220,27 +221,27 @@
         }
 
         // gets count of all dashboards
-        function count() {
-            return getPromise(HygieiaConfig.local ? testSearchRoute : dashboardCountRoute);
+        function count(type) {
+            return getPromise(HygieiaConfig.local ? testSearchRoute : dashboardCountRoute+ '/'+type);
         }
 
         // gets list of dashboards according to page size (default = 10)
         function searchByPage(params) {
             return  $http.get(HygieiaConfig.local ? testSearchRoute : dashboardRoutePage,{params: params}).then(function (response) {
-                return response.data;
+                return {"data": response.data, "type": params.type};
             });
         }
 
         // gets list of dashboards filtered by title with page size (default = 10)
         function filterByTitle(params) {
             return  $http.get(HygieiaConfig.local ? testSearchRoute : dashboardFilterRoutePage,{params: params}).then(function (response) {
-                return response.data;
+                return {"data": response.data, "type": params.type};
             });
         }
 
         //gets count of filtered dashboards for pagination
-        function filterCount(title){
-            return  $http.get(HygieiaConfig.local ? testSearchRoute : dashboardFilterCountRoute+ '/'+title).then(function (response) {
+        function filterCount(title, type){
+            return  $http.get(HygieiaConfig.local ? testSearchRoute : dashboardFilterCountRoute+ '/'+title+ '/'+type).then(function (response) {
                 return response.data;
             });
         }
@@ -251,29 +252,47 @@
         }
 
         // gets count of all my dashboards
-        function myDashboardsCount() {
-            return getPromise(HygieiaConfig.local ? testSearchRoute : myDashboardCountRoute);
+        function myDashboardsCount(type) {
+            return getPromise(HygieiaConfig.local ? testSearchRoute : myDashboardCountRoute+ '/'+type);
         }
 
         // gets list of my dashboards according to page size (default = 10)
         function searchMyDashboardsByPage(params) {
             return  $http.get(HygieiaConfig.local ? testSearchRoute : myDashboardRoutePage,{params: params}).then(function (response) {
-                return response.data;
+                return {"data": response.data, "type": params.type};
             });
         }
 
         // gets list of my dashboards filtered by title with page size (default = 10)
         function filterMyDashboardsByTitle(params) {
             return  $http.get(HygieiaConfig.local ? testSearchRoute : myDashboardFilterRoutePage,{params: params}).then(function (response) {
-                return response.data;
+                return {"data": response.data, "type": params.type};
             });
         }
 
         //gets count of filtered dashboards for pagination
-        function filterMyDashboardCount(title){
-            return  $http.get(HygieiaConfig.local ? testSearchRoute : myDashboardFilterCountRoute+ '/'+title).then(function (response) {
+        function filterMyDashboardCount(title, type){
+            return  $http.get(HygieiaConfig.local ? testSearchRoute : myDashboardFilterCountRoute+ '/'+title+ '/'+type).then(function (response) {
                 return response.data;
             });
+        }
+
+        //get List of all configurations
+        function getGeneralConfig(id) {
+            return getPromise(HygieiaConfig.local ? dashboardGenconfigRoute+'/fetch' : dashboardGenconfigRoute+'/fetch');
+        }
+        //To save the general config datas
+        function generalConfigSave(obj){
+            var route = dashboardGenconfigRoute, obj;
+            return $http.put(route, obj)
+                .success(
+                    function (response) {
+                        return response.data;
+                    })
+                .error (function (response) {
+                    console.log("Error Occured while saving the configuration:"+JSON.stringify(response));
+                    return response.data;
+                });
         }
 
         function updateDashboardScoreSettings(id, scoreEnabled, scoreDisplay) {
@@ -285,7 +304,6 @@
                     return null;
                 });
         }
-
 
     }
 })();

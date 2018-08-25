@@ -11,6 +11,7 @@ public class GitHubRepo extends CollectorItem {
     public static final String USER_ID = "userID";
     public static final String PASSWORD = "password";
     public static final String LAST_UPDATE_TIME = "lastUpdate";
+    public static final String PERSONAL_ACCESS_TOKEN = "personalAccessToken";
     private int lastPrPage;
 
 
@@ -63,6 +64,15 @@ public class GitHubRepo extends CollectorItem {
     public void setLastUpdateTime(Date date) {
         getOptions().put(LAST_UPDATE_TIME, date);
     }
+
+    public static String getPersonalAccessToken() {
+        return PERSONAL_ACCESS_TOKEN;
+    }
+
+    public void setPersonalAccessToken(String personalAccessToken) {
+        getOptions().put(PERSONAL_ACCESS_TOKEN, personalAccessToken);
+    }
+
 
     public void removeLastUpdateDate() {
         getOptions().remove(LAST_UPDATE_TIME);

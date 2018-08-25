@@ -19,7 +19,9 @@ public class LibraryPolicyResult extends BaseModel {
     private long evaluationTimestamp;
     private Map<LibraryPolicyType, Set<Threat>> threats = new HashMap<>();
     private String reportUrl;
-
+    private Integer totalComponentCount;
+   	private Integer knownComponentCount;
+   	private List<PolicyScanMetric> policyAlert = new ArrayList<>();
 
     public static class Threat {
         LibraryPolicyThreatLevel level;
@@ -132,4 +134,29 @@ public class LibraryPolicyResult extends BaseModel {
     public void setEvaluationTimestamp(long evaluationTimestamp) {
         this.evaluationTimestamp = evaluationTimestamp;
     }
+
+	public Integer getTotalComponentCount() {
+		return totalComponentCount;
+	}
+
+	public void setTotalComponentCount(Integer totalComponentCount) {
+		this.totalComponentCount = totalComponentCount;
+	}
+
+	public Integer getKnownComponentCount() {
+		return knownComponentCount;
+	}
+
+	public void setKnownComponentCount(Integer knownComponentCount) {
+		this.knownComponentCount = knownComponentCount;
+	}
+
+	public List<PolicyScanMetric> getPolicyAlert() {
+		return policyAlert;
+	}
+
+	public void setPolicyAlert(List<PolicyScanMetric> policyAlert) {
+		this.policyAlert = policyAlert;
+	}
+	
 }
