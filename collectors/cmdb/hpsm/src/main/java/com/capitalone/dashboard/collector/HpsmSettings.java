@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * Bean to hold settings specific to the HPSM collector.
  */
@@ -56,6 +58,13 @@ public class HpsmSettings {
 	private String incidentUpdatesRequestType;
 	private String incidentUpdatesSoapAction;
 	private String incidentUpdatesCron;
+	private List<String> incidentEnvironmentList;
+
+	public List<String> getIncidentEnvironmentList() { return incidentEnvironmentList; }
+
+	public void setIncidentEnvironmentList(List<String> incidentEnvironmentList) {
+		this.incidentEnvironmentList = incidentEnvironmentList;
+	}
 
 	public int getChangeOrderOffsetMinutes() { return changeOrderOffsetMinutes; }
 

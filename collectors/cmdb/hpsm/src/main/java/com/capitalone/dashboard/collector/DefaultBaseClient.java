@@ -6,6 +6,7 @@ import com.capitalone.dashboard.model.Incident;
 import com.capitalone.dashboard.util.HpsmCollectorConstants;
 import com.capitalone.dashboard.util.XmlUtil;
 import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.SimpleHttpConnectionManager;
@@ -33,6 +34,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class DefaultBaseClient {
@@ -52,6 +54,9 @@ public class DefaultBaseClient {
     String charset;
     String userName = "";
     String password = "";
+
+    private static final String APPLICATION_PREFIX = "ASV";
+    private static final String ENVIRONMENT_PREFIX = "ENV";
 
     @Autowired
     public DefaultBaseClient(HpsmSettings hpsmSettings) {
@@ -177,6 +182,10 @@ public class DefaultBaseClient {
         if(map == null || map.isEmpty()) return new ArrayList<>();
         if(getStringValueFromMap(map, HpsmCollectorConstants.INCIDENT_ID).isEmpty()) return new ArrayList<>();
 
+        // Environment Check
+        String environment = getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_ENVIRONMENT);
+        if (!environmentCheck(environment)) { return new ArrayList<>();}
+
         Incident incident = new Incident();
         incident.setIncidentID(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_ID));
         incident.setCategory(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_CATEGORY));
@@ -193,14 +202,11 @@ public class DefaultBaseClient {
         incident.setPrimaryAssignmentGroup(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_PRIMARY_ASSIGNMENT_GROUP));
         incident.setStatus(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_STATUS));
 
+        // Determine the affected Item.
         String affectedItem = getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_AFFECTED_ITEM);
         String service = getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_SERVICE);
-
-        if (!StringUtils.isEmpty(affectedItem)) {
-            incident.setAffectedItem(affectedItem);
-        } else if (!StringUtils.isEmpty(service)) {
-            incident.setAffectedItem(service);
-        }
+        String affectedItemResult = getAffectedItem(affectedItem, service);
+        incident.setAffectedItem(affectedItemResult);
 
         incident.setIncidentDescription(getStringValueFromMap(map, HpsmCollectorConstants.INCIDENT_DESCRIPTION));
         List<Incident> list = new ArrayList<>();
@@ -209,7 +215,44 @@ public class DefaultBaseClient {
         return list;
     }
 
-    protected String getStringValueFromMap(Map map, String key){
+    protected boolean environmentCheck (String environment) {
+        if (StringUtils.isEmpty(environment)) { return true; }
+
+        List<String> configuredEnvironmentList = hpsmSettings.getIncidentEnvironmentList();
+        if (!CollectionUtils.isEmpty(configuredEnvironmentList) && !StringUtils.isEmpty(environment)) {
+            String searchResult = configuredEnvironmentList.stream()
+                                    .filter(configuredEnv -> configuredEnv.equalsIgnoreCase(environment))
+                                    .findFirst().orElse(null);
+            if (!StringUtils.isEmpty(searchResult)) return true;
+        }
+        return false;
+    }
+
+    protected String getAffectedItem(String affectedItem, String service) {
+        // Return affectedItem, if it is truly a BAP/CI
+        if  (!StringUtils.isEmpty(affectedItem)
+                && !affectedItem.toUpperCase(Locale.ENGLISH).startsWith(APPLICATION_PREFIX)
+                && !affectedItem.toUpperCase(Locale.ENGLISH).startsWith(ENVIRONMENT_PREFIX)) {
+            return affectedItem;
+        }
+
+        // Return the service if it happens to be a BAP/CI
+        if  (!StringUtils.isEmpty(service)
+                && !service.toUpperCase(Locale.ENGLISH).startsWith(APPLICATION_PREFIX)
+                && !service.toUpperCase(Locale.ENGLISH).startsWith(ENVIRONMENT_PREFIX)) {
+            return service;
+        }
+
+        // Return affected Item if it is available.
+        if  (!StringUtils.isEmpty(affectedItem)) { return affectedItem; }
+
+        // Return service if it is available.
+        if  (!StringUtils.isEmpty(service)) { return service; }
+
+        return null;
+    }
+
+    protected String getStringValueFromMap(Map map, String key) {
         if(!map.containsKey(key)
                 || map.get(key) == null
                 || "".equals(key)) return "";

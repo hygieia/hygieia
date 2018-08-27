@@ -24,6 +24,7 @@ public final class HpsmCollectorConstants {
     public static final String INCIDENT_AFFECTED_ITEM = "AffectedItem";
     public static final String INCIDENT_DESCRIPTION = "IncidentDescription";
     public static final String INCIDENT_SERVICE = "Service";
+    public static final String INCIDENT_ENVIRONMENT = "Environment";
 
     public static final String CHANGE_ID = "ChangeID";
     public static final String CHANGE_CATEGORY = "Category";
