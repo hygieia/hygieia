@@ -286,7 +286,6 @@ public class DefaultHpsmClient extends DefaultBaseClient implements HpsmClient {
 				}
 
 			}
-
 		}catch(Exception e){
 			LOG.error(e);
 		}
@@ -480,40 +479,21 @@ public class DefaultHpsmClient extends DefaultBaseClient implements HpsmClient {
 		}
 	}
 
-
-	private void handleIncidentSoapMessage(SOAPBodyElement keysTag) throws SOAPException{
+	private void handleIncidentSoapMessage(SOAPBodyElement keysTag) throws SOAPException {
 		QName query = new QName("query");
 
 		// Incidents can be queried based on time.  This code retrieves the incidents since
 		// the last time it was run.  If that time cannot be determined, it counts backwards
 		// the number of days specified in hpsm.properties and retrieves those incidents.
 
-		// Get current date/time
-		DateTime nowDate = new DateTime();
-		// Get the last time this collector was run
-		DateTime previousDate = getDate(new DateTime(this.lastExecuted),0, hpsmSettings.getIncidentOffsetMinutes());
-
-		// Convert the above times to milliseconds for comparison
-		long nowMillis = nowDate.getMillis();
-		long previousMillis = previousDate.getMillis();
-
-		// calculate the difference in days between the two dates by dividing the difference by the number of milliseconds in a day
-		int diffInDays = (int) (Math.abs((nowMillis - previousMillis)) / MILLISECONDS_IN_DAY);
-
 		// get the number of days specified in the hpsm.properties file
 		int incidentDays = hpsmSettings.getIncidentDays();
 
-		// IF there are no incidents in the collection, or the collection does not exist
-		// OR if the times are reversed
-		// OR the number of days since collector last ran is greater than the requested number of days
-		// THEN the last time the collector ran is irrelevant so use the number of days in hpsm.properties
-		if((incidentCount < 1) || (previousMillis > nowMillis) || (diffInDays > incidentDays)) {
-			previousDate = nowDate.minusDays(incidentDays);
-		}
-
+		// Get current date/time
+		DateTime nowDate = new DateTime();
 		DateTimeFormatter formatter = DateTimeFormat.forPattern(QUERY_DATE_FORMAT);
 		String now = nowDate.toString(formatter);
-		String previous = previousDate.toString(formatter);
+		String previous = getPreviousDateValue(nowDate, incidentCount, incidentDays, hpsmSettings.getIncidentOffsetMinutes(), formatter);
 
 		String format = hpsmSettings.getIncidentQuery();
 		if(format == null || format.isEmpty()){
@@ -534,32 +514,14 @@ public class DefaultHpsmClient extends DefaultBaseClient implements HpsmClient {
 		// the last time it was run.  If that time cannot be determined, it counts backwards
 		// the number of days specified in hpsm.properties and retrieves those changes.
 
-		// Get current date/time
-		DateTime nowDate = new DateTime();
-		// Get the last time this collector was run
-		DateTime previousDate = getDate(new DateTime(this.lastExecuted),0, hpsmSettings.getChangeOrderOffsetMinutes());
-
-		// Convert the above times to milliseconds for comparison
-		long nowMillis = nowDate.getMillis();
-		long previousMillis = previousDate.getMillis();
-
-		// calculate the difference in days between the two dates by dividing the difference by the number of milliseconds in a day
-		int diffInDays = (int) (Math.abs((nowMillis - previousMillis)) / MILLISECONDS_IN_DAY);
-
 		// get the number of days specified in the hpsm.properties file
 		int changeDays = hpsmSettings.getChangeOrderDays();
 
-		// IF there are no changess in the collection, or the collection does not exist
-		// OR if the times are reversed
-		// OR the number of days since collector last ran is greater than the requested number of days
-		// THEN the last time the collector ran is irrelevant so use the number of days in hpsm.properties
-		if((changeCount < 1) || (previousMillis > nowMillis) || (diffInDays > changeDays)){
-			previousDate = nowDate.minusDays(changeDays);
-		}
-
+		// Get current date/time
+		DateTime nowDate = new DateTime();
 		DateTimeFormatter formatter = DateTimeFormat.forPattern(QUERY_DATE_FORMAT);
 		String now = nowDate.toString(formatter);
-		String previous = previousDate.toString(formatter);
+		String previous = getPreviousDateValue(nowDate, changeCount, changeDays, hpsmSettings.getChangeOrderOffsetMinutes(), formatter);
 
 		String format = hpsmSettings.getChangeOrderQuery();
 		if(format == null || format.isEmpty()) {
@@ -570,6 +532,29 @@ public class DefaultHpsmClient extends DefaultBaseClient implements HpsmClient {
 		String queryString = MessageFormat.format(format, args);
 
 		keysTag.addAttribute(query,  queryString);
+	}
+
+	public String getPreviousDateValue(DateTime nowDate, long count, int days,
+									   int offsetMinutes, DateTimeFormatter formatter) {
+		// Get the last time this collector was run
+		DateTime previousDate = getDate(new DateTime(this.lastExecuted),0, offsetMinutes);
+
+		// Convert the above times to milliseconds for comparison
+		long nowMillis = nowDate.getMillis();
+		long previousMillis = previousDate.getMillis();
+
+		// calculate the difference in days between the two dates by dividing the difference by the number of milliseconds in a day
+		int diffInDays = (int) (Math.abs((nowMillis - previousMillis)) / MILLISECONDS_IN_DAY);
+
+		// IF there are no changes in the collection, or the collection does not exist
+		// OR if the times are reversed
+		// OR the number of days since collector last ran is greater than the requested number of days
+		// THEN the last time the collector ran is irrelevant so use the number of days in hpsm.properties
+		if((count < 1) || (previousMillis > nowMillis) || (diffInDays > days)) {
+			previousDate = nowDate.minusDays(days);
+		}
+
+		return previousDate.toString(formatter);
 	}
 
 	private List<Cmdb> getCmdbItemFromXmlMap(Map map) {
