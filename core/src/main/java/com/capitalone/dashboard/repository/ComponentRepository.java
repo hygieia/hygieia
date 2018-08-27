@@ -21,4 +21,7 @@ public interface ComponentRepository extends CrudRepository<Component, ObjectId>
 
     @Query(value="{'collectorItems.Deployment._id': ?0}")
     List<Component> findByDeployCollectorItemId(ObjectId deployCollectorItemId);
+
+    @Query(value="{'collectorItems.Incident.enabled' : ?0}")
+    List<Component> findByIncidentCollectorItems(boolean enabled);
 }

@@ -4,15 +4,11 @@ import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
-
-import com.capitalone.dashboard.model.LibraryPolicyReport;
-import com.capitalone.dashboard.model.LibraryPolicyResult;
-import com.capitalone.dashboard.model.LibraryPolicyThreatLevel;
-import com.capitalone.dashboard.model.LibraryPolicyType;
-import com.capitalone.dashboard.model.NexusIQApplication;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
@@ -30,6 +26,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
+import com.capitalone.dashboard.model.LibraryPolicyReport;
+import com.capitalone.dashboard.model.LibraryPolicyResult;
+import com.capitalone.dashboard.model.LibraryPolicyThreatLevel;
+import com.capitalone.dashboard.model.LibraryPolicyType;
+import com.capitalone.dashboard.model.NexusIQApplication;
+import com.capitalone.dashboard.model.PolicyScanMetric;
 import com.capitalone.dashboard.util.Supplier;
 
 @Component
@@ -38,14 +40,15 @@ public class DefaultNexusIQClient implements NexusIQClient {
 
     private static final String API_V2_APPLICATIONS = "/api/v2/applications";
     private static final String API_V2_REPORTS_LINKS = "/api/v2/reports/applications/%s";
-
+    private static final String API_V2_POLICIES = "/api/v2/policies?format=json";
+    private static final String API_V2_POLICY_VIOLATION = "/api/v2/policyViolations?p=%s&format=json";
 
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
     private static final String ID = "id";
     private static final String NAME = "name";
     private static final String PUBLIC_ID = "publicId";
 
-
+    private static final String THREAT_LEVEL = "threatLevel";
 
     private final RestOperations rest;
     private final NexusIQSettings nexusIQSettings;
@@ -118,7 +121,7 @@ public class DefaultNexusIQClient implements NexusIQClient {
         }
         return applicationReports;
     }
-
+        
     /**
      * Get the report details given a url for the report data.
      * @param url url of the report
@@ -131,6 +134,7 @@ public class DefaultNexusIQClient implements NexusIQClient {
         LibraryPolicyResult policyResult = null;
         try {
             JSONObject obj = parseAsObject(url);
+            JSONObject matchSummary = (JSONObject) obj.get("matchSummary");
             JSONArray componentArray = (JSONArray) obj.get("components");
             if ((componentArray == null) || (componentArray.isEmpty())) return null;
             for (Object element : componentArray) {
@@ -183,14 +187,100 @@ public class DefaultNexusIQClient implements NexusIQClient {
                         }
                     } 
                 }
-            }
+            } 
+            
+            policyResult.setTotalComponentCount(Integer.parseInt(matchSummary.get("totalComponentCount").toString()));
+        	policyResult.setKnownComponentCount(Integer.parseInt(matchSummary.get("knownComponentCount").toString()));
+            
         } catch (ParseException e) {
             LOG.error("Could not parse response from: " + url, e);
         } catch (RestClientException rce) {
             LOG.error("RestClientException from: " + url + ". Error code=" + rce.getMessage());
         }
+                   
         return policyResult;
     }
+    
+    @Override
+    public PolicyScanMetric getPolicyAlerts(NexusIQApplication application)
+    {
+    	List<String> policyHighViolatedComponents = new ArrayList<>();
+		List<String> policyMediumViolatedComponents = new ArrayList<>();
+		List<String> policyModerateViolatedComponents = new ArrayList<>();
+		Set<String> affectedComponents = new HashSet<>();
+		PolicyScanMetric psm = new PolicyScanMetric();
+		
+    	JSONArray applicationViolations = getPolicyViolations(application.getInstanceUrl());
+    	
+    	for (Object violatedApplication : applicationViolations) {
+			JSONObject applicationArray = (JSONObject) violatedApplication;
+			JSONObject app = (JSONObject) applicationArray.get("application");
+			if (str(app, PUBLIC_ID).equals(application.getApplicationName())) {
+				JSONArray pv = (JSONArray) applicationArray.get("policyViolations");
+				for (Object objt : pv) {
+					JSONObject violationObject = (JSONObject) objt;
+
+					JSONObject component = (JSONObject) violationObject.get("component");
+					String componentHash = (String) component.get("hash");
+
+					if ((8 <= lng(violationObject, THREAT_LEVEL)) && (10 >= lng(violationObject, THREAT_LEVEL))) {
+						policyHighViolatedComponents.add(componentHash);
+						affectedComponents.add(componentHash);
+					} else if ((4 <= lng(violationObject, THREAT_LEVEL))
+							&& (7 >= lng(violationObject, THREAT_LEVEL))) {
+						policyMediumViolatedComponents.add(componentHash);
+						affectedComponents.add(componentHash);
+					} else if (3 >= lng(violationObject, THREAT_LEVEL)
+							&& (lng(violationObject, THREAT_LEVEL) >= 2)) {
+						policyModerateViolatedComponents.add(componentHash);
+						affectedComponents.add(componentHash);
+					}
+
+				}
+
+			}
+
+		}
+
+	for (String policyhighViolatedComponent : policyHighViolatedComponents) {
+		policyMediumViolatedComponents.removeIf(policyhighViolatedComponent::equals);
+		policyModerateViolatedComponents.removeIf(policyhighViolatedComponent::equals);
+	}
+	for (String policyMediumViolatedComponent : policyMediumViolatedComponents) {
+		policyModerateViolatedComponents.removeIf(policyMediumViolatedComponent::equals);
+	}
+
+	psm.setPolicycriticalCount(policyHighViolatedComponents.size());
+	psm.setPolicysevereCount(policyMediumViolatedComponents.size());
+	psm.setPolimoderateCount(policyModerateViolatedComponents.size());
+	psm.setPolicyAffectedCount(affectedComponents.size());
+	return psm;    	
+    	
+    }
+    
+	private JSONArray getPolicyViolations(String url) {
+		String policyUrl = url + API_V2_POLICIES;
+		String policyViolationUrl;
+
+		JSONObject object;
+		JSONArray applicationViolations = new JSONArray();
+		try {
+			object = parseAsObject(policyUrl);
+			JSONArray policyArray = (JSONArray) object.get("policies");
+
+			for (Object obj : policyArray) {
+				JSONObject policyData = (JSONObject) obj;
+				policyViolationUrl = String.format(url + API_V2_POLICY_VIOLATION, str(policyData, ID));
+				JSONObject policyObject = parseAsObject(policyViolationUrl);
+				applicationViolations.addAll((JSONArray) policyObject.get("applicationViolations"));
+			}
+		} catch (ParseException e) {
+			LOG.error("Error parsing JSON object at getPolicyViolations()" + e);
+		}catch (RestClientException e){
+			LOG.error("Error fetching polices in getPolicyViolations() "+e);
+		}
+		return applicationViolations;
+	}
 
     private String getComponentNameFromIdentifier(JSONObject identifier) {
         String unknown = "unknown";
@@ -285,7 +375,13 @@ public class DefaultNexusIQClient implements NexusIQClient {
         Object obj = json.get(key);
         return obj == null ? null : Boolean.valueOf(obj.toString());
     }
-
+    
+    @SuppressWarnings("unused")
+	private Long lng(JSONObject json, String key) {
+		Object obj = json.get(key);
+		return obj == null ? null : Long.valueOf(obj.toString());
+	}
+  
     private HttpEntity<String> createHeaders(String url) {
     	String username = null;
     	String password = null;
