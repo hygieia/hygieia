@@ -18,6 +18,13 @@ fi
 echo "MONGODB_HOST: $MONGODB_HOST"
 echo "MONGODB_PORT: $MONGODB_PORT"
 
+if [ -d "/certs/" ]; then
+    for f in /certs/*.crt; do
+	  [ -f "$f" ] || break
+	  alias=$(echo $(basename -- "$f") | cut -f 1 -d '.')
+	  keytool -noprompt -storepass changeit -import -alias $alias -keystore ${CACERTS} -file $f
+	done
+fi
 
 cat > $PROP_FILE <<EOF
 #Database Name

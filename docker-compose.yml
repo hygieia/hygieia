@@ -94,7 +94,7 @@ services:
       - db-setup
 
   gitlab-scm-collector:
-    build: collectors/feature/gitlab
+    build: collectors/scm/gitlab
     image: hygieia-gitlab-scm-collector
     depends_on:
       - db-setup
@@ -167,3 +167,4 @@ services:
 
 volumes:
   db-data:
+  certs:

@@ -122,8 +122,8 @@
     },
     {
         "auditStatuses": [
-            "COMMITAUTHOR_NE_MERGECOMMITER",
             "PEER_REVIEW_GHR",
+            "COMMITAUTHOR_NE_MERGECOMMITER",
             "PULLREQ_NOT_PEER_REVIEWED",
             "PEER_REVIEW_GHR_SELF_APPROVAL",
             "GIT_BRANCH_STRATEGY"
@@ -236,7 +236,8 @@
     },
     {
         "auditStatuses": [
-            "DIRECT_COMMITS_TO_BASE_FIRST_COMMIT"
+            "DIRECT_COMMITS_TO_BASE_FIRST_COMMIT",
+            "SCM_AUTHOR_LOGIN_INVALID"
         ],
         "lastUpdated": 1517029042023,
         "commits": [

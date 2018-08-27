@@ -7,6 +7,7 @@ import com.capitalone.dashboard.model.Authentication;
 import com.capitalone.dashboard.model.UserInfo;
 import com.capitalone.dashboard.model.UserRole;
 import com.capitalone.dashboard.repository.ApiTokenRepository;
+import com.capitalone.dashboard.repository.UserInfoRepository;
 import com.capitalone.dashboard.util.Encryption;
 import com.capitalone.dashboard.util.EncryptionException;
 import com.capitalone.dashboard.util.UnsafeDeleteException;
@@ -24,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -36,9 +38,12 @@ public class ApiTokenServiceImpl implements ApiTokenService {
 
     private ApiTokenRepository apiTokenRepository;
 
+    private UserInfoRepository userInfoRepository;
+
     @Autowired
-    public ApiTokenServiceImpl(ApiTokenRepository apiTokenRepository) {
+    public ApiTokenServiceImpl(ApiTokenRepository apiTokenRepository,UserInfoRepository userInfoRepository) {
         this.apiTokenRepository = apiTokenRepository;
+        this.userInfoRepository = userInfoRepository;
     }
 
 	public Collection<ApiToken> getApiTokens() {
@@ -65,6 +70,7 @@ public class ApiTokenServiceImpl implements ApiTokenService {
     @Override
     public org.springframework.security.core.Authentication authenticate(String username, String password) {
         List<ApiToken> apiTokens = apiTokenRepository.findByApiUser(username);
+        UserInfo user = userInfoRepository.findByUsername(username);
         for(ApiToken apiToken : apiTokens) {
             if (username.equalsIgnoreCase(apiToken.getApiUser())) {
                 if (apiToken != null && apiToken.checkApiKey(password)) {
@@ -74,7 +80,8 @@ public class ApiTokenServiceImpl implements ApiTokenService {
 
                         Collection<UserRole> roles = new ArrayList<>();
                         roles.add(UserRole.ROLE_API);
-
+                        if(isUserAdmin(user))
+                            roles.add(UserRole.ROLE_ADMIN);
                         return new UsernamePasswordAuthenticationToken(username,
                             password, createAuthorities(roles));
                     }
@@ -84,6 +91,12 @@ public class ApiTokenServiceImpl implements ApiTokenService {
 
         throw new BadCredentialsException("Login Failed: Invalid credentials for user " + username);
     }
+
+    private boolean isUserAdmin(UserInfo user) {
+        if(user==null) return false;
+        return user.getAuthorities().stream().filter(userRole -> userRole.equals(UserRole.ROLE_ADMIN)).findFirst().isPresent();
+    }
+
     @Override
     public void deleteToken(ObjectId id) {
         ApiToken apiToken = apiTokenRepository.findOne(id);

@@ -17,7 +17,7 @@
     <version>2.0.5-SNAPSHOT</version>
     <relativePath>../../..</relativePath>
   </parent>
- 
+
   <distributionManagement>
     <snapshotRepository>
       <id>ossrh</id>
@@ -27,8 +27,7 @@
       <id>ossrh</id>
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
-  </distributionManagement>
-  
+  </distributionManagement>  
 
   <properties>
     <java.version>1.8</java.version>
@@ -44,7 +43,7 @@
         <groupId>com.spotify</groupId>
         <artifactId>docker-maven-plugin</artifactId>
         <configuration>
-          <skipDockerBuild>false</skipDockerBuild>
+          <skipDockerBuild>true</skipDockerBuild>
           <imageName>hygieia-rally-feature-collector</imageName>
           <dockerDirectory>${project.basedir}/docker</dockerDirectory>
           <resources>

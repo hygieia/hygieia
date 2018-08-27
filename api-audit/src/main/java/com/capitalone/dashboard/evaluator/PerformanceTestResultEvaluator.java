@@ -74,7 +74,7 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
                         for (TestCase testCase : testCases) {
                             PerfIndicators kpi = new PerfIndicators();
                             kpi.setStatus(testCase.getStatus().toString());
-                            testCase.setDescription(kpi.getType());
+                            kpi.setType(testCase.getDescription().toString());
                             Collection<TestCaseStep> testSteps = testCase.getTestSteps();
                             int j = 0;
                             for (TestCaseStep testCaseStep : testSteps) {
