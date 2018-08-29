@@ -218,7 +218,7 @@ public class DefaultBaseClient {
     protected boolean environmentCheck (String environment) {
         if (StringUtils.isEmpty(environment)) { return true; }
 
-        List<String> configuredEnvironmentList = hpsmSettings.getIncidentEnvironmentList();
+        List<String> configuredEnvironmentList = hpsmSettings.getIncidentEnvironments();
         if (!CollectionUtils.isEmpty(configuredEnvironmentList) && !StringUtils.isEmpty(environment)) {
             String searchResult = configuredEnvironmentList.stream()
                                     .filter(configuredEnv -> configuredEnv.equalsIgnoreCase(environment))
