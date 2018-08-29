@@ -26,7 +26,7 @@ public class DefaultBaseClientTest {
         environmentList.add("Pre-Production");
         environmentList.add("Non-Production");
 
-        when(hpsmSettings.getIncidentEnvironmentList()).thenReturn(environmentList);
+        when(hpsmSettings.getIncidentEnvironments()).thenReturn(environmentList);
         boolean result = defaultBaseClient.environmentCheck("Production");
         Assert.assertTrue(result);
 

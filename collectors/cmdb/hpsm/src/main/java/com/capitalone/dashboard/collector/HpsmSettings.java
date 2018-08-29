@@ -58,12 +58,12 @@ public class HpsmSettings {
 	private String incidentUpdatesRequestType;
 	private String incidentUpdatesSoapAction;
 	private String incidentUpdatesCron;
-	private List<String> incidentEnvironmentList;
+	private List<String> incidentEnvironments;
 
-	public List<String> getIncidentEnvironmentList() { return incidentEnvironmentList; }
+	public List<String> getIncidentEnvironments() { return incidentEnvironments; }
 
-	public void setIncidentEnvironmentList(List<String> incidentEnvironmentList) {
-		this.incidentEnvironmentList = incidentEnvironmentList;
+	public void setIncidentEnvironments(List<String> incidentEnvironments) {
+		this.incidentEnvironments = incidentEnvironments;
 	}
 
 	public int getChangeOrderOffsetMinutes() { return changeOrderOffsetMinutes; }
