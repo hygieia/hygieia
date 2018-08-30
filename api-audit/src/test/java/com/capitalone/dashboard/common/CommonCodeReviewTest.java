@@ -5,11 +5,13 @@ import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.CommitStatus;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.Review;
+import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.response.AuditReviewResponse;
 import com.capitalone.dashboard.status.CodeReviewAuditStatus;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -17,6 +19,8 @@ import java.util.stream.Stream;
 public class CommonCodeReviewTest {
 
     private ApiSettings apiSettings = new ApiSettings();
+    @Mock
+    private CommitRepository commitRepository;
     @Test
     public void testCheckForServiceAccount() {
 
@@ -37,7 +41,7 @@ public class CommonCodeReviewTest {
         apiSettings.setPeerReviewContexts("context");
         apiSettings.setPeerReviewApprovalText("approved by");
         AuditReviewResponse<CodeReviewAuditStatus> codeReviewAuditRequestAuditReviewResponse = new AuditReviewResponse<>();
-        Assert.assertEquals(false, CommonCodeReview.computePeerReviewStatus(makeGitRequest("Service Accounts"), apiSettings, codeReviewAuditRequestAuditReviewResponse, Stream.of(makeCommit()).collect(Collectors.toList())));
+        Assert.assertEquals(false, CommonCodeReview.computePeerReviewStatus(makeGitRequest("Service Accounts"), apiSettings, codeReviewAuditRequestAuditReviewResponse, Stream.of(makeCommit()).collect(Collectors.toList()),commitRepository));
         Assert.assertEquals(true, codeReviewAuditRequestAuditReviewResponse.getAuditStatuses().toString().contains("PEER_REVIEW_BY_SERVICEACCOUNT"));
     }
 
@@ -47,7 +51,7 @@ public class CommonCodeReviewTest {
         apiSettings.setPeerReviewContexts("context");
         apiSettings.setPeerReviewApprovalText("approved by");
         AuditReviewResponse<CodeReviewAuditStatus> codeReviewAuditRequestAuditReviewResponse = new AuditReviewResponse<>();
-        Assert.assertEquals(false, CommonCodeReview.computePeerReviewStatus(makeGitRequest("All Users"), apiSettings, codeReviewAuditRequestAuditReviewResponse, Stream.of(makeCommit()).collect(Collectors.toList())));
+        Assert.assertEquals(false, CommonCodeReview.computePeerReviewStatus(makeGitRequest("All Users"), apiSettings, codeReviewAuditRequestAuditReviewResponse, Stream.of(makeCommit()).collect(Collectors.toList()),commitRepository));
         Assert.assertEquals(Boolean.TRUE,codeReviewAuditRequestAuditReviewResponse.getAuditStatuses().contains(CodeReviewAuditStatus.PEER_REVIEW_GHR));
         Assert.assertEquals(Boolean.TRUE,codeReviewAuditRequestAuditReviewResponse.getAuditStatuses().contains(CodeReviewAuditStatus.PEER_REVIEW_BY_SERVICEACCOUNT));
         Assert.assertEquals(Boolean.TRUE,codeReviewAuditRequestAuditReviewResponse.getAuditStatuses().contains(CodeReviewAuditStatus.PEER_REVIEW_GHR_SELF_APPROVAL));
