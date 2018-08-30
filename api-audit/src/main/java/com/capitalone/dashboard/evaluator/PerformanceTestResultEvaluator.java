@@ -118,20 +118,19 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
                         testlist.add(test);
                     }
                 }
+
+                testlist.sort(Comparator.comparing(PerfTest::getStartTime).reversed());
+                perfReviewResponse.setLastExecutionTime(testlist.get(0).getStartTime());
+                perfReviewResponse.setResult(testlist);
+                perfReviewResponse.addAuditStatus((int) testlist.stream().filter(list -> list.getResultStatus().matches("Success")).count() > 0 ?
+                        PerformanceTestAuditStatus.PERF_RESULT_AUDIT_OK : PerformanceTestAuditStatus.PERF_RESULT_AUDIT_FAIL);
             }
         }
         if (CollectionUtils.isEmpty(testlist)) {
             perfReviewResponse.addAuditStatus(PerformanceTestAuditStatus.PERF_RESULT_AUDIT_MISSING);
-            return perfReviewResponse;
         }else {
             perfReviewResponse.addAuditStatus(PerformanceTestAuditStatus.PERFORMANCE_COMMIT_IS_CURRENT);
         }
-
-        testlist.sort(Comparator.comparing(PerfTest::getStartTime).reversed());
-        perfReviewResponse.setLastExecutionTime(testlist.get(0).getStartTime());
-        perfReviewResponse.setResult(testlist);
-        perfReviewResponse.addAuditStatus((int) testlist.stream().filter(list -> list.getResultStatus().matches("Success")).count() > 0 ?
-                PerformanceTestAuditStatus.PERF_RESULT_AUDIT_OK : PerformanceTestAuditStatus.PERF_RESULT_AUDIT_FAIL);
         return perfReviewResponse;
     }
 }
