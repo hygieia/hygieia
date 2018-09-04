@@ -10,15 +10,26 @@
         "counter": 3010193
       },
       "name": "codeanalysis",
-      "componentId": {
-        "timestamp": 1515645665,
-        "machineIdentifier": 4693261,
-        "processIdentifier": 6916,
-        "counter": 3010182
-      },
+      "componentId": "57f29d143b55670a9e06d624",
       "options": {
         "testJobNames": [],
         "id": "codeanalysis0"
+      }
+    },
+    {
+      "name" : "feature",
+      "componentId" : "57f29d143b55670a9e06d624",
+      "options" : {
+        "sprintType" : "kanban",
+        "featureTool" : "Jira",
+        "showStatus" : {
+          "kanban" : true,
+          "scrum" : false
+        },
+        "id" : "feature0",
+        "estimateMetricType" : "storypoints",
+        "listType" : "epics",
+        "teamId" : "Team:26967234"
       }
     },
     {
@@ -29,12 +40,7 @@
         "counter": 3010193
       },
       "name": "repo",
-      "componentId": {
-        "timestamp": 1515645665,
-        "machineIdentifier": 4693261,
-        "processIdentifier": 6916,
-        "counter": 3010182
-      },
+      "componentId": "57f29d143b55670a9e06d624" ,
       "options": {
         "password": "",
         "id": "repo0",

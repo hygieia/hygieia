@@ -119,11 +119,11 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
         log("Starting AWS collection...");
         log("Collecting AWS Cloud Data...");
 
-        Map<String, List<CloudInstance>> accountToInstnaceMap = collectInstances();
+        Map<String, List<CloudInstance>> accountToInstanceMap = collectInstances();
 
         Map<String, String> instanceToAccountMap = new HashMap<>();
-        for (String account : accountToInstnaceMap.keySet()) {
-            Collection<CloudInstance> instanceList = accountToInstnaceMap.get(account);
+        for (String account : accountToInstanceMap.keySet()) {
+            Collection<CloudInstance> instanceList = accountToInstanceMap.get(account);
             for (CloudInstance ci : instanceList) {
                 instanceToAccountMap.put(ci.getInstanceId(), account);
             }
