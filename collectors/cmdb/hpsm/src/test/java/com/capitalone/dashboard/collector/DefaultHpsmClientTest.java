@@ -26,7 +26,7 @@ public class DefaultHpsmClientTest {
     @Test
     public void getPreviousDateValue_Test() {
         defaultHpsmClient.setLastExecuted(DateTime.parse("2018-08-27T12:15:00").getMillis());
-        DateTime nowDate = new DateTime();
+        DateTime nowDate = DateTime.parse("2018-08-28T12:15:00");
         DateTimeFormatter formatter = DateTimeFormat.forPattern(QUERY_DATE_FORMAT);
         String result = defaultHpsmClient.getPreviousDateValue(nowDate,2, 2, 15, formatter);
         Assert.assertEquals(result, "08/27/2018 12:00:00");
