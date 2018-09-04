@@ -20,6 +20,7 @@ public interface GitHubClient {
 	List<Commit> getCommits();
     List<GitRequest> getPulls();
     List<GitRequest> getIssues();
+    String getLDAPDN(GitHubRepo repo, String user);
 
     void fireGraphQL(GitHubRepo repo, boolean firstRun, Map<Long, String> existingPRMap, Map<Long, String> prCloseMap) throws RestClientException, MalformedURLException, HygieiaException;
 
