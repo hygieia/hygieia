@@ -3,7 +3,6 @@ package com.capitalone.dashboard.rest;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.model.LogAnalysis;
 import com.capitalone.dashboard.request.LogAnalysisSearchRequest;
-import com.capitalone.dashboard.service.CodeQualityService;
 import com.capitalone.dashboard.service.LogAnalysisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -243,5 +243,10 @@ import com.capitalone.dashboard.util.PaginationHeaderUtility;
 	 public ScoreDashboardService scoreDashboardService() {
 		 return Mockito.mock(ScoreDashboardService.class);
 	 }
+
+	 @Bean
+	 public LogAnalysisService logAnalysisService(){
+ 		return Mockito.mock(LogAnalysisService.class);
+	 }
  }
 
