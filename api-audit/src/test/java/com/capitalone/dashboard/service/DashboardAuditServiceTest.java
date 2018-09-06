@@ -29,6 +29,7 @@ import com.capitalone.dashboard.response.CodeReviewAuditResponse;
 import com.capitalone.dashboard.response.DashboardReviewResponse;
 import com.capitalone.dashboard.response.LibraryPolicyAuditResponse;
 import com.capitalone.dashboard.response.SecurityReviewAuditResponse;
+import com.capitalone.dashboard.response.PerformanceTestAuditResponse;
 import com.capitalone.dashboard.response.CodeQualityAuditResponse;
 import com.capitalone.dashboard.response.TestResultsAuditResponse;
 import com.capitalone.dashboard.testutil.GsonUtil;
@@ -116,8 +117,8 @@ public class DashboardAuditServiceTest {
         TestUtils.loadPullRequests(gitRequestRepository);
         TestUtils.loadSSCRequests(codeQualityRepository);
         TestUtils.loadLibraryPolicy(libraryPolicyResultsRepository);
-        TestUtils.loadCodeQuality(codeQualityRepository);
         TestUtils.loadTestResults(testResultsRepository);
+        TestUtils.loadCodeQuality(codeQualityRepository);
         TestUtils.loadFeature(featureRepository);
     }
 
@@ -158,6 +159,25 @@ public class DashboardAuditServiceTest {
         Collection<LibraryPolicyAuditResponse> actualReview = actualReviewMap.get(AuditType.LIBRARY_POLICY);
         Map<AuditType, Collection<LibraryPolicyAuditResponse>> expectedReviewMap = expected.getReview();
         Collection<LibraryPolicyAuditResponse> expectedReview = expectedReviewMap.get(AuditType.LIBRARY_POLICY);
+        assertThat(actualReview.size()).isEqualTo(1);
+        assertThat(actualReview.toArray()[0]).isEqualToComparingFieldByField(expectedReview.toArray()[0]);
+    }
+    @Test
+    public void runPerformanceAuditTests() throws AuditException, IOException {
+        DashboardReviewResponse actual = getActualReviewResponse(dashboardAuditService.getDashboardReviewResponse("TestSSA",
+                DashboardType.Team,
+                "TestBusServ",
+                "confItem",
+                1522623841000L, 1526505798000L,
+                Sets.newHashSet(AuditType.PERF_TEST)), PerformanceTestAuditResponse.class);
+        DashboardReviewResponse expected = getExpectedReviewResponse("Performance.json", PerformanceTestAuditResponse.class);
+        assertDashboardAudit(actual, expected);
+        assertThat(actual.getReview()).isNotEmpty();
+        assertThat(actual.getReview().get(AuditType.PERF_TEST)).isNotNull();
+        Map<AuditType, Collection<PerformanceTestAuditResponse>> actualReviewMap = actual.getReview();
+        Collection<PerformanceTestAuditResponse> actualReview = actualReviewMap.get(AuditType.PERF_TEST);
+        Map<AuditType, Collection<PerformanceTestAuditResponse>> expectedReviewMap = expected.getReview();
+        Collection<PerformanceTestAuditResponse> expectedReview = expectedReviewMap.get(AuditType.PERF_TEST);
         assertThat(actualReview.size()).isEqualTo(1);
         assertThat(actualReview.toArray()[0]).isEqualToComparingFieldByField(expectedReview.toArray()[0]);
     }
@@ -202,6 +222,7 @@ public class DashboardAuditServiceTest {
         assertThat(actualReview.size()).isEqualTo(1);
         //assertThat((actualReview.toArray()[0])).isEqualToComparingFieldByField(expectedReview.toArray()[0]);
     }
+
 
 
 
