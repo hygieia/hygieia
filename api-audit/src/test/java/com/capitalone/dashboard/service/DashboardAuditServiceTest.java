@@ -233,6 +233,10 @@ public class DashboardAuditServiceTest {
             if ((collector != null) && (collector.getCollectorType() == CollectorType.SCM)) {
                 String url = (String) item.getOptions().get("url");
                 String branch = (String) item.getOptions().get("branch");
+                //This is for a different test. Skip it for this.
+                if ("https://mygithub.com/TechOriginations/openupf".equalsIgnoreCase(url)) {
+                    continue;
+                }
                 List<CodeReviewAuditResponse> actual = (List<CodeReviewAuditResponse>) codeReviewAuditService.getPeerReviewResponses(url, branch, "GitHub", 0L, System.currentTimeMillis());
                 List<CodeReviewAuditResponse> expected = (List<CodeReviewAuditResponse>) getExpectedCodeReviewResponse(url);
                 assertThat(actual.size()).isEqualByComparingTo(expected.size());
@@ -270,6 +274,45 @@ public class DashboardAuditServiceTest {
         }
     }
 
+
+    @Test
+    public void runLegacyCodeReviewTestSpecialDateRange() throws AuditException, IOException {
+                String url = "https://mygithub.com/Devopscode/NewPrOldCommit";
+                String branch = "master";
+                List<CodeReviewAuditResponse> actual = (List<CodeReviewAuditResponse>) codeReviewAuditService.getPeerReviewResponses(url, branch, "GitHub", 1535502925000L, 1535675725000L);
+                List<CodeReviewAuditResponse> expected = (List<CodeReviewAuditResponse>) getExpectedCodeReviewResponse("https://mygithub.com/Devopscode/NewPrOldCommitSpecialDateRange");
+                assertThat(actual.size()).isEqualByComparingTo(expected.size());
+                IntStream.range(0, actual.size()).forEach(i -> {
+                    CodeReviewAuditResponse lhs = actual.get(i);
+                    CodeReviewAuditResponse rhs = expected.get(i);
+                    List<Commit> lhsCommits = lhs.getCommits();
+                    List<Commit> rhsCommits = rhs.getCommits();
+                    GitRequest lhsPR = lhs.getPullRequest();
+                    GitRequest rhsPR = rhs.getPullRequest();
+                    assertThat(lhs).isEqualToComparingOnlyGivenFields(rhs, "scmUrl", "scmBranch", "auditStatuses");
+                    boolean bothNull = (lhsPR == null) && (rhsPR == null);
+                    if (!bothNull) {
+                        assertThat(lhsPR).isEqualToComparingOnlyGivenFields(rhsPR, "scmUrl", "scmBranch", "number", "orgName", "repoName", "scmMergeEventRevisionNumber",
+                                "scmCommitLog", "scmCommitTimestamp", "scmAuthor", "numberOfChanges", "sourceRepo", "sourceBranch", "targetRepo", "targetBranch", "updatedAt", "createdAt",
+                                "closedAt", "state", "mergedAt", "headSha", "baseSha");
+
+                        List<Commit> lhsPRCommits = Objects.requireNonNull(lhsPR).getCommits();
+                        List<Commit> rhsPRCommits = rhsPR.getCommits();
+                        compareCommits(lhsPRCommits, rhsPRCommits);
+
+                        List<Review> lhsPRReviews = lhsPR.getReviews();
+                        List<Review> rhsPRReviews = rhsPR.getReviews();
+                        compareReviews(lhsPRReviews, rhsPRReviews);
+
+                        List<Comment> lhsPRComments = lhsPR.getComments();
+                        List<Comment> rhsPRComments = rhsPR.getComments();
+                        compareComments(lhsPRComments, rhsPRComments);
+                    }
+                    compareCommits(lhsCommits, rhsCommits);
+
+                });
+    }
+
     private void compareComments(List<Comment> lhsPRComments, List<Comment> rhsPRComments) {
         assertThat(CollectionUtils.isEmpty(lhsPRComments) ? 0 : lhsPRComments.size()).isEqualTo(CollectionUtils.isEmpty(rhsPRComments) ? 0 : rhsPRComments.size());
         lhsPRComments.sort(Comparator.comparing(Comment::getCreatedAt));
@@ -281,6 +324,7 @@ public class DashboardAuditServiceTest {
         assertThat(CollectionUtils.isEmpty(lhsPRReviews) ? 0 : lhsPRReviews.size()).isEqualTo(CollectionUtils.isEmpty(rhsPRReviews) ? 0 : rhsPRReviews.size());
         lhsPRReviews.sort(Comparator.comparing(Review::getCreatedAt));
         rhsPRReviews.sort(Comparator.comparing(Review::getCreatedAt));
+
         IntStream.range(0, lhsPRReviews.size()).forEach(i -> assertThat(lhsPRReviews.get(i)).isEqualToComparingFieldByField(rhsPRReviews.get(i)));
     }
 
