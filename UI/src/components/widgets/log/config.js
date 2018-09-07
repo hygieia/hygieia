@@ -6,7 +6,7 @@
 
     angular
         .module(HygieiaConfig.module)
-        .controller('LogAnalysisConfigController', LogAnalysisConfigController);
+        .controller('LogConfigController', LogAnalysisConfigController);
 
     LogAnalysisConfigController.$inject = ['modalData', '$scope', 'collectorData', '$uibModalInstance'];
     function LogAnalysisConfigController(modalData, $scope, collectorData, $uibModalInstance) {
@@ -19,6 +19,8 @@
                 return response;
             });
         };
+
+        loadSavedLogCollectorItemsJob();
 
         function loadSavedLogCollectorItemsJob(){
             var logCollectorItems = component.collectorItems.Log,

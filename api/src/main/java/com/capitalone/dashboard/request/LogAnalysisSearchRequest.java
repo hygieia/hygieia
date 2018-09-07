@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 /**
  * Created by stevegal on 22/06/2018.
  */
+//TODO probably need to specify a max amount
 public class LogAnalysisSearchRequest {
 
     @NotNull

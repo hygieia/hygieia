@@ -7,12 +7,12 @@
                 defaults: {
                     title: 'Log' // widget title
                 },
-                controller: 'LogWidgetViewController',
+                controller: 'LogViewController',
                 controllerAs: 'logView',
                 templateUrl: 'components/widgets/log/view.html'
             },
             config: {
-                controller: 'LogWidgetConfigController',
+                controller: 'LogConfigController',
                 controllerAs: 'logConfig',
                 templateUrl: 'components/widgets/log/config.html'
             },
