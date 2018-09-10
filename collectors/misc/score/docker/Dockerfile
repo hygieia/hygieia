@@ -8,11 +8,12 @@ RUN \
 
 COPY *.jar /hygieia/
 COPY properties-builder.sh /hygieia/
+COPY logback.xml /hygieia/
 
 WORKDIR /hygieia
 
 VOLUME ["/hygieia/logs"]
 
 CMD ./properties-builder.sh && \
-  java -jar score-collector*.jar --spring.config.location=/hygieia/hygieia-score-collector.properties
+  java -Dlogback.configurationFile=/hygieia/logback.xml -jar score-collector*.jar --spring.config.location=/hygieia/hygieia-score-collector.properties
 

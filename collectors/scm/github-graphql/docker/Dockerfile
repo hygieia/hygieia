@@ -10,6 +10,7 @@ RUN \
 
 COPY *.jar /hygieia/
 COPY properties-builder.sh /hygieia/
+COPY logback.xml /hygieia/
 
 WORKDIR /hygieia
 
@@ -18,5 +19,5 @@ VOLUME ["/hygieia/logs"]
 ENV PROP_FILE /hygieia/config/application.properties
 
 CMD ./properties-builder.sh && \
-  java -jar github-graphql-scm-collector*.jar --spring.config.location=$PROP_FILE
+  java -Dlogback.configurationFile=/hygieia/logback.xml -jar github-graphql-scm-collector*.jar --spring.config.location=$PROP_FILE
 
