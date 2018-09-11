@@ -16,4 +16,4 @@ VOLUME ["/hygieia/logs"]
 ENV PROP_FILE /hygieia/config/application.properties
 
 CMD ./properties-builder.sh &&\
-	 java -Dlogback.configurationFile=/hygieia/logback.xml -jar jira-feature-collector*.jar --spring.config.location=$PROP_FILE
+	 java -jar jira-feature-collector*.jar --spring.config.location=$PROP_FILE

@@ -21,6 +21,10 @@ github.errorThreshold=${GITHUB_ERROR_THRESHOLD:-1}
 
 github.rateLimitThreshold=${GITHUB_RATE_LIMIT_THRESHOLD:-100}
 github.personalAccessToken=${PERSONAL_ACCESS_TOKEN}
+
+#Log configuration
+logging.config=file:///hygieia/logback.xml
+
 EOF
 
 echo "

@@ -80,4 +80,7 @@ auth.authenticationProviders=${AUTH_AUTHENTICATION_PROVIDERS:-STANDARD}
 # monitor.proxy.host=${MONITOR_PROXY_HOST:-}
 # monitor.proxy.port=${MONITOR_PROXY_PORT:-80}
 
+# Log configuration
+logging.config=file:///hygieia/logback.xml
+
 EOF

@@ -45,6 +45,9 @@ subversion.password=${SUBVERSION_PASSWORD:-bar}
 #Maximum number of days to go back in time when fetching commits
 subversion.commitThresholdDays=${SUBVERSION_COMMIT_THRESHOLD_DAYS:-15}
 
+#Log configuration
+logging.config=file:///hygieia/logback.xml
+
 EOF
 
 echo "

@@ -58,6 +58,9 @@ hpsm.compType=${HPSM_COMP_TYPE:}
 hpsm.detailsRequestType=${HPSM_REQUEST_TYPE:RetrieveDeviceListRequest}
 hpsm.detailsSoapAction=${HPSM_SOAP_ACTION:RetrieveList}
 
+#Log configuration
+logging.config=file:///hygieia/logback.xml
+
 EOF
 
 echo "

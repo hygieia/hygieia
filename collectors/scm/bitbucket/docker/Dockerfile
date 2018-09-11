@@ -17,5 +17,5 @@ ENV PROP_FILE /hygieia/config/application.properties
 ENV CACERTS /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts
 
 CMD ./properties-builder.sh && \
-  java -Dlogback.configurationFile=/hygieia/logback.xml -jar bitbucket-scm-collector*.jar --spring.config.location=$PROP_FILE
+  java -jar bitbucket-scm-collector*.jar --spring.config.location=$PROP_FILE
 

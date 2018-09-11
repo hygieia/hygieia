@@ -15,5 +15,5 @@ WORKDIR /hygieia
 VOLUME ["/hygieia/logs"]
 
 CMD ./properties-builder.sh && \
-  java -Dlogback.configurationFile=/hygieia/logback.xml -jar score-collector*.jar --spring.config.location=/hygieia/hygieia-score-collector.properties
+  java -jar score-collector*.jar --spring.config.location=/hygieia/hygieia-score-collector.properties
 

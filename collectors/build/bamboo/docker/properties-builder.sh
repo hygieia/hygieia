@@ -80,6 +80,9 @@ bamboo.saveLog=${JENKINS_SAVE_LOG:-false}
 # this hack to fix the addresses
 bamboo.dockerLocalHostIP=${DOCKER_LOCALHOST}
 
+#Log configuration
+logging.config=file:///hygieia/logback.xml
+
 EOF
 
 if ( "$JENKINS_OP_CENTER" != "" )
