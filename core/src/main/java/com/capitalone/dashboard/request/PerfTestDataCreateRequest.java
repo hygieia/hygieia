@@ -106,6 +106,8 @@ public class PerfTestDataCreateRequest {
      */
     private Collection<TestCapability> testCapabilities = new ArrayList<>();
 
+    private String instanceUrl;
+
 
 
     public String getRunId() {
@@ -258,6 +260,14 @@ public class PerfTestDataCreateRequest {
 
     public void setTestCapabilities(Collection<TestCapability> testCapabilities) {
         this.testCapabilities = testCapabilities;
+    }
+
+    public String getInstanceUrl() {
+        return instanceUrl;
+    }
+
+    public void setInstanceUrl(String instanceUrl) {
+        this.instanceUrl = instanceUrl;
     }
 
 
