@@ -19,13 +19,21 @@ First, make sure that you have the [required tools](http://serenity-js.org/overv
 Next, [clone](https://help.github.com/articles/cloning-a-repository/) this project to your computer:
 
 ```
-$> https://github.com/capitalone/Hygieia.git
+$> git clone https://github.com/capitalone/Hygieia.git
+$> cd Hygieia
+```
+
+Start a mocked version of the UI
+
+```
+$> cd UI
+$> npm install && bower install
+$> gulp serve --local true
+```
+
+In a new terminal
+```
 $> cd UI-protractor-tests
-```
-
-Install the dependencies
-
-```
 $> npm install
 ```
 
