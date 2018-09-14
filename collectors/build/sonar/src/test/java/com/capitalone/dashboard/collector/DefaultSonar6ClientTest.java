@@ -103,6 +103,24 @@ public class DefaultSonar6ClientTest {
     }
 
 
+    @Test
+    public void currentCodeQualityForNullProjectData() throws Exception {
+        String measureJson = getJson("sonar6measures.json");
+        String analysesJson = getJson("sonar6analysesNull.json");
+        SonarProject project = getProject();
+        String measureUrl = String.format(SONAR_URL + URL_RESOURCE_DETAILS,project.getProjectId(),METRICS);
+        String analysesUrl = String.format(SONAR_URL + URL_PROJECT_ANALYSES,project.getProjectName());
+        doReturn(new ResponseEntity<>(measureJson, HttpStatus.OK)).when(rest).exchange(eq(measureUrl), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        doReturn(new ResponseEntity<>(analysesJson, HttpStatus.OK)).when(rest).exchange(eq(analysesUrl), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        CodeQuality quality = defaultSonar6Client.currentCodeQuality(getProject(),settings.getMetrics().get(0));
+        assertThat(quality.getMetrics().size(), is(15));
+        assertThat(quality.getType(), is (CodeQualityType.StaticAnalysis));
+        assertThat(quality.getName(), is ("com.capitalone.test:TestProject"));
+
+    }
+
+
+
     private String getJson(String fileName) throws IOException {
         InputStream inputStream = DefaultSonar6ClientTest.class.getResourceAsStream(fileName);
         return IOUtils.toString(inputStream);
