@@ -62,17 +62,6 @@ public class HygieiaBuildPublishStep extends AbstractStepImpl {
         }
 
 
-        public ListBoxModel doFillBuildStatusItems() {
-            ListBoxModel model = new ListBoxModel();
-
-            model.add("Started", "InProgress");
-            model.add("Success", BuildStatus.Success.toString());
-            model.add("Failure", BuildStatus.Failure.toString());
-            model.add("Unstable", BuildStatus.Unstable.toString());
-            model.add("Aborted", BuildStatus.Aborted.toString());
-            return model;
-        }
-
     }
 
     public static class HygieiaBuildPublishStepExecution extends AbstractSynchronousNonBlockingStepExecution<Integer> {
