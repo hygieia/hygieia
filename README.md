@@ -1,4 +1,13 @@
 <div align="center">
+<table>
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody><tr><td>
+<h1><b>We are excited to announce the transfer of Hygieia Project to it's own <a href="https://github.com/Hygieia">Github Organization.</a> This move is being made to allow for us to manage the individual collectors in their own repositories which renders for better product management.</p></b></h1>
+</td> </tr> </tbody> </table>
+</div>
+<div align="center">
 <img width="250" align="top" src="/UI/src/assets/img/hygieia_b.png"><a href="https://www.blackducksoftware.com/about/news-events/releases/2015-open-source-rookies-year"><img width="55" align="top" hspace="20" src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/Rookies_Award_Badge.png"></a> 
 </div>
 <div align="center"> 
