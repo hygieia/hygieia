@@ -104,7 +104,7 @@ public class CommonCodeReview {
                             break;
 
                         case "error":
-                            auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_LGTM_ERROR);
+                            auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_LGTM_PENDING);
                             break;
 
                         case "success":
