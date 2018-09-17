@@ -7,11 +7,11 @@ import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.CommitStatus;
 import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitHubGraphQLQuery;
+import com.capitalone.dashboard.model.GitHubPaging;
 import com.capitalone.dashboard.model.GitHubParsed;
 import com.capitalone.dashboard.model.GitHubRateLimit;
 import com.capitalone.dashboard.model.GitHubRepo;
 import com.capitalone.dashboard.model.GitRequest;
-import com.capitalone.dashboard.model.GitHubPaging;
 import com.capitalone.dashboard.model.MergeEvent;
 import com.capitalone.dashboard.model.Review;
 import com.capitalone.dashboard.util.Encryption;
@@ -102,6 +102,14 @@ public class DefaultGitHubClient implements GitHubClient {
         return issues;
     }
 
+
+    protected void setLdapMap(Map<String, String> ldapMap) {
+        this.ldapMap = ldapMap;
+    }
+
+    protected Map<String, String> getLdapMap() {
+        return ldapMap;
+    }
 
     @Override
     @SuppressWarnings("PMD.ExcessiveMethodLength")
@@ -937,26 +945,26 @@ public class DefaultGitHubClient implements GitHubClient {
         return rateLimit;
     }
 
+    @Override
     public String getLDAPDN(GitHubRepo repo, String user) {
         if (StringUtils.isEmpty(user)) return null;
-        if (ldapMap.get(user) != null) {
-            return ldapMap.get(user);
+        //This is weird. Github does replace the _ in commit author with - in the user api!!!
+        String formattedUser = user.replace("_", "-");
+        if (ldapMap.get(formattedUser) != null) {
+            return ldapMap.get(formattedUser);
         }
         String repoUrl = (String) repo.getOptions().get("url");
         try {
             GitHubParsed gitHubParsed = new GitHubParsed(repoUrl);
             String apiUrl = gitHubParsed.getBaseApiUrl();
 
-            String queryUrl = apiUrl.concat("users/").concat(user);
-            String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
-            String personalAccessToken = (String) repo.getOptions().get("personalAccessToken");
-            String decryptedPersonalAccessToken = decryptString(personalAccessToken, settings.getKey());
+            String queryUrl = apiUrl.concat("users/").concat(formattedUser);
 
-            ResponseEntity<String> response = makeRestCallGet(queryUrl, repo.getUserId(), decryptedPassword,decryptedPersonalAccessToken);
+            ResponseEntity<String> response = makeRestCallGet(queryUrl);
             JSONObject jsonObject = parseAsObject(response);
             String ldapDN = str(jsonObject, "ldap_dn");
             if (!StringUtils.isEmpty(ldapDN)) {
-                ldapMap.put(user, ldapDN);
+                ldapMap.put(formattedUser, ldapDN);
             }
             return str(jsonObject, "ldap_dn");
         } catch (MalformedURLException | HygieiaException | RestClientException e) {
@@ -1047,19 +1055,11 @@ public class DefaultGitHubClient implements GitHubClient {
         }
     }
 
-    private ResponseEntity<String> makeRestCallGet(String url, String userId,
-                                                   String password, String personalAccessToken) throws RestClientException {
+    private ResponseEntity<String> makeRestCallGet(String url) throws RestClientException {
         // Basic Auth only.
-        if (!Objects.equals("", userId) && !Objects.equals("", password)) {
+        if (settings.getPersonalAccessToken() != null && !Objects.equals("", settings.getPersonalAccessToken())) {
             return restOperations.exchange(url, HttpMethod.GET,
-                    new HttpEntity<>(createHeaders(userId, password)),
-                    String.class);
-        } else if ((personalAccessToken!=null && !Objects.equals("", personalAccessToken)) ) {
-            return restOperations.exchange(url, HttpMethod.GET,new HttpEntity<>(createHeaders(personalAccessToken)),String.class);
-        } else if (settings.getPersonalAccessToken() != null && !Objects.equals("", settings.getPersonalAccessToken())) {
-            String decryptPAC = decryptString(settings.getPersonalAccessToken(), settings.getKey());
-            return restOperations.exchange(url, HttpMethod.GET,
-                    new HttpEntity<>(createHeaders(decryptPAC)),
+                    new HttpEntity<>(createHeaders(settings.getPersonalAccessToken())),
                     String.class);
         } else {
             return restOperations.exchange(url, HttpMethod.GET, null,
