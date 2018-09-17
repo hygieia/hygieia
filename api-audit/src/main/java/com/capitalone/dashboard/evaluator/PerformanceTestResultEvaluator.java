@@ -111,7 +111,7 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
                         test.setRunId(testResult.getExecutionId());
                         test.setStartTime(testResult.getStartTime());
                         test.setEndTime(testResult.getEndTime());
-                        test.setResultStatus(testResult.getDescription());
+                        test.setResultStatus(testResult.getResultStatus());
                         test.setPerfIndicators(kpilist);
                         test.setTestName(testSuite.getDescription());
                         test.setTimeStamp(testResult.getTimestamp());
