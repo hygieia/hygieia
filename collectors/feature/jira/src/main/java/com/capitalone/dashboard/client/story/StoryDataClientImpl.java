@@ -18,6 +18,7 @@ package com.capitalone.dashboard.client.story;
 
 import com.atlassian.jira.rest.client.api.domain.BasicProject;
 import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.IssueLink;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.User;
@@ -25,6 +26,7 @@ import com.capitalone.dashboard.client.JiraClient;
 import com.capitalone.dashboard.client.Sprint;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.FeatureStatus;
+import com.capitalone.dashboard.model.FeatureIssueLink;
 import com.capitalone.dashboard.model.Team;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
@@ -280,6 +282,7 @@ public class StoryDataClientImpl implements StoryDataClient {
 	@SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.NPathComplexity"})
 	private void processFeatureData(Feature feature, Issue issue, Map<String, IssueField> fields) {
 		BasicProject project = issue.getProject();
+		Iterable<IssueLink> issueLinks = issue.getIssueLinks();
 		String status = this.toCanonicalFeatureStatus(issue.getStatus().getName());
 		String changeDate = issue.getUpdateDate().toString();
 		
@@ -404,6 +407,17 @@ public class StoryDataClientImpl implements StoryDataClient {
 
 		// sOwnersIsDeleted - does not exist in Jira
 		feature.setsOwnersIsDeleted(TOOLS.toCanonicalList(Collections.<String>emptyList()));
+
+		List<FeatureIssueLink> jiraIssueLinks = new ArrayList<>();
+
+		issueLinks.forEach(issueLink -> {
+			FeatureIssueLink jiraIssueLink = new FeatureIssueLink();
+
+			jiraIssueLink.setIssueLinkType(issueLink.getIssueLinkType());
+			jiraIssueLink.setTargetIssueKey(issueLink.getTargetIssueKey());
+			jiraIssueLink.setTargetIssueUri(issueLink.getTargetIssueUri());
+			jiraIssueLinks.add(jiraIssueLink);
+		});
 	}
 	
 	private void processEpicData(Feature feature, String epicKey) {
