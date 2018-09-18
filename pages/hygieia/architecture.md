@@ -8,7 +8,7 @@ permalink: architecture.html
 ---
 This diagram offers you the full view of Hygieia from an architectural vantage point.
 
-![Architecture](https://hygieia.github.io/Hygieia/media/images/apiup.png/Hygieia/media/images/architecture.png)
+![Architecture](https://hygieia.github.io/Hygieia/media/images/architecture.png)
 
 | Layer | Description |
 |-------|-------------|

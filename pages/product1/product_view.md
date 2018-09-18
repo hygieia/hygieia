@@ -134,24 +134,24 @@ The product dashboard displays averages and trends calculated over a 90-day peri
 
 Commit Stage:
 
-![Image](https://hygieia.github.io/Hygieia/media/images/apiup.png/Hygieia/media/images/h2-commit-stage.png)
+![Image](https://hygieia.github.io/Hygieia/media/images/h2-commit-stage.png)
 
 Build Stage:
 
-![Image](https://hygieia.github.io/Hygieia/media/images/apiup.png/Hygieia/media/images/h2-build-stage.png)
+![Image](https://hygieia.github.io/Hygieia/media/images/h2-build-stage.png)
 
 Commit Details at every stage:
 
-![Image](https://hygieia.github.io/Hygieia/media/images/apiup.png/Hygieia/media/images/h2-commit-details-stage.png)
+![Image](https://hygieia.github.io/Hygieia/media/images/h2-commit-details-stage.png)
 
 Deployment Stage:
 
-![Image](https://hygieia.github.io/Hygieia/media/images/apiup.png/Hygieia/media/images/h2-deploy-stages.png)
+![Image](https://hygieia.github.io/Hygieia/media/images/h2-deploy-stages.png)
 
 Production Stage:
 
-![Image](https://hygieia.github.io/Hygieia/media/images/apiup.png/Hygieia/media/images/h2-prod-stage.png)
+![Image](https://hygieia.github.io/Hygieia/media/images/h2-prod-stage.png)
 
 Pipeline Health Details:
 
-![Image](https://hygieia.github.io/Hygieia/media/images/apiup.png/Hygieia/media/images/h2-health-details.png)
+![Image](https://hygieia.github.io/Hygieia/media/images/h2-health-details.png)

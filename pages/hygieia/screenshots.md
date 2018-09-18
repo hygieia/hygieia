@@ -10,20 +10,20 @@ Screenshots of various Hygieia dashboard views:
 
 **Widget View:**
 
-![WidgetView](https://hygieia.github.io/Hygieia/media/images/apiup.png/Hygieia/media/images/Screenshots/hygiea-screenshot.jpg)
+![WidgetView](https://hygieia.github.io/Hygieia/media/images/Screenshots/hygiea-screenshot.jpg)
 
 **Pipeline View:**
 
-![PipelineView](https://hygieia.github.io/Hygieia/media/images/apiup.png/Hygieia/media/images/Screenshots/pipeline_view.png)
+![PipelineView](https://hygieia.github.io/Hygieia/media/images/Screenshots/pipeline_view.png)
 
 **Product View:**
 
-![ProductView](https://hygieia.github.io/Hygieia/media/images/apiup.png/Hygieia/media/images/Screenshots/hygieia-product-dashboard.png)
+![ProductView](https://hygieia.github.io/Hygieia/media/images/Screenshots/hygieia-product-dashboard.png)
 
 **Cloud - Overview:**
 
-![CloudOverview](https://hygieia.github.io/Hygieia/media/images/apiup.png/Hygieia/media/images/Screenshots/Cloud-Overview.png)
+![CloudOverview](https://hygieia.github.io/Hygieia/media/images/Screenshots/Cloud-Overview.png)
 
 **Cloud - Detail View:**
 
-![DetailView](https://hygieia.github.io/Hygieia/media/images/apiup.png/Hygieia/media/images/Screenshots/Cloud-Detail.png)
+![DetailView](https://hygieia.github.io/Hygieia/media/images/Screenshots/Cloud-Detail.png)

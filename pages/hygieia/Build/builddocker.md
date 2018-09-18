@@ -93,4 +93,4 @@ To build a Docker image for all components of Hygieia, execute the following ste
 	docker port hygieia-ui
 	```
 
-**Note**: You can build Docker images individually for the API and UI layers. For instructions, refer to the the [API](/api/api.md#docker-image-for-api) and [UI](/UI/ui.md#docker-image-for-ui-layer) documentation.
+**Note**: You can build Docker images individually for the API and UI layers. For instructions, refer to the the [API](../api/api.md#docker-image-for-api) and [UI](../UI/ui.md#docker-image-for-ui-layer) documentation.

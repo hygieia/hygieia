@@ -8,4 +8,4 @@ sidebar: hygieia_sidebar
 permalink: framework.html
 ---
 
-![Framework](http://capitalone.github.io/Hygieia/media/images/overview/4.png)
+![Framework](https://hygieia.github.io/Hygieia/media/images/overview/4.png)

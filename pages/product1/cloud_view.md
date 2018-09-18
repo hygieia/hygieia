@@ -53,8 +53,8 @@ This view gives a graphical representation for the given account number.
 
 **Cloud - Overview:**
 
-![CloudOverview](https://hygieia.github.io/Hygieia/media/images/apiup.png/Hygieia/media/images/Screenshots/Cloud-Overview.png)
+![CloudOverview](https://hygieia.github.io/Hygieia/media/images/Screenshots/Cloud-Overview.png)
 
 **Cloud - Detail View:**
 
-![DetailView](https://hygieia.github.io/Hygieia/media/images/apiup.png/Hygieia/media/images/Screenshots/Cloud-Detail.png)
+![DetailView](https://hygieia.github.io/Hygieia/media/images/Screenshots/Cloud-Detail.png)

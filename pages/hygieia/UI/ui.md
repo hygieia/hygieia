@@ -163,13 +163,13 @@ Once the UI is successfully connected, the following screenshots show the API co
 
 **Login page with API layer successfully connected**
 
-![Image](https://hygieia.github.io/Hygieia/media/images/apiup.png/Hygieia/media/images/apiup.png)
+![Image](https://hygieia.github.io/Hygieia/media/images/apiup.png)
 
 **API layer connection unsuccessful**
 
-![Image](https://hygieia.github.io/Hygieia/media/images/apiup.png/Hygieia/media/images/apidown.png)
+![Image](https://hygieia.github.io/Hygieia/media/images/apidown.png)
 
 **Signup page to create admin user**
 
-![Image](https://hygieia.github.io/Hygieia/media/images/apiup.png/Hygieia/media/images/adminuser.png)
+![Image](https://hygieia.github.io/Hygieia/media/images/adminuser.png)
 

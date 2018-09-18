@@ -39,4 +39,4 @@ To create a new product dashboard, click **Create a new dashboard**. For detaile
 
 **Screenshots:**
 
-![Image](https://hygieia.github.io/Hygieia/media/images/apiup.png/Hygieia/media/images/h2-select-dashboard.png)
+![Image](https://hygieia.github.io/Hygieia/media/images/h2-select-dashboard.png)
