@@ -42,7 +42,7 @@ To create a new team dashboard:
 
 If you have chosen **Select Widgets** radio button, then this option invokes the **Widget Management** screen. 
 
-![Image](https://hygieia.github.io/apiup.png/Hygieia/media/images/widget_management.png)
+![Image](https://hygieia.github.io/Hygieia/media/images/widget_management.png)
 
 In this screen, choose widgets from the list of widgets, and then click **Create**. The team dashboard is created.
 
