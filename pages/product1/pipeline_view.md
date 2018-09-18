@@ -12,7 +12,7 @@ The pipeline view showcases the code progression through each component’s life
 
 As the following screenshot shows, the screen offers immediate analysis of code progression:
 
-![PipelineView](http://capitalone.github.io/Hygieia/media/images/Screenshots/pipeline_view.png)
+![PipelineView](https://hygieia.github.io/Hygieia/media/images/apiup.png/Hygieia/media/images/Screenshots/pipeline_view.png)
 
 In addition, you can evaluate the code progression through its various stages through the delivery pipeline. As shown above, there is a list of executable packages with the corresponding version deployed at each stage in the delivery pipeline. Finally, the date under the version number indicates the package deployment date.
 
@@ -29,4 +29,4 @@ The Pipeline View is displayed for the configured environments.
 
 The following screenshot shows the **Configure Delivery Pipeline** pop-up window:
 
-![Image](http://capitalone.github.io/Hygieia/media/images/team-pipeline-config.png)
+![Image](https://hygieia.github.io/Hygieia/media/images/apiup.png/Hygieia/media/images/team-pipeline-config.png)

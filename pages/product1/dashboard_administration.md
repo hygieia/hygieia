@@ -31,5 +31,5 @@ To delete a dashboard:
  
 The dashboard is deleted.
 
-![Image](http://capitalone.github.io/Hygieia/media/images/dashboard_administration.png)
+![Image](https://hygieia.github.io/Hygieia/media/images/apiup.png/Hygieia/media/images/dashboard_administration.png)
 

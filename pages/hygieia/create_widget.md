@@ -32,7 +32,7 @@ To create a new widget in Hygieia:
 	
 	When you create a team dashboard in Hygieia, in the **Create a new dashboard** screen, choose **Select Widgets** radio button. Enter all other required information and click **Create**. This invokes the **Widget Management** screen. From the list of widgets, select your widget along with any other widgets, and then click **Create**.
 	
-	![Image](http://capitalone.github.io/Hygieia/media/images/widget_management.png)
+	![Image](https://hygieia.github.io/Hygieia/media/images/apiup.png/Hygieia/media/images/widget_management.png)
 	
 	For more information, see the [Team Dashboard](../product1/create_team_dashboard.md) documentation. 
 	

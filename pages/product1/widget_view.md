@@ -27,7 +27,7 @@ This section gives a high-level overview of the standard dashboard widgets avail
 
 As the following screenshot shows, the widget view enables you to configure and visualize the data of your DevOps pipeline:
 
-![WidgetView](http://capitalone.github.io/Hygieia/media/images/Screenshots/hygiea-screenshot.jpg)
+![WidgetView](https://hygieia.github.io/Hygieia/media/images/apiup.png/Hygieia/media/images/Screenshots/hygiea-screenshot.jpg)
 
 ## Configure Widgets - Common Procedure
 
