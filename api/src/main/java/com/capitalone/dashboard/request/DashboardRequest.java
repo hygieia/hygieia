@@ -38,6 +38,8 @@ public class DashboardRequest {
     //Display position for score.
     private String scoreDisplay;
 
+    private long timestamp = System.currentTimeMillis();
+
     @NotNull
     @Size(min=1, message="Please select a type")
     private String type;
@@ -126,6 +128,10 @@ public class DashboardRequest {
         this.scoreDisplay = scoreDisplay;
     }
 
+    public long getTimestamp() { return timestamp; }
+
+    public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
+
     public Dashboard toDashboard() {
         DashboardType type = DashboardType.fromString(this.type);
         Application application = new Application(applicationName, new Component(componentName));
@@ -140,7 +146,8 @@ public class DashboardRequest {
           configurationItemBusAppName,
           activeWidgets,
           scoreEnabled,
-          ScoreDisplayType.fromString(scoreDisplay)
+          ScoreDisplayType.fromString(scoreDisplay),
+          timestamp
         );
 
 
