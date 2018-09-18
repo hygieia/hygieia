@@ -12,7 +12,7 @@ Team Dashboard scores encourage teams to fully configure the CI/CD pipeline by e
 
 **Note:** Scoring your team dashboard is optional. However, it has the potential to foster healthy competitiveness within your organization.
 
-![Image](http://capitalone.github.io/Hygieia/media/images/Dashboard_Gamification_Overview.png)
+![Image](https://hygieia.github.io/Hygieia/media/images/Dashboard_Gamification_Overview.png)
 
 By keeping score for the team dashboards, you are able to:
 
@@ -37,7 +37,7 @@ Each widget is given a star rating on a scale from 0 to 5, with 5 stars being th
 
 To enable scoring for a new dashboard, check **Enable Score** in the **Create a New Dashboard** window.
 
-![Image](http://capitalone.github.io/Hygieia/media/images/DashboardGamification_NewDashboard.png)
+![Image](https://hygieia.github.io/Hygieia/media/images/DashboardGamification_NewDashboard.png)
 
 For details on other fields in this screen, see the [Create a Team Dashboard](select_dashboard.md#create-a-team-dashboard) section.
 
@@ -61,7 +61,7 @@ Select one of the following radio-buttons to choose how the score appears on the
 
 The owner or administrator of the dashboard can either enable or disable dashboard scores for an existing dashboard. You can do this from the **Administer Your Dashboard** screen. 
 
-![Image](http://capitalone.github.io/Hygieia/media/images/DashboardGamification_Administer.png)
+![Image](https://hygieia.github.io/Hygieia/media/images/DashboardGamification_Administer.png)
 
 Click the Settings icon to invoke the **Administer Your Dashboard** screen. In this screen, click on the **Score** tab for settings related to the scoring feature:
 
@@ -85,6 +85,6 @@ The **Score Details** pop-up offers a breakdown on the ratings for each of the w
 - Weight assigned to each widget
 - Star rating for each widget
 
-![Image](http://capitalone.github.io/Hygieia/media/images/Dashboard_Gamification_ScoreDetails.png)
+![Image](https://hygieia.github.io/Hygieia/media/images/Dashboard_Gamification_ScoreDetails.png)
 
 For additional information on **Administer Your Dashboard** screen, see [Change Dashboard Settings](dashboard_administration.md#change-dashboard-settings) section.

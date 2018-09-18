@@ -58,15 +58,15 @@ To install the plugin in Jenkins:
 
 5. Navigate to **New Page** > **Jenkins Pipeline Syntax** page. Here, you can view all of Hygieia's publishing steps:
 
-![Image](http://capitalone.github.io/Hygieia/media/images/jenkins2.0-steplist.png)
+![Image](https://hygieia.github.io/Hygieia/media/images/jenkins2.0-steplist.png)
 
 6. Select a step, such as, **Hygieia Deploy Step**, from the list of available steps, fill in the other required information, and then  click **Generate Pipeline Script**. Finally, copy the generated script to the pipeline script.
 
-![Image](http://capitalone.github.io/Hygieia/media/images/jenkins2.0-hygieia-deploy-step.png)
+![Image](https://hygieia.github.io/Hygieia/media/images/jenkins2.0-hygieia-deploy-step.png)
 
 7. The following screenshot shows a simple pipeline script with Maven build, Hygieia artifact, and deployed publishing:
 
-![Image](http://capitalone.github.io/Hygieia/media/images/jenkins2.0-pipeline-deploy-publish.png)
+![Image](https://hygieia.github.io/Hygieia/media/images/jenkins2.0-pipeline-deploy-publish.png)
 
 ### Jenkins (Versions Prior to 2.0) with Pipeline
 
@@ -81,12 +81,12 @@ To install the plugin for Jenkins:
 
    In the Jenkins toolbar, go to **Manage Jenkins** > **Configure System**. In the Jenkins URL, enter the Hygieia API URL, `http://localhost:8080/api`.
 
-![Image](http://capitalone.github.io/Hygieia/media/images/jenkins-global.png)
+![Image](https://hygieia.github.io/Hygieia/media/images/jenkins-global.png)
 
 5. For a build job, add the Post build action **Hygieia Publisher**. 
 6. Select the data to be sent to Hygieia. Currently, **Build**, **Artifact Info**, **Sonar Analysis**, **Deployment**, and **Cucumber Test Results** can be published.
 
-![Image](http://capitalone.github.io/Hygieia/media/images/jenkins-job-config.png)
+![Image](https://hygieia.github.io/Hygieia/media/images/jenkins-job-config.png)
 
 ### Troubleshooting Instructions
 

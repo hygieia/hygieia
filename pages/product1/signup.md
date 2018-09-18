@@ -72,8 +72,6 @@ Generate an API token for basic authentication to secure APIs. To generate an AP
 
 Copy the API token to the [API properties](../hygieia/api/api.md#api-properties-file) file.
 
-To know more about securing basic authentication for APIs, see [Secure APIs Basic Authentication](../hygieia/api/api.md#secure-apis-basic-authentication).
-
 #### Select a Dashboard Theme
 
 Select one of the following themes for the dashboard:

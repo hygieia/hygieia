@@ -53,7 +53,7 @@ To configure the Hygieia API layer, execute the following steps:
 	server.contextPath=/api
 	server.port=8080
 	```
-	**Note**: The 'jasypt.encryptor.password' system property is used to decrypt the database password. For more information, refer to [Encrypted Properties](#encrypted-properties).
+	**Note**: The 'jasypt.encryptor.password' system property is used to decrypt the database password. For more information, refer to [Encrypted Properties](../collectors/collectors.md#encrypted-properties).
 
 ## API Properties File
 
