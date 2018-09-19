@@ -414,10 +414,13 @@ public class StoryDataClientImpl implements StoryDataClient {
 		issueLinks.forEach(issueLink -> {
 			FeatureIssueLink jiraIssueLink = new FeatureIssueLink();
 
+			// story number of the linked issue
 			jiraIssueLink.setTargetIssueKey(issueLink.getTargetIssueKey());
 
+			// type of the linked issue
 			jiraIssueLink.setIssueLinkType(issueLink.getIssueLinkType());
 
+			// uri of the linked issue
 			jiraIssueLink.setTargetIssueUri(issueLink.getTargetIssueUri());
 
 			jiraIssueLinks.add(jiraIssueLink);
