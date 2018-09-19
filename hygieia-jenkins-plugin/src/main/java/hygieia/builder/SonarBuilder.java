@@ -95,6 +95,7 @@ public class SonarBuilder {
     private double sonarVersion;
     private String sonarBuildLink;
 
+    private Run<?, ?> run;
 
     public static final int DEFAULT_QUERY_INTERVAL = 10;
     public static final int DEFAULT_QUERY_MAX_ATTEMPTS = 30;
@@ -108,11 +109,10 @@ public class SonarBuilder {
         this.buildId = buildId;
         this.jenkinsName = jenkinsName;
         this.useProxy = useProxy;
-        setSonarDetails(run);
-
+        this.run = run;
     }
 
-    private void setSonarDetails(Run run) throws IOException, URISyntaxException, ParseException {
+    protected void setSonarDetails(Run run) throws IOException, URISyntaxException, ParseException {
         sonarBuildLink = extractSonarProjectURLFromLogs(run);
         if (!StringUtils.isEmpty(sonarBuildLink)) {
             this.sonarProjectName = getSonarProjectName(sonarBuildLink);
@@ -214,7 +214,8 @@ public class SonarBuilder {
     }
 
 
-    public CodeQualityCreateRequest getSonarMetrics() throws ParseException {
+    public CodeQualityCreateRequest getSonarMetrics() throws ParseException, IOException, URISyntaxException {
+        setSonarDetails(this.run);
         if (StringUtils.isEmpty(sonarServer) || StringUtils.isEmpty(sonarProjectID)) return null;
 
         if (sonarVersion >= 6.3) {
@@ -254,7 +255,7 @@ public class SonarBuilder {
             codeQuality.setProjectUrl(sonarServer + "/dashboard/index/" + sonarProjectID);
             codeQuality.setNiceName(jenkinsName);
             codeQuality.setType(CodeQualityType.StaticAnalysis);
-            codeQuality.setTimestamp(timestamp(prjData, DATE));
+            codeQuality.setTimestamp(timestamp(prjData,  DATE));
             codeQuality.setProjectVersion(str(prjData, VERSION));
             codeQuality.setHygieiaId(buildId);
             codeQuality.setProjectId(sonarProjectID);
