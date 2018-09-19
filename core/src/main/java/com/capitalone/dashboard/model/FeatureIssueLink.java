@@ -2,6 +2,7 @@
 package com.capitalone.dashboard.model;
 
 import com.atlassian.jira.rest.client.api.domain.IssueLinkType;
+
 import java.net.URI;
 
 /**
@@ -10,19 +11,30 @@ import java.net.URI;
 public class FeatureIssueLink extends BaseModel {
 
 	private String targetIssueKey;
-	private IssueLinkType issueLinkType;
 	private URI targetIssueUri;
+	private IssueLinkType issueLinkType;
+
+	public String getTargetIssueKey() {
+		return targetIssueKey;
+	}
 
 	public void setTargetIssueKey(String targetIssueKey) {
 		this.targetIssueKey = targetIssueKey;
 	}
 
-	public void setIssueLinkType(IssueLinkType issueLinkType) {
-		this.issueLinkType = issueLinkType;
+	public URI getTargetIssueUri() {
+		return targetIssueUri;
 	}
 
 	public void setTargetIssueUri(URI targetIssueUri) {
 		this.targetIssueUri = targetIssueUri;
 	}
 
+	public IssueLinkType getIssueLinkType() {
+		return issueLinkType;
+	}
+
+	public void setIssueLinkType(IssueLinkType issueLinkType) {
+		this.issueLinkType = issueLinkType;
+	}
 }
