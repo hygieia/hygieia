@@ -248,7 +248,8 @@ public class Cmdb {
                 && Objects.equals(this.ownerDept, other.ownerDept)
                 && Objects.equals(this.configurationItemSubType, other.configurationItemSubType)
                 && Objects.equals(this.configurationItemType, other.configurationItemType)
-                && Objects.equals(this.validConfigItem, other.validConfigItem);
+                && Objects.equals(this.validConfigItem, other.validConfigItem)
+                && Objects.equals(this.commonName, other.commonName);
 
     }
     /**
