@@ -275,7 +275,7 @@ public class StoryDataClientImplTests {
 				issueFields, // issueFields,
 				Arrays.asList(Comment.valueOf("A comment")), // comments
 				null, // transitionUri
-				null, // issueLinks
+				Collections.emptyList(), // issueLinks
 				new BasicVotes(null, 0, false), // votes
 				Collections.emptyList(), // worklogs
 				new BasicWatchers(null, false, 0), // watchers
@@ -283,7 +283,7 @@ public class StoryDataClientImplTests {
 				null, // subtasks
 				null, // changelog
 				null, // operations
-				new HashSet<>(Arrays.asList("label" + idStr)) // labels		
+				new HashSet<>(Arrays.asList("label" + idStr)) // labels
 		);
 		
 		return rt;
