@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * Bean to hold settings specific to the HPSM collector.
  */
@@ -43,6 +45,8 @@ public class HpsmSettings {
     private int firstRunHistoryDays;
     private int changeOrderDays;
 	private int incidentDays;
+	private int incidentOffsetMinutes;
+	private int changeOrderOffsetMinutes;
 
 	private String changeOrderQuery;
 	private String incidentQuery;
@@ -50,6 +54,47 @@ public class HpsmSettings {
 	private String cmdbBatchLimit;
 	private String incidentReturnLimit;
 	private String changeOrderReturnLimit;
+
+	private String incidentUpdatesRequestType;
+	private String incidentUpdatesSoapAction;
+	private String incidentUpdatesCron;
+	private List<String> incidentEnvironments;
+
+	public List<String> getIncidentEnvironments() { return incidentEnvironments; }
+
+	public void setIncidentEnvironments(List<String> incidentEnvironments) {
+		this.incidentEnvironments = incidentEnvironments;
+	}
+
+	public int getChangeOrderOffsetMinutes() { return changeOrderOffsetMinutes; }
+
+	public void setChangeOrderOffsetMinutes(int changeOrderOffsetMinutes) {
+		this.changeOrderOffsetMinutes = changeOrderOffsetMinutes;
+	}
+
+	public int getIncidentOffsetMinutes() { return incidentOffsetMinutes; }
+
+	public void setIncidentOffsetMinutes(int incidentOffsetMinutes) {
+		this.incidentOffsetMinutes = incidentOffsetMinutes;
+	}
+
+	public String getIncidentUpdatesRequestType() { return incidentUpdatesRequestType; }
+
+	public void setIncidentUpdatesRequestType(String incidentUpdatesRequestType) {
+		this.incidentUpdatesRequestType = incidentUpdatesRequestType;
+	}
+
+	public String getIncidentUpdatesSoapAction() { return incidentUpdatesSoapAction; }
+
+	public void setIncidentUpdatesSoapAction(String incidentUpdatesSoapAction) {
+		this.incidentUpdatesSoapAction = incidentUpdatesSoapAction;
+	}
+
+	public String getIncidentUpdatesCron() { return incidentUpdatesCron; }
+
+	public void setIncidentUpdatesCron(String incidentUpdatesCron) {
+		this.incidentUpdatesCron = incidentUpdatesCron;
+	}
 
 	public String getServer() {
 		return server;

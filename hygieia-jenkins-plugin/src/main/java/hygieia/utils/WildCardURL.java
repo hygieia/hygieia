@@ -163,7 +163,6 @@ public final class WildCardURL implements java.io.Serializable {
         if(wildcardMatches(protocol, url.getProtocol()) && wildcardMatches(host, url.getHost()) && wildcardMatches(getPath(), url.getPath())) {
             matches = true;
         }
-        //System.out.println((wildcardMatches(protocol, url.getProtocol()) ? "t":"Dockerfile") +"-"+  (wildcardMatches(host, url.getHost()) ? "t":"Dockerfile") +"-" + (wildcardMatches(getPath(), url.getPath()) ? 't' : 'Dockerfile'));
         return matches;
     }
 
