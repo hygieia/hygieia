@@ -1,6 +1,6 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.model.AuditStatus;
+import com.capitalone.dashboard.model.AuditResult;
 import com.capitalone.dashboard.repository.AuditStatusRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ public class AuditStatusServiceImpl implements AuditStatusService {
     }
 
     @Override
-    public Iterable<AuditStatus> all() {
+    public Iterable<AuditResult> all() {
         return  auditStatusRepository.findAll(new Sort(Sort.Direction.DESC, "timestamp"));
     }
 }

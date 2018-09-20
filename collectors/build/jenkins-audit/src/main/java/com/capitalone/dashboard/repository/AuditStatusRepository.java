@@ -1,11 +1,9 @@
 package com.capitalone.dashboard.repository;
 
-import com.capitalone.dashboard.model.AuditStatus;
+import com.capitalone.dashboard.model.AuditResult;
 import org.bson.types.ObjectId;
 import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.stereotype.Component;
 
-@Component
-public interface AuditStatusRepository extends PagingAndSortingRepository<AuditStatus, ObjectId>{
+public interface AuditStatusRepository extends PagingAndSortingRepository<AuditResult, ObjectId> {
 
 }
