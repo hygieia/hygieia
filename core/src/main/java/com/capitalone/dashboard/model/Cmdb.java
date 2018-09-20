@@ -15,6 +15,10 @@ public class Cmdb {
     private ObjectId id;
     private ObjectId collectorItemId;
     private long timestamp;
+
+    /**
+     * configurationItem unique system generated id
+     */
     @NotNull
     private String configurationItem;
     private String configurationItemSubType;
@@ -29,12 +33,15 @@ public class Cmdb {
     private String supportOwnerUserName;
     private String developmentOwnerUserName;
     private String ownerDept;
+    /**
+     * commonName Human readable value of the configurationItem
+     */
+    @NotNull
     private String commonName;
     private String itemType;
     private boolean validConfigItem;
     private List<String> components;
     private List<String> environments;
-    private String configurationId;
 
     public ObjectId getId() {
         return id;
@@ -203,14 +210,6 @@ public class Cmdb {
 
     public void setEnvironments(List<String> environments) {
         this.environments = environments;
-    }
-
-    public String getConfigurationId() {
-        return configurationId;
-    }
-
-    public void setConfigurationId(String configurationId) {
-        this.configurationId = configurationId;
     }
 
     @Override
