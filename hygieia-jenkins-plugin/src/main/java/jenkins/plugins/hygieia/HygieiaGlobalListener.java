@@ -17,26 +17,20 @@ import java.net.URISyntaxException;
 @Extension
 public class HygieiaGlobalListener extends RunListener<AbstractBuild> {
 
-    private HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor;
-    private HygieiaService hygieiaService;
-    private SonarBuilder sonarBuilder;
-    private BuildBuilder builder;
 
     @Override
     public void onCompleted(AbstractBuild build, TaskListener listener) {
-        if (hygieiaGlobalListenerDescriptor == null) {
-            hygieiaGlobalListenerDescriptor = Jenkins.getInstance().getDescriptorByType(HygieiaPublisher.DescriptorImpl.class);
-        }
-        if (hygieiaService == null) {
-            hygieiaService = new DefaultHygieiaService(hygieiaGlobalListenerDescriptor.getHygieiaAPIUrl(), hygieiaGlobalListenerDescriptor.getHygieiaToken(),
-                    hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), hygieiaGlobalListenerDescriptor.isUseProxy());
-        }
+
+        HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor = getDescriptor();
+        
+        HygieiaService hygieiaService = getHygieiaService(hygieiaGlobalListenerDescriptor);
+
         HygieiaResponse buildResponse = null;
 
         if (hygieiaGlobalListenerDescriptor.isHygieiaPublishBuildDataGlobal() || hygieiaGlobalListenerDescriptor.isHygieiaPublishSonarDataGlobal()) {
-            if (builder == null) {
-                builder = new BuildBuilder(build, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), listener, true, true);
-            }
+
+            BuildBuilder builder = getBuildBuilder(build, listener, hygieiaGlobalListenerDescriptor);
+
             buildResponse = hygieiaService.publishBuildData(builder.getBuildData());
             if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
                 listener.getLogger().println("Hygieia: Auto Published Build Complete Data. " + buildResponse.toString());
@@ -47,10 +41,9 @@ public class HygieiaGlobalListener extends RunListener<AbstractBuild> {
 
         if (hygieiaGlobalListenerDescriptor.isHygieiaPublishSonarDataGlobal()) {
             try {
-                if (sonarBuilder == null) {
-                    sonarBuilder = new SonarBuilder(build, listener, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), null,
-                            null, buildResponse != null ? buildResponse.getResponseValue(): "", hygieiaGlobalListenerDescriptor.isUseProxy());
-                }
+
+                SonarBuilder sonarBuilder = getSonarBuilder(buildResponse, build, listener, hygieiaGlobalListenerDescriptor);
+
                 CodeQualityCreateRequest request = sonarBuilder.getSonarMetrics();
                 if (request != null) {
                     HygieiaResponse sonarResponse = hygieiaService.publishSonarResults(request);
@@ -67,6 +60,24 @@ public class HygieiaGlobalListener extends RunListener<AbstractBuild> {
             }
         }
 
+    }
+
+    protected HygieiaPublisher.DescriptorImpl getDescriptor() {
+        return Jenkins.getInstance().getDescriptorByType(HygieiaPublisher.DescriptorImpl.class);
+    }
+
+    protected BuildBuilder getBuildBuilder(AbstractBuild build, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor) {
+        return new BuildBuilder(build, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), listener, true, true);
+    }
+
+    protected SonarBuilder getSonarBuilder(HygieiaResponse buildResponse, AbstractBuild build, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor) throws ParseException, IOException, URISyntaxException {
+        return new SonarBuilder(build, listener, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), null,
+                null, buildResponse != null ? buildResponse.getResponseValue() : "", hygieiaGlobalListenerDescriptor.isUseProxy());
+    }
+
+    protected HygieiaService getHygieiaService(HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor) {
+        return  hygieiaGlobalListenerDescriptor.getHygieiaService(hygieiaGlobalListenerDescriptor.getHygieiaAPIUrl(), hygieiaGlobalListenerDescriptor.getHygieiaToken(),
+                hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), hygieiaGlobalListenerDescriptor.isUseProxy());
     }
 
 }
