@@ -4,7 +4,7 @@ package com.capitalone.dashboard.model;
 /**
  * Represents an issue link of a jira story.
  */
-public class FeatureIssueLink extends BaseModel {
+public class FeatureIssueLink {
 
 	private String targetIssueKey;
 	private String targetIssueUri;
