@@ -189,6 +189,7 @@
         <module>collectors/build/jenkins</module>
         <module>collectors/build/jenkins-cucumber</module>
         <module>collectors/build/jenkins-codequality</module>
+        <module>collectors/build/jenkins-audit</module>
         <module>collectors/build/sonar</module>
         <module>collectors/cloud/aws</module>
         <module>collectors/deploy/udeploy</module>
@@ -237,6 +238,7 @@
         <module>collectors/build/jenkins</module>
         <module>collectors/build/jenkins-cucumber</module>
         <module>collectors/build/jenkins-codequality</module>
+          <module>collectors/build/jenkins-audit</module>
         <module>collectors/build/sonar</module>
         <module>collectors/cloud/aws</module>
         <module>collectors/deploy/udeploy</module>
