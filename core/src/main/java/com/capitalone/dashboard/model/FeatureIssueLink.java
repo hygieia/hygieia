@@ -1,10 +1,8 @@
 
 package com.capitalone.dashboard.model;
 
-import java.net.URI;
-
 /**
- * Represents a feature issue link of a jira story.
+ * Represents an issue link of a jira story.
  */
 public class FeatureIssueLink extends BaseModel {
 
