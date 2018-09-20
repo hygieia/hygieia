@@ -3,37 +3,35 @@ package com.capitalone.dashboard.model;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection="dashboard_audit")
-public class AuditStatus extends BaseModel     {
+@Document(collection="audit_results")
+public class AuditResult extends BaseModel     {
 
     private ObjectId dashboardId;
 
     private String dashboardTitle;
 
-    private String auditStatus;
+    private String auditResult;
 
-    public AuditStatus(ObjectId dashboardId, String dashboardTitle, String auditStatus){
+    public AuditResult(ObjectId dashboardId, String dashboardTitle, String auditResult){
         this.dashboardId = dashboardId;
         this.dashboardTitle = dashboardTitle;
-        this.auditStatus = auditStatus;
+        this.auditResult = auditResult;
     }
 
     public String getDashboardTitle() {
         return dashboardTitle;
     }
 
-    public AuditStatus setDashboardTitle(String dashboardTitle) {
+    public void setDashboardTitle(String dashboardTitle) {
         this.dashboardTitle = dashboardTitle;
-        return this;
     }
 
-    public String getAuditStatus() {
-        return auditStatus;
+    public String getAuditResult() {
+        return auditResult;
     }
 
-    public AuditStatus setAuditStatus(String auditStatus) {
-        this.auditStatus = auditStatus;
-        return this;
+    public void setAuditResult(String auditResult) {
+        this.auditResult = auditResult;
     }
 
     public ObjectId getDashboardId() {
@@ -44,7 +42,3 @@ public class AuditStatus extends BaseModel     {
         this.dashboardId = dashboardId;
     }
 }
-
-
-
-

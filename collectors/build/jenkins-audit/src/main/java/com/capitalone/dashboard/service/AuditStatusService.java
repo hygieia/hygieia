@@ -1,6 +1,6 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.model.AuditStatus;
+import com.capitalone.dashboard.model.AuditResult;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -11,5 +11,5 @@ public interface AuditStatusService {
      *
      * @return all dashboardAuditStatuses
      */
-    Iterable<AuditStatus> all();
+    Iterable<AuditResult> all();
 }

@@ -1,9 +1,8 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.model.AuditStatus;
+import com.capitalone.dashboard.repository.AuditStatusCollectorRepository;
 import com.capitalone.dashboard.repository.AuditStatusRepository;
 import com.capitalone.dashboard.model.*;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -24,8 +23,9 @@ import java.util.Set;
 
 @Component
 public class AuditStatusCollectorTask extends CollectorTask<AuditStatusCollector>{
+//public class AuditStatusCollectorTask {
 
-    Logger LOGGER = LoggerFactory.getLogger(AuditStatusCollectorTask.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(AuditStatusCollectorTask.class);
 
     @Autowired
     private DashboardRepository dashboardRepository;
@@ -33,32 +33,34 @@ public class AuditStatusCollectorTask extends CollectorTask<AuditStatusCollector
     @Autowired
     private DashboardAuditService dashboardAuditService;
 
+    @Autowired
     private AuditStatusRepository auditStatusRepository;
 
     @Autowired
-    public AuditStatusCollectorTask(TaskScheduler taskScheduler, DashboardRepository dashboardRepository, DashboardAuditService dashboardAuditService){
-        super(taskScheduler, "JenkinsAuditCollector");
+    private AuditStatusCollectorRepository auditStatusCollectorRepository;
+
+    @Autowired
+    public AuditStatusCollectorTask(TaskScheduler taskScheduler, DashboardRepository dashboardRepository, DashboardAuditService
+            dashboardAuditService, AuditStatusRepository auditStatusRepository, AuditStatusCollectorRepository auditStatusCollectorRepository){
+    //    public AuditStatusCollectorTask(DashboardRepository dashboardRepository, DashboardAuditService dashboardAuditService, AuditStatusRepository auditStatusRepository, AuditStatusCollectorRepository auditStatusCollectorRepository){
+       super(taskScheduler, "JenkinsAuditCollector");
         this.dashboardRepository = dashboardRepository;
         this.dashboardAuditService = dashboardAuditService;
+        this.auditStatusRepository = auditStatusRepository;
+        this.auditStatusCollectorRepository = auditStatusCollectorRepository;
+        //collect(null);
     }
 
     @Override
     public void collect(AuditStatusCollector collector) {
 
-        // timestamp and collector job execution interval yet to be finalized
-        long timestamp = Instant.now().toEpochMilli();
-
-        Iterable<Dashboard> dashboardList = dashboardRepository.findByTimestampAfter(timestamp);
-
-        //List<Dashboard> dashboardList = dashboardRepository.findByOwners(owner);
-        // LocalTime time = LocalTime.now();
-        // LocalTime twoDaysBeforeTime = time.minusHours(48);
-
+        long timestamp = collector.getLastExecuted();
         Set<AuditType> auditTypes = new HashSet<>();
-        auditTypes.add(AuditType.fromString("ALL"));
+        auditTypes.add(AuditType.ALL);
+        Iterable<Dashboard> newDashboards = dashboardRepository.findByTimestampAfter(timestamp);
 
-        List<AuditStatus> auditStatusList = new ArrayList<>();
-        dashboardList.forEach(dashboard -> {
+        List<AuditResult> auditResults = new ArrayList<>();
+        newDashboards.forEach(dashboard -> {
             try {
                 DashboardReviewResponse dashboardReviewResponse = dashboardAuditService.getDashboardReviewResponse(
                         dashboard.getTitle(),
@@ -69,30 +71,31 @@ public class AuditStatusCollectorTask extends CollectorTask<AuditStatusCollector
                         System.currentTimeMillis(),
                         auditTypes
                 );
-                AuditStatus auditStatus = new AuditStatus(dashboard.getId(), dashboard.getTitle(),
+                AuditResult auditResult = new AuditResult(dashboard.getId(), dashboard.getTitle(),
                         dashboardReviewResponse.getAuditStatuses().iterator().next().toString());
-                auditStatusList.add(auditStatus);
+               auditResults.add(auditResult);
 
             } catch (AuditException e) {
-                LOGGER.error(e.getMessage());
-                e.printStackTrace();
+                LOGGER.error(e.getStackTrace().toString());
             }
-            auditStatusRepository.save(auditStatusList);
+            if(!auditResults.isEmpty()) { auditStatusRepository.save(auditResults); }
         });
     }
 
     @Override
     public AuditStatusCollector getCollector() {
-        return this.getCollector();
+        List<String> servers = new ArrayList<>();
+        servers.add("http://localhost:8081/");
+        return AuditStatusCollector.prototype(servers);
     }
 
     @Override
     public BaseCollectorRepository<AuditStatusCollector> getCollectorRepository() {
-        return this.getCollectorRepository();
+        return auditStatusCollectorRepository;
     }
 
     @Override
     public String getCron() {
-        return this.getCron();
+        return "0 0/2 * * * *";
     }
 }
