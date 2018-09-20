@@ -15,6 +15,7 @@ public final class HpsmCollectorConstants {
     public static final String INCIDENT_ID = "IncidentID";
     public static final String INCIDENT_CATEGORY = "Category";
     public static final String INCIDENT_OPEN_TIME = "OpenTime";
+    public static final String INCIDENT_CLOSE_TIME = "ClosedTime";
     public static final String INCIDENT_OPEN_BY = "OpenedBy";
     public static final String INCIDENT_SEVERITY = "Severity";
     public static final String INCIDENT_UPDATE_TIME = "UpdatedTime";
@@ -22,6 +23,8 @@ public final class HpsmCollectorConstants {
     public static final String INCIDENT_STATUS = "Status";
     public static final String INCIDENT_AFFECTED_ITEM = "AffectedItem";
     public static final String INCIDENT_DESCRIPTION = "IncidentDescription";
+    public static final String INCIDENT_SERVICE = "Service";
+    public static final String INCIDENT_ENVIRONMENT = "Environment";
 
     public static final String CHANGE_ID = "ChangeID";
     public static final String CHANGE_CATEGORY = "Category";

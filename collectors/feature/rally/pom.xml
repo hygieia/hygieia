@@ -56,7 +56,7 @@
         <groupId>com.spotify</groupId>
         <artifactId>docker-maven-plugin</artifactId>
         <configuration>
-          <skipDockerBuild>false</skipDockerBuild>
+          <skipDockerBuild>true</skipDockerBuild>
           <imageName>hygieia-rally-feature-collector</imageName>
           <dockerDirectory>${project.basedir}/docker</dockerDirectory>
           <resources>
