@@ -76,9 +76,10 @@ public class CucumberTestBuilder {
 
         List<FilePath> testFiles = null;
         try {
-            EnvVars envVars = new EnvVars();
-            envVars = run.getEnvironment(listener);
-            filePattern = envVars.expand(filePattern);
+            EnvVars envVars = run.getEnvironment(listener);
+            if (envVars != null) {
+                filePattern = envVars.expand(filePattern);
+            }
             testFiles = HygieiaUtils.getArtifactFiles(rootDirectory, filePattern, new ArrayList<FilePath>());
             listener.getLogger().println("Hygieia Test Result Publisher - Looking for file pattern '" + filePattern + "' in directory " + rootDirectory.getRemote());
         } catch (IOException e) {
