@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.repository.AuditStatusCollectorRepository;
 import com.capitalone.dashboard.repository.AuditStatusRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.service.DashboardAuditService;
@@ -17,16 +18,18 @@ public class AuditStatusCollectorTaskTest {
     private AuditStatusCollectorTask testee;
     private TaskScheduler mockScheduler;
     private AuditStatusRepository statusRepository;
-    private DashboardAuditService mockDataService;
+    private DashboardAuditService mockDashboardService;
     private DashboardRepository mockDashboardRepository;
+    private AuditStatusCollectorRepository mockCollectorRepository;
 
     @Before
     public void setup(){
         mockScheduler = mock(TaskScheduler.class);
         statusRepository = mock(AuditStatusRepository.class);
-        mockDataService = mock(DashboardAuditService.class);
+        mockDashboardService = mock(DashboardAuditService.class);
         mockDashboardRepository = mock(DashboardRepository.class);
-        this.testee = new AuditStatusCollectorTask(mockScheduler, mockDashboardRepository,mockDataService);
+        mockCollectorRepository = mock(AuditStatusCollectorRepository.class);
+        this.testee = new AuditStatusCollectorTask(mockScheduler, mockDashboardRepository,mockDashboardService, statusRepository, mockCollectorRepository);
     }
 
     @Test
@@ -35,7 +38,7 @@ public class AuditStatusCollectorTaskTest {
         assertThat(collector).isNotNull().isInstanceOf(AuditStatusCollector.class);
         assertThat(collector.isEnabled()).isTrue();
         assertThat(collector.isOnline()).isTrue();
-        AssertionsForInterfaceTypes.assertThat(collector.getBuildServers()).contains("server1", "server2");
+        AssertionsForInterfaceTypes.assertThat(collector.getBuildServers()).contains("http://localhost:8081/");
         AssertionsForInterfaceTypes.assertThat(collector.getCollectorType()).isEqualTo(CollectorType.Audit);
         assertThat(collector.getName()).isEqualTo("JenkinsAuditCollector");
         assertThat(collector.getAllFields().get("instanceUrl")).isEqualTo("");
@@ -48,7 +51,7 @@ public class AuditStatusCollectorTaskTest {
 
     @Test
     public void getCollectorRepositoryReturnsTheRepository() {
-        assertThat(testee.getCollectorRepository()).isNotNull().isSameAs(statusRepository);
+        assertThat(testee.getCollectorRepository()).isNotNull().isInstanceOf(mockCollectorRepository.getClass());
     }
 
 

@@ -10,12 +10,12 @@ public class AuditResult extends BaseModel     {
 
     private String dashboardTitle;
 
-    private String auditResult;
+    private String auditStatuses;
 
-    public AuditResult(ObjectId dashboardId, String dashboardTitle, String auditResult){
+    public AuditResult(ObjectId dashboardId, String dashboardTitle, String auditStatuses){
         this.dashboardId = dashboardId;
         this.dashboardTitle = dashboardTitle;
-        this.auditResult = auditResult;
+        this.auditStatuses = auditStatuses;
     }
 
     public String getDashboardTitle() {
@@ -26,12 +26,12 @@ public class AuditResult extends BaseModel     {
         this.dashboardTitle = dashboardTitle;
     }
 
-    public String getAuditResult() {
-        return auditResult;
+    public String getAuditStatuses() {
+        return auditStatuses;
     }
 
-    public void setAuditResult(String auditResult) {
-        this.auditResult = auditResult;
+    public void setAuditStatuses(String auditStatuses) {
+        this.auditStatuses = auditStatuses;
     }
 
     public ObjectId getDashboardId() {
