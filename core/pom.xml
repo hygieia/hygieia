@@ -205,10 +205,5 @@
 	    <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
 	</dependency>
-        <dependency>
-            <groupId>com.atlassian.jira</groupId>
-            <artifactId>jira-rest-java-client-api</artifactId>
-            <version>3.0.0</version>
-        </dependency>
     </dependencies>
 </project>

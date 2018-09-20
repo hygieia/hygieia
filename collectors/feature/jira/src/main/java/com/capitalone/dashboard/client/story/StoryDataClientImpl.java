@@ -417,11 +417,17 @@ public class StoryDataClientImpl implements StoryDataClient {
 			// story number of the linked issue
 			jiraIssueLink.setTargetIssueKey(issueLink.getTargetIssueKey());
 
+			// name of the linked issue
+			jiraIssueLink.setIssueLinkName(issueLink.getIssueLinkType().getName());
+
 			// type of the linked issue
-			jiraIssueLink.setIssueLinkType(issueLink.getIssueLinkType());
+			jiraIssueLink.setIssueLinkType(issueLink.getIssueLinkType().getDescription());
+
+			// direction of the linked issue (inbount/outbound)
+			jiraIssueLink.setIssueLinkDirection(issueLink.getIssueLinkType().getDirection().toString());
 
 			// uri of the linked issue
-			jiraIssueLink.setTargetIssueUri(issueLink.getTargetIssueUri());
+			jiraIssueLink.setTargetIssueUri(issueLink.getTargetIssueUri().toString());
 
 			jiraIssueLinks.add(jiraIssueLink);
 		});

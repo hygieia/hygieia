@@ -1,8 +1,6 @@
 
 package com.capitalone.dashboard.model;
 
-import com.atlassian.jira.rest.client.api.domain.IssueLinkType;
-
 import java.net.URI;
 
 /**
@@ -11,8 +9,10 @@ import java.net.URI;
 public class FeatureIssueLink extends BaseModel {
 
 	private String targetIssueKey;
-	private URI targetIssueUri;
-	private IssueLinkType issueLinkType;
+	private String targetIssueUri;
+	private String issueLinkName;
+	private String issueLinkType;
+	private String issueLinkDirection;
 
 	public String getTargetIssueKey() {
 		return targetIssueKey;
@@ -22,19 +22,35 @@ public class FeatureIssueLink extends BaseModel {
 		this.targetIssueKey = targetIssueKey;
 	}
 
-	public URI getTargetIssueUri() {
+	public String getTargetIssueUri() {
 		return targetIssueUri;
 	}
 
-	public void setTargetIssueUri(URI targetIssueUri) {
+	public void setTargetIssueUri(String targetIssueUri) {
 		this.targetIssueUri = targetIssueUri;
 	}
 
-	public IssueLinkType getIssueLinkType() {
+	public String getIssueLinkName() {
+		return issueLinkName;
+	}
+
+	public void setIssueLinkName(String issueLinkName) {
+		this.issueLinkName = issueLinkName;
+	}
+
+	public String getIssueLinkType() {
 		return issueLinkType;
 	}
 
-	public void setIssueLinkType(IssueLinkType issueLinkType) {
+	public void setIssueLinkType(String issueLinkType) {
 		this.issueLinkType = issueLinkType;
+	}
+
+	public String getIssueLinkDirection() {
+		return issueLinkDirection;
+	}
+
+	public void setIssueLinkDirection(String issueLinkDirection) {
+		this.issueLinkDirection = issueLinkDirection;
 	}
 }
