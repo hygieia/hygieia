@@ -52,7 +52,8 @@ public class CommonCodeReview {
      */
     public static boolean computePeerReviewStatus(GitRequest pr, ApiSettings settings,
                                                   AuditReviewResponse<CodeReviewAuditStatus> auditReviewResponse,
-                                                  List<Commit> commits) {
+                                                  List<Commit> commits,
+                                                  CommitRepository commitRepository) {
         List<Review> reviews = pr.getReviews();
 
         List<CommitStatus> statuses = pr.getCommitStatuses();
@@ -72,7 +73,7 @@ public class CommonCodeReview {
                     //review done using GitHub Review workflow
                     auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_GHR);
                     if (!CollectionUtils.isEmpty(auditReviewResponse.getAuditStatuses()) &&
-                            !isPRReviewedInTimeScale(pr, auditReviewResponse, commits)) {
+                            !isPRReviewedInTimeScale(pr, auditReviewResponse, commits, commitRepository)) {
                         auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_GHR_SELF_APPROVAL);
                         return Boolean.FALSE;
                     }
@@ -130,7 +131,7 @@ public class CommonCodeReview {
             if (lgtmAttempted) {
                 //if lgtm self-review, then no peer-review was done unless someone else looked at it
                 if (!CollectionUtils.isEmpty(auditReviewResponse.getAuditStatuses()) &&
-                        !isPRReviewedInTimeScale(pr, auditReviewResponse, commits)) {
+                        !isPRReviewedInTimeScale(pr, auditReviewResponse, commits, commitRepository)) {
                     auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_LGTM_SELF_APPROVAL);
                     return false;
                 }
@@ -152,7 +153,7 @@ public class CommonCodeReview {
      */
     public static boolean checkForServiceAccount(String userLdapDN, ApiSettings settings) {
         List<String> serviceAccountOU = settings.getServiceAccountOU();
-        if (!CollectionUtils.isEmpty(serviceAccountOU)) {
+        if (!CollectionUtils.isEmpty(serviceAccountOU) && StringUtils.isNotBlank(userLdapDN)) {
             try {
                 String userLdapDNParsed = LdapUtils.getStringValue(new LdapName(userLdapDN), "OU");
                 List<String> matches = serviceAccountOU.stream().filter(it -> it.contains(userLdapDNParsed)).collect(Collectors.toList());
@@ -207,11 +208,17 @@ public class CommonCodeReview {
 
     private static boolean isPRReviewedInTimeScale(GitRequest pr,
                                                    AuditReviewResponse<CodeReviewAuditStatus> auditReviewResponse,
-                                                   List<Commit> commits) {
+                                                   List<Commit> commits, CommitRepository commitRepository) {
         List<Commit> filteredPrCommits = new ArrayList<>();
         pr.getCommits().forEach(prC -> {
             Optional<Commit> cOptionalCommit = commits.stream().filter(c -> Objects.equals(c.getScmRevisionNumber(), prC.getScmRevisionNumber())).findFirst();
             Commit cCommit = cOptionalCommit.orElse(null);
+
+            //If not found in the list, it must be a commit in the PR from time beyond the evaluation time window.
+            //In this case, look up from repository.
+            if (cCommit == null) {
+                cCommit =  commitRepository.findByCollectorItemIdAndScmRevisionNumber(pr.getCollectorItemId(), prC.getScmRevisionNumber());
+            }
 
             if (cCommit != null
                     && !CollectionUtils.isEmpty(cCommit.getScmParentRevisionNumbers())

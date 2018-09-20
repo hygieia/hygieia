@@ -34,6 +34,7 @@ public class Cmdb {
     private boolean validConfigItem;
     private List<String> components;
     private List<String> environments;
+    private String configurationId;
 
     public ObjectId getId() {
         return id;
@@ -202,6 +203,14 @@ public class Cmdb {
 
     public void setEnvironments(List<String> environments) {
         this.environments = environments;
+    }
+
+    public String getConfigurationId() {
+        return configurationId;
+    }
+
+    public void setConfigurationId(String configurationId) {
+        this.configurationId = configurationId;
     }
 
     @Override
