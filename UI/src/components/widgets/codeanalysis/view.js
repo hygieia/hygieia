@@ -115,6 +115,38 @@
                 var deferred = $q.defer();
                 var libraryData = (response === null) || _.isEmpty(response.result) ? {} : response.result[0];
                 ctrl.libraryPolicyDetails = libraryData;
+                var totalComponentCount = 0;
+                var knownComponentCount = 0;
+                var calculatePercentage;
+                var criticalCountPolicy = 0;
+                var severeCountPolicy = 0;
+                var moderateCountPolicy = 0;
+                var policyAffectedCount =0;
+                if (libraryData.totalComponentCount !== null && libraryData.totalComponentCount !== undefined) {
+                    totalComponentCount = libraryData.totalComponentCount;
+                }    
+                if (libraryData.knownComponentCount !== null && libraryData.knownComponentCount !== undefined) {
+                    knownComponentCount = libraryData.knownComponentCount;
+                }            
+                if(isNaN(knownComponentCount / totalComponentCount)){
+                    calculatePercentage = 0;
+                }else{
+                    calculatePercentage = knownComponentCount / totalComponentCount; 
+                }
+                if(libraryData.policyAlert !== null && libraryData.policyAlert !== undefined){
+                    if (libraryData.policyAlert[0].policycriticalCount !== null && libraryData.policyAlert[0].policycriticalCount !== undefined) {
+                        criticalCountPolicy = libraryData.policyAlert[0].policycriticalCount;
+                    }
+                    if (libraryData.policyAlert[0].policysevereCount !== null && libraryData.policyAlert[0].policysevereCount !== undefined) {
+                        severeCountPolicy = libraryData.policyAlert[0].policysevereCount;
+                    }
+                    if (libraryData.policyAlert[0].polimoderateCount !== null && libraryData.policyAlert[0].polimoderateCount !== undefined) {
+                        moderateCountPolicy = libraryData.policyAlert[0].polimoderateCount;
+                    }
+                    if (libraryData.policyAlert[0].policyAffectedCount !== null && libraryData.policyAlert[0].policyAffectedCount !== undefined) {
+                        policyAffectedCount = libraryData.policyAlert[0].policyAffectedCount;
+                    }
+                }
                 if (libraryData.threats) {
                     if (libraryData.threats.License) {
                         ctrl.libraryLicenseThreats = libraryData.threats.License;
@@ -124,6 +156,22 @@
                         ctrl.librarySecurityThreats = libraryData.threats.Security;
                         ctrl.librarySecurityThreatStatus = getLibraryPolicyStatus(libraryData.threats.Security)
                     }
+                    ctrl.knownComponentCount = knownComponentCount;
+                    ctrl.knownComponentCountPercentage = Math.round(calculatePercentage * 100);;
+                    ctrl.criticalCountPolicy = criticalCountPolicy;
+                    ctrl.severeCountPolicy = severeCountPolicy;
+                    ctrl.moderateCountPolicy = moderateCountPolicy;
+                    ctrl.policyAffectedCompCount = policyAffectedCount;
+                    ctrl.donutData = {
+                        //labels: [90,10],
+                        series: [ctrl.knownComponentCountPercentage, (100 - ctrl.knownComponentCountPercentage)]
+                    };
+                    ctrl.donutOptions = {
+                        donut: true,
+                        donutWidth: 6,
+                        width: "60",
+                        showLabel: false
+                    };
                 }
                 deferred.resolve(response.lastUpdated);
                 return deferred.promise;
