@@ -205,6 +205,9 @@ score.scmWidget.commitsPerDay.criteria.dataRangeThresholds[0].score.scoreValue=0
 score.scmWidget.commitsPerDay.criteria.dataRangeThresholds[0].score.propagate=widget
 score.scmWidget.commitsPerDay.criteria.dataRangeThresholds[0].numDaysToCheck=7
 
+#Log configuration
+logging.config=file:///hygieia/logback.xml
+
 EOF
 
 echo "

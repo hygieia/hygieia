@@ -133,6 +133,9 @@ feature.jiraTeamFieldName=${JIRA_TEAM_FIELD_NAME}
 # Set this to true if you use boards as team
 feature.jiraBoardAsTeam=${JIRA_BOARD_AS_TEAM:-false}
 
+#Log configuration
+logging.config=file:///hygieia/logback.xml
+
 EOF
 
 echo "

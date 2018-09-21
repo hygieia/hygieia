@@ -47,6 +47,10 @@ dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpassword}
 
 #Collector schedule (required)
 xldeploy.cron=${XLDEPLOY_CRON:-0 0/5 * * * *}
+
+#Log configuration
+logging.config=file:///hygieia/logback.xml
+
 EOF
 
 echo -e "\n#XLDeploy server (required) - Can provide multiple" >> $PROP_FILE

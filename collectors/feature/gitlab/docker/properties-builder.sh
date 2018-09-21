@@ -59,6 +59,9 @@ gitlab.selfSignedCertificate=${GITLAB_SELF_SIGNED_CERTIFICATE:-false}
 #Gitlab API Version (optional, defaults to current version of 4)
 gitlab.apiVersion=${GITLAB_API_VERSION:-4}
 
+#Log configuration
+logging.config=file:///hygieia/logback.xml
+
 EOF
 
 echo "

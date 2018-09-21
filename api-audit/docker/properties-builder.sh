@@ -72,4 +72,7 @@ monitor.proxy.type=${MONITOR_PROXY_TYPE:-http}
 monitor.proxy.host=${MONITOR_PROXY_HOST:-}
 monitor.proxy.port=${MONITOR_PROXY_PORT:-80}
 
+# Log configuration
+logging.config=file:///hygieia/logback.xml
+
 EOF

@@ -38,6 +38,9 @@ dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpassword}
 #Collector schedule (required)
 chatops.cron=${CHATOPS_CRON:-5 * * * * *}
 
+#Log configuration
+logging.config=file:///hygieia/logback.xml
+
 EOF
 
 echo "
