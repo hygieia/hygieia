@@ -19,4 +19,4 @@ ENV PROP_FILE /hygieia/config/hygieia-api-audit.properties
 
 EXPOSE 8080
 CMD ./properties-builder.sh &&\
-  java -Djava.security.egd=file:/dev/./urandom -Dlogback.configurationFile=/hygieia/logback.xml -jar *.jar --spring.config.location=$PROP_FILE
+  java -Djava.security.egd=file:/dev/./urandom -Dlogging.config=file:/hygieia/logback.xml -jar *.jar --spring.config.location=$PROP_FILE

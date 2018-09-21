@@ -19,5 +19,5 @@ VOLUME ["/hygieia/logs"]
 ENV PROP_FILE /hygieia/config/application.properties
 
 CMD ./properties-builder.sh && \
-  java -Dlogback.configurationFile=/hygieia/logback.xml -jar github-graphql-scm-collector*.jar --spring.config.location=$PROP_FILE
+  java -Dlogging.config=file:/hygieia/logback.xml -jar github-graphql-scm-collector*.jar --spring.config.location=$PROP_FILE
 
