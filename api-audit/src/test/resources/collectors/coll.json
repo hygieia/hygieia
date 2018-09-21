@@ -190,6 +190,7 @@
   {
     "id" : "56ca15297fab7c68bfdb420c",
     "name" : "GitHub",
+    "collectorType" : "SCM",
     "enabled" : true,
     "online" : true,
     "errors" : [

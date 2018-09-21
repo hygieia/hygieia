@@ -8,8 +8,8 @@ import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.LibraryPolicyResult;
-import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.TestResult;
+import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.repository.TestResultRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
@@ -20,6 +20,7 @@ import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.repository.LibraryPolicyResultsRepository;
+import com.capitalone.dashboard.repository.TestResultRepository;
 import com.capitalone.dashboard.testutil.GsonUtil;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
@@ -41,6 +42,7 @@ public class TestUtils {
     public static void loadCollector (CollectorRepository collectorRepository) throws IOException {
         Gson gson = GsonUtil.getGson();
         String json = IOUtils.toString(Resources.getResource("./collectors/coll.json"));
+        // List<Collector> collector = gson.fromJson(json, Collector.class);
         List<Collector> collector = gson.fromJson(json, new TypeToken<List<Collector>>(){}.getType());
         collectorRepository.save(collector);
     }
@@ -83,8 +85,14 @@ public class TestUtils {
     public static void loadLibraryPolicy(LibraryPolicyResultsRepository libraryPolicyResultsRepository) throws IOException {
         Gson gson = GsonUtil.getGson();
         String json = IOUtils.toString(Resources.getResource("./librarypolicy/librarypolicy.json"));
-        List<LibraryPolicyResult> ssa = gson.fromJson(json, new TypeToken<List<LibraryPolicyResult>>(){}.getType());
+        List<LibraryPolicyResult> ssa = gson.fromJson(json, new TypeToken<List<LibraryPolicyResult>>() {}.getType());
         libraryPolicyResultsRepository.save(ssa);
+    }
+    public static void loadTestResults(TestResultRepository testResultRepository) throws IOException {
+        Gson gson = GsonUtil.getGson();
+        String json = IOUtils.toString(Resources.getResource("./test_results/test_results.json"));
+        List<TestResult> testResults = gson.fromJson(json, new TypeToken<List<TestResult>>(){}.getType());
+        testResultRepository.save(testResults);
     }
 
     public static void loadCodeQuality(CodeQualityRepository codeQualityRepository) throws IOException {
@@ -94,12 +102,7 @@ public class TestUtils {
         codeQualityRepository.save(codeQuality);
     }
 
-    public static void loadTestResults(TestResultRepository testResultRepository) throws IOException {
-        Gson gson = GsonUtil.getGson();
-        String json = IOUtils.toString(Resources.getResource("./test_results/test_results.json"));
-        List<TestResult> testResults = gson.fromJson(json, new TypeToken<List<TestResult>>(){}.getType());
-        testResultRepository.save(testResults);
-    }
+
     public static void loadFeature(FeatureRepository featureRepository) throws IOException {
         Gson gson = GsonUtil.getGson();
         String json = IOUtils.toString(Resources.getResource("./feature/feature.json"));
