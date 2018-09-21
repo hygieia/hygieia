@@ -3,9 +3,8 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.repository.AuditStatusCollectorRepository;
 import com.capitalone.dashboard.repository.AuditStatusRepository;
 import com.capitalone.dashboard.model.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+
+import java.util.*;
 
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
@@ -19,7 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import java.util.Set;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 @Component
 public class AuditStatusCollectorTask extends CollectorTask<AuditStatusCollector>{
@@ -29,64 +29,62 @@ public class AuditStatusCollectorTask extends CollectorTask<AuditStatusCollector
 
     @Autowired
     private DashboardRepository dashboardRepository;
-
     @Autowired
     private DashboardAuditService dashboardAuditService;
-
     @Autowired
     private AuditStatusRepository auditStatusRepository;
-
     @Autowired
     private AuditStatusCollectorRepository auditStatusCollectorRepository;
-
+    @Autowired
+    private AuditConfigSettings auditConfigSettings;
     @Autowired
     public AuditStatusCollectorTask(TaskScheduler taskScheduler, DashboardRepository dashboardRepository, DashboardAuditService
-            dashboardAuditService, AuditStatusRepository auditStatusRepository, AuditStatusCollectorRepository auditStatusCollectorRepository){
-    //    public AuditStatusCollectorTask(DashboardRepository dashboardRepository, DashboardAuditService dashboardAuditService, AuditStatusRepository auditStatusRepository, AuditStatusCollectorRepository auditStatusCollectorRepository){
+            dashboardAuditService, AuditStatusRepository auditStatusRepository, AuditStatusCollectorRepository auditStatusCollectorRepository, AuditConfigSettings auditConfigSettings){
+    //    public AuditStatusCollectorTask(DashboardRepository dashboardRepository, DashboardAuditService dashboardAuditService,
+        // AuditStatusRepository auditStatusRepository, AuditStatusCollectorRepository auditStatusCollectorRepository, AuditConfigSettings auditConfigSettings){
        super(taskScheduler, "JenkinsAuditCollector");
         this.dashboardRepository = dashboardRepository;
         this.dashboardAuditService = dashboardAuditService;
         this.auditStatusRepository = auditStatusRepository;
         this.auditStatusCollectorRepository = auditStatusCollectorRepository;
+        this.auditConfigSettings = auditConfigSettings;
         //collect(null);
     }
 
     @Override
     public void collect(AuditStatusCollector collector) {
+        long lastExecutedTimestamp = collector.getLastExecuted();
+        Iterable<Dashboard> recentDashboards = dashboardRepository.findByTimestampAfter(lastExecutedTimestamp);
+        List<AuditResult> auditResults = getAuditResults(recentDashboards, lastExecutedTimestamp);
+        if(!auditResults.isEmpty()) {
+            auditStatusRepository.save(auditResults); }
+        }
 
-        long timestamp = collector.getLastExecuted();
-        Set<AuditType> auditTypes = new HashSet<>();
-        auditTypes.add(AuditType.ALL);
-        Iterable<Dashboard> newDashboards = dashboardRepository.findByTimestampAfter(timestamp);
-
-        List<AuditResult> auditResults = new ArrayList<>();
-        newDashboards.forEach(dashboard -> {
+    private List<AuditResult> getAuditResults(Iterable<Dashboard> dashboards, long timestamp) {
+        List<AuditResult> auditResults = new ArrayList();
+        Set<AuditType> allAuditTypes = new HashSet<>();
+        allAuditTypes.add(AuditType.ALL);
+        dashboards.forEach(dashboard -> {
             try {
                 DashboardReviewResponse dashboardReviewResponse = dashboardAuditService.getDashboardReviewResponse(
-                        dashboard.getTitle(),
-                        dashboard.getType(),
-                        "",
-                        "",
-                        timestamp,
-                        System.currentTimeMillis(),
-                        auditTypes
+                        dashboard.getTitle(), dashboard.getType(), dashboard.getConfigurationItemBusServName(),
+                        dashboard.getConfigurationItemBusAppName(), timestamp, System.currentTimeMillis(), allAuditTypes
                 );
                 AuditResult auditResult = new AuditResult(dashboard.getId(), dashboard.getTitle(),
                         dashboardReviewResponse.getAuditStatuses().iterator().next().toString());
-               auditResults.add(auditResult);
-
+                auditResults.add(auditResult);
             } catch (AuditException e) {
-                LOGGER.error(e.getStackTrace().toString());
+                LOGGER.error(e.getMessage());
             }
-            if(!auditResults.isEmpty()) { auditStatusRepository.save(auditResults); }
         });
+        // TEMPORARY SUPPORT NEED
+        //createCSV(auditResults);
+        return auditResults;
     }
 
     @Override
     public AuditStatusCollector getCollector() {
-        List<String> servers = new ArrayList<>();
-        servers.add("http://localhost:8081/");
-        return AuditStatusCollector.prototype(servers);
+        return AuditStatusCollector.prototype(this.auditConfigSettings.getServers());
     }
 
     @Override
@@ -96,6 +94,24 @@ public class AuditStatusCollectorTask extends CollectorTask<AuditStatusCollector
 
     @Override
     public String getCron() {
-        return "0 0/2 * * * *";
+        return this.auditConfigSettings.getCron();
+    }
+
+    private void createCSV(List<AuditResult> auditResults) {
+        List<String> entireCSVData = new ArrayList();
+        auditResults.forEach(auditResult -> {
+            // CSV file creation - TEMP - Not a master version
+            String idStr = auditResult.getId().toString();
+            String title = auditResult.getDashboardTitle();
+            String status = auditResult.getAuditStatuses();
+            List<String> eachCsvRowData = Arrays.asList(idStr, title, status);
+            entireCSVData.add(String.join(",", eachCsvRowData));
+        });
+        try {
+            Files.write(Paths.get("collectors/build/jenkins-audit/src/main/resources/"
+                    + System.currentTimeMillis() +".csv"), String.join("\n", entireCSVData).getBytes());
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+        }
     }
 }

@@ -7,15 +7,20 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class AuditResult extends BaseModel     {
 
     private ObjectId dashboardId;
-
     private String dashboardTitle;
+    private String auditStatuses;
 
-    private String auditResult;
+//    private String lineOfBusiness;
+//    private String configurationItemBusServName;
+//    private String configurationItemBusAppName;
+//    private String busServiceOwner;
+//    private String busAppOwner;
 
-    public AuditResult(ObjectId dashboardId, String dashboardTitle, String auditResult){
+
+    public AuditResult(ObjectId dashboardId, String dashboardTitle, String auditStatuses){
         this.dashboardId = dashboardId;
         this.dashboardTitle = dashboardTitle;
-        this.auditResult = auditResult;
+        this.auditStatuses = auditStatuses;
     }
 
     public String getDashboardTitle() {
@@ -26,12 +31,12 @@ public class AuditResult extends BaseModel     {
         this.dashboardTitle = dashboardTitle;
     }
 
-    public String getAuditResult() {
-        return auditResult;
+    public String getAuditStatuses() {
+        return auditStatuses;
     }
 
-    public void setAuditResult(String auditResult) {
-        this.auditResult = auditResult;
+    public void setAuditStatuses(String auditStatuses) {
+        this.auditStatuses = auditStatuses;
     }
 
     public ObjectId getDashboardId() {
