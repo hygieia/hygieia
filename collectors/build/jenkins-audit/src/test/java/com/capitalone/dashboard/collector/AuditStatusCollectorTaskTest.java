@@ -93,8 +93,10 @@ public class AuditStatusCollectorTaskTest {
             } catch (AuditException e) {
             }
             assertThat(!auditResults.isEmpty());
+            if(!auditResults.isEmpty())
              { mockstatusRepository.save(auditResults); }
         });
+        this.testee.collect(mockAudistatusCollector);
     }
 
     @Test
