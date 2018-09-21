@@ -18,12 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 @Component
-public class AuditStatusCollectorTask extends CollectorTask<AuditStatusCollector>{
-//public class AuditStatusCollectorTask {
+public class AuditStatusCollectorTask extends CollectorTask<AuditStatusCollector> {
 
     private final Logger LOGGER = LoggerFactory.getLogger(AuditStatusCollectorTask.class);
 
@@ -37,18 +33,16 @@ public class AuditStatusCollectorTask extends CollectorTask<AuditStatusCollector
     private AuditStatusCollectorRepository auditStatusCollectorRepository;
     @Autowired
     private AuditConfigSettings auditConfigSettings;
+
     @Autowired
     public AuditStatusCollectorTask(TaskScheduler taskScheduler, DashboardRepository dashboardRepository, DashboardAuditService
-            dashboardAuditService, AuditStatusRepository auditStatusRepository, AuditStatusCollectorRepository auditStatusCollectorRepository, AuditConfigSettings auditConfigSettings){
-    //    public AuditStatusCollectorTask(DashboardRepository dashboardRepository, DashboardAuditService dashboardAuditService,
-        // AuditStatusRepository auditStatusRepository, AuditStatusCollectorRepository auditStatusCollectorRepository, AuditConfigSettings auditConfigSettings){
-       super(taskScheduler, "JenkinsAuditCollector");
+            dashboardAuditService, AuditStatusRepository auditStatusRepository, AuditStatusCollectorRepository auditStatusCollectorRepository, AuditConfigSettings auditConfigSettings) {
+        super(taskScheduler, "JenkinsAuditCollector");
         this.dashboardRepository = dashboardRepository;
         this.dashboardAuditService = dashboardAuditService;
         this.auditStatusRepository = auditStatusRepository;
         this.auditStatusCollectorRepository = auditStatusCollectorRepository;
         this.auditConfigSettings = auditConfigSettings;
-        //collect(null);
     }
 
     @Override
@@ -56,9 +50,10 @@ public class AuditStatusCollectorTask extends CollectorTask<AuditStatusCollector
         long lastExecutedTimestamp = collector.getLastExecuted();
         Iterable<Dashboard> recentDashboards = dashboardRepository.findByTimestampAfter(lastExecutedTimestamp);
         List<AuditResult> auditResults = getAuditResults(recentDashboards, lastExecutedTimestamp);
-        if(!auditResults.isEmpty()) {
-            auditStatusRepository.save(auditResults); }
+        if (!auditResults.isEmpty()) {
+            auditStatusRepository.save(auditResults);
         }
+    }
 
     private List<AuditResult> getAuditResults(Iterable<Dashboard> dashboards, long timestamp) {
         List<AuditResult> auditResults = new ArrayList();
@@ -66,19 +61,18 @@ public class AuditStatusCollectorTask extends CollectorTask<AuditStatusCollector
         allAuditTypes.add(AuditType.ALL);
         dashboards.forEach(dashboard -> {
             try {
+                long currentTimestamp = System.currentTimeMillis();
                 DashboardReviewResponse dashboardReviewResponse = dashboardAuditService.getDashboardReviewResponse(
                         dashboard.getTitle(), dashboard.getType(), dashboard.getConfigurationItemBusServName(),
-                        dashboard.getConfigurationItemBusAppName(), timestamp, System.currentTimeMillis(), allAuditTypes
+                        dashboard.getConfigurationItemBusAppName(), timestamp, currentTimestamp, allAuditTypes
                 );
-                AuditResult auditResult = new AuditResult(dashboard.getId(), dashboard.getTitle(),
-                        dashboardReviewResponse.getAuditStatuses().iterator().next().toString());
+                AuditResult auditResult = new AuditResult(dashboard.getId(), dashboardReviewResponse, timestamp);
                 auditResults.add(auditResult);
+
             } catch (AuditException e) {
-                LOGGER.error(e.getMessage());
+                LOGGER.error(e.getLocalizedMessage());
             }
         });
-        // TEMPORARY SUPPORT NEED
-        //createCSV(auditResults);
         return auditResults;
     }
 
@@ -95,23 +89,5 @@ public class AuditStatusCollectorTask extends CollectorTask<AuditStatusCollector
     @Override
     public String getCron() {
         return this.auditConfigSettings.getCron();
-    }
-
-    private void createCSV(List<AuditResult> auditResults) {
-        List<String> entireCSVData = new ArrayList();
-        auditResults.forEach(auditResult -> {
-            // CSV file creation - TEMP - Not a master version
-            String idStr = auditResult.getId().toString();
-            String title = auditResult.getDashboardTitle();
-            String status = auditResult.getAuditStatuses();
-            List<String> eachCsvRowData = Arrays.asList(idStr, title, status);
-            entireCSVData.add(String.join(",", eachCsvRowData));
-        });
-        try {
-            Files.write(Paths.get("collectors/build/jenkins-audit/src/main/resources/"
-                    + System.currentTimeMillis() +".csv"), String.join("\n", entireCSVData).getBytes());
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-        }
     }
 }
