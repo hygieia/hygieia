@@ -1,42 +1,21 @@
 package com.capitalone.dashboard.model;
 
+import com.capitalone.dashboard.response.DashboardReviewResponse;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection="audit_results")
-public class AuditResult extends BaseModel     {
+@Document(collection = "audit_results")
+public class AuditResult extends BaseModel {
 
     private ObjectId dashboardId;
-    private String dashboardTitle;
-    private String auditStatuses;
-
-//    private String lineOfBusiness;
-//    private String configurationItemBusServName;
-//    private String configurationItemBusAppName;
-//    private String busServiceOwner;
-//    private String busAppOwner;
+    private DashboardReviewResponse dashboardReviewResponse;
+    private long timestamp;
 
 
-    public AuditResult(ObjectId dashboardId, String dashboardTitle, String auditStatuses){
+    public AuditResult(ObjectId dashboardId, DashboardReviewResponse dashboardReviewResponse, long timestamp) {
         this.dashboardId = dashboardId;
-        this.dashboardTitle = dashboardTitle;
-        this.auditStatuses = auditStatuses;
-    }
-
-    public String getDashboardTitle() {
-        return dashboardTitle;
-    }
-
-    public void setDashboardTitle(String dashboardTitle) {
-        this.dashboardTitle = dashboardTitle;
-    }
-
-    public String getAuditStatuses() {
-        return auditStatuses;
-    }
-
-    public void setAuditStatuses(String auditStatuses) {
-        this.auditStatuses = auditStatuses;
+        this.dashboardReviewResponse = dashboardReviewResponse;
+        this.timestamp = timestamp;
     }
 
     public ObjectId getDashboardId() {
@@ -46,4 +25,33 @@ public class AuditResult extends BaseModel     {
     public void setDashboardId(ObjectId dashboardId) {
         this.dashboardId = dashboardId;
     }
+
+    public DashboardReviewResponse getDashboardReviewResponse() {
+        return dashboardReviewResponse;
+    }
+
+    public void setDashboardReviewResponse(DashboardReviewResponse dashboardReviewResponse) {
+        this.dashboardReviewResponse = dashboardReviewResponse;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public String getDashboardTitle() {
+        return dashboardReviewResponse.getDashboardTitle();
+    }
+
+    public String getBusinessService() {
+        return dashboardReviewResponse.getBusinessService();
+    }
+
+    public String getBusinessApplication() {
+        return dashboardReviewResponse.getBusinessApplication();
+    }
+
 }
