@@ -85,18 +85,21 @@
     "CodeQuality" : [
       {
         "id" : "56e5919d7fab7c0244e33341",
-        "description" : "openupf-hldirect service parent",
-        "niceName" : "HomeLoan",
+        "description" : "service parent",
         "enabled" : true,
-        "pushed" : true,
+        "errors" : [
+
+        ],
+        "pushed" : false,
         "collectorId" : "56cb5bde7fab7c548551410e",
-        "lastUpdated" : 1458247537167,
+        "lastUpdated" : 0,
         "options" : {
-          "projectName" : "openupf-hldirect service parent",
-          "projectId" : "111955",
-          "instanceUrl" : "http://mysonar.com/sonar"
+          "projectName" : "service parent",
+          "projectId" : "124466",
+          "instanceUrl" : "https://sonar.com"
         }
       }
     ]
   }
+
 }
