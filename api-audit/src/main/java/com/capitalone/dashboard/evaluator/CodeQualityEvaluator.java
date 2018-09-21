@@ -166,7 +166,8 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
                     codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_CRITICAL_MET);
                 }  else if (StringUtils.equalsIgnoreCase(metric.getName(), CodeQualityMetricType.UNIT_TEST.getType())) {
                     codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_UNIT_TEST_MET);
-                } else if (StringUtils.equalsIgnoreCase(metric.getName(), CodeQualityMetricType.COVERAGE.getType())) {
+                } else if (StringUtils.equalsIgnoreCase(metric.getName(), CodeQualityMetricType.COVERAGE.getType())
+                        || StringUtils.equalsIgnoreCase(metric.getName(), CodeQualityMetricType.NEW_COVERAGE.getType())) {
                     codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_CODE_COVERAGE_MET);
                 }
             }
