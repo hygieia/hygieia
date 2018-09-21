@@ -78,6 +78,9 @@ jenkins-cucumber.cucumberJsonRegex=${JENKINS_CUCUMBER_JSON_FILENAME:-cucumber.js
 # this hack to fix the addresses
 jenkins-cucumber.dockerLocalHostIP=${DOCKER_LOCALHOST}
 
+#Log configuration
+logging.config=file:///hygieia/logback.xml
+
 EOF
 
 echo "

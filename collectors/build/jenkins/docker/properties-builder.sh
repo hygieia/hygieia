@@ -132,6 +132,9 @@ jenkins.saveLog=${JENKINS_SAVE_LOG:-true}
 # this hack to fix the addresses
 jenkins.dockerLocalHostIP=${DOCKER_LOCALHOST}
 
+#Log configuration
+logging.config=file:///hygieia/logback.xml
+
 EOF
 
 if [ "$JENKINS_OP_CENTER" != "" ]

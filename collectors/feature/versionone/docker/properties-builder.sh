@@ -75,6 +75,9 @@ feature.versionOneAccessToken=${VERSIONONE_ACCESS_TOKEN:-accessToken}
 feature.deltaStartDate=${VERSIONONE_DELTA_START_DATE:-2015-03-01T00:00:00.000000}
 feature.masterStartDate=${VERSIONONE_MASTER_START_DATE:-2008-01-01T00:00:00.000000}
 
+#Log configuration
+logging.config=file:///hygieia/logback.xml
+
 EOF
 
 echo "

@@ -51,6 +51,9 @@ udeploy.password=${UDEPLOY_PASSWORD:-s3cr3t}
 # UDeploy token can be used instead of username and password
 udeploy.token=${UDEPLOY_TOKEN:-theudeploytoken}
 
+#Log configuration
+logging.config=file:///hygieia/logback.xml
+
 EOF
 
 echo "

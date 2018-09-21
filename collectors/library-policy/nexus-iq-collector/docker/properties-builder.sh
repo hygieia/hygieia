@@ -59,6 +59,9 @@ nexusiq.username=$NEXUSIQ_USERNAME
 #Nexus IQ Authentication Password - default is blank
 nexusiq.password=$NEXUSIQ_PASSWORD
 
+#Log configuration
+logging.config=file:///hygieia/logback.xml
+
 EOF
 
 echo "

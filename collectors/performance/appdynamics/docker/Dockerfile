@@ -1,4 +1,4 @@
-FROM docker.io/openjdk:8-jre
+FROM docker.io/openjdk:8-jre-alpine
 
 MAINTAINER Hygieia@capitalone.com
 
@@ -6,6 +6,7 @@ RUN mkdir /hygieia /hygieia/config
 
 COPY hygieia/ /hygieia
 COPY properties-builder.sh /hygieia/
+COPY logback.xml /hygieia/
 
 WORKDIR /hygieia
 
@@ -15,4 +16,4 @@ ENV PROP_FILE /hygieia/config/application.properties
 
 EXPOSE 8080
 CMD /bin/sh ./properties-builder.sh &&\
-  java -Djava.security.egd=file:/dev/./urandom -jar appdynamics-collector.jar --spring.config.location=$PROP_FILE
+  java -Dlogging.config=file:/hygieia/logback.xml -Djava.security.egd=file:/dev/./urandom -jar appdynamics-collector.jar --spring.config.location=$PROP_FILE

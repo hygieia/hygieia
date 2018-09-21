@@ -16,7 +16,7 @@ echo "SPRING_DATA_MONGODB_HOST: $SPRING_DATA_MONGODB_HOST"
 echo "SPRING_DATA_MONGODB_PORT: $SPRING_DATA_MONGODB_PORT"
 
 
-cat > config/hygieia-api-audit.properties <<EOF
+cat > $PROP_FILE <<EOF
 #Database Name - default is test
 dbname=${SPRING_DATA_MONGODB_DATABASE:-dashboarddb}
 
@@ -71,5 +71,8 @@ monitor.proxy.password=${MONITOR_PROXY_PASSWORD:-}
 monitor.proxy.type=${MONITOR_PROXY_TYPE:-http}
 monitor.proxy.host=${MONITOR_PROXY_HOST:-}
 monitor.proxy.port=${MONITOR_PROXY_PORT:-80}
+
+# Log configuration
+logging.config=file:///hygieia/logback.xml
 
 EOF

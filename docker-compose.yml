@@ -29,7 +29,7 @@ services:
     depends_on:
       - db-setup
     ports:
-      - "8081:8080"
+      - "8082:8080"
 
   ui:
     build: UI

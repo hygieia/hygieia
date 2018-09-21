@@ -64,6 +64,9 @@ git.product=${BITBUCKET_PRODUCT:-cloud}
 #API encryption key. Optional. See http://capitalone.github.io/Hygieia/setup.html#encryption-for-private-repos	
 git.key=${BITBUCKET_KEY:-}
 
+#Log configuration
+logging.config=file:///hygieia/logback.xml
+
 EOF
 
 echo "

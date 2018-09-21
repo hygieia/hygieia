@@ -111,6 +111,10 @@ cat >> $PROP_FILE <<EOF
 
 # Artifactory REST endpoint
 artifactory.endpoint=${ARTIFACTORY_ENDPOINT:-artifactory/}
+
+#Log configuration
+logging.config=file:///hygieia/logback.xml
+
 EOF
 
 echo "

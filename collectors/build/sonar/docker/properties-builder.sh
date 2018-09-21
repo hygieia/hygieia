@@ -26,6 +26,9 @@ sonar.metrics[0]=${SONAR_METRICS:-ncloc,line_coverage,violations,critical_violat
 #Sonar Version - see above for semantics between version/metrics
 sonar.versions[0]=${SONAR_VERSION}
 
+#Log configuration
+logging.config=file:///hygieia/logback.xml
+
 EOF
 
 echo "
