@@ -490,7 +490,6 @@
   },
   {
     "id": "5b87001e60bd8d3c47853f3d",
-    "_class": "com.capitalone.dashboard.model.GitHubRepo",
     "enabled": true,
     "errors": [],
     "pushed": false,
