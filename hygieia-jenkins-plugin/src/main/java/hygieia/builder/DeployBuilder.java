@@ -81,11 +81,13 @@ public class DeployBuilder {
         EnvVars envVars = null;
         try {
             envVars = run.getEnvironment(listener);
-            artifactVersion = envVars.expand(artifactVersion);
-            artifactGroup = envVars.expand(artifactGroup);
-            artifactName = envVars.expand(artifactName);
-            environmentName = envVars.expand(environmentName);
-            applicationName = envVars.expand(applicationName);
+            if (envVars != null) {
+                artifactVersion = envVars.expand(artifactVersion);
+                artifactGroup = envVars.expand(artifactGroup);
+                artifactName = envVars.expand(artifactName);
+                environmentName = envVars.expand(environmentName);
+                applicationName = envVars.expand(applicationName);
+            }
         } catch (IOException e) {
             listener.getLogger().println("Hygieia BuildArtifact Publisher - IOException getting EnvVars");
         } catch (InterruptedException e) {

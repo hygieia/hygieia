@@ -9,8 +9,9 @@
     },
     {
         "auditStatuses": [
-            "DIRECT_COMMITS_TO_BASE",
-            "DIRECT_COMMITS_TO_BASE_FIRST_COMMIT"
+            "SCM_AUTHOR_LOGIN_INVALID",
+            "DIRECT_COMMITS_TO_BASE_FIRST_COMMIT",
+            "DIRECT_COMMITS_TO_BASE"
         ],
         "lastUpdated": 1516207277235,
         "commits": [

@@ -7,31 +7,18 @@ import com.capitalone.dashboard.model.HpsmSoapModel;
 import com.capitalone.dashboard.model.Incident;
 import com.capitalone.dashboard.util.HpsmCollectorConstants;
 import com.capitalone.dashboard.util.XmlUtil;
-import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.SimpleHttpConnectionManager;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.RequestEntity;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.NamedNodeMap;
-import org.xml.sax.SAXException;
-
-
 import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPEnvelope;
 import javax.xml.soap.SOAPMessage;
@@ -41,18 +28,12 @@ import javax.xml.soap.SOAPBodyElement;
 import javax.xml.soap.SOAPException;
 
 import java.io.ByteArrayOutputStream;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Date;
-import java.util.Calendar;
-
 
 /**
  * HpsmClient implementation that uses SVNKit to fetch information about
@@ -60,25 +41,10 @@ import java.util.Calendar;
  */
 
 @Component
-public class DefaultHpsmClient implements HpsmClient {
+public class DefaultHpsmClient extends DefaultBaseClient implements HpsmClient {
 
     private static final Log LOG = LogFactory.getLog(DefaultHpsmClient.class);
 	private final HpsmSettings hpsmSettings;
-
-    private PostMethod post;
-    private SimpleHttpConnectionManager manager = new SimpleHttpConnectionManager(true);
-    HttpClient httpclient = new HttpClient(manager);
-    boolean usedClient = false;
-    int port;
-
-    String strURL;
-    String protocol;
-    String server;
-    String resource;
-    String contentType;
-    String charset;
-    String userName = "";
-    String password = "";
 
     private static final String APP_TYPE = "app";
 	private static final String COMPONENT_TYPE = "component";
@@ -119,6 +85,7 @@ public class DefaultHpsmClient implements HpsmClient {
 
 	@Autowired
 	public DefaultHpsmClient(HpsmSettings hpsmSettings) {
+		super(hpsmSettings);
 		this.hpsmSettings = hpsmSettings;
 	}
 
@@ -319,7 +286,6 @@ public class DefaultHpsmClient implements HpsmClient {
 				}
 
 			}
-
 		}catch(Exception e){
 			LOG.error(e);
 		}
@@ -347,19 +313,6 @@ public class DefaultHpsmClient implements HpsmClient {
 		incidentList = responseToIncidentList(response);
 
 		return incidentList;
-	}
-	private List <Incident> responseToIncidentList(String response) {
-		List <Incident> returnList = new ArrayList<>();
-		try {
-			Document doc = responseToDoc(response);
-			for(Node n: XmlUtil.asList(doc.getElementsByTagName("instance"))){
-				Map xmlMap = XmlUtil.getElementKeyValue(n.getChildNodes());
-				returnList.addAll(getIncidentFromXmlMap(xmlMap));
-			}
-		}catch(Exception e){
-			LOG.error(e);
-		}
-		return returnList;
 	}
 
 	/**
@@ -420,125 +373,6 @@ public class DefaultHpsmClient implements HpsmClient {
 
 		return itemType;
 	}
-	/**
-	 *  Converts String response into document for parsing
-	 * @param response SOAP response required for creation of Document
-	 * @return Document Object
-	 */
-	private Document responseToDoc(String response){
-
-		Document doc = null;
-
-		try {
-
-			DocumentBuilderFactory factory = new DocumentBuilderFactoryImpl();
-			DocumentBuilderFactory.newInstance();
-			DocumentBuilder builder =  factory.newDocumentBuilder();
-			ByteArrayInputStream input =  new ByteArrayInputStream(response.getBytes("UTF-8"));
-			doc = builder.parse(input);
-
-		} catch (ParserConfigurationException e) {
-			LOG.error("ParserConfigurationException", e);
-		} catch (UnsupportedEncodingException e) {
-			LOG.error("UnsupportedEncodingException", e);
-		} catch (IOException e) {
-			LOG.error("IOException", e);
-		} catch (SAXException e) {
-			LOG.error("SAXException", e);
-		}
-
-
-		return doc;
-	}
-
-	/**
-	 *  Start SOAP connection
-	 */
-	private void startHttpConnection(){
-		server = hpsmSettings.getServer();
-		port = hpsmSettings.getPort();
-		protocol = hpsmSettings.getProtocol() + "://";
-		resource = hpsmSettings.getResource();
-		userName = hpsmSettings.getUser();
-		password = hpsmSettings.getPass();
-
-		if(!usedClient){
-			strURL = protocol + server + ":" + port + "/"
-					+ resource;
-			// Prepare HTTP post
-			post = new PostMethod(strURL);
-
-
-			// Get HTTP client
-			httpclient.getParams().setAuthenticationPreemptive(true);
-
-			Credentials defaultcreds = new UsernamePasswordCredentials(userName,
-					password);
-			httpclient.getState().setCredentials(
-					new AuthScope(server, port, AuthScope.ANY_REALM), defaultcreds);
-			usedClient = true;
-		}
-
-	}
-
-    /**
-     * Ends SOAP Connection
-     */
-	private void stopHttpConnection() {
-		if(post != null && usedClient){
-			post.releaseConnection();
-		}
-		if(manager != null && usedClient){
-			manager.shutdown();
-		}
-		usedClient = false;
-	}
-	private String getResponseString(InputStream in) throws IOException {
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		byte[] byteArray = new byte[1024];
-		int count;
-		while ((count = in.read(byteArray, 0, byteArray.length)) > 0) {
-			outputStream.write(byteArray, 0, count);
-		}
-		return new String(outputStream.toByteArray(), "UTF-8");
-	}
-    /**
-     *  Makes SOAP request for given soap message
-     * @param soapMessageString Generated SOAP ready for POST
-     * @param hpsmSoapModel hpsmSoapModel
-     * @return Soap response
-     */
-    private String makeSoapCall(String soapMessageString, HpsmSoapModel hpsmSoapModel) throws HygieiaException{
-
-        String requestAction = hpsmSoapModel.getSoapAction();
-        String response = "";
-        contentType = hpsmSettings.getContentType();
-        charset = hpsmSettings.getCharset();
-
-        try {
-            startHttpConnection();
-
-            RequestEntity entity = new StringRequestEntity(
-                    soapMessageString, contentType, charset);
-            post.setRequestEntity(entity);
-
-            post.setRequestHeader("SOAPAction", requestAction);
-
-            httpclient.executeMethod(post);
-
-            response = getResponseString(post.getResponseBodyAsStream());
-
-            if(!"OK".equals(post.getStatusText())){
-                throw new HygieiaException("Soap Request Failure: " +  post.getStatusCode() + "|response: " +response, HygieiaException.BAD_DATA);
-            }
-
-            stopHttpConnection();
-        } catch (IOException e) {
-            LOG.error("Error while trying to make soap call: " + e);
-        }
-        return response;
-
-    }
 
 	private String getSoapMessage(HpsmSoapModel hpsmSoapModel, String start, String limit, SoapRequestType type){
 		String strMsg = "";
@@ -645,45 +479,21 @@ public class DefaultHpsmClient implements HpsmClient {
 		}
 	}
 
-
-	private void handleIncidentSoapMessage(SOAPBodyElement keysTag) throws SOAPException{
-
+	private void handleIncidentSoapMessage(SOAPBodyElement keysTag) throws SOAPException {
 		QName query = new QName("query");
 
 		// Incidents can be queried based on time.  This code retrieves the incidents since
 		// the last time it was run.  If that time cannot be determined, it counts backwards
 		// the number of days specified in hpsm.properties and retrieves those incidents.
 
-		// Get current date/time
-		Date nowDate = new Date();
-
-		// Get the last time this collector was run
-		Date previousDate = new Date(this.lastExecuted);
-
-		// Convert the above times to milliseconds for comparison
-		long nowMillis = nowDate.getTime();
-		long previousMillis = previousDate.getTime();
-
-		// calculate the difference in days between the two dates by dividing the difference by the number of milliseconds in a day
-		int diffInDays = (int) (Math.abs((nowMillis - previousMillis)) / MILLISECONDS_IN_DAY);
-
 		// get the number of days specified in the hpsm.properties file
 		int incidentDays = hpsmSettings.getIncidentDays();
 
-		// IF there are no incidents in the collection, or the collection does not exist
-		// OR if the times are reversed
-		// OR the number of days since collector last ran is greater than the requested number of days
-		// THEN the last time the collector ran is irrelevant so use the number of days in hpsm.properties
-		if((incidentCount < 1) || (previousMillis > nowMillis) || (diffInDays > incidentDays)){
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(nowDate);
-			cal.add(Calendar.DATE, - incidentDays);
-			previousDate = cal.getTime();
-		}
-
-		SimpleDateFormat dateFormat = new SimpleDateFormat(QUERY_DATE_FORMAT);
-		String now = dateFormat.format(nowDate);
-		String previous = dateFormat.format(previousDate);
+		// Get current date/time
+		DateTime nowDate = new DateTime();
+		DateTimeFormatter formatter = DateTimeFormat.forPattern(QUERY_DATE_FORMAT);
+		String now = nowDate.toString(formatter);
+		String previous = getPreviousDateValue(nowDate, incidentCount, incidentDays, hpsmSettings.getIncidentOffsetMinutes(), formatter);
 
 		String format = hpsmSettings.getIncidentQuery();
 		if(format == null || format.isEmpty()){
@@ -694,7 +504,6 @@ public class DefaultHpsmClient implements HpsmClient {
 		String queryString = MessageFormat.format(format, args);
 
 		keysTag.addAttribute(query,  queryString);
-
 	}
 
 	private void handleChangeSoapMessage(SOAPBodyElement keysTag) throws SOAPException{
@@ -705,39 +514,17 @@ public class DefaultHpsmClient implements HpsmClient {
 		// the last time it was run.  If that time cannot be determined, it counts backwards
 		// the number of days specified in hpsm.properties and retrieves those changes.
 
-		// Get current date/time
-		Date nowDate = new Date();
-
-		// Get the last time this collector was run
-		Date previousDate = new Date(this.lastExecuted);
-
-		// Convert the above times to milliseconds for comparison
-		long nowMillis = nowDate.getTime();
-		long previousMillis = previousDate.getTime();
-
-		// calculate the difference in days between the two dates by dividing the difference by the number of milliseconds in a day
-		int diffInDays = (int) (Math.abs((nowMillis - previousMillis)) / MILLISECONDS_IN_DAY);
-
 		// get the number of days specified in the hpsm.properties file
 		int changeDays = hpsmSettings.getChangeOrderDays();
 
-		// IF there are no changess in the collection, or the collection does not exist
-		// OR if the times are reversed
-		// OR the number of days since collector last ran is greater than the requested number of days
-		// THEN the last time the collector ran is irrelevant so use the number of days in hpsm.properties
-		if((changeCount < 1) || (previousMillis > nowMillis) || (diffInDays > changeDays)){
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(nowDate);
-			cal.add(Calendar.DATE, - changeDays);
-			previousDate = cal.getTime();
-		}
-
-		SimpleDateFormat dateFormat = new SimpleDateFormat(QUERY_DATE_FORMAT);
-		String now = dateFormat.format(nowDate);
-		String previous = dateFormat.format(previousDate);
+		// Get current date/time
+		DateTime nowDate = new DateTime();
+		DateTimeFormatter formatter = DateTimeFormat.forPattern(QUERY_DATE_FORMAT);
+		String now = nowDate.toString(formatter);
+		String previous = getPreviousDateValue(nowDate, changeCount, changeDays, hpsmSettings.getChangeOrderOffsetMinutes(), formatter);
 
 		String format = hpsmSettings.getChangeOrderQuery();
-		if(format == null || format.isEmpty()){
+		if(format == null || format.isEmpty()) {
 			format = DEFAULT_CHANGE_QUERY_FORMAT;
 		}
 
@@ -745,8 +532,31 @@ public class DefaultHpsmClient implements HpsmClient {
 		String queryString = MessageFormat.format(format, args);
 
 		keysTag.addAttribute(query,  queryString);
-
 	}
+
+	public String getPreviousDateValue(DateTime nowDate, long count, int days,
+									   int offsetMinutes, DateTimeFormatter formatter) {
+		// Get the last time this collector was run
+		DateTime previousDate = getDate(new DateTime(this.lastExecuted),0, offsetMinutes);
+
+		// Convert the above times to milliseconds for comparison
+		long nowMillis = nowDate.getMillis();
+		long previousMillis = previousDate.getMillis();
+
+		// calculate the difference in days between the two dates by dividing the difference by the number of milliseconds in a day
+		int diffInDays = (int) (Math.abs((nowMillis - previousMillis)) / MILLISECONDS_IN_DAY);
+
+		// IF there are no changes in the collection, or the collection does not exist
+		// OR if the times are reversed
+		// OR the number of days since collector last ran is greater than the requested number of days
+		// THEN the last time the collector ran is irrelevant so use the number of days in hpsm.properties
+		if((count < 1) || (previousMillis > nowMillis) || (diffInDays > days)) {
+			previousDate = nowDate.minusDays(days);
+		}
+
+		return previousDate.toString(formatter);
+	}
+
 	private List<Cmdb> getCmdbItemFromXmlMap(Map map) {
 		if(map == null || map.isEmpty()) return new ArrayList<>();
 		if(getStringValueFromMap(map,HpsmCollectorConstants.CONFIGURATION_ITEM).isEmpty()) return new ArrayList<>();
@@ -771,32 +581,7 @@ public class DefaultHpsmClient implements HpsmClient {
 		list.add(cmdb);
 		return list;
 	}
-	private List<Incident> getIncidentFromXmlMap(Map map) {
-		if(map == null || map.isEmpty()) return new ArrayList<>();
-		if(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_ID).isEmpty()) return new ArrayList<>();
 
-		Incident incident = new Incident();
-		incident.setIncidentID(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_ID));
-		incident.setCategory(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_CATEGORY));
-		incident.setOpenTime(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_OPEN_TIME));
-		String closedTime = getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_CLOSE_TIME);
-		if (!StringUtils.isEmpty(closedTime)) {
-			incident.setClosedTime(closedTime);
-		} else {
-			incident.setClosedTime(0L);
-		}
-		incident.setOpenedBy(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_OPEN_BY));
-		incident.setUpdatedTime(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_UPDATE_TIME));
-		incident.setSeverity(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_SEVERITY));
-		incident.setPrimaryAssignmentGroup(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_PRIMARY_ASSIGNMENT_GROUP));
-		incident.setStatus(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_STATUS));
-		incident.setAffectedItem(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_AFFECTED_ITEM));
-		incident.setIncidentDescription(getStringValueFromMap(map,HpsmCollectorConstants.INCIDENT_DESCRIPTION));
-
-		List<Incident> list = new ArrayList<>();
-		list.add(incident);
-		return list;
-	}
 	private List<ChangeOrder> getChangeFromXmlMap(Map map) {
 		if(map == null || map.isEmpty()) return new ArrayList<>();
 		if(getStringValueFromMap(map,HpsmCollectorConstants.CHANGE_ID).isEmpty()) return new ArrayList<>();
@@ -823,11 +608,5 @@ public class DefaultHpsmClient implements HpsmClient {
 		List<ChangeOrder> list = new ArrayList<>();
 		list.add(change);
 		return list;
-	}
-	private String getStringValueFromMap(Map map, String key){
-		if(!map.containsKey(key)
-				|| map.get(key) == null
-				|| "".equals(key)) return "";
-		return map.get(key).toString();
 	}
 }
