@@ -8,12 +8,12 @@
                     title: 'Log' // widget title
                 },
                 controller: 'LogViewController',
-                controllerAs: 'logView',
+                controllerAs: 'ctrl',
                 templateUrl: 'components/widgets/log/view.html'
             },
             config: {
                 controller: 'LogConfigController',
-                controllerAs: 'logConfig',
+                controllerAs: 'ctrl',
                 templateUrl: 'components/widgets/log/config.html'
             },
             getState: getState,
