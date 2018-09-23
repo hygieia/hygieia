@@ -9,7 +9,7 @@
     function RepoViewController($q, $scope, codeRepoData, pullRepoData, issueRepoData, collectorData, $uibModal) {
         var ctrl = this;
 
-        ctrl.combinedcombinedChartDataChartOptions = {
+        ctrl.combinedChartDataChartOptions = {
             plugins: [
                 Chartist.plugins.gridBoundaries(),
                 Chartist.plugins.lineAboveArea(),
