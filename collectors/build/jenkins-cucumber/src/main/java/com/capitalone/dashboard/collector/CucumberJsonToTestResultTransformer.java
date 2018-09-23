@@ -1,6 +1,11 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.TestCase;
+import com.capitalone.dashboard.model.TestCaseStatus;
+import com.capitalone.dashboard.model.TestCaseStep;
+import com.capitalone.dashboard.model.TestSuite;
+import com.capitalone.dashboard.model.TestSuiteType;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -136,6 +141,11 @@ public class CucumberJsonToTestResultTransformer implements Transformer<String, 
         } else {
             testCase.setStatus(TestCaseStatus.Unknown);
         }
+
+        for (Object tag : getJsonArray(scenarioElement, "tags")) {
+            testCase.getTags().add(getString((JSONObject) tag, "name"));
+        }
+
         return testCase;
     }
 

@@ -7,7 +7,7 @@ RUN mkdir /hygieia/config
 EXPOSE 8080
 
 ENV PROP_FILE /hygieia/config/application.properties
-
+ENV CACERTS /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts
 WORKDIR /hygieia
 
 COPY target/*.jar /hygieia

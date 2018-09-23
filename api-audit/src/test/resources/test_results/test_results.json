@@ -1,0 +1,418 @@
+[
+
+  {
+    "id" : "5803cd02edb9650aa33d205a",
+    "collectorItemId" : "57f2a0193b55670a9e06d63a",
+    "timestamp" : 1476644087024,
+    "executionId" : "94",
+    "buildId" : "5803cd02edb9650aa33d2059",
+    "description" : " TEST-UI",
+    "url" : "https://myjenkins.com/myjenkins/job/TEST-UI/",
+    "startTime" : 1476643852954,
+    "endTime" : 1476644086910,
+    "duration" : 233956,
+    "failureCount" : 0,
+    "successCount" : 1,
+    "skippedCount" : 0,
+    "totalCount" : 1,
+    "unknownStatusCount" : 0,
+    "type" : "Functional",
+    "targetAppName" : " -UI-SLATE",
+    "targetEnvName" : "QAMB",
+    "testCapabilities" : [
+      {
+        "timestamp" : 0,
+        "executionId" : "94",
+        "description" : "/json",
+        "startTime" : 0,
+        "endTime" : 0,
+        "duration" : 161998,
+        "failedTestSuiteCount" : 0,
+        "successTestSuiteCount" : 1,
+        "skippedTestSuiteCount" : 0,
+        "totalTestSuiteCount" : 1,
+        "unknownStatusTestSuiteCount" : 0,
+        "status" : "Success",
+        "type" : "Functional",
+        "testSuites" : [
+          {
+            "id" : "validate-auto-loan-account-details",
+            "description" : "Feature:Validate Auto Loan Account Details",
+            "type" : "Functional",
+            "startTime" : 0,
+            "endTime" : 0,
+            "duration" : 161998,
+            "totalTestCaseCount" : 2,
+            "failedTestCaseCount" : 0,
+            "successTestCaseCount" : 2,
+            "skippedTestCaseCount" : 0,
+            "unknownStatusCount" : 0,
+            "status" : "Success",
+            "testCases" : [
+              {
+                "id" : "validate-auto-loan-account-details;validate-the-nick-name-accountdetails-l2-page",
+                "description" : "Scenario:Validate the Nick Name Accountdetails L2 page",
+                "duration" : 161997,
+                "totalTestStepCount" : 11,
+                "failedTestStepCount" : 0,
+                "successTestStepCount" : 11,
+                "skippedTestStepCount" : 0,
+                "unknownStatusTestStepCount" : 0,
+                "status" : "Success",
+                "testSteps" : [
+                  {
+                    "id" : "1157",
+                    "description" : "Given :The Auto Loan account with \"Nick_Name_Test\"",
+                    "duration" : 162,
+                    "status" : "Success"
+                  },
+                  {
+                    "id" : "1158",
+                    "description" : "And :I'm on    Welcome page",
+                    "duration" : 26925,
+                    "status" : "Success"
+                  },
+                  {
+                    "id" : "1159",
+                    "description" : "And :I click on preferences on Account Settings",
+                    "duration" : 6978,
+                    "status" : "Success"
+                  },
+                  {
+                    "id" : "1160",
+                    "description" : "And :I click on Add Nickname and pass \"Angelo\"",
+                    "duration" : 8168,
+                    "status" : "Success"
+                  },
+                  {
+                    "id" : "1161",
+                    "description" : "And :I Logout from Preferences Page",
+                    "duration" : 11205,
+                    "status" : "Success"
+                  },
+                  {
+                    "id" : "1162",
+                    "description" : "Then :The Auto Loan account with \"Nick_Name_Test\"",
+                    "duration" : 47,
+                    "status" : "Success"
+                  },
+                  {
+                    "id" : "1163",
+                    "description" : "And :I'm on    Welcome page",
+                    "duration" : 22027,
+                    "status" : "Success"
+                  },
+                  {
+                    "id" : "1164",
+                    "description" : "And :I am on the transaction page",
+                    "duration" : 39588,
+                    "status" : "Success"
+                  },
+                  {
+                    "id" : "1165",
+                    "description" : "Then :I verify the account name shown is the same as inputted nickname from the preferences page",
+                    "duration" : 560,
+                    "status" : "Success"
+                  },
+                  {
+                    "id" : "1166",
+                    "description" : "And :I am on the Payment Modal page",
+                    "duration" : 43410,
+                    "status" : "Success"
+                  },
+                  {
+                    "id" : "1167",
+                    "description" : "Then :I verify the account name shown on the modal is the same as inputted nickname",
+                    "duration" : 2927,
+                    "status" : "Success"
+                  }
+                ],
+                "tags" : [
+                  "@B-1626822"
+                ],
+                "before" : [
+                  {
+                    "condition" : "Match: Hooks.shutdownHook()",
+                    "result" : {
+                      "status" : "Success",
+                      "duration" : 51099790
+                    }
+                  }
+                ],
+                "after" : [
+                  {
+                    "condition" : "Match: AccountDetailsStepDef.embedScreenshot(Scenario)",
+                    "result" : {
+                      "status" : "Success",
+                      "duration" : 1750778
+                    }
+                  },
+                  {
+                    "condition" : "Match: Hooks.logout()",
+                    "result" : {
+                      "status" : "Success",
+                      "duration" : 42169376799
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id" : "5b22b0b9f5c2f30601895e9d",
+    "collectorItemId" : "57f2a0193b55670a9e06d63a",
+    "timestamp" : 1523505798000,
+    "executionId" : "60c8133f-7886-4908-8aea-f9c9162bee19",
+    "description" : "Success",
+    "url" : "https://hercules.com/api/core/tests",
+    "startTime" : 1522623841000,
+    "endTime" : 1526505798000,
+    "duration" : 1203,
+    "failureCount" : 0,
+    "successCount" : 1,
+    "skippedCount" : 0,
+    "totalCount" : 1,
+    "unknownStatusCount" : 0,
+    "type" : "Performance",
+    "testCapabilities" : [
+      {
+        "timestamp" : 1529000121,
+        "executionId" : "60c8133f-7886-4908-8aea-f9c9162bee19",
+        "description" : "/Perf",
+        "startTime" : 1528998917,
+        "endTime" : 1529000120,
+        "duration" : 1203,
+        "failedTestSuiteCount" : 0,
+        "successTestSuiteCount" : 1,
+        "skippedTestSuiteCount" : 0,
+        "totalTestSuiteCount" : 1,
+        "unknownStatusTestSuiteCount" : 0,
+        "status" : "Success",
+        "type" : "Performance",
+        "testSuites" : [
+          {
+            "id" : "60c8133f-7886-4908-8aea-f9c9162bee19",
+            "description" : "paribus-retail:Default-Jmeter-3.3",
+            "type" : "Performance",
+            "startTime" : 1528998917,
+            "endTime" : 1529000120,
+            "duration" : 1203,
+            "totalTestCaseCount" : 1,
+            "failedTestCaseCount" : 0,
+            "successTestCaseCount" : 1,
+            "skippedTestCaseCount" : 0,
+            "unknownStatusCount" : 0,
+            "status" : "Success",
+            "testCases" : [
+              {
+                "id" : "60c8133f-7886-4908-8aea-f9c9162bee19",
+                "description" : "KPI : Avg response times",
+                "duration" : 0,
+                "totalTestStepCount" : 1,
+                "failedTestStepCount" : 0,
+                "successTestStepCount" : 1,
+                "skippedTestStepCount" : 0,
+                "unknownStatusTestStepCount" : 0,
+                "status" : "Success",
+                "testSteps" : [
+                  {
+                    "id" : "Target Response Time",
+                    "description" : "5000.0",
+                    "duration" : 0,
+                    "status" : "Success"
+                  },
+                  {
+                    "id" : "Actual Response Time",
+                    "description" : "16.4",
+                    "duration" : 0,
+                    "status" : "Success"
+                  }
+                ],
+                "tags" : [],
+                "before" : [],
+                "after" : []
+              },
+              {
+                "id" : "60c8133f-7886-4908-8aea-f9c9162bee19",
+                "description" : "KPI : Transaction Per Second",
+                "duration" : 0,
+                "totalTestStepCount" : 1,
+                "failedTestStepCount" : 0,
+                "successTestStepCount" : 1,
+                "skippedTestStepCount" : 0,
+                "unknownStatusTestStepCount" : 0,
+                "status" : "Success",
+                "testSteps" : [
+                  {
+                    "id" : "Target Transactions per sec",
+                    "description" : "3.0",
+                    "duration" : 0,
+                    "status" : "Success"
+                  },
+                  {
+                    "id" : "Actual Transactions per sec",
+                    "description" : "4.75",
+                    "duration" : 0,
+                    "status" : "Success"
+                  }
+                ],
+                "tags" : [],
+                "before" : [],
+                "after" : []
+              },
+              {
+                "id" : "60c8133f-7886-4908-8aea-f9c9162bee19",
+                "description" : "KPI : Error Rate Threshold",
+                "duration" : 0,
+                "totalTestStepCount" : 1,
+                "failedTestStepCount" : 0,
+                "successTestStepCount" : 1,
+                "skippedTestStepCount" : 0,
+                "unknownStatusTestStepCount" : 0,
+                "status" : "Success",
+                "testSteps" : [
+                  {
+                    "id" : "Target Error Rate Threshold",
+                    "description" : "1.0",
+                    "duration" : 0,
+                    "status" : "Success"
+                  },
+                  {
+                    "id" : "Actual Error Rate",
+                    "description" : "0.0",
+                    "duration" : 0,
+                    "status" : "Success"
+                  }
+                ],
+                "tags" : [],
+                "before" : [],
+                "after" : []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "timestamp" : 1529000121,
+        "executionId" : "60c8133f-7886-4908-8aea-f9c9162bee19",
+        "description" : "/Perf",
+        "startTime" : 1528998917,
+        "endTime" : 1529000120,
+        "duration" : 1203,
+        "failedTestSuiteCount" : 0,
+        "successTestSuiteCount" : 1,
+        "skippedTestSuiteCount" : 0,
+        "totalTestSuiteCount" : 1,
+        "unknownStatusTestSuiteCount" : 0,
+        "status" : "Success",
+        "type" : "Performance",
+        "testSuites" : [
+          {
+            "id" : "60c8133f-7886-4908-8aea-f9c9162bee19",
+            "description" : "paribus-retail:Default-Jmeter-3.3",
+            "type" : "Performance",
+            "startTime" : 1528998917,
+            "endTime" : 1529000120,
+            "duration" : 1203,
+            "totalTestCaseCount" : 1,
+            "failedTestCaseCount" : 0,
+            "successTestCaseCount" : 1,
+            "skippedTestCaseCount" : 0,
+            "unknownStatusCount" : 0,
+            "status" : "Success",
+            "testCases" : [
+              {
+                "id" : "60c8133f-7886-4908-8aea-f9c9162bee19",
+                "description" : "KPI : Avg response times",
+                "duration" : 0,
+                "totalTestStepCount" : 1,
+                "failedTestStepCount" : 0,
+                "successTestStepCount" : 1,
+                "skippedTestStepCount" : 0,
+                "unknownStatusTestStepCount" : 0,
+                "status" : "Success",
+                "testSteps" : [
+                  {
+                    "id" : "Target Response Time",
+                    "description" : "5000.0",
+                    "duration" : 0,
+                    "status" : "Success"
+                  },
+                  {
+                    "id" : "Actual Response Time",
+                    "description" : "16.4",
+                    "duration" : 0,
+                    "status" : "Success"
+                  }
+                ],
+                "tags" : [],
+                "before" : [],
+                "after" : []
+              },
+              {
+                "id" : "60c8133f-7886-4908-8aea-f9c9162bee19",
+                "description" : "KPI : Transaction Per Second",
+                "duration" : 0,
+                "totalTestStepCount" : 1,
+                "failedTestStepCount" : 0,
+                "successTestStepCount" : 1,
+                "skippedTestStepCount" : 0,
+                "unknownStatusTestStepCount" : 0,
+                "status" : "Success",
+                "testSteps" : [
+                  {
+                    "id" : "Target Transactions per sec",
+                    "description" : "3.0",
+                    "duration" : 0,
+                    "status" : "Success"
+                  },
+                  {
+                    "id" : "Actual Transactions per sec",
+                    "description" : "4.75",
+                    "duration" : 0,
+                    "status" : "Success"
+                  }
+                ],
+                "tags" : [],
+                "before" : [],
+                "after" : []
+              },
+              {
+                "id" : "60c8133f-7886-4908-8aea-f9c9162bee19",
+                "description" : "KPI : Error Rate Threshold",
+                "duration" : 0,
+                "totalTestStepCount" : 1,
+                "failedTestStepCount" : 0,
+                "successTestStepCount" : 1,
+                "skippedTestStepCount" : 0,
+                "unknownStatusTestStepCount" : 0,
+                "status" : "Success",
+                "testSteps" : [
+                  {
+                    "id" : "Target Error Rate Threshold",
+                    "description" : "1.0",
+                    "duration" : 0,
+                    "status" : "Success"
+                  },
+                  {
+                    "id" : "Actual Error Rate",
+                    "description" : "0.0",
+                    "duration" : 0,
+                    "status" : "Success"
+                  }
+                ],
+                "tags" : [],
+                "before" : [],
+                "after" : []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

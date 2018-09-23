@@ -15,6 +15,8 @@ public class Performance extends BaseModel{
     private PerformanceType type;
     private String version;
     private  ObjectId executionId;
+    private String targetAppName;
+    private String targetEnvName;
     private Map<String,Object> metrics = new HashMap<>();
 
     public Map<String,Object> getMetrics() {
@@ -73,4 +75,19 @@ public class Performance extends BaseModel{
         this.executionId = executionId;
     }
 
+    public String getTargetAppName() {
+        return targetAppName;
+    }
+
+    public void setTargetAppName(String targetAppName) {
+        this.targetAppName = targetAppName;
+    }
+
+    public String getTargetEnvName() {
+        return targetEnvName;
+    }
+
+    public void setTargetEnvName(String targetEnvName) {
+        this.targetEnvName = targetEnvName;
+    }
 }

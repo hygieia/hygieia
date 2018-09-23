@@ -83,7 +83,7 @@ public class TestAuthConfig {
 
     @Bean
     public ApiTokenService apiTokenService() {
-        return new ApiTokenServiceImpl(apiTokenRepository());
+        return new ApiTokenServiceImpl(apiTokenRepository(),userInfoRepository());
     }
 
     @Bean
@@ -270,5 +270,10 @@ public class TestAuthConfig {
     public LogAnalysisService logAnalysisService(){
         return Mockito.mock(LogAnalysisService.class);
     }
+
+    public TeamInventoryService teamInventoryService() {
+        return Mockito.mock(TeamInventoryService.class);
+    }
+
 }
 

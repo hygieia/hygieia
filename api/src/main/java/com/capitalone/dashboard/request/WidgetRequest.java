@@ -48,7 +48,9 @@ public class WidgetRequest {
         Widget widget = new Widget();
         widget.setName(name);
         widget.setComponentId(componentId);
-        widget.getOptions().putAll(options);
+        if ((options != null) && !options.isEmpty()) {
+            widget.getOptions().putAll(options);
+        }
         return widget;
     }
 
@@ -56,7 +58,9 @@ public class WidgetRequest {
         widget.setComponentId(componentId);
         widget.setName(name);
         widget.getOptions().clear();
-        widget.getOptions().putAll(options);
+        if ((options != null) && !options.isEmpty()) {
+            widget.getOptions().putAll(options);
+        }
         return widget;
     }
 }
