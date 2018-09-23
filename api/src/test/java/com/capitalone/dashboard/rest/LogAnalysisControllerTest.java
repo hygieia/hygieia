@@ -26,6 +26,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -51,6 +52,7 @@ public class LogAnalysisControllerTest {
   @Before
   public void before() {
     mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+    reset(mockLogAnalysisService);
   }
 
   @Test
@@ -71,5 +73,26 @@ public class LogAnalysisControllerTest {
     verify(mockLogAnalysisService).search(captor.capture());
 
     assertThat(captor.getValue().getComponentId(),equalTo(objId));
+  }
+
+  @Test
+  public void getsAllMaxLogStreams() throws Exception {
+
+    ObjectId objId = ObjectId.get();
+
+    Iterable<LogAnalysis> logAnalysis = Arrays.asList(new LogAnalysis());
+    DataResponse<Iterable<LogAnalysis>> searchResult = new DataResponse<>(logAnalysis,1);
+    when(mockLogAnalysisService.search(any(LogAnalysisSearchRequest.class))).thenReturn(searchResult);
+
+    this.mockMvc.perform(get("/loganalysis?max=30&componentId="+objId.toString()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.result", hasSize(1)));
+
+
+    ArgumentCaptor<LogAnalysisSearchRequest> captor = ArgumentCaptor.forClass(LogAnalysisSearchRequest.class);
+    verify(mockLogAnalysisService).search(captor.capture());
+
+    assertThat(captor.getValue().getComponentId(),equalTo(objId));
+    assertThat(captor.getValue().getMax(),equalTo(30));
   }
 }

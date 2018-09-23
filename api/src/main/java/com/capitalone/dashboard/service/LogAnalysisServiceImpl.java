@@ -12,6 +12,8 @@ import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.LogAnalysizerRepository;
 import com.capitalone.dashboard.request.LogAnalysisSearchRequest;
 import com.mysema.query.BooleanBuilder;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 /**
@@ -49,7 +51,13 @@ public class LogAnalysisServiceImpl implements LogAnalysisService {
     QLogAnalysis log = new QLogAnalysis("logAnalysis");
     builder.and(log.collectorItemId.eq(item.getId()));
 
-    Iterable<LogAnalysis> result = this.repository.findAll(builder.getValue(), log.timestamp.desc());
+    Iterable<LogAnalysis> result = null;
+    if (null == request.getMax()) {
+      result = this.repository.findAll(builder.getValue(), log.timestamp.desc());
+    } else {
+      PageRequest pageRequest = new PageRequest(0, request.getMax(), Sort.Direction.DESC, "timestamp");
+      result = this.repository.findAll(builder.getValue(), pageRequest);
+    }
 
     Collector collector = collectorRepository.findOne(item.getCollectorId());
     return new DataResponse<>(result,collector.getLastExecuted());

@@ -6,9 +6,9 @@
         .controller('LogViewController', LogViewController)
         .controller('LogViewController', LogViewController);
 
-    LogViewController.$inject = ['$q','$interval', '$scope','logRepoData', 'collectorData', '$uibModal'];
+    LogViewController.$inject = ['$q','$interval', '$scope','logRepoData', '$uibModal'];
 
-    function LogViewController($q, $interval, $scope, logRepoData, collectorData, $uibModal) {
+    function LogViewController($q, $interval, $scope, logRepoData, $uibModal) {
         var ctrl = this;
 
         ctrl.combinedChartOptions = {
