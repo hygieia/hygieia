@@ -22,21 +22,9 @@ before_install:
 script: mvn clean install -q
 
 notifications:
-  webhooks:
-    urls:
-      https://webhooks.gitter.im/e/48597b0f75dd571734bc
-    on_success: always  # options: [always|never|change] default: always
-    on_failure: always  # options: [always|never|change] default: always
-    on_start: always   # options: [always|never|change] default: always
   email:
     recipients:
-      - tapabrata.pal@capitalone.com
-      - nireesh.thiruveedula@capitalone.com
-      - Stephen.Hughes@capitalone.com
-      - Prashant.Parekh@capitalone.com
-      - Matthew.Beasley@capitalone.com
-      - Subodh.Battina@capitalone.com
-      - Ragha.Vema@capitalone.com
+      - adityaii@gmail.com
     on_success: always #[always|never|change] # default: change
     on_failure: always # [always|never|change] # default: always
 
