@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.cloudwatch;
+package com.capitalone.dashboard;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
