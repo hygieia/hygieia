@@ -61,7 +61,10 @@ public class AwsCloudwatchLogAnalyzerTask extends CollectorTask<AwsCloudwatchLog
     public void collect(AwsCloudwatchLogAnalyzer collector) {
         List<CloudWatchJob> jobs = this.settings.getJobs();
         AWSLogsClient client = this.factory.getInstance();
+        int jobCount=0;
+        int metricCount=0;
         for (CloudWatchJob job: jobs) {
+            jobCount++;
             List<AwsLogCollectorItem> logJobItem = this.jobRepo.findByName(job.getName());
             AwsLogCollectorItem analyzerJob = null;
             if (null==logJobItem || logJobItem.isEmpty()) {
@@ -81,6 +84,7 @@ public class AwsCloudwatchLogAnalyzerTask extends CollectorTask<AwsCloudwatchLog
                     metric.setName(series.getName());
                     metric.setValue(numberOfEvents);
                     metrics.add(metric);
+                    metricCount++;
                 }
             }
             LogAnalysis logAnalysis = new LogAnalysis();
@@ -90,6 +94,8 @@ public class AwsCloudwatchLogAnalyzerTask extends CollectorTask<AwsCloudwatchLog
             logAnalysis.addMetrics(metrics);
             this.metricsRepo.save(logAnalysis);
         }
+        log("job Count", System.currentTimeMillis(), jobCount);
+        log("metric Count", System.currentTimeMillis(), metricCount);
     }
 
     private FilterLogEventsRequest buildLogEvent(Series job) {
