@@ -4,10 +4,12 @@ import com.amazonaws.auth.AWSCredentialsProviderChain;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.logs.AWSLogsClient;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by stevegal on 17/06/2018.
  */
+@Component
 public class AwsCloudWatchClientFactory {
 
     private AWSLogsClient awsLogsClient;

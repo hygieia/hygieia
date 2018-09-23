@@ -1,7 +1,6 @@
-package com.capitalone.dashboard.cloudwatch.repository;
+package com.capitalone.dashboard.repository;
 
 import com.capitalone.dashboard.cloudwatch.collector.AwsCloudwatchLogAnalyzer;
-import com.capitalone.dashboard.repository.BaseCollectorRepository;
 
 /**
  * Created by stevegal on 16/06/2018.

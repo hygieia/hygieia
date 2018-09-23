@@ -6,12 +6,13 @@ import com.amazonaws.services.logs.model.FilterLogEventsResult;
 import com.capitalone.dashboard.cloudwatch.model.AwsLogCollectorItem;
 import com.capitalone.dashboard.cloudwatch.model.CloudWatchJob;
 import com.capitalone.dashboard.cloudwatch.model.Series;
-import com.capitalone.dashboard.cloudwatch.repository.AwsLogCollectorItemRepository;
+import com.capitalone.dashboard.repository.AwsLogCollectorItemRepository;
 import com.capitalone.dashboard.collector.CollectorTask;
 import com.capitalone.dashboard.model.LogAnalysis;
 import com.capitalone.dashboard.model.LogAnalysisMetric;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.LogAnalysizerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +31,7 @@ public class AwsCloudwatchLogAnalyzerTask extends CollectorTask<AwsCloudwatchLog
     private final AwsCloudWatchClientFactory factory;
     private final AwsCloudwatchLogAnalyzerSettings settings;
 
+    @Autowired
     public AwsCloudwatchLogAnalyzerTask(TaskScheduler taskScheduler, BaseCollectorRepository<AwsCloudwatchLogAnalyzer> repository, AwsCloudWatchClientFactory factory, AwsLogCollectorItemRepository jobRepo,LogAnalysizerRepository metricsRepo,AwsCloudwatchLogAnalyzerSettings settings){
         super(taskScheduler,"AwsCloudwatchAnalyzerTask");
         this.repository = repository;

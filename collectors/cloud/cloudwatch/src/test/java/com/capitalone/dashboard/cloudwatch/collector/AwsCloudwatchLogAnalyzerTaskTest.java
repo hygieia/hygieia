@@ -7,7 +7,7 @@ import com.amazonaws.services.logs.model.FilteredLogEvent;
 import com.capitalone.dashboard.cloudwatch.model.AwsLogCollectorItem;
 import com.capitalone.dashboard.cloudwatch.model.CloudWatchJob;
 import com.capitalone.dashboard.cloudwatch.model.Series;
-import com.capitalone.dashboard.cloudwatch.repository.AwsLogCollectorItemRepository;
+import com.capitalone.dashboard.repository.AwsLogCollectorItemRepository;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.LogAnalysis;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
