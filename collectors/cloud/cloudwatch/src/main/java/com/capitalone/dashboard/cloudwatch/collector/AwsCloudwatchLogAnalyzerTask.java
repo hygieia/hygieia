@@ -8,16 +8,13 @@ import com.capitalone.dashboard.cloudwatch.model.CloudWatchJob;
 import com.capitalone.dashboard.cloudwatch.model.Series;
 import com.capitalone.dashboard.cloudwatch.repository.AwsLogCollectorItemRepository;
 import com.capitalone.dashboard.collector.CollectorTask;
-import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.LogAnalysis;
 import com.capitalone.dashboard.model.LogAnalysisMetric;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.LogAnalysizerRepository;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.support.CronSequenceGenerator;
 import org.springframework.stereotype.Component;
 
-import java.time.chrono.ChronoPeriod;
 import java.util.ArrayList;
 import java.util.List;
 
