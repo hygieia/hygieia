@@ -37,6 +37,7 @@ public class AwsCloudwatchLogAnalyzerTask extends CollectorTask<AwsCloudwatchLog
         this.jobRepo = jobRepo;
         this.metricsRepo = metricsRepo;
         this.settings = settings;
+        this.factory.setup(settings);
     }
 
     @Override
