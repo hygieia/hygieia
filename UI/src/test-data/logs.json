@@ -22,7 +22,7 @@
     {
       "id": "563bd2b9d4c6eb827a1bae00",
       "collectorItemId": "563a54114568c6b4b779c423",
-      "timestamp": 1446761138205,
+      "timestamp": 1446761137205,
       "name": "CapitalOneDummyAwsLog",
       "url": "http://jadk.mycompany.com:11400/ssc",
       "type": "LogAnalysis",
@@ -41,7 +41,7 @@
     {
       "id": "563bd2b9d4c6eb827a1bae00",
       "collectorItemId": "563a54114568c6b4b779c423",
-      "timestamp": 1446761138215,
+      "timestamp": 1446761136215,
       "name": "CapitalOneDummyAwsLog",
       "url": "http://jadk.mycompany.com:11400/ssc",
       "type": "LogAnalysis",
@@ -54,6 +54,43 @@
         {
           "name": "item2",
           "value": "4"
+        }
+      ]},
+    {
+      "id": "563bd2b9d4c6eb827a1bae00",
+      "collectorItemId": "563a54114568c6b4b779c423",
+      "timestamp": 1446761135205,
+      "name": "CapitalOneDummyAwsLog",
+      "url": "http://jadk.mycompany.com:11400/ssc",
+      "type": "LogAnalysis",
+      "version": "CapitalOneDummyiPhone-dev",
+      "metrics": [
+        {
+          "name": "item1",
+          "value": "5"
+        },
+        {
+          "name": "item2",
+          "value": "5"
+        }
+      ]}
+  ,
+    {
+      "id": "563bd2b9d4c6eb827a1bae00",
+      "collectorItemId": "563a54114568c6b4b779c423",
+      "timestamp": 1446761130185,
+      "name": "CapitalOneDummyAwsLog",
+      "url": "http://jadk.mycompany.com:11400/ssc",
+      "type": "LogAnalysis",
+      "version": "CapitalOneDummyiPhone-dev",
+      "metrics": [
+        {
+          "name": "item1",
+          "value": "5"
+        },
+        {
+          "name": "item2",
+          "value": "5"
         }
       ]}
   ],

@@ -6,9 +6,9 @@
         .controller('LogViewController', LogViewController)
         .controller('LogViewController', LogViewController);
 
-    LogViewController.$inject = ['$q', '$scope','logRepoData', 'collectorData', '$uibModal'];
+    LogViewController.$inject = ['$q','$interval', '$scope','logRepoData', 'collectorData', '$uibModal'];
 
-    function LogViewController($q, $scope, logRepoData, collectorData, $uibModal) {
+    function LogViewController($q, $interval, $scope, logRepoData, collectorData, $uibModal) {
         var ctrl = this;
 
         ctrl.combinedChartOptions = {
@@ -20,11 +20,15 @@
                 Chartist.plugins.legend()
             ],
             showArea: false,
-            lineSmooth: true,
+            lineSmooth: false,
             fullWidth: false,
-            chartPadding: 7,
+            chartPadding: 14,
             axisX: {
-                showLabel: true
+                type: Chartist.FixedScaleAxis,
+                divisor: 5,
+                labelInterpolationFnc: function(value) {
+                    return moment(value).format('HH:mm:ss');
+                }
             },
             axisY: {
                 labelInterpolationFnc: function(value) {
@@ -42,6 +46,10 @@
             return $q.all[logRepoData.logDetails(logRequest).then(processLogResponse)]
         };
 
+        $interval(function () {
+            ctrl.load();
+        }, 60000);
+
         function processLogResponse(response) {
             var deferred = $q.defer();
             var logData = _.isEmpty(response.result) ? {} : response.result;
@@ -52,20 +60,20 @@
 
             var series = [];
             (logData).forEach(function (item) {
+                var date = new Date(item.timestamp);
+                ctrl.combinedChartData.labels.push('');
                 item.metrics.forEach(function (metric) {
                     var values = series[metric.name];
                     if (null == values) {
                         values = [];
                         series[metric.name] = values;
                     }
-                    values.push(metric.value);
-                });
+                    values.push({x:date,y:metric.value});
+                }, date);
             });
 
             Object.keys(series).forEach(function (value) {
-                console.log(value);
                 ctrl.combinedChartData.series.push({name:value,data:series[value]});
-                ctrl.combinedChartData.labels.push('');
             });
         };
     }
