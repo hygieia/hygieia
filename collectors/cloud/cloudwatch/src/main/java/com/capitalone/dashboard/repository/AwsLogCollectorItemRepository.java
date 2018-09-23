@@ -1,7 +1,6 @@
 package com.capitalone.dashboard.repository;
 
 import com.capitalone.dashboard.cloudwatch.model.AwsLogCollectorItem;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
