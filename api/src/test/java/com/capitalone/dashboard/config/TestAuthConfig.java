@@ -271,6 +271,7 @@ public class TestAuthConfig {
         return Mockito.mock(LogAnalysisService.class);
     }
 
+    @Bean
     public TeamInventoryService teamInventoryService() {
         return Mockito.mock(TeamInventoryService.class);
     }
