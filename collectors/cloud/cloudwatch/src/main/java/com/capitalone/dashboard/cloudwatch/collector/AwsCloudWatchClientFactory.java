@@ -15,11 +15,15 @@ public class AwsCloudWatchClientFactory {
     private AWSLogsClient awsLogsClient;
 
     public void setup(AwsCloudwatchLogAnalyzerSettings settings) {
-        System.getProperties().put("http.proxyHost", settings.getProxyHost());
-        System.getProperties().put("http.proxyPort", settings.getProxyPort());
-        System.getProperties().put("https.proxyHost", settings.getProxyHost());
-        System.getProperties().put("https.proxyPort", settings.getProxyPort());
-        System.getProperties().put("http.nonProxyHosts", settings.getNonProxy());
+        if (null != settings.getProxyHost() && null != settings.getProxyPort()) {
+            System.getProperties().put("http.proxyHost", settings.getProxyHost());
+            System.getProperties().put("http.proxyPort", settings.getProxyPort());
+            System.getProperties().put("https.proxyHost", settings.getProxyHost());
+            System.getProperties().put("https.proxyPort", settings.getProxyPort());
+        }
+        if (null != settings.getNonProxy()) {
+            System.getProperties().put("http.nonProxyHosts", settings.getNonProxy());
+        }
 
         this.awsLogsClient = new AWSLogsClient(new AWSCredentialsProviderChain(new ProfileCredentialsProvider(settings.getProfile()),
             new InstanceProfileCredentialsProvider()));
