@@ -25,6 +25,8 @@ public class AwsCloudwatchLogAnalyzerSettings {
 
     private Regions region;
 
+    private int logAnalysisPeriod;
+
     public String getProfile() {
         return profile;
     }
@@ -81,5 +83,13 @@ public class AwsCloudwatchLogAnalyzerSettings {
 
     public void setRegion(Regions region) {
         this.region = region;
+    }
+
+    public int getLogAnalysisPeriod() {
+        return logAnalysisPeriod;
+    }
+
+    public void setLogAnalysisPeriod(int logAnalysisPeriod) {
+        this.logAnalysisPeriod = logAnalysisPeriod;
     }
 }

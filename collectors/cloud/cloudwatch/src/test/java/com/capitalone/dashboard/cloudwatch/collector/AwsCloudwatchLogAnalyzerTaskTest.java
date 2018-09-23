@@ -62,6 +62,7 @@ public class AwsCloudwatchLogAnalyzerTaskTest {
     private AwsCloudwatchLogAnalyzerSettings produceDefaultSettings(){
         AwsCloudwatchLogAnalyzerSettings settings = new AwsCloudwatchLogAnalyzerSettings();
         settings.setCron("*/5 * * *");
+        settings.setLogAnalysisPeriod(2);
         CloudWatchJob job = new CloudWatchJob();
         job.setName("MyFirstGraph");
         Series series1 = new Series();
@@ -136,7 +137,7 @@ public class AwsCloudwatchLogAnalyzerTaskTest {
         assertThat(actualFilterLogEventRequest.getLogStreamNames()).containsExactlyInAnyOrder("myStream1","myStream2","myStream3");
         assertThat(actualFilterLogEventRequest.getFilterPattern()).isEqualTo("{$.event=\"myValue\"}");
         assertThat(actualFilterLogEventRequest.getEndTime()).isBetween(currentTime-1000,currentTime);
-        assertThat(actualFilterLogEventRequest.getStartTime()).isBetween(currentTime-((5*60*1000)+1000),currentTime-(5*60*1000));
+        assertThat(actualFilterLogEventRequest.getStartTime()).isBetween(currentTime-((2*60*1000)+1000),currentTime-(2*60*1000));
 
         ArgumentCaptor<LogAnalysis> captor = ArgumentCaptor.forClass(LogAnalysis.class);
         verify(mockLogRepo).save(captor.capture());

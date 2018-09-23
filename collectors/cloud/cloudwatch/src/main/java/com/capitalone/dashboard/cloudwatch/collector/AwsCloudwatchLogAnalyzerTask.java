@@ -97,7 +97,7 @@ public class AwsCloudwatchLogAnalyzerTask extends CollectorTask<AwsCloudwatchLog
         filter.setLogStreamNames(job.getLogStreams());
         filter.setFilterPattern(job.getFilterPattern());
         filter.setEndTime(currentTime);
-        filter.setStartTime(currentTime-(5*60*1000));
+        filter.setStartTime(currentTime-(this.settings.getLogAnalysisPeriod()*60*1000));
         return filter;
     }
 }
