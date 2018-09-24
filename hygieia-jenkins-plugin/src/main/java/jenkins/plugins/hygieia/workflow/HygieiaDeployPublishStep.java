@@ -35,207 +35,207 @@ import jenkins.plugins.hygieia.HygieiaPublisher;
 import jenkins.plugins.hygieia.HygieiaResponse;
 import jenkins.plugins.hygieia.HygieiaService;
 
-
 public class HygieiaDeployPublishStep extends AbstractStepImpl {
 
+	private String artifactName;
+	private String artifactDirectory;
+	private String artifactGroup;
+	private String artifactVersion;
+	private String applicationName;
+	private String environmentName;
 
-    private  String artifactName;
-    private  String artifactDirectory;
-    private  String artifactGroup;
-    private  String artifactVersion;
-    private  String applicationName;
-    private  String environmentName;
+	private String buildStatus;
 
-    private String buildStatus;
+	public String getBuildStatus() {
+		return buildStatus;
+	}
 
-    public String getBuildStatus() {
-        return buildStatus;
-    }
+	@DataBoundSetter
+	public void setBuildStatus(String buildStatus) {
+		this.buildStatus = buildStatus;
+	}
 
-    @DataBoundSetter
-    public void setBuildStatus(String buildStatus) {
-        this.buildStatus = buildStatus;
-    }
+	public String getArtifactName() {
+		return artifactName;
+	}
 
-    public String getArtifactName() {
-        return artifactName;
-    }
+	@DataBoundSetter
+	public void setArtifactName(String artifactName) {
+		this.artifactName = artifactName;
+	}
 
-    @DataBoundSetter
-    public void setArtifactName(String artifactName) {
-        this.artifactName = artifactName;
-    }
+	public String getArtifactDirectory() {
+		return artifactDirectory;
+	}
 
-    public String getArtifactDirectory() {
-        return artifactDirectory;
-    }
+	@DataBoundSetter
+	public void setArtifactDirectory(String artifactDirectory) {
+		this.artifactDirectory = artifactDirectory;
+	}
 
-    @DataBoundSetter
-    public void setArtifactDirectory(String artifactDirectory) {
-        this.artifactDirectory = artifactDirectory;
-    }
+	public String getArtifactGroup() {
+		return artifactGroup;
+	}
 
-    public String getArtifactGroup() {
-        return artifactGroup;
-    }
+	@DataBoundSetter
+	public void setArtifactGroup(String artifactGroup) {
+		this.artifactGroup = artifactGroup;
+	}
 
-    @DataBoundSetter
-    public void setArtifactGroup(String artifactGroup) {
-        this.artifactGroup = artifactGroup;
-    }
+	public String getArtifactVersion() {
+		return artifactVersion;
+	}
 
-    public String getArtifactVersion() {
-        return artifactVersion;
-    }
+	@DataBoundSetter
+	public void setArtifactVersion(String artifactVersion) {
+		this.artifactVersion = artifactVersion;
+	}
 
-    @DataBoundSetter
-    public void setArtifactVersion(String artifactVersion) {
-        this.artifactVersion = artifactVersion;
-    }
+	public String getApplicationName() {
+		return applicationName;
+	}
 
-    public String getApplicationName() {
-        return applicationName;
-    }
+	@DataBoundSetter
+	public void setApplicationName(String applicationName) {
+		this.applicationName = applicationName;
+	}
 
-    @DataBoundSetter
-    public void setApplicationName(String applicationName) {
-        this.applicationName = applicationName;
-    }
+	public String getEnvironmentName() {
+		return environmentName;
+	}
 
-    public String getEnvironmentName() {
-        return environmentName;
-    }
+	@DataBoundSetter
+	public void setEnvironmentName(String environmentName) {
+		this.environmentName = environmentName;
+	}
 
-    @DataBoundSetter
-    public void setEnvironmentName(String environmentName) {
-        this.environmentName = environmentName;
-    }
+	@DataBoundConstructor
+	public HygieiaDeployPublishStep(String artifactName, String artifactDirectory, String artifactGroup,
+			String artifactVersion, String applicationName, String environmentName, String buildStatus) {
+		this.artifactName = artifactName;
+		this.artifactDirectory = artifactDirectory;
+		this.artifactGroup = artifactGroup;
+		this.artifactVersion = artifactVersion;
+		this.applicationName = applicationName;
+		this.environmentName = environmentName;
+		this.buildStatus = buildStatus;
+	}
 
-    @DataBoundConstructor
-    public HygieiaDeployPublishStep(String artifactName, String artifactDirectory, String artifactGroup, String artifactVersion, String applicationName, String environmentName, String buildStatus) {
-        this.artifactName = artifactName;
-        this.artifactDirectory = artifactDirectory;
-        this.artifactGroup = artifactGroup;
-        this.artifactVersion = artifactVersion;
-        this.applicationName = applicationName;
-        this.environmentName = environmentName;
-        this.buildStatus = buildStatus;
-    }
+	public boolean checkFileds() {
+		return (!"".equals(artifactName));
+	}
 
+	@Extension
+	public static class DescriptorImpl extends AbstractStepDescriptorImpl {
 
-    public boolean checkFileds() {
-        return (!"".equals(artifactName));
-    }
+		public DescriptorImpl() {
+			super(HygieiaDeployPublishStepExecution.class);
+		}
 
-    @Extension
-    public static class DescriptorImpl extends AbstractStepDescriptorImpl {
+		@Override
+		public String getFunctionName() {
+			return "hygieiaDeployPublishStep";
+		}
 
-        public DescriptorImpl() {
-            super(HygieiaDeployPublishStepExecution.class);
-        }
+		@Override
+		public String getDisplayName() {
+			return "Hygieia Deployment Publish Step";
+		}
 
-        @Override
-        public String getFunctionName() {
-            return "hygieiaDeployPublishStep";
-        }
+		public FormValidation doCheckValue(@QueryParameter String value) throws IOException, ServletException {
+			if (value.isEmpty()) {
+				return FormValidation.warning("You must fill this box!");
+			}
+			return FormValidation.ok();
+		}
 
-        @Override
-        public String getDisplayName() {
-            return "Hygieia Deployment Publish Step";
-        }
+		public ListBoxModel doFillBuildStatusItems() {
+			ListBoxModel model = new ListBoxModel();
+			model.add("Started", "InProgress");
+			model.add("Success", BuildStatus.Success.toString());
+			model.add("Failure", BuildStatus.Failure.toString());
+			model.add("Unstable", BuildStatus.Unstable.toString());
+			model.add("Aborted", BuildStatus.Aborted.toString());
+			return model;
+		}
 
-        public FormValidation doCheckValue(@QueryParameter String value) throws IOException, ServletException {
-            if (value.isEmpty()) {
-                return FormValidation.warning("You must fill this box!");
-            }
-            return FormValidation.ok();
-        }
+	}
 
+	public static class HygieiaDeployPublishStepExecution
+			extends AbstractSynchronousNonBlockingStepExecution<List<Integer>> {
 
-        public ListBoxModel doFillBuildStatusItems() {
-            ListBoxModel model = new ListBoxModel();
-            model.add("Started", "InProgress");
-            model.add("Success", BuildStatus.Success.toString());
-            model.add("Failure", BuildStatus.Failure.toString());
-            model.add("Unstable", BuildStatus.Unstable.toString());
-            model.add("Aborted", BuildStatus.Aborted.toString());
-            return model;
-        }
+		private static final long serialVersionUID = 1L;
 
-    }
+		@Inject
+		transient HygieiaDeployPublishStep step;
 
-    public static class HygieiaDeployPublishStepExecution extends AbstractSynchronousNonBlockingStepExecution<List<Integer>> {
+		@StepContextParameter
+		transient TaskListener listener;
 
-        private static final long serialVersionUID = 1L;
+		@StepContextParameter
+		transient Run run;
 
-        @Inject
-        transient HygieiaDeployPublishStep step;
+		@StepContextParameter
+		transient FilePath filepath;
 
-        @StepContextParameter
-        transient TaskListener listener;
+		// This run MUST return a non-Void object, otherwise it will be executed
+		// three times!!!! No idea why
+		@Override
+		protected List<Integer> run() throws Exception {
 
-        @StepContextParameter
-        transient Run run;
+			// default to global config values if not set in step, but allow
+			// step to override all global settings
+			Jenkins jenkins;
+			try {
+				jenkins = Jenkins.getInstance();
+			} catch (NullPointerException ne) {
+				listener.error(ne.toString());
+				return null;
+			}
 
-        @StepContextParameter
-        transient FilePath filepath;
+			HygieiaPublisher.DescriptorImpl hygieiaDesc = jenkins
+					.getDescriptorByType(HygieiaPublisher.DescriptorImpl.class);
+			List<Integer> responseCodes = new ArrayList<Integer>();
+			List<String> hygieiaAPIUrls = Arrays.asList(hygieiaDesc.getHygieiaAPIUrl().split(";"));
+			for (String hygieiaAPIUrl : hygieiaAPIUrls) {
+				this.listener.getLogger().println("Publishing data for API " + hygieiaAPIUrl.toString());
+				HygieiaService hygieiaService = getHygieiaService(hygieiaDesc.getHygieiaAPIUrl(),
+						hygieiaDesc.getHygieiaToken(), hygieiaDesc.getHygieiaJenkinsName(), hygieiaDesc.isUseProxy());
 
-        // This run MUST return a non-Void object, otherwise it will be executed three times!!!! No idea why
-        @Override
-        protected List<Integer> run()
-       throws Exception
-     {
+				BuildBuilder buildBuilder = new BuildBuilder(run, hygieiaDesc.getHygieiaJenkinsName(), listener,
+						BuildStatus.Success, true);
+				HygieiaResponse buildResponse = hygieiaService.publishBuildData(buildBuilder.getBuildData());
 
-            //default to global config values if not set in step, but allow step to override all global settings
-            Jenkins jenkins;
-            try {
-                jenkins = Jenkins.getInstance();
-            } catch (NullPointerException ne) {
-                listener.error(ne.toString());
-                return null;
-            }
+				if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
+					listener.getLogger().println(
+							"Hygieia: Published Build Data For Deployment Publishing. " + buildResponse.toString());
+				} else {
+					listener.getLogger().println("Hygieia: Failed Publishing Build Data for Deployment Publishing. "
+							+ buildResponse.toString());
+				}
 
-            HygieiaPublisher.DescriptorImpl hygieiaDesc = jenkins.getDescriptorByType(HygieiaPublisher.DescriptorImpl.class);
- List<Integer> responseCodes = new ArrayList<Integer>();
-     List<String> hygieiaAPIUrls = Arrays.asList(hygieiaDesc.getHygieiaAPIUrl().split(";"));
-     for (String hygieiaAPIUrl : hygieiaAPIUrls) {
-      this.listener.getLogger().println("Publishing data for API " + hygieiaAPIUrl.toString());
-            HygieiaService hygieiaService = getHygieiaService(hygieiaDesc.getHygieiaAPIUrl(), hygieiaDesc.getHygieiaToken(),
-                    hygieiaDesc.getHygieiaJenkinsName(), hygieiaDesc.isUseProxy());
+				DeployBuilder deployBuilder = new DeployBuilder(run, hygieiaDesc.getHygieiaJenkinsName(), step,
+						filepath, listener, buildResponse.getResponseValue(), BuildStatus.fromString(step.buildStatus));
 
-            BuildBuilder buildBuilder = new BuildBuilder(run, hygieiaDesc.getHygieiaJenkinsName(), listener, BuildStatus.Success, true);
-            HygieiaResponse buildResponse = hygieiaService.publishBuildData(buildBuilder.getBuildData());
+				Set<DeployDataCreateRequest> requests = deployBuilder.getDeploys();
+				for (DeployDataCreateRequest bac : requests) {
+					HygieiaResponse deployResponse = hygieiaService.publishDeployData(bac);
+					if (deployResponse.getResponseCode() == HttpStatus.SC_CREATED) {
+						listener.getLogger().println("Hygieia: Published Deploy Data: " + deployResponse.toString());
+					} else {
+						listener.getLogger()
+								.println("Hygieia: Failed Publishing Deploy Data:" + deployResponse.toString());
+					}
+				}
+				responseCodes.add(Integer.valueOf(buildResponse.getResponseCode()));
+			}
+			return responseCodes;
+		}
 
-
-            if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
-                listener.getLogger().println("Hygieia: Published Build Data For Deployment Publishing. " + buildResponse.toString());
-            } else {
-                listener.getLogger().println("Hygieia: Failed Publishing Build Data for Deployment Publishing. " + buildResponse.toString());
-            }
-
-            DeployBuilder deployBuilder = new DeployBuilder(run, hygieiaDesc.getHygieiaJenkinsName(), step, filepath, listener, buildResponse.getResponseValue(), BuildStatus.fromString(step.buildStatus));
-
-
-            Set<DeployDataCreateRequest> requests = deployBuilder.getDeploys();
-            for (DeployDataCreateRequest bac : requests) {
-                HygieiaResponse deployResponse = hygieiaService.publishDeployData(bac);
-                if (deployResponse.getResponseCode() == HttpStatus.SC_CREATED) {
-                    listener.getLogger().println("Hygieia: Published Deploy Data: " + deployResponse.toString());
-                } else {
-                    listener.getLogger().println("Hygieia: Failed Publishing Deploy Data:" + deployResponse.toString());
-                }
-            }
-			responseCodes.add(Integer.valueOf(buildResponse.getResponseCode()));
-       }
-            return responseCodes;
-        }
-
-
-        //streamline unit testing
-        HygieiaService getHygieiaService(String hygieiaAPIUrl, String hygieiaToken, String hygieiaJenkinsName, boolean useProxy) {
-            return new DefaultHygieiaService(hygieiaAPIUrl, hygieiaToken, hygieiaJenkinsName, useProxy);
-        }
-    }
-
-
+		// streamline unit testing
+		HygieiaService getHygieiaService(String hygieiaAPIUrl, String hygieiaToken, String hygieiaJenkinsName,
+				boolean useProxy) {
+			return new DefaultHygieiaService(hygieiaAPIUrl, hygieiaToken, hygieiaJenkinsName, useProxy);
+		}
+	}
 }
