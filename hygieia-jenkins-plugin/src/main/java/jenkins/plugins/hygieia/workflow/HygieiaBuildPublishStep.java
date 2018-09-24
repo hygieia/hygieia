@@ -1,17 +1,12 @@
 package jenkins.plugins.hygieia.workflow;
 
-import com.capitalone.dashboard.model.BuildStatus;
-import hudson.Extension;
-import hudson.model.Result;
-import hudson.model.Run;
-import hudson.model.TaskListener;
-import hudson.util.ListBoxModel;
-import hygieia.builder.BuildBuilder;
-import jenkins.model.Jenkins;
-import jenkins.plugins.hygieia.DefaultHygieiaService;
-import jenkins.plugins.hygieia.HygieiaPublisher;
-import jenkins.plugins.hygieia.HygieiaResponse;
-import jenkins.plugins.hygieia.HygieiaService;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+
 import org.apache.commons.httpclient.HttpStatus;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepImpl;
@@ -20,12 +15,17 @@ import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.capitalone.dashboard.model.BuildStatus;
 
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
+import hudson.Extension;
+import hudson.model.Run;
+import hudson.model.TaskListener;
+import hygieia.builder.BuildBuilder;
+import jenkins.model.Jenkins;
+import jenkins.plugins.hygieia.DefaultHygieiaService;
+import jenkins.plugins.hygieia.HygieiaPublisher;
+import jenkins.plugins.hygieia.HygieiaResponse;
+import jenkins.plugins.hygieia.HygieiaService;
 
 public class HygieiaBuildPublishStep extends AbstractStepImpl {
 
@@ -61,18 +61,6 @@ public class HygieiaBuildPublishStep extends AbstractStepImpl {
 		public String getDisplayName() {
 			return "Hygieia Build Publish Step";
 		}
-
-		public ListBoxModel doFillBuildStatusItems() {
-			ListBoxModel model = new ListBoxModel();
-
-			model.add("Started", "InProgress");
-			model.add("Success", BuildStatus.Success.toString());
-			model.add("Failure", BuildStatus.Failure.toString());
-			model.add("Unstable", BuildStatus.Unstable.toString());
-			model.add("Aborted", BuildStatus.Aborted.toString());
-			return model;
-		}
-
 	}
 
 	public static class HygieiaBuildPublishStepExecution

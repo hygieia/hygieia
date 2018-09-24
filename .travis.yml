@@ -17,7 +17,7 @@ before_install:
  - "sudo /etc/init.d/postgresql stop"
  - "#sudo /etc/init.d/couchdb stop"
  - "sudo /etc/init.d/redis-server stop"
- - "sudo free -m -t"
+ - "sudo chown -R $USER:$GROUP $HOME"
 
 script: mvn clean install -q
 

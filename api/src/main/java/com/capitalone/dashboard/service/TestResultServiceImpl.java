@@ -191,11 +191,11 @@ public class TestResultServiceImpl implements TestResultService {
          * Step 2: create Perfomance Collector item if not there
          * Step 3: Insert performance test data if new. If existing, update it
          */
-        Collector collector = createCollector();
+        Collector collector = createGenericCollector(request.getPerfTool());
         if (collector == null) {
             throw new HygieiaException("Failed creating Test collector.", HygieiaException.COLLECTOR_CREATE_ERROR);
         }
-        CollectorItem collectorItem = createPerfCollectorItem(collector, request);
+        CollectorItem collectorItem = createGenericCollectorItem(collector, request);
         if (collectorItem == null) {
             throw new HygieiaException("Failed creating Test collector item.", HygieiaException.COLLECTOR_ITEM_CREATE_ERROR);
         }
@@ -228,6 +228,23 @@ public class TestResultServiceImpl implements TestResultService {
         return collectorService.createCollector(col);
     }
 
+
+    private Collector createGenericCollector(String performanceTool) {
+        CollectorRequest collectorReq = new CollectorRequest();
+        collectorReq.setName(performanceTool);
+        collectorReq.setCollectorType(CollectorType.Test);
+        Collector col = collectorReq.toCollector();
+        col.setEnabled(true);
+        col.setOnline(true);
+        col.setLastExecuted(System.currentTimeMillis());
+        Map<String, Object> allOptions = new HashMap<>();
+        allOptions.put("jobName","");
+        allOptions.put("instanceUrl", "");
+        col.setAllFields(allOptions);
+        col.setUniqueFields(allOptions);
+        return collectorService.createCollector(col);
+    }
+
     private CollectorItem createCollectorItem(Collector collector, TestDataCreateRequest request) throws HygieiaException {
         CollectorItem tempCi = new CollectorItem();
         tempCi.setCollectorId(collector.getId());
@@ -247,7 +264,7 @@ public class TestResultServiceImpl implements TestResultService {
     }
 
 
-    private CollectorItem createPerfCollectorItem(Collector collector, PerfTestDataCreateRequest request) throws HygieiaException {
+    private CollectorItem createGenericCollectorItem(Collector collector, PerfTestDataCreateRequest request) throws HygieiaException {
         CollectorItem tempCi = new CollectorItem();
         tempCi.setCollectorId(collector.getId());
         tempCi.setDescription(request.getPerfTool()+" : "+request.getTestName());
@@ -255,13 +272,9 @@ public class TestResultServiceImpl implements TestResultService {
         tempCi.setLastUpdated(System.currentTimeMillis());
         Map<String, Object> option = new HashMap<>();
         option.put("jobName", request.getTestName());
-        option.put("jobUrl", request.getReportUrl());
-        option.put("instanceUrl", request.getPerfTool());
+        option.put("instanceUrl", request.getInstanceUrl());
         tempCi.getOptions().putAll(option);
         tempCi.setNiceName(request.getPerfTool());
-        if (StringUtils.isEmpty(tempCi.getNiceName())) {
-            return collectorService.createCollectorItem(tempCi);
-        }
         return collectorService.createCollectorItem(tempCi);
     }
 
@@ -319,6 +332,7 @@ public class TestResultServiceImpl implements TestResultService {
         testResult.setUrl(request.getReportUrl());
         testResult.getTestCapabilities().addAll(request.getTestCapabilities());
         testResult.setDescription(request.getDescription());
+        testResult.setResultStatus(request.getResultStatus());
         return testResultRepository.save(testResult);
     }
 
