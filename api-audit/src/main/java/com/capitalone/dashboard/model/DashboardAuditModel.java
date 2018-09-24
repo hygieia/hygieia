@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -51,15 +52,15 @@ public class DashboardAuditModel {
 
 
     public Map<AuditType, Evaluator> evaluatorMap() {
-        return Collections.unmodifiableMap(Stream.of(
-                new SimpleEntry<>(AuditType.CODE_REVIEW, codeReviewEvaluator),
-                new SimpleEntry<>(AuditType.CODE_QUALITY, codeQualityEvaluator),
-                new SimpleEntry<>(AuditType.STATIC_SECURITY_ANALYSIS, staticSecurityAnalysisEvaluator),
-                new SimpleEntry<>(AuditType.LIBRARY_POLICY, libraryPolicyEvaluator),
-                new SimpleEntry<>(AuditType.BUILD_REVIEW, buildEvaluator),
-                new SimpleEntry<>(AuditType.TEST_RESULT, regressionTestResultEvaluator),
-                new SimpleEntry<>(AuditType.PERF_TEST, performanceTestResultEvaluator))
-                .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue)));
+        Map<AuditType,Evaluator> map = new HashMap<>();
+        map.put(AuditType.CODE_REVIEW, codeReviewEvaluator);
+        map.put(AuditType.CODE_QUALITY, codeQualityEvaluator);
+        map.put(AuditType.STATIC_SECURITY_ANALYSIS, staticSecurityAnalysisEvaluator);
+        map.put(AuditType.LIBRARY_POLICY, libraryPolicyEvaluator);
+        map.put(AuditType.BUILD_REVIEW, buildEvaluator);
+        map.put(AuditType.TEST_RESULT, regressionTestResultEvaluator);
+        map.put(AuditType.PERF_TEST, performanceTestResultEvaluator);
+        return Collections.unmodifiableMap(map);
     }
 
 
