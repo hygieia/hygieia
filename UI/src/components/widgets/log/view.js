@@ -52,7 +52,7 @@
 
         function processLogResponse(response) {
             var deferred = $q.defer();
-            var logData = _.isEmpty(response.result) ? {} : response.result;
+            var logData = _.isEmpty(response.result) ? {} : response.result.content;
             ctrl.lastResult = logData[0];
             ctrl.title = ctrl.lastResult.name;
 
