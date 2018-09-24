@@ -33,7 +33,7 @@ public class AwsCloudwatchLogAnalyzerTask extends CollectorTask<AwsCloudwatchLog
 
     @Autowired
     public AwsCloudwatchLogAnalyzerTask(TaskScheduler taskScheduler, BaseCollectorRepository<AwsCloudwatchLogAnalyzer> repository, AwsCloudWatchClientFactory factory, AwsLogCollectorItemRepository jobRepo,LogAnalysizerRepository metricsRepo,AwsCloudwatchLogAnalyzerSettings settings){
-        super(taskScheduler,"AwsCloudwatchAnalyzerTask");
+        super(taskScheduler,AwsCloudwatchLogAnalyzer.COLLECTOR_NAME);
         this.repository = repository;
         this.factory = factory;
         this.jobRepo = jobRepo;

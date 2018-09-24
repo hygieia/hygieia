@@ -1,6 +1,6 @@
-<widget-modal widget-modal-title="Configure Log Analysis Widget" class="ca-config">
+<widget-modal widget-modal-title="Configure Log Analysis Widget" class="log-config">
     <form name="configForm" role="form"
-          ng-submit="caWidget.submit(caWidget.logCollectorItem)"
+          ng-submit="logWidget.submit(logWidget.logCollectorItem)"
           novalidate="novalidate">
 
         <div class="box">
@@ -10,9 +10,17 @@
                 <div class="text-center modal-label">Log Analysis:</div>
 
                 <input type="text" name="logCollectorItem" class="form-control" placeholder="Search a Log Analysis Job"
-                       ng-model="caWidget.logCollectorItem">
+                       ng-model="logWidget.logCollectorItemId"
+                       uib-typeahead="item as item.niceName + ' : ' + item.description for item in getJobs($viewValue)" typeahead-focus
+                       typeahead-min-length="0"
+                       typeahead-wait-ms="250"
+                       autocomplete="off"
+                       typeahead-no-results="noResults">
 
             </form-group>
+        </div>
+        <div class="button-row row text-center">
+            <button type="submit" class="btn btn-primary btn-wide">Save</button>
         </div>
     </form>
 </widget-modal>
