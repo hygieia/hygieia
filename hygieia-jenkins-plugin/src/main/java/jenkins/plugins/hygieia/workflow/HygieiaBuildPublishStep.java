@@ -98,8 +98,8 @@ public class HygieiaBuildPublishStep extends AbstractStepImpl {
 			List<Integer> responseCodes = new ArrayList<>();
 			for (String hygieiaAPIUrl : hygieiaAPIUrls) {
 				this.listener.getLogger().println("Publishing data for API " + hygieiaAPIUrl.toString());
-				HygieiaService hygieiaService = getHygieiaService(hygieiaAPIUrl,
-						hygieiaDesc.getHygieiaToken(), hygieiaDesc.getHygieiaJenkinsName(), hygieiaDesc.isUseProxy());
+				HygieiaService hygieiaService = getHygieiaService(hygieiaAPIUrl, hygieiaDesc.getHygieiaToken(),
+						hygieiaDesc.getHygieiaJenkinsName(), hygieiaDesc.isUseProxy());
 				BuildBuilder builder = new BuildBuilder(run, hygieiaDesc.getHygieiaJenkinsName(), listener,
 						BuildStatus.fromString(step.buildStatus), true);
 				HygieiaResponse buildResponse = hygieiaService.publishBuildData(builder.getBuildData());
@@ -113,12 +113,11 @@ public class HygieiaBuildPublishStep extends AbstractStepImpl {
 			}
 			return responseCodes;
 		}
-
+		
 		// streamline unit testing
 		HygieiaService getHygieiaService(String hygieiaAPIUrl, String hygieiaToken, String hygieiaJenkinsName,
 				boolean useProxy) {
 			return new DefaultHygieiaService(hygieiaAPIUrl, hygieiaToken, hygieiaJenkinsName, useProxy);
 		}
 	}
-
 }
