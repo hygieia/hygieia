@@ -2,11 +2,12 @@ package jenkins.plugins.hygieia;
 
 import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import hudson.Extension;
-import hudson.model.AbstractBuild;
+import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
 import hygieia.builder.BuildBuilder;
 import hygieia.builder.SonarBuilder;
+import hygieia.utils.HygieiaUtils;
 import jenkins.model.Jenkins;
 import org.apache.commons.httpclient.HttpStatus;
 import org.json.simple.parser.ParseException;
@@ -15,11 +16,11 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 @Extension
-public class HygieiaGlobalListener extends RunListener<AbstractBuild> {
+public class HygieiaGlobalListener extends RunListener<Run<?,?>> {
 
 
     @Override
-    public void onCompleted(AbstractBuild build, TaskListener listener) {
+    public void onCompleted(Run run, TaskListener listener) {
 
         HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor = getDescriptor();
         
@@ -29,7 +30,7 @@ public class HygieiaGlobalListener extends RunListener<AbstractBuild> {
 
         if (hygieiaGlobalListenerDescriptor.isHygieiaPublishBuildDataGlobal() || hygieiaGlobalListenerDescriptor.isHygieiaPublishSonarDataGlobal()) {
 
-            BuildBuilder builder = getBuildBuilder(build, listener, hygieiaGlobalListenerDescriptor);
+            BuildBuilder builder = getBuildBuilder(run, listener, hygieiaGlobalListenerDescriptor);
 
             buildResponse = hygieiaService.publishBuildData(builder.getBuildData());
             if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
@@ -42,7 +43,7 @@ public class HygieiaGlobalListener extends RunListener<AbstractBuild> {
         if (hygieiaGlobalListenerDescriptor.isHygieiaPublishSonarDataGlobal()) {
             try {
 
-                SonarBuilder sonarBuilder = getSonarBuilder(buildResponse, build, listener, hygieiaGlobalListenerDescriptor);
+                SonarBuilder sonarBuilder = getSonarBuilder(buildResponse, run, listener, hygieiaGlobalListenerDescriptor);
 
                 CodeQualityCreateRequest request = sonarBuilder.getSonarMetrics();
                 if (request != null) {
@@ -66,12 +67,12 @@ public class HygieiaGlobalListener extends RunListener<AbstractBuild> {
         return Jenkins.getInstance().getDescriptorByType(HygieiaPublisher.DescriptorImpl.class);
     }
 
-    protected BuildBuilder getBuildBuilder(AbstractBuild build, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor) {
-        return new BuildBuilder(build, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), listener, true, true);
+    protected BuildBuilder getBuildBuilder(Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor) {
+        return new BuildBuilder(run, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), listener, HygieiaUtils.getBuildStatus(run.getResult()), true);
     }
 
-    protected SonarBuilder getSonarBuilder(HygieiaResponse buildResponse, AbstractBuild build, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor) throws ParseException, IOException, URISyntaxException {
-        return new SonarBuilder(build, listener, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), null,
+    protected SonarBuilder getSonarBuilder(HygieiaResponse buildResponse, Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor) throws ParseException, IOException, URISyntaxException {
+        return new SonarBuilder(run, listener, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), null,
                 null, buildResponse != null ? buildResponse.getResponseValue() : "", hygieiaGlobalListenerDescriptor.isUseProxy());
     }
 
