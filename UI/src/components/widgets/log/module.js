@@ -13,7 +13,7 @@
             },
             config: {
                 controller: 'LogConfigController',
-                controllerAs: 'ctrl',
+                controllerAs: 'logConfig',
                 templateUrl: 'components/widgets/log/config.html'
             },
             getState: getState,
