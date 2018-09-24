@@ -71,6 +71,8 @@ public class AwsCloudwatchLogAnalyzerTask extends CollectorTask<AwsCloudwatchLog
                 analyzerJob = new AwsLogCollectorItem();
                 analyzerJob.setName(job.getName());
                 analyzerJob.setCollectorId(collector.getId());
+                analyzerJob.setNiceName(job.getName());
+                analyzerJob.setDescription(job.getName());
                 this.jobRepo.save(analyzerJob);
             } else {
                 analyzerJob = logJobItem.get(0);

@@ -44,7 +44,13 @@
         }
 
         function submitForm(valid, collector) {
-
+            if (valid) {
+                var postObj = {
+                    componentId: modalData.dashboard.application.components[0].id,
+                    collectorItemId: collector.id
+                };
+                $uibModalInstance.close(postObj);
+            }
         }
     }
 })();

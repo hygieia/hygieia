@@ -82,7 +82,7 @@ public class AwsCloudwatchLogAnalyzerTaskTest {
     @Test
     public void hasNameSet(){
 
-        assertThat((String)Whitebox.getInternalState(subject,"collectorName")).isEqualTo("AwsCloudwatchAnalyzerTask");
+        assertThat((String)Whitebox.getInternalState(subject,"collectorName")).isEqualTo("AwsCloudwatchLogAnalyzer");
     }
 
     @Test
@@ -108,7 +108,7 @@ public class AwsCloudwatchLogAnalyzerTaskTest {
     @Test
     public void collectWithExistingAddsNewMetric() {
         AwsCloudwatchLogAnalyzer mockAnalyzer = mock(AwsCloudwatchLogAnalyzer.class);
-        when(mockRepo.findByCollectorTypeAndName(CollectorType.Log,"AwsCloudwatchAnalyzerTask")).thenReturn(Collections.EMPTY_LIST);
+        when(mockRepo.findByCollectorTypeAndName(CollectorType.Log,"AwsCloudwatchLogAnalyzer")).thenReturn(Collections.EMPTY_LIST);
         AWSLogsClient mockClient = mock(AWSLogsClient.class);
         when(mockFactory.getInstance()).thenReturn(mockClient);
 
@@ -167,6 +167,8 @@ public class AwsCloudwatchLogAnalyzerTaskTest {
 
         assertThat(captor.getValue()).isNotNull();
         assertThat(captor.getValue().getName()).isEqualTo("MyFirstGraph");
+        assertThat(captor.getValue().getNiceName()).isEqualTo("MyFirstGraph");
+        assertThat(captor.getValue().getDescription()).isEqualTo("MyFirstGraph");
         assertThat(captor.getValue().getCollectorId()).isSameAs(fakeCollectorId);
     }
 

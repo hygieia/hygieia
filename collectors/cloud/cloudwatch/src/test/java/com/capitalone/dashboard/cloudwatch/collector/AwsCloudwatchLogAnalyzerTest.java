@@ -15,7 +15,7 @@ public class AwsCloudwatchLogAnalyzerTest {
     public void createsPrototype(){
         AwsCloudwatchLogAnalyzer producedCollector = AwsCloudwatchLogAnalyzer.prototype();
 
-        assertThat(producedCollector.getName()).isEqualTo("CloudwatchLogAnalyzer");
+        assertThat(producedCollector.getName()).isEqualTo("AwsCloudwatchLogAnalyzer");
         assertThat(producedCollector.getCollectorType()).isEqualTo(CollectorType.Log);
         assertThat(producedCollector.isEnabled()).isTrue();
         assertThat(producedCollector.isOnline()).isTrue();

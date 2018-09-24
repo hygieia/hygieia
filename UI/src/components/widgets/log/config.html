@@ -11,7 +11,7 @@
 
                 <input type="text" name="logCollectorItem" class="form-control" placeholder="Search a Log Analysis Job"
                        ng-model="logWidget.logCollectorItemId"
-                       uib-typeahead="item as item.niceName + ' : ' + item.description for item in getJobs($viewValue)" typeahead-focus
+                       uib-typeahead="item as item.niceName for item in getLogCollectors($viewValue)" typeahead-focus
                        typeahead-min-length="0"
                        typeahead-wait-ms="250"
                        autocomplete="off"
