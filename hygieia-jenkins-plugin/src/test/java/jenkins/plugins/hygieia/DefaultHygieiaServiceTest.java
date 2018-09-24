@@ -2,6 +2,7 @@ package jenkins.plugins.hygieia;
 
 import com.capitalone.dashboard.model.SCM;
 import com.capitalone.dashboard.request.BuildDataCreateRequest;
+import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Test;
 
 public class DefaultHygieiaServiceTest {
@@ -28,14 +29,14 @@ public class DefaultHygieiaServiceTest {
     }
 
 
-//    @Test
-//    public void successfulPublishBuildDataReturnsTrue() {
-//        DefaultHygieiaServiceStub service = new DefaultHygieiaServiceStub("domain", "token");
-//        HttpClientStub httpClientStub = new HttpClientStub();
-//        httpClientStub.setHttpStatus(HttpStatus.SC_OK);
-//        service.setHttpClient(httpClientStub);
-//        assertTrue(service.publishBuildData(makeBuildDataRequestData()));
-//    }
+    @Test
+    public void successfulPublishBuildDataReturnsTrue() {
+        DefaultHygieiaServiceStub service = new DefaultHygieiaServiceStub("foo", "token", "myname", false);
+        HttpClientStub httpClientStub = new HttpClientStub();
+        httpClientStub.setHttpStatus(HttpStatus.SC_OK);
+        service.setHttpClient(httpClientStub);
+        service.publishBuildData(makeBuildDataRequestData());
+    }
 
     private BuildDataCreateRequest makeBuildDataRequestData() {
         BuildDataCreateRequest build = new BuildDataCreateRequest();
