@@ -1,54 +1,46 @@
 package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.*;
-import com.capitalone.dashboard.repository.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.HpsmCollector;
+import com.capitalone.dashboard.model.Cmdb;
+import com.capitalone.dashboard.model.ChangeOrder;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Incident;
+
+import com.capitalone.dashboard.repository.CmdbRepository;
+import com.capitalone.dashboard.repository.IncidentRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.repository.ChangeOrderRepository;
+import com.capitalone.dashboard.repository.CollectorItemRepository;
+
 import org.bson.types.ObjectId;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.internal.matchers.Any;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.TaskScheduler;
-
 import java.util.*;
-import java.util.regex.Matcher;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyCollection;
 import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.anyVararg;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HpsmCollectorTaskTest {
-    private static final Log LOG = LogFactory.getLog(HpsmCollectorTaskTest.class);
-    @Mock private BaseCollectorRepository<Collector> collectorRepository;
-    @Mock private HpsmRepository hpsmRepository;
     @Mock private CmdbRepository cmdbRepository;
-    @Mock private HpsmCollector hpsmCollector;
     @Mock private HpsmClient hpsmClient;
-    @Mock private HpsmSettings hpsmSettings;
     @Mock private IncidentRepository incidentRepository;
     @Mock private ComponentRepository componentRepository;
     @Mock private ChangeOrderRepository changeOrderRepository;
     @Mock private CollectorItemRepository collectorItemRepository;
-
-    @Mock private Cmdb cmdb1;
-    @Mock private Cmdb cmdb2;
 
     @InjectMocks private HpsmCollectorTask task;
 

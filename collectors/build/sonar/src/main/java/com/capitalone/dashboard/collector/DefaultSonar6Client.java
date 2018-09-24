@@ -148,16 +148,7 @@ public class DefaultSonar6Client implements SonarClient {
                         project.getInstanceUrl() + URL_PROJECT_ANALYSES, str(prjData, KEY));
                 key = "analyses";
                 JSONArray jsonArray = parseAsArray(url, key);
-                JSONObject prjLatestData = (JSONObject) jsonArray.get(0);
-                codeQuality.setTimestamp(timestamp(prjLatestData, DATE));
-                for (Object eventObj : (JSONArray) prjLatestData.get(EVENTS)) {
-                    JSONObject eventJson = (JSONObject) eventObj;
-
-                    if (strSafe(eventJson, "category").equals("VERSION")) {
-                        codeQuality.setVersion(str(eventJson, NAME));
-                    }
-                }
-
+                getProjectAnalysis(codeQuality, jsonArray);
                 for (Object metricObj : (JSONArray) prjData.get(MSR)) {
                     JSONObject metricJson = (JSONObject) metricObj;
 
@@ -186,7 +177,21 @@ public class DefaultSonar6Client implements SonarClient {
 
         return null;
     }
-    
+
+    private void getProjectAnalysis(CodeQuality codeQuality, JSONArray jsonArray) {
+        if(jsonArray!=null && !jsonArray.isEmpty()) {
+            JSONObject prjLatestData = (JSONObject) jsonArray.get(0);
+            codeQuality.setTimestamp(timestamp(prjLatestData, DATE));
+            for (Object eventObj : (JSONArray) prjLatestData.get(EVENTS)) {
+                JSONObject eventJson = (JSONObject) eventObj;
+
+                if (strSafe(eventJson, "category").equals("VERSION")) {
+                    codeQuality.setVersion(str(eventJson, NAME));
+                }
+            }
+        }
+    }
+
     public List<String> retrieveProfileAndProjectAssociation(String instanceUrl,String qualityProfile) throws ParseException{
     	List<String> projects = new ArrayList<>();
     	String url = instanceUrl + URL_QUALITY_PROFILE_PROJECT_DETAILS + qualityProfile;
