@@ -43,11 +43,12 @@
             ctrl.logCollectorItem = data[0];
         }
 
-        function submitForm(valid, collector) {
+        function submitForm(valid, collector, maxEntries) {
             if (valid) {
                 var postObj = {
                     componentId: modalData.dashboard.application.components[0].id,
-                    collectorItemId: collector.id
+                    collectorItemId: collector.id,
+                    maxEntries: maxEntries
                 };
                 $uibModalInstance.close(postObj);
             }

@@ -39,7 +39,7 @@
 
         var logRequest = {
             componentId: $scope.widgetConfig.componentId,
-            max: 100
+            max:  $scope.widgetConfig.maxEntries
         };
 
         ctrl.load = function() {
@@ -51,7 +51,6 @@
         }, 60000);
 
         function processLogResponse(response) {
-            var deferred = $q.defer();
             var logData = _.isEmpty(response.result) ? {} : response.result.content;
             ctrl.lastResult = logData[0];
             ctrl.title = ctrl.lastResult.name;
