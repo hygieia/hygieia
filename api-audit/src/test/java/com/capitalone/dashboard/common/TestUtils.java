@@ -32,11 +32,11 @@ import java.util.List;
 
 public class TestUtils {
 
-    public static void loadDashBoard(DashboardRepository mockDashboardRepository) throws IOException {
+    public static void loadDashBoard(DashboardRepository dashboardRepository) throws IOException {
         Gson gson = GsonUtil.getGson();
         String json = IOUtils.toString(Resources.getResource("./dashboard/dashboard.json"));
         Dashboard dashboard = gson.fromJson(json, Dashboard.class);
-        mockDashboardRepository.save(dashboard);
+        dashboardRepository.save(dashboard);
     }
 
     public static void loadCollector (CollectorRepository collectorRepository) throws IOException {
