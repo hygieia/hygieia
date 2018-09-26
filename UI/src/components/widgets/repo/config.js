@@ -25,27 +25,37 @@
 			});
 			var collector = modalData.dashboard.application.components[0].collectorItems.SCM;
 			var collectorId = (collector!=null && collector[0].collector!=null)? collector[0].collector.id: null;
-			collectorData.collectorsById(collectorId).then(function(response){
-				var collectorResponse = response[0];
-				var scmType = 	collectorResponse.name;
-				var myIndex;
-				if(scmType!=null){
-					for (var v = 0; v < ctrl.repoOptions.length; v++) {
-						if (ctrl.repoOptions[v].name.toUpperCase() === scmType.toUpperCase()) {
-							myIndex = v;
-						}
-					}
-					ctrl.repoOption=ctrl.repoOptions[myIndex];
-				}
+			if(collectorId!=null){
+                collectorData.collectorsById(collectorId).then(function(response){
+                    var collectorResponse = response[0];
+                    var scmType = 	collectorResponse.name;
+                    var myIndex;
+                    if(scmType!=null){
+                        for (var v = 0; v < ctrl.repoOptions.length; v++) {
+                            if (ctrl.repoOptions[v].name.toUpperCase() === scmType.toUpperCase()) {
+                                myIndex = v;
+                            }
+                        }
+                        ctrl.repoOption=ctrl.repoOptions[myIndex];
+                    }
 
-			});
+                });
+			}
+			// sort collectorItems by lastUpdated
+            var sorted = _.sortBy(collector,function(collectorItem){
+                return - (new Date(collectorItem.lastUpdated).getTime());
+            });
+
+			if(!angular.isUndefined(sorted) && !angular.isUndefined(sorted[0])){
+                ctrl.repoUrl = removeGit(sorted[0].options.url);
+                ctrl.gitBranch = sorted[0].options.branch;
+                ctrl.repouser = sorted[0].options.userID;
+                ctrl.repopass = sorted[0].options.password;
+                ctrl.repoPersonalAccessToken = sorted[0].options.personalAccessToken;
+			}
+
+
 		}
-
-		ctrl.repoUrl = removeGit(widgetConfig.options.url);
-		ctrl.gitBranch = widgetConfig.options.branch;
-		ctrl.repouser = widgetConfig.options.userID;
-		ctrl.repopass = widgetConfig.options.password;
-		ctrl.repoPersonalAccessToken = widgetConfig.options.personalAccessToken;
 
 		// public variables
 		ctrl.submitted = false;
@@ -203,13 +213,8 @@
 		function processCollectorItemResponse(response) {
 			var postObj = {
 				name : "repo",
-				options : {
-					id : widgetConfig.options.id,
-					url : removeGit(ctrl.repoUrl),
-					branch : ctrl.gitBranch,
-					userID : getNonNullString(ctrl.repouser),
-					password: getNonNullString(ctrl.repopass),
-					personalAccessToken: getNonNullString(ctrl.repoPersonalAccessToken)
+				options:{
+					id: widgetConfig.options.id
 				},
 				componentId : modalData.dashboard.application.components[0].id,
 				collectorItemId : response.data.id

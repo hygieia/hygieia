@@ -2,6 +2,8 @@ package com.capitalone.dashboard.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -79,4 +81,22 @@ public class Component extends BaseModel {
         collectorItems.addAll(getCollectorItems().get(type));
         return collectorItems.get(0);
     }
+
+    public CollectorItem getLastUpdatedCollectorItemForType(CollectorType type){
+
+        if(getCollectorItems().get(type) == null || getCollectorItems().get(type).isEmpty()) {
+            return null;
+        }
+        List<CollectorItem> collectorItems = new ArrayList<>();
+        collectorItems.addAll(getCollectorItems().get(type));
+        return getLastUpdateItem(collectorItems);
+    }
+
+    private CollectorItem getLastUpdateItem(List<CollectorItem> collectorItems){
+        Comparator<CollectorItem> collectorItemComparator = Comparator.comparing(CollectorItem::getLastUpdated);
+        Comparator<CollectorItem> reversed = collectorItemComparator.reversed();
+        Collections.sort(collectorItems,reversed);
+        return collectorItems.get(0);
+    }
+
 }
