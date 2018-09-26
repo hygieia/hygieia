@@ -127,7 +127,7 @@ public class AwsCloudwatchLogAnalyzerTaskTest {
         fakeAnalayser.setNiceName("myFirstGraph");
         ObjectId fakeJobId = new ObjectId();
         fakeAnalayser.setId(fakeJobId);
-        when(mockJobRepo.findByCollectorIdAndNiceName(same(fakeId),eq("MyFirstGraph"))).thenReturn(Collections.singletonList(fakeAnalayser));
+        when(mockJobRepo.findByCollectorIdAndDescription(same(fakeId),eq("MyFirstGraph"))).thenReturn(Collections.singletonList(fakeAnalayser));
 
         subject.collect(mockAnalyzer);
 
@@ -160,7 +160,7 @@ public class AwsCloudwatchLogAnalyzerTaskTest {
 
         ObjectId fakeCollectorId = new ObjectId();
         when(mockAnalyzer.getId()).thenReturn(fakeCollectorId);
-        when(mockJobRepo.findByCollectorIdAndNiceName(same(fakeCollectorId),eq("MyFirstGraph"))).thenReturn(null);
+        when(mockJobRepo.findByCollectorIdAndDescription(same(fakeCollectorId),eq("MyFirstGraph"))).thenReturn(null);
 
         subject.collect(mockAnalyzer);
 
@@ -181,7 +181,7 @@ public class AwsCloudwatchLogAnalyzerTaskTest {
 
         ObjectId fakeCollectorId = new ObjectId();
         when(mockAnalyzer.getId()).thenReturn(fakeCollectorId);
-        when(mockJobRepo.findByCollectorIdAndNiceName(same(fakeCollectorId),eq("MyFirstGraph"))).thenReturn(Collections.emptyList());
+        when(mockJobRepo.findByCollectorIdAndDescription(same(fakeCollectorId),eq("MyFirstGraph"))).thenReturn(Collections.emptyList());
 
         subject.collect(mockAnalyzer);
 

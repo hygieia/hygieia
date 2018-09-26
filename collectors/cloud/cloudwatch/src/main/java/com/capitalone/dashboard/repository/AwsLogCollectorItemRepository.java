@@ -10,4 +10,5 @@ import java.util.List;
  */
 public interface AwsLogCollectorItemRepository extends BaseCollectorItemRepository<AwsLogCollectorItem>{
 
+    List<AwsLogCollectorItem> findByCollectorIdAndDescription(ObjectId collectorId, String description);
 }
