@@ -52,13 +52,13 @@ public class DashboardAuditModel {
 
     public Map<AuditType, Evaluator> evaluatorMap() {
         return Collections.unmodifiableMap(Stream.of(
-                new SimpleEntry<>(AuditType.CODE_REVIEW, codeReviewEvaluator),
-                new SimpleEntry<>(AuditType.CODE_QUALITY, codeQualityEvaluator),
-                new SimpleEntry<>(AuditType.STATIC_SECURITY_ANALYSIS, staticSecurityAnalysisEvaluator),
-                new SimpleEntry<>(AuditType.LIBRARY_POLICY, libraryPolicyEvaluator),
-                new SimpleEntry<>(AuditType.BUILD_REVIEW, buildEvaluator),
-                new SimpleEntry<>(AuditType.TEST_RESULT, regressionTestResultEvaluator),
-                new SimpleEntry<>(AuditType.PERF_TEST, performanceTestResultEvaluator))
+                new SimpleEntry<>(AuditType.CODE_REVIEW, (Evaluator)codeReviewEvaluator),
+                new SimpleEntry<>(AuditType.CODE_QUALITY, (Evaluator)codeQualityEvaluator),
+                new SimpleEntry<>(AuditType.STATIC_SECURITY_ANALYSIS, (Evaluator)staticSecurityAnalysisEvaluator),
+                new SimpleEntry<>(AuditType.LIBRARY_POLICY, (Evaluator)libraryPolicyEvaluator),
+                new SimpleEntry<>(AuditType.BUILD_REVIEW, (Evaluator)buildEvaluator),
+                new SimpleEntry<>(AuditType.TEST_RESULT, (Evaluator)regressionTestResultEvaluator),
+                new SimpleEntry<>(AuditType.PERF_TEST, (Evaluator)performanceTestResultEvaluator))
                 .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue)));
     }
 
