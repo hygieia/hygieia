@@ -34,6 +34,8 @@ import com.atlassian.jira.rest.client.api.domain.Comment;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
+import com.atlassian.jira.rest.client.api.domain.IssueLink;
+import com.atlassian.jira.rest.client.api.domain.IssueLinkType;
 import com.atlassian.jira.rest.client.api.domain.Status;
 import com.atlassian.jira.rest.client.api.domain.TimeTracking;
 import com.atlassian.jira.rest.client.api.domain.User;
@@ -41,6 +43,7 @@ import com.capitalone.dashboard.client.JiraClient;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.FeatureCollector;
 import com.capitalone.dashboard.model.FeatureStatus;
+import com.capitalone.dashboard.model.FeatureIssueLink;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.TeamRepository;
@@ -61,6 +64,8 @@ public class StoryDataClientImplTests {
 	private static final Status STATUS_TODO = new Status(URI.create("http://my.jira.com/rest/api/2/status/21"), Long.valueOf(21), "OPEN", "OPEN", null);
 	private static final Status STATUS_IN_PROGRESS = new Status(URI.create("http://my.jira.com/rest/api/2/status/22"), Long.valueOf(22), "IN PROGRESS", "IN PROGRESS", null);
 	private static final Status STATUS_DONE = new Status(URI.create("http://my.jira.com/rest/api/2/status/23"), Long.valueOf(23), "CLOSED", "CLOSED", null);
+	private static final IssueLinkType issuelinkType = new IssueLinkType("Tests", "is tested by", IssueLinkType.Direction.OUTBOUND);
+	private static final IssueLink issuelink = new IssueLink("ABC-123", URI.create("https://my.jira.com/rest/api/2/issue/3"), issuelinkType);
 	
 	CoreFeatureSettings coreFeatureSettings;
 	FeatureSettings featureSettings;
@@ -117,7 +122,7 @@ public class StoryDataClientImplTests {
 				createIssue(1001, 10000000, STATUS_TODO, createTimeTracking(5 * 60, 4 * 60, 1 * 60), 
 						Arrays.asList(createField("custom_sprint", "List", jsonA), 
 						                createField("custom_storypoints", "Integer", 3),
-						                createField("custom_teamname", "String", "1534")))
+						                createField("custom_teamname", "String", "1534")), Arrays.asList(issuelink))
 				);
 		
 		Mockito.when(jiraClient.getIssues(Mockito.anyLong(), Mockito.eq(0))).thenReturn(jiraClientResponse);
@@ -174,8 +179,17 @@ public class StoryDataClientImplTests {
 		assertEquals(Arrays.asList("Billy"), feature1.getsOwnersUsername());
 		assertEquals(Arrays.asList("Billy"), feature1.getsOwnersID());
 		assertEquals(Arrays.asList("Billy Bob"), feature1.getsOwnersFullName());
-		
-		// epic data test elsewhere
+
+		//processIssueLinkData
+		assertNotNull(feature1.getIssueLinks());
+		assertEquals(1, feature1.getIssueLinks().size());
+		for (FeatureIssueLink featureIssueLink:feature1.getIssueLinks()) {
+			assertEquals("Tests",featureIssueLink.getIssueLinkName());
+			assertEquals("is tested by",featureIssueLink.getIssueLinkType());
+			assertEquals("ABC-123", featureIssueLink.getTargetIssueKey());
+			assertEquals("OUTBOUND", featureIssueLink.getIssueLinkDirection());
+			assertEquals("https://my.jira.com/rest/api/2/issue/3", featureIssueLink.getTargetIssueUri());
+		}
 	}
 	
 	@Test
@@ -189,9 +203,9 @@ public class StoryDataClientImplTests {
 		jsonA.put(sprintRaw);
 		
 		List<Issue> jiraClientResponse = Arrays.asList(
-				createIssue(1001, 10000000, STATUS_TODO, createTimeTracking(5 * 60, 4 * 60, 1 * 60), Arrays.asList(createField("custom_sprint", "List", jsonA))),
-				createIssue(1002, 10000000, STATUS_TODO, createTimeTracking(5 * 60, 4 * 60, 1 * 60), Arrays.asList(createField("custom_sprint", "List", jsonA))),
-				createIssue(1003, 10000000, STATUS_DONE, createTimeTracking(5 * 60, 4 * 60, 1 * 60), Arrays.asList(createField("custom_sprint", "List", jsonA)))
+				createIssue(1001, 10000000, STATUS_TODO, createTimeTracking(5 * 60, 4 * 60, 1 * 60), Arrays.asList(createField("custom_sprint", "List", jsonA)), Arrays.asList(issuelink)),
+				createIssue(1002, 10000000, STATUS_TODO, createTimeTracking(5 * 60, 4 * 60, 1 * 60), Arrays.asList(createField("custom_sprint", "List", jsonA)), Arrays.asList(issuelink)),
+				createIssue(1003, 10000000, STATUS_DONE, createTimeTracking(5 * 60, 4 * 60, 1 * 60), Arrays.asList(createField("custom_sprint", "List", jsonA)), Arrays.asList(issuelink))
 				);
 		
 		Mockito.when(jiraClient.getIssues(Mockito.anyLong(), Mockito.eq(0))).thenReturn(jiraClientResponse.subList(0, 2));
@@ -220,10 +234,10 @@ public class StoryDataClientImplTests {
 		// This is actually how the data comes back from jira
 		List<Issue> jiraClientResponse = Arrays.asList(
 				createIssue(1001, 10000000, STATUS_DONE, createTimeTracking(5 * 60, 4 * 60, 1 * 60), 
-						Arrays.asList(createField("custom_epic", "String", "1002")))
+						Arrays.asList(createField("custom_epic", "String", "1002")), Arrays.asList(issuelink))
 				);
 		
-		Issue jiraClientEpicResponse = createIssue(1002, 1467739128322L, STATUS_IN_PROGRESS, null, null);
+		Issue jiraClientEpicResponse = createIssue(1002, 1467739128322L, STATUS_IN_PROGRESS, null, null, Arrays.asList(issuelink));
 		
 		Mockito.when(jiraClient.getIssues(Mockito.anyLong(), Mockito.eq(0))).thenReturn(jiraClientResponse);
 		Mockito.when(jiraClient.getEpic(Mockito.eq("1002"))).thenReturn(jiraClientEpicResponse);
@@ -248,7 +262,7 @@ public class StoryDataClientImplTests {
 		assertEquals("False", feature1.getsEpicIsDeleted());
 	}
 	
-	private Issue createIssue(long id, long updateDate, Status status, TimeTracking timeTracking, Collection<IssueField> issueFields) {
+	private Issue createIssue(long id, long updateDate, Status status, TimeTracking timeTracking, Collection<IssueField> issueFields, Collection<IssueLink> issueLinks) {
 		String idStr = Long.valueOf(id).toString();
 		
 		Issue rt = new Issue(
@@ -275,7 +289,7 @@ public class StoryDataClientImplTests {
 				issueFields, // issueFields,
 				Arrays.asList(Comment.valueOf("A comment")), // comments
 				null, // transitionUri
-				Collections.emptyList(), // issueLinks
+				issueLinks, // issueLinks
 				new BasicVotes(null, 0, false), // votes
 				Collections.emptyList(), // worklogs
 				new BasicWatchers(null, false, 0), // watchers
