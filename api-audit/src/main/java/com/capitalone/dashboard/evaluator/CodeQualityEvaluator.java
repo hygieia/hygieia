@@ -83,6 +83,7 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
         if (!MapUtils.isEmpty(data) &&
                 (data.get("repos") instanceof List) &&
                 !CollectionUtils.isEmpty(Collections.singleton(data.get("repos"))) &&
+                (!CollectionUtils.isEmpty((List) data.get("repos"))) &&
                 (((List) data.get("repos")).get(0) instanceof CollectorItem)) {
             repoItems = (List<CollectorItem>) data.get("repos");
 

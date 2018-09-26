@@ -103,6 +103,14 @@ public class DefaultGitHubClient implements GitHubClient {
     }
 
 
+    protected void setLdapMap(Map<String, String> ldapMap) {
+        this.ldapMap = ldapMap;
+    }
+
+    protected Map<String, String> getLdapMap() {
+        return ldapMap;
+    }
+
     @Override
     @SuppressWarnings("PMD.ExcessiveMethodLength")
     public void fireGraphQL(GitHubRepo repo, boolean firstRun, Map<Long, String> existingPRMap, Map<Long, String> existingIssueMap) throws RestClientException, MalformedURLException, HygieiaException {
@@ -937,23 +945,26 @@ public class DefaultGitHubClient implements GitHubClient {
         return rateLimit;
     }
 
+    @Override
     public String getLDAPDN(GitHubRepo repo, String user) {
         if (StringUtils.isEmpty(user)) return null;
-        if (ldapMap.get(user) != null) {
-            return ldapMap.get(user);
+        //This is weird. Github does replace the _ in commit author with - in the user api!!!
+        String formattedUser = user.replace("_", "-");
+        if (ldapMap.get(formattedUser) != null) {
+            return ldapMap.get(formattedUser);
         }
         String repoUrl = (String) repo.getOptions().get("url");
         try {
             GitHubParsed gitHubParsed = new GitHubParsed(repoUrl);
             String apiUrl = gitHubParsed.getBaseApiUrl();
 
-            String queryUrl = apiUrl.concat("users/").concat(user);
+            String queryUrl = apiUrl.concat("users/").concat(formattedUser);
 
             ResponseEntity<String> response = makeRestCallGet(queryUrl);
             JSONObject jsonObject = parseAsObject(response);
             String ldapDN = str(jsonObject, "ldap_dn");
             if (!StringUtils.isEmpty(ldapDN)) {
-                ldapMap.put(user, ldapDN);
+                ldapMap.put(formattedUser, ldapDN);
             }
             return str(jsonObject, "ldap_dn");
         } catch (MalformedURLException | HygieiaException | RestClientException e) {
