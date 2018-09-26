@@ -6,6 +6,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -183,7 +184,7 @@ public class CodeQualityMetricsConverter implements CodeQualityVisitor {
     private CodeQualityMetric computeCoveragePercent(String metricName, CodeQualityMetric covered,CodeQualityMetric missed) {
         double percentageCovered = Double.parseDouble(covered.getValue())*100.0/(Double.parseDouble(covered.getValue()) + Double.parseDouble(missed.getValue()));
         CodeQualityMetric metric = new CodeQualityMetric(metricName);
-        metric.setFormattedValue(String.format("%.3f",percentageCovered));
+        metric.setFormattedValue(String.format(Locale.US,"%.3f",percentageCovered));
         metric.setValue(Double.toString(percentageCovered));
         metric.setStatus(CodeQualityMetricStatus.Ok);
         return metric;

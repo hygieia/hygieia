@@ -14,11 +14,11 @@ import java.util.logging.Logger;
 
 @Extension
 @SuppressWarnings("rawtypes")
-public class HygieiaListener extends RunListener<AbstractBuild> {
+public class HygieiaJobListener extends RunListener<AbstractBuild> {
 
-    private static final Logger logger = Logger.getLogger(HygieiaListener.class.getName());
+    private static final Logger logger = Logger.getLogger(HygieiaJobListener.class.getName());
 
-    public HygieiaListener() {
+    public HygieiaJobListener() {
         super(AbstractBuild.class);
     }
 
@@ -48,7 +48,7 @@ public class HygieiaListener extends RunListener<AbstractBuild> {
         Map<Descriptor<Publisher>, Publisher> map = project.getPublishersList().toMap();
         for (Publisher publisher : map.values()) {
             if (publisher instanceof HygieiaPublisher) {
-                return new ActiveNotifier((HygieiaPublisher) publisher, (BuildListener)listener);
+                return new ActiveJobNotifier((HygieiaPublisher) publisher, (BuildListener)listener);
             }
         }
         return new DisabledNotifier();
