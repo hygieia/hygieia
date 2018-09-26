@@ -46,6 +46,7 @@ public class BuildBuilder {
         this.buildChangeSet = buildChangeSet;
         if (run instanceof AbstractBuild) {
             this.build = (AbstractBuild<?, ?>) run;
+            this.isComplete = !(Objects.equals(BuildStatus.InProgress, result));
             createBuildRequest();
         } else {
             createBuildRequestFromRun();
