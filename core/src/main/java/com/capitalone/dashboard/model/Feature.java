@@ -16,6 +16,8 @@
 
 package com.capitalone.dashboard.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -114,6 +116,9 @@ public class Feature extends BaseModel {
 	private String sProjectBeginDate;
 	private String sProjectName;
 	private String sProjectID;
+
+
+	private Collection<FeatureIssueLink> issueLinks = new ArrayList<>();
 
 	public ObjectId getCollectorId() {
         return collectorId;
@@ -521,6 +526,14 @@ public class Feature extends BaseModel {
 
 	public List<String> getsOwnersIsDeleted() {
 		return this.sOwnersIsDeleted;
+	}
+
+	public Collection<FeatureIssueLink> getIssueLinks() {
+		return issueLinks;
+	}
+
+	public void setIssueLinks(Collection<FeatureIssueLink> issueLinks) {
+		this.issueLinks = issueLinks;
 	}
 	
 	@Override
