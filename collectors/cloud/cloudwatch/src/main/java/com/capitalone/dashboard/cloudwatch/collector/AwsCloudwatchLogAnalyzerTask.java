@@ -65,11 +65,10 @@ public class AwsCloudwatchLogAnalyzerTask extends CollectorTask<AwsCloudwatchLog
         int metricCount=0;
         for (CloudWatchJob job: jobs) {
             jobCount++;
-            List<AwsLogCollectorItem> logJobItem = this.jobRepo.findByName(job.getName());
+            List<AwsLogCollectorItem> logJobItem = this.jobRepo.findByCollectorIdAndNiceName(collector.getId(),job.getName());
             AwsLogCollectorItem analyzerJob = null;
             if (null==logJobItem || logJobItem.isEmpty()) {
                 analyzerJob = new AwsLogCollectorItem();
-                analyzerJob.setName(job.getName());
                 analyzerJob.setCollectorId(collector.getId());
                 analyzerJob.setNiceName(job.getName());
                 analyzerJob.setDescription(job.getName());

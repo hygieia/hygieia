@@ -25,6 +25,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -122,10 +124,10 @@ public class AwsCloudwatchLogAnalyzerTaskTest {
         when(mockAnalyzer.getId()).thenReturn(fakeId);
 
         AwsLogCollectorItem fakeAnalayser = new AwsLogCollectorItem();
-        fakeAnalayser.setName("myFirstGraph");
+        fakeAnalayser.setNiceName("myFirstGraph");
         ObjectId fakeJobId = new ObjectId();
         fakeAnalayser.setId(fakeJobId);
-        when(mockJobRepo.findByName("MyFirstGraph")).thenReturn(Collections.singletonList(fakeAnalayser));
+        when(mockJobRepo.findByCollectorIdAndNiceName(same(fakeId),eq("MyFirstGraph"))).thenReturn(Collections.singletonList(fakeAnalayser));
 
         subject.collect(mockAnalyzer);
 
@@ -156,9 +158,9 @@ public class AwsCloudwatchLogAnalyzerTaskTest {
         AWSLogsClient mockClient = mock(AWSLogsClient.class);
         when(mockFactory.getInstance()).thenReturn(mockClient);
 
-        when(mockJobRepo.findByName("MyFirstGraph")).thenReturn(null);
         ObjectId fakeCollectorId = new ObjectId();
         when(mockAnalyzer.getId()).thenReturn(fakeCollectorId);
+        when(mockJobRepo.findByCollectorIdAndNiceName(same(fakeCollectorId),eq("MyFirstGraph"))).thenReturn(null);
 
         subject.collect(mockAnalyzer);
 
@@ -166,7 +168,6 @@ public class AwsCloudwatchLogAnalyzerTaskTest {
         verify(mockJobRepo).save(captor.capture());
 
         assertThat(captor.getValue()).isNotNull();
-        assertThat(captor.getValue().getName()).isEqualTo("MyFirstGraph");
         assertThat(captor.getValue().getNiceName()).isEqualTo("MyFirstGraph");
         assertThat(captor.getValue().getDescription()).isEqualTo("MyFirstGraph");
         assertThat(captor.getValue().getCollectorId()).isSameAs(fakeCollectorId);
@@ -178,9 +179,9 @@ public class AwsCloudwatchLogAnalyzerTaskTest {
         AWSLogsClient mockClient = mock(AWSLogsClient.class);
         when(mockFactory.getInstance()).thenReturn(mockClient);
 
-        when(mockJobRepo.findByName("MyFirstGraph")).thenReturn(Collections.emptyList());
         ObjectId fakeCollectorId = new ObjectId();
         when(mockAnalyzer.getId()).thenReturn(fakeCollectorId);
+        when(mockJobRepo.findByCollectorIdAndNiceName(same(fakeCollectorId),eq("MyFirstGraph"))).thenReturn(Collections.emptyList());
 
         subject.collect(mockAnalyzer);
 
@@ -188,7 +189,6 @@ public class AwsCloudwatchLogAnalyzerTaskTest {
         verify(mockJobRepo).save(captor.capture());
 
         assertThat(captor.getValue()).isNotNull();
-        assertThat(captor.getValue().getName()).isEqualTo("MyFirstGraph");
         assertThat(captor.getValue().getCollectorId()).isSameAs(fakeCollectorId);
     }
 }
