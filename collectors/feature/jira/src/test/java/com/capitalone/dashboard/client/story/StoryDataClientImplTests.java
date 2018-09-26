@@ -64,7 +64,7 @@ public class StoryDataClientImplTests {
 	private static final Status STATUS_TODO = new Status(URI.create("http://my.jira.com/rest/api/2/status/21"), Long.valueOf(21), "OPEN", "OPEN", null);
 	private static final Status STATUS_IN_PROGRESS = new Status(URI.create("http://my.jira.com/rest/api/2/status/22"), Long.valueOf(22), "IN PROGRESS", "IN PROGRESS", null);
 	private static final Status STATUS_DONE = new Status(URI.create("http://my.jira.com/rest/api/2/status/23"), Long.valueOf(23), "CLOSED", "CLOSED", null);
-	private static final IssueLinkType issuelinkType = new IssueLinkType("Tests", "is tested by", IssueLinkType.Direction.OUTBOUND);
+	private static final IssueLinkType issuelinkType = new IssueLinkType("Tests", "tested by", IssueLinkType.Direction.INBOUND);
 	private static final IssueLink issuelink = new IssueLink("ABC-123", URI.create("https://my.jira.com/rest/api/2/issue/3"), issuelinkType);
 	
 	CoreFeatureSettings coreFeatureSettings;
@@ -185,9 +185,9 @@ public class StoryDataClientImplTests {
 		assertEquals(1, feature1.getIssueLinks().size());
 		for (FeatureIssueLink featureIssueLink:feature1.getIssueLinks()) {
 			assertEquals("Tests",featureIssueLink.getIssueLinkName());
-			assertEquals("is tested by",featureIssueLink.getIssueLinkType());
+			assertEquals("tested by",featureIssueLink.getIssueLinkType());
 			assertEquals("ABC-123", featureIssueLink.getTargetIssueKey());
-			assertEquals("OUTBOUND", featureIssueLink.getIssueLinkDirection());
+			assertEquals("INBOUND", featureIssueLink.getIssueLinkDirection());
 			assertEquals("https://my.jira.com/rest/api/2/issue/3", featureIssueLink.getTargetIssueUri());
 		}
 	}
