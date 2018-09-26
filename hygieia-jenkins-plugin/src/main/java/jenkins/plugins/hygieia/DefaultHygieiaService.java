@@ -16,6 +16,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -211,12 +212,22 @@ public class DefaultHygieiaService implements HygieiaService {
 
     public boolean testConnection() {
         RestCall restCall = new RestCall(useProxy);
-        RestCall.RestCallResponse callResponse = restCall.makeRestCallGet(hygieiaAPIUrl + "/ping");
-        int responseCode = callResponse.getResponseCode();
-
-        if (responseCode == HttpStatus.SC_OK) return true;
-
-        logger.log(Level.WARNING, "Hygieia Test Connection Failed. Response: " + responseCode);
-        return false;
+        RestCall.RestCallResponse callResponse = null;
+        List<String> hygieiaAPIUrls = Arrays.asList(hygieiaAPIUrl.split(";"));
+        if(hygieiaAPIUrls.isEmpty()) {
+            logger.log(Level.WARNING, "No URL's to test");
+            return false;
+        }
+        for(String hygieiaUrl : hygieiaAPIUrls){
+        	callResponse = restCall.makeRestCallGet(hygieiaUrl + "/ping");
+            int responseCode = callResponse.getResponseCode();
+            if (responseCode == HttpStatus.SC_OK) {
+            	continue;
+            } else {
+                logger.log(Level.WARNING, "Hygieia Test Connection Failed for the URL"+hygieiaUrl+". Response: " + responseCode);
+            	return false;
+            }
+        }
+        return true;
     }
 }
