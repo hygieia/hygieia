@@ -1,0 +1,196 @@
+{
+  "auditStatuses": [
+    "DASHBOARD_TEST_CONFIGURED"
+  ],
+  "lastUpdated": 0,
+  "dashboardTitle": "TestSSA",
+  "businessService": "TestBusServ",
+  "businessApplication": "confItem",
+  "review": {
+    "TEST_RESULT": [
+      {
+        "auditStatuses": [
+          "TEST_RESULT_AUDIT_OK",
+          "TEST_RESULTS_TRACEABILITY_STORY_MATCH"],
+        "lastUpdated": 0,
+        "lastExecutionTime": 1476643852954,
+        "testCapabilities": [
+          {
+            "timestamp": 0,
+            "executionId": "94",
+            "description": "/json",
+            "startTime": 0,
+            "endTime": 0,
+            "duration": 161998,
+            "failedTestSuiteCount": 0,
+            "successTestSuiteCount": 1,
+            "skippedTestSuiteCount": 0,
+            "totalTestSuiteCount": 1,
+            "unknownStatusTestSuiteCount": 0,
+            "status": "Success",
+            "type": "Functional",
+            "testSuites": [
+              {
+                "id": "validate-auto-loan-account-details",
+                "description": "Feature:Validate Auto Loan Account Details",
+                "type": "Functional",
+                "startTime": 0,
+                "endTime": 0,
+                "duration": 161998,
+                "totalTestCaseCount": 2,
+                "failedTestCaseCount": 0,
+                "successTestCaseCount": 2,
+                "skippedTestCaseCount": 0,
+                "unknownStatusCount": 0,
+                "status": "Success",
+                "testCases": [
+                  {
+                    "id": "validate-auto-loan-account-details;validate-the-nick-name-accountdetails-l2-page",
+                    "description": "Scenario:Validate the Nick Name Accountdetails L2 page",
+                    "duration": 161997,
+                    "totalTestStepCount": 11,
+                    "failedTestStepCount": 0,
+                    "successTestStepCount": 11,
+                    "skippedTestStepCount": 0,
+                    "unknownStatusTestStepCount": 0,
+                    "status": "Success",
+                    "testSteps": [
+                      {
+                        "id": "1157",
+                        "description": "Given :The Auto Loan account with \"Nick_Name_Test\"",
+                        "duration": 162,
+                        "status": "Success"
+                      },
+                      {
+                        "id": "1158",
+                        "description": "And :I'm on    Welcome page",
+                        "duration": 26925,
+                        "status": "Success"
+                      },
+                      {
+                        "id": "1159",
+                        "description": "And :I click on preferences on Account Settings",
+                        "duration": 6978,
+                        "status": "Success"
+                      },
+                      {
+                        "id": "1160",
+                        "description": "And :I click on Add Nickname and pass \"Angelo\"",
+                        "duration": 8168,
+                        "status": "Success"
+                      },
+                      {
+                        "id": "1161",
+                        "description": "And :I Logout from Preferences Page",
+                        "duration": 11205,
+                        "status": "Success"
+                      },
+                      {
+                        "id": "1162",
+                        "description": "Then :The Auto Loan account with \"Nick_Name_Test\"",
+                        "duration": 47,
+                        "status": "Success"
+                      },
+                      {
+                        "id": "1163",
+                        "description": "And :I'm on    Welcome page",
+                        "duration": 22027,
+                        "status": "Success"
+                      },
+                      {
+                        "id": "1164",
+                        "description": "And :I am on the transaction page",
+                        "duration": 39588,
+                        "status": "Success"
+                      },
+                      {
+                        "id": "1165",
+                        "description": "Then :I verify the account name shown is the same as inputted nickname from the preferences page",
+                        "duration": 560,
+                        "status": "Success"
+                      },
+                      {
+                        "id": "1166",
+                        "description": "And :I am on the Payment Modal page",
+                        "duration": 43410,
+                        "status": "Success"
+                      },
+                      {
+                        "id": "1167",
+                        "description": "Then :I verify the account name shown on the modal is the same as inputted nickname",
+                        "duration": 2927,
+                        "status": "Success"
+                      }
+                    ],
+                    "tags": [
+                      "@B-1626822"
+                    ],
+                    "storyIndicators": [
+                      {
+                        "storyId": "Story:25440803",
+                        "storyNumber": "B-1626822",
+                        "storyName": "Stop calling Account Summary from L2 - Performance Improvements",
+                        "storyStatus": "Accepted",
+                        "storyState": "Closed",
+                        "storyType": "Story",
+                        "epicNumber": "E-51172",
+                        "epicName": "Continuous Improvement",
+                        "projectName": "Web PI-8",
+                        "teamName": "Slate",
+                        "sprintName": "Sprint 8.5 (9/1 - 9/14)"
+                      }
+                    ],
+                    "before": [
+                      {
+                        "condition": "Match: Hooks.shutdownHook()",
+                        "result": {
+                          "status": "Success",
+                          "duration": 51099790
+                        }
+                      }
+                    ],
+                    "after": [
+                      {
+                        "condition": "Match: AccountDetailsStepDef.embedScreenshot(Scenario)",
+                        "result": {
+                          "status": "Success",
+                          "duration": 1750778
+                        }
+                      },
+                      {
+                        "condition": "Match: Hooks.logout()",
+                        "result": {
+                          "status": "Success",
+                          "duration": 42169376799
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "totalStoryCount": 4,
+        "threshold": 80,
+        "percentTraceability": 25,
+        "totalStories": [
+          {
+            "B-1488671": {
+              "auditStatus": "TEST_RESULTS_TRACEABILITY_STORY_STATUS_INVALID"
+            },
+            "B-1521515": {
+              "auditStatus": "TEST_RESULTS_TRACEABILITY_STORY_NOT_FOUND"
+            },
+            "B-1626822": {
+              "auditStatus": "TEST_RESULTS_TRACEABILITY_STORY_MATCH"
+            },
+            "JIRA-11998": {
+              "auditStatus": "TEST_RESULTS_TRACEABILITY_STORY_MATCH"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

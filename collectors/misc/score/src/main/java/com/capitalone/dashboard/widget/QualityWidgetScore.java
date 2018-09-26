@@ -284,7 +284,7 @@ public class QualityWidgetScore extends WidgetScoreAbstract {
     CodeQuality codeQuality = qualityIterator.next();
     for (CodeQualityMetric codeQualityMetric : codeQuality.getMetrics()) {
       if (codeQualityMetric.getName().equals(param)) {
-        paramValue = (Double.valueOf(String.valueOf(codeQualityMetric.getValue())));
+        paramValue = Double.valueOf(codeQualityMetric.getValue());
         break;
       }
     }

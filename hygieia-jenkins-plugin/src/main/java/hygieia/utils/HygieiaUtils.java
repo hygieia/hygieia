@@ -1,13 +1,13 @@
 package hygieia.utils;
 
+import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.RepoBranch;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
+import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.plugins.git.GitSCM;
@@ -17,7 +17,6 @@ import jenkins.plugins.hygieia.CustomObjectMapper;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
-import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.multiplescms.MultiSCM;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.springframework.util.CollectionUtils;
@@ -27,12 +26,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 
 public class HygieiaUtils {
     private static final Logger logger = Logger.getLogger(HygieiaUtils.class.getName());
     public static final String APPLICATION_JSON_VALUE = "application/json";
+    public static final String JOB_URL_SEARCH_PARM = "job/";
 
     public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
         ObjectMapper mapper = new CustomObjectMapper();
@@ -144,7 +145,20 @@ public class HygieiaUtils {
         return run.getParent().getDisplayName();
     }
 
+    public static String getJobPath(AbstractBuild<?, ?> build){
+        String jobUrl = getJobUrl(build);
+        if(jobUrl == null || !jobUrl.contains(JOB_URL_SEARCH_PARM))return build.getProject().getName();
 
+        String jobPath = jobUrl.substring(jobUrl.indexOf(JOB_URL_SEARCH_PARM) , jobUrl.length());
+        return jobPath;
+    }
+    public static String getJobPath(Run<?, ?> run){
+        String jobUrl = getJobUrl(run);
+        if(jobUrl == null || !jobUrl.contains(JOB_URL_SEARCH_PARM))return run.getParent().getDisplayName();
+
+        String jobPath = jobUrl.substring(jobUrl.indexOf(JOB_URL_SEARCH_PARM) , jobUrl.length());
+        return jobPath;
+    }
 
     public static String getInstanceUrl(AbstractBuild<?, ?> build, TaskListener listener) {
         String envValue = getEnvironmentVariable(build, listener, "JENKINS_URL");
@@ -315,6 +329,27 @@ public class HygieiaUtils {
             }
         }
         return returnValue;
+    }
+
+    public static BuildStatus getBuildStatus (Result result) {
+
+        if(Objects.equals(Result.SUCCESS,result))
+        {
+            return BuildStatus.Success ;
+        }
+        else if(Objects.equals(Result.ABORTED, result))
+        {
+            return BuildStatus.Aborted;
+        }
+        else if(Objects.equals(Result.UNSTABLE, result)) {
+            return BuildStatus.Unstable;
+        }
+        else if(Objects.equals(Result.FAILURE, result)) {
+            return BuildStatus.Failure;
+        }
+        else {
+            return BuildStatus.Unknown;
+        }
     }
 
 }

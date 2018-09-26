@@ -1,27 +1,29 @@
 package com.capitalone.dashboard.collector;
 
 
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.LibraryPolicyReport;
-import com.capitalone.dashboard.model.LibraryPolicyResult;
-import com.capitalone.dashboard.model.NexusIQApplication;
-import com.capitalone.dashboard.model.NexusIQCollector;
-import com.capitalone.dashboard.repository.BaseCollectorRepository;
-import com.capitalone.dashboard.repository.ComponentRepository;
-import com.capitalone.dashboard.repository.LibraryPolicyResultsRepository;
-import com.capitalone.dashboard.repository.NexusIQApplicationRepository;
-import com.capitalone.dashboard.repository.NexusIQCollectorRepository;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.LibraryPolicyReport;
+import com.capitalone.dashboard.model.LibraryPolicyResult;
+import com.capitalone.dashboard.model.NexusIQApplication;
+import com.capitalone.dashboard.model.NexusIQCollector;
+import com.capitalone.dashboard.model.PolicyScanMetric;
+import com.capitalone.dashboard.repository.BaseCollectorRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.repository.LibraryPolicyResultsRepository;
+import com.capitalone.dashboard.repository.NexusIQApplicationRepository;
+import com.capitalone.dashboard.repository.NexusIQCollectorRepository;
 
 
 @Component
@@ -168,6 +170,10 @@ public class NexusIQCollectorTask extends CollectorTask<NexusIQCollector> {
                         lpr.setReportUrl(report.getReportUIUrl());
                         lpr.setEvaluationTimestamp(report.getEvaluationDate());
                         lpr.setTimestamp(System.currentTimeMillis());
+                        
+                        PolicyScanMetric policyResults = nexusIQClient.getPolicyAlerts(app);
+                        lpr.getPolicyAlert().add(policyResults);
+                        
                         libraryPolicyResultsRepository.save(lpr);
                         appUpdated = true;
                         count++;

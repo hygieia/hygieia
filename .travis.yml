@@ -17,7 +17,7 @@ before_install:
  - "sudo /etc/init.d/postgresql stop"
  - "#sudo /etc/init.d/couchdb stop"
  - "sudo /etc/init.d/redis-server stop"
- - "sudo free -m -t"
+ - "sudo chown -R $USER:$GROUP $HOME"
 
 script: mvn clean install -q
 
@@ -30,8 +30,13 @@ notifications:
     on_start: always   # options: [always|never|change] default: always
   email:
     recipients:
-      - amit.mawkin@capitalone.com
       - tapabrata.pal@capitalone.com
+      - nireesh.thiruveedula@capitalone.com
+      - Stephen.Hughes@capitalone.com
+      - Prashant.Parekh@capitalone.com
+      - Matthew.Beasley@capitalone.com
+      - Subodh.Battina@capitalone.com
+      - Ragha.Vema@capitalone.com
     on_success: always #[always|never|change] # default: change
     on_failure: always # [always|never|change] # default: always
 

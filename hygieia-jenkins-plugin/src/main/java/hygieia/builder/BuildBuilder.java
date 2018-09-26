@@ -1,28 +1,20 @@
 package hygieia.builder;
 
 import com.capitalone.dashboard.model.BuildStatus;
-import com.capitalone.dashboard.model.RepoBranch;
 import com.capitalone.dashboard.model.SCM;
 import com.capitalone.dashboard.request.BuildDataCreateRequest;
-import hudson.model.*;
-import hudson.plugins.git.GitSCM;
-import hudson.plugins.git.util.*;
+import hudson.model.AbstractBuild;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import hudson.scm.ChangeLogSet;
-import hudson.scm.SubversionSCM;
 import hygieia.utils.HygieiaUtils;
-import org.apache.commons.collections.CollectionUtils;
-import org.jenkinsci.plugins.multiplescms.MultiSCM;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Logger;
 
-import static hygieia.utils.HygieiaUtils.getEnvironmentVariable;
 import static hygieia.utils.HygieiaUtils.getRepoBranch;
 
 public class BuildBuilder {
@@ -54,6 +46,7 @@ public class BuildBuilder {
         this.buildChangeSet = buildChangeSet;
         if (run instanceof AbstractBuild) {
             this.build = (AbstractBuild<?, ?>) run;
+            this.isComplete = !(Objects.equals(BuildStatus.InProgress, result));
             createBuildRequest();
         } else {
             createBuildRequestFromRun();
@@ -63,7 +56,7 @@ public class BuildBuilder {
     private void createBuildRequestFromRun() {
         request = new BuildDataCreateRequest();
         request.setNiceName(jenkinsName);
-        request.setJobName(HygieiaUtils.getJobName(run));
+        request.setJobName(HygieiaUtils.getJobPath(run));
         request.setBuildUrl(HygieiaUtils.getBuildUrl(run));
         request.setJobUrl(HygieiaUtils.getJobUrl(run));
         request.setInstanceUrl(HygieiaUtils.getInstanceUrl(run, listener));
@@ -85,14 +78,14 @@ public class BuildBuilder {
     private void createBuildRequest() {
         request = new BuildDataCreateRequest();
         request.setNiceName(jenkinsName);
-        request.setJobName(HygieiaUtils.getJobName(build));
+        request.setJobName(HygieiaUtils.getJobPath(build));
         request.setBuildUrl(HygieiaUtils.getBuildUrl(build));
         request.setJobUrl(HygieiaUtils.getJobUrl(build));
         request.setInstanceUrl(HygieiaUtils.getInstanceUrl(build, listener));
         request.setNumber(HygieiaUtils.getBuildNumber(build));
         request.setStartTime(build.getStartTimeInMillis());
         if (isComplete) {
-            request.setBuildStatus(build.getResult().toString());
+            request.setBuildStatus(Objects.requireNonNull(build.getResult()).toString());
             request.setDuration(build.getDuration());
             request.setEndTime(build.getStartTimeInMillis() + build.getDuration());
             if (buildChangeSet) {
