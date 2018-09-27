@@ -1,0 +1,39 @@
+[
+  {
+    "_id": "5ac4f4e95470fb75445daaf6",
+    "collectorItemId": "5b4e524333ec296b81c3935f",
+    "timestamp": 1522855896054,
+    "type": "SecurityAnalysis",
+    "metrics": [
+      {
+        "name": "Score",
+        "value": "89",
+        "formattedValue": "89"
+      },
+      {
+        "name": "Low",
+        "value": "1",
+        "formattedValue": "1",
+        "status": "Ok"
+      },
+      {
+        "name": "Medium",
+        "value": "4",
+        "formattedValue": "4",
+        "status": "Warning"
+      },
+      {
+        "name": "Critical",
+        "value": "3",
+        "formattedValue": "3",
+        "status": "Alert"
+      },
+      {
+        "name": "High",
+        "value": "21",
+        "formattedValue": "21",
+        "status": "Alert"
+      }
+    ]
+  }
+]
