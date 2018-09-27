@@ -56,7 +56,7 @@ public class CommitServiceImpl implements CommitService {
         BooleanBuilder builder = new BooleanBuilder();
 
         Component component = componentRepository.findOne(request.getComponentId());
-        CollectorItem item = component.getFirstCollectorItemForType(CollectorType.SCM);
+        CollectorItem item = component.getLastUpdatedCollectorItemForType(CollectorType.SCM);
         if (item == null) {
             Iterable<Commit> results = new ArrayList<>();
             return new DataResponse<>(results, new Date().getTime());

@@ -344,7 +344,6 @@ public class DashboardRemoteRequest {
         public Map<String, Object> toWidgetOptions() {
             Map<String, Object> opts = new HashMap<>();
             opts.put("id", getWidgetId());
-            opts.put("testJobNames", Arrays.asList(""));
             return opts;
         }
     }
@@ -374,7 +373,6 @@ public class DashboardRemoteRequest {
         public Map<String, Object> toWidgetOptions() {
             Map<String, Object> opts = new HashMap<>();
             opts.put("id", getWidgetId());
-            opts.put("testJobNames", Arrays.asList(""));
             return opts;
         }
 
@@ -404,7 +402,6 @@ public class DashboardRemoteRequest {
         public Map<String, Object> toWidgetOptions() {
             Map<String, Object> opts = new HashMap<>();
             opts.put("id", getWidgetId());
-            opts.put("testJobNames", Arrays.asList(""));
             return opts;
         }
     }
@@ -433,7 +430,6 @@ public class DashboardRemoteRequest {
         public Map<String, Object> toWidgetOptions() {
             Map<String, Object> opts = new HashMap<>();
             opts.put("id", getWidgetId());
-            opts.put("testJobNames",Arrays.asList(""));
             return opts;
         }
     }
