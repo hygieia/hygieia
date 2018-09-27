@@ -47,8 +47,11 @@
             if (valid) {
                 var postObj = {
                     componentId: modalData.dashboard.application.components[0].id,
-                    collectorItemId: collector.id,
-                    maxEntries: maxEntries
+                    collectorItemIds: [collector.id],
+                    name: 'log',
+                    options: {
+                        maxEntries: maxEntries
+                    }
                 };
                 $uibModalInstance.close(postObj);
             }

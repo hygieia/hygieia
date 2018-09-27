@@ -39,7 +39,7 @@
 
         var logRequest = {
             componentId: $scope.widgetConfig.componentId,
-            max:  $scope.widgetConfig.maxEntries
+            max:  $scope.widgetConfig.options.maxEntries
         };
 
         ctrl.load = function() {
