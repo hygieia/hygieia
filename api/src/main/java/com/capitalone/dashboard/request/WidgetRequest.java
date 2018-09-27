@@ -49,7 +49,7 @@ public class WidgetRequest {
         widget.setName(name);
         widget.setComponentId(componentId);
         if ((options != null) && !options.isEmpty()) {
-            widget.getOptions().putAll(options);
+            widget.getOptions().put("id",options.get("id"));
         }
         return widget;
     }
