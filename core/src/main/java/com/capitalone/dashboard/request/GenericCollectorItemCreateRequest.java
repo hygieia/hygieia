@@ -1,13 +1,6 @@
 package com.capitalone.dashboard.request;
 
-import com.capitalone.dashboard.model.SCM;
-import org.bson.types.ObjectId;
-
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A request to create a Generic Collector Item.
