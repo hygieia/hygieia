@@ -94,8 +94,7 @@ public class Component extends BaseModel {
 
     private CollectorItem getLastUpdateItem(List<CollectorItem> collectorItems){
         Comparator<CollectorItem> collectorItemComparator = Comparator.comparing(CollectorItem::getLastUpdated);
-        Comparator<CollectorItem> reversed = collectorItemComparator.reversed();
-        Collections.sort(collectorItems,reversed);
+        Collections.sort(collectorItems,collectorItemComparator.reversed());
         return collectorItems.get(0);
     }
 
