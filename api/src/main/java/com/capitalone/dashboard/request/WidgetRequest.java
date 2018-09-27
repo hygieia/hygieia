@@ -50,6 +50,10 @@ public class WidgetRequest {
         widget.setComponentId(componentId);
         if ((options != null) && !options.isEmpty()) {
             widget.getOptions().put("id",options.get("id"));
+            if("build".equalsIgnoreCase(name)){
+                widget.getOptions().put("buildDurationThreshold",3);
+                widget.getOptions().put("consecutiveFailureThreshold",5);
+            }
         }
         return widget;
     }
