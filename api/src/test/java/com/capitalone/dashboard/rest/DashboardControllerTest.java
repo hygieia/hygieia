@@ -334,8 +334,6 @@ public class DashboardControllerTest {
                 .andExpect(jsonPath("$.widget.id", is(widgetWithId.getId().toString())))
                 .andExpect(jsonPath("$.widget.name", is("build")))
                 .andExpect(jsonPath("$.widget.componentId", is(compId.toString())))
-                .andExpect(jsonPath("$.widget.options.option1", is(1)))
-                .andExpect(jsonPath("$.widget.options.option2", is("2")))
                 .andExpect(jsonPath("$.component.id", is(component.getId().toString())))
                 .andExpect(jsonPath("$.component.name", is(component.getName())))
                 .andExpect(jsonPath("$.component.collectorItems.Build[0].id", is(collId.toString())))
