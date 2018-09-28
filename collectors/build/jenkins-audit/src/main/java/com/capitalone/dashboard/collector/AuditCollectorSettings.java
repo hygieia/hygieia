@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -11,7 +12,7 @@ import java.util.List;
  */
 @Component
 @ConfigurationProperties(prefix = "jenkins-audit")
-public class AuditConfigSettings {
+public class AuditCollectorSettings {
 
     private String cron;
     private boolean saveLog = false;
@@ -21,9 +22,9 @@ public class AuditConfigSettings {
     private List<String> usernames;
     private List<String> apiKeys;
     private String dockerLocalHostIP; //null if not running in docker on http://localhost
-    private int pageSize;
+    private int pageSize=1000;
     @Value("${folderDepth:10}")
-    private int folderDepth;
+    private int folderDepth=10;
 
     public String getCron() {
         return cron;

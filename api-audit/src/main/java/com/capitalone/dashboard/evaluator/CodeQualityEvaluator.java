@@ -123,7 +123,7 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
             if (metric.getName().equalsIgnoreCase("quality_gate_details")) {
                 codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_GATES_FOUND);
                 try {
-                    JSONObject qualityGateDetails = (JSONObject) new JSONParser().parse(metric.getValue().toString());
+                    JSONObject qualityGateDetails = (JSONObject) new JSONParser().parse((metric.getValue() == null ? "" : metric.getValue().toString()));
                     JSONArray conditions = (JSONArray) qualityGateDetails.get("conditions");
                     Iterator itr = conditions.iterator();
 

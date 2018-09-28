@@ -4,12 +4,10 @@ import com.capitalone.dashboard.model.AuditResult;
 import org.springframework.stereotype.Component;
 
 @Component
-public interface AuditStatusService {
+public interface AuditResultService {
 
     /**
-     * Fetches audit status for all the dashboards, sorted by timestamp.
-     *
-     * @return all dashboardAuditStatuses
+     * Get all audit results
      */
     Iterable<AuditResult> all();
 }

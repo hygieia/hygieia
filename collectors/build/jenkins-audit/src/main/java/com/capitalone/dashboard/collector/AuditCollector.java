@@ -8,15 +8,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AuditStatusCollector extends Collector {
+public class AuditCollector extends Collector {
 
     public static final String INSTANCE_URL = "instanceUrl";
     public static final String JOB_NAME = "jobName";
     public static final String JOB_URL = "jobUrl";
 
-    public static AuditStatusCollector prototype(List<String> servers) {
-        AuditStatusCollector protoType = new AuditStatusCollector();
-        protoType.setName("JenkinsAuditCollector");
+    public static AuditCollector prototype(List<String> servers) {
+        AuditCollector protoType = new AuditCollector();
+        protoType.setName("AuditCollector");
         protoType.setCollectorType(CollectorType.Audit);
         protoType.setOnline(true);
         protoType.setEnabled(true);
