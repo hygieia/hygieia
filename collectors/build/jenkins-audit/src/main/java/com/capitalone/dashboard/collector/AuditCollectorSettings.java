@@ -65,10 +65,6 @@ public class AuditCollectorSettings {
         this.apiKeys = apiKeys;
     }
 
-    public void setDockerLocalHostIP(String dockerLocalHostIP) {
-        this.dockerLocalHostIP = dockerLocalHostIP;
-    }
-
     public List<String> getNiceNames() {
         return niceNames;
     }
@@ -98,19 +94,23 @@ public class AuditCollectorSettings {
         return localHostOverride;
     }
 
-    public void setPageSize(int pageSize) {
-        this.pageSize = pageSize;
+    public void setDockerLocalHostIP(String dockerLocalHostIP) {
+        this.dockerLocalHostIP = dockerLocalHostIP;
     }
 
     public int getPageSize() {
         return pageSize;
     }
 
-    public void setFolderDepth(int folderDepth) {
-        this.folderDepth = folderDepth;
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
     }
 
     public int getFolderDepth() {
         return folderDepth;
+    }
+
+    public void setFolderDepth(int folderDepth) {
+        this.folderDepth = folderDepth;
     }
 }

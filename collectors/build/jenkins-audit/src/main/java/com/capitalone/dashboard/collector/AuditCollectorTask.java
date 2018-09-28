@@ -1,18 +1,24 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.repository.*;
-import com.capitalone.dashboard.model.*;
-import java.util.*;
-import com.capitalone.dashboard.service.DashboardAuditService;
-
+import com.capitalone.dashboard.model.AuditResult;
 import com.capitalone.dashboard.model.AuditType;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.repository.AuditCollectorRepository;
+import com.capitalone.dashboard.repository.AuditResultRepository;
+import com.capitalone.dashboard.repository.BaseCollectorRepository;
+import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.response.DashboardReviewResponse;
-
+import com.capitalone.dashboard.service.DashboardAuditService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * <h1>AuditCollectorTask</h1>
@@ -59,7 +65,7 @@ public class AuditCollectorTask extends CollectorTask<AuditCollector> {
         if (!auditResults.isEmpty()) {
             try {
                 auditResultRepository.save(auditResults);
-            }catch(Exception e){
+            } catch (Exception e) {
                 LOGGER.error("Error while saving audit status data to database", e.getMessage());
             }
         }
@@ -67,6 +73,7 @@ public class AuditCollectorTask extends CollectorTask<AuditCollector> {
 
     /**
      * Get audit statuses for the dashboards
+     *
      * @param dashboards
      * @param lastExecutedCollectorTimestamp
      */
@@ -109,6 +116,6 @@ public class AuditCollectorTask extends CollectorTask<AuditCollector> {
      */
     @Override
     public String getCron() {
-         return this.auditCollectorSettings.getCron();
+        return this.auditCollectorSettings.getCron();
     }
 }

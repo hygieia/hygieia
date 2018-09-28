@@ -26,11 +26,12 @@ public class TestUtils {
         dashboardRepository.save(dashboard);
     }
 
-    public static void loadCollector (CollectorRepository collectorRepository) throws IOException {
+    public static void loadCollector(CollectorRepository collectorRepository) throws IOException {
         Gson gson = GsonUtil.getGson();
         String json = IOUtils.toString(Resources.getResource("./collectors/coll.json"));
         // List<Collector> collector = gson.fromJson(json, Collector.class);
-        List<Collector> collector = gson.fromJson(json, new TypeToken<List<Collector>>(){}.getType());
+        List<Collector> collector = gson.fromJson(json, new TypeToken<List<Collector>>() {
+        }.getType());
         collectorRepository.save(collector);
     }
 
@@ -44,7 +45,8 @@ public class TestUtils {
     public static void loadCollectorItems(CollectorItemRepository collectorItemRepository) throws IOException {
         Gson gson = GsonUtil.getGson();
         String json = IOUtils.toString(Resources.getResource("./collector_items/items.json"));
-        List<CollectorItem> collectorItem = gson.fromJson(json, new TypeToken<List<CollectorItem>>(){}.getType());
+        List<CollectorItem> collectorItem = gson.fromJson(json, new TypeToken<List<CollectorItem>>() {
+        }.getType());
         collectorItemRepository.save(collectorItem);
     }
 

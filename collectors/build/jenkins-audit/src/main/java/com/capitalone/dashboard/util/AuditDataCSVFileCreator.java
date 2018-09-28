@@ -48,15 +48,14 @@ public class AuditDataCSVFileCreator {
             "COMMITAUTHOR_EQ_MERGECOMMITER", "PEER_REVIEW_BY_SERVICEACCOUNT", "COMMITAUTHOR_EQ_SERVICEACCOUNT", "MERGECOMMITER_EQ_SERVICEACCOUNT"};
 
     private static String lob, asv, bap, asvOwner, serviceOwner, type, collectionStatus, auditStatus, error, url;
-    private List<String> entireCSVData = new ArrayList<>();
-    private final Logger LOGGER = LoggerFactory.getLogger(AuditDataCSVFileCreator.class);
-
     @Autowired
     private static DashboardRepository dashboardRepository;
     @Autowired
     private static DashboardAuditService dashboardAuditService;
     @Autowired
     private static CmdbRepository cmdbRepository;
+    private final Logger LOGGER = LoggerFactory.getLogger(AuditDataCSVFileCreator.class);
+    private List<String> entireCSVData = new ArrayList<>();
 
     @Autowired
     public AuditDataCSVFileCreator(DashboardRepository dashboardRepository, DashboardAuditService dashboardAuditService, CmdbRepository cmdbRepository) {
@@ -72,7 +71,7 @@ public class AuditDataCSVFileCreator {
         Iterable<Dashboard> recentDashboards = dashboardRepository.findByTitle("CI304346");
         AUDIT_TYPE.add(AuditType.ALL);
         this.getAuditResults(recentDashboards, BEGIN_DATE);
-        if(!(entireCSVData == null && entireCSVData.isEmpty())) {
+        if (!(entireCSVData == null && entireCSVData.isEmpty())) {
             this.writeCSV();
         }
     }
