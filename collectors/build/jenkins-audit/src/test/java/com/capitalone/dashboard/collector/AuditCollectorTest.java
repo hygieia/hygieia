@@ -48,7 +48,7 @@ public class AuditCollectorTest {
         assertThat(collector.isOnline()).isTrue();
         AssertionsForInterfaceTypes.assertThat(collector.getBuildServers()).contains("http://localhost:8081/");
         AssertionsForInterfaceTypes.assertThat(collector.getCollectorType()).isEqualTo(CollectorType.Audit);
-        assertThat(collector.getName()).isEqualTo("JenkinsAuditCollector");
+        assertThat(collector.getName()).isEqualTo("AuditCollector");
         assertThat(collector.getAllFields().get("instanceUrl")).isEqualTo("");
         assertThat(collector.getAllFields().get("jobName")).isEqualTo("");
         assertThat(collector.getAllFields().get("jobUrl")).isEqualTo("");
