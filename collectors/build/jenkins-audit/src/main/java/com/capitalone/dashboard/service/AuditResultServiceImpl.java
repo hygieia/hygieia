@@ -10,15 +10,15 @@ public class AuditResultServiceImpl implements AuditResultService {
 
     private AuditResultRepository auditResultRepository;
 
-    public AuditResultServiceImpl(){
+    public AuditResultServiceImpl() {
     }
 
-    public AuditResultServiceImpl( AuditResultRepository auditResultRepository){
+    public AuditResultServiceImpl(AuditResultRepository auditResultRepository) {
         this.auditResultRepository = auditResultRepository;
     }
 
     @Override
     public Iterable<AuditResult> all() {
-        return  auditResultRepository.findAll(new Sort(Sort.Direction.DESC, "timestamp"));
+        return auditResultRepository.findAll(new Sort(Sort.Direction.DESC, "timestamp"));
     }
 }

@@ -2,8 +2,15 @@ package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.collector.config.FongoConfig;
 import com.capitalone.dashboard.collector.config.TestConfig;
-import com.capitalone.dashboard.model.*;
-import com.capitalone.dashboard.repository.*;
+import com.capitalone.dashboard.model.AuditException;
+import com.capitalone.dashboard.model.AuditResult;
+import com.capitalone.dashboard.model.AuditType;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.repository.AuditResultRepository;
+import com.capitalone.dashboard.repository.DashboardRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.repository.CollectorRepository;
+import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.response.DashboardReviewResponse;
 import com.capitalone.dashboard.service.DashboardAuditService;
 import org.junit.Before;
@@ -12,7 +19,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 
 import java.io.IOException;
 import java.util.*;
@@ -28,7 +34,7 @@ public class AuditCollectorTaskTest {
     @Autowired
     private DashboardAuditService dashboardAuditService;
     @Autowired
-   private DashboardRepository dashboardRepository;
+    private DashboardRepository dashboardRepository;
     @Autowired
     private ComponentRepository componentRepository;
     @Autowired
@@ -56,13 +62,13 @@ public class AuditCollectorTaskTest {
         List<AuditResult> auditResults = new ArrayList<>();
         Set<AuditType> allAuditTypes = new HashSet<>();
         allAuditTypes.add(AuditType.CODE_QUALITY);
-            recentDashboards.forEach(dashboard -> {
+        recentDashboards.forEach(dashboard -> {
             try {
                 long currentTimestamp = System.currentTimeMillis();
 
-                DashboardReviewResponse dashboardReviewResponse = dashboardAuditService.getDashboardReviewResponse(dashboard.getTitle(), dashboard.getType(), dashboard.getConfigurationItemBusServName(),dashboard.getConfigurationItemBusAppName(), timestamp, currentTimestamp, allAuditTypes);
-                AuditResult auditResult = new AuditResult(dashboard.getId(), dashboardReviewResponse,timestamp);
-                assert(auditResult.getDashboardTitle().equals("auditTestDashboard"));
+                DashboardReviewResponse dashboardReviewResponse = dashboardAuditService.getDashboardReviewResponse(dashboard.getTitle(), dashboard.getType(), dashboard.getConfigurationItemBusServName(), dashboard.getConfigurationItemBusAppName(), timestamp, currentTimestamp, allAuditTypes);
+                AuditResult auditResult = new AuditResult(dashboard.getId(), dashboardReviewResponse, timestamp);
+                assert (auditResult.getDashboardTitle().equals("auditTestDashboard"));
                 assertNotNull(auditResult.getDashboardId());
                 assertNotNull(auditResult.getDashboardReviewResponse());
                 auditResults.add(auditResult);
@@ -70,12 +76,11 @@ public class AuditCollectorTaskTest {
             } catch (AuditException e) {
                 e.getLocalizedMessage();
             }
-            if(!auditResults.isEmpty())
-             { mockstatusRepository.save(auditResults); }
+            if (!auditResults.isEmpty()) {
+                mockstatusRepository.save(auditResults);
+            }
         });
     }
-
-
 
 
 }

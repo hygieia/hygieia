@@ -26,7 +26,7 @@ public class AuditCollectorTest {
 
 
     @Before
-    public void setup(){
+    public void setup() {
         taskScheduler = mock(TaskScheduler.class);
         auditResultRepository = mock(AuditResultRepository.class);
         auditCollectorRepository = mock(AuditCollectorRepository.class);
@@ -37,11 +37,11 @@ public class AuditCollectorTest {
         auditCollectorSettings.setCron("*/2 * * * *");
 
 
-        this.testee = new AuditCollectorTask(taskScheduler,dashboardRepository, dashboardAuditService, auditResultRepository, auditCollectorRepository, auditCollectorSettings);
+        this.testee = new AuditCollectorTask(taskScheduler, dashboardRepository, dashboardAuditService, auditResultRepository, auditCollectorRepository, auditCollectorSettings);
     }
 
     @Test
-    public void getCollectorReturnsAuditStatusCollector(){
+    public void getCollectorReturnsAuditStatusCollector() {
         final AuditCollector collector = testee.getCollector();
         assertThat(collector).isNotNull().isInstanceOf(AuditCollector.class);
         assertThat(collector.isEnabled()).isTrue();
@@ -63,7 +63,7 @@ public class AuditCollectorTest {
     }
 
     @Test
-    public  void getCron(){
+    public void getCron() {
         assertThat(testee.getCron().equals("*/2 * * * *"));
     }
 }

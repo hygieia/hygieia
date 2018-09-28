@@ -13,6 +13,7 @@ public class AuditCollector extends Collector {
     public static final String INSTANCE_URL = "instanceUrl";
     public static final String JOB_NAME = "jobName";
     public static final String JOB_URL = "jobUrl";
+    private List<String> buildServers = new ArrayList<>();
 
     public static AuditCollector prototype(List<String> servers) {
         AuditCollector protoType = new AuditCollector();
@@ -22,15 +23,13 @@ public class AuditCollector extends Collector {
         protoType.setEnabled(true);
         protoType.buildServers.addAll(servers);
         Map<String, Object> options = new HashMap<>();
-        options.put(INSTANCE_URL,"");
-        options.put(JOB_URL,"");
-        options.put(JOB_NAME,"");
+        options.put(INSTANCE_URL, "");
+        options.put(JOB_URL, "");
+        options.put(JOB_NAME, "");
         protoType.setAllFields(options);
         protoType.setUniqueFields(options);
         return protoType;
     }
-
-    private List<String> buildServers = new ArrayList<>();
 
     public List<String> getBuildServers() {
         return buildServers;
