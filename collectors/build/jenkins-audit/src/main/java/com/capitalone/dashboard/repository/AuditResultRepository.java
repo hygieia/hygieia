@@ -4,6 +4,6 @@ import com.capitalone.dashboard.model.AuditResult;
 import org.bson.types.ObjectId;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-public interface AuditStatusRepository extends PagingAndSortingRepository<AuditResult, ObjectId> {
+public interface AuditResultRepository extends PagingAndSortingRepository<AuditResult, ObjectId> {
 
 }

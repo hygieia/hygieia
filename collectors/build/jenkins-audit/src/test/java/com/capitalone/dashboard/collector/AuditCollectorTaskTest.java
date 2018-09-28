@@ -10,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -24,8 +23,8 @@ import static org.mockito.Mockito.mock;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, FongoConfig.class})
-public class AuditStatusCollectorTaskTest {
-    private AuditStatusRepository mockstatusRepository;
+public class AuditCollectorTaskTest {
+    private AuditResultRepository mockstatusRepository;
     @Autowired
     private DashboardAuditService dashboardAuditService;
     @Autowired
@@ -39,12 +38,12 @@ public class AuditStatusCollectorTaskTest {
 
     @Before
     public void setup() throws IOException {
-        mockstatusRepository = mock(AuditStatusRepository.class);
+        mockstatusRepository = mock(AuditResultRepository.class);
         TestUtils.loadDashBoard(dashboardRepository);
         TestUtils.loadCollector(collectorRepository);
         TestUtils.loadComponent(componentRepository);
         TestUtils.loadCollectorItems(collectorItemRepository);
-        AuditConfigSettings settings = new AuditConfigSettings();
+        AuditCollectorSettings settings = new AuditCollectorSettings();
         settings.setServers(Arrays.asList("http://localhost:8081/"));
         settings.setCron("*/2 * * * *");
 
@@ -63,7 +62,7 @@ public class AuditStatusCollectorTaskTest {
 
                 DashboardReviewResponse dashboardReviewResponse = dashboardAuditService.getDashboardReviewResponse(dashboard.getTitle(), dashboard.getType(), dashboard.getConfigurationItemBusServName(),dashboard.getConfigurationItemBusAppName(), timestamp, currentTimestamp, allAuditTypes);
                 AuditResult auditResult = new AuditResult(dashboard.getId(), dashboardReviewResponse,timestamp);
-                assert(auditResult.getDashboardTitle().equals("praveenDashboard"));
+                assert(auditResult.getDashboardTitle().equals("auditTestDashboard"));
                 assertNotNull(auditResult.getDashboardId());
                 assertNotNull(auditResult.getDashboardReviewResponse());
                 auditResults.add(auditResult);
