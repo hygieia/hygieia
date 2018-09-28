@@ -2,11 +2,12 @@ package jenkins.plugins.hygieia;
 
 import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import hudson.Extension;
-import hudson.model.AbstractBuild;
+import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
 import hygieia.builder.BuildBuilder;
 import hygieia.builder.SonarBuilder;
+import hygieia.utils.HygieiaUtils;
 import jenkins.model.Jenkins;
 import org.apache.commons.httpclient.HttpStatus;
 import org.json.simple.parser.ParseException;
@@ -15,28 +16,22 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 @Extension
-public class HygieiaGlobalListener extends RunListener<AbstractBuild> {
+public class HygieiaGlobalListener extends RunListener<Run<?,?>> {
 
-    private HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor;
-    private HygieiaService hygieiaService;
-    private SonarBuilder sonarBuilder;
-    private BuildBuilder builder;
 
     @Override
-    public void onCompleted(AbstractBuild build, TaskListener listener) {
-        if (hygieiaGlobalListenerDescriptor == null) {
-            hygieiaGlobalListenerDescriptor = Jenkins.getInstance().getDescriptorByType(HygieiaPublisher.DescriptorImpl.class);
-        }
-        if (hygieiaService == null) {
-            hygieiaService = new DefaultHygieiaService(hygieiaGlobalListenerDescriptor.getHygieiaAPIUrl(), hygieiaGlobalListenerDescriptor.getHygieiaToken(),
-                    hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), hygieiaGlobalListenerDescriptor.isUseProxy());
-        }
+    public void onCompleted(Run run, TaskListener listener) {
+
+        HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor = getDescriptor();
+        
+        HygieiaService hygieiaService = getHygieiaService(hygieiaGlobalListenerDescriptor);
+
         HygieiaResponse buildResponse = null;
 
         if (hygieiaGlobalListenerDescriptor.isHygieiaPublishBuildDataGlobal() || hygieiaGlobalListenerDescriptor.isHygieiaPublishSonarDataGlobal()) {
-            if (builder == null) {
-                builder = new BuildBuilder(build, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), listener, true, true);
-            }
+
+            BuildBuilder builder = getBuildBuilder(run, listener, hygieiaGlobalListenerDescriptor);
+
             buildResponse = hygieiaService.publishBuildData(builder.getBuildData());
             if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
                 listener.getLogger().println("Hygieia: Auto Published Build Complete Data. " + buildResponse.toString());
@@ -47,10 +42,9 @@ public class HygieiaGlobalListener extends RunListener<AbstractBuild> {
 
         if (hygieiaGlobalListenerDescriptor.isHygieiaPublishSonarDataGlobal()) {
             try {
-                if (sonarBuilder == null) {
-                    sonarBuilder = new SonarBuilder(build, listener, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), null,
-                            null, buildResponse != null ? buildResponse.getResponseValue(): "", hygieiaGlobalListenerDescriptor.isUseProxy());
-                }
+
+                SonarBuilder sonarBuilder = getSonarBuilder(buildResponse, run, listener, hygieiaGlobalListenerDescriptor);
+
                 CodeQualityCreateRequest request = sonarBuilder.getSonarMetrics();
                 if (request != null) {
                     HygieiaResponse sonarResponse = hygieiaService.publishSonarResults(request);
@@ -67,6 +61,24 @@ public class HygieiaGlobalListener extends RunListener<AbstractBuild> {
             }
         }
 
+    }
+
+    protected HygieiaPublisher.DescriptorImpl getDescriptor() {
+        return Jenkins.getInstance().getDescriptorByType(HygieiaPublisher.DescriptorImpl.class);
+    }
+
+    protected BuildBuilder getBuildBuilder(Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor) {
+        return new BuildBuilder(run, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), listener, HygieiaUtils.getBuildStatus(run.getResult()), true);
+    }
+
+    protected SonarBuilder getSonarBuilder(HygieiaResponse buildResponse, Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor) throws ParseException, IOException, URISyntaxException {
+        return new SonarBuilder(run, listener, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), null,
+                null, buildResponse != null ? buildResponse.getResponseValue() : "", hygieiaGlobalListenerDescriptor.isUseProxy());
+    }
+
+    protected HygieiaService getHygieiaService(HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor) {
+        return  hygieiaGlobalListenerDescriptor.getHygieiaService(hygieiaGlobalListenerDescriptor.getHygieiaAPIUrl(), hygieiaGlobalListenerDescriptor.getHygieiaToken(),
+                hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), hygieiaGlobalListenerDescriptor.isUseProxy());
     }
 
 }

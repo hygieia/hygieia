@@ -381,7 +381,7 @@ public class DefaultNexusIQClient implements NexusIQClient {
 		Object obj = json.get(key);
 		return obj == null ? null : Long.valueOf(obj.toString());
 	}
-
+  
     private HttpEntity<String> createHeaders(String url) {
     	String username = null;
     	String password = null;
