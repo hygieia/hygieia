@@ -45,7 +45,7 @@
         <artifactId>docker-maven-plugin</artifactId>
         <configuration>
           <skipDockerBuild>false</skipDockerBuild>
-          <imageName>hygieia-github-scm-collector</imageName>
+          <imageName>hygieia-github-graphql-scm-collector</imageName>
           <dockerDirectory>${project.basedir}/docker</dockerDirectory>
           <resources>
             <resource>

@@ -301,12 +301,12 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
             String incidentId = incident.getIncidentID();
             String severity = incident.getSeverity();
 
-            LOG.info("Fetching Incident : "+incidentId+" ; Severity : "+severity);
+            LOG.debug("Fetching Incident : "+incidentId+" ; Severity : "+severity);
             try {
                 Incident incidentLatest = incidentUpdateClient.getIncident(incidentId);
                 if (incidentLatest != null) {
                     String updatedSeverity = incidentLatest.getSeverity();
-                    LOG.info("Updating Incident : "+incidentId+" ; latest severity from hpsm : "+updatedSeverity);
+                    LOG.debug("Updating Incident : "+incidentId+" ; latest severity from hpsm : "+updatedSeverity);
 
                     incidentLatest.setId(incident.getId());
                     incidentLatest.setCollectorItemId(incident.getCollectorItemId());
