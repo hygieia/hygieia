@@ -50,6 +50,7 @@
                     collectorItemIds: [collector.id],
                     name: 'log',
                     options: {
+                        id: widgetConfig.options.id,
                         maxEntries: maxEntries
                     }
                 };
