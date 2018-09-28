@@ -10,6 +10,9 @@ public class AuditResultServiceImpl implements AuditResultService {
 
     private AuditResultRepository auditResultRepository;
 
+    public AuditResultServiceImpl(){
+    }
+
     public AuditResultServiceImpl( AuditResultRepository auditResultRepository){
         this.auditResultRepository = auditResultRepository;
     }

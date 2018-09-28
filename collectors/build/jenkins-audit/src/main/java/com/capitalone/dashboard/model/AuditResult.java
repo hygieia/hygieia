@@ -9,6 +9,8 @@ public class AuditResult extends BaseModel {
 
     private ObjectId dashboardId;
     private DashboardReviewResponse dashboardReviewResponse;
+
+    @SuppressWarnings("PMD")
     private long timestamp;
 
     public AuditResult(ObjectId dashboardId, DashboardReviewResponse dashboardReviewResponse, long timestamp) {

@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
  *
  * @since 09/28/2018
  */
-@SuppressWarnings("PMD")
 @Component
 public class AuditCollectorTask extends CollectorTask<AuditCollector> {
 
