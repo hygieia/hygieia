@@ -31,6 +31,6 @@
     }
 
     function getState(config) {
-        return HygieiaConfig.local || (config.graphName) ? widget_state.READY : widget_state.CONFIGURE;
+        return HygieiaConfig.local || (config.id) ? widget_state.READY : widget_state.CONFIGURE;
     }
 })();
