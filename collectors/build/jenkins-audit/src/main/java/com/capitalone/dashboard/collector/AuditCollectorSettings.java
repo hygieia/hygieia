@@ -22,9 +22,9 @@ public class AuditCollectorSettings {
     private List<String> usernames;
     private List<String> apiKeys;
     private String dockerLocalHostIP; //null if not running in docker on http://localhost
-    private int pageSize=1000;
+    private int pageSize;
     @Value("${folderDepth:10}")
-    private int folderDepth=10;
+    private int folderDepth;
 
     public String getCron() {
         return cron;
