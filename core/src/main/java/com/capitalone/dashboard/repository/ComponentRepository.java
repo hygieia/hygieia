@@ -33,7 +33,7 @@ public interface ComponentRepository extends CrudRepository<Component, ObjectId>
 
     default List<Component> findByCollectorTypeAndItemIdIn(CollectorType collectorType, List<ObjectId> collectorItemIds) {
         BooleanBuilder builder = new BooleanBuilder();
-        PathBuilder<Component> path = new PathBuilder<>(Component.class, "component");
+        PathBuilder<Component> path = new PathBuilder<>(Component.class, "components");
         builder.and(path.get("collectorItems", Map.class).get(collectorType.toString(),List.class).get("id", ObjectId.class).in(collectorItemIds));
         return (List<Component>) findAll(builder.getValue());
     }

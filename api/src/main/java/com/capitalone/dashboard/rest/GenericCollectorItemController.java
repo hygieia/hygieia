@@ -28,7 +28,7 @@ public class GenericCollectorItemController {
 
     @RequestMapping(value = "/generic-item", method = POST,
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createStaticAnanlysis(@Valid @RequestBody GenericCollectorItemCreateRequest request) throws HygieiaException {
+    public ResponseEntity<String> createGenericItem (@Valid @RequestBody GenericCollectorItemCreateRequest request) throws HygieiaException {
         String response = genericCollectorItemService.create(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)

@@ -31,15 +31,16 @@ public class GenericCollectorItemServiceImpl implements GenericCollectorItemServ
         }
 
         GenericCollectorItem newItem = new GenericCollectorItem();
+        newItem.setCollectorId(collector.getId());
         newItem.setCreationTime(System.currentTimeMillis());
         newItem.setRawData(request.getRawData());
         newItem.setSource(request.getSource());
+        newItem.setToolName(request.getToolName());
         try {
-            newItem.setRelatedCollectorItem(new ObjectId(request.getHygieiaId()));
+            newItem.setRelatedCollectorItem(new ObjectId(request.getHygieiaCollectionId()));
         } catch (IllegalArgumentException ie) {
             throw new HygieiaException("Bad relatedItemId: " + ie.getMessage(), HygieiaException.BAD_DATA);
         }
-        newItem.setToolName(request.getToolName());
 
         GenericCollectorItem existing = genericCollectorItemRepository.findByToolNameAndRawDataAndRelatedCollectorItem(newItem.getToolName(), newItem.getRawData(), newItem.getRelatedCollectorItem());
         if (existing == null) {

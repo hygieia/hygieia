@@ -11,10 +11,10 @@ import javax.validation.constraints.NotNull;
  */
 @Document(collection = "generic_collector_items")
 public class GenericCollectorItem extends BaseModel {
-    //To build relations if needed
-    private ObjectId relatedCollectorItem;
     @NotNull
     private String toolName;
+    @NotNull
+    private ObjectId collectorId;
     @NotNull
     private String rawData;
 
@@ -23,6 +23,9 @@ public class GenericCollectorItem extends BaseModel {
 
     @NotNull
     private String source;
+
+    //To build relations if needed
+    private ObjectId relatedCollectorItem;
 
     public ObjectId getRelatedCollectorItem() {
         return relatedCollectorItem;
@@ -62,5 +65,13 @@ public class GenericCollectorItem extends BaseModel {
 
     public void setSource(String source) {
         this.source = source;
+    }
+
+    public ObjectId getCollectorId() {
+        return collectorId;
+    }
+
+    public void setCollectorId(ObjectId collectorId) {
+        this.collectorId = collectorId;
     }
 }

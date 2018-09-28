@@ -20,6 +20,7 @@ import org.json.simple.parser.ParseException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -39,13 +40,13 @@ public class CucumberTestBuilder {
     private String testType;
     private String applicationName;
     private String environmentName;
-    BuildDataCreateRequest buildDataCreateRequest;
+    private BuildDataCreateRequest buildDataCreateRequest;
 
     public CucumberTestBuilder(AbstractBuild build, TaskListener listener, String applicationName, String environmentName, String testType, String filePattern, String directory, String jenkinsName, String buildId) {
         run = build;
         BuildBuilder buildBuilder = new BuildBuilder(build,jenkinsName,listener,true,false);
         this.buildDataCreateRequest = buildBuilder.getBuildData();
-        this.buildId = buildId;
+        this.buildId = HygieiaUtils.getBuildCollectionId(buildId);
         this.listener = listener;
         this.applicationName = applicationName.trim();
         this.environmentName = environmentName.trim();
@@ -59,7 +60,7 @@ public class CucumberTestBuilder {
 
     public CucumberTestBuilder(Run run, TaskListener listener, BuildStatus buildStatus, FilePath filePath, String applicationName, String environmentName, String testType, String filePattern, String directory, String jenkinsName, String buildId) {
         this.run = run;
-        this.buildId = buildId;
+        this.buildId = HygieiaUtils.getBuildCollectionId(buildId);
         BuildBuilder buildBuilder = new BuildBuilder(run,jenkinsName, listener, buildStatus, false);
         this.buildDataCreateRequest = buildBuilder.getBuildData();
         this.listener = listener;
@@ -77,19 +78,17 @@ public class CucumberTestBuilder {
         List<FilePath> testFiles = null;
         try {
             EnvVars envVars = run.getEnvironment(listener);
-            if (envVars != null) {
-                filePattern = envVars.expand(filePattern);
-            }
+            filePattern = envVars.expand(filePattern);
             testFiles = HygieiaUtils.getArtifactFiles(rootDirectory, filePattern, new ArrayList<FilePath>());
             listener.getLogger().println("Hygieia Test Result Publisher - Looking for file pattern '" + filePattern + "' in directory " + rootDirectory.getRemote());
         } catch (IOException e) {
             e.printStackTrace();
-            listener.getLogger().println("Hygieia Test Result Publisher" + e.getStackTrace());
+            listener.getLogger().println("Hygieia Test Result Publisher" + Arrays.toString(e.getStackTrace()));
         } catch (InterruptedException e) {
             e.printStackTrace();
-            listener.getLogger().println("Hygieia Test Result Publisher - InterruptedException on " + e.getStackTrace());
+            listener.getLogger().println("Hygieia Test Result Publisher - InterruptedException on " + Arrays.toString(e.getStackTrace()));
         }
-        testResult = buildTestResultObject(getCapabilities(testFiles));
+        testResult = buildTestResultObject(getCapabilities(testFiles != null ? testFiles : new ArrayList<FilePath>()));
     }
 
     private List<TestCapability> getCapabilities(List<FilePath> testFiles) {
@@ -146,9 +145,7 @@ public class CucumberTestBuilder {
                 listener.getLogger().println("Hygieia Publisher: Test File Not Found: " + file.getRemote());
             } catch (ParseException e) {
                 listener.getLogger().println("Hygieia Publisher: Error Parsing File: " + file.getRemote());
-            } catch (IOException e) {
-                listener.getLogger().println("Hygieia Publisher: Error Reading File: " + file.getName());
-            } catch (InterruptedException e) {
+            } catch (IOException | InterruptedException e) {
                 listener.getLogger().println("Hygieia Publisher: Error Reading File: " + file.getName());
             }
         }

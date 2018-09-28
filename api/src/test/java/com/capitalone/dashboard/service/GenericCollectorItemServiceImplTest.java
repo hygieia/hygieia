@@ -4,14 +4,12 @@ import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.GenericCollectorItem;
 import com.capitalone.dashboard.repository.CollectorRepository;
-import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.GenericCollectorItemRepository;
 import com.capitalone.dashboard.request.GenericCollectorItemCreateRequest;
 import com.capitalone.dashboard.testutil.FongoConfig;
 import com.capitalone.dashboard.testutil.GsonUtil;
 import com.github.fakemongo.junit.FongoRule;
 import com.google.common.collect.Lists;
-import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.collections4.CollectionUtils;
@@ -28,6 +26,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.Assert.*;
 
@@ -54,7 +53,7 @@ public class GenericCollectorItemServiceImplTest {
 
     @Test
     public void createNew() throws IOException, HygieiaException {
-        GenericCollectorItemCreateRequest request = createRequest("GitHub", "some data", "some source", "5ba136290be2d32568777fa8");
+        GenericCollectorItemCreateRequest request = createRequest("GitHub", "some data", "some source", "5ba136290be2d32568777fa8", "5bae541b099739600663ef9a");
         loadCollector();
         genericCollectorItemRepository.deleteAll();
         String response = genericCollectorItemService().create(request);
@@ -64,55 +63,59 @@ public class GenericCollectorItemServiceImplTest {
         assertTrue(genericCollectorItem.getRawData().equalsIgnoreCase("some data"));
         assertTrue(genericCollectorItem.getSource().equalsIgnoreCase("some source"));
         assertTrue(genericCollectorItem.getToolName().equalsIgnoreCase("GitHub"));
-        assertTrue(genericCollectorItem.getRelatedCollectorItem().equals(new ObjectId("5ba136290be2d32568777fa8")));
+        assertEquals(genericCollectorItem.getRelatedCollectorItem(), new ObjectId("5ba136290be2d32568777fa8"));
+        assertEquals(genericCollectorItem.getCollectorId(), new ObjectId("5ba16a0b0be2d34a64291205"));
     }
 
     @Test
     public void createWithExisting() throws IOException, HygieiaException {
-        GenericCollectorItemCreateRequest request = createRequest("GitHub", "some data", "some source", "5ba136290be2d32568777fa8");
+        GenericCollectorItemCreateRequest request = createRequest("GitHub", "some data", "some source", "5ba136290be2d32568777fa8", "5bae541b099739600663ef9a");
         loadCollector();
         genericCollectorItemRepository.deleteAll();
-        loadData("GitHub", "some data", "some source", new ObjectId("5ba136290be2d32568777fa8"));
+        loadData("GitHub", "some data", "some source", new ObjectId("5ba136290be2d32568777fa8"), new ObjectId("5ba16a0b0be2d34a64291205"));
         genericCollectorItemService().create(request);
         List<GenericCollectorItem> genericCollectorItems = Lists.newArrayList(genericCollectorItemRepository.findAll());
         assertTrue(!CollectionUtils.isEmpty(genericCollectorItems));
-        assertTrue(genericCollectorItems.size() == 1);
+        assertEquals(1, genericCollectorItems.size());
         GenericCollectorItem genericCollectorItem = genericCollectorItems.get(0);
         assertTrue(genericCollectorItem.getRawData().equalsIgnoreCase("some data"));
         assertTrue(genericCollectorItem.getSource().equalsIgnoreCase("some source"));
         assertTrue(genericCollectorItem.getToolName().equalsIgnoreCase("GitHub"));
-        assertTrue(genericCollectorItem.getRelatedCollectorItem().equals(new ObjectId("5ba136290be2d32568777fa8")));
+        assertEquals(genericCollectorItem.getRelatedCollectorItem(), new ObjectId("5ba136290be2d32568777fa8"));
+        assertEquals(genericCollectorItem.getCollectorId(), new ObjectId("5ba16a0b0be2d34a64291205"));
     }
 
 
     @Test (expected = HygieiaException.class)
     public void createNewBadToolName() throws IOException, HygieiaException {
-        GenericCollectorItemCreateRequest request = createRequest("Tool", "some data", "some source", "5ba136290be2d32568777fa8");
+        GenericCollectorItemCreateRequest request = createRequest("Tool", "some data", "some source", "5ba136290be2d32568777fa8", "5bae541b099739600663ef9a");
         loadCollector();
         genericCollectorItemRepository.deleteAll();
         String response = genericCollectorItemService().create(request);
     }
 
     @Test (expected = HygieiaException.class)
-    public void createNewBadObjectId() throws IOException, HygieiaException {
+    public void createNewBadObjectId() throws HygieiaException {
         genericCollectorItemRepository.deleteAll();
-        GenericCollectorItemCreateRequest request = createRequest("GitHub", "some data", "some source", "1aaaa");
+        GenericCollectorItemCreateRequest request = createRequest("GitHub", "some data", "some source", "1aaaa", "5bae541b099739600663ef9a");
         String response = genericCollectorItemService().create(request);
     }
 
-    private void loadData(String toolName, String rawData, String source, ObjectId relatedId) {
+    private void loadData(String toolName, String rawData, String source, ObjectId relatedId, ObjectId collectorId) {
         GenericCollectorItem genericCollectorItem = new GenericCollectorItem();
         genericCollectorItem.setToolName(toolName);
         genericCollectorItem.setRawData(rawData);
         genericCollectorItem.setSource(source);
         genericCollectorItem.setRelatedCollectorItem(relatedId);
+        genericCollectorItem.setCollectorId(collectorId);
         genericCollectorItemRepository.save(genericCollectorItem);
     }
 
-    private GenericCollectorItemCreateRequest createRequest(String toolName, String rawData, String source, String relatedId) {
+    private GenericCollectorItemCreateRequest createRequest(String toolName, String rawData, String source, String relatedCollectoionId, String relatedCollectorItemId) {
         GenericCollectorItemCreateRequest genericCollectorItem = new GenericCollectorItemCreateRequest();
         genericCollectorItem.setToolName(toolName);
-        genericCollectorItem.setHygieiaId(relatedId);
+        genericCollectorItem.setHygieiaCollectionId(relatedCollectoionId);
+        genericCollectorItem.setHygieiaCollectorItemId(relatedCollectorItemId);
         genericCollectorItem.setRawData(rawData);
         genericCollectorItem.setSource(source);
         return genericCollectorItem;
