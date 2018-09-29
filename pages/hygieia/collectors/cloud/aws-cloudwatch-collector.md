@@ -1,5 +1,5 @@
 ---
-title: AWS Collector
+title: AWS CLoudwatch Collector
 tags:
 keywords:
 summary:
