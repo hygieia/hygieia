@@ -26,6 +26,15 @@ public class GenericCollectorItem extends BaseModel {
 
     //To build relations if needed
     private ObjectId relatedCollectorItem;
+    private ObjectId buildId; //if started  off by some build - connects to build collection
+
+    public ObjectId getBuildId() {
+        return buildId;
+    }
+
+    public void setBuildId(ObjectId buildId) {
+        this.buildId = buildId;
+    }
 
     public ObjectId getRelatedCollectorItem() {
         return relatedCollectorItem;

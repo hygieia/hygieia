@@ -14,11 +14,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.Assert.*;
 
 
-public class RelatedCollectorItemRepositoryTest extends FongoBaseRepositoryTest{
+public class RelatedCollectorItemRepositoryTest extends FongoBaseRepositoryTest {
 
     @Autowired
     private RelatedCollectorItemRepository relatedCollectorItemRepository;
@@ -30,10 +31,10 @@ public class RelatedCollectorItemRepositoryTest extends FongoBaseRepositoryTest{
         ObjectId right = ObjectId.get();
         relatedCollectorItemRepository.saveRelatedItems(left, right, "some source", "some reason");
         List<RelatedCollectorItem> relatedCollectorItemList = Lists.newArrayList(relatedCollectorItemRepository.findAll());
-        assertTrue(!CollectionUtils.isEmpty(relatedCollectorItemList));
-        assertTrue(relatedCollectorItemList.size() == 1);
-        assertTrue(relatedCollectorItemList.get(0).getLeft().equals(left));
-        assertTrue(relatedCollectorItemList.get(0).getRight().equals(right));
+        assertFalse(CollectionUtils.isEmpty(relatedCollectorItemList));
+        assertEquals(1, relatedCollectorItemList.size());
+        assertEquals(relatedCollectorItemList.get(0).getLeft(), left);
+        assertEquals(relatedCollectorItemList.get(0).getRight(), right);
         assertTrue(relatedCollectorItemList.get(0).getReason().equalsIgnoreCase("some reason"));
         assertTrue(relatedCollectorItemList.get(0).getSource().equalsIgnoreCase("some source"));
 
@@ -55,12 +56,42 @@ public class RelatedCollectorItemRepositoryTest extends FongoBaseRepositoryTest{
 
         List<RelatedCollectorItem> relatedCollectorItemList = Lists.newArrayList(relatedCollectorItemRepository.findAll());
         assertTrue(!CollectionUtils.isEmpty(relatedCollectorItemList));
-        assertTrue(relatedCollectorItemList.size() == 1);
-        assertTrue(relatedCollectorItemList.get(0).getLeft().equals(left));
-        assertTrue(relatedCollectorItemList.get(0).getRight().equals(right));
+        assertEquals(1, relatedCollectorItemList.size());
+        assertEquals(relatedCollectorItemList.get(0).getLeft(), left);
+        assertEquals(relatedCollectorItemList.get(0).getRight(), right);
         assertTrue(relatedCollectorItemList.get(0).getReason().equalsIgnoreCase("some reason"));
         assertTrue(relatedCollectorItemList.get(0).getSource().equalsIgnoreCase("some source"));
-        assertTrue(saved.getId().equals(savedAgain.getId()));
+        assertTrue(!Objects.equals(saved.getId(), savedAgain.getId()));
+
+
+    }
+
+    @Test
+    public void saveRelatedItemsDuplicateMany() {
+        relatedCollectorItemRepository.deleteAll();
+        ObjectId left = ObjectId.get();
+        ObjectId right = ObjectId.get();
+        for (int i = 0; i < 5; i++) {
+            RelatedCollectorItem rc = new RelatedCollectorItem();
+            rc.setLeft(left);
+            rc.setRight(right);
+            rc.setSource("some source");
+            rc.setReason("some reason");
+            relatedCollectorItemRepository.save(rc);
+        }
+
+        RelatedCollectorItem saved = relatedCollectorItemRepository.findAll().iterator().next();
+
+        RelatedCollectorItem savedAgain = relatedCollectorItemRepository.saveRelatedItems(left, right, "some source", "some reason");
+
+        List<RelatedCollectorItem> relatedCollectorItemList = Lists.newArrayList(relatedCollectorItemRepository.findAll());
+        assertTrue(!CollectionUtils.isEmpty(relatedCollectorItemList));
+        assertEquals(1, relatedCollectorItemList.size());
+        assertEquals(relatedCollectorItemList.get(0).getLeft(), left);
+        assertEquals(relatedCollectorItemList.get(0).getRight(), right);
+        assertTrue(relatedCollectorItemList.get(0).getReason().equalsIgnoreCase("some reason"));
+        assertTrue(relatedCollectorItemList.get(0).getSource().equalsIgnoreCase("some source"));
+        assertTrue(!Objects.equals(saved.getId(), savedAgain.getId()));
 
 
     }

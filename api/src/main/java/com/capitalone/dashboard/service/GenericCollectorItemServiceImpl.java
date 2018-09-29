@@ -37,7 +37,8 @@ public class GenericCollectorItemServiceImpl implements GenericCollectorItemServ
         newItem.setSource(request.getSource());
         newItem.setToolName(request.getToolName());
         try {
-            newItem.setRelatedCollectorItem(new ObjectId(request.getHygieiaCollectionId()));
+            newItem.setRelatedCollectorItem(new ObjectId(request.getRelatedCollectorItemId()));
+            newItem.setBuildId(new ObjectId(request.getBuildId()));
         } catch (IllegalArgumentException ie) {
             throw new HygieiaException("Bad relatedItemId: " + ie.getMessage(), HygieiaException.BAD_DATA);
         }

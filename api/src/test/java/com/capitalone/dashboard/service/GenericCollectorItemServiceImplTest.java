@@ -26,7 +26,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 import static org.junit.Assert.*;
 
@@ -63,7 +62,8 @@ public class GenericCollectorItemServiceImplTest {
         assertTrue(genericCollectorItem.getRawData().equalsIgnoreCase("some data"));
         assertTrue(genericCollectorItem.getSource().equalsIgnoreCase("some source"));
         assertTrue(genericCollectorItem.getToolName().equalsIgnoreCase("GitHub"));
-        assertEquals(genericCollectorItem.getRelatedCollectorItem(), new ObjectId("5ba136290be2d32568777fa8"));
+        assertEquals(genericCollectorItem.getBuildId(), new ObjectId("5ba136290be2d32568777fa8"));
+        assertEquals(genericCollectorItem.getRelatedCollectorItem(), new ObjectId("5bae541b099739600663ef9a"));
         assertEquals(genericCollectorItem.getCollectorId(), new ObjectId("5ba16a0b0be2d34a64291205"));
     }
 
@@ -72,7 +72,7 @@ public class GenericCollectorItemServiceImplTest {
         GenericCollectorItemCreateRequest request = createRequest("GitHub", "some data", "some source", "5ba136290be2d32568777fa8", "5bae541b099739600663ef9a");
         loadCollector();
         genericCollectorItemRepository.deleteAll();
-        loadData("GitHub", "some data", "some source", new ObjectId("5ba136290be2d32568777fa8"), new ObjectId("5ba16a0b0be2d34a64291205"));
+        loadData("GitHub", "some data", "some source",new ObjectId("5ba136290be2d32568777fa8"), new ObjectId("5bae541b099739600663ef9a"), new ObjectId("5ba16a0b0be2d34a64291205"));
         genericCollectorItemService().create(request);
         List<GenericCollectorItem> genericCollectorItems = Lists.newArrayList(genericCollectorItemRepository.findAll());
         assertTrue(!CollectionUtils.isEmpty(genericCollectorItems));
@@ -81,7 +81,8 @@ public class GenericCollectorItemServiceImplTest {
         assertTrue(genericCollectorItem.getRawData().equalsIgnoreCase("some data"));
         assertTrue(genericCollectorItem.getSource().equalsIgnoreCase("some source"));
         assertTrue(genericCollectorItem.getToolName().equalsIgnoreCase("GitHub"));
-        assertEquals(genericCollectorItem.getRelatedCollectorItem(), new ObjectId("5ba136290be2d32568777fa8"));
+        assertEquals(genericCollectorItem.getBuildId(), new ObjectId("5ba136290be2d32568777fa8"));
+        assertEquals(genericCollectorItem.getRelatedCollectorItem(), new ObjectId("5bae541b099739600663ef9a"));
         assertEquals(genericCollectorItem.getCollectorId(), new ObjectId("5ba16a0b0be2d34a64291205"));
     }
 
@@ -101,21 +102,22 @@ public class GenericCollectorItemServiceImplTest {
         String response = genericCollectorItemService().create(request);
     }
 
-    private void loadData(String toolName, String rawData, String source, ObjectId relatedId, ObjectId collectorId) {
+    private void loadData(String toolName, String rawData, String source, ObjectId buildId, ObjectId relatedId, ObjectId collectorId) {
         GenericCollectorItem genericCollectorItem = new GenericCollectorItem();
         genericCollectorItem.setToolName(toolName);
         genericCollectorItem.setRawData(rawData);
         genericCollectorItem.setSource(source);
+        genericCollectorItem.setBuildId(buildId);
         genericCollectorItem.setRelatedCollectorItem(relatedId);
         genericCollectorItem.setCollectorId(collectorId);
         genericCollectorItemRepository.save(genericCollectorItem);
     }
 
-    private GenericCollectorItemCreateRequest createRequest(String toolName, String rawData, String source, String relatedCollectoionId, String relatedCollectorItemId) {
+    private GenericCollectorItemCreateRequest createRequest(String toolName, String rawData, String source, String buildId, String relatedCollectorItemId) {
         GenericCollectorItemCreateRequest genericCollectorItem = new GenericCollectorItemCreateRequest();
         genericCollectorItem.setToolName(toolName);
-        genericCollectorItem.setHygieiaCollectionId(relatedCollectoionId);
-        genericCollectorItem.setHygieiaCollectorItemId(relatedCollectorItemId);
+        genericCollectorItem.setBuildId(buildId);
+        genericCollectorItem.setRelatedCollectorItemId(relatedCollectorItemId);
         genericCollectorItem.setRawData(rawData);
         genericCollectorItem.setSource(source);
         return genericCollectorItem;

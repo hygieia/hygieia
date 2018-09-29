@@ -1,17 +1,13 @@
 package hygieia.builder;
 
 import com.capitalone.dashboard.request.GenericCollectorItemCreateRequest;
-import com.capitalone.dashboard.request.GitRequestCreateRequest;
 import hudson.model.Build;
 import hudson.model.Job;
 import hudson.model.Run;
 import jenkins.model.Jenkins;
-import jenkins.plugins.hygieia.HygieiaPublisher;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -65,8 +61,8 @@ public class GenericCollectorItemBuilderTest {
 
         assertEquals(requests.size(), 1);
         GenericCollectorItemCreateRequest request = requests.get(0);
-        assertEquals("5ba16a0b0be2d34a64291205", request.getHygieiaCollectionId());
-        assertEquals("56c39f487fab7c63c8f947aa", request.getHygieiaCollectorItemId());
+        assertEquals("5ba16a0b0be2d34a64291205", request.getBuildId());
+        assertEquals("56c39f487fab7c63c8f947aa", request.getRelatedCollectorItemId());
         assertEquals("http://whatever", request.getRawData());
         assertEquals("mytool", request.getToolName());
     }
@@ -85,14 +81,14 @@ public class GenericCollectorItemBuilderTest {
 
         assertEquals(requests.size(), 2);
         GenericCollectorItemCreateRequest request = requests.get(0);
-        assertEquals("5ba16a0b0be2d34a64291205", request.getHygieiaCollectionId());
-        assertEquals("56c39f487fab7c63c8f947aa", request.getHygieiaCollectorItemId());
+        assertEquals("5ba16a0b0be2d34a64291205", request.getBuildId());
+        assertEquals("56c39f487fab7c63c8f947aa", request.getRelatedCollectorItemId());
         assertEquals("http://whatever", request.getRawData());
         assertEquals("mytool", request.getToolName());
 
         request = requests.get(1);
-        assertEquals("5ba16a0b0be2d34a64291205", request.getHygieiaCollectionId());
-        assertEquals("56c39f487fab7c63c8f947aa", request.getHygieiaCollectorItemId());
+        assertEquals("5ba16a0b0be2d34a64291205", request.getBuildId());
+        assertEquals("56c39f487fab7c63c8f947aa", request.getRelatedCollectorItemId());
         assertEquals("http://another.whatever", request.getRawData());
         assertEquals("mytool", request.getToolName());
     }

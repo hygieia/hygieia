@@ -7,10 +7,9 @@ import javax.validation.constraints.NotNull;
  *
  */
 public class GenericCollectorItemCreateRequest {
+    private String buildId;
     @NotNull
-    private String hygieiaCollectionId; //A collector item id in hygieia for linking things
-    @NotNull
-    private String hygieiaCollectorItemId;
+    private String relatedCollectorItemId;
     @NotNull
     private String toolName;
     @NotNull
@@ -19,12 +18,12 @@ public class GenericCollectorItemCreateRequest {
     private String source;
 
 
-    public String getHygieiaCollectionId() {
-        return hygieiaCollectionId;
+    public String getBuildId() {
+        return buildId;
     }
 
-    public void setHygieiaCollectionId(String hygieiaCollectionId) {
-        this.hygieiaCollectionId = hygieiaCollectionId;
+    public void setBuildId(String buildId) {
+        this.buildId = buildId;
     }
 
     public String getToolName() {
@@ -51,11 +50,11 @@ public class GenericCollectorItemCreateRequest {
         this.source = source;
     }
 
-    public String getHygieiaCollectorItemId() {
-        return hygieiaCollectorItemId;
+    public String getRelatedCollectorItemId() {
+        return relatedCollectorItemId;
     }
 
-    public void setHygieiaCollectorItemId(String hygieiaCollectorItemId) {
-        this.hygieiaCollectorItemId = hygieiaCollectorItemId;
+    public void setRelatedCollectorItemId(String relatedCollectorItemId) {
+        this.relatedCollectorItemId = relatedCollectorItemId;
     }
 }

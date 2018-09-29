@@ -4,14 +4,12 @@ import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import com.capitalone.dashboard.request.GenericCollectorItemCreateRequest;
-import hudson.model.AbstractBuild;
 import hudson.model.Build;
 import hudson.model.BuildListener;
 import hudson.model.Job;
 import hudson.model.Project;
 import hudson.model.Result;
 import hudson.model.Run;
-import hudson.model.TaskListener;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.SCM;
 import hygieia.builder.BuildBuilder;
@@ -21,11 +19,9 @@ import jenkins.model.Jenkins;
 import org.apache.http.HttpStatus;
 import org.assertj.core.util.Lists;
 import org.json.simple.parser.ParseException;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.powermock.api.mockito.PowerMockito;
@@ -220,8 +216,8 @@ public class HygieiaGlobalListenerTest {
         doReturn(genericCollectorItemBuilder).when(hygieiaGlobalListener).getGenericCollectorItemBuilder(any(HygieiaResponse.class), any(Run.class), any(HygieiaPublisher.DescriptorImpl.class), anyString(), anyString());
 
         GenericCollectorItemCreateRequest gc = new GenericCollectorItemCreateRequest();
-        gc.setHygieiaCollectionId("1234");
-        gc.setHygieiaCollectorItemId("9876");
+        gc.setBuildId("1234");
+        gc.setRelatedCollectorItemId("9876");
         gc.setRawData("some data");
         gc.setSource("some source");
         when(genericCollectorItemBuilder.getRequests()).thenReturn(Lists.newArrayList(gc));
@@ -248,15 +244,15 @@ public class HygieiaGlobalListenerTest {
 
         List<GenericCollectorItemCreateRequest> gcList = new ArrayList<>();
         GenericCollectorItemCreateRequest gc = new GenericCollectorItemCreateRequest();
-        gc.setHygieiaCollectionId("1234");
-        gc.setHygieiaCollectorItemId("9876");
+        gc.setBuildId("1234");
+        gc.setRelatedCollectorItemId("9876");
         gc.setRawData("some data");
         gc.setSource("some source");
         gcList.add(gc);
 
         gc = new GenericCollectorItemCreateRequest();
-        gc.setHygieiaCollectionId("1234");
-        gc.setHygieiaCollectorItemId("9876");
+        gc.setBuildId("1234");
+        gc.setRelatedCollectorItemId("9876");
         gc.setRawData("some data again");
         gc.setSource("some source");
         gcList.add(gc);

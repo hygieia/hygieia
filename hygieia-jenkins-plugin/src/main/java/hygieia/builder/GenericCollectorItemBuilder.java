@@ -4,7 +4,6 @@ import com.capitalone.dashboard.request.GenericCollectorItemCreateRequest;
 import hudson.model.Run;
 import hygieia.utils.HygieiaUtils;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,9 +37,9 @@ public class GenericCollectorItemBuilder {
         if (CollectionUtils.isEmpty(matchedData)) return requests;
         for (String line: matchedData) {
             GenericCollectorItemCreateRequest gc = new GenericCollectorItemCreateRequest();
-            gc.setHygieiaCollectionId(HygieiaUtils.getBuildCollectionId(buildId));
-            gc.setHygieiaCollectorItemId(HygieiaUtils.getCollectorItemId(buildId));
+            gc.setRelatedCollectorItemId(HygieiaUtils.getCollectorItemId(buildId));
             gc.setRawData(line.trim());
+            gc.setBuildId(HygieiaUtils.getBuildCollectionId(buildId));
             gc.setSource(run.getParent().getAbsoluteUrl());
             gc.setToolName(toolName);
             requests.add(gc);
