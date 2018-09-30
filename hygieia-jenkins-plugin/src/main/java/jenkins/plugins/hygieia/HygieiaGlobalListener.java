@@ -25,7 +25,7 @@ public class HygieiaGlobalListener extends RunListener<Run<?,?>> {
 
 
     @Override
-    public void onCompleted(Run run, @Nonnull TaskListener listener) {
+    public void onCompleted(Run run, TaskListener listener) {
 
         HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor = getDescriptor();
         

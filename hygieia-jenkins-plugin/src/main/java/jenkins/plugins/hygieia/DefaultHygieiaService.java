@@ -4,7 +4,6 @@ import com.capitalone.dashboard.request.BinaryArtifactCreateRequest;
 import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import com.capitalone.dashboard.request.DeployDataCreateRequest;
-import com.capitalone.dashboard.request.GenericCollectorItemCreateRequest;
 import com.capitalone.dashboard.request.TestDataCreateRequest;
 import hudson.model.BuildListener;
 import hygieia.utils.HygieiaUtils;
@@ -30,10 +29,10 @@ public class DefaultHygieiaService implements HygieiaService {
 
     private static final Logger logger = Logger.getLogger(DefaultHygieiaService.class.getName());
 
-    private String hygieiaAPIUrl;
-    private String hygieiaToken;
-    private String hygieiaJenkinsName;
-    private boolean useProxy;
+    private String hygieiaAPIUrl = "";
+    private String hygieiaToken = "";
+    private String hygieiaJenkinsName = "";
+    private boolean useProxy = false;
     private BuildListener listener;
 
 
@@ -64,7 +63,7 @@ public class DefaultHygieiaService implements HygieiaService {
             }
             return new HygieiaResponse(responseCode, responseValue);
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Hygieia: Error posting build data to Hygieia", e);
+            logger.log(Level.SEVERE, "Hygieia: Error posting to Hygieia", e);
             responseValue = "";
         }
 
@@ -147,7 +146,7 @@ public class DefaultHygieiaService implements HygieiaService {
             }
             return new HygieiaResponse(responseCode, responseValue);
         } catch (IOException ioe) {
-            logger.log(Level.WARNING, "Error posting deploy data to Hygieia", ioe);
+            logger.log(Level.WARNING, "Error posting to Hygieia", ioe);
             responseValue = "";
         }
         return new HygieiaResponse(responseCode, responseValue);
@@ -240,7 +239,7 @@ public class DefaultHygieiaService implements HygieiaService {
 
     public boolean testConnection() {
         RestCall restCall = new RestCall(useProxy);
-        RestCall.RestCallResponse callResponse;
+        RestCall.RestCallResponse callResponse = null;
         List<String> hygieiaAPIUrls = Arrays.asList(hygieiaAPIUrl.split(";"));
         if(hygieiaAPIUrls.isEmpty()) {
             logger.log(Level.WARNING, "No URL's to test");
@@ -249,7 +248,9 @@ public class DefaultHygieiaService implements HygieiaService {
         for(String hygieiaUrl : hygieiaAPIUrls){
         	callResponse = restCall.makeRestCallGet(hygieiaUrl + "/ping");
             int responseCode = callResponse.getResponseCode();
-            if (responseCode != HttpStatus.SC_OK) {
+            if (responseCode == HttpStatus.SC_OK) {
+            	continue;
+            } else {
                 logger.log(Level.WARNING, "Hygieia Test Connection Failed for the URL"+hygieiaUrl+". Response: " + responseCode);
             	return false;
             }
