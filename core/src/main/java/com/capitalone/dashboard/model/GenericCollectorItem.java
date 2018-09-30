@@ -17,16 +17,15 @@ public class GenericCollectorItem extends BaseModel {
     private ObjectId collectorId;
     @NotNull
     private String rawData;
-
     @NotNull
     private long creationTime;
-
+    private long processTime;
     @NotNull
     private String source;
-
-    //To build relations if needed
-    private ObjectId relatedCollectorItem;
+    private ObjectId relatedCollectorItem; //To build relations if needed
     private ObjectId buildId; //if started  off by some build - connects to build collection
+
+
 
     public ObjectId getBuildId() {
         return buildId;
@@ -82,5 +81,13 @@ public class GenericCollectorItem extends BaseModel {
 
     public void setCollectorId(ObjectId collectorId) {
         this.collectorId = collectorId;
+    }
+
+    public long getProcessTime() {
+        return processTime;
+    }
+
+    public void setProcessTime(long processTime) {
+        this.processTime = processTime;
     }
 }

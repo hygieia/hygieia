@@ -19,16 +19,17 @@ import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Objects;
 
 @Extension
-public class HygieiaGlobalListener extends RunListener<Run<?,?>> {
+public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
 
 
     @Override
-    public void onCompleted(Run run, TaskListener listener) {
+    public void onCompleted(Run run, @Nonnull TaskListener listener) {
 
         HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor = getDescriptor();
-        
+
         HygieiaService hygieiaService = getHygieiaService(hygieiaGlobalListenerDescriptor);
 
         HygieiaResponse buildResponse = null;
@@ -91,24 +92,24 @@ public class HygieiaGlobalListener extends RunListener<Run<?,?>> {
     }
 
     protected HygieiaPublisher.DescriptorImpl getDescriptor() {
-        return Jenkins.getInstance().getDescriptorByType(HygieiaPublisher.DescriptorImpl.class);
+        return Objects.requireNonNull(Jenkins.getInstance()).getDescriptorByType(HygieiaPublisher.DescriptorImpl.class);
     }
 
     protected BuildBuilder getBuildBuilder(Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor) {
         return new BuildBuilder(run, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), listener, HygieiaUtils.getBuildStatus(run.getResult()), true);
     }
 
-    protected SonarBuilder getSonarBuilder(HygieiaResponse buildResponse, Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor) throws ParseException, IOException, URISyntaxException {
+    protected SonarBuilder getSonarBuilder(HygieiaResponse buildResponse, Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor) {
         return new SonarBuilder(run, listener, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), null,
                 null, buildResponse != null ? buildResponse.getResponseValue() : "", hygieiaGlobalListenerDescriptor.isUseProxy());
     }
 
-    protected GenericCollectorItemBuilder getGenericCollectorItemBuilder (HygieiaResponse buildResponse, Run run, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, String toolName, String pattern) {
-        return new GenericCollectorItemBuilder(run, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(),toolName, pattern, buildResponse != null ? buildResponse.getResponseValue() : "");
+    protected GenericCollectorItemBuilder getGenericCollectorItemBuilder(HygieiaResponse buildResponse, Run run, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, String toolName, String pattern) {
+        return new GenericCollectorItemBuilder(run, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), toolName, pattern, buildResponse != null ? buildResponse.getResponseValue() : "");
     }
 
     protected HygieiaService getHygieiaService(HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor) {
-        return  hygieiaGlobalListenerDescriptor.getHygieiaService(hygieiaGlobalListenerDescriptor.getHygieiaAPIUrl(), hygieiaGlobalListenerDescriptor.getHygieiaToken(),
+        return hygieiaGlobalListenerDescriptor.getHygieiaService(hygieiaGlobalListenerDescriptor.getHygieiaAPIUrl(), hygieiaGlobalListenerDescriptor.getHygieiaToken(),
                 hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), hygieiaGlobalListenerDescriptor.isUseProxy());
     }
 
