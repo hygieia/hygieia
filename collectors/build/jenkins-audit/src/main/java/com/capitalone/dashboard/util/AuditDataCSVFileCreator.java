@@ -13,10 +13,20 @@ import com.capitalone.dashboard.status.DashboardAuditStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.stream.Stream;
+import java.util.Set;
+import java.util.Map;
+import java.util.HashSet;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 
 /**
  * <h1>AuditDataCSVFileCreator</h1>
@@ -29,7 +39,7 @@ import java.util.*;
  *
  * @since 09/28/2018
  */
-@SuppressWarnings("PMD")
+//@SuppressWarnings("PMD")
 public class AuditDataCSVFileCreator {
 
     // BEGIN_DATE, END_DATE,CSV_OUTPUT_FILE_PATH values finalized by CSV file creator
@@ -38,14 +48,14 @@ public class AuditDataCSVFileCreator {
     private static final String CSV_OUTPUT_FILE_PATH = "";
 
     private static final Set<AuditType> AUDIT_TYPE = new HashSet<>();
-    private static final String[] CSV_HEADER = {"LOB", "ASV", "BAP",
-            "ASV_OWNER", "SERV_OWNER", "AUDIT_TYPE", "COLLECTION_STATUS", "AUDIT_STATUS", "URL", "ERROR"};
-    private static final String[] AUDIT_TYPES = {"LIBRARY_POLICY", "CODE_REVIEW", "TEST_RESULT", "STATIC_SECURITY_ANALYSIS",
-            "PERF_TEST", "CODE_QUALITY", "BUILD_REVIEW"};
-    private static final String[] CODE_REVIEW_FAIL_STATUES = {"PEER_REVIEW_LGTM_ERROR", "PEER_REVIEW_LGTM_SELF_APPROVAL", "PEER_REVIEW_GHR_SELF_APPROVAL",
-            "DIRECT_COMMITS_TO_BASE", "MERGECOMMITER_NOT_FOUND", "PULLREQ_NOT_PEER_REVIEWED", "COLLECTOR_ITEM_ERROR",
-            "NO_COMMIT_FOR_DATE_RANGE", "COMMIT_AFTER_PR_MERGE", "SCM_AUTHOR_LOGIN_INVALID", "REPO_NOT_CONFIGURED", "PENDING_DATA_COLLECTION", "GIT_NO_WORKFLOW",
-            "COMMITAUTHOR_EQ_MERGECOMMITER", "PEER_REVIEW_BY_SERVICEACCOUNT", "COMMITAUTHOR_EQ_SERVICEACCOUNT", "MERGECOMMITER_EQ_SERVICEACCOUNT"};
+    private enum CSV_HEADER {LOB, ASV, BAP,
+            ASV_OWNER, SERV_OWNER, AUDIT_TYPE, COLLECTION_STATUS, AUDIT_STATUS, URL, ERROR};
+    private enum AUDIT_TYPES {LIBRARY_POLICY, CODE_REVIEW, TEST_RESULT, STATIC_SECURITY_ANALYSIS,
+            PERF_TEST, CODE_QUALITY, BUILD_REVIEW};
+    private enum CODE_REVIEW_FAIL_STATUES {PEER_REVIEW_LGTM_ERROR, PEER_REVIEW_LGTM_SELF_APPROVAL, PEER_REVIEW_GHR_SELF_APPROVAL,
+            DIRECT_COMMITS_TO_BASE, MERGECOMMITER_NOT_FOUND, PULLREQ_NOT_PEER_REVIEWED, COLLECTOR_ITEM_ERROR,
+            NO_COMMIT_FOR_DATE_RANGE, COMMIT_AFTER_PR_MERGE, SCM_AUTHOR_LOGIN_INVALID, REPO_NOT_CONFIGURED, PENDING_DATA_COLLECTION, GIT_NO_WORKFLOW,
+            COMMITAUTHOR_EQ_MERGECOMMITER, PEER_REVIEW_BY_SERVICEACCOUNT, COMMITAUTHOR_EQ_SERVICEACCOUNT, MERGECOMMITER_EQ_SERVICEACCOUNT};
 
     private static String lob, asv, bap, asvOwner, serviceOwner, type, collectionStatus, auditStatus, error, url;
     @Autowired
@@ -65,10 +75,12 @@ public class AuditDataCSVFileCreator {
         createCSVFile();
     }
 
+    /**
+     * Create CSV file
+     */
     private void createCSVFile() {
         // This findByTimestampAfter can be changed based on the need.
-        //Iterable<Dashboard> recentDashboards = dashboardRepository.findByTimestampAfter(BEGIN_DATE);
-        Iterable<Dashboard> recentDashboards = dashboardRepository.findByTitle("CI304346");
+        Iterable<Dashboard> recentDashboards = dashboardRepository.findByTimestampAfter(BEGIN_DATE);
         AUDIT_TYPE.add(AuditType.ALL);
         this.getAuditResults(recentDashboards, BEGIN_DATE);
         if (!(entireCSVData == null && entireCSVData.isEmpty())) {
@@ -86,10 +98,13 @@ public class AuditDataCSVFileCreator {
         }
     }
 
+    /**
+     * Get Audit Results for each dashboard
+     */
     private void getAuditResults(Iterable<Dashboard> dashboards, long timestamp) {
         List<AuditResult> auditResults = new ArrayList();
-        // CSV Header
-        entireCSVData.add(String.join(",", Arrays.asList(CSV_HEADER)));
+        List<String> csvHeaders = Stream.of(CSV_HEADER.values()).map(Enum::name).collect(Collectors.toList());
+        entireCSVData.add(String.join(",", csvHeaders));
 
         dashboards.forEach(dashboard -> {
             try {
@@ -115,6 +130,9 @@ public class AuditDataCSVFileCreator {
         });
     }
 
+    /**
+     * Add CSV row data
+     */
     private void addCSVRowData(Dashboard dashboard) {
         Cmdb cmdb = cmdbRepository.findByConfigurationItem(dashboard.getConfigurationItemBusServName());
         lob = cmdb.getOwnerDept();
@@ -127,9 +145,12 @@ public class AuditDataCSVFileCreator {
         entireCSVData.add(String.join(",", csvRowData));
     }
 
+    /**
+     * Assign values to CSV column attributes
+     */
     private void assignAuditDataValues(AuditResult auditResult) {
 
-        List<String> auditTypes = Arrays.asList(AUDIT_TYPES);
+        List<String> auditTypes = Stream.of(AUDIT_TYPES.values()).map(Enum::name).collect(Collectors.toList());
         Set<DashboardAuditStatus> dashboardAuditStatuses = auditResult.getDashboardReviewResponse().getAuditStatuses();
         Map<AuditType, Collection<AuditReviewResponse>> auditDetailReview = auditResult.getDashboardReviewResponse().getReview();
 
@@ -201,12 +222,18 @@ public class AuditDataCSVFileCreator {
         }
     }
 
+    /**
+     * Assign default values
+     */
     private void assignAuditDetailDefaults() {
         collectionStatus = "NOT_CONFIGURED";
         auditStatus = "NA";
         error = "";
     }
 
+    /**
+     * Assign Audit Detail Values
+     */
     private String[] assignAuditDetailStatusValues(Map<AuditType, Collection<AuditReviewResponse>> statusReviewes, AuditType auditType) {
 
         // collection statuses expected are NO_DATA, NOT_CONFIGURED, OK 
@@ -216,7 +243,7 @@ public class AuditDataCSVFileCreator {
         Collection<AuditReviewResponse> auditReviewResponses = statusReviewes.get(auditType);
         boolean isAssigned = false;
 
-        List<String> codeReviewFailStatuses = Arrays.asList(CODE_REVIEW_FAIL_STATUES);
+        List<String> codeReviewFailStatuses = Stream.of(CODE_REVIEW_FAIL_STATUES.values()).map(Enum::name).collect(Collectors.toList());
         if (auditReviewResponses == null || auditReviewResponses.isEmpty()) {
             collectionStatus = "NO_DATA";
             auditStatus = "NA";

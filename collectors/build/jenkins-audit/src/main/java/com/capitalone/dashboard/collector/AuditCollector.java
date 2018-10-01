@@ -15,6 +15,9 @@ public class AuditCollector extends Collector {
     public static final String JOB_URL = "jobUrl";
     private List<String> buildServers = new ArrayList<>();
 
+    /**
+    * Audit Collector Instance built with required config settings
+    */
     public static AuditCollector prototype(List<String> servers) {
         AuditCollector protoType = new AuditCollector();
         protoType.setName("AuditCollector");
