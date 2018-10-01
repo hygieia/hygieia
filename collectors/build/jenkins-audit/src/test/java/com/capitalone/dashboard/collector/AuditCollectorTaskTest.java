@@ -19,9 +19,12 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 import static junit.framework.TestCase.assertNotNull;
 import static org.mockito.Mockito.mock;
@@ -52,9 +55,7 @@ public class AuditCollectorTaskTest {
         AuditCollectorSettings settings = new AuditCollectorSettings();
         settings.setServers(Arrays.asList("http://localhost:8081/"));
         settings.setCron("*/2 * * * *");
-
     }
-
     @Test
     public void getCollectAuditStatusData() throws IOException {
         long timestamp = 1537824736000L;
@@ -65,7 +66,6 @@ public class AuditCollectorTaskTest {
         recentDashboards.forEach(dashboard -> {
             try {
                 long currentTimestamp = System.currentTimeMillis();
-
                 DashboardReviewResponse dashboardReviewResponse = dashboardAuditService.getDashboardReviewResponse(dashboard.getTitle(), dashboard.getType(), dashboard.getConfigurationItemBusServName(), dashboard.getConfigurationItemBusAppName(), timestamp, currentTimestamp, allAuditTypes);
                 AuditResult auditResult = new AuditResult(dashboard.getId(), dashboardReviewResponse, timestamp);
                 assert (auditResult.getDashboardTitle().equals("auditTestDashboard"));
@@ -81,6 +81,4 @@ public class AuditCollectorTaskTest {
             }
         });
     }
-
-
 }

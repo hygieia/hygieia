@@ -17,13 +17,12 @@ import static org.mockito.Mockito.mock;
 
 public class AuditCollectorTest {
 
-    private AuditCollectorTask testee;
+    private AuditCollectorTask taskToTest;
     private TaskScheduler taskScheduler;
     private DashboardRepository dashboardRepository;
     private DashboardAuditService dashboardAuditService;
     private AuditResultRepository auditResultRepository;
     private AuditCollectorRepository auditCollectorRepository;
-
 
     @Before
     public void setup() {
@@ -35,14 +34,12 @@ public class AuditCollectorTest {
         AuditCollectorSettings auditCollectorSettings = new AuditCollectorSettings();
         auditCollectorSettings.setServers(Arrays.asList("http://localhost:8081/"));
         auditCollectorSettings.setCron("*/2 * * * *");
-
-
-        this.testee = new AuditCollectorTask(taskScheduler, dashboardRepository, dashboardAuditService, auditResultRepository, auditCollectorRepository, auditCollectorSettings);
+        this.taskToTest = new AuditCollectorTask(taskScheduler, dashboardRepository, dashboardAuditService, auditResultRepository, auditCollectorRepository, auditCollectorSettings);
     }
 
     @Test
     public void getCollectorReturnsAuditStatusCollector() {
-        final AuditCollector collector = testee.getCollector();
+        final AuditCollector collector = taskToTest.getCollector();
         assertThat(collector).isNotNull().isInstanceOf(AuditCollector.class);
         assertThat(collector.isEnabled()).isTrue();
         assertThat(collector.isOnline()).isTrue();
@@ -59,11 +56,11 @@ public class AuditCollectorTest {
 
     @Test
     public void getCollectorRepositoryReturnsTheRepository() {
-        assertThat(testee.getCollectorRepository()).isNotNull().isInstanceOf(AuditCollectorRepository.class);
+        assertThat(taskToTest.getCollectorRepository()).isNotNull().isInstanceOf(AuditCollectorRepository.class);
     }
 
     @Test
     public void getCron() {
-        assertThat(testee.getCron().equals("*/2 * * * *"));
+        assertThat(taskToTest.getCron().equals("*/2 * * * *"));
     }
 }
