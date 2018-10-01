@@ -26,3 +26,4 @@ target
 jir-client.properties
 /bin/
 application.properties
+docker-compose.override.yml

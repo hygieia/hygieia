@@ -5,9 +5,24 @@
         .module(HygieiaConfig.module)
         .controller('RepoViewController', RepoViewController);
 
-    RepoViewController.$inject = ['$q', '$scope','codeRepoData', 'pullRepoData', 'issueRepoData', 'collectorData', '$uibModal'];
-    function RepoViewController($q, $scope, codeRepoData, pullRepoData, issueRepoData, collectorData, $uibModal) {
+    RepoViewController.$inject = ['$filter', '$q', '$scope', 'codeRepoData', 'pullRepoData', 'issueRepoData', 'collectorData', '$uibModal'];
+
+    function RepoViewController($filter, $q, $scope, codeRepoData, pullRepoData, issueRepoData, collectorData, $uibModal) {
         var ctrl = this;
+
+        ctrl.pendingPullRequests = [];
+
+        ctrl.pendingPullRequest = {
+            prId: 0,
+            repoName: null,
+            prTitle: null,
+            prBranchFrom: null,
+            prBranchTo: null,
+            prCreatedDate: null,
+            prUdatedDate: null,
+            prAuthor: null,
+            daysFromToday: 0
+        };
 
         ctrl.combinedChartOptions = {
             plugins: [
@@ -50,7 +65,29 @@
         ctrl.issues = [];
 
         ctrl.showDetail = showDetail;
-        ctrl.load = function() {
+
+        function howOld(createdDate) {
+            var now = new Date();
+            var nbDays = (now - createdDate) / 1000 / 60 / 60 / 24;
+            return Math.round(nbDays);
+        }
+
+        function processPendingPullRequest(data) {
+            ctrl.pendingPullRequests = [];
+            console.log("data = ", data);
+            angular.forEach(data, function (pullRequest) {
+                pullRequest.daysFromToday = howOld(pullRequest.createdDate);
+                console.log("createdDate = ", pullRequest.createdDate);
+                pullRequest.createdDate = $filter('date')(pullRequest.createdDate, "dd-MMM-yyyy");
+                pullRequest.updatedDate = $filter('date')(pullRequest.updatedDate, "dd-MMM-yyyy");
+                console.log("pullRequest = ", pullRequest);
+                console.log("pullRequest author name = ", pullRequest.author.user.displayName);
+                console.log("pullRequest destination branch = ", pullRequest.toRef.displayId);
+                ctrl.pendingPullRequests.push(pullRequest);
+            });
+        }
+
+        ctrl.load = function () {
             var deferred = $q.defer();
             var params = {
                 componentId: $scope.widgetConfig.componentId,
@@ -62,7 +99,7 @@
                 ctrl.lastUpdated = data.lastUpdated;
             }).then(function () {
                 collectorData.getCollectorItem($scope.widgetConfig.componentId, 'scm').then(function (data) {
-                    deferred.resolve( {lastUpdated: ctrl.lastUpdated, collectorItem: data});
+                    deferred.resolve({lastUpdated: ctrl.lastUpdated, collectorItem: data});
                 });
             });
             pullRepoData.details(params).then(function (data) {
@@ -70,7 +107,7 @@
                 ctrl.lastUpdated = data.lastUpdated;
             }).then(function () {
                 collectorData.getCollectorItem($scope.widgetConfig.componentId, 'scm').then(function (data) {
-                    deferred.resolve( {lastUpdated: ctrl.lastUpdated, collectorItem: data});
+                    deferred.resolve({lastUpdated: ctrl.lastUpdated, collectorItem: data});
                 });
             });
             issueRepoData.details(params).then(function (data) {
@@ -78,10 +115,22 @@
                 ctrl.lastUpdated = data.lastUpdated;
             }).then(function () {
                 collectorData.getCollectorItem($scope.widgetConfig.componentId, 'scm').then(function (data) {
-                    deferred.resolve( {lastUpdated: ctrl.lastUpdated, collectorItem: data});
+                    deferred.resolve({lastUpdated: ctrl.lastUpdated, collectorItem: data});
                 });
             });
-            
+
+            collectorData.collectorsByType('SCM').then(function (response) {
+                ctrl.collectorId = response[0].id;
+                console.log("component id = ", $scope.widgetConfig.componentId);
+            });
+
+            collectorData.collectorsByType('SCM').then(function () {
+                var url = $scope.widgetConfig.options.url;
+                var urlSplitted = url.split('/');
+                ctrl.repoName = urlSplitted[urlSplitted.length - 1];
+                pullRepoData.pendingPullRequestsDetails(ctrl.collectorId, ctrl.repoName).then(processPendingPullRequest);
+            });
+
             return deferred.promise;
         };
 
@@ -99,16 +148,16 @@
                 size: 'lg',
 
                 resolve: {
-                    commits: function() {
+                    commits: function () {
                         if (seriesIndex == "0")
                             return groupedCommitData[pointIndex];
                     },
-                    pulls: function() {
-                       if (seriesIndex == "1")
+                    pulls: function () {
+                        if (seriesIndex == "1")
                             return groupedpullData[pointIndex];
                     },
-                    issues: function() {
-                       if (seriesIndex == "2")
+                    issues: function () {
+                        if (seriesIndex == "2")
                             return groupedissueData[pointIndex];
                     }
                 }
@@ -117,6 +166,7 @@
 
         var commits = [];
         var groupedCommitData = [];
+
         function processCommitResponse(data, numberOfDays) {
             commits = [];
             groupedCommitData = [];
@@ -141,8 +191,7 @@
                 labels.push('');
             });
             //update charts
-            if (commits.length)
-            {
+            if (commits.length) {
                 ctrl.commitChartData = {
                     series: [commits],
                     labels: labels
@@ -181,26 +230,26 @@
             // loop through and add to counts
             _(data).forEach(function (commit) {
 
-                if(commit.scmCommitTimestamp >= today.getTime()) {
+                if (commit.scmCommitTimestamp >= today.getTime()) {
                     lastDayCommitCount++;
 
-                    if(lastDayCommitContributors.indexOf(commit.scmAuthor) == -1) {
+                    if (lastDayCommitContributors.indexOf(commit.scmAuthor) == -1) {
                         lastDayCommitContributors.push(commit.scmAuthor);
                     }
                 }
 
-                if(commit.scmCommitTimestamp >= sevenDays.getTime()) {
+                if (commit.scmCommitTimestamp >= sevenDays.getTime()) {
                     lastSevenDayCommitCount++;
 
-                    if(lastSevenDaysCommitContributors.indexOf(commit.scmAuthor) == -1) {
+                    if (lastSevenDaysCommitContributors.indexOf(commit.scmAuthor) == -1) {
                         lastSevenDaysCommitContributors.push(commit.scmAuthor);
                     }
                 }
 
-                if(commit.scmCommitTimestamp >= fourteenDays.getTime()) {
+                if (commit.scmCommitTimestamp >= fourteenDays.getTime()) {
                     lastFourteenDayCommitCount++;
                     ctrl.commits.push(commit);
-                    if(lastFourteenDaysCommitContributors.indexOf(commit.scmAuthor) == -1) {
+                    if (lastFourteenDaysCommitContributors.indexOf(commit.scmAuthor) == -1) {
                         lastFourteenDaysCommitContributors.push(commit.scmAuthor);
                     }
                 }
@@ -222,17 +271,18 @@
 
         var pulls = [];
         var groupedpullData = [];
+
         function processPullResponse(data, numberOfDays) {
             pulls = [];
             groupedpullData = [];
             // get total pulls by day
             var groups = _(data).sortBy('timestamp')
-                .groupBy(function(item) {
+                .groupBy(function (item) {
                     return -1 * Math.floor(moment.duration(moment().diff(moment(item.timestamp))).asDays());
                 }).value();
 
-            for(var x=-1*numberOfDays+1; x <= 0; x++) {
-                if(groups[x]) {
+            for (var x = -1 * numberOfDays + 1; x <= 0; x++) {
+                if (groups[x]) {
                     pulls.push(groups[x].length);
                     groupedpullData.push(groups[x]);
                 }
@@ -242,12 +292,11 @@
                 }
             }
             var labels = [];
-            _(pulls).forEach(function() {
+            _(pulls).forEach(function () {
                 labels.push('');
             });
             //update charts
-            if(pulls.length)
-            {
+            if (pulls.length) {
                 ctrl.pullChartData = {
                     series: [pulls],
                     labels: labels
@@ -287,24 +336,24 @@
             // loop through and add to counts
             _(data).forEach(function (pull) {
 
-                if(pull.timestamp >= today.getTime()) {
+                if (pull.timestamp >= today.getTime()) {
                     lastDayPullCount++;
 
-                    if(lastDayPullContributors.indexOf(pull.userId) == -1) {
+                    if (lastDayPullContributors.indexOf(pull.userId) == -1) {
                         lastDayPullContributors.push(pull.userId);
                     }
                 }
-                else if(pull.timestamp >= sevenDays.getTime()) {
+                else if (pull.timestamp >= sevenDays.getTime()) {
                     lastsevenDayPullCount++;
 
-                    if(lastsevenDaysPullContributors.indexOf(pull.userId) == -1) {
+                    if (lastsevenDaysPullContributors.indexOf(pull.userId) == -1) {
                         lastsevenDaysPullContributors.push(pull.userId);
                     }
                 }
-                else if(pull.timestamp >= fourteenDays.getTime()) {
+                else if (pull.timestamp >= fourteenDays.getTime()) {
                     lastfourteenDayPullCount++;
                     ctrl.pulls.push(pull);
-                    if(lastfourteenDaysPullContributors.indexOf(pull.userId) == -1) {
+                    if (lastfourteenDaysPullContributors.indexOf(pull.userId) == -1) {
                         lastfourteenDaysPullContributors.push(pull.userId);
                     }
                 }
@@ -323,20 +372,21 @@
                 return date;
             }
         }
-          
+
         var issues = [];
         var groupedissueData = [];
+
         function processIssueResponse(data, numberOfDays) {
             groupedissueData = [];
             issues = [];
             // get total issues by day
             var groups = _(data).sortBy('timestamp')
-                .groupBy(function(item) {
+                .groupBy(function (item) {
                     return -1 * Math.floor(moment.duration(moment().diff(moment(item.timestamp))).asDays());
                 }).value();
 
-            for(var x=-1*numberOfDays+1; x <= 0; x++) {
-                if(groups[x]) {
+            for (var x = -1 * numberOfDays + 1; x <= 0; x++) {
+                if (groups[x]) {
                     issues.push(groups[x].length);
                     groupedissueData.push(groups[x]);
                 }
@@ -346,12 +396,11 @@
                 }
             }
             var labels = [];
-            _(issues).forEach(function() {
+            _(issues).forEach(function () {
                 labels.push('');
             });
             //update charts
-            if(issues.length)
-            {
+            if (issues.length) {
                 ctrl.issueChartData = {
                     series: [issues],
                     labels: labels
@@ -390,24 +439,24 @@
             // loop through and add to counts
             _(data).forEach(function (issue) {
 
-                if(issue.timestamp >= today.getTime()) {
+                if (issue.timestamp >= today.getTime()) {
                     lastDayIssueCount++;
 
-                    if(lastDayIssueContributors.indexOf(issue.userId) == -1) {
+                    if (lastDayIssueContributors.indexOf(issue.userId) == -1) {
                         lastDayIssueContributors.push(issue.userId);
                     }
                 }
-                else if(issue.timestamp >= sevenDays.getTime()) {
+                else if (issue.timestamp >= sevenDays.getTime()) {
                     lastsevenDayIssueCount++;
 
-                    if(lastsevenDaysIssueContributors.indexOf(issue.userId) == -1) {
+                    if (lastsevenDaysIssueContributors.indexOf(issue.userId) == -1) {
                         lastsevenDaysIssueContributors.push(issue.userId);
                     }
                 }
-                else if(issue.timestamp >= fourteenDays.getTime()) {
+                else if (issue.timestamp >= fourteenDays.getTime()) {
                     lastfourteenDayIssueCount++;
                     ctrl.issues.push(issue);
-                    if(lastfourteenDaysIssueContributors.indexOf(issue.userId) == -1) {
+                    if (lastfourteenDaysIssueContributors.indexOf(issue.userId) == -1) {
                         lastfourteenDaysIssueContributors.push(issue.userId);
                     }
                 }
@@ -425,6 +474,20 @@
                 date.setHours(0, 0, 0, 0);
                 return date;
             }
+        }
+
+        function getCollectorId() {
+            collectorData.collectorsByType('SCM').then(function (response) {
+                ctrl.collectorId = response[0].id;
+            });
+        }
+
+        function getRepoName() {
+            collectorData.collectorsByType('SCM').then(function (response) {
+                var url = response[0].options.url;
+                var urlSplitted = url.split('/');
+                ctrl.repoName = urlSplitted[urlSplitted.length - 1];
+            });
         }
     }
 })();

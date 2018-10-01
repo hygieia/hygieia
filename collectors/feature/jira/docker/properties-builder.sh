@@ -79,10 +79,10 @@ feature.jiraQueryEndpoint=${JIRA_QUERY_ENDPOINT:-rest/api/2/}
 feature.jiraCredentials=${JIRA_CREDENTIALS}
 
 #OAuth2.0 token credentials (currently not supported in this version)
-feature.jiraOauthAuthtoken=${JIRA_OAUTH_AUTH_TOKEN:-sdfghjkl==}
-feature.jiraOauthRefreshtoken=${JIRA_OAUTH_REFRESH_TOKEN:-sdfagheh==}
-feature.jiraOauthRedirecturi=${JIRA_OAUTH_REDIRECT_URL:-uri.this.is.test:uri}
-feature.jiraOauthExpiretime=${JIRA_OAUTH_EXPIRE_TIME:-234567890987}
+#feature.jiraOauthAuthtoken=${JIRA_OAUTH_AUTH_TOKEN:-sdfghjkl==}
+#feature.jiraOauthRefreshtoken=${JIRA_OAUTH_REFRESH_TOKEN:-sdfagheh==}
+#feature.jiraOauthRedirecturi=${JIRA_OAUTH_REDIRECT_URL:-uri.this.is.test:uri}
+#feature.jiraOauthExpiretime=${JIRA_OAUTH_EXPIRE_TIME:-234567890987}
 
 #Start dates from which to begin collector data, if no other data is present - usually, a month back is appropriate (required)
 feature.deltaStartDate=${JIRA_DELTA_START_DATE:-2015-03-01T00:00:00.000000}
@@ -121,6 +121,14 @@ feature.jiraEpicIdFieldName=${JIRA_EPIC_FIELD_NAME:-customfield_10400}
 # story points value you expect to see:
 # https://[your-jira-domain-name]/rest/api/2/issue/[some-issue-name]
 feature.jiraStoryPointsFieldName=${JIRA_STORY_POINTS_FIELD_NAME:-customfield_10002}
+
+# Possible statuses of the issues
+feature.todoStatuses[0]=${JIRA_TODO_STATUS0}
+feature.todoStatuses[1]=${JIRA_TODO_STATUS1}
+feature.todoStatuses[2]=${JIRA_TODO_STATUS2}
+feature.doingStatuses[0]=${JIRA_DOING_STATUS0}
+feature.doneStatuses[0]=${JIRA_DONE_STATUS0}
+feature.doneStatuses[1]=${JIRA_DONE_STATUS1}
 
 # In Jira, your instance will have its own custom field created for "team"
 # This field allows you to specify that data field for your instance

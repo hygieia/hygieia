@@ -1,8 +1,10 @@
 package com.capitalone.dashboard.service;
 
+import java.util.List;
+
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.request.GitRequestRequest;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -21,5 +23,7 @@ public interface GitRequestService {
                                               String type, String state);
 
     String createFromGitHubv3(JSONObject request) throws ParseException, HygieiaException;
+
+    List<com.capitalone.dashboard.model.pullrequest.PullRequest> getPullRequestsByRepoName(String repoName);
 
 }

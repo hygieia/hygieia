@@ -1,5 +1,9 @@
 package com.capitalone.dashboard.service;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
@@ -8,9 +12,11 @@ import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.QGitRequest;
+import com.capitalone.dashboard.model.pullrequest.PullRequest;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
+import com.capitalone.dashboard.repository.PullRequestRepository;
 import com.capitalone.dashboard.request.GitRequestRequest;
 import com.mysema.query.BooleanBuilder;
 import org.apache.commons.lang.StringUtils;
@@ -23,10 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 @Service
 public class GitRequestServiceImpl implements GitRequestService {
 
@@ -34,16 +36,24 @@ public class GitRequestServiceImpl implements GitRequestService {
     private final ComponentRepository componentRepository;
     private final CollectorRepository collectorRepository;
     private final CollectorService collectorService;
+    private final PullRequestRepository pullRequestRepository;
 
     @Autowired
     public GitRequestServiceImpl(GitRequestRepository gitRequestRepository,
-                           ComponentRepository componentRepository,
-                           CollectorRepository collectorRepository,
-                                 CollectorService collectorService) {
+                                 ComponentRepository componentRepository,
+                                 CollectorRepository collectorRepository,
+                                 CollectorService collectorService,
+                                 PullRequestRepository pullRequestRepository) {
         this.gitRequestRepository = gitRequestRepository;
         this.componentRepository = componentRepository;
         this.collectorRepository = collectorRepository;
         this.collectorService = collectorService;
+        this.pullRequestRepository = pullRequestRepository;
+    }
+
+    @Override
+    public List<PullRequest> getPullRequestsByRepoName(String repoName) {
+        return pullRequestRepository.findByFromRef_Repository_NameAndOpenOrderByCreatedDateAsc(repoName, true);
     }
 
     @Override
@@ -65,13 +75,13 @@ public class GitRequestServiceImpl implements GitRequestService {
             long endTimeTarget = new LocalDate().minusDays(request.getNumberOfDays()).toDate().getTime();
             builder.and(gitRequest.timestamp.goe(endTimeTarget));
         }
-        if ( (type != null) &&
+        if ((type != null) &&
                 ((type.toLowerCase().equals("pull")) || (type.toLowerCase().equals("issue")))) {
             builder.and(gitRequest.requestType.eq(type));
         }
-        if ( (state != null) &&
+        if ((state != null) &&
                 ((state.toLowerCase().equals("open")) ||
-                (state.toLowerCase().equals("closed")) || (state.toLowerCase().equals("merged")))) {
+                        (state.toLowerCase().equals("closed")) || (state.toLowerCase().equals("merged")))) {
             builder.and(gitRequest.state.eq(state));
         }
         Collector collector = collectorRepository.findOne(item.getCollectorId());
@@ -81,6 +91,7 @@ public class GitRequestServiceImpl implements GitRequestService {
         }
         return new DataResponse<>(gitRequestRepository.findAll(builder.getValue()), collector.getLastExecuted());
     }
+
     @Override
     public String createFromGitHubv3(JSONObject request) throws ParseException, HygieiaException {
         GitRequestServiceImpl.GitHubv3 gitHubv3 = new GitRequestServiceImpl.GitHubv3(request.toJSONString());
@@ -175,14 +186,14 @@ public class GitRequestServiceImpl implements GitRequestService {
         private void buildGitRequests() throws HygieiaException {
             GitRequest gitRequest = new GitRequest();
             // Both Pull and Issue Events can be handled here
-            JSONObject  reqObject = (JSONObject) jsonObject.get("pull_request");
+            JSONObject reqObject = (JSONObject) jsonObject.get("pull_request");
             gitRequest.setRequestType("pull");
             if (reqObject == null) {
                 reqObject = (JSONObject) jsonObject.get("issue");
                 gitRequest.setRequestType("issue");
             }
 
-            if ( reqObject == null) {
+            if (reqObject == null) {
                 return;
             }
             JSONObject senderObject = (JSONObject) jsonObject.get("sender");
@@ -194,19 +205,19 @@ public class GitRequestServiceImpl implements GitRequestService {
 
             long timestamp = System.currentTimeMillis();
             gitRequest.setTimestamp(System.currentTimeMillis()); // this is hygieia timestamp.
-            gitRequest.setScmRevisionNumber(str(reqObject,"number"));
+            gitRequest.setScmRevisionNumber(str(reqObject, "number"));
             gitRequest.setScmAuthor(str(senderObject, "login"));
             gitRequest.setUserId(str(senderObject, "login"));
             gitRequest.setScmCommitLog(str(reqObject, "title"));
-            gitRequest.setCreatedAt(new DateTime(str(reqObject,"created_at")).getMillis());
-            gitRequest.setClosedAt(new DateTime(str(reqObject,"closed_at")).getMillis());
-            gitRequest.setMergedAt(new DateTime(str(reqObject,"merged_at")).getMillis());
-            gitRequest.setState(str(reqObject,"state"));
-            gitRequest.setNumber(str(reqObject,"number"));
-            String orgRepo = str(repoObject,"full_name");
+            gitRequest.setCreatedAt(new DateTime(str(reqObject, "created_at")).getMillis());
+            gitRequest.setClosedAt(new DateTime(str(reqObject, "closed_at")).getMillis());
+            gitRequest.setMergedAt(new DateTime(str(reqObject, "merged_at")).getMillis());
+            gitRequest.setState(str(reqObject, "state"));
+            gitRequest.setNumber(str(reqObject, "number"));
+            String orgRepo = str(repoObject, "full_name");
             if (orgRepo != null) {
                 String reponameArray[] = orgRepo.split("/");
-                if ((reponameArray != null) && ( reponameArray.length > 1)) {
+                if ((reponameArray != null) && (reponameArray.length > 1)) {
                     gitRequest.setOrgName(reponameArray[0]);
                     gitRequest.setRepoName(reponameArray[1]);
                 }
@@ -225,6 +236,7 @@ public class GitRequestServiceImpl implements GitRequestService {
             gitRequest.setBaseSha(str(baseObject, "sha"));
 
         }
+
         private String str(JSONObject json, String key) throws HygieiaException {
             if (json == null) {
                 throw new HygieiaException("Field '" + key + "' cannot be missing or null or empty",
@@ -236,4 +248,4 @@ public class GitRequestServiceImpl implements GitRequestService {
 
     }
 
-  }
+}

@@ -2,48 +2,78 @@
 @import (reference) '../../../app/css/mixins.less';
 
 .repo-view {
-    .commit-view{
-        .ct-series-a .ct-line {
-            stroke: #04eeff;
-        }
-        .ct-series-b .ct-line {
-            stroke: #04eb0f;
-        }
-        .ct-series-c .ct-line {
-            stroke: red;
-        }
+  .commit-view {
+    .ct-series-a .ct-line {
+      stroke: #04eeff;
+    }
+    .ct-series-b .ct-line {
+      stroke: #04eb0f;
+    }
+    .ct-series-c .ct-line {
+      stroke: red;
+    }
+  }
+
+  .bg-danger {
+    background-color: #AD004C;
+    border-bottom: 2px solid white;
+  }
+
+  .bg-warning {
+    background-color: #f29a14;
+    border-bottom: 2px solid white;
+  }
+
+  .bg-success {
+    //background-color: #00CC4B;
+    background-color: green;
+    border-bottom: 2px solid white;
+  }
+
+  .conflicted {
+    vertical-align: middle;
+    font-style: italic;
+    font-weight: bold;
+    font-size: 17px;
+  }
+
+  .pr-title {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 15em;
+    white-space: nowrap;
+  }
+
+  .repo-summary-table {
+    @dash-chart-alt-color: contrast('blue');
+
+    td {
+      .text-lg;
+      vertical-align: top;
+      text-align: center;
+      width: 20%;
+      padding: .1rem .1rem;
+
+      &:first-child {
+        .text-standard;
+        text-align: left;
+        width: 40%;
+      }
+
+      &:nth-child(even) {
+        background: @dash-widget-section-highlight;
+      }
     }
 
-    .repo-summary-table {
-        @dash-chart-alt-color:    contrast('blue');
-
-        td {
-            .text-lg;
-            vertical-align: top;
-            text-align: center;
-            width: 20%;
-            padding: .1rem .1rem;
-
-            &:first-child {
-                .text-standard;
-                text-align: left;
-                width: 40%;
-            }
-
-            &:nth-child(even) {
-                background: @dash-widget-section-highlight;
-            }
-        }
-
-        tr:last-of-type td {
-            .text-standard;
-            background: none;
-            vertical-align: top;
-            &:not(:first-child) {
-                border-top: 1px solid @dash-divider;
-            }
-        }
+    tr:last-of-type td {
+      .text-standard;
+      background: none;
+      vertical-align: top;
+      &:not(:first-child) {
+        border-top: 1px solid @dash-divider;
+      }
     }
+  }
 }
 
 

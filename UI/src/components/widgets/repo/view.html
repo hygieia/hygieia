@@ -1,6 +1,66 @@
 <div class="repo-view">
     <div class="widget">
         <div class="widget-heading">
+            Pending Pull Requests
+        </div>
+        <div class="widget-body">
+            <table class="table table-hover table-dark">
+                <thead>
+                <tr>
+                    <th scope="col">TITLE</th>
+                    <th scope="col">FROM</th>
+                    <th scope="col">TO</th>
+                    <th scope="col">CREATED</th>
+                    <th scope="col">AUTHOR</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="pullRequest in repoView.pendingPullRequests | orderBy: 'pullRequest.createdDate'">
+                    <td class="pr-title bg-success" ng-if="pullRequest.daysFromToday <= 1">{{pullRequest.title}}</td>
+                    <td class="pr-title bg-warning"
+                        ng-if="pullRequest.daysFromToday > 1 && pullRequest.daysFromToday < 4">{{pullRequest.title}}
+                    </td>
+                    <td class="pr-title bg-danger" ng-if="pullRequest.daysFromToday > 3">{{pullRequest.title}}</td>
+
+                    <td class="bg-success" ng-if="pullRequest.daysFromToday <= 1">{{pullRequest.fromRef.displayId}}</td>
+                    <td class="bg-warning" ng-if="pullRequest.daysFromToday > 1 && pullRequest.daysFromToday < 4">
+                        {{pullRequest.fromRef.displayId}}
+                    </td>
+                    <td class="bg-danger" ng-if="pullRequest.daysFromToday > 3">{{pullRequest.fromRef.displayId}}</td>
+
+                    <td class="bg-success" ng-if="pullRequest.daysFromToday <= 1">{{pullRequest.toRef.displayId}}</td>
+                    <td class="bg-warning" ng-if="pullRequest.daysFromToday > 1 && pullRequest.daysFromToday < 4">
+                        {{pullRequest.toRef.displayId}}
+                    </td>
+                    <td class="bg-danger" ng-if="pullRequest.daysFromToday > 3">{{pullRequest.toRef.displayId}}</td>
+
+                    <td class="bg-success" ng-if="pullRequest.daysFromToday <= 1">{{pullRequest.createdDate}}</td>
+                    <td class="bg-warning" ng-if="pullRequest.daysFromToday > 1 && pullRequest.daysFromToday < 4">
+                        {{pullRequest.createdDate}}
+                    </td>
+                    <td class="bg-danger" ng-if="pullRequest.daysFromToday > 3">{{pullRequest.createdDate}}</td>
+
+                    <td class="bg-success" ng-if="pullRequest.daysFromToday <= 1">
+                        {{pullRequest.author.user.displayName}}
+                    </td>
+                    <td class="bg-warning" ng-if="pullRequest.daysFromToday > 3 && pullRequest.daysFromToday < 4">
+                        {{pullRequest.author.user.displayName}}
+                    </td>
+                    <td class="bg-danger" ng-if="pullRequest.daysFromToday > 3">
+                        {{pullRequest.author.user.displayName}}
+                    </td>
+
+                    <td class="conflicted " ng-if="pullRequest.properties.mergeResult.outcome === 'CONFLICTED'">
+                        Conflicted
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="widget">
+        <div class="widget-heading">
             Issues, Pulls and Commits per day
         </div>
         <div class="widget-body">
@@ -9,7 +69,7 @@
                       chartist-data="repoView.combinedChartData"
                       chartist-chart-options="repoView.combinedChartOptions"
                       chartist-events="repoView.commitChartEvents"
-                    >
+            >
             </chartist>
         </div>
     </div>

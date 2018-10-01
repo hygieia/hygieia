@@ -1,5 +1,6 @@
 @import (reference) '../../../app/css/variables.less';
 @import (reference) '../../../app/css/mixins.less';
+
 /* Add custom styles here. Any properties involving colors
    should considering using values from the variables.less file.
    All dash variables are prefixed with @dash.
@@ -12,6 +13,9 @@
   .sprintDaysTilEnd {
     font-size: 1.5rem;
     float: right;
+  }
+  .column-20 {
+    width: 20%;
   }
   .story-summary-count {
     border-bottom: 1px solid @dash-divider;
@@ -36,16 +40,19 @@
   .issue-done {
     text-decoration: line-through;
   }
-  
+  .ct-chart-sprint-health {
+    font-size: 2rem;
+  }
+
   .feature-link {
     a {
-        color: @dash-dashboard-text;
-        &:hover {
-            color: @dash-dashboard-text-hover;
-        }
+      color: @dash-dashboard-text;
+      &:hover {
+        color: @dash-dashboard-text-hover;
+      }
     }
   }
-	// Handles Feature Widget agile view transition switching
+  // Handles Feature Widget agile view transition switching
   .animate-show.ng-hide-remove {
     animation-name: example;
     animation-duration: 0.9s;
@@ -57,6 +64,23 @@
     to {
       opacity: 1;
     }
+  }
+  .ct-bar-label {
+    text-anchor: middle;
+    alignment-baseline: hanging;
+    fill: white;
+  }
+  .ct-bar {
+    stroke-width: 50px;
+  }
+  .ct-series-a .ct-bar {
+    stroke: @dash-chart-alt-fill;
+  }
+  .ct-series-b .ct-bar {
+    stroke: @dash-status-warn;
+  }
+  .ct-series-c .ct-bar {
+    stroke: @dash-status-pass;
   }
   .iteration-change-btn {
     padding-bottom: 1em;

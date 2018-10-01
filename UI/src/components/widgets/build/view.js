@@ -9,6 +9,7 @@
         .controller('BuildWidgetViewController', BuildWidgetViewController);
 
     BuildWidgetViewController.$inject = ['$scope', 'buildData', 'DisplayState', '$q', '$uibModal'];
+
     function BuildWidgetViewController($scope, buildData, DisplayState, $q, $uibModal) {
         var ctrl = this;
         var builds = [];
@@ -31,7 +32,7 @@
                 showLabel: false
             },
             axisY: {
-                labelInterpolationFnc: function(value) {
+                labelInterpolationFnc: function (value) {
                     return value === 0 ? 0 : ((Math.round(value * 100) / 100) + '');
                 }
             }
@@ -60,7 +61,7 @@
             centerLabels: true,
             axisY: {
                 offset: 30,
-                labelInterpolationFnc: function(value) {
+                labelInterpolationFnc: function (value) {
                     return value === 0 ? 0 : ((Math.round(value * 100) / 100) + '');
                 }
             }
@@ -71,13 +72,13 @@
         };
         //endregion
 
-        ctrl.load = function() {
+        ctrl.load = function () {
             var deferred = $q.defer();
             var params = {
                 componentId: $scope.widgetConfig.componentId,
                 numberOfDays: 15
             };
-            buildData.details(params).then(function(data) {
+            buildData.details(params).then(function (data) {
                 builds = data.result;
                 processResponse(builds);
                 deferred.resolve(data.lastUpdated);
@@ -89,15 +90,15 @@
             window.open(url);
         };
 
-        ctrl.detail = function(build) {
+        ctrl.detail = function (build) {
             $uibModal.open({
                 templateUrl: 'components/widgets/build/detail.html',
                 controller: 'BuildWidgetDetailController',
                 controllerAs: 'detail',
                 size: 'lg',
                 resolve: {
-                    build: function() {
-                        return _.find(builds, { number: build.number });
+                    build: function () {
+                        return _.find(builds, {number: build.number});
                     },
                     collectorName: function () {
                         return $scope.dashboard.application.components[0].collectorItems.Build[0].collector.name;
@@ -135,12 +136,12 @@
         //region Processing API Response
         function processResponse(data) {
             var worker = {
-                    averageBuildDuration: averageBuildDuration,
-                    buildsPerDay: buildsPerDay,
-                    latestBuilds: latestBuilds,
-                    setDisplayToErrorState: setDisplayToErrorState,
-                    totalBuilds: totalBuilds
-                };
+                averageBuildDuration: averageBuildDuration,
+                buildsPerDay: buildsPerDay,
+                latestBuilds: latestBuilds,
+                setDisplayToErrorState: setDisplayToErrorState,
+                totalBuilds: totalBuilds
+            };
 
             //region web worker method implementations
             function averageBuildDuration(data, buildThreshold, cb) {
@@ -203,9 +204,9 @@
                         }
                         else {
                             // calculate average and put in proper
-                            var avg = _(data).reduce(function(a,b) {
-                                    return a + b;
-                                }) / data.length;
+                            var avg = _(data).reduce(function (a, b) {
+                                return a + b;
+                            }) / data.length;
 
                             if (avg > buildThreshold) {
                                 passed.push(0);
@@ -276,7 +277,7 @@
                 // loop and convert time to readable format
                 data = _.map(data, function (item) {
                     return {
-                        status : item.buildStatus.toLowerCase(),
+                        status: item.buildStatus.toLowerCase(),
                         number: item.number,
                         endTime: item.endTime,
                         url: item.buildUrl
@@ -290,7 +291,7 @@
                 // order by end time and limit to last 5
                 data = _.sortBy(data, 'endTime').reverse().slice(0, failureThreshold);
                 data = _.filter(data, function (item) {
-                    return (item.buildStatus.toLowerCase() != 'success') &&  (item.buildStatus.toLowerCase() != 'inprogress') ;
+                    return (item.buildStatus.toLowerCase() != 'success') && (item.buildStatus.toLowerCase() != 'inprogress');
                 });
 
                 cb(data && data.length >= failureThreshold);
@@ -333,6 +334,7 @@
                     return date;
                 }
             }
+
             //endregion
 
             //region web worker calls
@@ -341,7 +343,7 @@
                 //$scope.$apply(function () {
 
                 var labels = [];
-                _(data.passed).forEach(function() {
+                _(data.passed).forEach(function () {
                     labels.push(1);
                 });
 
@@ -360,14 +362,14 @@
 
             worker.latestBuilds(data, function (buildsToDisplay) {
                 //$scope.$apply(function () {
-                    ctrl.recentBuilds = buildsToDisplay;
+                ctrl.recentBuilds = buildsToDisplay;
                 //});
             });
 
             worker.averageBuildDuration(data, $scope.widgetConfig.options.buildDurationThreshold, function (buildDurationData) {
                 //$scope.$apply(function () {
                 var labels = [];
-                _(buildDurationData.series[0]).forEach(function() {
+                _(buildDurationData.series[0]).forEach(function () {
                     labels.push('');
                 });
                 buildDurationData.labels = labels;
@@ -378,19 +380,20 @@
 
             worker.setDisplayToErrorState(data, $scope.widgetConfig.options.consecutiveFailureThreshold, function (displayAsErrorState) {
                 //$scope.$apply(function () {
-                    $scope.display = displayAsErrorState ? DisplayState.ERROR : DisplayState.DEFAULT;
+                $scope.display = displayAsErrorState ? DisplayState.ERROR : DisplayState.DEFAULT;
                 //});
             });
 
             worker.totalBuilds(data, function (data) {
                 //$scope.$apply(function () {
-                    ctrl.totalBuildsYesterday = data.today;
-                    ctrl.totalBuildsLastWeek = data.sevenDays;
-                    ctrl.totalBuildsLastMonth = data.fourteenDays;
+                ctrl.totalBuildsYesterday = data.today;
+                ctrl.totalBuildsLastWeek = data.sevenDays;
+                ctrl.totalBuildsLastMonth = data.fourteenDays;
                 //});
             });
             //endregion
         }
+
         //endregion
     }
 })();

@@ -6,10 +6,12 @@ import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitRepo;
+import com.capitalone.dashboard.model.pullrequest.PullRequest;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.GitRepoRepository;
+import com.capitalone.dashboard.repository.PullRequestRepository;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
@@ -39,6 +41,7 @@ public class GitCollectorTask extends CollectorTask<Collector> {
     private final GitClient gitClient;
     private final GitSettings gitSettings;
     private final ComponentRepository dbComponentRepository;
+    private final PullRequestRepository pullRequestRepository;
 
     @Autowired
     public GitCollectorTask(TaskScheduler taskScheduler,
@@ -47,7 +50,8 @@ public class GitCollectorTask extends CollectorTask<Collector> {
                             CommitRepository commitRepository,
                             GitClient gitClient,
                             GitSettings gitSettings,
-                            ComponentRepository dbComponentRepository) {
+                            ComponentRepository dbComponentRepository,
+                            PullRequestRepository pullRequestRepository) {
         super(taskScheduler, "Bitbucket");
         this.collectorRepository = collectorRepository;
         this.gitRepoRepository = gitRepoRepository;
@@ -55,6 +59,7 @@ public class GitCollectorTask extends CollectorTask<Collector> {
         this.gitClient = gitClient;
         this.gitSettings = gitSettings;
         this.dbComponentRepository = dbComponentRepository;
+        this.pullRequestRepository = pullRequestRepository;
     }
 
     @Override
@@ -132,12 +137,15 @@ public class GitCollectorTask extends CollectorTask<Collector> {
 
 
     @Override
+    @SuppressWarnings("PMD.NPathComplexity")
     public void collect(Collector collector) {
 
         logBanner("Starting...");
         long start = System.currentTimeMillis();
         int repoCount = 0;
         int commitCount = 0;
+        int newPullRequestCount = 0;
+        int deletedPullRequestCount = 0;
 
         clean(collector);
         for (GitRepo repo : enabledRepos(collector)) {
@@ -160,6 +168,24 @@ public class GitCollectorTask extends CollectorTask<Collector> {
             commitRepository.save(newCommits);
             commitCount += newCommits.size();
 
+            List<PullRequest> pullRequests = gitClient.getPullRequests(repo, firstRun);
+            for (PullRequest pullRequest : pullRequests) {
+                if (isNewPullRequest(pullRequest)) {
+                    pullRequest.setCollectorItemId(repo.getId());
+                    newPullRequestCount++;
+                }
+            }
+            pullRequestRepository.save(pullRequests);
+
+            List<Long> mergedPullRequestsIds = gitClient.getMergedPullRequests(repo);
+            for (Long mergedPullRequestId : mergedPullRequestsIds) {
+                if (hasBeenMergedPullRequest(mergedPullRequestId)) {
+                    pullRequestRepository.delete(
+                            pullRequestRepository.findById(mergedPullRequestId));
+                    deletedPullRequestCount++;
+                }
+            }
+
             repo.setLastUpdateTime(Calendar.getInstance().getTime());
             if (!commits.isEmpty()) {
                 // It appears that the first commit in the list is the HEAD of the branch
@@ -172,6 +198,8 @@ public class GitCollectorTask extends CollectorTask<Collector> {
         }
         log("Repo Count", start, repoCount);
         log("New Commits", start, commitCount);
+        log("New Pull Requests", start, newPullRequestCount);
+        log("Deleted Pull Requests", start, deletedPullRequestCount);
 
         log("Finished", start);
     }
@@ -188,5 +216,13 @@ public class GitCollectorTask extends CollectorTask<Collector> {
     private boolean isNewCommit(GitRepo repo, Commit commit) {
         return commitRepository.findByCollectorItemIdAndScmRevisionNumber(
                 repo.getId(), commit.getScmRevisionNumber()) == null;
+    }
+
+    private boolean isNewPullRequest(PullRequest pullRequest) {
+        return pullRequestRepository.findById(pullRequest.getId()) == null;
+    }
+
+    private boolean hasBeenMergedPullRequest(Long pullRequestId) {
+        return pullRequestRepository.findById(pullRequestId) != null;
     }
 }

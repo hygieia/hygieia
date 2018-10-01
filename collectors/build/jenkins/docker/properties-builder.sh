@@ -8,7 +8,7 @@ fi
 # mongo container provides the HOST/PORT
 # api container provided DB Name, ID & PWD
 
-if [ "$TEST_SCRIPT" != "" ]
+if [ "$PROP_FILE" != "" ]
 then
         #for testing locally
         PROP_FILE=application.properties

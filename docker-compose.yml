@@ -21,7 +21,7 @@ services:
     depends_on:
       - db-setup
     ports:
-      - "8080:8080"
+      - "8082:8080"
 
   api-audit:
     build: api-audit
