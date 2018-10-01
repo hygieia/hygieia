@@ -72,7 +72,7 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
             if (TestSuiteType.Performance.toString().equalsIgnoreCase(testResult.getType().name())) {
                 Collection<TestCapability> testCapabilities = testResult.getTestCapabilities();
 
-                if(testCapabilities !=null){
+                if(!CollectionUtils.isEmpty(testCapabilities)){
                     Comparator<TestCapability> testCapabilityComparator = Comparator.comparing(TestCapability::getTimestamp);
                     List<TestCapability> tc = new ArrayList<>(testCapabilities);
                     Collections.sort(tc,testCapabilityComparator.reversed());
