@@ -46,7 +46,7 @@ public class PerformanceTestResultEvaluatorTest {
     private TestResultRepository testResultRepository;
 
     @Test
-    public void evaluate_REPO_NOT_CONFIGURED() {
+    public void evaluate_COLLECTOR_ITEM_ERROR() {
         CollectorItem c = null;
         PerformanceTestAuditResponse response = performanceTestResultEvaluator.evaluate(c, 125634536, 6235263, null);
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("COLLECTOR_ITEM_ERROR"));
