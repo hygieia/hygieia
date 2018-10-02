@@ -40,7 +40,10 @@ The following audit APIs support code quality checks:
 
 ## Remote Create and Update
 
-These endpoints are used to post (either create or update) SCA data.
+These endpoints are used to post (either create or update) dashboard data.
+
+Note: Widget display on UI will show information basing on last updated timestamp.  
+
 
 **Input Parameters**
 
