@@ -40,7 +40,6 @@ public class CodeQualityEvaluatorTest {
     public void testEvaluate_CodeQualityNotConfigured(){
         CollectorItem c = null;
         CodeQualityAuditResponse response = codeQualityEvaluator.evaluate(c, 125634536, 6235263, null);
-        System.out.println(response.getAuditStatuses().toString());
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_NOT_CONFIGURED"));
     }
 
@@ -51,7 +50,6 @@ public class CodeQualityEvaluatorTest {
         when(codeQualityRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class),any(Long.class),any(Long.class))).thenReturn(codeQualities);
 
         CodeQualityAuditResponse response = codeQualityEvaluator.evaluate(createCollectorItem1(0), 125634536, 6235263, null);
-        System.out.println(response.getAuditStatuses().toString());
 
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("COLLECTOR_ITEM_ERROR"));
         Assert.assertEquals(true, response.getMessage().toString().contains("Unable to collect scan results at this point - check Sonar project exist"));
@@ -66,7 +64,6 @@ public class CodeQualityEvaluatorTest {
         when(collItemConfigHistoryRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class),any(Long.class),any(Long.class))).thenReturn(null);
 
         CodeQualityAuditResponse response = codeQualityEvaluator.evaluate(createCollectorItem(100), 125634536, 6235263, null);
-        System.out.println(response.getAuditStatuses().toString());
 
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_CHECK_IS_CURRENT"));
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_THRESHOLD_BLOCKER_MET"));
@@ -87,7 +84,6 @@ public class CodeQualityEvaluatorTest {
         when(collItemConfigHistoryRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class),any(Long.class),any(Long.class))).thenReturn(null);
 
         CodeQualityAuditResponse response = codeQualityEvaluator.evaluate(createCollectorItem(100), 125634536, 6235263, null);
-        System.out.println(response.getAuditStatuses().toString());
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_THRESHOLD_CRITICAL_FOUND"));
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_CHECK_IS_CURRENT"));
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_THRESHOLD_CODE_COVERAGE_MET"));
