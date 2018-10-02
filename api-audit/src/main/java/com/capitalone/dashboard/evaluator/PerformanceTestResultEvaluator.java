@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -132,7 +133,7 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
                 testlist.sort(Comparator.comparing(PerfTest::getStartTime).reversed());
                 perfReviewResponse.setLastExecutionTime(testlist.get(0).getStartTime());
                 perfReviewResponse.setResult(testlist);
-                perfReviewResponse.addAuditStatus((int) testlist.stream().filter(list -> list.getResultStatus().matches("Success")).count() > 0 ?
+                perfReviewResponse.addAuditStatus((int) testlist.stream().filter(list -> Optional.ofNullable(list).isPresent() && Optional.ofNullable(list.getResultStatus()).isPresent() && list.getResultStatus().matches("Success")).count() > 0 ?
                         PerformanceTestAuditStatus.PERF_RESULT_AUDIT_OK : PerformanceTestAuditStatus.PERF_RESULT_AUDIT_FAIL);
             }
         }
