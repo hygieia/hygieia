@@ -1,5 +1,4 @@
 package com.capitalone.dashboard.collector;
-
 import com.capitalone.dashboard.model.AuditResult;
 import com.capitalone.dashboard.model.AuditType;
 import com.capitalone.dashboard.model.Dashboard;
@@ -67,6 +66,7 @@ public class AuditCollectorTask extends CollectorTask<AuditCollector> {
                 auditResultRepository.save(auditResults);
             } catch (Exception e) {
                 LOGGER.error("Error while saving audit status data to database", e.getMessage());
+                throw new RuntimeException(e.getCause());
             }
         }
     }
@@ -82,7 +82,7 @@ public class AuditCollectorTask extends CollectorTask<AuditCollector> {
         Set<AuditType> allAuditTypes = new HashSet<>();
         allAuditTypes.add(AuditType.ALL);
 
-        dashboards.forEach(dashboard -> {
+        dashboards.forEach((Dashboard dashboard) -> {
             try {
                 long currentTimestamp = System.currentTimeMillis();
                 LOGGER.info("Get dashboard audit review response for the dashboard - " + dashboard.getTitle());
@@ -96,6 +96,7 @@ public class AuditCollectorTask extends CollectorTask<AuditCollector> {
 
             } catch (Exception e) {
                 LOGGER.error("Error while calling audit api service for the dashboard - " + dashboard.getTitle());
+                throw new RuntimeException(e.getCause());
             }
         });
         return auditResults;
