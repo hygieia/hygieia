@@ -249,5 +249,8 @@ import com.capitalone.dashboard.util.PaginationHeaderUtility;
 		 return Mockito.mock(TeamInventoryService.class);
 	 }
 
+	 @Bean
+	 public CmdbRemoteService cmdbRemoteService() {return Mockito.mock(CmdbRemoteService.class);}
+
  }
 

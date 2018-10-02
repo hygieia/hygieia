@@ -212,28 +212,31 @@ public class TestConfig {
 	@Bean
 	public DashboardRemoteService dashboardRemoteService() {return Mockito.mock(DashboardRemoteService.class);}
 
-  @Bean
+    @Bean
     public TemplateService templateService() {
         return Mockito.mock(TemplateService.class);
     }
 
-  @Bean
-  public ScoreService scoreService() {
+    @Bean
+    public ScoreService scoreService() {
     return Mockito.mock(ScoreService.class);
-  }
+    }
 
-  @Bean
-  public ScoreCriteriaSettingsService scoreCriteriaSettingsService() {
+    @Bean
+    public ScoreCriteriaSettingsService scoreCriteriaSettingsService() {
     return Mockito.mock(ScoreCriteriaSettingsService.class);
-  }
+    }
 
-  @Bean
-  public ScoreDashboardService scoreDashboardService() {
+    @Bean
+    public ScoreDashboardService scoreDashboardService() {
     return Mockito.mock(ScoreDashboardService.class);
-  }
+    }
 
     @Bean
     public TeamInventoryService teamInventoryService() {
         return Mockito.mock(TeamInventoryService.class);
     }
+
+    @Bean
+    public CmdbRemoteService cmdbRemoteService() {return Mockito.mock(CmdbRemoteService.class);}
 }
