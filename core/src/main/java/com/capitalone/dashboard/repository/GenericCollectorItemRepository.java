@@ -15,5 +15,5 @@ public interface GenericCollectorItemRepository extends CrudRepository<GenericCo
     List<GenericCollectorItem> findAllByToolName(String toolName);
     List<GenericCollectorItem> findAllByRelatedCollectorItem (ObjectId relatedCollectorItemId);
     GenericCollectorItem findByToolNameAndRawDataAndRelatedCollectorItem(String toolName, String rawData, ObjectId relatedCollectorItem);
-    List<GenericCollectorItem> findAllByToolNameAndProcessTimeEquals(long processTime);
+    List<GenericCollectorItem> findAllByToolNameAndProcessTimeEquals(String toolName, long processTime);
 }
