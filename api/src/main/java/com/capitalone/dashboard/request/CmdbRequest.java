@@ -3,6 +3,9 @@ package com.capitalone.dashboard.request;
 import javax.validation.constraints.NotNull;
 
 public class CmdbRequest {
+    /**
+     * configurationItem unique system generated id
+     */
     @NotNull
     private String configurationItem;
     @NotNull
@@ -13,8 +16,14 @@ public class CmdbRequest {
     private String assignmentGroup;
     @NotNull
     private String ownerDept;
+    /**
+     * commonName Human readable value of the configurationItem
+     */
     @NotNull
     private String commonName;
+    /**
+     * toolName Collector name 
+     */
     @NotNull
     private String toolName;
 
