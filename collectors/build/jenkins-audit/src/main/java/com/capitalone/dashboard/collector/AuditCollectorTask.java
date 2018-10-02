@@ -91,7 +91,7 @@ public class AuditCollectorTask extends CollectorTask<AuditCollector> {
                         dashboard.getTitle(), dashboard.getType(), dashboard.getConfigurationItemBusServName(),
                         dashboard.getConfigurationItemBusAppName(), lastExecutedCollectorTimestamp, currentTimestamp, allAuditTypes
                 );
-                AuditResult auditResult = new AuditResult(dashboard.getId(), dashboardReviewResponse, lastExecutedCollectorTimestamp);
+                AuditResult auditResult = new AuditResult(dashboard.getId(), dashboard.getTitle(), dashboardReviewResponse, lastExecutedCollectorTimestamp);
                 auditResults.add(auditResult);
 
             } catch (Exception e) {

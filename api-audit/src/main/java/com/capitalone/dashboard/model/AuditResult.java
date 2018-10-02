@@ -9,14 +9,14 @@ public class AuditResult extends BaseModel {
 
     private ObjectId dashboardId;
     private String dashboardTitle;
-    private DashboardReviewResponse dashboardReviewResponse;
+    private DashboardReviewResponse dashboardReview;
     private long timestamp;
 
-    public AuditResult(ObjectId dashboardId, String dashboardTitle, DashboardReviewResponse dashboardReviewResponse,
+    public AuditResult(ObjectId dashboardId, String dashboardTitle, DashboardReviewResponse dashboardReview,
                        long timestamp) {
         this.dashboardId = dashboardId;
         this.dashboardTitle = dashboardTitle;
-        this.dashboardReviewResponse = dashboardReviewResponse;
+        this.dashboardReview = dashboardReview;
         this.timestamp = timestamp;
     }
 
@@ -24,8 +24,8 @@ public class AuditResult extends BaseModel {
         return dashboardId;
     }
 
-    public DashboardReviewResponse getDashboardReviewResponse() {
-        return dashboardReviewResponse;
+    public DashboardReviewResponse getDashboardReview() {
+        return dashboardReview;
     }
 
     public String getDashboardTitle() {

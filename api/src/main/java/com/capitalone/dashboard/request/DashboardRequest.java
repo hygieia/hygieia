@@ -1,7 +1,12 @@
 package com.capitalone.dashboard.request;
 
 import com.capitalone.dashboard.auth.AuthenticationUtil;
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.Application;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.Owner;
+import com.capitalone.dashboard.model.ScoreDisplayType;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
