@@ -12,6 +12,8 @@ import java.util.Set;
 
 public class CodeQualityAuditResponse extends AuditReviewResponse<CodeQualityAuditStatus> {
     private String url;
+    private String name;
+    private String message;
     private long lastExecutionTime;
     private CodeQuality codeQuality;
     private Set<String> codeAuthors = new HashSet<>();
@@ -55,5 +57,19 @@ public class CodeQualityAuditResponse extends AuditReviewResponse<CodeQualityAud
 
     public void setLastExecutionTime(long lastExecutionTime) {
         this.lastExecutionTime = lastExecutionTime;
+    }
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }
