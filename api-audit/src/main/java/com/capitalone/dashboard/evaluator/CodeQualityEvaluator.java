@@ -137,24 +137,23 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
                             String level = values.get("level");
                             codeQualityAuditResponse.addAuditStatus(level.equalsIgnoreCase("ok") ? CodeQualityAuditStatus.CODE_QUALITY_AUDIT_OK : CodeQualityAuditStatus.CODE_QUALITY_AUDIT_FAIL);
                         }
-                        try {
-                            JSONObject qualityGateDetails = (JSONObject) new JSONParser().parse(metric.getValue().toString());
-                            JSONArray conditions = (JSONArray) qualityGateDetails.get("conditions");
-                            Iterator itr = conditions.iterator();
 
-                            // Iterate through the quality_gate conditions
-                            while (itr.hasNext()) {
-                                Map condition = ((Map) itr.next());
+                        JSONObject qualityGateDetails = (JSONObject) new JSONParser().parse(metric.getValue().toString());
+                        JSONArray conditions = (JSONArray) qualityGateDetails.get("conditions");
+                        Iterator itr = conditions.iterator();
 
-                                // Set audit statuses for Thresholds found if they are defined in quality_gate_details metric
-                                this.auditStatusWhenQualityGateDetailsFound(condition, codeQualityAuditResponse);
+                        // Iterate through the quality_gate conditions
+                        while (itr.hasNext()) {
+                            Map condition = ((Map) itr.next());
 
-                            }
-                        } catch (ParseException e) {
-                            LOGGER.error("Error in CodeQualityEvaluator.getStaticAnalysisResponse() - Unable to parse quality_gate metrics - " + e.getMessage());
+                            // Set audit statuses for Thresholds found if they are defined in quality_gate_details metric
+                            this.auditStatusWhenQualityGateDetailsFound(condition, codeQualityAuditResponse);
                         }
+
                     } catch (IOException e) {
                         LOGGER.error("Error in CodeQualityEvaluator.getStaticAnalysisResponse() - Unable to parse quality_gate metrics - " + e.getMessage());
+                    } catch (ParseException e) {
+                        LOGGER.error("Error in CodeQualityEvaluator.getStaticAnalysisResponse() - Unable to parse quality_gate_details values - " + e.getMessage());
                     }
                 }
             }
