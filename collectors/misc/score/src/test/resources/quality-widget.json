@@ -3,7 +3,6 @@
   "name" : "codeanalysis",
   "componentId" : "596c43483d88f70bf778caed",
   "options" : {
-    "testJobNames" : [],
     "id" : "codeanalysis0"
   }
 }

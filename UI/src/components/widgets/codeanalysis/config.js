@@ -116,16 +116,6 @@
             ctrl.testConfigs = [];
             var testCollectorItems = component.collectorItems.Test;
             var testCollectorItemIds = [];
-            var testJobNamesFromWidget = [];
-            // set values from config
-            if (widgetConfig) {
-                if (widgetConfig.options.testJobNames) {
-                    var j;
-                    for (j = 0; j < widgetConfig.options.testJobNames.length; ++j) {
-                        testJobNamesFromWidget.push(widgetConfig.options.testJobNames[j]);
-                    }
-                }
-            }
             var index;
             if (testCollectorItems != null) {
                 for (index = 0; index < testCollectorItems.length; ++index) {
@@ -135,7 +125,6 @@
             for (index = 0; index < testCollectorItemIds.length; ++index) {
                 var testItem = testCollectorItemIds ? _.find(ctrl.testJobs, {id: testCollectorItemIds[index]}) : null;
                 ctrl.testConfigs.push({
-                    testJobName: testJobNamesFromWidget[index],
                     testJob: ctrl.testJobs,
                     testCollectorItem: testItem
                 });
@@ -145,7 +134,6 @@
 
         function submitForm(caCollectorItem, saCollectorItem, ossCollectorItem, testConfigs) {
             var collectorItems = [];
-            var testJobNames = [];
             if (caCollectorItem) collectorItems.push(caCollectorItem.id);
             if (saCollectorItem) collectorItems.push(saCollectorItem.id);
             if (ossCollectorItem) collectorItems.push(ossCollectorItem.id);
@@ -153,16 +141,14 @@
                 var index;
                 for (index = 0; index < testConfigs.length; ++index) {
                     collectorItems.push(testConfigs[index].testCollectorItem.id);
-                    testJobNames.push(testConfigs[index].testJobName);
                 }
             }
             var form = document.configForm;
             var postObj = {
                 name: 'codeanalysis',
                 options: {
-                    id: widgetConfig.options.id,
-                    testJobNames: testJobNames
-                },
+                    id: widgetConfig.options.id
+                  },
                 componentId: component.id,
                 collectorItemIds: collectorItems
             };
@@ -173,7 +159,7 @@
 
         function addTestConfig() {
             var newItemNo = ctrl.testConfigs.length + 1;
-            ctrl.testConfigs.push({testJobName: 'Name' + newItemNo, testJob: ctrl.testJobs, testCollectorItem: null});
+            ctrl.testConfigs.push({testJob: ctrl.testJobs, testCollectorItem: null});
         }
 
         function deleteTestConfig(item) {
