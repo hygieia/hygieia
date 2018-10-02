@@ -67,10 +67,10 @@ public class AuditCollectorTaskTest {
             try {
                 long currentTimestamp = System.currentTimeMillis();
                 DashboardReviewResponse dashboardReviewResponse = dashboardAuditService.getDashboardReviewResponse(dashboard.getTitle(), dashboard.getType(), dashboard.getConfigurationItemBusServName(), dashboard.getConfigurationItemBusAppName(), timestamp, currentTimestamp, allAuditTypes);
-                AuditResult auditResult = new AuditResult(dashboard.getId(), dashboardReviewResponse, timestamp);
+                AuditResult auditResult = new AuditResult(dashboard.getId(), dashboard.getTitle(), dashboardReviewResponse, timestamp);
                 assert (auditResult.getDashboardTitle().equals("auditTestDashboard"));
                 assertNotNull(auditResult.getDashboardId());
-                assertNotNull(auditResult.getDashboardReviewResponse());
+                assertNotNull(auditResult.getDashboardReview());
                 auditResults.add(auditResult);
                 assertNotNull(auditResults);
             } catch (AuditException e) {

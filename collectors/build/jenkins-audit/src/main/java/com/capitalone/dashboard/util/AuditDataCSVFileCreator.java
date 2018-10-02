@@ -10,10 +10,10 @@ import com.capitalone.dashboard.response.AuditReviewResponse;
 import com.capitalone.dashboard.response.DashboardReviewResponse;
 import com.capitalone.dashboard.service.DashboardAuditService;
 import com.capitalone.dashboard.status.DashboardAuditStatus;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
  *
  * @since 09/28/2018
  */
-//@SuppressWarnings("PMD")
 public class AuditDataCSVFileCreator {
 
     // BEGIN_DATE, END_DATE,CSV_OUTPUT_FILE_PATH values finalized by CSV file creator
@@ -57,7 +56,7 @@ public class AuditDataCSVFileCreator {
             NO_COMMIT_FOR_DATE_RANGE, COMMIT_AFTER_PR_MERGE, SCM_AUTHOR_LOGIN_INVALID, REPO_NOT_CONFIGURED, PENDING_DATA_COLLECTION, GIT_NO_WORKFLOW,
             COMMITAUTHOR_EQ_MERGECOMMITER, PEER_REVIEW_BY_SERVICEACCOUNT, COMMITAUTHOR_EQ_SERVICEACCOUNT, MERGECOMMITER_EQ_SERVICEACCOUNT};
 
-    private static String lob, asv, bap, asvOwner, serviceOwner, type, collectionStatus, auditStatus, error, url;
+    private static String ownerDept, configItemBusServName, configItemBusAppName, businessOwner, serviceOwner, type, collectionStatus, auditStatus, error, url;
     @Autowired
     private static DashboardRepository dashboardRepository;
     @Autowired
@@ -112,7 +111,7 @@ public class AuditDataCSVFileCreator {
                         dashboard.getTitle(), dashboard.getType(), dashboard.getConfigurationItemBusServName(),
                         dashboard.getConfigurationItemBusAppName(), BEGIN_DATE, END_DATE, AUDIT_TYPE
                 );
-                AuditResult auditResult = new AuditResult(dashboard.getId(), dashboardReviewResponse, timestamp);
+                AuditResult auditResult = new AuditResult(dashboard.getId(), dashboard.getTitle(), dashboardReviewResponse, timestamp);
 
                 auditResults.add(auditResult);
                 this.assignAuditDataValues(auditResult);
@@ -123,7 +122,7 @@ public class AuditDataCSVFileCreator {
                 LOGGER.error("AUDIT API ERROR - " + e.getMessage());
                 Cmdb cmdb = cmdbRepository.findByConfigurationItem(dashboard.getConfigurationItemBusServName());
                 List<String> csvAuditAPIFailedRow = Arrays.asList(cmdb.getOwnerDept(), dashboard.getConfigurationItemBusServName(),
-                        dashboard.getConfigurationItemBusServName(), cmdb.getBusinessOwner(), cmdb.getAppServiceOwner(),
+                        dashboard.getConfigurationItemBusAppName(), cmdb.getBusinessOwner(), cmdb.getAppServiceOwner(),
                         "", "NO_DATA", "NA", "", "AUDIT API ERROR - " + e.getMessage());
                 entireCSVData.add(String.join(",", csvAuditAPIFailedRow));
             }
@@ -135,13 +134,13 @@ public class AuditDataCSVFileCreator {
      */
     private void addCSVRowData(Dashboard dashboard) {
         Cmdb cmdb = cmdbRepository.findByConfigurationItem(dashboard.getConfigurationItemBusServName());
-        lob = cmdb.getOwnerDept();
-        asv = dashboard.getConfigurationItemBusServName();
-        bap = dashboard.getConfigurationItemBusServName();
-        asvOwner = cmdb.getBusinessOwner();
+        ownerDept = cmdb.getOwnerDept();
+        configItemBusServName = dashboard.getConfigurationItemBusServName();
+        configItemBusAppName = dashboard.getConfigurationItemBusAppName();
+        businessOwner = cmdb.getBusinessOwner();
         serviceOwner = cmdb.getAppServiceOwner();
         url = "";
-        List<String> csvRowData = Arrays.asList(lob, asv, bap, asvOwner, serviceOwner, type, collectionStatus, auditStatus, error, url);
+        List<String> csvRowData = Arrays.asList(ownerDept, configItemBusServName, configItemBusAppName, businessOwner, serviceOwner, type, collectionStatus, auditStatus, error, url);
         entireCSVData.add(String.join(",", csvRowData));
     }
 
@@ -151,9 +150,12 @@ public class AuditDataCSVFileCreator {
     private void assignAuditDataValues(AuditResult auditResult) {
 
         List<String> auditTypes = Stream.of(AUDIT_TYPES.values()).map(Enum::name).collect(Collectors.toList());
-        Set<DashboardAuditStatus> dashboardAuditStatuses = auditResult.getDashboardReviewResponse().getAuditStatuses();
-        Map<AuditType, Collection<AuditReviewResponse>> auditDetailReview = auditResult.getDashboardReviewResponse().getReview();
+        Set<DashboardAuditStatus> dashboardAuditStatuses = auditResult.getDashboardReview().getAuditStatuses();
+        Map<AuditType, Collection<AuditReviewResponse>> auditDetailReview = auditResult.getDashboardReview().getReview();
 
+        if(dashboardAuditStatuses == null || dashboardAuditStatuses.isEmpty()){
+            assignAuditDetailDefaults();
+        }
         for (String auditType : auditTypes) {
             type = auditType;
 
@@ -251,6 +253,13 @@ public class AuditDataCSVFileCreator {
             isAssigned = true;
         } else {
             for (AuditReviewResponse auditReviewResponse : auditReviewResponses) {
+                if (CollectionUtils.isEmpty(auditReviewResponse.getAuditStatuses())) {
+                    collectionStatus = "NO_DATA";
+                    auditStatus = "NA";
+                    error = "";
+                    isAssigned = true;
+                    break;
+                }
                 for (Object dashboardAuditStatus : auditReviewResponse.getAuditStatuses()) {
 
                     if (dashboardAuditStatus.toString().equalsIgnoreCase("COLLECTOR_ITEM_ERROR")) {
