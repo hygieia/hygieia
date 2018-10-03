@@ -157,7 +157,7 @@
                         ctrl.librarySecurityThreatStatus = getLibraryPolicyStatus(libraryData.threats.Security)
                     }
                     ctrl.knownComponentCount = knownComponentCount;
-                    ctrl.knownComponentCountPercentage = Math.round(calculatePercentage * 100);;
+                    ctrl.knownComponentCountPercentage = Math.round(calculatePercentage * 100);
                     ctrl.criticalCountPolicy = criticalCountPolicy;
                     ctrl.severeCountPolicy = severeCountPolicy;
                     ctrl.moderateCountPolicy = moderateCountPolicy;
