@@ -4,6 +4,7 @@ import com.capitalone.dashboard.request.BinaryArtifactCreateRequest;
 import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import com.capitalone.dashboard.request.DeployDataCreateRequest;
+import com.capitalone.dashboard.request.GenericCollectorItemCreateRequest;
 import com.capitalone.dashboard.request.TestDataCreateRequest;
 import org.json.simple.JSONObject;
 
@@ -22,6 +23,8 @@ public interface HygieiaService {
     HygieiaResponse publishSonarResults(CodeQualityCreateRequest request);
 
     HygieiaResponse publishDeployData(DeployDataCreateRequest request);
+
+    HygieiaResponse publishGenericCollectorItemData(GenericCollectorItemCreateRequest request);
 
     List<JSONObject> getCollectorItemOptions(String type);
 

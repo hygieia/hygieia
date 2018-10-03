@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.event;
 
+import com.capitalone.dashboard.event.sync.SyncDashboard;
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.Collector;
@@ -10,7 +11,6 @@ import com.capitalone.dashboard.model.Pipeline;
 import com.capitalone.dashboard.model.PipelineCommit;
 import com.capitalone.dashboard.model.PipelineStage;
 import com.capitalone.dashboard.model.SCM;
-import com.capitalone.dashboard.repository.BuildRepository;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
@@ -32,21 +32,20 @@ import static com.capitalone.dashboard.util.PipelineUtils.processPreviousFailedB
 public class BuildEventListener extends HygieiaMongoEventListener<Build> {
     private final DashboardRepository dashboardRepository;
     private final ComponentRepository componentRepository;
-    private final BuildRepository buildRepository;
     private final CommitRepository commitRepository;
+    private final SyncDashboard syncDashboard;
 
     @Autowired
     public BuildEventListener(DashboardRepository dashboardRepository,
                               CollectorItemRepository collectorItemRepository,
                               ComponentRepository componentRepository,
                               PipelineRepository pipelineRepository,
-                              CollectorRepository collectorRepository,
-                              BuildRepository buildRepository, CommitRepository commitRepository) {
+                              CollectorRepository collectorRepository, CommitRepository commitRepository, SyncDashboard syncDashboard) {
         super(collectorItemRepository, pipelineRepository, collectorRepository);
         this.dashboardRepository = dashboardRepository;
         this.componentRepository = componentRepository;
-        this.buildRepository = buildRepository;
         this.commitRepository = commitRepository;
+        this.syncDashboard = syncDashboard;
     }
 
     @Override
@@ -58,6 +57,7 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
         } else if (build.getBuildStatus().equals(BuildStatus.Failure)) {
             processFailedBuild(event.getSource());
         }
+        syncDashboard.sync(build);
     }
 
     /**

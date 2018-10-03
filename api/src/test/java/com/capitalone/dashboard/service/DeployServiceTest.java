@@ -287,14 +287,16 @@ public class DeployServiceTest {
         EnvironmentComponent co = new EnvironmentComponent();
         ObjectId id = new ObjectId();
         co.setId(id);
-        setUpCollector(id);
+        ObjectId id2 = new ObjectId();
+        setUpCollector(id, id2);
+        co.setCollectorItemId(id2);
         when(environmentComponentRepository.save((EnvironmentComponent)any()))
             .thenReturn(co);
         String output = deployService.create(request);
         ArgumentCaptor<Collector> collectorCaptor = ArgumentCaptor.forClass(Collector.class);
         verify(collectorService, times(1)).createCollector(collectorCaptor.capture());
         assertEquals("customCollector", collectorCaptor.getValue().getName());
-        assertEquals(id.toString(), output);
+        assertEquals(id.toString()+","+ id2.toString(), output);
     }
 
     @Test
@@ -330,10 +332,11 @@ public class DeployServiceTest {
         String executionId = "22";
         String status = "success";
         ObjectId id = new ObjectId();
-        setUpCollector(id);
+        ObjectId id2 = new ObjectId();
+        setUpCollector(id, id2);
         ArgumentCaptor<EnvironmentComponent> captor = ArgumentCaptor.forClass(EnvironmentComponent.class);
         String output = deployService.createRundeckBuild(doc, new HashMap<>(), executionId, status);
-        assertEquals(id.toString(), output);
+        assertEquals(id.toString() + "," + id2.toString(), output);
         verify(environmentComponentRepository, times(1)).save(captor.capture());
         EnvironmentComponent value = captor.getValue();
         assertEquals(true, value.isDeployed());
@@ -341,13 +344,14 @@ public class DeployServiceTest {
         assertEquals(1481001727759L, value.getDeployTime());
     }
 
-    private void setUpCollector(ObjectId id) {
+    private void setUpCollector(ObjectId id1, ObjectId id2) {
         Collector expectedCollector = makeCollector();
         when(collectorService.createCollector(any())).thenReturn(expectedCollector);
         CollectorItem expectedItem = makeCollectorItem();
         when(collectorService.createCollectorItem(any())).thenReturn(expectedItem);
         EnvironmentComponent co = new EnvironmentComponent();
-        co.setId(id);
+        co.setCollectorItemId(id2);
+        co.setId(id1);
         when(environmentComponentRepository.save((EnvironmentComponent)any()))
             .thenReturn(co);        
     }
