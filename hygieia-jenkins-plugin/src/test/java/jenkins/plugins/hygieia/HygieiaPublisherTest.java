@@ -4,6 +4,7 @@ import com.capitalone.dashboard.request.BinaryArtifactCreateRequest;
 import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import com.capitalone.dashboard.request.DeployDataCreateRequest;
+import com.capitalone.dashboard.request.GenericCollectorItemCreateRequest;
 import com.capitalone.dashboard.request.TestDataCreateRequest;
 import hudson.model.Descriptor;
 import hudson.util.FormValidation;
@@ -51,19 +52,14 @@ public class HygieiaPublisherTest extends TestCase {
     }
 
     @Test
-    public void testDoTestConnection() throws Exception {
+    public void testDoTestConnection()  {
         if (hygieiaServiceStub != null) {
             hygieiaServiceStub.setResponse(responseBoolean);
             hygieiaServiceStub.setHygieiaResponse(hygieiaResponse);
         }
         descriptor.setHygieiaService(hygieiaServiceStub);
-        try {
-            FormValidation result = descriptor.doTestConnection("hygieaUrl", "authToken", "myname", "true");
-            assertEquals(result.kind, expectedResult);
-        } catch (Descriptor.FormException e) {
-            e.printStackTrace();
-            assertTrue(false);
-        }
+        FormValidation result = descriptor.doTestConnection("hygieaUrl", "authToken", "myname", "true");
+        assertEquals(result.kind, expectedResult);
     }
 
     public static class HygieiaServiceStub implements HygieiaService {
@@ -105,6 +101,11 @@ public class HygieiaPublisherTest extends TestCase {
         }
 
         public HygieiaResponse publishDeployData(DeployDataCreateRequest request) {
+            return hygieiaResponse;
+        }
+
+        @Override
+        public HygieiaResponse publishGenericCollectorItemData(GenericCollectorItemCreateRequest request) {
             return hygieiaResponse;
         }
 

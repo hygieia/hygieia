@@ -66,23 +66,17 @@ public class TestResultServiceImpl implements TestResultService {
 
 
     private void validateAllCollectorItems(TestResultRequest request, Component component, List<TestResult> result) {
-        for (CollectorItem item : component.getCollectorItems().get(CollectorType.Test)) {
-
+        // add all test result repos
+        component.getCollectorItems().get(CollectorType.Test).forEach(item -> {
             QTestResult testResult = new QTestResult("testResult");
             BooleanBuilder builder = new BooleanBuilder();
-
             builder.and(testResult.collectorItemId.eq(item.getId()));
-
             validateStartDateRange(request, testResult, builder);
             validateEndDateRange(request, testResult, builder);
-
             validateDurationRange(request, testResult, builder);
-
             validateTestCapabilities(request, testResult, builder);
-
-            // add all test result repos
             addAllTestResultRepositories(request, result, testResult, builder);
-        }
+        });
     }
 
     private void addAllTestResultRepositories(TestResultRequest request, List<TestResult> result, QTestResult testResult, BooleanBuilder builder) {
@@ -129,37 +123,37 @@ public class TestResultServiceImpl implements TestResultService {
         if (depth == null || depth > 3) {
             return results;
         }
-        for (TestResult result : results) {
+        results.forEach(result -> {
             if (depth == 0) {
                 result.getTestCapabilities().clear();
             } else {
-                for (TestCapability testCapability : result.getTestCapabilities()) {
+                result.getTestCapabilities().forEach(testCapability -> {
                     if (depth == 1) {
                         testCapability.getTestSuites().clear();
                     } else {
-                        for (TestSuite testSuite : testCapability.getTestSuites()) {
+                        testCapability.getTestSuites().forEach(testSuite -> {
                             if (depth == 2) {
                                 testSuite.getTestCases().clear();
                             } else { // depth == 3
-                                for (TestCase testCase : testSuite.getTestCases()) {
+                                testSuite.getTestCases().forEach(testCase -> {
                                     testCase.getTestSteps().clear();
-                                }
+                                });
                             }
-                        }
+                        });
                     }
-                }
+                });
             }
-        }
+        });
 
         return results;
     }
 
     @Override
     public String create(TestDataCreateRequest request) throws HygieiaException {
-        /**
-         * Step 1: create Collector if not there
-         * Step 2: create Collector item if not there
-         * Step 3: Insert test data if new. If existing, update it
+        /*
+          Step 1: create Collector if not there
+          Step 2: create Collector item if not there
+          Step 3: Insert test data if new. If existing, update it
          */
         Collector collector = createCollector();
 
@@ -181,7 +175,7 @@ public class TestResultServiceImpl implements TestResultService {
             throw new HygieiaException("Failed inserting/updating Test information.", HygieiaException.ERROR_INSERTING_DATA);
         }
 
-        return testResult.getId().toString();
+        return testResult.getId().toString() + "," + testResult.getCollectorItemId().toString();
 
     }
 
@@ -203,7 +197,7 @@ public class TestResultServiceImpl implements TestResultService {
         if (testResult == null) {
             throw new HygieiaException("Failed inserting/updating Test information.", HygieiaException.ERROR_INSERTING_DATA);
         }
-        return testResult.getId().toString();
+        return testResult.getId().toString() + "," + testResult.getCollectorItemId().toString();
 
     }
 
@@ -264,7 +258,7 @@ public class TestResultServiceImpl implements TestResultService {
     }
 
 
-    private CollectorItem createGenericCollectorItem(Collector collector, PerfTestDataCreateRequest request) throws HygieiaException {
+    private CollectorItem createGenericCollectorItem(Collector collector, PerfTestDataCreateRequest request) {
         CollectorItem tempCi = new CollectorItem();
         tempCi.setCollectorId(collector.getId());
         tempCi.setDescription(request.getPerfTool()+" : "+request.getTestName());

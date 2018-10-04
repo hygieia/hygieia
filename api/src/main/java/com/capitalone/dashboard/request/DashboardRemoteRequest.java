@@ -271,15 +271,15 @@ public class DashboardRemoteRequest {
             Map<String, Object> opts = new HashMap<>();
             opts.put("name", "repo");
             opts.put("id", "repo0");
-            for (String key : options.keySet()) {
-                if("url".equalsIgnoreCase(key)){
-                    GitHubParsedUrl gitHubParsed = new GitHubParsedUrl((String)options.get(key));
+            options.keySet().forEach(key -> {
+                if ("url".equalsIgnoreCase(key)) {
+                    GitHubParsedUrl gitHubParsed = new GitHubParsedUrl((String) options.get(key));
                     String repoUrl = gitHubParsed.getUrl();
                     opts.put(key, repoUrl);
-                }else{
+                } else {
                     opts.put(key, options.get(key));
                 }
-             }
+            });
             Map<String, String> scm = new HashMap<>();
             scm.put("name", toolName);
             scm.put("value", toolName);
