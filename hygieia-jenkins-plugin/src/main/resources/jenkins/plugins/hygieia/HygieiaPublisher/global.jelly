@@ -21,6 +21,9 @@
     <f:entry title="Name your Jenkins" help="/plugin/hygieia-publisher/help-globalConfig-hygieiaJenkinsName.html">
         <f:textbox field="hygieiaJenkinsName" name="hygieiaJenkinsName" value="${descriptor.getHygieiaJenkinsName()}" />
     </f:entry>
+    <f:entry title="Exclude Jenkins Job Names" help="/plugin/hygieia-publisher/help-globalConfig-hygieiaExcludeJobNames.html">
+        <f:textbox field="hygieiaExcludeJobNames" name="hygieiaExcludeJobNames" value="${descriptor.getHygieiaExcludeJobNames()}" />
+    </f:entry>
     <f:entry title="Publish all build data" help="/plugin/hygieia-publisher/help-globalConfig-hygieiaPublishBuildData.html">
         <f:checkbox field="hygieiaPublishBuildDataGlobal" name="hygieiaPublishBuildDataGlobal" checked="${descriptor.isHygieiaPublishBuildDataGlobal()}" />
     </f:entry>

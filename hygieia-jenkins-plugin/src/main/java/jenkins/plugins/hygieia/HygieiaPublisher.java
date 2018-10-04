@@ -316,6 +316,7 @@ public class HygieiaPublisher extends Notifier {
         private String hygieiaAPIUrl;
         private String hygieiaToken;
         private String hygieiaJenkinsName;
+        private String hygieiaExcludeJobNames;
         private boolean useProxy;
         private boolean hygieiaPublishBuildDataGlobal;
         private boolean hygieiaPublishSonarDataGlobal;
@@ -345,6 +346,8 @@ public class HygieiaPublisher extends Notifier {
         public String getHygieiaJenkinsName() {
             return hygieiaJenkinsName;
         }
+
+        public String getHygieiaExcludeJobNames() { return hygieiaExcludeJobNames; }
 
         public boolean isUseProxy() {
             return useProxy;
@@ -553,6 +556,7 @@ public class HygieiaPublisher extends Notifier {
             hygieiaAPIUrl = sr.getParameter("hygieiaAPIUrl");
             hygieiaToken = sr.getParameter("hygieiaToken");
             hygieiaJenkinsName = sr.getParameter("hygieiaJenkinsName");
+            hygieiaExcludeJobNames = sr.getParameter("hygieiaExcludeJobNames");
             useProxy = "on".equals(sr.getParameter("useProxy"));
             hygieiaPublishBuildDataGlobal = "on".equals(sr.getParameter("hygieiaPublishBuildDataGlobal"));
             hygieiaPublishSonarDataGlobal =  "on".equals(sr.getParameter("hygieiaPublishSonarDataGlobal"));
