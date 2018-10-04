@@ -82,7 +82,7 @@ public class ActiveJobNotifierTest {
     private HygieiaResponse hygieiaResponse;
 
 
-    private void setup() throws IOException, InterruptedException {
+    private void setup() {
         hygieiaResponse = new HygieiaResponse(HttpStatus.SC_CREATED, "1234");
         activeJobNotifier = new ActiveJobNotifier(mockPublisher, mockBuildListener);
 

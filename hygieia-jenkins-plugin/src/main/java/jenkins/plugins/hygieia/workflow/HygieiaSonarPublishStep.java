@@ -97,7 +97,7 @@ public class HygieiaSonarPublishStep extends AbstractStepImpl {
 
         // This run MUST return a non-Void object, otherwise it will be executed three times!!!! No idea why
         @Override
-        protected Integer run() throws Exception {
+        protected Integer run() {
 
             //default to global config values if not set in step, but allow step to override all global settings
 

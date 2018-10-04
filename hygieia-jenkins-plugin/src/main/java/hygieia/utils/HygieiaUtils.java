@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.model.AbstractBuild;
+import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
@@ -18,16 +19,16 @@ import jenkins.plugins.hygieia.CustomObjectMapper;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
-//import org.jenkinsci.plugins.multiplescms.MultiSCM;
+import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.springframework.util.CollectionUtils;
 
 import java.io.BufferedReader;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -40,7 +41,8 @@ import java.util.regex.Pattern;
 public class HygieiaUtils {
     private static final Logger logger = Logger.getLogger(HygieiaUtils.class.getName());
     public static final String APPLICATION_JSON_VALUE = "application/json";
-    private static final String JOB_URL_SEARCH_PARM = "job/";
+    public static final String JOB_URL_SEARCH_PARM = "job/";
+    public static final String SEPERATOR = ",";
 
     public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
         ObjectMapper mapper = new CustomObjectMapper();
@@ -406,6 +408,18 @@ public class HygieiaUtils {
         String[] parts = buildResponse.split(",");
         if (parts.length < 2) return "";
         return parts[1];
+    }
+
+    public static boolean isJobExcluded (String jobName, String patterns) {
+        if(StringUtils.isNotBlank(patterns)){
+            List<String> patternsList = Arrays.asList(patterns.split(SEPERATOR));
+            for (String pattern : patternsList) {
+                if (StringUtils.startsWithIgnoreCase(jobName, pattern)) {
+                    return Boolean.TRUE;
+                }
+            }
+        }
+        return Boolean.FALSE;
     }
 
 }

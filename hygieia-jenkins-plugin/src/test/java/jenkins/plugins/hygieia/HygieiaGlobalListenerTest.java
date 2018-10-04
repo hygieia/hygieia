@@ -135,6 +135,14 @@ public class HygieiaGlobalListenerTest {
     }
 
     @Test
+    public void onCompletedBuildSkipJob() throws ParseException, IOException, URISyntaxException {
+        setup();
+        when(mockDescriptor.getHygieiaExcludeJobNames()).thenReturn("PR-,test");
+        hygieiaGlobalListener.onCompleted(mockBuild, mockBuildListener);
+        verify(mockStream, never()).println("Hygieia: Skipping publish to hygieia as the job was excluded in global configuration." + hygieiaResponse.toString());
+    }
+
+    @Test
     public void onCompletedBuildPublishBuildNoSonar() throws ParseException, IOException, URISyntaxException {
         setup();
         when(mockDescriptor.isHygieiaPublishBuildDataGlobal()).thenReturn(true);

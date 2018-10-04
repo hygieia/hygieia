@@ -330,6 +330,7 @@ public class HygieiaPublisher extends Notifier {
         public String hygieiaAPIUrl;
         public String hygieiaToken;
         public String hygieiaJenkinsName;
+        private String hygieiaExcludeJobNames;
         public boolean useProxy;
         public boolean hygieiaPublishBuildDataGlobal;
         public boolean hygieiaPublishSonarDataGlobal;
@@ -351,6 +352,8 @@ public class HygieiaPublisher extends Notifier {
         public String getHygieiaJenkinsName() {
             return hygieiaJenkinsName;
         }
+
+        public String getHygieiaExcludeJobNames() { return hygieiaExcludeJobNames; }
 
         public boolean isUseProxy() {
             return useProxy;

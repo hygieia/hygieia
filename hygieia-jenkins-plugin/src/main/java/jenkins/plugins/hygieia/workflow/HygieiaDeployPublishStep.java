@@ -142,7 +142,7 @@ public class HygieiaDeployPublishStep extends AbstractStepImpl {
 			return "Hygieia Deployment Publish Step";
 		}
 
-		public FormValidation doCheckValue(@QueryParameter String value) throws IOException, ServletException {
+		public FormValidation doCheckValue(@QueryParameter String value) {
 			if (value.isEmpty()) {
 				return FormValidation.warning("You must fill this box!");
 			}
@@ -181,7 +181,7 @@ public class HygieiaDeployPublishStep extends AbstractStepImpl {
 		// This run MUST return a non-Void object, otherwise it will be executed
 		// three times!!!! No idea why
 		@Override
-		protected List<Integer> run() throws Exception {
+		protected List<Integer> run() {
 
 			// default to global config values if not set in step, but allow
 			// step to override all global settings
