@@ -125,7 +125,7 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
 
                 if (metric.getStatus() != null) {
                     // this applies for sonar 5 style data for quality_gate_details
-                    codeQualityAuditResponse.addAuditStatus("ok".equalsIgnoreCase(metric.getStatus().toString()) ? CodeQualityAuditStatus.CODE_QUALITY_AUDIT_OK : CodeQualityAuditStatus.CODE_QUALITY_AUDIT_FAIL);
+                    codeQualityAuditResponse.addAuditStatus("Ok".equalsIgnoreCase(metric.getStatus().toString()) ? CodeQualityAuditStatus.CODE_QUALITY_AUDIT_OK : CodeQualityAuditStatus.CODE_QUALITY_AUDIT_FAIL);
                 } else {
                     // this applies for sonar 6.7 style data for quality_gate_details
                     TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
@@ -135,7 +135,7 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
                         values = mapper.readValue((String) metric.getValue(), typeRef);
                         if (MapUtils.isNotEmpty(values) && values.containsKey("level")) {
                             String level = values.get("level");
-                            codeQualityAuditResponse.addAuditStatus(level.equalsIgnoreCase("ok") ? CodeQualityAuditStatus.CODE_QUALITY_AUDIT_OK : CodeQualityAuditStatus.CODE_QUALITY_AUDIT_FAIL);
+                            codeQualityAuditResponse.addAuditStatus((level.equalsIgnoreCase("Ok") || level.equalsIgnoreCase("WARN"))? CodeQualityAuditStatus.CODE_QUALITY_AUDIT_OK : CodeQualityAuditStatus.CODE_QUALITY_AUDIT_FAIL);
                         }
 
                         JSONObject qualityGateDetails = (JSONObject) new JSONParser().parse(metric.getValue().toString());
@@ -161,8 +161,8 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
             // Set audit statuses if the threshold is met based on the status field of code_quality metric
             this.auditStatusWhenQualityGateDetailsNotFound(metric, codeQualityAuditResponse);
         }
-
-
+        codeQualityAuditResponse.addAuditStatus((StringUtils.containsIgnoreCase(codeQualityAuditResponse.getAuditStatuses().toString(), "CODE_QUALITY_AUDIT_FAIL"))?
+                CodeQualityAuditStatus.CODE_QUALITY_AUDIT_FAIL:CodeQualityAuditStatus.CODE_QUALITY_AUDIT_OK);
         List<CollectorItemConfigHistory> configHistories = getProfileChanges(returnQuality, beginDate, endDate);
         if (CollectionUtils.isEmpty(configHistories)) {
             codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_NO_CHANGE);
@@ -218,45 +218,46 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
     }
 
     private void auditStatusWhenQualityGateDetailsFound(Map condition, CodeQualityAuditResponse codeQualityAuditResponse) {
-        if (condition.containsKey("error")) {
-            if (StringUtils.equalsIgnoreCase(condition.get("metric").toString(), CodeQualityMetricType.BLOCKER_VIOLATIONS.getType())) {
-                codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_BLOCKER_FOUND);
-                if (StringUtils.equalsIgnoreCase(condition.get("level").toString(), "OK")) {
-                    codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_BLOCKER_MET);
-                }
-            } else if (StringUtils.equalsIgnoreCase(condition.get("metric").toString(), CodeQualityMetricType.CRITICAL_VIOLATIONS.getType())) {
-                codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_CRITICAL_FOUND);
-                if (StringUtils.equalsIgnoreCase(condition.get("level").toString(), "OK")) {
-                    codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_CRITICAL_MET);
-                }
-            } else if (StringUtils.equalsIgnoreCase(condition.get("metric").toString(), CodeQualityMetricType.UNIT_TEST.getType())) {
-                codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_UNIT_TEST_FOUND);
-                if (StringUtils.equalsIgnoreCase(condition.get("level").toString(), "OK")) {
-                    codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_UNIT_TEST_MET);
-                }
-            } else if (StringUtils.equalsIgnoreCase(condition.get("metric").toString(), CodeQualityMetricType.NEW_COVERAGE.getType())
-                    || StringUtils.equalsIgnoreCase(condition.get("metric").toString(), CodeQualityMetricType.COVERAGE.getType())) {
-                codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_CODE_COVERAGE_FOUND);
-                if (StringUtils.equalsIgnoreCase(condition.get("level").toString(), "OK")) {
-                    codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_CODE_COVERAGE_MET);
-                }
+        if (StringUtils.equalsIgnoreCase(condition.get("metric").toString(), CodeQualityMetricType.BLOCKER_VIOLATIONS.getType())) {
+            codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_BLOCKER_FOUND);
+            if (!StringUtils.equalsIgnoreCase(condition.get("level").toString(), "ERROR")) {
+                codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_BLOCKER_MET);
+            }
+        } else if (StringUtils.equalsIgnoreCase(condition.get("metric").toString(), CodeQualityMetricType.CRITICAL_VIOLATIONS.getType())) {
+            codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_CRITICAL_FOUND);
+            if (!StringUtils.equalsIgnoreCase(condition.get("level").toString(), "ERROR")) {
+                codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_CRITICAL_MET);
+            }
+        } else if (StringUtils.equalsIgnoreCase(condition.get("metric").toString(), CodeQualityMetricType.UNIT_TEST.getType())) {
+            codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_UNIT_TEST_FOUND);
+            if (!StringUtils.equalsIgnoreCase(condition.get("level").toString(), "ERROR")) {
+                codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_UNIT_TEST_MET);
+            }
+        } else if (StringUtils.equalsIgnoreCase(condition.get("metric").toString(), CodeQualityMetricType.NEW_COVERAGE.getType())
+                || StringUtils.equalsIgnoreCase(condition.get("metric").toString(), CodeQualityMetricType.COVERAGE.getType())) {
+            codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_CODE_COVERAGE_FOUND);
+            if (!StringUtils.equalsIgnoreCase(condition.get("level").toString(), "ERROR")) {
+                codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_CODE_COVERAGE_MET);
             }
         }
     }
 
     private void auditStatusWhenQualityGateDetailsNotFound(CodeQualityMetric metric, CodeQualityAuditResponse codeQualityAuditResponse) {
-        if (CodeQualityMetricStatus.Ok.equals(metric.getStatus())){
+        if (CodeQualityMetricStatus.Error.equals(metric.getStatus())){
+            codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_AUDIT_FAIL);
+        }else {
             if (StringUtils.equalsIgnoreCase(metric.getName(), CodeQualityMetricType.BLOCKER_VIOLATIONS.getType())) {
                 codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_BLOCKER_MET);
             } else if (StringUtils.equalsIgnoreCase(metric.getName(), CodeQualityMetricType.CRITICAL_VIOLATIONS.getType())) {
                 codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_CRITICAL_MET);
-            }  else if (StringUtils.equalsIgnoreCase(metric.getName(), CodeQualityMetricType.UNIT_TEST.getType())) {
+            } else if (StringUtils.equalsIgnoreCase(metric.getName(), CodeQualityMetricType.UNIT_TEST.getType())) {
                 codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_UNIT_TEST_MET);
             } else if (StringUtils.equalsIgnoreCase(metric.getName(), CodeQualityMetricType.COVERAGE.getType())
                     || StringUtils.equalsIgnoreCase(metric.getName(), CodeQualityMetricType.NEW_COVERAGE.getType())) {
                 codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_CODE_COVERAGE_MET);
             }
         }
+
     }
 
     private boolean isProjectIdValid(CollectorItem codeQualityCollectorItem) {
