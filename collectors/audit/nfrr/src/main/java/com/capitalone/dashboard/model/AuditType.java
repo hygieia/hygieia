@@ -11,7 +11,6 @@ public enum AuditType {
     TEST_RESULT,
     PERF_TEST;
 
-
     public static AuditType fromString(String value) {
         for (AuditType auditType : values()) {
             if (auditType.toString().equalsIgnoreCase(value)) {

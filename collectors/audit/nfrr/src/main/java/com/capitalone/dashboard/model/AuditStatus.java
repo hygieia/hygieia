@@ -5,7 +5,6 @@ public enum AuditStatus {
     OK,
     FAIL;
 
-
     public static AuditStatus fromString(String value) {
         for (AuditStatus auditType : values()) {
             if (auditType.toString().equalsIgnoreCase(value)) {
