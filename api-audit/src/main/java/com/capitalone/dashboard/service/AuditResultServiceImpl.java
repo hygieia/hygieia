@@ -2,6 +2,7 @@ package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.AuditResult;
 import com.capitalone.dashboard.repository.AuditResultRepository;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
@@ -18,7 +19,12 @@ public class AuditResultServiceImpl implements AuditResultService{
     }
 
     @Override
-    public AuditResult findByDashboardTitle(String dashboardTitle){
+    public AuditResult findById(ObjectId id){
+        return auditResultRepository.findById(id);
+    }
+
+    @Override
+    public Iterable<AuditResult> findByDashboardTitle(String dashboardTitle){
         return auditResultRepository.findByDashboardTitle(dashboardTitle);
     }
 
