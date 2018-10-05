@@ -30,4 +30,6 @@ public interface CmdbRepository extends CrudRepository<Cmdb, ObjectId>  {
 
     Iterable<Cmdb> findAllByValidConfigItem(boolean validFlag);
 
+    Cmdb findByConfigurationItemIgnoreCaseOrCommonNameIgnoreCase(String configurationItem, String commonName);
+
 }

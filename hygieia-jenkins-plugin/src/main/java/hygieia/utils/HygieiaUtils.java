@@ -7,33 +7,42 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.model.AbstractBuild;
+import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.plugins.git.GitSCM;
 import hudson.plugins.git.util.Build;
 import hudson.scm.SubversionSCM;
+import hudson.util.IOUtils;
 import jenkins.plugins.hygieia.CustomObjectMapper;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
-import org.jenkinsci.plugins.multiplescms.MultiSCM;
+import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.springframework.util.CollectionUtils;
 
+import java.io.BufferedReader;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class HygieiaUtils {
     private static final Logger logger = Logger.getLogger(HygieiaUtils.class.getName());
     public static final String APPLICATION_JSON_VALUE = "application/json";
     public static final String JOB_URL_SEARCH_PARM = "job/";
+    public static final String SEPERATOR = ",";
 
     public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
         ObjectMapper mapper = new CustomObjectMapper();
@@ -149,15 +158,13 @@ public class HygieiaUtils {
         String jobUrl = getJobUrl(build);
         if(jobUrl == null || !jobUrl.contains(JOB_URL_SEARCH_PARM))return build.getProject().getName();
 
-        String jobPath = jobUrl.substring(jobUrl.indexOf(JOB_URL_SEARCH_PARM) , jobUrl.length());
-        return jobPath;
+        return jobUrl.substring(jobUrl.indexOf(JOB_URL_SEARCH_PARM));
     }
     public static String getJobPath(Run<?, ?> run){
         String jobUrl = getJobUrl(run);
         if(jobUrl == null || !jobUrl.contains(JOB_URL_SEARCH_PARM))return run.getParent().getDisplayName();
 
-        String jobPath = jobUrl.substring(jobUrl.indexOf(JOB_URL_SEARCH_PARM) , jobUrl.length());
-        return jobPath;
+        return jobUrl.substring(jobUrl.indexOf(JOB_URL_SEARCH_PARM));
     }
 
     public static String getInstanceUrl(AbstractBuild<?, ?> build, TaskListener listener) {
@@ -215,12 +222,12 @@ public class HygieiaUtils {
     	return null;
     }
     
-    public static boolean isGitScm(AbstractBuild<?, ?> build) {
+    private static boolean isGitScm(AbstractBuild<?, ?> build) {
     	return "hudson.plugins.git.GitSCM".equalsIgnoreCase(build.getProject().getScm().getType());
     }
 
 
-    public static boolean isSvnScm(AbstractBuild<?, ?> build) {
+    private static boolean isSvnScm(AbstractBuild<?, ?> build) {
     	return "hudson.scm.SubversionSCM".equalsIgnoreCase(build.getProject().getScm().getType());
     }
 
@@ -270,28 +277,30 @@ public class HygieiaUtils {
             list = getSVNRepoBranch((SubversionSCM) scm);
         } else if (scm instanceof GitSCM) {
             list = getGitHubRepoBranch((GitSCM) scm, r);
-        } else if (scm instanceof MultiSCM) {
-            List<hudson.scm.SCM> multiScms = ((MultiSCM) scm).getConfiguredSCMs();
-            for (hudson.scm.SCM hscm : multiScms) {
-                if (hscm instanceof SubversionSCM) {
-                    list.addAll(getSVNRepoBranch((SubversionSCM) hscm));
-                } else if (hscm instanceof GitSCM) {
-                    list.addAll(getGitHubRepoBranch((GitSCM) hscm, r));
-                }
-            }
         }
+        // Removing multi SCM support. MultiSCM plugin is unstable
+//        else if (scm instanceof MultiSCM) {
+//            List<hudson.scm.SCM> multiScms = ((MultiSCM) scm).getConfiguredSCMs();
+//            for (hudson.scm.SCM hscm : multiScms) {
+//                if (hscm instanceof SubversionSCM) {
+//                    list.addAll(getSVNRepoBranch((SubversionSCM) hscm));
+//                } else if (hscm instanceof GitSCM) {
+//                    list.addAll(getGitHubRepoBranch((GitSCM) hscm, r));
+//                }
+//            }
+//        }
         return list;
     }
 
 
     private static List<RepoBranch> getGitHubRepoBranch(GitSCM scm, Run r) {
         List<RepoBranch> list = new ArrayList<>();
-        if (!org.apache.commons.collections.CollectionUtils.isEmpty(scm.getBuildData(r).remoteUrls)) {
-            for (String url : scm.getBuildData(r).remoteUrls) {
+        if (!org.apache.commons.collections.CollectionUtils.isEmpty(Objects.requireNonNull(scm.getBuildData(r)).remoteUrls)) {
+            for (String url : Objects.requireNonNull(scm.getBuildData(r)).remoteUrls) {
                 if (url.endsWith(".git")) {
                     url = url.substring(0, url.lastIndexOf(".git"));
                 }
-                Map<String, Build> branches = scm.getBuildData(r).getBuildsByBranchName();
+                Map<String, Build> branches = Objects.requireNonNull(scm.getBuildData(r)).getBuildsByBranchName();
                 String branch = "";
                 for (String key : branches.keySet()) {
                     hudson.plugins.git.util.Build b = branches.get(key);
@@ -309,8 +318,8 @@ public class HygieiaUtils {
         List<RepoBranch> list = new ArrayList<>();
         SubversionSCM.ModuleLocation[] mLocations = scm.getLocations();
         if (mLocations != null) {
-            for (int i = 0; i < mLocations.length; i++) {
-                list.add(new RepoBranch(mLocations[i].getURL(), "", RepoBranch.RepoType.SVN));
+            for (SubversionSCM.ModuleLocation mLocation : mLocations) {
+                list.add(new RepoBranch(mLocation.getURL(), "", RepoBranch.RepoType.SVN));
             }
         }
         return list;
@@ -350,6 +359,67 @@ public class HygieiaUtils {
         else {
             return BuildStatus.Unknown;
         }
+    }
+
+    public static String getMatchFromLog(Run run, String pattern) throws IOException {
+        BufferedReader br = null;
+        String matchLine = null;
+        try {
+            br = new BufferedReader(run.getLogReader());
+            String strLine;
+            Pattern p = Pattern.compile(pattern);
+            while ((strLine = br.readLine()) != null) {
+                Matcher match = p.matcher(strLine);
+                if (match.matches()) {
+                    matchLine = match.group(1);
+                }
+            }
+        } finally {
+            IOUtils.closeQuietly(br);
+        }
+        return matchLine;
+    }
+
+    public static Set<String> getMatchedLinesFromLog(Run run, String pattern) throws IOException {
+        BufferedReader br = null;
+        Set<String> matchLines = new HashSet<>();
+        try {
+            br = new BufferedReader(run.getLogReader());
+            String strLine;
+            Pattern p = Pattern.compile(pattern);
+            while ((strLine = br.readLine()) != null) {
+                Matcher match = p.matcher(strLine);
+                if (match.matches()) {
+                    matchLines.add(match.group(1));
+                }
+            }
+        } finally {
+            IOUtils.closeQuietly(br);
+        }
+        return matchLines;
+    }
+
+    public static String getBuildCollectionId (String buildResponse) {
+        String[] parts = buildResponse.split(",");
+        return parts[0];
+    }
+
+    public static String getCollectorItemId (String buildResponse) {
+        String[] parts = buildResponse.split(",");
+        if (parts.length < 2) return "";
+        return parts[1];
+    }
+
+    public static boolean isJobExcluded (String jobName, String patterns) {
+        if(StringUtils.isNotBlank(patterns)){
+            List<String> patternsList = Arrays.asList(patterns.split(SEPERATOR));
+            for (String pattern : patternsList) {
+                if (StringUtils.startsWithIgnoreCase(jobName, pattern)) {
+                    return Boolean.TRUE;
+                }
+            }
+        }
+        return Boolean.FALSE;
     }
 
 }
