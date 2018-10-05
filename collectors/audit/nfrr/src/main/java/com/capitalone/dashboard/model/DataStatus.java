@@ -6,8 +6,7 @@ public enum DataStatus {
     OK,
     NOT_CONFIGURED,
     NO_DATA;
-
-
+    
     public static DataStatus fromString(String value) {
         for (DataStatus auditType : values()) {
             if (auditType.toString().equalsIgnoreCase(value)) {
