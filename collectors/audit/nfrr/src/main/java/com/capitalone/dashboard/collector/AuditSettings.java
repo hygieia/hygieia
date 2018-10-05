@@ -13,12 +13,12 @@ import java.util.List;
 @ConfigurationProperties(prefix = "nfrr")
 public class AuditSettings {
 
-    private String cron = "0 * * * * *";
+    private String cron;
     private boolean saveLog = false;
-    private List<String> servers = Arrays.asList("http://localhost:8090");
+    private List<String> servers;
     private List<String> environments;
-    private List<String> usernames = Arrays.asList("apiadmin");
-    private List<String> apiKeys = Arrays.asList("UGFzc3dvcmRJc0F1dGhUb2tlbjp7ImFwaUtleSI6Im9kTXNUd1EzeTF1MVcra3ltUGZObEFRdnp0TkdHaXBkIn0=");
+    private List<String> usernames;
+    private List<String> apiKeys;
     private String dockerLocalHostIP; //null if not running in docker on http://localhost
 
     public String getCron() {
