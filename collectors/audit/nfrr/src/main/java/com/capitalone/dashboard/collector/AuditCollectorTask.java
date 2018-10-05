@@ -7,6 +7,7 @@ import com.capitalone.dashboard.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -26,9 +27,6 @@ import java.util.Map;
 public class AuditCollectorTask extends CollectorTask<AuditCollector> {
 
     private final Logger LOGGER = LoggerFactory.getLogger(AuditCollectorTask.class);
-
-    private static final long BEGIN_DATE = Instant.now().minus(Duration.ofDays(30)).toEpochMilli();
-    private static final long END_DATE = Instant.now().toEpochMilli();
 
     @Autowired
     private DashboardRepository dashboardRepository;
@@ -58,16 +56,15 @@ public class AuditCollectorTask extends CollectorTask<AuditCollector> {
 
     @Override
     public void collect(AuditCollector collector) {
-        long lastExecutedCollectorTimestamp = collector.getLastExecuted();
+        LOGGER.info("NFRR Audit Collector pulls all the dashboards");
+        Iterable<Dashboard> dashboards = dashboardRepository.findAll(new Sort(Sort.Direction.ASC, "title"));
 
-        Iterable<Dashboard> recentDashboards = dashboardRepository.findByTitle("Purple Rain Test");
-        //Iterable<Dashboard> recentDashboards = dashboardRepository.findAll(new Sort(Sort.Direction.ASC, "title"));
-        LOGGER.info("Get dashboards created after " + lastExecutedCollectorTimestamp);
-
-        List<AuditResult> auditResults = getAuditResults(recentDashboards);
+        List<AuditResult> auditResults = getAuditResults(dashboards);
         if (!auditResults.isEmpty()) {
             try {
+                AuditCollectorUtil.clearAuditResultRepo(auditResultRepository);
                 auditResultRepository.save(auditResults);
+                AuditCollectorUtil.clearAuditResults();
             } catch (Exception e) {
                 LOGGER.error("Error while saving audit status data to database", e.getMessage());
                 throw new RuntimeException(e.getCause());
@@ -80,19 +77,23 @@ public class AuditCollectorTask extends CollectorTask<AuditCollector> {
      *
      * @param dashboards
      */
-    private List<AuditResult> getAuditResults(Iterable<Dashboard> dashboards) throws HttpClientErrorException{
+    private List<AuditResult> getAuditResults(Iterable<Dashboard> dashboards) {
+
+        long currentTimeStamp = Instant.now().toEpochMilli();
+        LOGGER.info("NFRR Audit Collector audits the dashboards");
         dashboards.forEach((Dashboard dashboard) -> {
             try {
-                Map<AuditType, Audit> auditMap = AuditCollectorUtil.getAudit(dashboard, settings, BEGIN_DATE, END_DATE);
-                AuditCollectorUtil.addAuditResultByAuditType(dashboard, auditMap, cmdbRepository, END_DATE);
+                Map<AuditType, Audit> auditMap = AuditCollectorUtil.getAudit(dashboard, settings,
+                        Instant.now().minus(Duration.ofDays(30)).toEpochMilli(), currentTimeStamp);
+
+                LOGGER.info("NFRR Audit Collector adding audit results by audit type ");
+                AuditCollectorUtil.addAuditResultByAuditType(dashboard, auditMap, cmdbRepository, currentTimeStamp);
             }
             catch(HttpClientErrorException hce){
                 LOGGER.error("Http Error while calling audit api service for the dashboard - " + dashboard.getTitle());
-                throw hce;
             }
             catch (Exception e) {
                 LOGGER.error("Error while calling audit api service for the dashboard - " + dashboard.getTitle());
-                throw new RuntimeException(e.getCause());
             }
         });
         return AuditCollectorUtil.getAuditResults();
