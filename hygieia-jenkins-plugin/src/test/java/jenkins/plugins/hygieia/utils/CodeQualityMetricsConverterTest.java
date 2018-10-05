@@ -114,7 +114,7 @@ public class CodeQualityMetricsConverterTest {
     }
 
     @Test
-    public void handlesFindbugsFiles() throws Exception {
+    public void handlesFindbugsFiles() {
 
         //set up 2 files each with 2 bugs of different priorties
         FindBugsXmlReport findBugsXmlReport = produceFindbugsReport();
