@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.collector;
 
+import com.capitalone.dashboard.collector.config.TestConfig;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.repository.AuditCollectorRepository;
 import com.capitalone.dashboard.repository.AuditResultRepository;
@@ -8,8 +9,6 @@ import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.scheduling.TaskScheduler;
-
-import java.util.Arrays;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
@@ -21,6 +20,7 @@ public class AuditCollectorTest {
     private DashboardRepository dashboardRepository;
     private AuditResultRepository auditResultRepository;
     private AuditCollectorRepository auditCollectorRepository;
+    private AuditSettings auditSettings;
 
     @Before
     public void setup() {
@@ -28,10 +28,9 @@ public class AuditCollectorTest {
         auditResultRepository = mock(AuditResultRepository.class);
         auditCollectorRepository = mock(AuditCollectorRepository.class);
         dashboardRepository = mock(DashboardRepository.class);
-        AuditSettings auditSettings = new AuditSettings();
-        auditSettings.setServers(Arrays.asList("http://localhost:8081/"));
-        auditSettings.setCron("*/2 * * * *");
-        this.taskToTest = new AuditCollectorTask(taskScheduler, dashboardRepository, auditResultRepository, auditCollectorRepository, auditSettings);
+        auditSettings = new TestConfig().settings();
+        this.taskToTest = new AuditCollectorTask(taskScheduler, dashboardRepository, auditResultRepository,
+                auditCollectorRepository, auditSettings);
     }
 
     @Test
@@ -40,7 +39,7 @@ public class AuditCollectorTest {
         assertThat(collector).isNotNull().isInstanceOf(AuditCollector.class);
         assertThat(collector.isEnabled()).isTrue();
         assertThat(collector.isOnline()).isTrue();
-        AssertionsForInterfaceTypes.assertThat(collector.getBuildServers()).contains("http://localhost:8081/");
+        AssertionsForInterfaceTypes.assertThat(collector.getBuildServers()).contains(auditSettings.getServers().get(0));
         AssertionsForInterfaceTypes.assertThat(collector.getCollectorType()).isEqualTo(CollectorType.Audit);
         assertThat(collector.getName()).isEqualTo("AuditCollector");
         assertThat(collector.getAllFields().get("instanceUrl")).isEqualTo("");
@@ -58,6 +57,6 @@ public class AuditCollectorTest {
 
     @Test
     public void getCron() {
-        assertThat(taskToTest.getCron().equals("*/2 * * * *"));
+        assertThat(taskToTest.getCron().equals(auditSettings.getCron()));
     }
 }

@@ -7,24 +7,24 @@ import com.capitalone.dashboard.model.AuditType;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.repository.*;
 import org.apache.commons.collections.CollectionUtils;
-import org.json.simple.parser.JSONParser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Map;
 
-import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -46,7 +46,6 @@ public class AuditCollectorTaskTest {
     private CmdbRepository cmdbRepository;
 
     AuditSettings settings = new AuditSettings();
-    private static final String HYGIEIA_AUDIT_URL = "/api-audit/dashboardReview?";
     private static final long BEGIN_DATE = 1537824736000L;
     private static final long END_DATE = Instant.now().toEpochMilli();
     private HttpEntity<String> httpHeaders;
