@@ -46,7 +46,7 @@ public class CodeQualityEvaluatorTest {
 
     @Test
     public void testEvalatefor_COLLECTOR_ITEM_ERROR(){
-        List<CodeQuality> codeQualities = makeCodeQuality2("cloud-service-parent");
+        List<CodeQuality> codeQualities = makeCodeQualityGateDetailsFoundAuditFAIL("cloud-service-parent");
         when(codeQualityRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class),any(Long.class),any(Long.class))).thenReturn(codeQualities);
 
         CodeQualityAuditResponse response = codeQualityEvaluator.evaluate(createCollectorItem1(0), 125634536, 6235263, null);
@@ -58,7 +58,7 @@ public class CodeQualityEvaluatorTest {
     @Test
     //Test for 5.3 version Code Quality Audit OK
     public void testEvalatefor_StatusMetAuditOk(){
-        List<CodeQuality> codeQualities = makeCodeQuality1("cloud-service-parent");
+        List<CodeQuality> codeQualities = makeCodeQualityGateDetailsMetricNotFound("cloud-service-parent");
 
         when(codeQualityRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class),any(Long.class),any(Long.class))).thenReturn(codeQualities);
         when(collItemConfigHistoryRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class),any(Long.class),any(Long.class))).thenReturn(null);
@@ -67,14 +67,15 @@ public class CodeQualityEvaluatorTest {
 
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_CHECK_IS_CURRENT"));
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_THRESHOLD_BLOCKER_MET"));
+        Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_THRESHOLD_UNIT_TEST_MET"));
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_AUDIT_OK"));
-        Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_GATES_FOUND"));
+        Assert.assertEquals(false, response.getAuditStatuses().toString().contains("CODE_QUALITY_GATES_FOUND"));
     }
 
     @Test
     //Test for 5.3 version Code Quality Audit FAIl
     public void testEvalatefor_StatusMet(){
-        List<CodeQuality> codeQualities = makeCodeQuality2("cloud-service-parent");
+        List<CodeQuality> codeQualities = makeCodeQualityGateDetailsFoundAuditFAIL("cloud-service-parent");
 
         when(codeQualityRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class),any(Long.class),any(Long.class))).thenReturn(codeQualities);
         when(collItemConfigHistoryRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class),any(Long.class),any(Long.class))).thenReturn(null);
@@ -149,11 +150,12 @@ public class CodeQualityEvaluatorTest {
         items.getOptions().put("projectId", projectId);
         return items;
     }
-    private List<CodeQuality> makeCodeQuality1(String name) {
+
+    private List<CodeQuality> makeCodeQualityGateDetailsMetricNotFound(String name) {
         CodeQuality codeQuality = new CodeQuality();
         CodeQualityMetric  codeQualityMetric1 = new CodeQualityMetric();
-        codeQualityMetric1.setName("quality_gate_details");
-        codeQualityMetric1.setStatus(CodeQualityMetricStatus.Ok);
+        codeQualityMetric1.setName("test_success_density");
+        codeQualityMetric1.setStatus(CodeQualityMetricStatus.Warning);
         CodeQualityMetric  codeQualityMetric2 = new CodeQualityMetric();
         codeQualityMetric2.setName("blocker_violations");
         codeQualityMetric2.setStatus(CodeQualityMetricStatus.Ok);
@@ -165,7 +167,7 @@ public class CodeQualityEvaluatorTest {
 
     }
 
-    private List<CodeQuality> makeCodeQuality2(String name) {
+    private List<CodeQuality> makeCodeQualityGateDetailsFoundAuditFAIL(String name) {
         CodeQuality codeQuality = new CodeQuality();
         CodeQualityMetric  codeQualityMetric1 = new CodeQualityMetric();
         codeQualityMetric1.setName("blocker_violations");

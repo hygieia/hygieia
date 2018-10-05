@@ -124,10 +124,11 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
                 codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_GATES_FOUND);
 
                 if (metric.getStatus() != null) {
-                    // this applies for sonar 5 style data for quality_gate_details
-                    codeQualityAuditResponse.addAuditStatus("Ok".equalsIgnoreCase(metric.getStatus().toString()) ? CodeQualityAuditStatus.CODE_QUALITY_AUDIT_OK : CodeQualityAuditStatus.CODE_QUALITY_AUDIT_FAIL);
+                    // this applies for sonar 5.3 style data for quality_gate_details. Sets CODE_QUALITY_AUDIT_OK if Status is Ok/Warning
+                    codeQualityAuditResponse.addAuditStatus(("Ok".equalsIgnoreCase(metric.getStatus().toString())
+                            || ("Warning".equalsIgnoreCase(metric.getStatus().toString()))) ? CodeQualityAuditStatus.CODE_QUALITY_AUDIT_OK : CodeQualityAuditStatus.CODE_QUALITY_AUDIT_FAIL);
                 } else {
-                    // this applies for sonar 6.7 style data for quality_gate_details
+                    // this applies for sonar 6.7 style data for quality_gate_details. Sets CODE_QUALITY_AUDIT_OK if Status is Ok/Warning
                     TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
                     };
                     Map<String, String> values;
@@ -217,6 +218,12 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
         return detailsMissing;
     }
 
+    /**
+     * Sets audit status when code quality gate details are found. Sonar 6.7 style data.
+     *
+     * @param condition
+     * @param codeQualityAuditResponse
+     */
     private void auditStatusWhenQualityGateDetailsFound(Map condition, CodeQualityAuditResponse codeQualityAuditResponse) {
         if (StringUtils.equalsIgnoreCase(condition.get("metric").toString(), CodeQualityMetricType.BLOCKER_VIOLATIONS.getType())) {
             codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_BLOCKER_FOUND);
@@ -242,6 +249,12 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
         }
     }
 
+    /**
+     * Sets audit status when code quality gate details are found/not found. Sonar 5.3 style data.
+     *
+     * @param metric
+     * @param codeQualityAuditResponse
+     */
     private void auditStatusWhenQualityGateDetailsNotFound(CodeQualityMetric metric, CodeQualityAuditResponse codeQualityAuditResponse) {
         if (CodeQualityMetricStatus.Error.equals(metric.getStatus())){
             codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_AUDIT_FAIL);
