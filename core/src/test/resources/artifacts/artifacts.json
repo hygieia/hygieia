@@ -1,0 +1,30 @@
+[{
+    "id": "56ccb7a57fab7c3eac031aac",
+    "_class": "com.capitalone.dashboard.model.BinaryArtifact",
+    "timestamp": 1456256819843,
+    "artifactName": "api.jar",
+    "canonicalName": "api-1.0.0.0.jar",
+    "artifactGroupId": "com.lightningcd.api",
+    "artifactVersion": "1.0.0.0",
+    "buildInfo":  {
+      "id": "5ba51c320be2d3f98f795044",
+      "_class": "com.capitalone.dashboard.model.Build",
+      "collectorItemId": "5ba136220be2d32568777fa5",
+      "timestamp": 1537547314372,
+      "number": "148",
+      "buildUrl": "http://localhost:8082/job/c1usercheck/148/",
+      "startTime": 1537547300387,
+      "endTime": 1537547314338,
+      "duration": 13951,
+      "buildStatus": "Success",
+      "codeRepos": [
+        {
+          "url": "https://mygithub.com/myOrg/myRepo",
+          "branch": "refs/remotes/origin/master",
+          "type": "GIT"
+        }
+      ],
+      "sourceChangeSet": []
+    }
+  }
+]

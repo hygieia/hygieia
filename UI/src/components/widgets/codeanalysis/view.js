@@ -157,7 +157,7 @@
                         ctrl.librarySecurityThreatStatus = getLibraryPolicyStatus(libraryData.threats.Security)
                     }
                     ctrl.knownComponentCount = knownComponentCount;
-                    ctrl.knownComponentCountPercentage = Math.round(calculatePercentage * 100);;
+                    ctrl.knownComponentCountPercentage = Math.round(calculatePercentage * 100);
                     ctrl.criticalCountPolicy = criticalCountPolicy;
                     ctrl.severeCountPolicy = severeCountPolicy;
                     ctrl.moderateCountPolicy = moderateCountPolicy;
@@ -219,7 +219,7 @@
 
                     ctrl.executionId = _.isEmpty(response.result) ? "-" : response.result[index].executionId;
                     ctrl.functionalTests.push({
-                        name: $scope.widgetConfig.options.testJobNames[index],
+                        name: testResult.description,
                         totalCount: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.totalCount, 0),
                         successCount: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.successCount, 0),
                         failureCount: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.failureCount, 0),

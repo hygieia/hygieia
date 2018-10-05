@@ -18,12 +18,14 @@ package com.capitalone.dashboard.client.story;
 
 import com.atlassian.jira.rest.client.api.domain.BasicProject;
 import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.IssueLink;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.User;
 import com.capitalone.dashboard.client.JiraClient;
 import com.capitalone.dashboard.client.Sprint;
 import com.capitalone.dashboard.model.Feature;
+import com.capitalone.dashboard.model.FeatureIssueLink;
 import com.capitalone.dashboard.model.FeatureStatus;
 import com.capitalone.dashboard.model.Team;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
@@ -280,6 +282,7 @@ public class StoryDataClientImpl implements StoryDataClient {
 	@SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.NPathComplexity"})
 	private void processFeatureData(Feature feature, Issue issue, Map<String, IssueField> fields) {
 		BasicProject project = issue.getProject();
+		Iterable<IssueLink> issueLinks = issue.getIssueLinks();
 		String status = this.toCanonicalFeatureStatus(issue.getStatus().getName());
 		String changeDate = issue.getUpdateDate().toString();
 		
@@ -404,6 +407,32 @@ public class StoryDataClientImpl implements StoryDataClient {
 
 		// sOwnersIsDeleted - does not exist in Jira
 		feature.setsOwnersIsDeleted(TOOLS.toCanonicalList(Collections.<String>emptyList()));
+
+		// issueLinks
+		List<FeatureIssueLink> jiraIssueLinks = new ArrayList<>();
+
+		issueLinks.forEach(issueLink -> {
+			FeatureIssueLink jiraIssueLink = new FeatureIssueLink();
+
+			// story number of the linked issue
+			jiraIssueLink.setTargetIssueKey(issueLink.getTargetIssueKey());
+
+			// name of the linked issue
+			jiraIssueLink.setIssueLinkName(issueLink.getIssueLinkType().getName());
+
+			// type of the linked issue
+			jiraIssueLink.setIssueLinkType(issueLink.getIssueLinkType().getDescription());
+
+			// direction of the linked issue (inbount/outbound)
+			jiraIssueLink.setIssueLinkDirection(issueLink.getIssueLinkType().getDirection().toString());
+
+			// uri of the linked issue
+			jiraIssueLink.setTargetIssueUri(issueLink.getTargetIssueUri().toString());
+
+			jiraIssueLinks.add(jiraIssueLink);
+		});
+
+		feature.setIssueLinks(jiraIssueLinks);
 	}
 	
 	private void processEpicData(Feature feature, String epicKey) {

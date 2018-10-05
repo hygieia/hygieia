@@ -2,11 +2,13 @@ package com.capitalone.dashboard.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * A self-contained, independently deployable piece of the larger application. Each component of an application
@@ -53,7 +55,7 @@ public class Component extends BaseModel {
     public void addCollectorItem(CollectorType collectorType, CollectorItem collectorItem) {
         // Currently only one collectorItem per collectorType is supported
         if (collectorItems.get(collectorType) == null) {
-            collectorItems.put(collectorType, Arrays.asList(collectorItem));
+            collectorItems.put(collectorType, Collections.singletonList(collectorItem));
         } else {
             List<CollectorItem> existing = new ArrayList<> (collectorItems.get(collectorType));
             if (isNewCollectorItem(existing, collectorItem)) {
@@ -64,10 +66,7 @@ public class Component extends BaseModel {
     }
 
     private boolean isNewCollectorItem (List<CollectorItem> existing, CollectorItem item) {
-        for (CollectorItem ci : existing) {
-            if (ci.getId().equals(item.getId())) return false;
-        }
-        return true;
+        return existing.stream().noneMatch(ci -> Objects.equals(ci.getId(), item.getId()));
     }
 
     public CollectorItem getFirstCollectorItemForType(CollectorType type){
@@ -75,8 +74,23 @@ public class Component extends BaseModel {
         if(getCollectorItems().get(type) == null) {
             return null;
         }
-        List<CollectorItem> collectorItems = new ArrayList<>();
-        collectorItems.addAll(getCollectorItems().get(type));
+        List<CollectorItem> collectorItems = new ArrayList<>(getCollectorItems().get(type));
         return collectorItems.get(0);
     }
+
+    public CollectorItem getLastUpdatedCollectorItemForType(CollectorType type){
+
+        if(getCollectorItems().get(type) == null || getCollectorItems().get(type).isEmpty()) {
+            return null;
+        }
+        List<CollectorItem> collectorItems = new ArrayList<>(getCollectorItems().get(type));
+        return getLastUpdateItem(collectorItems);
+    }
+
+    private CollectorItem getLastUpdateItem(List<CollectorItem> collectorItems){
+        Comparator<CollectorItem> collectorItemComparator = Comparator.comparing(CollectorItem::getLastUpdated);
+        collectorItems.sort(collectorItemComparator.reversed());
+        return collectorItems.get(0);
+    }
+
 }
