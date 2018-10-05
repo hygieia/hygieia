@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -54,9 +55,9 @@ public class DeployBuilder {
         this.artifactVersion = hygieiaDeploy.getArtifactVersion().trim();
         this.applicationName = hygieiaDeploy.getApplicationName().trim();
         this.environmentName = hygieiaDeploy.getEnvironmentName().trim();
-        this.buildId = buildId;
+        this.buildId = HygieiaUtils.getBuildCollectionId(buildId);
         this.listener = listener;
-        rootDirectory = new FilePath(build.getWorkspace(), hygieiaDeploy.getArtifactDirectory().trim());
+        rootDirectory = new FilePath(Objects.requireNonNull(build.getWorkspace()), hygieiaDeploy.getArtifactDirectory().trim());
         this.jenkinsName = publisher.getDescriptor().getHygieiaJenkinsName();
         buildDeployRequests();
     }
@@ -68,7 +69,7 @@ public class DeployBuilder {
         this.artifactVersion = publisher.getArtifactVersion().trim();
         this.applicationName = publisher.getApplicationName().trim();
         this.environmentName = publisher.getEnvironmentName().trim();
-        this.buildId = buildId;
+        this.buildId = HygieiaUtils.getBuildCollectionId(buildId);
         this.listener = listener;
         rootDirectory = new FilePath(filePath, publisher.getArtifactDirectory().trim());
         this.jenkinsName = jenkinsName;
@@ -77,8 +78,9 @@ public class DeployBuilder {
 
     }
 
+
     private void buildDeployRequests() {
-        EnvVars envVars = null;
+        EnvVars envVars;
         try {
             envVars = run.getEnvironment(listener);
             if (envVars != null) {
@@ -88,9 +90,7 @@ public class DeployBuilder {
                 environmentName = envVars.expand(environmentName);
                 applicationName = envVars.expand(applicationName);
             }
-        } catch (IOException e) {
-            listener.getLogger().println("Hygieia BuildArtifact Publisher - IOException getting EnvVars");
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             listener.getLogger().println("Hygieia BuildArtifact Publisher - IOException getting EnvVars");
         }
 

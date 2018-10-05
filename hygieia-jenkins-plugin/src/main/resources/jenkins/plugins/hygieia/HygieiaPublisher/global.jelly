@@ -21,11 +21,23 @@
     <f:entry title="Name your Jenkins" help="/plugin/hygieia-publisher/help-globalConfig-hygieiaJenkinsName.html">
         <f:textbox field="hygieiaJenkinsName" name="hygieiaJenkinsName" value="${descriptor.getHygieiaJenkinsName()}" />
     </f:entry>
+    <f:entry title="Exclude Jenkins Job Names" help="/plugin/hygieia-publisher/help-globalConfig-hygieiaExcludeJobNames.html">
+        <f:textbox field="hygieiaExcludeJobNames" name="hygieiaExcludeJobNames" value="${descriptor.getHygieiaExcludeJobNames()}" />
+    </f:entry>
     <f:entry title="Publish all build data" help="/plugin/hygieia-publisher/help-globalConfig-hygieiaPublishBuildData.html">
         <f:checkbox field="hygieiaPublishBuildDataGlobal" name="hygieiaPublishBuildDataGlobal" checked="${descriptor.isHygieiaPublishBuildDataGlobal()}" />
     </f:entry>
     <f:entry title="Publish all sonar scan data" help="/plugin/hygieia-publisher/help-globalConfig-hygieiaPublishBuildData.html">
         <f:checkbox field="hygieiaPublishSonarDataGlobal" name="hygieiaPublishSonarDataGlobal" checked="${descriptor.isHygieiaPublishSonarDataGlobal()}" />
+    </f:entry>
+    <f:entry title="Publish custom collector items (tool name : regex)" help="/plugin/hygieia-publisher/help-globalConfig-hygieiaPublishBuildData.html">
+        <f:repeatable var="hygieiaPublishGenericCollectorItems" field="hygieiaPublishGenericCollectorItems" name="hygieiaPublishGenericCollectorItems" >
+            <f:textbox field="toolName" name="toolName" clazz="required" checkMessage="Required!" value="${hygieiaPublishGenericCollectorItems.toolName}"/>
+            <f:textbox field="pattern" name="pattern" clazz="required" checkMessage="Required!" value="${hygieiaPublishGenericCollectorItems.pattern}"/>
+                                    <div align="right">
+                                        <f:repeatableDeleteButton/>
+                                    </div>
+        </f:repeatable>
     </f:entry>
     <f:entry title="Use Proxy">
         <f:checkbox field="useProxy" name="useProxy" checked="${descriptor.isUseProxy()}" />

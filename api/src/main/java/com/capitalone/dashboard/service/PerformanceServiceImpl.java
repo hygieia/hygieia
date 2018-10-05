@@ -136,7 +136,7 @@ public class PerformanceServiceImpl implements PerformanceService {
             throw new HygieiaException("Failed inserting/updating Quality information.", HygieiaException.ERROR_INSERTING_DATA);
         }
 
-        return quality.getId().toString();
+        return quality.getId().toString() + "," + quality.getCollectorItemId().toString();
 
     }
 
