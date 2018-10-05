@@ -51,8 +51,6 @@ public class Dashboard extends BaseModel {
 
     private List<String> activeWidgets;
 
-    private long timestamp;
-
     @Transient
     String errorMessage;
 
