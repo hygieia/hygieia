@@ -44,9 +44,9 @@ public class ArtifactBuilder {
         filePattern = hygieiaArtifact.getArtifactName().trim();
         group = hygieiaArtifact.getArtifactGroup().trim();
         version = hygieiaArtifact.getArtifactVersion().trim();
-        this.hygieiaBuildId = hygieiaBuildId;
+        this.hygieiaBuildId = HygieiaUtils.getBuildCollectionId(hygieiaBuildId);
         this.listener = listener;
-        this.rootDirectory = new FilePath(build.getWorkspace(), directory);
+        this.rootDirectory = new FilePath(Objects.requireNonNull(build.getWorkspace()), directory);
 
         buildArtifacts();
     }
@@ -57,7 +57,7 @@ public class ArtifactBuilder {
         filePattern = publisher.getArtifactName().trim();
         group = publisher.getArtifactGroup().trim();
         version = publisher.getArtifactVersion().trim();
-        this.hygieiaBuildId = hygieiaBuildId;
+        this.hygieiaBuildId = HygieiaUtils.getBuildCollectionId(hygieiaBuildId);
         this.listener = listener;
         this.rootDirectory = new FilePath(filePath, directory);
         buildArtifacts();

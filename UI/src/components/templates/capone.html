@@ -31,34 +31,7 @@
                         <div ng-if="ctrl.scoreWidgetEnabled">
                             <score-view-widget dashboard-id="{{ctrl.dashboard.id}}" rate-it-options="ctrl.scoreRateItOptionsWidget"></score-view-widget>
                         </div>
-
-                        <div class="container-fluid">
-                            <ul class="nav nav-tabs">
-                                <li class="text-lg auth-modal-tab" ng-repeat="tab in template.miniFeaturetabs" ng-click="template.miniFeatureToggleView($index)"
-                                    ng-class="tab.name == template.miniFeatureWidgetView ? 'active' : ''">
-                                    <a class="textColor-Performance" data-toggle="tab" >{{tab.name}}</a>
-
-                                </li>
-                                </span>
-                            </ul>
-                        </div>
-
-                        <div class="container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.miniFeatureWidgetView == 'Feature'">
-                            <div class="row">
-                                <div class="col-xs-12">
-                                    <widget name="feature" widget-title="Feature"></widget>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.miniFeatureWidgetView == 'Team'">
-                            <div class="row">
-                                <div class="col-xs-12">
-                                    <widget name="team" widget-title="Team"></widget>
-                                </div>
-                            </div>
-                        </div>
-
+                        <widget name="feature" widget-title="Feature"></widget>
                         <widget name="repo"></widget>
                         </div>
                 </div>

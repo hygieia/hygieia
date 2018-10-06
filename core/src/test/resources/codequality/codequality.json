@@ -1,0 +1,281 @@
+[
+  {
+    "id": "5ba950da0be2d3128858d322",
+    "_class": "com.capitalone.dashboard.model.CodeQuality",
+    "collectorItemId": "5ba136290be2d32568777fa9",
+    "timestamp": 1537822938615,
+    "name": "C1 Custom Env Var Inject",
+    "url": "http://localhost:9000/dashboard/index/org.jenkins-ci.plugins:CustomC1EnvVarInject",
+    "type": "StaticAnalysis",
+    "version": "1.0.0-SNAPSHOT",
+    "buildId": "5ba51c320be2d3f98f795044",
+    "metrics": [
+      {
+        "name": "coverage",
+        "value": "0.0",
+        "formattedValue": "0.0%"
+      },
+      {
+        "name": "new_vulnerabilities",
+        "value": "",
+        "formattedValue": ""
+      },
+      {
+        "name": "violations",
+        "value": "28",
+        "formattedValue": "28"
+      },
+      {
+        "name": "quality_gate_details",
+        "value": "{\"level\":\"ERROR\",\"conditions\":[{\"metric\":\"new_security_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"1\",\"level\":\"OK\"},{\"metric\":\"new_reliability_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"1\",\"level\":\"OK\"},{\"metric\":\"new_maintainability_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"1\",\"level\":\"OK\"},{\"metric\":\"coverage\",\"op\":\"LT\",\"warning\":\"\",\"error\":\"80\",\"actual\":\"0.0\",\"level\":\"ERROR\"}]}",
+        "formattedValue": "{\"level\":\"ERROR\",\"conditions\":[{\"metric\":\"new_security_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"1\",\"level\":\"OK\"},{\"metric\":\"new_reliability_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"1\",\"level\":\"OK\"},{\"metric\":\"new_maintainability_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"1\",\"level\":\"OK\"},{\"metric\":\"coverage\",\"op\":\"LT\",\"warning\":\"\",\"error\":\"80\",\"actual\":\"0.0\",\"level\":\"ERROR\"}]}%"
+      },
+      {
+        "name": "sqale_index",
+        "value": "203",
+        "formattedValue": "3h 23min"
+      },
+      {
+        "name": "critical_violations",
+        "value": "1",
+        "formattedValue": "1"
+      },
+      {
+        "name": "blocker_violations",
+        "value": "0",
+        "formattedValue": "0"
+      },
+      {
+        "name": "new_major_violations",
+        "value": "",
+        "formattedValue": ""
+      },
+      {
+        "name": "alert_status",
+        "value": "ERROR",
+        "formattedValue": "ERROR"
+      },
+      {
+        "name": "new_critical_violations",
+        "value": "",
+        "formattedValue": ""
+      },
+      {
+        "name": "major_violations",
+        "value": "12",
+        "formattedValue": "12"
+      },
+      {
+        "name": "new_violations",
+        "value": "",
+        "formattedValue": ""
+      },
+      {
+        "name": "new_blocker_violations",
+        "value": "",
+        "formattedValue": ""
+      },
+      {
+        "name": "ncloc",
+        "value": "232",
+        "formattedValue": "232"
+      },
+      {
+        "name": "line_coverage",
+        "value": "0.0",
+        "formattedValue": "0.0%"
+      },
+      {
+        "name": "new_lines_to_cover",
+        "value": "",
+        "formattedValue": ""
+      }
+    ]
+  },
+  {
+    "id": "5ba98bcd0be2d3176e554081",
+    "_class": "com.capitalone.dashboard.model.CodeQuality",
+    "collectorItemId": "5ba136290be2d32568777fa9",
+    "timestamp": 1537838029598,
+    "name": "C1 Custom Env Var Inject",
+    "url": "http://localhost:9000/dashboard/index/org.jenkins-ci.plugins:CustomC1EnvVarInject",
+    "type": "StaticAnalysis",
+    "version": "1.0.0-SNAPSHOT",
+    "buildId": "5ba51d120be2d3f98f79504c",
+    "metrics": [
+      {
+        "name": "coverage",
+        "value": "0.0",
+        "formattedValue": "0.0%"
+      },
+      {
+        "name": "new_vulnerabilities",
+        "value": "",
+        "formattedValue": ""
+      },
+      {
+        "name": "violations",
+        "value": "28",
+        "formattedValue": "28"
+      },
+      {
+        "name": "quality_gate_details",
+        "value": "{\"level\":\"ERROR\",\"conditions\":[{\"metric\":\"new_security_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"1\",\"level\":\"OK\"},{\"metric\":\"new_reliability_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"1\",\"level\":\"OK\"},{\"metric\":\"new_maintainability_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"1\",\"level\":\"OK\"},{\"metric\":\"coverage\",\"op\":\"LT\",\"warning\":\"\",\"error\":\"80\",\"actual\":\"0.0\",\"level\":\"ERROR\"}]}",
+        "formattedValue": "{\"level\":\"ERROR\",\"conditions\":[{\"metric\":\"new_security_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"1\",\"level\":\"OK\"},{\"metric\":\"new_reliability_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"1\",\"level\":\"OK\"},{\"metric\":\"new_maintainability_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"1\",\"level\":\"OK\"},{\"metric\":\"coverage\",\"op\":\"LT\",\"warning\":\"\",\"error\":\"80\",\"actual\":\"0.0\",\"level\":\"ERROR\"}]}%"
+      },
+      {
+        "name": "sqale_index",
+        "value": "203",
+        "formattedValue": "3h 23min"
+      },
+      {
+        "name": "critical_violations",
+        "value": "1",
+        "formattedValue": "1"
+      },
+      {
+        "name": "blocker_violations",
+        "value": "0",
+        "formattedValue": "0"
+      },
+      {
+        "name": "new_major_violations",
+        "value": "",
+        "formattedValue": ""
+      },
+      {
+        "name": "alert_status",
+        "value": "ERROR",
+        "formattedValue": "ERROR"
+      },
+      {
+        "name": "new_critical_violations",
+        "value": "",
+        "formattedValue": ""
+      },
+      {
+        "name": "major_violations",
+        "value": "12",
+        "formattedValue": "12"
+      },
+      {
+        "name": "new_violations",
+        "value": "",
+        "formattedValue": ""
+      },
+      {
+        "name": "new_blocker_violations",
+        "value": "",
+        "formattedValue": ""
+      },
+      {
+        "name": "ncloc",
+        "value": "232",
+        "formattedValue": "232"
+      },
+      {
+        "name": "line_coverage",
+        "value": "0.0",
+        "formattedValue": "0.0%"
+      },
+      {
+        "name": "new_lines_to_cover",
+        "value": "",
+        "formattedValue": ""
+      }
+    ]
+  },
+  {
+    "id": "5ba98d055de4b1195307bf5a",
+    "_class": "com.capitalone.dashboard.model.CodeQuality",
+    "collectorItemId": "5ba136290be2d32568777fa9",
+    "timestamp": 1537838341119,
+    "name": "C1 Custom Env Var Inject",
+    "url": "http://localhost:9000/dashboard/index/org.jenkins-ci.plugins:CustomC1EnvVarInject",
+    "type": "StaticAnalysis",
+    "version": "1.0.0-SNAPSHOT",
+    "buildId": "5ba520c40be2d3f98f795054",
+    "metrics": [
+      {
+        "name": "coverage",
+        "value": "0.0",
+        "formattedValue": "0.0%"
+      },
+      {
+        "name": "new_vulnerabilities",
+        "value": "",
+        "formattedValue": ""
+      },
+      {
+        "name": "violations",
+        "value": "28",
+        "formattedValue": "28"
+      },
+      {
+        "name": "quality_gate_details",
+        "value": "{\"level\":\"ERROR\",\"conditions\":[{\"metric\":\"new_security_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"1\",\"level\":\"OK\"},{\"metric\":\"new_reliability_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"1\",\"level\":\"OK\"},{\"metric\":\"new_maintainability_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"1\",\"level\":\"OK\"},{\"metric\":\"coverage\",\"op\":\"LT\",\"warning\":\"\",\"error\":\"80\",\"actual\":\"0.0\",\"level\":\"ERROR\"}]}",
+        "formattedValue": "{\"level\":\"ERROR\",\"conditions\":[{\"metric\":\"new_security_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"1\",\"level\":\"OK\"},{\"metric\":\"new_reliability_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"1\",\"level\":\"OK\"},{\"metric\":\"new_maintainability_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"1\",\"level\":\"OK\"},{\"metric\":\"coverage\",\"op\":\"LT\",\"warning\":\"\",\"error\":\"80\",\"actual\":\"0.0\",\"level\":\"ERROR\"}]}%"
+      },
+      {
+        "name": "sqale_index",
+        "value": "203",
+        "formattedValue": "3h 23min"
+      },
+      {
+        "name": "critical_violations",
+        "value": "1",
+        "formattedValue": "1"
+      },
+      {
+        "name": "new_major_violations",
+        "value": "",
+        "formattedValue": ""
+      },
+      {
+        "name": "blocker_violations",
+        "value": "0",
+        "formattedValue": "0"
+      },
+      {
+        "name": "alert_status",
+        "value": "ERROR",
+        "formattedValue": "ERROR"
+      },
+      {
+        "name": "major_violations",
+        "value": "12",
+        "formattedValue": "12"
+      },
+      {
+        "name": "new_critical_violations",
+        "value": "",
+        "formattedValue": ""
+      },
+      {
+        "name": "new_violations",
+        "value": "",
+        "formattedValue": ""
+      },
+      {
+        "name": "new_blocker_violations",
+        "value": "",
+        "formattedValue": ""
+      },
+      {
+        "name": "ncloc",
+        "value": "232",
+        "formattedValue": "232"
+      },
+      {
+        "name": "line_coverage",
+        "value": "0.0",
+        "formattedValue": "0.0%"
+      },
+      {
+        "name": "new_lines_to_cover",
+        "value": "",
+        "formattedValue": ""
+      }
+    ]
+  }
+]

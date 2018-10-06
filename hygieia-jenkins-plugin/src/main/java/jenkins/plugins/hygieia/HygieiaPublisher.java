@@ -1,34 +1,29 @@
 package jenkins.plugins.hygieia;
 
-import com.capitalone.dashboard.model.TestSuiteType;
+import com.capitalone.dashboard.model.GenericCollectorItem;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
-import hudson.model.*;
+import hudson.model.AbstractBuild;
+import hudson.model.AbstractDescribableImpl;
+import hudson.model.AbstractProject;
+import hudson.model.BuildListener;
+import hudson.model.Descriptor;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
 import hudson.tasks.Publisher;
 import hudson.util.FormValidation;
-import hudson.util.ListBoxModel;
-import hygieia.transformer.HygieiaConstants;
 import net.sf.json.JSONObject;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
-import javax.servlet.ServletException;
 import java.io.IOException;
-import java.lang.String;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
 import java.util.logging.Logger;
 
-//import org.json.simple.JSONObject;
 
 public class HygieiaPublisher extends Notifier {
 
@@ -255,6 +250,36 @@ public class HygieiaPublisher extends Notifier {
         }
     }
 
+        public static class GenericCollectorItem extends AbstractDescribableImpl<GenericCollectorItem> {
+//    public static class GenericCollectorItem {
+        public final String toolName;
+        public final String pattern;
+
+
+        @DataBoundConstructor
+        public GenericCollectorItem(String toolName, String pattern) {
+            this.toolName = toolName;
+            this.pattern = pattern;
+        }
+
+        public String getToolName() {
+            return toolName;
+        }
+
+        public String getPattern() {
+            return pattern;
+        }
+
+        @Extension
+        public static class DescriptorImpl extends Descriptor<GenericCollectorItem> {
+            @Override
+            public String getDisplayName() {
+                return "";
+            }
+        }
+
+    }
+
     @DataBoundConstructor
     public HygieiaPublisher(final HygieiaBuild hygieiaBuild,
                             final HygieiaTest hygieiaTest, final HygieiaArtifact hygieiaArtifact, final HygieiaSonar hygieiaSonar, final HygieiaDeploy hygieiaDeploy) {
@@ -282,17 +307,6 @@ public class HygieiaPublisher extends Notifier {
         return makeService(env);
     }
 
-    public HygieiaService newHygieiaService(Run r, TaskListener listener) {
-        EnvVars env;
-        try {
-            env = r.getEnvironment(listener);
-        } catch (Exception e) {
-            listener.getLogger().println("Error retrieving environment vars: " + e.getMessage());
-            env = new EnvVars();
-        }
-        return makeService(env);
-    }
-
     private HygieiaService makeService(EnvVars env) {
         String hygieiaAPIUrl = getDescriptor().getHygieiaAPIUrl();
         String hygieiaToken = getDescriptor().getHygieiaToken();
@@ -305,7 +319,7 @@ public class HygieiaPublisher extends Notifier {
     }
 
     @Override
-    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
+    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)  {
         return true;
     }
 
@@ -313,21 +327,14 @@ public class HygieiaPublisher extends Notifier {
     @Extension
     public static class DescriptorImpl extends BuildStepDescriptor<Publisher> {
 
-        private String hygieiaAPIUrl;
-        private String hygieiaToken;
-        private String hygieiaJenkinsName;
-        private boolean useProxy;
-        private boolean hygieiaPublishBuildDataGlobal;
-        private boolean hygieiaPublishSonarDataGlobal;
-        private Set<String> deployAppNames = new HashSet<>();
-        private Set<String> deployEnvNames = new HashSet<>();
-
-        private String deployApplicationNameSelected;
-        private String deployEnvSelected;
-        private String testApplicationNameSelected;
-        private String testEnvSelected;
-
-        private Map<String, Set<String>> appEnv = new HashMap<>();
+        public String hygieiaAPIUrl;
+        public String hygieiaToken;
+        public String hygieiaJenkinsName;
+        private String hygieiaExcludeJobNames;
+        public boolean useProxy;
+        public boolean hygieiaPublishBuildDataGlobal;
+        public boolean hygieiaPublishSonarDataGlobal;
+        public List<GenericCollectorItem> hygieiaPublishGenericCollectorItems;
 
         public DescriptorImpl() {
             load();
@@ -346,192 +353,22 @@ public class HygieiaPublisher extends Notifier {
             return hygieiaJenkinsName;
         }
 
+        public String getHygieiaExcludeJobNames() { return hygieiaExcludeJobNames; }
+
         public boolean isUseProxy() {
             return useProxy;
         }
 
-        public boolean isHygieiaPublishBuildDataGlobal() { return hygieiaPublishBuildDataGlobal;}
+        public boolean isHygieiaPublishBuildDataGlobal() {
+            return hygieiaPublishBuildDataGlobal;
+        }
 
         public boolean isHygieiaPublishSonarDataGlobal() {
             return hygieiaPublishSonarDataGlobal;
         }
 
-        public ListBoxModel doFillTestTypeItems(String testType) {
-            ListBoxModel model = new ListBoxModel();
-
-            model.add(HygieiaConstants.UNIT_TEST_DISPLAY, TestSuiteType.Unit.toString());
-            model.add(HygieiaConstants.INTEGRATION_TEST_DISPLAY, TestSuiteType.Integration.toString());
-            model.add(HygieiaConstants.FUNCTIONAL_TEST_DISPLAY, TestSuiteType.Functional.toString());
-            model.add(HygieiaConstants.REGRESSION_TEST_DISPLAY, TestSuiteType.Regression.toString());
-            model.add(HygieiaConstants.PERFORMANCE_TEST_DISPLAY, TestSuiteType.Performance.toString());
-            model.add(HygieiaConstants.SECURITY_TEST_DISPLAY, TestSuiteType.Security.toString());
-            return model;
-        }
-
-        /**
-         * This method provides auto-completion items for the 'state' field.
-         * Stapler finds this method via the naming convention.
-         *
-         * @param value The text that the user entered.
-         */
-        public AutoCompletionCandidates doAutoCompleteApplicationName(@QueryParameter String value, @QueryParameter("hygieiaAPIUrl") final String hygieiaAPIUrl,
-                                                                      @QueryParameter("hygieiaToken") final String hygieiaToken,
-                                                                      @QueryParameter("hygieiaJenkinsName") final String hygieiaJenkinsName,
-                                                                      @QueryParameter("useProxy") final String sUseProxy) {
-
-            String hostUrl = hygieiaAPIUrl;
-            if (StringUtils.isEmpty(hostUrl)) {
-                hostUrl = this.hygieiaAPIUrl;
-            }
-            String targetToken = hygieiaToken;
-            if (StringUtils.isEmpty(targetToken)) {
-                targetToken = this.hygieiaToken;
-            }
-            String niceName = hygieiaJenkinsName;
-            if (StringUtils.isEmpty(niceName)) {
-                niceName = this.hygieiaJenkinsName;
-            }
-            boolean bProxy = "true".equalsIgnoreCase(sUseProxy);
-            if (StringUtils.isEmpty(sUseProxy)) {
-                bProxy = this.useProxy;
-            }
-            AutoCompletionCandidates c = new AutoCompletionCandidates();
-            if (CollectionUtils.isEmpty(deployAppNames)) fillApplicationNames(hostUrl, targetToken, niceName, bProxy);
-            for (String aN : deployAppNames) {
-                if (aN.toLowerCase().startsWith(value.toLowerCase())) {
-                    c.add(aN);
-                }
-            }
-            return c;
-        }
-
-
-        /**
-         * This method provides auto-completion items for the 'state' field.
-         * Stapler finds this method via the naming convention.
-         *
-         * @param value The text that the user entered.
-         */
-        public AutoCompletionCandidates doAutoCompleteEnvironmentName(@QueryParameter String value, @QueryParameter("hygieiaAPIUrl") final String hygieiaAPIUrl,
-                                                                      @QueryParameter("hygieiaToken") final String hygieiaToken,
-                                                                      @QueryParameter("hygieiaJenkinsName") final String hygieiaJenkinsName,
-                                                                      @QueryParameter("useProxy") final String sUseProxy) {
-            String hostUrl = hygieiaAPIUrl;
-            if (StringUtils.isEmpty(hostUrl)) {
-                hostUrl = this.hygieiaAPIUrl;
-            }
-            String targetToken = hygieiaToken;
-            if (StringUtils.isEmpty(targetToken)) {
-                targetToken = this.hygieiaToken;
-            }
-            String niceName = hygieiaJenkinsName;
-            if (StringUtils.isEmpty(niceName)) {
-                niceName = this.hygieiaJenkinsName;
-            }
-            boolean bProxy = "true".equalsIgnoreCase(sUseProxy);
-            if (StringUtils.isEmpty(sUseProxy)) {
-                bProxy = this.useProxy;
-            }
-
-            if (!StringUtils.isEmpty(deployApplicationNameSelected)) {
-                deployEnvNames = getHygieiaService(hostUrl, targetToken, niceName, bProxy)
-                        .getDeploymentEnvironments(deployApplicationNameSelected);
-            }
-            AutoCompletionCandidates c = new AutoCompletionCandidates();
-            for (String eN : deployEnvNames) {
-                if (eN.toLowerCase().startsWith(value.toLowerCase())) {
-                    c.add(eN);
-                }
-            }
-            return c;
-        }
-
-
-        private void fillApplicationNames(String hostUrl, String targetToken, String niceName, boolean useProxy) {
-            for (org.json.simple.JSONObject item : getHygieiaService(hostUrl, targetToken, niceName, useProxy)
-                    .getCollectorItemOptions(HygieiaConstants.COLLECTOR_ITEM_DEPLOYMENT)) {
-                String name = (String) item.get("applicationName");
-                if (!StringUtils.isEmpty(name)) {
-                    deployAppNames.add(name);
-                }
-            }
-        }
-
-        /**
-         * This method provides auto-completion items for the 'state' field.
-         * Stapler finds this method via the naming convention.
-         *
-         * @param value The text that the user entered.
-         */
-        public AutoCompletionCandidates doAutoCompleteTestApplicationName(@QueryParameter String value, @QueryParameter("hygieiaAPIUrl") final String hygieiaAPIUrl,
-                                                                          @QueryParameter("hygieiaToken") final String hygieiaToken,
-                                                                          @QueryParameter("hygieiaJenkinsName") final String hygieiaJenkinsName,
-                                                                          @QueryParameter("useProxy") final String sUseProxy) {
-
-            String hostUrl = hygieiaAPIUrl;
-            if (StringUtils.isEmpty(hostUrl)) {
-                hostUrl = this.hygieiaAPIUrl;
-            }
-            String targetToken = hygieiaToken;
-            if (StringUtils.isEmpty(targetToken)) {
-                targetToken = this.hygieiaToken;
-            }
-            String niceName = hygieiaJenkinsName;
-            if (StringUtils.isEmpty(niceName)) {
-                niceName = this.hygieiaJenkinsName;
-            }
-            boolean bProxy = "true".equalsIgnoreCase(sUseProxy);
-            if (StringUtils.isEmpty(sUseProxy)) {
-                bProxy = this.useProxy;
-            }
-            AutoCompletionCandidates c = new AutoCompletionCandidates();
-            if (CollectionUtils.isEmpty(deployAppNames)) fillApplicationNames(hostUrl, targetToken, niceName, bProxy);
-            for (String aN : deployAppNames) {
-                if (aN.toLowerCase().startsWith(value.toLowerCase())) {
-                    c.add(aN);
-                }
-            }
-            return c;
-        }
-
-        /**
-         * This method provides auto-completion items for the 'state' field.
-         * Stapler finds this method via the naming convention.
-         *
-         * @param value The text that the user entered.
-         */
-        public AutoCompletionCandidates doAutoCompleteTestEnvironmentName(@QueryParameter String value, @QueryParameter("hygieiaAPIUrl") final String hygieiaAPIUrl,
-                                                                          @QueryParameter("hygieiaToken") final String hygieiaToken,
-                                                                          @QueryParameter("hygieiaJenkinsName") final String hygieiaJenkinsName,
-                                                                          @QueryParameter("useProxy") final String sUseProxy) {
-            String hostUrl = hygieiaAPIUrl;
-            if (StringUtils.isEmpty(hostUrl)) {
-                hostUrl = this.hygieiaAPIUrl;
-            }
-            String targetToken = hygieiaToken;
-            if (StringUtils.isEmpty(targetToken)) {
-                targetToken = this.hygieiaToken;
-            }
-            String niceName = hygieiaJenkinsName;
-            if (StringUtils.isEmpty(niceName)) {
-                niceName = this.hygieiaJenkinsName;
-            }
-            boolean bProxy = "true".equalsIgnoreCase(sUseProxy);
-            if (StringUtils.isEmpty(sUseProxy)) {
-                bProxy = this.useProxy;
-            }
-            if (!StringUtils.isEmpty(testApplicationNameSelected)) {
-                deployEnvNames = getHygieiaService(hostUrl, targetToken, niceName, bProxy)
-                        .getDeploymentEnvironments(testApplicationNameSelected);
-            }
-
-            AutoCompletionCandidates c = new AutoCompletionCandidates();
-            for (String eN : deployEnvNames) {
-                if (eN.toLowerCase().startsWith(value.toLowerCase())) {
-                    c.add(eN);
-                }
-            }
-            return c;
+        public List<GenericCollectorItem> getHygieiaPublishGenericCollectorItems() {
+            return hygieiaPublishGenericCollectorItems;
         }
 
         public boolean isApplicable(Class<? extends AbstractProject> aClass) {
@@ -550,12 +387,7 @@ public class HygieiaPublisher extends Notifier {
 
         @Override
         public boolean configure(StaplerRequest sr, JSONObject formData) throws FormException {
-            hygieiaAPIUrl = sr.getParameter("hygieiaAPIUrl");
-            hygieiaToken = sr.getParameter("hygieiaToken");
-            hygieiaJenkinsName = sr.getParameter("hygieiaJenkinsName");
-            useProxy = "on".equals(sr.getParameter("useProxy"));
-            hygieiaPublishBuildDataGlobal = "on".equals(sr.getParameter("hygieiaPublishBuildDataGlobal"));
-            hygieiaPublishSonarDataGlobal =  "on".equals(sr.getParameter("hygieiaPublishSonarDataGlobal"));
+            sr.bindJSON(this, formData.getJSONObject("hygieia-publisher"));
             save();
             return super.configure(sr, formData);
         }
@@ -572,7 +404,7 @@ public class HygieiaPublisher extends Notifier {
         public FormValidation doTestConnection(@QueryParameter("hygieiaAPIUrl") final String hygieiaAPIUrl,
                                                @QueryParameter("hygieiaToken") final String hygieiaToken,
                                                @QueryParameter("hygieiaJenkinsName") final String hygieiaJenkinsName,
-                                               @QueryParameter("useProxy") final String sUseProxy) throws FormException {
+                                               @QueryParameter("useProxy") final String sUseProxy)  {
 
             String hostUrl = hygieiaAPIUrl;
             if (StringUtils.isEmpty(hostUrl)) {
@@ -597,64 +429,6 @@ public class HygieiaPublisher extends Notifier {
             } else {
                 return FormValidation.error("Failure");
             }
-        }
-
-        public FormValidation doCheckValue(@QueryParameter String value) throws IOException, ServletException {
-            if (value.isEmpty()) {
-                return FormValidation.warning("You must fill this box!");
-            }
-            return FormValidation.ok();
-        }
-
-        public FormValidation doCheckDeployAppNameValue(@QueryParameter String value) throws IOException, ServletException {
-            deployApplicationNameSelected = value;
-            if (value.isEmpty()) {
-                return FormValidation.warning("You must fill this box!");
-            }
-//            else if (!CollectionUtils.isEmpty(deployAppNames) && !deployAppNames.contains(value.trim())) {
-//                return FormValidation.warning("You have entered a name that does not exist in Hygieia yet. This will create a new application in Hygieia.");
-//            }
-
-            return FormValidation.ok();
-        }
-
-        public FormValidation doCheckDeployEnvValue(@QueryParameter String value) throws IOException, ServletException {
-            deployEnvSelected = value;
-            if (value.isEmpty()) {
-                return FormValidation.warning("You must fill this box!");
-            }
-//            else if (!CollectionUtils.isEmpty(deployEnvNames) && !deployEnvNames.contains(value.trim())) {
-//                return FormValidation.warning("You have entered a name that does not exist in Hygieia yet. This will create a new environment for application '" +
-//                        deployApplicationNameSelected + "' in Hygieia.");
-//            }
-
-            return FormValidation.ok();
-        }
-
-
-        public FormValidation doCheckTestingAppNameValue(@QueryParameter String value) throws IOException, ServletException {
-            testApplicationNameSelected = value;
-            if (value.isEmpty()) {
-                return FormValidation.warning("You must fill this box!");
-            }
-//            else if (!CollectionUtils.isEmpty(deployAppNames) && !deployAppNames.contains(value.trim())) {
-//                return FormValidation.warning("You have entered a name that does not exist in Hygieia yet. This will create a new application in Hygieia.");
-//            }
-
-            return FormValidation.ok();
-        }
-
-        public FormValidation doCheckTestingEnvValue(@QueryParameter String value) throws IOException, ServletException {
-            testEnvSelected = value;
-            if (value.isEmpty()) {
-                return FormValidation.warning("You must fill this box!");
-            }
-//            else if (!CollectionUtils.isEmpty(deployEnvNames) && !deployEnvNames.contains(value.trim())) {
-//                return FormValidation.warning("You have entered a name that does not exist in Hygieia yet. This will create a new environment for application '" +
-//                        testApplicationNameSelected + "' in Hygieia.");
-//            }
-
-            return FormValidation.ok();
         }
 
     }
