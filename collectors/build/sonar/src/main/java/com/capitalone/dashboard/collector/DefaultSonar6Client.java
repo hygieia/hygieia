@@ -365,7 +365,7 @@ public class DefaultSonar6Client implements SonarClient {
     private HttpHeaders createHeaders(String username, String password){
         HttpHeaders headers = new HttpHeaders();
         if (username != null && !username.isEmpty()) {
-            String auth = username + ":" + password == null ? "" : password;
+            String auth = username + ":" + (password == null ? "" : password);
             byte[] encodedAuth = Base64.encodeBase64(
                     auth.getBytes(Charset.forName("US-ASCII"))
             );
