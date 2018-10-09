@@ -109,7 +109,7 @@ public class BuildServiceImpl implements BuildService {
             throw new HygieiaException("Failed inserting/updating build information.", HygieiaException.ERROR_INSERTING_DATA);
         }
 
-        return build.getId().toString();
+        return String.format("%s,%s", build.getId().toString(), build.getCollectorItemId().toString());
 
     }
 

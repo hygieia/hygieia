@@ -108,7 +108,7 @@ public class HygieiaArtifactPublishStep extends AbstractStepImpl {
 			return "Hygieia Artifact Publish Step";
 		}
 
-		public FormValidation doCheckValue(@QueryParameter String value) throws IOException, ServletException {
+		public FormValidation doCheckValue(@QueryParameter String value) {
 			if (value.isEmpty()) {
 				return FormValidation.warning("You must fill this box!");
 			}
@@ -133,7 +133,7 @@ public class HygieiaArtifactPublishStep extends AbstractStepImpl {
 		@StepContextParameter
 		transient FilePath filepath;
 
-		protected List<Integer> run() throws Exception {
+		protected List<Integer> run() {
 
 			Jenkins jenkins;
 
@@ -144,7 +144,7 @@ public class HygieiaArtifactPublishStep extends AbstractStepImpl {
 				return null;
 			}
 
-			HygieiaPublisher.DescriptorImpl hygieiaDesc = (HygieiaPublisher.DescriptorImpl) jenkins
+			HygieiaPublisher.DescriptorImpl hygieiaDesc = jenkins
 					.getDescriptorByType(HygieiaPublisher.DescriptorImpl.class);
 			List<String> hygieiaAPIUrls = Arrays.asList(hygieiaDesc.getHygieiaAPIUrl().split(";"));
 			List<Integer> responseCodes = new ArrayList<>();

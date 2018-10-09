@@ -1,0 +1,79 @@
+[
+{
+  "id" : "5ba136220be2d32568777fa4",
+  "_class" : "com.capitalone.dashboard.model.Collector",
+  "name" : "Hudson",
+  "collectorType" : "Build",
+  "enabled" : true,
+  "online" : true,
+  "errors" : [],
+  "uniqueFields" : {
+    "jobName" : "",
+    "jobUrl" : ""
+  },
+  "allFields" : {
+    "jobName" : "",
+    "jobUrl" : "",
+    "instanceUrl" : ""
+  },
+  "lastExecuted" : 1537838340823,
+  "searchFields" : [
+    "options.jobName",
+    "niceName"
+  ]
+},
+{
+  "id" : "5ba136290be2d32568777fa8",
+  "_class" : "com.capitalone.dashboard.model.Collector",
+  "name" : "Sonar",
+  "collectorType" : "CodeQuality",
+  "enabled" : true,
+  "online" : true,
+  "errors" : [],
+  "uniqueFields" : {},
+  "allFields" : {},
+  "lastExecuted" : 1537838341109,
+  "searchFields" : [
+    "description"
+  ]
+},
+{
+  "id" : "5ba155280be2d339d2f2461e",
+  "_class" : "com.capitalone.dashboard.model.Collector",
+  "name" : "Product",
+  "collectorType" : "Product",
+  "enabled" : true,
+  "online" : true,
+  "errors" : [],
+  "uniqueFields" : {},
+  "allFields" : {},
+  "lastExecuted" : 0,
+  "searchFields" : [
+    "description"
+  ]
+},
+{
+  "id" : "5ba16a0b0be2d34a64291205",
+  "_class" : "com.capitalone.dashboard.model.Collector",
+  "name" : "GitHub",
+  "collectorType" : "SCM",
+  "enabled" : true,
+  "online" : false,
+  "errors" : [],
+  "uniqueFields" : {
+    "branch" : "",
+    "url" : ""
+  },
+  "allFields" : {
+    "password" : "",
+    "personalAccessToken" : "",
+    "branch" : "",
+    "userID" : "",
+    "url" : ""
+  },
+  "lastExecuted" : 1537305133269,
+  "searchFields" : [
+    "description"
+  ]
+}
+  ]

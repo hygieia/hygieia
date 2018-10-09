@@ -80,7 +80,7 @@ public class HygieiaBuildPublishStep extends AbstractStepImpl {
 		// This run MUST return a non-Void object, otherwise it will be executed
 		// three times!!!! No idea why
 		@Override
-		protected List<Integer> run() throws Exception {
+		protected List<Integer> run() {
 
 			// default to global config values if not set in step, but allow
 			// step to override all global settings
@@ -92,7 +92,7 @@ public class HygieiaBuildPublishStep extends AbstractStepImpl {
 				listener.error(ne.toString());
 				return null;
 			}
-			HygieiaPublisher.DescriptorImpl hygieiaDesc = (HygieiaPublisher.DescriptorImpl) jenkins
+			HygieiaPublisher.DescriptorImpl hygieiaDesc = jenkins
 					.getDescriptorByType(HygieiaPublisher.DescriptorImpl.class);
 			List<String> hygieiaAPIUrls = Arrays.asList(hygieiaDesc.getHygieiaAPIUrl().split(";"));
 			List<Integer> responseCodes = new ArrayList<>();
