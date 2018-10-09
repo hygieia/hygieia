@@ -1,0 +1,421 @@
+[
+  {
+    "id": "5ba155820be2d339d2f24627",
+    "_class": "com.capitalone.dashboard.model.Dashboard",
+    "template": "widgets",
+    "title": "TestPlugin",
+    "widgets": [
+      {
+        "id": "5ba16a200be2d349ddf7fc82",
+        "name": "repo",
+        "componentId": "5ba155820be2d339d2f24626",
+        "options": {
+          "password": "",
+          "id": "repo0",
+          "personalAccessToken": "",
+          "branch": "master",
+          "userID": "",
+          "url": "https://mygithub.com/myOrg/myRepo"
+        }
+      },
+      {
+        "id": "5ba16af70be2d34a77757045",
+        "name": "build",
+        "componentId": "5ba155820be2d339d2f24626",
+        "options": {
+          "buildDurationThreshold": 3,
+          "id": "build0",
+          "consecutiveFailureThreshold": 5
+        }
+      },
+      {
+        "id": "5ba16b060be2d34a77757048",
+        "name": "codeanalysis",
+        "componentId": "5ba155820be2d339d2f24626",
+        "options": {
+          "id": "codeanalysis0"
+        }
+      }
+    ],
+    "owners": [
+      {
+        "username": "topo",
+        "authType": "STANDARD"
+      }
+    ],
+    "type": "Team",
+    "application": {
+      "name": "Testing",
+      "components": [
+        {
+          "id": "5ba155820be2d339d2f24626",
+          "_class": "com.capitalone.dashboard.model.Component",
+          "name": "Testing",
+          "collectorItems": {
+            "SCM": [
+              {
+                "id": "5ba16a200be2d349ddf7fc80",
+                "enabled": true,
+                "errors": [],
+                "pushed": false,
+                "collectorId": "5ba16a0b0be2d34a64291205",
+                "lastUpdated": 0,
+                "options": {
+                  "password": "",
+                  "personalAccessToken": "",
+                  "branch": "master",
+                  "userID": "",
+                  "url": "https://mygithub.com/myOrg/myRepo"
+                }
+              }
+            ],
+            "Build": [
+              {
+                "id": "5ba136220be2d32568777fa5",
+                "description": "job/c1usercheck/",
+                "niceName": "TopoJenkins",
+                "enabled": false,
+                "errors": [],
+                "pushed": true,
+                "collectorId": "5ba136220be2d32568777fa4",
+                "lastUpdated": 1537305331713,
+                "options": {
+                  "jobName": "job/c1usercheck/",
+                  "jobUrl": "http://localhost:8082/job/c1usercheck/",
+                  "instanceUrl": "http://localhost:8082/"
+                }
+              }
+            ],
+            "CodeQuality": [
+              {
+                "id": "5ba136290be2d32568777fa9",
+                "description": "C1 Custom Env Var Inject",
+                "niceName": "TopoJenkins",
+                "enabled": false,
+                "errors": [],
+                "pushed": true,
+                "collectorId": "5ba136290be2d32568777fa8",
+                "lastUpdated": 1537305335290,
+                "options": {
+                  "projectName": "C1 Custom Env Var Inject",
+                  "projectId": "AWUfseU7tTiUsfWMVoi8",
+                  "instanceUrl": "http://localhost:9000"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "validServiceName": false,
+    "validAppName": false,
+    "remoteCreated": false,
+    "scoreEnabled": false,
+    "scoreDisplay": "HEADER",
+    "activeWidgets": [
+      "build",
+      "codeanalysis",
+      "repo"
+    ]
+  },
+  {
+    "id": "5ba294100be2d38449720549",
+    "_class": "com.capitalone.dashboard.model.Dashboard",
+    "template": "widgets",
+    "title": "Test212",
+    "widgets": [
+      {
+        "id": "5ba294340be2d3844972054d",
+        "name": "repo",
+        "componentId": "5ba294100be2d38449720548",
+        "options": {
+          "password": "",
+          "id": "repo0",
+          "personalAccessToken": "",
+          "branch": "master",
+          "userID": "",
+          "url": "https://mygithub.com/myOrg/myRepo"
+        }
+      },
+      {
+        "id": "5ba520c40be2d3f98f795055",
+        "name": "build",
+        "componentId": "5ba294100be2d38449720548",
+        "options": {
+          "buildDurationThreshold": 3,
+          "id": "build0",
+          "consecutiveFailureThreshold": 5
+        }
+      },
+      {
+        "id": "5ba520c80be2d3f98f795058",
+        "name": "codeanalysis",
+        "componentId": "5ba294100be2d38449720548",
+        "options": {
+          "id": "codeanalysis0"
+        }
+      }
+    ],
+    "owners": [
+      {
+        "username": "topo1234",
+        "authType": "STANDARD"
+      }
+    ],
+    "type": "Team",
+    "application": {
+      "name": "Test212",
+      "components": [
+        {
+          "id": "5ba294100be2d38449720548",
+          "_class": "com.capitalone.dashboard.model.Component",
+          "name": "Test212",
+          "collectorItems": {
+            "SCM": [
+              {
+                "id": "5ba16a200be2d349ddf7fc80",
+                "enabled": true,
+                "errors": [],
+                "pushed": false,
+                "collectorId": "5ba16a0b0be2d34a64291205",
+                "lastUpdated": 1537305133267,
+                "options": {
+                  "password": "",
+                  "personalAccessToken": "",
+                  "branch": "master",
+                  "userID": "",
+                  "url": "https://mygithub.com/myOrg/myRepo"
+                }
+              }
+            ],
+            "Build": [
+              {
+                "id": "5ba136220be2d32568777fa5",
+                "description": "job/c1usercheck/",
+                "niceName": "TopoJenkins",
+                "enabled": false,
+                "errors": [],
+                "pushed": true,
+                "collectorId": "5ba136220be2d32568777fa4",
+                "lastUpdated": 1537548484342,
+                "options": {
+                  "jobName": "job/c1usercheck/",
+                  "jobUrl": "http://localhost:8082/job/c1usercheck/",
+                  "instanceUrl": "http://localhost:8082/"
+                }
+              }
+            ],
+            "CodeQuality": [
+              {
+                "id": "5ba136290be2d32568777fa9",
+                "description": "C1 Custom Env Var Inject",
+                "niceName": "TopoJenkins",
+                "enabled": false,
+                "errors": [],
+                "pushed": true,
+                "collectorId": "5ba136290be2d32568777fa8",
+                "lastUpdated": 1537548487364,
+                "options": {
+                  "projectName": "C1 Custom Env Var Inject",
+                  "projectId": "AWUfseU7tTiUsfWMVoi8",
+                  "instanceUrl": "http://localhost:9000"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "validServiceName": false,
+    "validAppName": false,
+    "remoteCreated": false,
+    "scoreEnabled": false,
+    "scoreDisplay": "HEADER",
+    "activeWidgets": [
+      "codeanalysis",
+      "build",
+      "repo"
+    ]
+  },
+  {
+    "id": "5ba3a22c0be2d3844972056b",
+    "_class": "com.capitalone.dashboard.model.Dashboard",
+    "template": "widgets",
+    "title": "WidgetTest",
+    "widgets": [
+      {
+        "id": "5ba3a2470be2d3844972056e",
+        "name": "build",
+        "componentId": "5ba3a22c0be2d3844972056a",
+        "options": {
+          "buildDurationThreshold": 3,
+          "id": "build0",
+          "consecutiveFailureThreshold": 5
+        }
+      },
+      {
+        "id": "5ba3a2550be2d38449720570",
+        "name": "codeanalysis",
+        "componentId": "5ba3a22c0be2d3844972056a",
+        "options": {
+          "testJobNames": [],
+          "id": "codeanalysis0"
+        }
+      },
+      {
+        "id": "5ba3ebc50be2d38449720576",
+        "name": "repo",
+        "componentId": "5ba3a22c0be2d3844972056a",
+        "options": {}
+      }
+    ],
+    "owners": [
+      {
+        "username": "topo1234",
+        "authType": "STANDARD"
+      }
+    ],
+    "type": "Team",
+    "application": {
+      "name": "WidgetTest",
+      "components": [
+        {
+          "id": "5ba3a22c0be2d3844972056a",
+          "_class": "com.capitalone.dashboard.model.Component",
+          "name": "WidgetTest",
+          "collectorItems": {
+            "Build": [
+              {
+                "id": "5ba136220be2d32568777fa5",
+                "description": "job/c1usercheck/",
+                "niceName": "TopoJenkins",
+                "enabled": true,
+                "errors": [],
+                "pushed": true,
+                "collectorId": "5ba136220be2d32568777fa4",
+                "lastUpdated": 1537390365366,
+                "options": {
+                  "jobName": "job/c1usercheck/",
+                  "jobUrl": "http://localhost:8082/job/c1usercheck/",
+                  "instanceUrl": "http://localhost:8082/"
+                }
+              }
+            ],
+            "CodeQuality": [
+              {
+                "id": "5ba136290be2d32568777fa9",
+                "description": "C1 Custom Env Var Inject",
+                "niceName": "TopoJenkins",
+                "enabled": true,
+                "errors": [],
+                "pushed": true,
+                "collectorId": "5ba136290be2d32568777fa8",
+                "lastUpdated": 1537389859355,
+                "options": {
+                  "projectName": "C1 Custom Env Var Inject",
+                  "projectId": "AWUfseU7tTiUsfWMVoi8",
+                  "instanceUrl": "http://localhost:9000"
+                }
+              }
+            ],
+            "SCM": [
+              {
+                "id": "5ba16a200be2d349ddf7fc80",
+                "enabled": true,
+                "errors": [],
+                "pushed": false,
+                "collectorId": "5ba16a0b0be2d34a64291205",
+                "lastUpdated": 1537305133267,
+                "options": {
+                  "password": "",
+                  "personalAccessToken": "",
+                  "branch": "master",
+                  "userID": "",
+                  "url": "https://mygithub.com/myOrg/myRepo"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "validServiceName": false,
+    "validAppName": false,
+    "remoteCreated": false,
+    "scoreEnabled": false,
+    "scoreDisplay": "HEADER",
+    "activeWidgets": [
+      "build",
+      "performance",
+      "repo",
+      "codeanalysis"
+    ]
+  },
+  {
+  "id" : "5baa458b0be2d337e3885815",
+  "_class" : "com.capitalone.dashboard.model.Dashboard",
+  "template" : "widgets",
+  "title" : "TestSubject",
+  "widgets" : [
+    {
+      "id" : "5baa459c0be2d337e3885819",
+      "name" : "repo",
+      "componentId" : "5baa458b0be2d337e3885814",
+      "options" : {
+        "password" : "",
+        "id" : "repo0",
+        "personalAccessToken" : "",
+        "branch" : "master",
+        "userID" : "",
+        "url" : "https://mygithub.com/myOrg/myRepo"
+      }
+    }
+  ],
+  "owners" : [
+    {
+      "username" : "topo1234",
+      "authType" : "STANDARD"
+    }
+  ],
+  "type" : "Team",
+  "application" : {
+    "name" : "TestSubject",
+    "components" : [
+      {
+        "id": "5baa458b0be2d337e3885814",
+        "_class": "com.capitalone.dashboard.model.Component",
+        "name": "TestSubject",
+        "collectorItems": {
+          "SCM": [
+            {
+              "id": "5ba16a200be2d349ddf7fc80",
+              "enabled": true,
+              "errors": [],
+              "pushed": false,
+              "collectorId": "5ba16a0b0be2d34a64291205",
+              "lastUpdated": 1537305133267,
+              "options": {
+                "password": "",
+                "personalAccessToken": "",
+                "branch": "master",
+                "userID": "",
+                "url": "https://mygithub.com/myOrg/myRepo"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "validServiceName" : false,
+  "validAppName" : false,
+  "remoteCreated" : false,
+  "scoreEnabled" : false,
+  "scoreDisplay" : "HEADER",
+  "activeWidgets" : [
+    "build",
+    "codeanalysis",
+    "repo"
+  ]
+}
+]
