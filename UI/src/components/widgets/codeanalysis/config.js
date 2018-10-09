@@ -64,7 +64,6 @@
 
             if(savedCodeQualityJob){
                 $scope.getJobsById(savedCodeQualityJob.id).then(getCodeQualityCollectorsCallback)
-            	//$scope.getCodeQualityCollectors(savedCodeQualityJob).then(getCodeQualityCollectorsCallback) ;
             }
         }
 
