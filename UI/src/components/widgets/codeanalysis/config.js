@@ -30,6 +30,12 @@
         	});
         };
 
+        $scope.getJobsById = function (id) {
+            return collectorData.getCollectorItemById(id).then(function (response){
+                return response;
+            });
+        }
+
         $scope.getSACollectors = function(filter){
             return collectorData.itemsByType('staticSecurityScan', {"search": filter, "size": 20}).then(function (response){
                 return response;
@@ -54,10 +60,11 @@
 
         function loadSavedCodeQualityJob(){
         	var codeQualityCollectorItems = component.collectorItems.CodeQuality,
-            savedCodeQualityJob = codeQualityCollectorItems ? codeQualityCollectorItems[0].description : null;
+            savedCodeQualityJob = codeQualityCollectorItems ? codeQualityCollectorItems[0] : null;
 
             if(savedCodeQualityJob){
-            	$scope.getCodeQualityCollectors(savedCodeQualityJob).then(getCodeQualityCollectorsCallback) ;
+                $scope.getJobsById(savedCodeQualityJob.id).then(getCodeQualityCollectorsCallback)
+            	//$scope.getCodeQualityCollectors(savedCodeQualityJob).then(getCodeQualityCollectorsCallback) ;
             }
         }
 
@@ -66,6 +73,7 @@
                 savedSAJob = saCollectorItems ? saCollectorItems[0].description : null;
 
             if(savedSAJob){
+
                 $scope.getSACollectors(savedSAJob).then(getSACollectorsCallback) ;
             }
         }
@@ -89,7 +97,7 @@
         }
 
         function getCodeQualityCollectorsCallback(data) {
-            ctrl.caCollectorItem = data[0];
+            ctrl.caCollectorItem = data;
         }
 
         function processSaResponse(data) {
