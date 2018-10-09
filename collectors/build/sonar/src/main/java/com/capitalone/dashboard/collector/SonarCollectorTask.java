@@ -98,7 +98,6 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
                 String instanceUrl = collector.getSonarServers().get(i);
                 Double version = collector.getSonarVersions().get(i);
                 String metrics = collector.getSonarMetrics().get(i);
-               // String niceName = collector.getNiceNames()!=null?collector.getNiceNames().get(i):null;
 
                 logBanner(instanceUrl);
                 SonarClient sonarClient = sonarClientSelector.getSonarClient(version);
