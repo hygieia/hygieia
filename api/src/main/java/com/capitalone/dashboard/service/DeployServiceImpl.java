@@ -263,7 +263,7 @@ public class DeployServiceImpl implements DeployService {
         deploy.setComponentID(request.getArtifactGroup());
         deploy.setComponentName(request.getArtifactName());
         deploy.setComponentVersion(request.getArtifactVersion());
-        deploy.setCollectorItemId(new ObjectId("56d8b6967fab7c452af804cb"));
+        deploy.setCollectorItemId(collectorItem.getId());
         deploy.setEnvironmentName(request.getEnvName());
         deploy.setEnvironmentUrl(request.getInstanceUrl());
         deploy.setJobUrl(request.getJobUrl());
