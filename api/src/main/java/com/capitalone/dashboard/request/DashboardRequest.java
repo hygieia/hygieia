@@ -1,9 +1,5 @@
 package com.capitalone.dashboard.request;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
 import com.capitalone.dashboard.auth.AuthenticationUtil;
 import com.capitalone.dashboard.model.Application;
 import com.capitalone.dashboard.model.Component;
@@ -12,11 +8,14 @@ import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.ScoreDisplayType;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 public class DashboardRequest {
     @NotNull
-    @Size(min=1, message="Please select a template")
+    @Size(min = 1, message = "Please select a template")
     private String template;
 
     @Valid
@@ -39,7 +38,7 @@ public class DashboardRequest {
     private String scoreDisplay;
 
     @NotNull
-    @Size(min=1, message="Please select a type")
+    @Size(min = 1, message = "Please select a type")
     private String type;
 
     private List<String> activeWidgets;
@@ -52,19 +51,19 @@ public class DashboardRequest {
         this.template = template;
     }
 
-	public DashboardRequestTitle getDashboardRequestTitle() {
-		return dashboardRequestTitle;
-	}
+    public DashboardRequestTitle getDashboardRequestTitle() {
+        return dashboardRequestTitle;
+    }
 
-	public void setDashboardRequestTitle(DashboardRequestTitle dashboardRequestTitle) {
-		this.dashboardRequestTitle = dashboardRequestTitle;
-	}
+    public void setDashboardRequestTitle(DashboardRequestTitle dashboardRequestTitle) {
+        this.dashboardRequestTitle = dashboardRequestTitle;
+    }
 
-	public void setTitle(String title) {
-		DashboardRequestTitle dashboardRequestTitle = new DashboardRequestTitle();
-		dashboardRequestTitle.setTitle(title);
-		this.dashboardRequestTitle = dashboardRequestTitle;
-	}
+    public void setTitle(String title) {
+        DashboardRequestTitle dashboardRequestTitle = new DashboardRequestTitle();
+        dashboardRequestTitle.setTitle(title);
+        this.dashboardRequestTitle = dashboardRequestTitle;
+    }
 
     public String getApplicationName() {
         return applicationName;
@@ -82,9 +81,13 @@ public class DashboardRequest {
         this.componentName = componentName;
     }
 
-    public String getType() { return type; }
+    public String getType() {
+        return type;
+    }
 
-    public void setType(String type) { this.type = type; }
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public String getConfigurationItemBusServName() {
         return configurationItemBusServName;
@@ -131,19 +134,17 @@ public class DashboardRequest {
         Application application = new Application(applicationName, new Component(componentName));
         Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
         return new Dashboard(
-          template,
-          dashboardRequestTitle.getTitle(),
-          application,
-          owner,
-          type ,
-          configurationItemBusServName,
-          configurationItemBusAppName,
-          activeWidgets,
-          scoreEnabled,
-          ScoreDisplayType.fromString(scoreDisplay)
+                template,
+                dashboardRequestTitle.getTitle(),
+                application,
+                owner,
+                type,
+                configurationItemBusServName,
+                configurationItemBusAppName,
+                activeWidgets,
+                scoreEnabled,
+                ScoreDisplayType.fromString(scoreDisplay)
         );
-
-
     }
 
     public Dashboard copyTo(Dashboard dashboard) {
