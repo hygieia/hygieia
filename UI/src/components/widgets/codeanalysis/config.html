@@ -11,7 +11,7 @@
 
 				<input type="text" name="caCollectorItem" class="form-control" placeholder="Search a Code Analysis Job"
 					ng-model="caWidget.caCollectorItem"
-					uib-typeahead="item as item.description for item in getCodeQualityCollectors($viewValue)" typeahead-focus
+					uib-typeahead="item as (item.niceName + ' : ' + item.description) for item in getCodeQualityCollectors($viewValue)" typeahead-focus
 					typeahead-template-url="sonarProjectUrlTemplate.html"
 					typeahead-wait-ms="250" autocomplete="off"
 					typeahead-min-length="0"
