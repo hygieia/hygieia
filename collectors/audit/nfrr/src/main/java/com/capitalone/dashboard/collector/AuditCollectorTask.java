@@ -3,7 +3,11 @@ import com.capitalone.dashboard.model.Audit;
 import com.capitalone.dashboard.model.AuditResult;
 import com.capitalone.dashboard.model.AuditType;
 import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.repository.*;
+import com.capitalone.dashboard.repository.DashboardRepository;
+import com.capitalone.dashboard.repository.AuditResultRepository;
+import com.capitalone.dashboard.repository.AuditCollectorRepository;
+import com.capitalone.dashboard.repository.CmdbRepository;
+import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +69,7 @@ public class AuditCollectorTask extends CollectorTask<AuditCollector> {
                 AuditCollectorUtil.clearAuditResultRepo(auditResultRepository);
                 auditResultRepository.save(auditResults);
                 AuditCollectorUtil.clearAuditResults();
+                LOGGER.info("NFRR Audit Collector executed successfully");
             } catch (Exception e) {
                 LOGGER.error("Error while saving audit status data to database", e.getMessage());
                 throw new RuntimeException(e.getCause());
@@ -79,15 +84,18 @@ public class AuditCollectorTask extends CollectorTask<AuditCollector> {
      */
     private List<AuditResult> getAuditResults(Iterable<Dashboard> dashboards) {
 
-        long currentTimeStamp = Instant.now().toEpochMilli();
-        LOGGER.info("NFRR Audit Collector audits the dashboards");
+        int numberOfAuditDays = settings.getDays();
+        long auditBeginDateTimeStamp = Instant.now().minus(Duration.ofDays(numberOfAuditDays)).toEpochMilli();
+        long auditEndDateTimeStamp = Instant.now().toEpochMilli();
+        LOGGER.info("NFRR Audit Collector audits with begin,end timestamps as " + auditBeginDateTimeStamp + "," + auditEndDateTimeStamp);
+
         dashboards.forEach((Dashboard dashboard) -> {
             try {
                 Map<AuditType, Audit> auditMap = AuditCollectorUtil.getAudit(dashboard, settings,
-                        Instant.now().minus(Duration.ofDays(30)).toEpochMilli(), currentTimeStamp);
+                        auditBeginDateTimeStamp, auditEndDateTimeStamp);
 
-                LOGGER.info("NFRR Audit Collector adding audit results by audit type ");
-                AuditCollectorUtil.addAuditResultByAuditType(dashboard, auditMap, cmdbRepository, currentTimeStamp);
+                LOGGER.info("NFRR Audit Collector adding audit results for the dashboard : " + dashboard.getTitle());
+                AuditCollectorUtil.addAuditResultByAuditType(dashboard, auditMap, cmdbRepository, auditEndDateTimeStamp);
             }
             catch(HttpClientErrorException hce){
                 LOGGER.error("Http Error while calling audit api service for the dashboard - " + dashboard.getTitle());

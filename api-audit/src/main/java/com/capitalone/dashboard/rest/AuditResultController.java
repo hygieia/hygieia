@@ -24,21 +24,21 @@ public class AuditResultController {
         this.auditResultService = auditResultService;
     }
 
-    @RequestMapping(value = "/auditresult/last30days", method=GET,produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Iterable<AuditResult>> all(){
-        Iterable<AuditResult> auditResults = auditResultService.all();
+    @RequestMapping(value = "/auditresult/dashboard/all", method=GET,produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Iterable<AuditResult>> getAuditResults(){
+        Iterable<AuditResult> auditResults = auditResultService.getAuditResults();
         return ResponseEntity.ok().body(auditResults);
     }
 
-    @RequestMapping(value = "/auditresult", method = GET,produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Iterable<AuditResult>> getAuditResults(@Valid String dashboardTitle) {
-        Iterable<AuditResult> auditResults = auditResultService.findByDashboardTitle(dashboardTitle);
+    @RequestMapping(value = "/auditresult/dashboard/{title}", method = GET,produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Iterable<AuditResult>> getAuditResultsByTitle(@Valid @PathVariable String title) {
+        Iterable<AuditResult> auditResults = auditResultService.getAuditResultsByTitle(title);
         return ResponseEntity.ok().body(auditResults);
     }
 
     @RequestMapping(value = "/auditresult/{id}", method = GET,produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<AuditResult> getAuditResult(@Valid @PathVariable ObjectId id) {
-        AuditResult auditResult = auditResultService.findById(id);
+        AuditResult auditResult = auditResultService.getAuditResult(id);
         return ResponseEntity.ok().body(auditResult);
     }
 }

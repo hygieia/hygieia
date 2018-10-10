@@ -19,18 +19,17 @@ public class AuditResultServiceImpl implements AuditResultService{
     }
 
     @Override
-    public AuditResult findById(ObjectId id){
+    public AuditResult getAuditResult(ObjectId id){
         return auditResultRepository.findById(id);
     }
 
     @Override
-    public Iterable<AuditResult> findByDashboardTitle(String dashboardTitle){
+    public Iterable<AuditResult> getAuditResultsByTitle(String dashboardTitle){
         return auditResultRepository.findByDashboardTitle(dashboardTitle);
     }
 
     @Override
-    public Iterable<AuditResult> all() {
-        Iterable<AuditResult> auditResults = auditResultRepository.findAll(new Sort(Sort.Direction.ASC, "title"));
-        return auditResults;
+    public Iterable<AuditResult> getAuditResults() {
+        return auditResultRepository.findAll(new Sort(Sort.Direction.ASC, "dashboardTitle"));
     }
 }

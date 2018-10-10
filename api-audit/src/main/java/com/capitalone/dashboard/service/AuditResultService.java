@@ -5,7 +5,7 @@ import org.bson.types.ObjectId;
 
 public interface AuditResultService {
 
-    AuditResult findById(ObjectId id);
-    Iterable<AuditResult> findByDashboardTitle(String dashboardTitle);
-    Iterable<AuditResult> all();
+    AuditResult getAuditResult(ObjectId id);
+    Iterable<AuditResult> getAuditResultsByTitle(String dashboardTitle);
+    Iterable<AuditResult> getAuditResults();
 }
