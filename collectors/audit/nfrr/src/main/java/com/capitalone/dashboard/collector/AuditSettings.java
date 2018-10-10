@@ -12,12 +12,21 @@ import java.util.List;
 public class AuditSettings {
 
     private String cron;
-    private boolean saveLog = false;
+    private boolean saveLog;
     private List<String> servers;
     private List<String> environments;
     private List<String> usernames;
     private List<String> apiKeys;
     private String dockerLocalHostIP; //null if not running in docker on http://localhost
+    private int days;
+
+    public int getDays() {
+        return days;
+    }
+
+    public void setDays(int days) {
+        this.days = days;
+    }
 
     public String getCron() {
         return cron;

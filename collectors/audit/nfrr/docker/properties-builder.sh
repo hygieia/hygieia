@@ -48,6 +48,9 @@ dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpassword}
 #Collector schedule (required)
 nfrr.cron=${NFRR_CRON:-0 0/59 * * * *}
 
+# Audit number of days - begin date
+nfrr.days=${NFRR_DAYS:-30}
+
 #nfrr server (required) - Can provide multiple
 #nfrr.servers[0]=http://nfrr.company.com
 #nfrr.environments[0]=[DEV,QA,INT,PERF,PROD]
@@ -67,16 +70,19 @@ do
 		server="NFRR_URL"
 		username="NFRR_USERNAME"
 		apiKey="NFRR_API_KEY"
+		days="NFRR_DAYS"
 	else
 		server="NFRR_URL$i"
 		username="NFRR_USERNAME$i"
 		apiKey="NFRR_API_KEY$i"
+		days="NFRR_DAYS$i"
 	fi
 	
 cat >> $PROP_FILE <<EOF
 nfrr.servers[${i}]=${!server}
 nfrr.usernames[${i}]=${!username}
 nfrr.apiKeys[${i}]=${!apiKey}
+nfrr.days[${i}]=${!days}
 
 EOF
 	

@@ -402,7 +402,7 @@ public class AuditCollectorUtil {
      * Make audit api rest call and parse response
      */
     protected static JSONObject parseObject(String url, AuditSettings settings) throws ParseException {
-        LOGGER.info("NFRR Audit Collector makes Audit API Call");
+        LOGGER.info("NFRR Audit Collector Audit API Call");
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, getHeaders(settings), String.class);
         JSONParser jsonParser = new JSONParser();
@@ -421,7 +421,7 @@ public class AuditCollectorUtil {
             throw new MBeanServerNotFoundException("No Server Found to run NoFearRelease audit collector");
         }
         return settings.getServers().get(0)
-                + HYGIEIA_AUDIT_URL.concat("auditType=CODE_REVIEW,CODE_QUALITY,STATIC_SECURITY_ANALYSIS,LIBRARY_POLICY"
+                + HYGIEIA_AUDIT_URL.concat("auditType=ALL"
                 .concat("&title=").concat(dashboard.getTitle() == null ? "" : dashboard.getTitle())
                 .concat("&businessService=").concat(dashboard.getConfigurationItemBusServName() == null ? "" : dashboard.getConfigurationItemBusServName())
                 .concat("&businessApplication=").concat(dashboard.getConfigurationItemBusAppName() == null ? "" : dashboard.getConfigurationItemBusAppName())
@@ -449,14 +449,14 @@ public class AuditCollectorUtil {
         Cmdb cmdb = cmdbRepository.findByConfigurationItem(dashboard.getConfigurationItemBusServName());
         ObjectId dashboardId = dashboard.getId();
         String dashboardTitle = dashboard.getTitle();
-        String ownerDept = (cmdb.getOwnerDept() == null ? "" : cmdb.getOwnerDept());
+        String ownerDept = ((cmdb == null || cmdb.getOwnerDept() == null) ? "" : cmdb.getOwnerDept());
         String appService = (dashboard.getConfigurationItemBusServName() == null ? "" : dashboard.getConfigurationItemBusServName());
         String appBusApp = (dashboard.getConfigurationItemBusAppName() == null ? "" : dashboard.getConfigurationItemBusAppName());
-        String appServiceOwner = (cmdb.getAppServiceOwner() == null ? "" : cmdb.getAppServiceOwner());
-        String appBusAppOwner = (cmdb.getBusinessOwner() == null ? "" : cmdb.getBusinessOwner());
+        String appServiceOwner = ((cmdb == null || cmdb.getAppServiceOwner() == null) ? "" : cmdb.getAppServiceOwner());
+        String appBusAppOwner = ((cmdb == null || cmdb.getBusinessOwner() == null) ? "" : cmdb.getBusinessOwner());
 
         Arrays.stream(AuditType.values()).forEach((AuditType auditType) -> {
-            if (!(auditType.equals(AuditType.ALL) || auditType.equals(AuditType.BUILD_REVIEW) || cmdb == null)) {
+            if (!(auditType.equals(AuditType.ALL) || auditType.equals(AuditType.BUILD_REVIEW))) {
                 Audit audit = auditMap.get(auditType);
                 AuditResult auditResult = new AuditResult(dashboardId, dashboardTitle, ownerDept, appService, appBusApp, appServiceOwner, appBusAppOwner,
                         auditType.name(), audit.getDataStatus().name(), audit.getAuditStatus().name(), String.join(",", audit.getAuditStatusCodes()),
@@ -485,7 +485,6 @@ public class AuditCollectorUtil {
      * Clear audit results collection
      */
     public static void clearAuditResults() {
-        LOGGER.info("NFRR Audit Collector clears last collected audit results from collection");
         auditResults.clear();
     }
 }

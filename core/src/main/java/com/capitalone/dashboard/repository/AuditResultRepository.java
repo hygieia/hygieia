@@ -8,5 +8,4 @@ public interface AuditResultRepository extends PagingAndSortingRepository<AuditR
 
     AuditResult findById(ObjectId id);
     Iterable<AuditResult> findByDashboardTitle(String dashboardTitle);
-
 }
