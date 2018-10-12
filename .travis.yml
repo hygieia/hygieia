@@ -1,33 +1,38 @@
 language: java
 jdk:
-- oraclejdk8
+  - oraclejdk8
 
-install: true
+branches:
+  only:
+    - master
+    - gerrit-integration
+    - "/^v[0-9]+\\.[0-9]+\\.[0-9]+.*$/"
 
 cache:
   directories:
-    - $HOME/.m2
-    - $HOME/UI/node_modules
+    - "$HOME/.m2"
+    - "$TRAVIS_BUILD_DIR/UI/node_modules"
 
 before_install:
-# stop unused services and check memory
- - "sudo service --status-all"
- - "sudo free -m -t"
- - "sudo /etc/init.d/mysql stop"
- - "sudo /etc/init.d/postgresql stop"
- - "#sudo /etc/init.d/couchdb stop"
- - "sudo /etc/init.d/redis-server stop"
- - "sudo chown -R $USER:$GROUP $HOME"
+  - openssl aes-256-cbc -K $encrypted_229149f15c3f_key -iv $encrypted_229149f15c3f_iv
+    -in travis-utilities/keys.gpg.enc -out keys.gpg -d
 
-script: mvn clean install -q
+install: true
+
+before_script:
+  - sudo chown -R $USER:$GROUP $TRAVIS_BUILD_DIR
+
+script:
+  - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then mvn clean install -q; fi
+  - if [ "$TRAVIS_PULL_REQUEST" = "false" ] && [ "$TRAVIS_BRANCH" = "master" ]; then cp ./travis-utilities/deploy-snapshot.sh . && ./deploy-snapshot.sh; fi
+  - if [ "$TRAVIS_PULL_REQUEST" = "false" ] && [[ "$TRAVIS_BRANCH" =~ ^v[0-9]+\.[0-9]+\.[0-9]+.*$ ]]; then cp ./travis-utilities/release.sh . && ./release.sh; fi
 
 notifications:
   webhooks:
-    urls:
-      https://webhooks.gitter.im/e/48597b0f75dd571734bc
-    on_success: always  # options: [always|never|change] default: always
-    on_failure: always  # options: [always|never|change] default: always
-    on_start: always   # options: [always|never|change] default: always
+    urls: https://webhooks.gitter.im/e/48597b0f75dd571734bc
+    on_success: always
+    on_failure: always
+    on_start: always
   email:
     recipients:
       - tapabrata.pal@capitalone.com
@@ -37,17 +42,12 @@ notifications:
       - Matthew.Beasley@capitalone.com
       - Subodh.Battina@capitalone.com
       - Ragha.Vema@capitalone.com
-    on_success: always #[always|never|change] # default: change
-    on_failure: always # [always|never|change] # default: always
+    on_success: always
+    on_failure: always
 
 after_failure:
-# check memory and show kernel messages
- - "sudo free -m -t"
- - "sudo dmesg"
+  - sudo free -m -t
+  - sudo dmesg
 
 after_success:
   - codecov
-branches:
-  only:
-  - master
-  - gerrit-integration
