@@ -13,10 +13,6 @@ cache:
     - "$HOME/.m2"
     - "$TRAVIS_BUILD_DIR/UI/node_modules"
 
-before_install:
-  - openssl aes-256-cbc -K $encrypted_229149f15c3f_key -iv $encrypted_229149f15c3f_iv
-    -in travis-utilities/keys.gpg.enc -out keys.gpg -d
-
 install: true
 
 before_script:
