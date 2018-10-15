@@ -26,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
+import org.springframework.web.client.ResourceAccessException;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -59,8 +60,15 @@ import java.util.stream.IntStream;
 public class DefaultHudsonClient implements HudsonClient {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultHudsonClient.class);
 
+    // Sleep time in between socket read errors, milliseconds
+    // Suggest keeping this below 10-15 seconds lest there be potential
+    // for harmful interaction with client instance scheduling.
+    private static final int RETRY_SLEEP_TIME_MS = 5000;
+
     private final RestOperations rest;
     private final HudsonSettings settings;
+
+    private int maxSocketRetries;
 
     private static final String API_SUFFIX = "api/json?tree=";
     //private static final String JOB_QUERY = "jobs[name,url,builds[number,url],lastSuccessfulBuild[timestamp,builtOn],lastBuild[timestamp,builtOn]]";
@@ -102,9 +110,11 @@ public class DefaultHudsonClient implements HudsonClient {
     public DefaultHudsonClient(Supplier<RestOperations> restOperationsSupplier, HudsonSettings settings) {
         this.rest = restOperationsSupplier.get();
         this.settings = settings;
+        this.maxSocketRetries = settings.getSocketRetries();
     }
 
     @Override
+    @SuppressWarnings("PMD.ExcessiveMethodLength")
     public Map<HudsonJob, Map<jobData, Set<BaseModel>>> getInstanceJobs(String instanceUrl) {
         LOG.debug("Enter getInstanceJobs");
         //Map<HudsonJob, Set<Build>> result = new LinkedHashMap<>();
@@ -121,13 +131,27 @@ public class DefaultHudsonClient implements HudsonClient {
         while (i < jobsCount) {
         	LOG.info("Fetching jobs " + i + "/" + jobsCount + " pageSize " + settings.getPageSize() + "...");
         	
+
+        int readTry = 0;
+
+        // (>)  n tries,  (<=)  n+1 tries
+        while (maxSocketRetries >= readTry++) {
+            String url = null;
+
 	        try {
-                String url = joinURL(instanceUrl, new String[]{API_SUFFIX + buildJobQueryString() + URLEncoder.encode("{" + i + "," + (i + pageSize) + "}", "UTF-8")});
+                url = joinURL(instanceUrl, JOBS_URL_SUFFIX);
+         // TODO:  My logic does NOT deal with any 'pageSize' logic
+         //     String url = joinURL(instanceUrl, new String[]{API_SUFFIX + buildJobQueryString() + URLEncoder.encode("{" + i + "," + (i + pageSize) + "}", "UTF-8")});
+
+                LOG.info("Jenkins JSON request " + readTry +
+                         " at URL:  " + url);
 	            ResponseEntity<String> responseEntity = makeRestCall(url);
 	            if (responseEntity == null) {
 	            	break;
 	            }
 	            String returnJSON = responseEntity.getBody();
+                LOG.info("Jenkins JSON response " + readTry +
+                         ":  " + returnJSON);
 	            if (StringUtils.isEmpty(returnJSON)) {
 	            	break;	            	
 	            }
@@ -154,6 +178,35 @@ public class DefaultHudsonClient implements HudsonClient {
 	            } catch (ParseException e) {
 	                LOG.error("Parsing jobs details on instance: " + instanceUrl, e);
 	            }
+
+                // Action complete without error so carry on
+                break;
+
+            } catch (ResourceAccessException rae) {
+                //
+                // MUST catch this BEFORE 'catch RestClientException'
+                // because that handler apparently also implies
+                // 'catch ResourceAccessException' handling also.
+                // Otherwise, you get the error message, "exception
+                // org.springframework.web.client
+                // .ResourceAccessException has already been caught"
+                //
+                LOG.error("Connection or read timeout " + readTry +
+                          ".  Max retries:  " + maxSocketRetries +
+                          " on resource URL " + url);
+
+                // Sleep, then try again until retries exceeded
+                try {
+                    Thread.sleep(RETRY_SLEEP_TIME_MS);
+                } catch(InterruptedException tse) {
+                    LOG.error(
+         "Read timeout sleep interrupted.  Repeating retry " + readTry);
+                    readTry--;
+                }
+
+                // Go back and retry this block
+                continue;
+
 	        } catch (RestClientException rce) {
 	            LOG.error("client exception loading jobs details", rce);
 	            throw rce;
@@ -162,6 +215,7 @@ public class DefaultHudsonClient implements HudsonClient {
 			} catch (URISyntaxException e1) {
 			    LOG.error("wrong syntax url for loading jobs details", e1);
             }
+        }
 	        
 	        i += pageSize;
         }

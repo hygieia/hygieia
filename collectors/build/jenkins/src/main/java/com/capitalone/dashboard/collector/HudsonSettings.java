@@ -1,5 +1,7 @@
 package com.capitalone.dashboard.collector;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -12,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "jenkins")
 public class HudsonSettings {
-
+    private static final Logger LOG = LoggerFactory.getLogger(HudsonSettings.class);
 	
     private String cron;
     private boolean saveLog = false;
@@ -26,6 +28,9 @@ public class HudsonSettings {
     private int pageSize;
     @Value("${folderDepth:10}")
     private int folderDepth;
+
+    // Provide default value for injected fields
+    private Integer socketRetries = 3;
 
     public String getCron() {
         return cron;
@@ -98,6 +103,16 @@ public class HudsonSettings {
     		localHostOverride = dockerLocalHostIP;
     	}
         return localHostOverride;
+    }
+
+    public Integer getSocketRetries() {
+        LOG.info("getSocketRetries:  " + socketRetries);
+        return socketRetries;
+    }
+
+    public void setSocketRetries(Integer socketRetries) {
+        LOG.info("setSocketRetries:  " + socketRetries);
+        this.socketRetries = socketRetries;
     }
     
     public void setPageSize(int pageSize) {

@@ -2,6 +2,8 @@ package com.capitalone.dashboard.collector;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.List;
 
@@ -11,12 +13,17 @@ import java.util.List;
 @Component
 @ConfigurationProperties(prefix = "udeploy")
 public class UDeploySettings {
+    private static final Log LOG = LogFactory.getLog(UDeploySettings.class);
+
     private String cron;
     private String token;
     private String username;
     private String password;
     private List<String> servers;
     private List<String> niceNames;
+
+    // Provide default value for injected fields
+    private Integer socketRetries = 3;
 
     public String getCron() {
         return cron;
@@ -64,5 +71,15 @@ public class UDeploySettings {
     
     public void setNiceNames(List<String> niceNames) {
     	this.niceNames = niceNames;
+    }
+
+    public Integer getSocketRetries() {
+LOG.error("getSocketRetries:  " + socketRetries);
+        return socketRetries;
+    }
+
+    public void setSocketRetries(Integer socketRetries) {
+LOG.error("setSocketRetries:  " + socketRetries);
+        this.socketRetries = socketRetries;
     }
 }

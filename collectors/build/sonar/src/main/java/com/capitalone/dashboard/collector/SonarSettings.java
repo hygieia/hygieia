@@ -2,6 +2,8 @@ package com.capitalone.dashboard.collector;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.List;
 
@@ -11,6 +13,8 @@ import java.util.List;
 @Component
 @ConfigurationProperties(prefix = "sonar")
 public class SonarSettings {
+    private static final Log LOG = LogFactory.getLog(SonarSettings.class);
+
     private String cron;
     private String username;
     private String password;
@@ -18,6 +22,9 @@ public class SonarSettings {
     private List<Double> versions;
     private List<String> metrics;
     private List<String> niceNames;
+
+    // Provide default value for injected fields
+    private Integer socketRetries = 3;
 
     public String getCron() {
         return cron;
@@ -57,6 +64,16 @@ public class SonarSettings {
 
     public void setServers(List<String> servers) {
         this.servers = servers;
+    }
+
+    public Integer getSocketRetries() {
+        LOG.info("getSocketRetries:  " + socketRetries);
+        return socketRetries;
+    }
+
+    public void setSocketRetries(Integer socketRetries) {
+        LOG.info("setSocketRetries:  " + socketRetries);
+        this.socketRetries = socketRetries;
     }
 
     public List<Double> getVersions() {

@@ -107,13 +107,24 @@ public class GitlabGitCollectorTask  extends CollectorTask<Collector> {
         clean(collector);
         for (GitlabGitRepo repo : enabledRepos(collector)) {
 			boolean firstRun = false;
+
+			// Start at 0, keep at 0 until getCommits() returns data
 			if (repo.getLastUpdated() == 0)
 				firstRun = true;
-			repo.setLastUpdated(System.currentTimeMillis());
+
+			long currentTime = System.currentTimeMillis();
 			repo.removeLastUpdateDate();
 			
 			try {
 				List<Commit> commits = defaultGitlabGitClient.getCommits(repo, firstRun);
+
+			    // Only report update time if repo connection was present
+			    if ( !commits.isEmpty() )
+			    {
+				    repo.setLastUpdated(currentTime);
+			    }
+			    gitlabGitCollectorRepository.save(repo);
+
 				commitCount = saveNewCommits(commitCount, repo, commits);
 				gitlabGitCollectorRepository.save(repo);
 			} catch (HttpClientErrorException | ResourceAccessException e) {

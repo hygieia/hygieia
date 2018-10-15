@@ -37,6 +37,9 @@ public class GitlabSettings {
 	private boolean selfSignedCertificate;
 	private int apiVersion;
 
+    // Provide default value for injected fields
+    private Integer socketRetries = 3;
+
     public String getCron() {
         return cron;
     }
@@ -103,6 +106,16 @@ public class GitlabSettings {
 
     public int getApiVersion() {
         return apiVersion;
+    }
+
+    public Integer getSocketRetries() {
+        LOG.debug("getSocketRetries:  " + socketRetries);
+        return socketRetries;
+    }
+
+    public void setSocketRetries(Integer socketRetries) {
+        LOG.debug("setSocketRetries:  " + socketRetries);
+        this.socketRetries = socketRetries;
     }
 
     public void setApiVersion(int apiVersion) {
