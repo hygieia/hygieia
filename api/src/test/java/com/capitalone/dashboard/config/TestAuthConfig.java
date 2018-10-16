@@ -276,5 +276,11 @@ public class TestAuthConfig {
         return Mockito.mock(TeamInventoryService.class);
     }
 
+    @Bean
+    public GenericCollectorItemService genericCollectorItemService() {return Mockito.mock(GenericCollectorItemService.class);}
+
+    @Bean
+    public CmdbRemoteService cmdbRemoteService() {return Mockito.mock(CmdbRemoteService.class);}
+
 }
 

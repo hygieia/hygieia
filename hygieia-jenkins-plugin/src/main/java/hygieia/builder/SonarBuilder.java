@@ -6,7 +6,7 @@ import com.capitalone.dashboard.model.CodeQualityType;
 import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import hudson.model.Run;
 import hudson.model.TaskListener;
-import hudson.util.IOUtils;
+import hygieia.utils.HygieiaUtils;
 import jenkins.plugins.hygieia.RestCall;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
@@ -16,18 +16,16 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.lang.InterruptedException;
 import java.lang.String;
 import java.lang.Thread;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static hygieia.utils.HygieiaUtils.getSafePositiveInteger;
@@ -38,22 +36,22 @@ public class SonarBuilder {
     /**
      * Pattern for Sonar project URL in logs
      */
-    public static final String URL_PATTERN_IN_LOGS = ".*" + Pattern.quote("ANALYSIS SUCCESSFUL, you can browse ") + "(.*)";
-    public static final String URL_PROCESSING_STATUS_FRAGMENT = ".*" + Pattern.quote("More about the report processing at ") + "(.*)";
+    private static final String URL_PATTERN_IN_LOGS = ".*" + Pattern.quote("ANALYSIS SUCCESSFUL, you can browse ") + "(.*)";
+    private static final String URL_PROCESSING_STATUS_FRAGMENT = ".*" + Pattern.quote("More about the report processing at ") + "(.*)";
 
-    public static final String URL_PROJECT_ID_FRAGMENT_PRE6_3 = "/api/projects/index?format=json&key=%s";
-    public static final String URL_PROJECT_ID_FRAGMENT_POST6_3 = "/api/components/search?qualifiers=TRK&q=%s";
+    private static final String URL_PROJECT_ID_FRAGMENT_PRE6_3 = "/api/projects/index?format=json&key=%s";
+    private static final String URL_PROJECT_ID_FRAGMENT_POST6_3 = "/api/components/search?qualifiers=TRK&q=%s";
 
 
-    public static final String URL_METRIC_FRAGMENT_PRE_6_3 = "/api/resources?format=json&resource=%s&metrics=%s&includealerts=true&includetrends=true";
-    public static final String URL_METRICS_FRAGMENT_POST6_3 = "/api/measures/component?componentId=%s&metricKeys=%s";
+    private static final String URL_METRIC_FRAGMENT_PRE_6_3 = "/api/resources?format=json&resource=%s&metrics=%s&includealerts=true&includetrends=true";
+    private static final String URL_METRICS_FRAGMENT_POST6_3 = "/api/measures/component?componentId=%s&metricKeys=%s";
     private static final String URL_PROJECT_ANALYSES = "/api/project_analyses/search?project=%s";
 
-    public static final String METRICS_PRE6_3 = "quality_gate_details,ncloc,violations,critical_violations,major_violations,blocker_violations," +
+    private static final String METRICS_PRE6_3 = "quality_gate_details,ncloc,violations,critical_violations,major_violations,blocker_violations," +
             "violations_density,tests,test_success_density,test_errors,test_failures,coverage,line_coverage,sqale_index,new_violations," +
             "new_blocker_violations,new_critical_violations,new_major_violations,new_coverage,new_lines_to_cover,new_line_coverage";
 
-    public static final String METRICS_POST6_3 = "alert_status,quality_gate_details,ncloc,new_vulnerabilities,violations,critical_violations,major_violations," +
+    private static final String METRICS_POST6_3 = "alert_status,quality_gate_details,ncloc,new_vulnerabilities,violations,critical_violations,major_violations," +
             "blocker_violations,tests,test_success_density,test_errors,test_failures,coverage,line_coverage,sqale_index,new_violations,new_blocker_violations," +
             "new_critical_violations,new_major_violations,new_coverage,new_lines_to_cover,new_line_coverage";
 
@@ -97,17 +95,16 @@ public class SonarBuilder {
 
     private Run<?, ?> run;
 
-    public static final int DEFAULT_QUERY_INTERVAL = 10;
-    public static final int DEFAULT_QUERY_MAX_ATTEMPTS = 30;
+    private static final int DEFAULT_QUERY_INTERVAL = 10;
+    private static final int DEFAULT_QUERY_MAX_ATTEMPTS = 30;
 
 
-    public SonarBuilder(Run<?, ?> run, TaskListener listener, String jenkinsName, String ceQueryIntervalInSeconds, String ceQueryMaxAttempts, String buildId, boolean useProxy) throws IOException, URISyntaxException, ParseException {
+    public SonarBuilder(Run<?, ?> run, TaskListener listener, String jenkinsName, String ceQueryIntervalInSeconds, String ceQueryMaxAttempts, String buildId, boolean useProxy)  {
         this.listener = listener;
         this.jenkinsName = jenkinsName;
         this.ceQueryIntervalInSeconds = getSafePositiveInteger(ceQueryIntervalInSeconds, DEFAULT_QUERY_INTERVAL);
         this.ceQueryMaxAttempts = getSafePositiveInteger(ceQueryMaxAttempts, DEFAULT_QUERY_MAX_ATTEMPTS);
-        this.buildId = buildId;
-        this.jenkinsName = jenkinsName;
+        this.buildId = HygieiaUtils.getBuildCollectionId(buildId);
         this.useProxy = useProxy;
         this.run = run;
     }
@@ -326,7 +323,7 @@ public class SonarBuilder {
             for (Object eventObj : (JSONArray) prjLatestData.get(EVENTS)) {
                 JSONObject eventJson = (JSONObject) eventObj;
 
-                if (str(eventJson, "category").equals("VERSION")) {
+                if (Objects.equals(str(eventJson, "category"), "VERSION")) {
                     codeQuality.setProjectVersion(str(eventJson, NAME));
                 }
             }
@@ -336,7 +333,7 @@ public class SonarBuilder {
 
                 CodeQualityMetric metric = new CodeQualityMetric(str(metricJson, METRIC));
                 metric.setValue(str(metricJson, VALUE));
-                if (metric.getName().equals("sqale_index")) {
+                if (Objects.equals(metric.getName(), "sqale_index")) {
                     metric.setFormattedValue(format(str(metricJson, VALUE)));
                 } else if (str(metricJson, VALUE).indexOf(".") > 0) {
                     metric.setFormattedValue(str(metricJson, VALUE) + "%");
@@ -361,7 +358,7 @@ public class SonarBuilder {
         if (status.equalsIgnoreCase(STATUS_WARN)) {
             return CodeQualityMetricStatus.Warning;
         }
-        if (status.equalsIgnoreCase(STATUS_WARN)) {
+        if (status.equalsIgnoreCase(STATUS_ALERT)) {
             return CodeQualityMetricStatus.Alert;
         }
         return CodeQualityMetricStatus.Ok;
@@ -372,7 +369,7 @@ public class SonarBuilder {
      * Read logs of the build to find URL of the project dashboard in Sonar
      */
     private String extractSonarProjectURLFromLogs(Run run) throws IOException {
-        return getSonarUrl(run.getLogReader(), URL_PATTERN_IN_LOGS);
+        return HygieiaUtils.getMatchFromLog(run, URL_PATTERN_IN_LOGS);
     }
 
 
@@ -382,26 +379,7 @@ public class SonarBuilder {
      * whihc needs to be polled regularly to determine status of the analysis. URL of CE API can be taken from logs
      */
     public String extractSonarProcessingStatusUrlFromLogs(Run run) throws IOException {
-        return getSonarUrl(run.getLogReader(), URL_PROCESSING_STATUS_FRAGMENT);
-    }
-
-    private String getSonarUrl(Reader reader, String pattern) throws IOException {
-        BufferedReader br = null;
-        String url = null;
-        try {
-            br = new BufferedReader(reader);
-            String strLine;
-            Pattern p = Pattern.compile(pattern);
-            while ((strLine = br.readLine()) != null) {
-                Matcher match = p.matcher(strLine);
-                if (match.matches()) {
-                    url = match.group(1);
-                }
-            }
-        } finally {
-            IOUtils.closeQuietly(br);
-        }
-        return url;
+        return HygieiaUtils.getMatchFromLog(run, URL_PROCESSING_STATUS_FRAGMENT);
     }
 
     private String getSonarProjectName(String url) throws URISyntaxException {
@@ -412,7 +390,7 @@ public class SonarBuilder {
         } else return "";
     }
 
-    private String getSonarProjectID(String project, double sonarVersion) throws IOException, URISyntaxException, ParseException {
+    private String getSonarProjectID(String project, double sonarVersion) throws ParseException {
         if (sonarVersion < 6.3) {
             return getSonarProjectID_PRE6_3(project);
         } else {
