@@ -63,19 +63,23 @@ The sample `application.properties` file lists parameters with sample values to 
 
 ```properties
 # Database Name
-spring.data.mongodb.dbname=dashboard
+dbname=dashboarddb
 
 # Database HostName - default is localhost
-spring.data.mongodb.host=10.0.1.1
+dbhost=localhost
 
 # Database Port - default is 27017
-spring.data.mongodb.port=9999
+dbport=27017
+
+# MongoDB replicaset
+dbreplicaset=[false if you are not using MongoDB replicaset]
+dbhostport=[host1:port1,host2:port2,host3:port3]
 
 # Database Username - default is blank
-spring.data.mongodb.username=db
+dbusername=dashboarduser
 
 # Database Password - default is blank
-spring.data.mongodb.password=dbpass
+dbpassword=dbpassword
 
 # Collector schedule (required)
 score.cron=0 0/5 * * * *
