@@ -70,7 +70,7 @@
                               ng-model="ctrl.configurationItemBusServ"
                               class="form-control"
                               placeholder="Select a Business Service (Optional)"
-                              uib-typeahead="configItem as configItem.configurationItem for configItem in ctrl.getConfigItem('app',$viewValue) "
+                              uib-typeahead="configItem as configItem.configurationItem + ' - (' + configItem.commonName + ')' for configItem in ctrl.getConfigItem('app',$viewValue) "
                               typeahead-wait-ms="250" autocomplete="off"
                               typeahead-focus
                               typeahead-min-length="0"
