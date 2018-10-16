@@ -27,7 +27,7 @@ public class CmdbServiceImpl implements CmdbService {
 
         Page<Cmdb> configItemString;
 
-        if(filter != null && !filter.isEmpty() && !itemType.equals("app")){
+        if(filter != null && !filter.isEmpty()){
 
             List<Cmdb> cmdbList = cmdbRepository.findAllByConfigurationItemContainingOrCommonNameContainingAllIgnoreCase(filter,filter);
 
