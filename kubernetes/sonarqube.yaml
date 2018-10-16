@@ -14,9 +14,9 @@ spec:
       containers:
       - env:
         - name: SONAR_PASSWORD
-          value: kde8*)idEEw2
+          value: <<password>>
         - name: SONAR_URL
-          value: https://alm-latam.accenture.com/fs-rec-brdsco-sonarqube
+          value: https://<<address>>
         - name: SONAR_USERNAME
           value: cambiosonar
         - name: SONAR_VERSION
