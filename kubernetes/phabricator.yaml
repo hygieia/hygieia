@@ -16,9 +16,9 @@ spec:
         - name: MONGO_PORT
           value: tcp://db:27017
         - name: PHABRICATOR_HOST
-          value: pb-dc.alm-latam.accenture.com
+          value: <<address>
         - name: PHABRICATOR_TOKEN
-          value: api-ddh64pznhpx2wqgjluhgm5cedbvv
+          value: <<token>>
         image: japm/hygieia-phabricator-scm-collector
         name: phabricator-collector
       restartPolicy: Always
