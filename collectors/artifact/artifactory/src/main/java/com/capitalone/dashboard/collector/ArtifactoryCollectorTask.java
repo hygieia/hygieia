@@ -164,15 +164,9 @@ public class ArtifactoryCollectorTask extends CollectorTask<ArtifactoryCollector
 
 		List<ArtifactoryRepo> stateChangeRepoList = new ArrayList<>();
 		for (ArtifactoryRepo repo : existingRepos) {
-			if ((repo.isEnabled() && (!collector.getId().equals(repo.getCollectorId())
-					|| !serversToBeCollected.contains(repo.getInstanceUrl())
-					|| !repoNamesToBeCollected.get(collector.getArtifactoryServers().indexOf(repo.getInstanceUrl())).contains(repo.getRepoName()))) ||  // if it was enabled but not to be collected
-					(!repo.isEnabled() && (collector.getId().equals(repo.getCollectorId())
-							&& serversToBeCollected.contains(repo.getInstanceUrl())
-							&& repoNamesToBeCollected.get(collector.getArtifactoryServers().indexOf(repo.getInstanceUrl())).contains(repo.getRepoName())))) { // OR it was disabled and now is to be collected
-				repo.setEnabled((collector.getId().equals(repo.getCollectorId())
-						&& serversToBeCollected.contains(repo.getInstanceUrl())
-						&& repoNamesToBeCollected.get(collector.getArtifactoryServers().indexOf(repo.getInstanceUrl())).contains(repo.getRepoName())));
+			if (isRepoEnabledAndNotCollected(collector, serversToBeCollected, repoNamesToBeCollected, repo) ||  // if it was enabled but not to be collected
+					isRepoDisabledAndToBeCollected(collector, serversToBeCollected, repoNamesToBeCollected, repo)) { // OR it was disabled and now is to be collected
+				repo.setEnabled(isRepoCollected(collector, serversToBeCollected, repoNamesToBeCollected, repo));
 				stateChangeRepoList.add(repo);
 			}
 		}
@@ -181,6 +175,21 @@ public class ArtifactoryCollectorTask extends CollectorTask<ArtifactoryCollector
 		}
 	}
 
+	private boolean isRepoCollected(ArtifactoryCollector collector, Set<String> serversToBeCollected, List<Set<String>> repoNamesToBeCollected, ArtifactoryRepo repo) {
+		return collector.getId().equals(repo.getCollectorId())
+				&& serversToBeCollected.contains(repo.getInstanceUrl())
+				&& repoNamesToBeCollected.get(collector.getArtifactoryServers().indexOf(repo.getInstanceUrl())).contains(repo.getRepoName());
+	}
+
+	private boolean isRepoDisabledAndToBeCollected(ArtifactoryCollector collector, Set<String> serversToBeCollected, List<Set<String>> repoNamesToBeCollected, ArtifactoryRepo repo) {
+		return !repo.isEnabled() && (isRepoCollected(collector, serversToBeCollected, repoNamesToBeCollected, repo));
+	}
+
+	private boolean isRepoEnabledAndNotCollected(ArtifactoryCollector collector, Set<String> serversToBeCollected, List<Set<String>> repoNamesToBeCollected, ArtifactoryRepo repo) {
+		return repo.isEnabled() && (!collector.getId().equals(repo.getCollectorId())
+				|| !serversToBeCollected.contains(repo.getInstanceUrl())
+				|| !repoNamesToBeCollected.get(collector.getArtifactoryServers().indexOf(repo.getInstanceUrl())).contains(repo.getRepoName()));
+	}
 
 
 	/**
@@ -280,6 +289,7 @@ public class ArtifactoryCollectorTask extends CollectorTask<ArtifactoryCollector
     private List<BinaryArtifact> nullSafe(List<BinaryArtifact> builds) {
         return builds == null ? new ArrayList<BinaryArtifact>() : builds;
     }
+
 
     private List<ArtifactoryRepo> enabledRepos(ArtifactoryCollector collector, String instanceUrl) {
 		return artifactoryRepoRepository.findEnabledArtifactoryRepos(collector.getId(), instanceUrl);
