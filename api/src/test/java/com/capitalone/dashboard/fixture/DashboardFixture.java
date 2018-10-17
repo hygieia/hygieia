@@ -38,6 +38,8 @@ package com.capitalone.dashboard.fixture;
 		 metaData.setTemplate(template);
 		 metaData.setTitle(title);
 		 metaData.setType(type);
+		 metaData.setBusinessApplication(configItemComponentName);
+		 metaData.setBusinessService(configItemAppName);
 		 request.setMetaData(metaData);
 
 
