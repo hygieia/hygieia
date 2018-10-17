@@ -84,8 +84,7 @@ public class BuildServiceImpl implements BuildService {
         return new DataResponse<>(result, collector.getLastExecuted());
     }
 
-    @Override
-    public String create(BuildDataCreateRequest request) throws HygieiaException {
+    protected Build createBuild(BuildDataCreateRequest request) throws HygieiaException {
         /**
          * Step 1: create Collector if not there
          * Step 2: create Collector item if not there
@@ -109,8 +108,20 @@ public class BuildServiceImpl implements BuildService {
             throw new HygieiaException("Failed inserting/updating build information.", HygieiaException.ERROR_INSERTING_DATA);
         }
 
-        return String.format("%s,%s", build.getId().toString(), build.getCollectorItemId().toString());
+        return build;
 
+    }
+
+    @Override
+    public String create(BuildDataCreateRequest request) throws HygieiaException {
+        Build build = createBuild(request);
+        return build.getId().toString();
+    }
+
+    @Override
+    public String createV2(BuildDataCreateRequest request) throws HygieiaException {
+        Build build = createBuild(request);
+        return String.format("%s,%s", build.getId().toString(), build.getCollectorItemId().toString());
     }
 
     private Collector createCollector() {
