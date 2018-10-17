@@ -2,6 +2,7 @@ package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.repository.CmdbRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,7 +28,7 @@ public class CmdbServiceImpl implements CmdbService {
 
         Page<Cmdb> configItemString;
 
-        if(filter != null && !filter.isEmpty() && !itemType.equals("app")){
+        if( StringUtils.isNotEmpty( filter ) ){
 
             List<Cmdb> cmdbList = cmdbRepository.findAllByConfigurationItemContainingOrCommonNameContainingAllIgnoreCase(filter,filter);
 
