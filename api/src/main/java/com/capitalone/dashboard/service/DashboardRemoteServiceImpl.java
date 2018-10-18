@@ -60,7 +60,7 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
             throw new HygieiaException("Invalid owner information or authentication type. Owner first needs to sign up in Hygieia", HygieiaException.BAD_DATA);
         }
 
-        List<Dashboard> dashboards = dashboardRepository.findByTitle(request.getMetaData().getTitle());
+        List<Dashboard> dashboards = findExistingDashboardsFromRequest( request );
         if (!CollectionUtils.isEmpty(dashboards)) {
             dashboard = dashboards.get(0);
             if (!isUpdate) {
@@ -73,7 +73,7 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
 
         } else {
             if (isUpdate) {
-                throw new HygieiaException("Dashboard " + request.getMetaData().getTitle() +  "does not exist.", HygieiaException.BAD_DATA);
+                throw new HygieiaException("Dashboard " + request.getMetaData().getTitle() +  " does not exist.", HygieiaException.BAD_DATA);
             }
             dashboard = dashboardService.create(requestToDashboard(request));
         }
@@ -118,6 +118,23 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
             }
         }
         return (dashboard != null) ? dashboardService.get(dashboard.getId()) : null;
+    }
+
+    /**
+     * Takes a DashboardRemoteRequest. If the request contains a Business Service and Business Application then returns dashboard. Otherwise,
+     * Checks dashboards for existing Title and returns dashboards.
+     * @param request
+     * @return  List< Dashboard >
+     */
+    private List< Dashboard > findExistingDashboardsFromRequest( DashboardRemoteRequest request ) {
+        String businessService = request.getMetaData().getBusinessService();
+        String businessApplication = request.getMetaData().getBusinessApplication();
+
+        if( !StringUtils.isEmpty( businessService ) && !StringUtils.isEmpty( businessApplication ) ){
+           return dashboardRepository.findAllByConfigurationItemBusServNameContainingIgnoreCaseAndConfigurationItemBusAppNameContainingIgnoreCase( businessService, businessApplication );
+        }else {
+           return dashboardRepository.findByTitle( request.getMetaData().getTitle() );
+        }
     }
 
 

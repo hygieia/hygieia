@@ -2,6 +2,7 @@ package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.repository.CmdbRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.request.DashboardRemoteRequest;
@@ -31,6 +32,8 @@ public class DashboardRemoteServiceTest {
     @Mock
     private DashboardRepository dashboardRepository;
     @Mock
+    private CmdbRepository cmdbRepository;
+    @Mock
     private CollectorRepository collectorRepository;
     @Mock
     private UserInfoService userInfoService;
@@ -53,13 +56,36 @@ public class DashboardRemoteServiceTest {
         DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "someuser", null, "team", configItemBusServName, configItemBusAppName);
 
         when(userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())).thenReturn(true);
+
+        when(dashboardRepository.findAllByConfigurationItemBusServNameContainingIgnoreCaseAndConfigurationItemBusAppNameContainingIgnoreCase( configItemBusServName, configItemBusAppName )).thenReturn(new ArrayList<Dashboard>());
+
+        Cmdb busApp = new Cmdb();
+        busApp.setConfigurationItem(configItemBusServName);
+        when(cmdbRepository.findByConfigurationItemAndItemType(configItemBusServName, "app")).thenReturn(busApp);
+
+        Cmdb busComp = new Cmdb();
+        busComp.setConfigurationItem(configItemBusAppName);
+        when(cmdbRepository.findByConfigurationItemAndItemType(configItemBusAppName, "component")).thenReturn(busComp);
+
+        when(dashboardService.create(Matchers.any(Dashboard.class))).thenReturn(expected);
+        when(dashboardService.get(objectId)).thenReturn(expected);
+
+        assertThat(dashboardRemoteService.remoteCreate(request, false), is(expected));
+    }
+    @Test
+    public void remoteCreateWithoutAppAndComp() throws HygieiaException {
+        Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "someuser","","", "comp1","comp2");
+        ObjectId objectId = ObjectId.get();
+        expected.setId(objectId);
+        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "someuser", null, "team", "", "");
+
+        when(userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())).thenReturn(true);
         when(dashboardRepository.findByTitle(request.getMetaData().getTitle())).thenReturn(new ArrayList<Dashboard>());
         when(dashboardService.create(Matchers.any(Dashboard.class))).thenReturn(expected);
         when(dashboardService.get(objectId)).thenReturn(expected);
 
         assertThat(dashboardRemoteService.remoteCreate(request, false), is(expected));
     }
-
     @Test
     public void remoteCreateInvalidUser() throws HygieiaException {
         Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "invaliduser",configItemBusServName,configItemBusAppName, "comp1","comp2");
@@ -82,13 +108,46 @@ public class DashboardRemoteServiceTest {
             assertEquals(excep.getMessage(), e.getMessage());
         }
     }
+    @Test
+    public void remoteCreateInvalidApp() throws HygieiaException {
+        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "invaliduser", null, "team", configItemBusServName, configItemBusAppName);
 
+        when(userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())).thenReturn(true);
+
+        Throwable t = new Throwable();
+        RuntimeException excep = new RuntimeException("Invalid Business Application Name.", t);
+
+        try {
+            dashboardRemoteService.remoteCreate(request, false);
+            fail("Should throw RuntimeException");
+        } catch(Exception e) {
+            assertEquals(excep.getMessage(), e.getMessage());
+        }
+    }
+    @Test
+    public void remoteCreateInvalidComp() throws HygieiaException {
+        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "invaliduser", null, "team", configItemBusServName, configItemBusAppName);
+
+        when(userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())).thenReturn(true);
+        Cmdb busApp = new Cmdb();
+        busApp.setConfigurationItem(configItemBusServName);
+        when(cmdbRepository.findByConfigurationItemAndItemType(configItemBusServName, "app")).thenReturn(busApp);
+        Throwable t = new Throwable();
+        RuntimeException excep = new RuntimeException("Invalid Business Application Name.", t);
+
+        try {
+            dashboardRemoteService.remoteCreate(request, false);
+            fail("Should throw RuntimeException");
+        } catch(Exception e) {
+            assertEquals(excep.getMessage(), e.getMessage());
+        }
+    }
     @Test
     public void remoteCreateDuplicateDashoard() throws HygieiaException {
-        Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "validuser",configItemBusServName,configItemBusAppName, "comp1","comp2");
+        Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "validuser","","", "comp1","comp2");
         ObjectId objectId = ObjectId.get();
         expected.setId(objectId);
-        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "validuser", null, "team", configItemBusServName, configItemBusAppName);
+        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "validuser", null, "team", "", "");
 
         when(userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())).thenReturn(false);
 
@@ -113,10 +172,10 @@ public class DashboardRemoteServiceTest {
 
     @Test
     public void remoteCreateWithInvalidCollector() throws HygieiaException {
-        Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "someuser",configItemBusServName,configItemBusAppName, "comp1","comp2");
+        Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "someuser","","", "comp1","comp2");
         ObjectId objectId = ObjectId.get();
         expected.setId(objectId);
-        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "someuser", null, "team", configItemBusServName, configItemBusAppName);
+        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "someuser", null, "team", "", "");
         List<DashboardRemoteRequest.CodeRepoEntry> entries = new ArrayList<DashboardRemoteRequest.CodeRepoEntry>();
         DashboardRemoteRequest.CodeRepoEntry invalidSCM = new DashboardRemoteRequest.CodeRepoEntry();
         invalidSCM.setToolName("Clearcase");
@@ -141,10 +200,10 @@ public class DashboardRemoteServiceTest {
 
     @Test
     public void remoteCreateSCM() throws HygieiaException {
-        Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "someuser",configItemBusServName,configItemBusAppName, "comp1","comp2");
+        Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "someuser","","", "comp1","comp2");
         ObjectId objectId = ObjectId.get();
         expected.setId(objectId);
-        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "someuser", null, "team", configItemBusServName, configItemBusAppName);
+        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "someuser", null, "team", "", "");
         List<DashboardRemoteRequest.CodeRepoEntry> entries = new ArrayList<DashboardRemoteRequest.CodeRepoEntry>();
         DashboardRemoteRequest.CodeRepoEntry validSCM = new DashboardRemoteRequest.CodeRepoEntry();
         validSCM.setToolName("GitHub");
@@ -191,10 +250,10 @@ public class DashboardRemoteServiceTest {
 
     @Test
     public void remoteCreateBuild() throws HygieiaException {
-        Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "someuser",configItemBusServName,configItemBusAppName, "comp1","comp2");
+        Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "someuser","","", "comp1","comp2");
         ObjectId objectId = ObjectId.get();
         expected.setId(objectId);
-        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "someuser", null, "team", configItemBusServName, configItemBusAppName);
+        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "someuser", null, "team", "", "");
         List<DashboardRemoteRequest.BuildEntry> entries = new ArrayList<DashboardRemoteRequest.BuildEntry>();
         DashboardRemoteRequest.BuildEntry validBuild = new DashboardRemoteRequest.BuildEntry();
         validBuild.setToolName("Hudson");
@@ -238,7 +297,6 @@ public class DashboardRemoteServiceTest {
 
         assertThat(dashboardRemoteService.remoteCreate(request, false), is(expected));
     }
-
     private Dashboard makeTeamDashboard(String template, String title, String appName, String owner,String configItemBusServName,String configItemBusAppName, String... compNames) {
         Application app = new Application(appName);
         for (String compName : compNames) {

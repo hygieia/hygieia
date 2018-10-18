@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import com.capitalone.dashboard.ApiSettings;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -430,39 +431,29 @@ public class DashboardServiceImpl implements DashboardService {
         Dashboard dashboard = get(dashboardId);
         String updatedBusServiceName = request.getConfigurationItemBusServName();
         String updatedBusApplicationName = request.getConfigurationItemBusAppName();
-        String originalBusServiceName = dashboard.getConfigurationItemBusServName();
-        String originalBusApplicationName = dashboard.getConfigurationItemBusAppName();
-        boolean updateDashboard = false;
 
-        if(updatedBusServiceName != null && !updatedBusServiceName.isEmpty()){
+        if(StringUtils.isEmpty(updatedBusServiceName)){
+
+            dashboard.setConfigurationItemBusServName(null);
+        }else{
             Cmdb cmdb = cmdbService.configurationItemByConfigurationItem(updatedBusServiceName);
             if(cmdb != null){
-                updateDashboard = true;
+
                 dashboard.setConfigurationItemBusServName(cmdb.getConfigurationItem());
             }
-        } else if(originalBusServiceName != null && !originalBusServiceName.isEmpty()){
-
-            updateDashboard = true;
-            dashboard.setConfigurationItemBusServName(null);
         }
+        if(StringUtils.isEmpty(updatedBusApplicationName)){
 
-        if(updatedBusApplicationName != null && !updatedBusApplicationName.isEmpty()){
+            dashboard.setConfigurationItemBusAppName(null);
+        }else{
             Cmdb cmdb = cmdbService.configurationItemByConfigurationItem(updatedBusApplicationName);
             if(cmdb != null){
-                updateDashboard = true;
+
                 dashboard.setConfigurationItemBusAppName(cmdb.getConfigurationItem());
             }
-        } else if(originalBusApplicationName != null && !originalBusApplicationName.isEmpty()){
-                updateDashboard = true;
-                dashboard.setConfigurationItemBusAppName(null);
-        }
-        if(updateDashboard){
-            dashboard = update(dashboard);
-        }else{
-            dashboard = null;
         }
 
-        return dashboard;
+        return update(dashboard);
     }
     @Override
     public DataResponse<Iterable<Dashboard>> getByBusinessService(String app) throws HygieiaException {

@@ -256,21 +256,22 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
      * @param codeQualityAuditResponse
      */
     private void auditStatusWhenQualityGateDetailsNotFound(CodeQualityMetric metric, CodeQualityAuditResponse codeQualityAuditResponse) {
-        if (CodeQualityMetricStatus.Error.equals(metric.getStatus())){
-            codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_AUDIT_FAIL);
-        }else {
-            if (StringUtils.equalsIgnoreCase(metric.getName(), CodeQualityMetricType.BLOCKER_VIOLATIONS.getType())) {
-                codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_BLOCKER_MET);
-            } else if (StringUtils.equalsIgnoreCase(metric.getName(), CodeQualityMetricType.CRITICAL_VIOLATIONS.getType())) {
-                codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_CRITICAL_MET);
-            } else if (StringUtils.equalsIgnoreCase(metric.getName(), CodeQualityMetricType.UNIT_TEST.getType())) {
-                codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_UNIT_TEST_MET);
-            } else if (StringUtils.equalsIgnoreCase(metric.getName(), CodeQualityMetricType.COVERAGE.getType())
-                    || StringUtils.equalsIgnoreCase(metric.getName(), CodeQualityMetricType.NEW_COVERAGE.getType())) {
-                codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_CODE_COVERAGE_MET);
+        if (metric.getStatus() != null) {
+            if (CodeQualityMetricStatus.Error.equals(metric.getStatus())){
+                codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_AUDIT_FAIL);
+            } else {
+                if (StringUtils.equalsIgnoreCase(metric.getName(), CodeQualityMetricType.BLOCKER_VIOLATIONS.getType())) {
+                    codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_BLOCKER_MET);
+                } else if (StringUtils.equalsIgnoreCase(metric.getName(), CodeQualityMetricType.CRITICAL_VIOLATIONS.getType())) {
+                    codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_CRITICAL_MET);
+                } else if (StringUtils.equalsIgnoreCase(metric.getName(), CodeQualityMetricType.UNIT_TEST.getType())) {
+                    codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_UNIT_TEST_MET);
+                } else if (StringUtils.equalsIgnoreCase(metric.getName(), CodeQualityMetricType.COVERAGE.getType())
+                        || StringUtils.equalsIgnoreCase(metric.getName(), CodeQualityMetricType.NEW_COVERAGE.getType())) {
+                    codeQualityAuditResponse.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_THRESHOLD_CODE_COVERAGE_MET);
+                }
             }
         }
-
     }
 
     private boolean isProjectIdValid(CollectorItem codeQualityCollectorItem) {
