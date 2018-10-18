@@ -108,17 +108,17 @@ The sample `application.properties` file lists parameters with sample values to 
 		# Matches maven artifacts of the form [org]/[module]/[version]/[module]-[version]([-classifier])(.[ext])
 		
 		artifactory.servers[0].repoAndPatterns[0].patterns[1]=
-		(?<group>.+)/(?<module>[^/]+)/(?<version>[^/]+)/(?<artifact>\\k<module>)-\\k<version>(-(?<classifier[^\\.]+))?			(\\.(?<ext>.+))?
+		(?<group>.+)/(?<module>[^/]+)/(?<version>[^/]+)/(?<artifact>\\k<module>)-\\k<version>(-(?<classifier[^\\.]+))?(\\.(?<ext>.+))?
 
 		# Matches ivy files of the form [org]/[module]/[revision]/ivy-[revision](-[classifier]).xml 
 		
 		artifactory.servers[0].repoAndPatterns[0].patterns[2]=
-		(?<group>.+)/(?<module>[^/]+)/(?<version>[^/]+)/(?<artifact>ivy)-\\k<version>(-(?<classifier>[^\\.]+))?\\.(?			<ext>xml)
+		(?<group>.+)/(?<module>[^/]+)/(?<version>[^/]+)/(?<artifact>ivy)-\\k<version>(-(?<classifier>[^\\.]+))?\\.(?<ext>xml)
 
 		# Matches ivy artifact files of the form [org]/[module]/[revision]/[type]/[artifact]-[revision](-[classifier])			(.[ext])
 		
 		artifactory.servers[0].repoAndPatterns[0].patterns[3]=
-		(?<group>.+)/(?<module>[^/]+)/(?<version>[^/]+)/(?<type>[^/]+)/(?<artifact>[^\\.-/]+)-\\k<version>(-(?			<classifier>[^\\.]+))?(\\.(?<ext>.+))?
+		(?<group>.+)/(?<module>[^/]+)/(?<version>[^/]+)/(?<type>[^/]+)/(?<artifact>[^\\.-/]+)-\\k<version>(-(?<classifier>[^\\.]+))?(\\.(?<ext>.+))?
 		
 		# Artifactory mode - possible values (ARTIFACT_BASED, REPO_BASED)
 		artifactory.mode= ARTIFACT_BASED
