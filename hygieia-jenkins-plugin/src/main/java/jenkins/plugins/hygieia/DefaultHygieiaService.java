@@ -55,7 +55,7 @@ public class DefaultHygieiaService implements HygieiaService {
         try {
             String jsonString = new String(HygieiaUtils.convertObjectToJsonBytes(request));
             RestCall restCall = new RestCall(useProxy);
-            RestCall.RestCallResponse callResponse = restCall.makeRestCallPost(hygieiaAPIUrl + "/build", jsonString);
+            RestCall.RestCallResponse callResponse = restCall.makeRestCallPost(hygieiaAPIUrl + "/v2/build", jsonString);
             responseCode = callResponse.getResponseCode();
             responseValue = callResponse.getResponseString().replaceAll("\"", "");
             if (responseCode != HttpStatus.SC_CREATED) {
@@ -98,7 +98,7 @@ public class DefaultHygieiaService implements HygieiaService {
         try {
             String jsonString = new String(HygieiaUtils.convertObjectToJsonBytes(request));
             RestCall restCall = new RestCall(useProxy);
-            RestCall.RestCallResponse callResponse = restCall.makeRestCallPost(hygieiaAPIUrl + "/quality/test", jsonString);
+            RestCall.RestCallResponse callResponse = restCall.makeRestCallPost(hygieiaAPIUrl + "/v2/quality/test", jsonString);
             responseCode = callResponse.getResponseCode();
             responseValue = callResponse.getResponseString();
             if (responseCode != HttpStatus.SC_CREATED) {
@@ -119,7 +119,7 @@ public class DefaultHygieiaService implements HygieiaService {
         try {
             String jsonString = new String(HygieiaUtils.convertObjectToJsonBytes(request));
             RestCall restCall = new RestCall(useProxy);
-            RestCall.RestCallResponse callResponse = restCall.makeRestCallPost(hygieiaAPIUrl + "/quality/static-analysis", jsonString);
+            RestCall.RestCallResponse callResponse = restCall.makeRestCallPost(hygieiaAPIUrl + "/v2/quality/static-analysis", jsonString);
             responseCode = callResponse.getResponseCode();
             responseValue = callResponse.getResponseString();
             if (responseCode != HttpStatus.SC_CREATED) {
@@ -138,7 +138,7 @@ public class DefaultHygieiaService implements HygieiaService {
         try {
             String jsonString = new String(HygieiaUtils.convertObjectToJsonBytes(request));
             RestCall restCall = new RestCall(useProxy);
-            RestCall.RestCallResponse callResponse = restCall.makeRestCallPost(hygieiaAPIUrl + "/deploy", jsonString);
+            RestCall.RestCallResponse callResponse = restCall.makeRestCallPost(hygieiaAPIUrl + "/v2/deploy", jsonString);
             responseCode = callResponse.getResponseCode();
             responseValue = callResponse.getResponseString();
             if (responseCode != HttpStatus.SC_CREATED) {

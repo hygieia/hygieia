@@ -1,7 +1,13 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.model.QTestResult;
+import com.capitalone.dashboard.model.TestResult;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
@@ -12,7 +18,6 @@ import com.capitalone.dashboard.request.TestResultRequest;
 import com.google.common.collect.Lists;
 import com.mysema.query.BooleanBuilder;
 import org.apache.commons.lang.StringUtils;
-import org.bouncycastle.util.test.Test;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -148,8 +153,8 @@ public class TestResultServiceImpl implements TestResultService {
         return results;
     }
 
-    @Override
-    public String create(TestDataCreateRequest request) throws HygieiaException {
+
+    protected TestResult createTest(TestDataCreateRequest request) throws HygieiaException {
         /*
           Step 1: create Collector if not there
           Step 2: create Collector item if not there
@@ -175,11 +180,25 @@ public class TestResultServiceImpl implements TestResultService {
             throw new HygieiaException("Failed inserting/updating Test information.", HygieiaException.ERROR_INSERTING_DATA);
         }
 
-        return testResult.getId().toString() + "," + testResult.getCollectorItemId().toString();
+        return testResult;
 
     }
 
-    public String createPerf(PerfTestDataCreateRequest request) throws HygieiaException {
+    @Override
+    public String create(TestDataCreateRequest request) throws HygieiaException {
+        TestResult testResult = createTest(request);
+        return testResult.getId().toString();
+    }
+
+    @Override
+    public String createV2(TestDataCreateRequest request) throws HygieiaException {
+        TestResult testResult = createTest(request);
+        return testResult.getId().toString() + "," + testResult.getCollectorItemId().toString();
+    }
+
+
+
+    protected TestResult createPerfTest(PerfTestDataCreateRequest request) throws HygieiaException {
         /**
          * Step 1: create performance Collector if not there
          * Step 2: create Perfomance Collector item if not there
@@ -197,8 +216,20 @@ public class TestResultServiceImpl implements TestResultService {
         if (testResult == null) {
             throw new HygieiaException("Failed inserting/updating Test information.", HygieiaException.ERROR_INSERTING_DATA);
         }
-        return testResult.getId().toString() + "," + testResult.getCollectorItemId().toString();
+        return testResult;
 
+    }
+
+    @Override
+    public String createPerf(PerfTestDataCreateRequest request) throws HygieiaException {
+        TestResult testResult = createPerfTest(request);
+        return testResult.getId().toString();
+    }
+
+    @Override
+    public String createPerfV2(PerfTestDataCreateRequest request) throws HygieiaException {
+        TestResult testResult = createPerfTest(request);
+        return testResult.getId().toString() + "," + testResult.getCollectorItemId().toString();
     }
 
     private Collector createCollector() {

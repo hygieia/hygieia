@@ -157,9 +157,25 @@ public class HygieiaGlobalListenerTest {
         verify(mockHygieiaService,never()).publishSonarResults(captorSonar.capture());
         assertThat(captorBuild.getValue().getBuildStatus()).isEqualToIgnoringCase(BuildStatus.Success.toString());
         assertThat(captorBuild.getValue().getInstanceUrl()).isEqualTo("http://jenkins.test.com");
-        assertThat(captorBuild.getValue().getNiceName()).isEqualTo("jenkins");    }
+        assertThat(captorBuild.getValue().getNiceName()).isEqualTo("jenkins");
+    }
 
-
+    @Test
+    public void onCompletedFailPublishBuild() throws ParseException, IOException, URISyntaxException {
+        setup();
+        when(mockDescriptor.isHygieiaPublishBuildDataGlobal()).thenReturn(true);
+        when(mockBuild.getResult()).thenReturn(Result.SUCCESS);
+        when(mockBuild.getChangeSet()).thenReturn(mockChangeSet);
+        when(mockChangeSet.isEmptySet()).thenReturn(true);
+        when(mockHygieiaService.publishBuildData(any(BuildDataCreateRequest.class))).thenReturn(new HygieiaResponse(HttpStatus.SC_UNAUTHORIZED, ""));
+        hygieiaGlobalListener.onCompleted(mockBuild, mockBuildListener);
+        ArgumentCaptor<BuildDataCreateRequest> captorBuild = ArgumentCaptor.forClass(BuildDataCreateRequest.class);
+        verify(mockHygieiaService,times(1)).publishBuildData(captorBuild.capture());
+        ArgumentCaptor<CodeQualityCreateRequest> captorSonar = ArgumentCaptor.forClass(CodeQualityCreateRequest.class);
+        ArgumentCaptor<GenericCollectorItemCreateRequest> captorGeneric = ArgumentCaptor.forClass(GenericCollectorItemCreateRequest.class);
+        verify(mockHygieiaService,never()).publishSonarResults(captorSonar.capture());
+        verify(mockHygieiaService,never()).publishGenericCollectorItemData(captorGeneric.capture());
+    }
 
     @Test
     public void onCompletedBuildPublishBuildAndSonar() throws IOException, ParseException, URISyntaxException {

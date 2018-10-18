@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -64,11 +65,11 @@ public class DeployControllerTest {
         component.setAsOfDate(100L);
 
         Server server = new Server("server name", false);
-        DeployableUnit unit = new DeployableUnit(component, Arrays.asList(server));
+        DeployableUnit unit = new DeployableUnit(component, Collections.singletonList(server));
 
         Environment e = new Environment("QA", "http://www.google.com");
         e.getUnits().add(unit);
-        DataResponse<List<Environment>> response = new DataResponse<>(Arrays.asList(e), 1);
+        DataResponse<List<Environment>> response = new DataResponse<>(Collections.singletonList(e), 1);
 
         when(deployService.getDeployStatus(componentId)).thenReturn(response);
 
@@ -108,4 +109,18 @@ public class DeployControllerTest {
             .andExpect(status().isCreated())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON));        
     }
+
+    @Test
+    public void rundeckPostEndpointParsesXmlIntoDocumentV2() throws Exception {
+        when(deployService.createRundeckBuildV2(any(Document.class), any(), eq("test"), eq("success")))
+                .thenReturn("8675309");
+        mockMvc.perform(post("/v2/deploy/rundeck")
+                .content("<valid></valid>")
+                .contentType(MediaType.TEXT_XML_VALUE)
+                .header("X-Rundeck-Notification-Execution-ID", "test")
+                .header("X-Rundeck-Notification-Trigger", "success"))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
 }
