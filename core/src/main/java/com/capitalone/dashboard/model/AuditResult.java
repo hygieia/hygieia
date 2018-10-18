@@ -13,7 +13,7 @@ public class AuditResult extends BaseModel {
     private String configItemBusAppName;
     private String configItemBusServOwner;
     private String configItemBusAppOwner;
-    private String auditType;
+    private AuditType auditType;
     private String auditTypeStatus;
     private String auditStatus;
     private String url;
@@ -22,7 +22,7 @@ public class AuditResult extends BaseModel {
 
     @SuppressWarnings("PMD.ExcessiveParameterList")
     public AuditResult(ObjectId dashboardId, String dashboardTitle, String lineOfBusiness, String configItemBusServName,
-                       String configItemBusAppName, String configItemBusServOwner, String configItemBusAppOwner, String auditType,
+                       String configItemBusAppName, String configItemBusServOwner, String configItemBusAppOwner, AuditType auditType,
                        String auditTypeStatus, String auditStatus, String auditDetails, String url, long timestamp) {
         this.dashboardId = dashboardId;
         this.dashboardTitle = dashboardTitle;
@@ -95,11 +95,11 @@ public class AuditResult extends BaseModel {
         this.configItemBusAppOwner = configItemBusAppOwner;
     }
 
-    public String getAuditType() {
+    public AuditType getAuditType() {
         return auditType;
     }
 
-    public void setAuditType(String auditType) {
+    public void setAuditType(AuditType auditType) {
         this.auditType = auditType;
     }
 

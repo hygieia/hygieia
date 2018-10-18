@@ -459,7 +459,7 @@ public class AuditCollectorUtil {
             if (!(auditType.equals(AuditType.ALL) || auditType.equals(AuditType.BUILD_REVIEW))) {
                 Audit audit = auditMap.get(auditType);
                 AuditResult auditResult = new AuditResult(dashboardId, dashboardTitle, ownerDept, appService, appBusApp, appServiceOwner, appBusAppOwner,
-                        auditType.name(), audit.getDataStatus().name(), audit.getAuditStatus().name(), String.join(",", audit.getAuditStatusCodes()),
+                        auditType, audit.getDataStatus().name(), audit.getAuditStatus().name(), String.join(",", audit.getAuditStatusCodes()),
                         String.join(",", audit.getUrl()), timestamp);
                 auditResults.add(auditResult);
             }
