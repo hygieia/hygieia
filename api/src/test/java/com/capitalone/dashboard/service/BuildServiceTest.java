@@ -1,5 +1,8 @@
 package com.capitalone.dashboard.service;
 
+import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.Build;
+import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
@@ -23,7 +26,10 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.Collections;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -36,6 +42,8 @@ public class BuildServiceTest {
     @Mock private ComponentRepository componentRepository;
     @Mock private CollectorRepository collectorRepository;
     @InjectMocks private BuildServiceImpl buildService;
+    @Mock
+    private CollectorService collectorService;
 
     @Test
     public void search() {
@@ -75,12 +83,49 @@ public class BuildServiceTest {
         verify(buildRepository, times(1)).findAll(argThat(hasPredicate(expectedPredicate)));
     }
 
+    @Test
+    public void createWithGoodRequest() throws HygieiaException {
+        ObjectId collectorId = ObjectId.get();
+
+        BuildDataCreateRequest request = makeBuildRequest();
+
+        when(collectorRepository.findOne(collectorId)).thenReturn(new Collector());
+        when(collectorService.createCollector(any(Collector.class))).thenReturn(new Collector());
+        when(collectorService.createCollectorItem(any(CollectorItem.class))).thenReturn(new CollectorItem());
+
+        Build build = makeBuild();
+
+        when(buildRepository.save(any(Build.class))).thenReturn(build);
+        String response = buildService.create(request);
+        String expected = build.getId().toString();
+        assertEquals(response, expected);
+    }
+
+    @Test
+    public void createV2WithGoodRequest() throws HygieiaException {
+        ObjectId collectorId = ObjectId.get();
+
+        BuildDataCreateRequest request = makeBuildRequest();
+
+        when(collectorRepository.findOne(collectorId)).thenReturn(new Collector());
+        when(collectorService.createCollector(any(Collector.class))).thenReturn(new Collector());
+        when(collectorService.createCollectorItem(any(CollectorItem.class))).thenReturn(new CollectorItem());
+
+        Build build = makeBuild();
+
+        when(buildRepository.save(any(Build.class))).thenReturn(build);
+        String response = buildService.createV2(request);
+        String expected = build.getId().toString() + "," + build.getCollectorItemId();
+        assertEquals(response, expected);
+    }
+
+
     private Component makeComponent(ObjectId collectorItemId, ObjectId collectorId) {
         CollectorItem item = new CollectorItem();
         item.setId(collectorItemId);
         item.setCollectorId(collectorId);
         Component c = new Component();
-        c.getCollectorItems().put(CollectorType.Build, Arrays.asList(item));
+        c.getCollectorItems().put(CollectorType.Build, Collections.singletonList(item));
         return c;
     }
 
@@ -98,6 +143,7 @@ public class BuildServiceTest {
         };
     }
 
+
     private SCM makeScm() {
         SCM scm = new SCM();
         scm.setScmUrl("scmUrl");
@@ -110,7 +156,7 @@ public class BuildServiceTest {
     }
 
 
-    @SuppressWarnings("unused")
+
 	private BuildDataCreateRequest makeBuildRequest() {
         BuildDataCreateRequest build = new BuildDataCreateRequest();
         build.setNumber("1");
@@ -124,4 +170,20 @@ public class BuildServiceTest {
         build.getSourceChangeSet().add(makeScm());
         return build;
     }
+
+    private Build makeBuild() {
+        Build build = new Build();
+        build.setNumber("1");
+        build.setBuildUrl("buildUrl");
+        build.setStartTime(3);
+        build.setEndTime(8);
+        build.setDuration(5);
+        build.setBuildStatus(BuildStatus.Success);
+        build.setStartedBy("foo");
+        build.setId(ObjectId.get());
+        build.setCollectorItemId(ObjectId.get());
+        build.getSourceChangeSet().add(makeScm());
+        return build;
+    }
+
 }
