@@ -2,7 +2,6 @@ package com.capitalone.dashboard.collector;
 
 
 import com.capitalone.dashboard.model.ArtifactItem;
-import com.capitalone.dashboard.model.ArtifactoryCollectionMode;
 import com.capitalone.dashboard.model.ArtifactoryCollector;
 import com.capitalone.dashboard.model.ArtifactoryRepo;
 import com.capitalone.dashboard.model.BaseArtifact;
@@ -75,12 +74,16 @@ public class ArtifactoryCollectorTask extends CollectorTask<ArtifactoryCollector
 
 	@Override
 	public void collect(ArtifactoryCollector collector) {
-		if (artifactorySettings.getMode().equals(ArtifactoryCollectionMode.REPO_BASED)) {
-			collectRepoBased(collector);
-		} else if (artifactorySettings.getMode().equals(ArtifactoryCollectionMode.ARTIFACT_BASED)) {
-			collectArtifactBased(collector);
-		} else {
-			LOGGER.error("Error with collection mode. Valid modes are REPO_BASED or ARTIFACT_BASED to be set as properties.");
+		switch (artifactorySettings.getMode()) {
+			case REPO_BASED:
+				collectRepoBased(collector);
+				break;
+			case ARTIFACT_BASED:
+				collectArtifactBased(collector);
+				break;
+			default:
+				LOGGER.error("Error with collection mode. Valid modes are REPO_BASED or ARTIFACT_BASED to be set as properties.");
+				break;
 		}
 
 	}

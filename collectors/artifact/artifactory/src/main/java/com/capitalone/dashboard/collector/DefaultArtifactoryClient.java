@@ -153,13 +153,7 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
 					}
 
 					// create artifact_items (collector_item)
-					ArtifactItem artifactItem = new ArtifactItem();
-					artifactItem.setInstanceUrl(instanceUrl);
-					artifactItem.setRepoName(repo);
-					artifactItem.setArtifactName(artName);
-					artifactItem.setPath(artPath);
-					artifactItem.setDescription(artName);
-					artifactItem.setLastUpdated(System.currentTimeMillis());
+					ArtifactItem artifactItem = createArtifactItem(instanceUrl, repo, artName, artPath);
 
 					String sTimestamp = getString(jsonArtifact, "modified");
 					if (sTimestamp == null) {
@@ -449,4 +443,16 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
 	private String getString(JSONObject json, String key) {
 		return (String) json.get(key);
 	}
+
+	private ArtifactItem createArtifactItem(String instanceUrl, String repo, String artName, String artPath) {
+		ArtifactItem artifactItem = new ArtifactItem();
+		artifactItem.setInstanceUrl(instanceUrl);
+		artifactItem.setRepoName(repo);
+		artifactItem.setArtifactName(artName);
+		artifactItem.setPath(artPath);
+		artifactItem.setDescription(artName);
+		artifactItem.setLastUpdated(System.currentTimeMillis());
+		return artifactItem;
+	}
+
 }
