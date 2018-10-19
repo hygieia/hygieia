@@ -10,9 +10,8 @@ import java.util.List;
 import java.util.Objects;
 
 @Document(collection="cmdb")
-public class Cmdb {
-    @Id
-    private ObjectId id;
+public class Cmdb extends BaseModel{
+
     private ObjectId collectorItemId;
     private long timestamp;
 
@@ -21,36 +20,73 @@ public class Cmdb {
      */
     @NotNull
     private String configurationItem;
+    /**
+     * configurationItemSubType SubType of the CI
+     */
     private String configurationItemSubType;
+    /**
+     * configurationItemType Type of the CI
+     */
     private String configurationItemType;
     private String assignmentGroup;
+    /**
+     * A owner assigned to the CI usually the id associated with the owner when provided
+     */
     private String appServiceOwner;
+    /**
+     * A owner assigned to the CI usually the id associated with the owner when provided
+     */
     private String businessOwner;
+    /**
+     * A owner assigned to the CI usually the id associated with the owner when provided
+     */
     private String supportOwner;
+    /**
+     * A owner assigned to the CI usually the id associated with the owner when provided
+     */
     private String developmentOwner;
+    /**
+     * A owner assigned to the CI usually the fullName of the owner when provided
+     */
     private String appServiceOwnerUserName;
+    /**
+     * A owner assigned to the CI usually the fullName of the owner when provided
+     */
     private String businessOwnerUserName;
+    /**
+     * A owner assigned to the CI usually the fullName of the owner when provided
+     */
     private String supportOwnerUserName;
+    /**
+     * A owner assigned to the CI usually the fullName of the owner when provided
+     */
     private String developmentOwnerUserName;
+    /**
+     * ownerDept is the upper level department associated with the CI
+     */
     private String ownerDept;
+    /**
+     * ownerSubDept is used in correlation with the ownerDept as a sub department of the ownerDept
+     */
     private String ownerSubDept;
     /**
      * commonName Human readable value of the configurationItem
      */
     @NotNull
     private String commonName;
+    /**
+     * itemType Hygieia specific value for determining if the is an APP or a COMP
+     */
     private String itemType;
+    /**
+     * validConfigItem used to set the validity of the CI
+     */
     private boolean validConfigItem;
+    /**
+     * components used as a way to type relationships to a CI
+     */
     private List<String> components;
     private List<String> environments;
-
-    public ObjectId getId() {
-        return id;
-    }
-
-    public void setId(ObjectId id) {
-        this.id = id;
-    }
 
     public ObjectId getCollectorItemId() {
         return collectorItemId;
@@ -262,41 +298,5 @@ public class Cmdb {
                 && Objects.equals(this.ownerSubDept, other.ownerSubDept)
                 && Objects.equals(this.commonName, other.commonName);
 
-    }
-    /**
-     *  Returns human readable string of the Cmdb Object.
-     *  * equals(Object object) depends on this method. Changing this method could alter the return of the equals method.
-     * @return object to string
-     */
-    @Override
-    public String toString() {
-
-        StringBuffer buf = new StringBuffer(223);
-        buf.append("configurationItem: ")
-                .append(configurationItem)
-                .append("\nassignmentGroup: ")
-                .append(assignmentGroup)
-                .append("\nappServiceOwner: ")
-                .append(appServiceOwner)
-                .append("\nbusinessOwner: ")
-                .append(businessOwner)
-                .append("\nsupportOwner: ")
-                .append(supportOwner)
-                .append("\ndevelopmentOwner: ")
-                .append(developmentOwner)
-                .append("\nownerDept: ")
-                .append(ownerDept)
-                .append("\nownerSubDept: ")
-                .append(ownerSubDept)
-                .append("\nitemType: ")
-                .append(itemType)
-                .append("\nconfigurationItemSubType: ")
-                .append(configurationItemSubType)
-                .append("\nconfigurationItemType: ")
-                .append(configurationItemType)
-                .append("\nvalidConfigItem: ")
-                .append(validConfigItem);
-
-        return buf.toString();
     }
 }
