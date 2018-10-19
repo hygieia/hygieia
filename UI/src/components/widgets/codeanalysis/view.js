@@ -293,7 +293,7 @@
             }
 
             ctrl.getDashStatus = function getDashStatus() {
-
+                if(ctrl.librarySecurityThreatStatus == undefined) return 'ignore';
                 switch (ctrl.librarySecurityThreatStatus.level) {
                     case 4:
                         return 'critical';

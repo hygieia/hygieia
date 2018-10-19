@@ -51,4 +51,13 @@ public class BuildController {
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
+
+    @RequestMapping(value = "/v2/build", method = POST,
+            consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> createBuildv2(@Valid @RequestBody BuildDataCreateRequest request) throws HygieiaException {
+        String response = buildService.createV2(request);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
 }

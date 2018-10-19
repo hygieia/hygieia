@@ -1,5 +1,7 @@
 package com.capitalone.dashboard.collector;
 
+import com.capitalone.dashboard.model.ArtifactoryCollectionMode;
+import com.capitalone.dashboard.model.ServerSetting;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -12,13 +14,12 @@ import java.util.List;
 @ConfigurationProperties(prefix = "artifactory")
 public class ArtifactorySettings {
     private String cron;
-    private List<String> usernames;
-    private List<String> apiKeys;
-    private List<String> servers;
-    private List<String[]> repos;
-    private List<String> patterns;
-    private String endpoint;
-    
+    List<ServerSetting> servers;
+    ArtifactoryCollectionMode mode;
+    String endpoint;
+    long offSet;
+
+
     public String getCron() {
         return cron;
     }
@@ -27,38 +28,22 @@ public class ArtifactorySettings {
         this.cron = cron;
     }
 
-    public List<String> getUsernames() {
-        return usernames;
-    }
-
-    public void setUsernames(List<String> usernames) {
-        this.usernames = usernames;
-    }
-
-    public List<String> getApiKeys() {
-        return apiKeys;
-    }
-
-    public void setApiKeys(List<String> apiKeys) {
-        this.apiKeys = apiKeys;
-    }
-
-    public List<String> getServers() {
+    public List<ServerSetting> getServers() {
         return servers;
     }
 
-    public void setServers(List<String> servers) {
+    public void setServers(List<ServerSetting> servers) {
         this.servers = servers;
     }
-    
-    public List<String[]> getRepos() {
-        return repos;
+
+    public ArtifactoryCollectionMode getMode() {
+        return mode;
     }
 
-    public void setRepos(List<String[]> repos) {
-        this.repos = repos;
+    public void setMode(ArtifactoryCollectionMode mode) {
+        this.mode = mode;
     }
-    
+
     public String getEndpoint() {
         return endpoint;
     }
@@ -67,17 +52,14 @@ public class ArtifactorySettings {
         this.endpoint = endpoint;
     }
 
-	/**
-	 * @return the patterns
-	 */
-	public List<String> getPatterns() {
-		return patterns;
-	}
 
-	/**
-	 * @param patterns the patterns to set
-	 */
-	public void setPatterns(List<String> patterns) {
-		this.patterns = patterns;
-	}
+    public long getOffSet() {
+        return offSet;
+    }
+
+    public void setOffSet(long offSet) {
+        this.offSet = offSet;
+    }
+
+
 }
