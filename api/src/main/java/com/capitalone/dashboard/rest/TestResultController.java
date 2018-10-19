@@ -53,6 +53,15 @@ public class TestResultController {
                     .body(response);
     }
 
+    @RequestMapping(value = "/v2/quality/test", method = POST,
+            consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> createTestV2(@Valid @RequestBody TestDataCreateRequest request) throws HygieiaException {
+        String response = testResultService.createV2(request);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
     @RequestMapping(value = "/quality/testresult", method = POST,
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> createPerfTest(@Valid @RequestBody PerfTestDataCreateRequest request) throws HygieiaException {
@@ -61,4 +70,14 @@ public class TestResultController {
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
+
+    @RequestMapping(value = "/v2/quality/testresult", method = POST,
+            consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> createPerfTestV2(@Valid @RequestBody PerfTestDataCreateRequest request) throws HygieiaException {
+        String response = testResultService.createPerfV2(request);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
 }
