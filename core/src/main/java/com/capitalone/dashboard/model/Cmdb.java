@@ -33,6 +33,7 @@ public class Cmdb {
     private String supportOwnerUserName;
     private String developmentOwnerUserName;
     private String ownerDept;
+    private String ownerSubDept;
     /**
      * commonName Human readable value of the configurationItem
      */
@@ -212,6 +213,14 @@ public class Cmdb {
         this.environments = environments;
     }
 
+    public String getOwnerSubDept() {
+        return ownerSubDept;
+    }
+
+    public void setOwnerSubDept(String ownerSubDept) {
+        this.ownerSubDept = ownerSubDept;
+    }
+
     @Override
     public int hashCode()
     {
@@ -223,6 +232,7 @@ public class Cmdb {
                 this.supportOwner,
                 this.developmentOwner,
                 this.ownerDept,
+                this.ownerSubDept,
                 this.itemType,
                 this.configurationItemSubType,
                 this.configurationItemType);
@@ -249,6 +259,7 @@ public class Cmdb {
                 && Objects.equals(this.configurationItemSubType, other.configurationItemSubType)
                 && Objects.equals(this.configurationItemType, other.configurationItemType)
                 && Objects.equals(this.validConfigItem, other.validConfigItem)
+                && Objects.equals(this.ownerSubDept, other.ownerSubDept)
                 && Objects.equals(this.commonName, other.commonName);
 
     }
@@ -260,7 +271,7 @@ public class Cmdb {
     @Override
     public String toString() {
 
-        StringBuffer buf = new StringBuffer(210);
+        StringBuffer buf = new StringBuffer(223);
         buf.append("configurationItem: ")
                 .append(configurationItem)
                 .append("\nassignmentGroup: ")
@@ -275,6 +286,8 @@ public class Cmdb {
                 .append(developmentOwner)
                 .append("\nownerDept: ")
                 .append(ownerDept)
+                .append("\nownerSubDept: ")
+                .append(ownerSubDept)
                 .append("\nitemType: ")
                 .append(itemType)
                 .append("\nconfigurationItemSubType: ")
