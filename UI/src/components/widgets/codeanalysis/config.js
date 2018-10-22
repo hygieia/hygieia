@@ -163,7 +163,7 @@
         }
 
         function deleteTestConfig(item) {
-            ctrl.testConfigs.pop(item);
+            ctrl.testConfigs.splice(ctrl.testConfigs.indexOf(item), 1);
         }
     }
 })();
