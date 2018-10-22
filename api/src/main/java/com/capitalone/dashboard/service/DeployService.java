@@ -22,8 +22,10 @@ public interface DeployService {
     DataResponse<List<Environment>> getDeployStatus(ObjectId componentId);
 
     String create(DeployDataCreateRequest request) throws HygieiaException;
+    String createV2(DeployDataCreateRequest request) throws HygieiaException;
 
     DataResponse<List<Environment>> getDeployStatus(String applicationName);
 
     String createRundeckBuild(Document doc, Map<String, String[]> parameters, String executionId, String status) throws HygieiaException;
+    String createRundeckBuildV2(Document doc, Map<String, String[]> parameters, String executionId, String status) throws HygieiaException;
 }

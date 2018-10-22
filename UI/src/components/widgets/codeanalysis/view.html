@@ -292,10 +292,10 @@
                         <div class="widget-body">
                             <table class="table">
                                 <tr class="dash-row clickable" ng-click="caWidget.showDetail(test.details)"
-                                    ng-repeat="test in caWidget.functionalTests">
+                                    ng-repeat="test in caWidget.functionalTests" uib-tooltip-html = "'<p>{{test.name}}</p>'">
                                     <td><span dash-status="{{ test.status }}"
                                               ng-if="caWidget.showStatusIcon(test)"></span></td>
-                                    <td class="ca-name">{{test.name}}</td>
+                                    <td class="ca-name"  >{{ test.name | limitTo: 30 }}{{test.name.length > 30 ? '...' : ''}}</td>
                                     <td></td>
                                     <td class="ca-value"
                                         ng-class="{'widget-font-fail': (test.failureCount > 0) || (test.successCount == 0)}">

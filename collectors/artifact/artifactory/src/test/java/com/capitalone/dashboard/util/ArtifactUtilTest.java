@@ -21,6 +21,9 @@ public class ArtifactUtilTest {
 	public static final String MISC_PATTERN1 = "(?<group>.+)/([^/]+)/(?<artifact>[^\\.-/]+)-(?<version>[^/]+)\\.(?<ext>zip)";
 	public static final String MISC_PATTERN2 = "(?<group>.+)/(?<buildnumber>\\d+)/([^/]+/)*(?<artifact>[^\\./]+)-(?<version>[^/]+)\\.(?<ext>zip)";
 
+	public static final String ARTIFACT_PATTERN = "(?<group>.+)[\\/](?<artifact>.+)\\/(?<version>.+)\\/(?<filename>.+)\\.(?<ext>.+)";
+
+
 	@Test
 	public void testIvy() {
 		String patternStr = IVY_PATTERN1;
@@ -260,4 +263,21 @@ public class ArtifactUtilTest {
 		assertEquals(null, ba.getArtifactClassifier());
 		assertEquals("zip", ba.getArtifactExtension());
 	}
+
+	@Test
+	public void testArtifactPattern() {
+		String patternStr = ARTIFACT_PATTERN;
+		String path = "dummy/test-dev/1/manifest.json";
+
+		Pattern pattern = Pattern.compile(patternStr);
+		BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
+		assertNotNull(ba);
+		assertEquals("dummy", ba.getArtifactGroupId());
+		assertEquals(null, ba.getArtifactModule());
+		assertEquals("1", ba.getArtifactVersion());
+		assertEquals("test-dev", ba.getArtifactName());
+		assertEquals(null, ba.getArtifactClassifier());
+		assertEquals("json", ba.getArtifactExtension());
+	}
+
 }
