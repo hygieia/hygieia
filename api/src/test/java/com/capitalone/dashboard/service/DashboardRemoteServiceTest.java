@@ -244,7 +244,7 @@ public class DashboardRemoteServiceTest {
         for (String compName : compNames) {
             app.addComponent(new Component(compName));
         }
-        List<String> activeWidgets = new ArrayList<>();
+        List<ActiveWidget> activeWidgets = new ArrayList<>();
         return new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemBusServName, configItemBusAppName,activeWidgets, false, ScoreDisplayType.HEADER);
     }
 

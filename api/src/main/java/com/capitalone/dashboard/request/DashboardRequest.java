@@ -5,6 +5,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import com.capitalone.dashboard.auth.AuthenticationUtil;
+import com.capitalone.dashboard.model.ActiveWidget;
 import com.capitalone.dashboard.model.Application;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
@@ -13,6 +14,7 @@ import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.ScoreDisplayType;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DashboardRequest {
     @NotNull
@@ -42,7 +44,7 @@ public class DashboardRequest {
     @Size(min=1, message="Please select a type")
     private String type;
 
-    private List<String> activeWidgets;
+    private List<DashboardRequestWidget> activeWidgets;
 
     public String getTemplate() {
         return template;
@@ -102,11 +104,11 @@ public class DashboardRequest {
         this.configurationItemBusAppName = configurationItemBusAppName;
     }
 
-    public List<String> getActiveWidgets() {
+    public List<DashboardRequestWidget> getActiveWidgets() {
         return activeWidgets;
     }
 
-    public void setActiveWidgets(List<String> activeWidgets) {
+    public void setActiveWidgets(List<DashboardRequestWidget> activeWidgets) {
         this.activeWidgets = activeWidgets;
     }
 
@@ -138,12 +140,20 @@ public class DashboardRequest {
           type ,
           configurationItemBusServName,
           configurationItemBusAppName,
-          activeWidgets,
+          convert(activeWidgets),
           scoreEnabled,
           ScoreDisplayType.fromString(scoreDisplay)
         );
 
 
+    }
+
+    private List<ActiveWidget> convert(List<DashboardRequestWidget> widget) {
+        return null==widget?null:widget.stream().map(DashboardRequest::convert).collect(Collectors.toList());
+    }
+
+    private static ActiveWidget convert(DashboardRequestWidget request) {
+        return ActiveWidget.newActiveWidget().title(request.getTitle()).type(request.getType()).build();
     }
 
     public Dashboard copyTo(Dashboard dashboard) {

@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.ActiveWidget;
 import com.capitalone.dashboard.model.Application;
 import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.Collector;
@@ -102,20 +103,24 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
 
         for (String key : allWidgetRequests.keySet()) {
             WidgetRequest widgetRequest = allWidgetRequests.get(key);
-            Component component = dashboardService.associateCollectorToComponent(
-                    dashboard.getApplication().getComponents().get(0).getId(), widgetRequest.getCollectorItemIds());
             Widget newWidget = widgetRequest.widget();
+            List<ObjectId> originalWigetCollectoItemIds=null;
             if (isUpdate) {
                 Widget oldWidget = existingWidgets.get(newWidget.getName());
                 if (oldWidget == null) {
                     dashboardService.addWidget(dashboard, newWidget);
                 } else {
-                    Widget widget = widgetRequest.updateWidget(dashboardService.getWidget(dashboard, oldWidget.getId()));
+                    Widget originalWidget = dashboardService.getWidget(dashboard, oldWidget.getId());
+                    originalWigetCollectoItemIds = originalWidget.getCollectorItemIds();
+                    Widget widget = widgetRequest.updateWidget(originalWidget);
                     dashboardService.updateWidget(dashboard, widget);
                 }
             } else {
                 dashboardService.addWidget(dashboard, newWidget);
             }
+            //TODO.. we'll need to come back to this to get the original collectorItemIds if update
+            Component component = dashboardService.associateCollectorToComponent(
+                    dashboard.getApplication().getComponents().get(0).getId(), widgetRequest.getCollectorItemIds(),originalWigetCollectoItemIds);
         }
         return (dashboard != null) ? dashboardService.get(dashboard.getId()) : null;
     }
@@ -171,7 +176,7 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
             if (service == null) throw new HygieiaException("Invalid Business Service Name.", HygieiaException.BAD_DATA);
             serviceName = service.getConfigurationItem();
         }
-        List<String> activeWidgets = new ArrayList<>();
+        List<ActiveWidget> activeWidgets = new ArrayList<>();
         return new Dashboard(true, metaData.getTemplate(), metaData.getTitle(), application, metaData.getOwner(), DashboardType.fromString(metaData.getType()), serviceName, appName,activeWidgets, false, ScoreDisplayType.HEADER);
     }
 }

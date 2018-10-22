@@ -92,7 +92,7 @@ public class BuildEventListenerTest {
             component.addCollectorItem(CollectorType.Build, collectorItem());
         }
 
-        Application application = new Application("app", component); List<String> activeWidgets = new ArrayList<>();
+        Application application = new Application("app", component); List<ActiveWidget> activeWidgets = new ArrayList<>();
         Dashboard dashboard = new Dashboard("template", "title", application, new Owner("owner", AuthType.STANDARD),  DashboardType.Team , "ASVTEST", "BAPTEST",activeWidgets, false, ScoreDisplayType.HEADER);
         dashboard.setId(ObjectId.get());
         return dashboard;

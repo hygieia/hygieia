@@ -109,7 +109,7 @@
   "configurationItemBusServName": "TestBusServ",
   "configurationItemBusAppName": "confItem",
   "activeWidgets": [
-    "repo"
+    {"title":"repo", "type":"repo"}
   ],
   "errorCode": 0,
   "id": {

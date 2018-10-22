@@ -325,7 +325,7 @@ public class DashboardControllerTest {
         widgetWithId.setId(ObjectId.get());
         Component component = makeComponent(compId, "Component", CollectorType.Build, collId);
         when(dashboardService.get(dashId)).thenReturn(d1);
-        when(dashboardService.associateCollectorToComponent(compId, collIds)).thenReturn(component);
+        when(dashboardService.associateCollectorToComponent(compId, collIds, null)).thenReturn(component);
         when(dashboardService.addWidget(Matchers.any(Dashboard.class), Matchers.any(Widget.class))).thenReturn(widgetWithId);
         mockMvc.perform(post("/dashboard/" + dashId.toString() + "/widget")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)

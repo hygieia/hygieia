@@ -45,7 +45,7 @@
 
             scope.$widgetEl = element;
             scope.container = containerController;
-            scope.widgetDefinition = widgetManager.getWidget(attrs.name);
+            scope.widgetDefinition = widgetManager.getWidget(attrs.type);
             scope.title = attrs.title || scope.widgetDefinition.view.defaults.title;
             scope.header = attrs.header ? attrs.header != 'false' : true;
 

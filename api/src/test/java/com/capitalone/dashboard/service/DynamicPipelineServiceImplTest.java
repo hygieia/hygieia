@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.capitalone.dashboard.model.ActiveWidget;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -619,7 +620,7 @@ public class DynamicPipelineServiceImplTest {
 	}
 
 	private Dashboard setupDashboard(Component component) {
-		List<String> activeWidgets = new ArrayList<>();
+		List<ActiveWidget> activeWidgets = new ArrayList<>();
 		Dashboard rt = new Dashboard("foo", "bar", new Application("helloworld", component), new Owner("MarkRx", AuthType.STANDARD), DashboardType.Product,"ASVTEST","BAPTEST", activeWidgets, false, null);
 
 		Widget pipelineWidget = new Widget();

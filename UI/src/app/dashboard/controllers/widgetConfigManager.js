@@ -23,6 +23,7 @@
         ctrl.admin = admin;
         ctrl.toggleWidget = toggleWidget;
         ctrl.removeWidget = removeWidget;
+        ctrl.addWidget = addWidget;
         ctrl.onChange = onChange;
         ctrl.onDragStart = onDragStart;
         ctrl.onResizeStart = onResizeStart;
@@ -39,6 +40,7 @@
         }
 
         $scope.widgets = {};
+        $scope.widgetCountByType={};
         ctrl.widgets = widgetManager.getWidgets();
 
         $scope.options = {
@@ -52,17 +54,24 @@
             }else{
                 addWidget(widget);
             }
-
-            $event.target.classList.toggle("added");
         }
 
-        function addWidget(widgetTitle) {
-            var newWidget = { x:0, y:0, width:4, height:1,order :ctrl.count++ };
-            $scope.widgets[widgetTitle] = newWidget;
+        function addWidget(widgetTitle, $event) {
+            var newWidget = { x:0, y:0, width:4, height:1,order :ctrl.count++, type: widgetTitle };
+            var title;
+            var count = 0;
+            if ($scope.widgetCountByType[widgetTitle]) {
+                count =$scope.widgetCountByType[widgetTitle]+1;
+                $scope.widgetCountByType[widgetTitle]=count;
+            } else {
+                $scope.widgetCountByType[widgetTitle]=1;
+                count=1;
+            }
+            title=widgetTitle+count;
+            $scope.widgets[title] = newWidget;
         };
 
         function removeWidget(title, $event) {
-            if ($event != null) document.getElementById(title + '-button').classList.remove('added');
             delete $scope.widgets[title];
             ctrl.count--;
         };

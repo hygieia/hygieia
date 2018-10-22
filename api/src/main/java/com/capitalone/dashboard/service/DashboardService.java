@@ -59,10 +59,11 @@ public interface DashboardService {
      * Associate a CollectorItem to a Component
      *
      * @param componentId unique identifier of the Component
-     * @param collectorItemIds List of unique identifier of the CollectorItem
+     * @param collectorItemIdsToAdd List of unique identifier of the CollectorItem
+     * @param collectorItemIdsToRemove List of old collectorItems
      * @return Component
      */
-    Component associateCollectorToComponent(ObjectId componentId, List<ObjectId> collectorItemIds);
+    Component associateCollectorToComponent(ObjectId componentId, List<ObjectId> collectorItemIdsToAdd, List<ObjectId> collectorItemIdsToRemove);
 
     /**
      * Creates a new Widget and adds it to the Dashboard indicated by the dashboardId parameter.

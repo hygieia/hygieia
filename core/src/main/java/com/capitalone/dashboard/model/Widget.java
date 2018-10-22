@@ -2,7 +2,9 @@ package com.capitalone.dashboard.model;
 
 import org.bson.types.ObjectId;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,6 +16,16 @@ public class Widget {
     private String name;
     private ObjectId componentId;
     private Map<String,Object> options = new HashMap<>();
+    private List<ObjectId> collectorItemIds = new ArrayList<>();
+
+    public List<ObjectId> getCollectorItemIds() {
+        return collectorItemIds;
+    }
+
+    public void setCollectorItemIds(List<ObjectId> collectorItemIds) {
+        this.collectorItemIds.clear();
+        this.collectorItemIds.addAll(collectorItemIds);
+    }
 
     public ObjectId getId() {
         return id;

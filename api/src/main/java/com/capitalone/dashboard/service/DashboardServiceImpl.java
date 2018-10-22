@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import com.capitalone.dashboard.ApiSettings;
+import com.capitalone.dashboard.model.ActiveWidget;
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -240,7 +241,8 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public Component associateCollectorToComponent(ObjectId componentId, List<ObjectId> collectorItemIds) {
+    //TODO this will need changing!!!
+    public Component associateCollectorToComponent(ObjectId componentId, List<ObjectId> collectorItemIds, List<ObjectId> oldCollectorItems) {
         if (componentId == null || collectorItemIds == null) {
             // Not all widgets gather data from collectors
             return null;
@@ -505,22 +507,22 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public Dashboard updateDashboardWidgets(ObjectId dashboardId, Dashboard request) throws HygieiaException {
         Dashboard dashboard = get(dashboardId);
-        List<String> existingActiveWidgets = dashboard.getActiveWidgets();
+        List<ActiveWidget> existingActiveWidgets = dashboard.getActiveWidgets();
         List<Component> components = dashboard.getApplication().getComponents();
-        List<String> widgetToDelete =  findUpdateCollectorItems(existingActiveWidgets,request.getActiveWidgets());
+        List<ActiveWidget> widgetToDelete =  findDeletedWidgets(existingActiveWidgets,request.getActiveWidgets());
         List<Widget> widgets = dashboard.getWidgets();
         ObjectId componentId = components.get(0)!=null?components.get(0).getId():null;
         List<Integer> indexList = new ArrayList<>();
         List<CollectorType> collectorTypesToDelete = new ArrayList<>();
         List<Widget> updatedWidgets = new ArrayList<>();
 
-        for (String widgetName: widgetToDelete) {
+        for (ActiveWidget activeWidget: widgetToDelete) {
             for (Widget widget:widgets) {
-                if(widgetName.equalsIgnoreCase(widget.getName())){
+                if(activeWidget.getTitle().equalsIgnoreCase(widget.getName())){
                     int widgetIndex = widgets.indexOf(widget);
                     indexList.add(widgetIndex);
-                    collectorTypesToDelete.add(findCollectorType(widgetName));
-                    if(widgetName.equalsIgnoreCase("codeanalysis")){
+                    collectorTypesToDelete.add(findCollectorType(activeWidget.getType()));
+                    if(activeWidget.getTitle().equalsIgnoreCase("codeanalysis")){
                         collectorTypesToDelete.add(CollectorType.CodeQuality);
                         collectorTypesToDelete.add(CollectorType.StaticSecurityScan);
                         collectorTypesToDelete.add(CollectorType.LibraryPolicy);
@@ -585,8 +587,8 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
 
-    private List<String> findUpdateCollectorItems(List<String> existingWidgets,List<String> currentWidgets){
-        List<String> result = existingWidgets.stream().filter(elem -> !currentWidgets.contains(elem)).collect(Collectors.toList());
+    private List<ActiveWidget> findDeletedWidgets(List<ActiveWidget> existingWidgets, List<ActiveWidget> newWidgets){
+        List<ActiveWidget> result = existingWidgets.stream().filter(elem -> !newWidgets.contains(elem)).collect(Collectors.toList());
         return result;
     }
 

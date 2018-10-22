@@ -52,7 +52,7 @@ package com.capitalone.dashboard.fixture;
  			component.setName(compName);
  			application = new Application(appName, component);
  		}
-		List<String> activeWidgets = new ArrayList<>();
+		List<ActiveWidget> activeWidgets = new ArrayList<>();
 		return new Dashboard(template, title, application, new Owner(owner, AuthType.STANDARD), type,configItemAppName, configItemComponentName,activeWidgets, false, ScoreDisplayType.HEADER);
 	}
 

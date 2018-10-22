@@ -10,8 +10,9 @@
         <div class="wrapper">
             <div class="sidebar">
                 <ul>
-                    <li ng-repeat="(title, widget) in ctrl.widgets"  ng-if="title!='product' && title!='monitor2'"><a id="{{title}}-button" ng-click="ctrl.toggleWidget(title, $event)">
-                        {{title}}</a></li>
+                    <li ng-repeat="(title, widget) in ctrl.widgets"  ng-if="title!='product' && title!='monitor2'">{{title}}<a id="{{title}}-remove-button" ng-click="ctrl.removeWidget(title, $event)">
+                        -</a><a id="{{title}}-add-button" ng-click="ctrl.addWidget(title, $event)">
+                        +</a></li>
                 </ul>
                 <br>
 
