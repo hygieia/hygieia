@@ -71,6 +71,9 @@ auth.authenticationProviders=${AUTH_AUTHENTICATION_PROVIDERS:-STANDARD}
 # auth.ldapBindUser=${AUTH_LDAP_BIND_USER:-}
 # auth.ldapBindPass=${AUTH_LDAP_BIND_PASS:-}
 
+# Disable LDAP group Authorization, avoid '[LDAP: error code 32 - No Such Object]' with some LDAP servers
+# auth.ldapDisableGroupAuthorization=${AUTH_LDAP_DISABLE_GROUP_AUTHORIZATION:-false}
+
 #Monitor Widget proxy credentials
 # monitor.proxy.username=${MONITOR_PROXY_USERNAME:-}
 # monitor.proxy.password=${MONITOR_PROXY_PASSWORD:-}
