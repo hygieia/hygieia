@@ -10,7 +10,6 @@ branches:
 
 cache:
   directories:
-    - "$HOME/.m2"
     - "$TRAVIS_BUILD_DIR/UI/node_modules"
 
 install: true

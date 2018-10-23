@@ -58,6 +58,15 @@ public class CodeQualityController {
                 .body(response);
     }
 
+    @RequestMapping(value = "/v2/quality/static-analysis", method = POST,
+            consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> createStaticAnanlysisV2(@Valid @RequestBody CodeQualityCreateRequest request) throws HygieiaException {
+        String response = codeQualityService.createV2(request);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
     @RequestMapping(value = "/quality/security-analysis", method = GET, produces = APPLICATION_JSON_VALUE)
     public DataResponse<Iterable<CodeQuality>> qualitySecurityAnalysis(@Valid CodeQualityRequest request) {
         request.setType(CodeQualityType.SecurityAnalysis);

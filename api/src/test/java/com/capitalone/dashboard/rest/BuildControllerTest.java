@@ -2,6 +2,8 @@ package com.capitalone.dashboard.rest;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -10,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -22,6 +25,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -54,7 +58,7 @@ public class BuildControllerTest {
     @Test
     public void builds() throws Exception {
         Build build = makeBuild();
-        Iterable<Build> builds = Arrays.asList(build);
+        Iterable<Build> builds = Collections.singletonList(build);
         DataResponse<Iterable<Build>> response = new DataResponse<>(builds, 1);
         SCM scm = build.getSourceChangeSet().get(0);
 
@@ -91,29 +95,58 @@ public class BuildControllerTest {
     @Test
     public void insertBuildGoodRequest() throws Exception {
         BuildDataCreateRequest request = makeBuildRequest();
-        @SuppressWarnings("unused")
 		byte[] content = TestUtil.convertObjectToJsonBytes(request);
         when(buildService.create(Matchers.any(BuildDataCreateRequest.class))).thenReturn("123456");
-        mockMvc.perform(post("/build")
+        MvcResult result = mockMvc.perform(post("/build")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(request)))
-                .andExpect(status().isCreated());
-
+                .content(content))
+                .andExpect(status().isCreated()).andReturn();
+        String s = result.getResponse().getContentAsString();
+        assertEquals(s, "\"123456\"");
     }
+
+    @Test
+    public void insertBuildGoodRequestV2() throws Exception {
+        BuildDataCreateRequest request = makeBuildRequest();
+//        @SuppressWarnings("unused")
+        byte[] content = TestUtil.convertObjectToJsonBytes(request);
+        when(buildService.createV2(Matchers.any(BuildDataCreateRequest.class))).thenReturn("123456");
+        MvcResult result = mockMvc.perform(post("/v2/build")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(content))
+                .andExpect(status().isCreated()).andReturn();
+
+        String s = result.getResponse().getContentAsString();
+        assertEquals(s, "\"123456\"");
+    }
+
 
     @Test
     public void insertBuildBadRequest1() throws Exception {
         BuildDataCreateRequest request = makeBuildRequest();
         request.setJobName(null);
-        @SuppressWarnings("unused")
 		byte[] content = TestUtil.convertObjectToJsonBytes(request);
         when(buildService.create(Matchers.any(BuildDataCreateRequest.class))).thenReturn("123456");
         mockMvc.perform(post("/build")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(request)))
+                .content(content))
                 .andExpect(status().isBadRequest());
 
     }
+
+    @Test
+    public void insertBuildBadRequest1_V2() throws Exception {
+        BuildDataCreateRequest request = makeBuildRequest();
+        request.setJobName(null);
+        byte[] content = TestUtil.convertObjectToJsonBytes(request);
+        when(buildService.create(Matchers.any(BuildDataCreateRequest.class))).thenReturn("123456");
+        mockMvc.perform(post("/v2/build")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(content))
+                .andExpect(status().isBadRequest());
+
+    }
+
     private Build makeBuild() {
         Build build = new Build();
         build.setId(ObjectId.get());

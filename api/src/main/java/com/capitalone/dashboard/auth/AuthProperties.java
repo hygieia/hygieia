@@ -19,9 +19,9 @@ import com.google.common.collect.Lists;
 @EnableConfigurationProperties
 @ConfigurationProperties(prefix = "auth")
 public class AuthProperties {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuthProperties.class);
-	
+
 	private Long expirationTime;
 	private String secret;
 	private String ldapUserDnPattern;
@@ -34,32 +34,34 @@ public class AuthProperties {
 
 	private String ldapBindUser;
 	private String ldapBindPass;
-	
+
+	private boolean ldapDisableGroupAuthorization = false;
+
 	// -- SSO properties
 	private String userEid;
-	private String userEmail; 
+	private String userEmail;
 	private String userFirstName;
 	private String userLastName;
 	private String userMiddelInitials;
 	private String userDisplayName;
 	//-- end SSO properties
-	
-	public void setExpirationTime(Long expirationTime) {
-		this.expirationTime = expirationTime;
-	}
-	
+
 	public Long getExpirationTime() {
 		return expirationTime;
 	}
-	
-	public void setSecret(String secret) {
-		this.secret = secret;
+
+	public void setExpirationTime(Long expirationTime) {
+		this.expirationTime = expirationTime;
 	}
-	
+
 	public String getSecret() {
 		return secret;
 	}
-	
+
+	public void setSecret(String secret) {
+		this.secret = secret;
+	}
+
 	public String getLdapUserDnPattern() {
 		return ldapUserDnPattern;
 	}
@@ -75,14 +77,14 @@ public class AuthProperties {
 	public void setLdapServerUrl(String ldapServerUrl) {
 		this.ldapServerUrl = ldapServerUrl;
 	}
-	
-    public List<AuthType> getAuthenticationProviders() {
-        return authenticationProviders;
-    }
 
-    public void setAuthenticationProviders(List<AuthType> authenticationProviders) {
-        this.authenticationProviders = authenticationProviders;
-    }
+	public List<AuthType> getAuthenticationProviders() {
+		return authenticationProviders;
+	}
+
+	public void setAuthenticationProviders(List<AuthType> authenticationProviders) {
+		this.authenticationProviders = authenticationProviders;
+	}
 
 	public String getAdDomain() {
 		return adDomain;
@@ -99,14 +101,14 @@ public class AuthProperties {
 	public void setAdRootDn(String adRootDn) {
 		this.adRootDn = adRootDn;
 	}
-	
-    public String getAdUrl() {
-        return adUrl;
-    }
 
-    public void setAdUrl(String adUrl) {
-        this.adUrl = adUrl;
-    }
+	public String getAdUrl() {
+		return adUrl;
+	}
+
+	public void setAdUrl(String adUrl) {
+		this.adUrl = adUrl;
+	}
 
 	public String getLdapBindUser() {
 		return ldapBindUser;
@@ -124,20 +126,28 @@ public class AuthProperties {
 		this.ldapBindPass = ldapBindPass;
 	}
 
+	public boolean isLdapDisableGroupAuthorization() {
+		return ldapDisableGroupAuthorization;
+	}
+
+	public void setLdapDisableGroupAuthorization(boolean ldapDisableGroupAuthorization) {
+		this.ldapDisableGroupAuthorization = ldapDisableGroupAuthorization;
+	}
+
 	@PostConstruct
 	public void applyDefaultsIfNeeded() {
 		if (getSecret() == null) {
 			LOGGER.info("No JWT secret found in configuration, generating random secret by default.");
-			setSecret(UUID.randomUUID().toString().replace("-", ""));			
+			setSecret(UUID.randomUUID().toString().replace("-", ""));
 		}
-		
+
 		if (getExpirationTime() == null) {
 			LOGGER.info("No JWT expiration time found in configuration, setting to one day.");
-			setExpirationTime((long) 1000*60*60*24);
+			setExpirationTime((long) 1000 * 60 * 60 * 24);
 		}
-		
+
 		if (CollectionUtils.isEmpty(authenticationProviders)) {
-		    authenticationProviders.add(AuthType.STANDARD);
+			authenticationProviders.add(AuthType.STANDARD);
 		}
 	}
 

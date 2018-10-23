@@ -17,4 +17,5 @@ public interface BuildService {
     DataResponse<Iterable<Build>> search(BuildSearchRequest request);
 
     String create(BuildDataCreateRequest request) throws HygieiaException;
+    String createV2(BuildDataCreateRequest request) throws HygieiaException;
 }
