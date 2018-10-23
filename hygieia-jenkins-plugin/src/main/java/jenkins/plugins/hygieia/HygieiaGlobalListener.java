@@ -49,6 +49,8 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
                     listener.getLogger().println("Hygieia: Auto Published Build Complete Data. " + buildResponse.toString());
                 } else {
                     listener.getLogger().println("Hygieia: Failed Publishing Build Complete Data. " + buildResponse.toString());
+                    //If publish build data fails, skip rest of publishing steps.
+                    return;
                 }
             }
 

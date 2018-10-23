@@ -174,8 +174,7 @@ public class DeployServiceImpl implements DeployService {
     }
 
 
-    @Override
-    public String create(DeployDataCreateRequest request) throws HygieiaException {
+    protected EnvironmentComponent createDeploy(DeployDataCreateRequest request) throws HygieiaException {
         /*
           Step 1: create Collector if not there
           Step 2: create Collector item if not there
@@ -199,6 +198,19 @@ public class DeployServiceImpl implements DeployService {
             throw new HygieiaException("Failed inserting/updating Deployment information.", HygieiaException.ERROR_INSERTING_DATA);
         }
 
+        return deploy;
+
+    }
+
+    @Override
+    public String create(DeployDataCreateRequest request) throws HygieiaException {
+        EnvironmentComponent deploy = createDeploy(request);
+        return deploy.getId().toString();
+    }
+
+    @Override
+    public String createV2(DeployDataCreateRequest request) throws HygieiaException {
+        EnvironmentComponent deploy = createDeploy(request);
         return String.format("%s,%s", deploy.getId().toString(), deploy.getCollectorItemId().toString());
 
     }
@@ -273,8 +285,7 @@ public class DeployServiceImpl implements DeployService {
         return environmentComponentRepository.save(deploy); // Save = Update (if ID present) or Insert (if ID not there)
     }
 
-    @Override
-    public String createRundeckBuild(Document doc, Map<String, String[]> parameters, String executionId, String status) throws HygieiaException {
+    protected DeployDataCreateRequest createRundeck(Document doc, Map<String, String[]> parameters, String executionId, String status) throws HygieiaException {
         Node executionNode = doc.getElementsByTagName("execution").item(0);
         Node jobNode = executionNode.getFirstChild();
         RundeckXMLParser p = new RundeckXMLParser(doc);
@@ -301,7 +312,19 @@ public class DeployServiceImpl implements DeployService {
             request.setInstanceUrl(matcher.group());
         }
         request.setJobName(getChildNodeValue(jobNode, "name"));
+        return request;
+    }
+
+    @Override
+    public String createRundeckBuild(Document doc, Map<String, String[]> parameters, String executionId, String status) throws HygieiaException {
+        DeployDataCreateRequest request = createRundeck(doc, parameters, executionId, status);
         return create(request);
+    }
+
+    @Override
+    public String createRundeckBuildV2(Document doc, Map<String, String[]> parameters, String executionId, String status) throws HygieiaException {
+        DeployDataCreateRequest request = createRundeck(doc, parameters, executionId, status);
+        return createV2(request);
     }
 
     private String evaluateParametersOrDefault(Map<String, String[]> params,

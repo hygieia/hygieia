@@ -16,4 +16,5 @@ public interface CodeQualityService {
      */
     DataResponse<Iterable<CodeQuality>> search(CodeQualityRequest request);
     String create(CodeQualityCreateRequest request) throws HygieiaException;
+    String createV2(CodeQualityCreateRequest request) throws HygieiaException;
 }

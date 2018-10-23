@@ -1,18 +1,12 @@
 package com.capitalone.dashboard.collector;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
+import com.capitalone.dashboard.model.ArtifactoryRepo;
+import com.capitalone.dashboard.model.BaseArtifact;
+import com.capitalone.dashboard.model.BinaryArtifact;
+import com.capitalone.dashboard.model.RepoAndPattern;
+import com.capitalone.dashboard.model.ServerSetting;
+import com.capitalone.dashboard.util.ArtifactUtilTest;
+import com.capitalone.dashboard.util.Supplier;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,10 +20,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestOperations;
 
-import com.capitalone.dashboard.model.ArtifactoryRepo;
-import com.capitalone.dashboard.model.BinaryArtifact;
-import com.capitalone.dashboard.util.ArtifactUtilTest;
-import com.capitalone.dashboard.util.Supplier;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultArtifactoryClientTest {
@@ -45,8 +47,12 @@ public class DefaultArtifactoryClientTest {
     public void init() {
     	when(restOperationsSupplier.get()).thenReturn(rest);
         settings = new ArtifactorySettings();
-        settings.setServers(Collections.singletonList("http://localhost:8081/artifactory/"));
-        settings.setPatterns(Arrays.asList(	ArtifactUtilTest.IVY_PATTERN1, ArtifactUtilTest.IVY_ARTIFACT_PATTERN1, ArtifactUtilTest.MAVEN_PATTERN1));
+        ServerSetting serverSetting = new ServerSetting();
+		serverSetting.setUrl("http://localhost:8081/artifactory");
+		RepoAndPattern r = new RepoAndPattern();
+		r.setPatterns(Arrays.asList(ArtifactUtilTest.IVY_PATTERN1, ArtifactUtilTest.IVY_ARTIFACT_PATTERN1, ArtifactUtilTest.MAVEN_PATTERN1,ArtifactUtilTest.ARTIFACT_PATTERN));
+		serverSetting.setRepoAndPatterns(Collections.singletonList(r));
+        settings.setServers(Collections.singletonList(serverSetting));
         defaultArtifactoryClient = new DefaultArtifactoryClient(settings, restOperationsSupplier);
     }
     
@@ -80,8 +86,41 @@ public class DefaultArtifactoryClientTest {
     	List<BinaryArtifact> artifacts = defaultArtifactoryClient.getArtifacts(instanceUrl, repoName, 0);
     	assertThat(artifacts.size(), is(0));
     }
-    
-    @Test
+
+
+	@Test
+	public void testGetArtifactItems() throws Exception {
+		String artifactItemsJson = getJson("artifactItems.json");
+
+		String instanceUrl = "http://localhost:8081/artifactory/";
+		String aqlUrl = "http://localhost:8081/artifactory/api/search/aql";
+		String repoName = "release";
+
+		when(rest.exchange(eq(aqlUrl), eq(HttpMethod.POST), Matchers.any(HttpEntity.class), eq(String.class)))
+				.thenReturn(new ResponseEntity<>(artifactItemsJson, HttpStatus.OK));
+		List<BaseArtifact> baseArtifacts = defaultArtifactoryClient.getArtifactItems(instanceUrl, repoName, ArtifactUtilTest.ARTIFACT_PATTERN,0);
+		assertThat(baseArtifacts.size(), is(1));
+		assertThat(baseArtifacts.get(0).getArtifactItem().getArtifactName(),is("test-dev"));
+		assertThat(baseArtifacts.get(0).getArtifactItem().getInstanceUrl(),is("http://localhost:8081/artifactory/"));
+		assertThat(baseArtifacts.get(0).getArtifactItem().getRepoName(),is("repoName"));
+		assertThat(baseArtifacts.get(0).getArtifactItem().getPath(),is("dummy/test-dev"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifact().getCanonicalName(),is("manifest.json"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifact().getArtifactGroupId(),is("dummy"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifact().getActual_md5(),is("111aadc11ed11b1111df111d16d6c8d821112f1"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifact().getActual_sha1(),is("111aadc11ed11b1111df111d16d6c8d821112f1"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifact().getArtifactExtension(),is("json"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifact().getArtifactName(),is("test-dev"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifact().getType(),is("file"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifact().getModifiedBy(),is("robot"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifact().getModifiedTimeStamp(),is("2018-10-11T14:38:56.471Z"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifact().getCreatedBy(),is("robot"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifact().getCreatedTimeStamp(),is("2018-10-11T14:27:16.031Z"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifact().getArtifactVersion(),is("1"));
+
+	}
+
+
+	@Test
     public void testGetMavenArtifacts() throws Exception {
     	String mavenArtifactsJson = getJson("mavenArtifacts.json");
     	
