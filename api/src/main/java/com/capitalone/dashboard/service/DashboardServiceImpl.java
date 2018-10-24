@@ -590,7 +590,7 @@ public class DashboardServiceImpl implements DashboardService {
         if(widgetName.equalsIgnoreCase("repo")) return CollectorType.SCM;
         if(widgetName.equalsIgnoreCase("performanceanalysis")) return CollectorType.AppPerformance;
         if(widgetName.equalsIgnoreCase("cloud")) return CollectorType.Cloud;
-        if(widgetName.equalsIgnoreCase("chatops")) return CollectorType.ChatOps
+        if(widgetName.equalsIgnoreCase("chatops")) return CollectorType.ChatOps;
         if(widgetName.equalsIgnoreCase("test")) return CollectorType.Test;
         return null;
     }
