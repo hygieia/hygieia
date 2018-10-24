@@ -300,7 +300,8 @@ public class DashboardServiceTest {
         ObjectId collItemId1 = ObjectId.get();
         ObjectId collItemId2 = ObjectId.get();
 
-        List<ObjectId> collItemIds = Arrays.asList(collItemId2);
+        List<ObjectId> collItemIds = new ArrayList<>();
+        collItemIds.add(collItemId2);
 
         CollectorItem item1 = new CollectorItem();
         item1.setCollectorId(collId);
@@ -326,7 +327,7 @@ public class DashboardServiceTest {
         when(collectorRepository.findOne(collId)).thenReturn(collector);
         when(componentRepository.findOne(compId)).thenReturn(component);
 
-        dashboardService.associateCollectorToComponent(compId, collItemIds,null);
+        dashboardService.associateCollectorToComponent(compId, collItemIds,Arrays.asList(collItemId1));
 
         assertThat(component.getCollectorItems().get(CollectorType.Build), contains(item2));
         assertThat(item1.isEnabled(), is(false));

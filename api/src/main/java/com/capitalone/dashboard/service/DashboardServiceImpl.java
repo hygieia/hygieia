@@ -256,22 +256,28 @@ public class DashboardServiceImpl implements DashboardService {
         //Second: remove all the collectorItem association of the Collector Type  that came in
         HashSet<CollectorType> incomingTypes = new HashSet<>();
         HashMap<ObjectId, CollectorItem> toSaveCollectorItems = new HashMap<>();
-        for (ObjectId collectorItemId : collectorItemIds) {
-            CollectorItem collectorItem = collectorItemRepository.findOne(collectorItemId);
-            Collector collector = collectorRepository.findOne(collectorItem.getCollectorId());
-            if (!incomingTypes.contains(collector.getCollectorType())) {
-                incomingTypes.add(collector.getCollectorType());
-                List<CollectorItem> cItems = component.getCollectorItems(collector.getCollectorType());
-                // Save all collector items as disabled for now
-                if (!CollectionUtils.isEmpty(cItems)) {
-                    for (CollectorItem ci : cItems) {
-                        //if item is orphaned, disable it. Otherwise keep it enabled.
-                        ci.setEnabled(!isLonely(ci, collector, component));
-                        toSaveCollectorItems.put(ci.getId(), ci);
+        if (null!=oldCollectorItems) {
+            for (ObjectId collectorItemId : oldCollectorItems) {
+                CollectorItem collectorItem = collectorItemRepository.findOne(collectorItemId);
+                Collector collector = collectorRepository.findOne(collectorItem.getCollectorId());
+                if (!incomingTypes.contains(collector.getCollectorType())) {
+                    incomingTypes.add(collector.getCollectorType());
+                    List<CollectorItem> cItems = component.getCollectorItems(collector.getCollectorType());
+                    // Save all collector items as disabled for now
+                    if (!CollectionUtils.isEmpty(cItems)) {
+                        for (CollectorItem ci : cItems) {
+                            //if item is orphaned, disable it. Otherwise keep it enabled.
+                            ci.setEnabled(!isLonely(ci, collector, component));
+                            toSaveCollectorItems.put(ci.getId(), ci);
+                        }
+                    }
+                    // remove the old collector item
+                    List<CollectorItem> allOfType = component.getCollectorItems().get(collector.getCollectorType());
+                    allOfType.remove(collectorItem);
+                    if (allOfType.isEmpty()) {
+                        component.getCollectorItems().remove(collector.getCollectorType());
                     }
                 }
-                // remove all collector items of a type
-                component.getCollectorItems().remove(collector.getCollectorType());
             }
         }
 

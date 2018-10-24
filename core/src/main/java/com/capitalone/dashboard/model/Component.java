@@ -55,7 +55,9 @@ public class Component extends BaseModel {
     public void addCollectorItem(CollectorType collectorType, CollectorItem collectorItem) {
         // Currently only one collectorItem per collectorType is supported
         if (collectorItems.get(collectorType) == null) {
-            collectorItems.put(collectorType, Arrays.asList(collectorItem));
+            List<CollectorItem> newList = new ArrayList<>();
+            newList.add(collectorItem);
+            collectorItems.put(collectorType,newList);
         } else {
             List<CollectorItem> existing = new ArrayList<> (collectorItems.get(collectorType));
             if (isNewCollectorItem(existing, collectorItem)) {
