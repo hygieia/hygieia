@@ -260,23 +260,21 @@ public class DashboardServiceImpl implements DashboardService {
             for (ObjectId collectorItemId : oldCollectorItems) {
                 CollectorItem collectorItem = collectorItemRepository.findOne(collectorItemId);
                 Collector collector = collectorRepository.findOne(collectorItem.getCollectorId());
-                if (!incomingTypes.contains(collector.getCollectorType())) {
-                    incomingTypes.add(collector.getCollectorType());
-                    List<CollectorItem> cItems = component.getCollectorItems(collector.getCollectorType());
-                    // Save all collector items as disabled for now
-                    if (!CollectionUtils.isEmpty(cItems)) {
-                        for (CollectorItem ci : cItems) {
-                            //if item is orphaned, disable it. Otherwise keep it enabled.
-                            ci.setEnabled(!isLonely(ci, collector, component));
-                            toSaveCollectorItems.put(ci.getId(), ci);
-                        }
+                incomingTypes.add(collector.getCollectorType());
+                List<CollectorItem> cItems = component.getCollectorItems(collector.getCollectorType());
+                // Save all collector items as disabled for now
+                if (!CollectionUtils.isEmpty(cItems)) {
+                    for (CollectorItem ci : cItems) {
+                        //if item is orphaned, disable it. Otherwise keep it enabled.
+                        ci.setEnabled(!isLonely(ci, collector, component));
+                        toSaveCollectorItems.put(ci.getId(), ci);
                     }
-                    // remove the old collector item
-                    List<CollectorItem> allOfType = component.getCollectorItems().get(collector.getCollectorType());
-                    allOfType.remove(collectorItem);
-                    if (allOfType.isEmpty()) {
-                        component.getCollectorItems().remove(collector.getCollectorType());
-                    }
+                }
+                // remove the old collector item
+                List<CollectorItem> allOfType = component.getCollectorItems().get(collector.getCollectorType());
+                allOfType.remove(collectorItem);
+                if (allOfType.isEmpty()) {
+                    component.getCollectorItems().remove(collector.getCollectorType());
                 }
             }
         }

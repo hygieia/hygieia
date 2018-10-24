@@ -375,7 +375,7 @@ public class DashboardServiceTest {
         when(componentRepository.findOne(compId)).thenReturn(component1);
         when(customRepositoryQuery.findComponents(collector, item1)).thenReturn(Arrays.asList(component1, component2));
 
-        dashboardService.associateCollectorToComponent(compId, collItemIds,null);
+        dashboardService.associateCollectorToComponent(compId, collItemIds,Arrays.asList(collItemId1));
 
         assertThat(component1.getCollectorItems().get(CollectorType.Build), contains(item2));
         assertThat(item1.isEnabled(), is(true));
@@ -396,7 +396,7 @@ public class DashboardServiceTest {
         ObjectId collItemId2 = ObjectId.get();
         ObjectId collItemId3 = ObjectId.get();
 
-        List<ObjectId> collItemIds = Arrays.asList(collItemId2, collItemId3);
+        List<ObjectId> collItemIds =new ArrayList<>(Arrays.asList(collItemId2, collItemId3));
 
         HashSet<CollectorItem> set = new HashSet<>();
 
@@ -427,7 +427,7 @@ public class DashboardServiceTest {
         when(collectorRepository.findOne(collId)).thenReturn(collector);
         when(componentRepository.findOne(compId)).thenReturn(component);
 
-        dashboardService.associateCollectorToComponent(compId, collItemIds,null);
+        dashboardService.associateCollectorToComponent(compId, collItemIds,Arrays.asList(collItemId1));
 
         assertThat(component.getCollectorItems().get(CollectorType.Build), contains(item2, item3));
         assertThat(item1.isEnabled(), is(false));
@@ -481,7 +481,7 @@ public class DashboardServiceTest {
         when(collectorRepository.findOne(collId)).thenReturn(collector);
         when(componentRepository.findOne(compId)).thenReturn(component);
 
-        dashboardService.associateCollectorToComponent(compId, collItemIds,null);
+        dashboardService.associateCollectorToComponent(compId, collItemIds,Arrays.asList(collItemId1, collItemId2));
 
         assertThat(component.getCollectorItems().get(CollectorType.Build), contains(item3));
         assertThat(item1.isEnabled(), is(false));
