@@ -116,17 +116,18 @@ public class AuditCollectorUtil {
             audit.setDataStatus(DataStatus.NOT_CONFIGURED);
             audit.setAuditStatus(AuditStatus.NA);
             return audit;
-        } else if (jsonArray == null || CollectionUtils.isEmpty(jsonArray)) {
+        }
+        if (jsonArray == null || CollectionUtils.isEmpty(jsonArray)) {
             audit.setAuditStatus(AuditStatus.NA);
             audit.setDataStatus(DataStatus.NO_DATA);
             return audit;
-        } else if (isCollectorError(jsonArray)) {
+        }
+        if (isCollectorError(jsonArray)) {
             audit.setAuditStatus(AuditStatus.NA);
             audit.setDataStatus(DataStatus.ERROR);
             return audit;
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
@@ -144,21 +145,26 @@ public class AuditCollectorUtil {
     private static boolean isConfigured(AuditType auditType, JSONArray jsonArray) {
         if (auditType.equals(AuditType.CODE_REVIEW)) {
             return (jsonArray.toJSONString().contains(DashboardAuditStatus.DASHBOARD_REPO_CONFIGURED.name()) ? true : false);
-        } else if (auditType.equals(AuditType.CODE_QUALITY)) {
-            return (jsonArray.toJSONString().contains(DashboardAuditStatus.DASHBOARD_CODEQUALITY_CONFIGURED.name()) ? true : false);
-        } else if (auditType.equals(AuditType.STATIC_SECURITY_ANALYSIS)) {
-            return (jsonArray.toJSONString().contains(DashboardAuditStatus.DASHBOARD_STATIC_SECURITY_ANALYSIS_CONFIGURED.name()) ? true : false);
-        } else if (auditType.equals(AuditType.LIBRARY_POLICY)) {
-            return (jsonArray.toJSONString().contains(DashboardAuditStatus.DASHBOARD_LIBRARY_POLICY_ANALYSIS_CONFIGURED.name()) ? true : false);
-        } else if (auditType.equals(AuditType.TEST_RESULT)) {
-            return (jsonArray.toJSONString().contains(DashboardAuditStatus.DASHBOARD_TEST_CONFIGURED.name()) ? true : false);
-        } else if (auditType.equals(AuditType.PERF_TEST)) {
-            return (jsonArray.toJSONString().contains(DashboardAuditStatus.DASHBOARD_PERFORMANCE_TEST_CONFIGURED.name()) ? true : false);
-        } else if (auditType.equals(AuditType.BUILD_REVIEW)) {
-            return (jsonArray.toJSONString().contains(DashboardAuditStatus.DASHBOARD_BUILD_CONFIGURED.name()) ? true : false);
-        } else {
-            return false;
         }
+        if (auditType.equals(AuditType.CODE_QUALITY)) {
+            return (jsonArray.toJSONString().contains(DashboardAuditStatus.DASHBOARD_CODEQUALITY_CONFIGURED.name()) ? true : false);
+        }
+        if (auditType.equals(AuditType.STATIC_SECURITY_ANALYSIS)) {
+            return (jsonArray.toJSONString().contains(DashboardAuditStatus.DASHBOARD_STATIC_SECURITY_ANALYSIS_CONFIGURED.name()) ? true : false);
+        }
+        if (auditType.equals(AuditType.LIBRARY_POLICY)) {
+            return (jsonArray.toJSONString().contains(DashboardAuditStatus.DASHBOARD_LIBRARY_POLICY_ANALYSIS_CONFIGURED.name()) ? true : false);
+        }
+        if (auditType.equals(AuditType.TEST_RESULT)) {
+            return (jsonArray.toJSONString().contains(DashboardAuditStatus.DASHBOARD_TEST_CONFIGURED.name()) ? true : false);
+        }
+        if (auditType.equals(AuditType.PERF_TEST)) {
+            return (jsonArray.toJSONString().contains(DashboardAuditStatus.DASHBOARD_PERFORMANCE_TEST_CONFIGURED.name()) ? true : false);
+        }
+        if (auditType.equals(AuditType.BUILD_REVIEW)) {
+            return (jsonArray.toJSONString().contains(DashboardAuditStatus.DASHBOARD_BUILD_CONFIGURED.name()) ? true : false);
+        }
+        return false;
     }
 
 
