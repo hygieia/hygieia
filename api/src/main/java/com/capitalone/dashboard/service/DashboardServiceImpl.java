@@ -270,25 +270,30 @@ public class DashboardServiceImpl implements DashboardService {
                         ci.setEnabled(!isLonely(ci, collector, component));
                         toSaveCollectorItems.put(ci.getId(), ci);
                     }
-                }≠
+                }
                 // remove all collector items of a type
                 component.getCollectorItems().remove(collector.getCollectorType());
 
 
             }
         }
-//      if(incomingTypes.name.contains("Test") || incomingTypes.contains("CodeQuality") || incomingTypes.contains("LibraryPolicy") || incomingTypes.contains("StaticSecurityScan")){
-        System.out.println(incomingTypes.getClass());
-        // If a collector type is within the code analysis widget, check to see if any of the remaining fields were passed values
-        if(incomingTypes.contains(CollectorType.Test) == true){
-            System.out.println("Inside if");
-            if(incomingTypes.contains("Test")){
-                component.getCollectorItems().remove("Test");
-            }
-        } else {
-            System.out.println("Not true");
-        }
 
+        // If a collector type is within the code analysis widget, check to see if any of the remaining fields were passed values
+        if(incomingTypes.contains(CollectorType.Test) || incomingTypes.contains(CollectorType.StaticSecurityScan) || incomingTypes.contains(CollectorType.CodeQuality) || incomingTypes.contains(CollectorType.LibraryPolicy) ){
+            System.out.println("Inside if");
+            if(!incomingTypes.contains(CollectorType.Test)){
+                component.getCollectorItems().remove(CollectorType.Test);
+            }
+            if(!incomingTypes.contains(CollectorType.StaticSecurityScan)){
+                component.getCollectorItems().remove(CollectorType.StaticSecurityScan);
+            }
+            if(!incomingTypes.contains(CollectorType.CodeQuality)){
+                component.getCollectorItems().remove(CollectorType.CodeQuality);
+            }
+            if(!incomingTypes.contains(CollectorType.LibraryPolicy)){
+                component.getCollectorItems().remove(CollectorType.LibraryPolicy);
+            }
+        }
 
         //Last step: add collector items that came in
         for (ObjectId collectorItemId : collectorItemIds) {
