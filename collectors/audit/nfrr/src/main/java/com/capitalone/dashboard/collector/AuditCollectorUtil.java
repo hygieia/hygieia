@@ -142,6 +142,7 @@ public class AuditCollectorUtil {
     /**
      * Check for dashboard audit type configuration
      */
+    @SuppressWarnings("PMD.NPathComplexity")
     private static boolean isConfigured(AuditType auditType, JSONArray jsonArray) {
         if (auditType.equals(AuditType.CODE_REVIEW)) {
             return (jsonArray.toJSONString().contains(DashboardAuditStatus.DASHBOARD_REPO_CONFIGURED.name()) ? true : false);
