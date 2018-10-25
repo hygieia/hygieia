@@ -39,15 +39,10 @@ public class AuditCollectorTest {
         assertThat(collector).isNotNull().isInstanceOf(AuditCollector.class);
         assertThat(collector.isEnabled()).isTrue();
         assertThat(collector.isOnline()).isTrue();
-        AssertionsForInterfaceTypes.assertThat(collector.getBuildServers()).contains(auditSettings.getServers().get(0));
+        AssertionsForInterfaceTypes.assertThat(collector.getAuditServers()).contains(auditSettings.getServers().get(0));
         AssertionsForInterfaceTypes.assertThat(collector.getCollectorType()).isEqualTo(CollectorType.Audit);
         assertThat(collector.getName()).isEqualTo("AuditCollector");
-        assertThat(collector.getAllFields().get("instanceUrl")).isEqualTo("");
-        assertThat(collector.getAllFields().get("jobName")).isEqualTo("");
-        assertThat(collector.getAllFields().get("jobUrl")).isEqualTo("");
-        assertThat(collector.getUniqueFields().get("instanceUrl")).isEqualTo("");
-        assertThat(collector.getUniqueFields().get("jobName")).isEqualTo("");
-        assertThat(collector.getUniqueFields().get("jobUrl")).isEqualTo("");
+        assertThat(collector.getCollectorType()).isEqualTo(CollectorType.Audit);
     }
 
     @Test
