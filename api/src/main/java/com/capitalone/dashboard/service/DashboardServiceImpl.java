@@ -46,6 +46,8 @@ import com.google.common.collect.Lists;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.capitalone.dashboard.model.CollectorType.*;
+
 @Service
 public class DashboardServiceImpl implements DashboardService {
 
@@ -268,11 +270,25 @@ public class DashboardServiceImpl implements DashboardService {
                         ci.setEnabled(!isLonely(ci, collector, component));
                         toSaveCollectorItems.put(ci.getId(), ci);
                     }
-                }
+                }≠
                 // remove all collector items of a type
                 component.getCollectorItems().remove(collector.getCollectorType());
+
+
             }
         }
+//      if(incomingTypes.name.contains("Test") || incomingTypes.contains("CodeQuality") || incomingTypes.contains("LibraryPolicy") || incomingTypes.contains("StaticSecurityScan")){
+        System.out.println(incomingTypes.getClass());
+        // If a collector type is within the code analysis widget, check to see if any of the remaining fields were passed values
+        if(incomingTypes.contains(CollectorType.Test) == true){
+            System.out.println("Inside if");
+            if(incomingTypes.contains("Test")){
+                component.getCollectorItems().remove("Test");
+            }
+        } else {
+            System.out.println("Not true");
+        }
+
 
         //Last step: add collector items that came in
         for (ObjectId collectorItemId : collectorItemIds) {
