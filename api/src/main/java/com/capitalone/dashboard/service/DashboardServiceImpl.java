@@ -280,7 +280,6 @@ public class DashboardServiceImpl implements DashboardService {
 
         // If a collector type is within the code analysis widget, check to see if any of the remaining fields were passed values
         if(incomingTypes.contains(CollectorType.Test) || incomingTypes.contains(CollectorType.StaticSecurityScan) || incomingTypes.contains(CollectorType.CodeQuality) || incomingTypes.contains(CollectorType.LibraryPolicy) ){
-            System.out.println("Inside if");
             if(!incomingTypes.contains(CollectorType.Test)){
                 component.getCollectorItems().remove(CollectorType.Test);
             }
