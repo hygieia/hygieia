@@ -29,6 +29,12 @@ public class ApiSettings {
     @Value("${threshold:80}")
     private int threshold;
     private List<String> validStoryStatus;
+    @Value("${githubWebhookEnabled:false}")
+    private boolean githubWebhookEnabled;
+
+    public boolean isGithubWebhookEnabled() { return githubWebhookEnabled; }
+
+    public void setGithubWebhookEnabled(boolean githubWebhookEnabled) { this.githubWebhookEnabled = githubWebhookEnabled; }
 
     public String getKey() {
         return key;

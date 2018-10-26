@@ -69,7 +69,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
     }
 
     @Override
-    public TestResultsAuditResponse evaluate(CollectorItem collectorItem, long beginDate, long endDate, Map<?, ?> dummy) {
+    public TestResultsAuditResponse evaluate(CollectorItem collectorItem, List<CollectorItem> collectorItemList, long beginDate, long endDate, Map<?, ?> dummy) {
         return null;
     }
 

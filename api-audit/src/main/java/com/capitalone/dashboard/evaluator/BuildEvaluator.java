@@ -52,11 +52,11 @@ public class BuildEvaluator extends Evaluator<BuildAuditResponse> {
 
         Map<String, List<CollectorItem>> repoData = new HashMap<>();
         repoData.put("repos", repoItems);
-        return buildItems.stream().map(item -> evaluate(item, beginDate, endDate, repoData)).collect(Collectors.toList());
+        return buildItems.stream().map(item -> evaluate(item, null, beginDate, endDate, repoData)).collect(Collectors.toList());
     }
 
     @Override
-    public BuildAuditResponse evaluate(CollectorItem collectorItem, long beginDate, long endDate, Map<?, ?> data) {
+    public BuildAuditResponse evaluate(CollectorItem collectorItem, List<CollectorItem> collectorItemList, long beginDate, long endDate, Map<?, ?> data) {
         List<CollectorItem> repoItems = (List<CollectorItem>) data.get("repos");
         return getBuildJobAuditResponse(collectorItem, beginDate, endDate, repoItems);
     }

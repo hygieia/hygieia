@@ -42,11 +42,11 @@ public class LibraryPolicyEvaluator extends Evaluator<LibraryPolicyAuditResponse
             throw new AuditException("No code quality job configured", AuditException.NO_COLLECTOR_ITEM_CONFIGURED);
         }
 
-        return libraryPolicyItems.stream().map(item -> evaluate(item, beginDate, endDate, null)).collect(Collectors.toList());
+        return libraryPolicyItems.stream().map(item -> evaluate(item, null, beginDate, endDate, null)).collect(Collectors.toList());
     }
 
     @Override
-    public LibraryPolicyAuditResponse evaluate(CollectorItem collectorItem, long beginDate, long endDate, Map<?, ?> data) {
+    public LibraryPolicyAuditResponse evaluate(CollectorItem collectorItem, List<CollectorItem> collectorItemList, long beginDate, long endDate, Map<?, ?> data) {
         return getLibraryPolicyAuditResponse(collectorItem, beginDate, endDate);
     }
 

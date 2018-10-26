@@ -33,6 +33,9 @@ public interface CollectorItemRepository extends BaseCollectorItemRepository<Col
     @Query(value="{ 'collectorId' : ?0, options.url : {$regex : '^?1$', $options: 'i'}, options.branch : {$regex : '^?2$', $options: 'i'}, enabled : ?3}")
     CollectorItem findRepoByUrlAndBranch(ObjectId collectorId, String url, String branch, boolean enabled);
 
+    @Query(value="{ 'collectorId' : ?0, options.url : {$regex : '^?1$', $options: 'i'}, enabled : ?2}")
+    List<CollectorItem> findRepoByUrl(ObjectId collectorId, String url, boolean enabled);
+
     @Query(value="{ 'collectorId': { $in: ?0 }, ?1 : {$regex : '.*?2.*', $options: 'i'}}")
     Page<CollectorItem> findByCollectorIdAndSearchField(List<ObjectId> collectorId, String searchField, String searchFieldValue, Pageable pageable);
 
