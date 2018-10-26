@@ -1,0 +1,71 @@
+{
+  "_id" : "5982430ef6c08708ca6c7f4a",
+  "template" : "capone",
+  "title" : "auditTestDashboard",
+  "widgets" : [
+    {
+      "_id" : "59889bb9f6c08708ca6c8a79",
+      "name" : "feature",
+      "componentId" : "5982430ef6c08708ca6c7f49",
+      "options" : {
+        "sprintType" : "scrum",
+        "featureTool" : "Jira",
+        "showStatus" : {
+          "kanban" : false,
+          "scrum" : true
+        },
+        "id" : "feature0",
+        "projectName" : "Delivery Transformation Tools",
+        "projectId" : "12828",
+        "estimateMetricType" : "storypoints",
+        "listType" : "epics"
+      }
+    },
+    {
+      "_id" : "5988c546f6c08708ca6c8b21",
+      "name" : "build",
+      "componentId" : "5982430ef6c08708ca6c7f49",
+      "options" : {
+        "id" : "build0",
+        "buildDurationThreshold" : 3,
+        "consecutiveFailureThreshold" : 5
+      }
+    },
+    {
+      "_id" : "5acfafeaca0bc905a14da5da",
+      "name" : "performanceanalysis",
+      "componentId" : "5982430ef6c08708ca6c7f49",
+      "options" : {
+        "id" : "performance0"
+      }
+    },
+    {
+      "_id" : "5acfb01bca0bc905a14da5db",
+      "name" : "codeanalysis",
+      "componentId" : "5982430ef6c08708ca6c7f49",
+      "options" : {
+        "id" : "codeanalysis0",
+        "testJobNames" : [
+          "Name1"
+        ]
+      }
+    }
+  ],
+  "owners" : [
+    {
+      "username" : "praveen",
+      "authType" : "LDAP"
+    }
+  ],
+  "type" : "Team",
+  "application" : {
+    "name" : "Hygieia",
+    "components" : [
+    ]
+  },
+  "validServiceName" : "TestBusServ",
+  "validAppName" : "confItem",
+  "remoteCreated" : false,
+  "scoreEnabled" : false,
+  "scoreDisplay" : "HEADER"
+}
