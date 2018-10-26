@@ -535,6 +535,7 @@ public class DashboardServiceImpl implements DashboardService {
                         collectorTypesToDelete.add(CollectorType.CodeQuality);
                         collectorTypesToDelete.add(CollectorType.StaticSecurityScan);
                         collectorTypesToDelete.add(CollectorType.LibraryPolicy);
+                        collectorTypesToDelete.add(CollectorType.Test);
                     }
                 }
             }
@@ -583,6 +584,7 @@ public class DashboardServiceImpl implements DashboardService {
             collectorTypesToDelete.add(CollectorType.CodeQuality);
             collectorTypesToDelete.add(CollectorType.StaticSecurityScan);
             collectorTypesToDelete.add(CollectorType.LibraryPolicy);
+            collectorTypesToDelete.add(CollectorType.Test);
         }
         if(componentId!=null){
             Component component = componentRepository.findOne(componentId);
@@ -609,6 +611,7 @@ public class DashboardServiceImpl implements DashboardService {
         if(widgetName.equalsIgnoreCase("performanceanalysis")) return CollectorType.AppPerformance;
         if(widgetName.equalsIgnoreCase("cloud")) return CollectorType.Cloud;
         if(widgetName.equalsIgnoreCase("chatops")) return CollectorType.ChatOps;
+        if(widgetName.equalsIgnoreCase("test")) return CollectorType.Test;
         return null;
     }
 
