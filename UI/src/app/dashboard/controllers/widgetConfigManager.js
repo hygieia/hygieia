@@ -59,15 +59,19 @@
         function addWidget(widgetType, $event) {
             var newWidget = { x:0, y:0, width:4, height:1,order :ctrl.count++, type: widgetType };
             var title;
-            var count = 0;
-            if ($scope.widgetCountByType[widgetType]) {
-                count =$scope.widgetCountByType[widgetType]+1;
+            if (widgetType === 'cloud' || widgetType === 'pipeline') {
+                // restrict these to 1!
+                title = widgetType;
+                $scope.widgetCountByType[widgetType]=1;
+            } else if ($scope.widgetCountByType[widgetType]) {
+                var count =$scope.widgetCountByType[widgetType]+1;
                 $scope.widgetCountByType[widgetType]=count;
+                title=widgetType+count;
             } else {
                 $scope.widgetCountByType[widgetType]=1;
-                count=1;
+                var count=1;
+                title=widgetType+count;
             }
-            title=widgetType+count;
             $scope.widgets[title] = newWidget;
         };
 

@@ -28,11 +28,12 @@
             var widgetObj = {};
             ctrl.widgets = dashboard.activeWidgets;
             _(ctrl.widgets).forEach(function (widget) {
-                widgetObj[widget.title] = widget;
                 if (widget.type == 'pipeline') {
                     ctrl.pipelineInd = true;
                 } else if (widget.type == 'cloud') {
                     ctrl.cloudInd = true;
+                } else {
+                    widgetObj[widget.title] = widget;
                 }
             });
             //Check in parent controller if score is enabled
