@@ -56,39 +56,34 @@
             }
         }
 
-        function addWidget(widgetTitle, $event) {
-            var newWidget = { x:0, y:0, width:4, height:1,order :ctrl.count++, type: widgetTitle };
+        function addWidget(widgetType, $event) {
+            var newWidget = { x:0, y:0, width:4, height:1,order :ctrl.count++, type: widgetType };
             var title;
             var count = 0;
-            if ($scope.widgetCountByType[widgetTitle]) {
-                count =$scope.widgetCountByType[widgetTitle]+1;
-                $scope.widgetCountByType[widgetTitle]=count;
+            if ($scope.widgetCountByType[widgetType]) {
+                count =$scope.widgetCountByType[widgetType]+1;
+                $scope.widgetCountByType[widgetType]=count;
             } else {
-                $scope.widgetCountByType[widgetTitle]=1;
+                $scope.widgetCountByType[widgetType]=1;
                 count=1;
             }
-            title=widgetTitle+count;
+            title=widgetType+count;
             $scope.widgets[title] = newWidget;
         };
 
         function removeWidget(title, $event) {
             delete $scope.widgets[title];
-            ctrl.count--;
         };
 
         function saveDashboard($event,form) {
             var widgets = [];
             var order=[];
-            _($scope.widgets).forEach(function(widget){
-                var title = widget.title;
-
+            _($scope.widgets).forEach(function(widget, title){
+                var activeWidget = {title:title, type: widget.type};
+                widgets.push(activeWidget);
+                removeWidget(activeWidget.title, $event);
+                order[widget.order] = activeWidget.title;
             });
-            for (var title in $scope.widgets) {
-                widgets.push(title);
-                var obj = $scope.widgets[title];
-                removeWidget(title, $event);
-                order[obj.order] = title;
-            }
 
             var submitData = {
                 template: ctrl.createDashboardData.template,
