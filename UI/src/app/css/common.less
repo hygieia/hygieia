@@ -516,6 +516,27 @@ body {
         padding-bottom: 8px;
     }
 
+    .widget-trash {
+        background: transparent;
+        cursor: pointer;
+        color: @panel-default-border !important;
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 3.5rem;
+        height: 3.5rem;
+        border: 0.5rem;
+        background-clip: padding-box;
+        text-align: center;
+        opacity: .5;
+        font-size: 1em;
+        line-height: 1em;
+        .transition(opacity .2s linear);
+        &:hover {
+            opacity: 1.0;
+        }
+    }
+
     .text-danger {
         color: @state-danger-text !important;
     }
