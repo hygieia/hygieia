@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -50,7 +51,7 @@ import static com.capitalone.dashboard.service.DeployServiceImpl.RundeckXMLParse
 @Service
 public class DeployServiceImpl implements DeployService {
 
-    private static final Pattern INSTANCE_URL_PATTERN = Pattern.compile("https?:\\/\\/[^\\/]*");
+    private static final Pattern INSTANCE_URL_PATTERN = Pattern.compile("https?://[^/]*");
     private static final String DEFAULT_COLLECTOR_NAME = "Jenkins";
     private static final String PARAM = "Param";
 
@@ -102,16 +103,13 @@ public class DeployServiceImpl implements DeployService {
             List<EnvironmentStatus> statuses = environmentStatusRepository
                     .findByCollectorItemId(collectorItemId);
 
-            for (Map.Entry<Environment, List<EnvironmentComponent>> entry : groupByEnvironment(
-                    components).entrySet()) {
-                Environment env = entry.getKey();
+            groupByEnvironment(
+                    components).forEach((env, value) -> {
                 environments.add(env);
-                for (EnvironmentComponent envComponent : entry.getValue()) {
-                    env.getUnits().add(
-                            new DeployableUnit(envComponent, servers(envComponent,
-                                    statuses)));
-                }
-            }
+                value.forEach(envComponent -> env.getUnits().add(
+                        new DeployableUnit(envComponent, servers(envComponent,
+                                statuses))));
+            });
 
             Collector collector = collectorRepository
                     .findOne(item.getCollectorId());
@@ -126,25 +124,24 @@ public class DeployServiceImpl implements DeployService {
     private Map<Environment, List<EnvironmentComponent>> groupByEnvironment(
             List<EnvironmentComponent> components) {
         Map<Environment, Map<String, EnvironmentComponent>> trackingMap = new LinkedHashMap<>();
-        for (EnvironmentComponent component : components) {
+        //two conditions to overwrite the value for the specific component
+        components.forEach(component -> {
             Environment env = new Environment(component.getEnvironmentName(),
                     component.getEnvironmentUrl());
-
             if (!trackingMap.containsKey(env)) {
                 trackingMap.put(env, new LinkedHashMap<>());
             }
-            //two conditions to overwrite the value for the specific component
             if (trackingMap.get(env).get(component.getComponentName()) == null ||
                     component.getAsOfDate() > trackingMap.get(env)
                             .get(component.getComponentName()).getAsOfDate()) {
                 trackingMap.get(env).put(component.getComponentName(), component);
             }
-        }
+        });
 
         //flatten the deeper map into a list
         return trackingMap.entrySet().stream()
                 .map(e -> new AbstractMap.SimpleEntry<>(e.getKey(),
-                        e.getValue().entrySet().stream().map(ec -> ec.getValue()).collect(Collectors.toList())))
+                        e.getValue().entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toList())))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
@@ -164,10 +161,8 @@ public class DeployServiceImpl implements DeployService {
 
         @Override
         public boolean apply(EnvironmentStatus environmentStatus) {
-            return environmentStatus.getEnvironmentName().equals(
-                    component.getEnvironmentName())
-                    && environmentStatus.getComponentName().equals(
-                    component.getComponentName());
+            return Objects.equals(environmentStatus.getEnvironmentName(), component.getEnvironmentName())
+                    && Objects.equals(environmentStatus.getComponentName(), component.getComponentName());
         }
     }
 
@@ -179,12 +174,11 @@ public class DeployServiceImpl implements DeployService {
     }
 
 
-    @Override
-    public String create(DeployDataCreateRequest request) throws HygieiaException {
-        /**
-         * Step 1: create Collector if not there
-         * Step 2: create Collector item if not there
-         * Step 3: Insert build data if new. If existing, update it.
+    protected EnvironmentComponent createDeploy(DeployDataCreateRequest request) throws HygieiaException {
+        /*
+          Step 1: create Collector if not there
+          Step 2: create Collector item if not there
+          Step 3: Insert build data if new. If existing, update it.
          */
         Collector collector = createCollector(request);
 
@@ -204,7 +198,20 @@ public class DeployServiceImpl implements DeployService {
             throw new HygieiaException("Failed inserting/updating Deployment information.", HygieiaException.ERROR_INSERTING_DATA);
         }
 
+        return deploy;
+
+    }
+
+    @Override
+    public String create(DeployDataCreateRequest request) throws HygieiaException {
+        EnvironmentComponent deploy = createDeploy(request);
         return deploy.getId().toString();
+    }
+
+    @Override
+    public String createV2(DeployDataCreateRequest request) throws HygieiaException {
+        EnvironmentComponent deploy = createDeploy(request);
+        return String.format("%s,%s", deploy.getId().toString(), deploy.getCollectorItemId().toString());
 
     }
 
@@ -253,8 +260,7 @@ public class DeployServiceImpl implements DeployService {
         option.put("instanceUrl", request.getInstanceUrl());
         tempCi.getOptions().putAll(option);
 
-        CollectorItem collectorItem = collectorService.createCollectorItem(tempCi);
-        return collectorItem;
+        return collectorService.createCollectorItem(tempCi);
     }
 
     private EnvironmentComponent createEnvComponent(CollectorItem collectorItem, DeployDataCreateRequest request) {
@@ -269,6 +275,7 @@ public class DeployServiceImpl implements DeployService {
         deploy.setComponentID(request.getArtifactGroup());
         deploy.setComponentName(request.getArtifactName());
         deploy.setComponentVersion(request.getArtifactVersion());
+        deploy.setCollectorItemId(collectorItem.getId());
         deploy.setEnvironmentName(request.getEnvName());
         deploy.setEnvironmentUrl(request.getInstanceUrl());
         deploy.setJobUrl(request.getJobUrl());
@@ -278,8 +285,7 @@ public class DeployServiceImpl implements DeployService {
         return environmentComponentRepository.save(deploy); // Save = Update (if ID present) or Insert (if ID not there)
     }
 
-    @Override
-    public String createRundeckBuild(Document doc, Map<String, String[]> parameters, String executionId, String status) throws HygieiaException {
+    protected DeployDataCreateRequest createRundeck(Document doc, Map<String, String[]> parameters, String executionId, String status) throws HygieiaException {
         Node executionNode = doc.getElementsByTagName("execution").item(0);
         Node jobNode = executionNode.getFirstChild();
         RundeckXMLParser p = new RundeckXMLParser(doc);
@@ -306,12 +312,24 @@ public class DeployServiceImpl implements DeployService {
             request.setInstanceUrl(matcher.group());
         }
         request.setJobName(getChildNodeValue(jobNode, "name"));
+        return request;
+    }
+
+    @Override
+    public String createRundeckBuild(Document doc, Map<String, String[]> parameters, String executionId, String status) throws HygieiaException {
+        DeployDataCreateRequest request = createRundeck(doc, parameters, executionId, status);
         return create(request);
+    }
+
+    @Override
+    public String createRundeckBuildV2(Document doc, Map<String, String[]> parameters, String executionId, String status) throws HygieiaException {
+        DeployDataCreateRequest request = createRundeck(doc, parameters, executionId, status);
+        return createV2(request);
     }
 
     private String evaluateParametersOrDefault(Map<String, String[]> params,
                                                RundeckXMLParser p, String name, boolean required, String defaultOptions) throws HygieiaException {
-        String output = null;
+        String output;
         if (params.containsKey(name)) {
             output = params.get(name)[0];
         } else if (params.containsKey(name + PARAM)) {
@@ -335,7 +353,7 @@ public class DeployServiceImpl implements DeployService {
             nodes = doc.getElementsByTagName("option");
             optionNameNode = IntStream.range(0, nodes.getLength())
                     .mapToObj(i -> nodes.item(i))
-                    .collect(Collectors.toMap(n -> getAttributeValue(n, "name"), n -> n));
+                    .collect(Collectors.toMap(n -> getAttributeValue(n, "name"), Function.identity()));
         }
 
         public static String getAttributeValue(Node node, String attributeName) {
@@ -355,22 +373,18 @@ public class DeployServiceImpl implements DeployService {
         }
 
         public static String getChildNodeValue(Node node, String childNodeName) {
-            return actOnChildNode(node, childNodeName, n -> n.getNodeValue());
+            return actOnChildNode(node, childNodeName, Node::getNodeValue);
         }
 
         public static String actOnChildNode(Node node, String childNodeName, Function<Node, String> valueSupplier) {
             Optional<Node> childNode = getNamedChild(node, childNodeName);
-            if (childNode.isPresent()) {
-                return valueSupplier.apply(childNode.get());
-            } else {
-                return null;
-            }
+            return childNode.map(valueSupplier::apply).orElse(null);
         }
 
         public static Optional<Node> getNamedChild(Node node, String childNodeName) {
             NodeList nodes = node.getChildNodes();
             return IntStream.range(0, nodes.getLength())
-                    .filter(i -> childNodeName.equals(nodes.item(i).getNodeName()))
+                    .filter(i -> Objects.equals(childNodeName, nodes.item(i).getNodeName()))
                     .mapToObj(i -> nodes.item(i))
                     .findFirst();
         }

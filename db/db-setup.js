@@ -1,4 +1,4 @@
-use dashboarddb;
+db = db.getSiblingDB("dashboarddb");
 
 db.createUser({
   user: "dashboarduser",

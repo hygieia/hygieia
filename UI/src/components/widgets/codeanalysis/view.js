@@ -157,7 +157,7 @@
                         ctrl.librarySecurityThreatStatus = getLibraryPolicyStatus(libraryData.threats.Security)
                     }
                     ctrl.knownComponentCount = knownComponentCount;
-                    ctrl.knownComponentCountPercentage = Math.round(calculatePercentage * 100);;
+                    ctrl.knownComponentCountPercentage = Math.round(calculatePercentage * 100);
                     ctrl.criticalCountPolicy = criticalCountPolicy;
                     ctrl.severeCountPolicy = severeCountPolicy;
                     ctrl.moderateCountPolicy = moderateCountPolicy;
@@ -293,7 +293,7 @@
             }
 
             ctrl.getDashStatus = function getDashStatus() {
-
+                if(ctrl.librarySecurityThreatStatus == undefined) return 'ignore';
                 switch (ctrl.librarySecurityThreatStatus.level) {
                     case 4:
                         return 'critical';

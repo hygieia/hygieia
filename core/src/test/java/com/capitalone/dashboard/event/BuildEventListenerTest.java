@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.event;
 
+import com.capitalone.dashboard.event.sync.SyncDashboard;
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
@@ -48,6 +49,9 @@ public class BuildEventListenerTest {
 
     @InjectMocks
     private BuildEventListener eventListener;
+
+    @Mock
+    private SyncDashboard syncDashboard;
 
     @Mock
     private CommitRepository commitRepository;

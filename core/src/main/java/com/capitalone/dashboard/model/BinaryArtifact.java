@@ -46,6 +46,17 @@ public class BinaryArtifact extends BaseModel {
     private String artifactName;
     private String artifactClassifier;
     private String artifactExtension;
+    private String type;
+    private String createdTimeStamp;
+
+
+    private String createdBy;
+    private String modifiedTimeStamp;
+    private String modifiedBy;
+    private String actual_sha1;
+    private String actual_md5;
+
+
     
     private Build buildInfo;
     
@@ -213,7 +224,64 @@ public class BinaryArtifact extends BaseModel {
     public void setScmRevisionNumber(String scmRevisionNumber) {
     	getMetadata().put(METADATA_SCM_REVISION_NUMBER, scmRevisionNumber);
     }
-    
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getCreatedTimeStamp() {
+        return createdTimeStamp;
+    }
+
+    public void setCreatedTimeStamp(String createdTimeStamp) {
+        this.createdTimeStamp = createdTimeStamp;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public String getModifiedTimeStamp() {
+        return modifiedTimeStamp;
+    }
+
+    public void setModifiedTimeStamp(String modifiedTimeStamp) {
+        this.modifiedTimeStamp = modifiedTimeStamp;
+    }
+
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+
+    public void setModifiedBy(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
+
+    public String getActual_sha1() {
+        return actual_sha1;
+    }
+
+    public void setActual_sha1(String actual_sha1) {
+        this.actual_sha1 = actual_sha1;
+    }
+
+    public String getActual_md5() {
+        return actual_md5;
+    }
+
+    public void setActual_md5(String actual_md5) {
+        this.actual_md5 = actual_md5;
+    }
+
+
     public Map<String, String> getMetadata() {
     	return metadata;
     }
