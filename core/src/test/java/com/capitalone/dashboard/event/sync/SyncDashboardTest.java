@@ -192,6 +192,7 @@ public class SyncDashboardTest {
 
     @Test
     public void syncWithRelatedCollectorItems() {
+        //TODO this is definitely broken now as it assumes the widget name is the type of collector (was true, no longer true)
         relatedCollectorItemRepository.deleteAll();
         CodeQuality codeQuality = codeQualityRepository.findOne(new ObjectId("5ba98d055de4b1195307bf5a"));
         Dashboard testSubject = dashboardRepository.findOne(new ObjectId("5baa458b0be2d337e3885815"));

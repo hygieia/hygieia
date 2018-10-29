@@ -113,9 +113,9 @@
     "scoreEnabled": false,
     "scoreDisplay": "HEADER",
     "activeWidgets": [
-      "build",
-      "codeanalysis",
-      "repo"
+      {"type":"build", "title":"build"},
+      {"type":"codeanalysis", "title":"codeanalysis"},
+      {"type":"repo", "title":"repo"}
     ]
   },
   {
@@ -232,9 +232,9 @@
     "scoreEnabled": false,
     "scoreDisplay": "HEADER",
     "activeWidgets": [
-      "codeanalysis",
-      "build",
-      "repo"
+      {"type":"codeanalysis", "title":"codeanalysis"},
+      {"type":"build", "title":"build"},
+      {"type":"repo", "title":"repo"}
     ]
   },
   {
@@ -345,10 +345,10 @@
     "scoreEnabled": false,
     "scoreDisplay": "HEADER",
     "activeWidgets": [
-      "build",
-      "performance",
-      "repo",
-      "codeanalysis"
+      {"type":"build", "title":"build"},
+      {"type":"performance", "title":"performance"},
+      {"type":"repo", "title":"repo"},
+      {"type":"codeanalysis", "title":"codeanalysis"}
     ]
   },
   {
@@ -413,9 +413,9 @@
   "scoreEnabled" : false,
   "scoreDisplay" : "HEADER",
   "activeWidgets" : [
-    "build",
-    "codeanalysis",
-    "repo"
+    {"type":"build", "title":"build"},
+    {"type":"codeanalysis", "title":"codeanalysis"},
+    {"type":"repo", "title":"repo"}
   ]
 }
 ]

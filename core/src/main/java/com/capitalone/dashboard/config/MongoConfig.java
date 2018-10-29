@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
@@ -108,7 +109,9 @@ public class MongoConfig extends AbstractMongoConfiguration {
 
     @Bean
     public MongoTemplate mongoTemplate() throws Exception {
-        return new MongoTemplate(new SimpleMongoDbFactory(mongo(), getDatabaseName()), mongoConverter());
+
+        MongoDbFactory factory = new SimpleMongoDbFactory(mongo(), getDatabaseName());
+        return new MongoTemplate(factory , mongoConverter(factory));
     }
 
     @Override
@@ -118,10 +121,9 @@ public class MongoConfig extends AbstractMongoConfiguration {
         return new CustomConversions(converters);
     }
 
-    @Bean
-    public MappingMongoConverter mongoConverter() throws Exception {
+    public MappingMongoConverter mongoConverter(MongoDbFactory factory) throws Exception {
         MongoMappingContext mappingContext = new MongoMappingContext();
-        DbRefResolver dbRefResolver = new DefaultDbRefResolver(mongoDbFactory());
+        DbRefResolver dbRefResolver = new DefaultDbRefResolver(factory);
         MappingMongoConverter mongoConverter = new MappingMongoConverter(dbRefResolver, mappingContext);
         mongoConverter.setCustomConversions(customConversions());
         mongoConverter.afterPropertiesSet();
