@@ -89,6 +89,48 @@ public class ComponentTest {
         Assert.assertEquals(component.getCollectorItems(CollectorType.SCM).get(0).getLastUpdated(), 1537473333333L);
     }
 
+    @Test
+    public void testFindByCollectorItemAndType() {
+        Component component = createComponent(1537473333333L);
+        CollectorItem c1 = new CollectorItem();
+        ObjectId collectorItemId = ObjectId.get();
+        c1.setId(collectorItemId);
+        c1.setLastUpdated(1537476665987L);
+        component.addCollectorItem(CollectorType.SCM,c1);
+
+        CollectorItem result = component.getCollectorItemMatchingTypeAndCollectorItemId(CollectorType.SCM, collectorItemId);
+
+        Assert.assertEquals(result.getId(),collectorItemId);
+    }
+
+    @Test
+    public void testFindByCollectorItemAndTypeNotFound() {
+        Component component = createComponent(1537473333333L);
+        CollectorItem c1 = new CollectorItem();
+        ObjectId collectorItemId = ObjectId.get();
+        c1.setId(collectorItemId);
+        c1.setLastUpdated(1537476665987L);
+        component.addCollectorItem(CollectorType.SCM,c1);
+
+        CollectorItem result = component.getCollectorItemMatchingTypeAndCollectorItemId(CollectorType.SCM, ObjectId.get());
+
+        Assert.assertNull(result);
+    }
+
+    @Test
+    public void testFindByCollectorItemAndTypeNoType() {
+      Component component = createComponent(1537473333333L);
+      CollectorItem c1 = new CollectorItem();
+      ObjectId collectorItemId = ObjectId.get();
+      c1.setId(collectorItemId);
+      c1.setLastUpdated(1537476665987L);
+      component.addCollectorItem(CollectorType.SCM,c1);
+
+      CollectorItem result = component.getCollectorItemMatchingTypeAndCollectorItemId(CollectorType.Build, collectorItemId);
+
+      Assert.assertNull(result);
+    }
+
     private CollectorItem makeCollectorItem(long lastUpdated) {
         CollectorItem c = new CollectorItem();
         c.setId(ObjectId.get());

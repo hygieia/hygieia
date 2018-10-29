@@ -53,6 +53,7 @@ public class BuildServiceTest {
 
         BuildSearchRequest request = new BuildSearchRequest();
         request.setComponentId(componentId);
+        request.setCollectorItemId(collectorItemId);
 
         when(componentRepository.findOne(request.getComponentId())).thenReturn(makeComponent(collectorItemId, collectorId));
         when(collectorRepository.findOne(collectorId)).thenReturn(new Collector());
@@ -71,6 +72,7 @@ public class BuildServiceTest {
 
         BuildSearchRequest request = new BuildSearchRequest();
         request.setComponentId(componentId);
+        request.setCollectorItemId(collectorItemId);
         request.setNumberOfDays(14);
 
         when(componentRepository.findOne(request.getComponentId())).thenReturn(makeComponent(collectorItemId, collectorId));

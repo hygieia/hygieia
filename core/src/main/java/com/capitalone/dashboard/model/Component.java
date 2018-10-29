@@ -1,14 +1,15 @@
 package com.capitalone.dashboard.model;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * A self-contained, independently deployable piece of the larger application. Each component of an application
@@ -90,6 +91,15 @@ public class Component extends BaseModel {
         }
         List<CollectorItem> collectorItems = new ArrayList<>(getCollectorItems().get(type));
         return collectorItems.get(0);
+    }
+
+    public CollectorItem getCollectorItemMatchingTypeAndCollectorItemId(CollectorType type, ObjectId collectorItemId) {
+        List<CollectorItem> collectorItems = getCollectorItems().get(type);
+        if (null == collectorItems ) {
+            return  null;
+        }
+        Optional<CollectorItem> found = collectorItems.stream().filter(item -> collectorItemId.equals(item.getId())).findFirst();
+        return found.isPresent() ? found.get() : null;
     }
 
     public CollectorItem getLastUpdatedCollectorItemForType(CollectorType type){

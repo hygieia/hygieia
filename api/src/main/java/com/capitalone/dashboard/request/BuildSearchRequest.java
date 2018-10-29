@@ -10,6 +10,10 @@ import java.util.List;
 public class BuildSearchRequest {
     @NotNull
     private ObjectId componentId;
+
+    @NotNull
+    private ObjectId collectorItemId;
+
     private Integer numberOfDays;
     private Long startDateBegins;
     private Long startDateEnds;
@@ -107,4 +111,12 @@ public class BuildSearchRequest {
     public Integer getMax() { return max; }
 
     public void setMax(Integer max) { this.max = max; }
+
+    public ObjectId getCollectorItemId() {
+        return collectorItemId;
+    }
+
+    public void setCollectorItemId(ObjectId collectorItemId) {
+        this.collectorItemId = collectorItemId;
+    }
 }
