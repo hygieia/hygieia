@@ -67,4 +67,5 @@ public interface DashboardRepository extends PagingAndSortingRepository<Dashboar
 	Page<Dashboard> findByOwnersAndTitleContainingIgnoreCase(Owner owner, String title, Pageable pageable);
 	Page<Dashboard> findByOwnersAndTypeContainingIgnoreCaseAndTitleContainingIgnoreCase(Owner owner, String type, String title, Pageable pageable);
 
+	Iterable<Dashboard> findAllByType(DashboardType dashboardType);
 }
