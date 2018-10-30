@@ -1,25 +1,24 @@
 package com.capitalone.dashboard.request;
 
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.NotEmpty;
+
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.constraints.NotEmpty;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class DashboardRemoteRequest {
     @Valid
@@ -241,7 +240,12 @@ public class DashboardRemoteRequest {
 
         @Override
         public Map<String, Object> toWidgetOptions() {
-            return null;
+        	Map<String, Object> opts = new HashMap<>();
+			opts.put("id", getWidgetId());
+			 for (String key : options.keySet()) {
+	                opts.put(key, options.get(key));
+	         }
+			return opts;
         }
     }
 
@@ -540,6 +544,7 @@ public class DashboardRemoteRequest {
     public List<Entry> getAllEntries() {
         List<Entry> all = new ArrayList<>();
         all.addAll(buildEntries);
+        all.addAll(featureEntries);
         all.addAll(codeRepoEntries);
         all.addAll(staticCodeEntries);
         all.addAll(libraryScanEntries);

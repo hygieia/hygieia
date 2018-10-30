@@ -297,6 +297,80 @@ public class DashboardRemoteServiceTest {
 
         assertThat(dashboardRemoteService.remoteCreate(request, false), is(expected));
     }
+    
+    @Test
+    public void remoteCreateFeature() throws HygieiaException {
+        Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "someuser","","", "comp1","comp2");
+        ObjectId objectId = ObjectId.get();
+        expected.setId(objectId);
+        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "someuser", null, "team", "", "");
+        List<DashboardRemoteRequest.FeatureEntry> entries = new ArrayList<DashboardRemoteRequest.FeatureEntry>();
+        DashboardRemoteRequest.FeatureEntry validFeature = new DashboardRemoteRequest.FeatureEntry();
+        validFeature.setToolName("Jira");
+        validFeature.setDescription("Metrics Service Team");
+        Map<String, Object> options = new HashMap<>();
+        options.put("teamName", "MST");
+        options.put("featureTool", "Jira");
+        options.put("projectName", "Metrics Service Team");
+        options.put("projectId", "15258144130");
+        options.put("teamId", "15258144034");
+        options.put("estimateMetricType", "count");
+        options.put("listType", "issues");
+		options.put("sprintType", "scrum");
+        Map<String, Object> showStatusOption = new HashMap<>();
+		showStatusOption.put("kanban", false);
+		showStatusOption.put("scrum", true);
+		options.put("showStatus", showStatusOption);
+
+        validFeature.setOptions(options);
+        entries.add(validFeature);
+        request.setFeatureEntries(entries);
+
+        when(userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())).thenReturn(true);
+        when(dashboardRepository.findByTitle(request.getMetaData().getTitle())).thenReturn(new ArrayList<Dashboard>());
+        when(dashboardService.create(Matchers.any(Dashboard.class))).thenReturn(expected);
+        when(dashboardService.get(objectId)).thenReturn(expected);
+
+        List<Collector> collectors = new ArrayList<Collector>();
+        Collector featureCollector = makeCollector("AgileTool", CollectorType.AgileTool);
+        Map<String,Object> uniqueFields = new HashMap<>();
+        uniqueFields.put("teamName", "");
+        uniqueFields.put("featureTool", "");
+        uniqueFields.put("projectName", "");
+        uniqueFields.put("projectId", "");
+        uniqueFields.put("teamId", "");
+        featureCollector.setUniqueFields(uniqueFields);
+
+        Map<String,Object> allFields = new HashMap<>();
+        allFields.put("teamName", "");
+        allFields.put("featureTool", "");
+        allFields.put("projectName", "");
+        allFields.put("projectId", "");
+        allFields.put("teamId", "");
+        allFields.put("estimateMetricType", "");
+        allFields.put("sprintType", "");
+        allFields.put("listType", "");
+        Map<String, Object> allshowStatusOption = new HashMap<>();
+        allshowStatusOption.put("kanban", false);
+        allshowStatusOption.put("scrum", true);
+        allFields.put("showStatus", showStatusOption);
+        
+        featureCollector.setAllFields(allFields);
+
+        collectors.add(featureCollector);
+
+        when( collectorRepository.findByCollectorTypeAndName(validFeature.getType(), validFeature.getToolName()) ).thenReturn(collectors);
+
+        CollectorItem item = makeCollectorItem();
+
+        when(  collectorService.createCollectorItemSelectOptions(Matchers.any(CollectorItem.class), Matchers.any(Map.class), Matchers.any(Map.class) ) ).thenReturn(item);
+
+        Component component = new Component();
+        component.addCollectorItem(CollectorType.SCM, item);
+
+        assertThat(dashboardRemoteService.remoteCreate(request, false), is(expected));
+    }
+    
     private Dashboard makeTeamDashboard(String template, String title, String appName, String owner,String configItemBusServName,String configItemBusAppName, String... compNames) {
         Application app = new Application(appName);
         for (String compName : compNames) {
