@@ -41,6 +41,7 @@ public class HygieiaArtifactPublishStep extends AbstractStepImpl {
 	private String artifactDirectory;
 	private String artifactGroup;
 	private String artifactVersion;
+	private String artifactStatus
 
 	public String getArtifactName() {
 		return artifactName;
@@ -53,6 +54,10 @@ public class HygieiaArtifactPublishStep extends AbstractStepImpl {
 
 	public String getArtifactDirectory() {
 		return artifactDirectory;
+	}
+	
+	public String getArtifactStatus() {
+		return artifactStatus;
 	}
 
 	@DataBoundSetter
@@ -80,11 +85,12 @@ public class HygieiaArtifactPublishStep extends AbstractStepImpl {
 
 	@DataBoundConstructor
 	public HygieiaArtifactPublishStep(@Nonnull String artifactName, @Nonnull String artifactDirectory,
-			@Nonnull String artifactGroup, String artifactVersion) {
+			@Nonnull String artifactGroup, String artifactVersion, String artifactStatus) {
 		this.artifactName = artifactName;
 		this.artifactDirectory = artifactDirectory;
 		this.artifactGroup = artifactGroup;
 		this.artifactVersion = artifactVersion;
+		this.artifactStatus = artifactStatus;
 	}
 
 	public boolean checkFileds() {
