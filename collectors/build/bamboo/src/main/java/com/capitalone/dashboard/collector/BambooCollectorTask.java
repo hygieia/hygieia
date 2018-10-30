@@ -240,6 +240,7 @@ public class BambooCollectorTask extends CollectorTask<BambooCollector> {
                 job.setCollectorId(collector.getId());
                 job.setEnabled(false); // Do not enable for collection. Will be enabled when added to dashboard
                 job.setDescription(job.getJobName());
+                job.setLastUpdated(System.currentTimeMillis());
                 if (StringUtils.isNotEmpty(niceName)) {
                     job.setNiceName(niceName);
                 }
