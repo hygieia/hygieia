@@ -64,7 +64,7 @@ public class BuildControllerTest {
 
         when(buildService.search(Mockito.any(BuildSearchRequest.class))).thenReturn(response);
 
-        mockMvc.perform(get("/build?componentId=" + ObjectId.get()))
+        mockMvc.perform(get("/build?componentId=" + ObjectId.get()+"&collectorItemId="+build.getCollectorItemId()))
         		.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result", hasSize(1)))
