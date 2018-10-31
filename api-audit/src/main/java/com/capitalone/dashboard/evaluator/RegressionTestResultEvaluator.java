@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.evaluator;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
@@ -66,6 +67,11 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         });
 
         return testResultsAuditResponse;
+    }
+
+    @Override
+    public TestResultsAuditResponse evaluate(CollectorItem collectorItem, long beginDate, long endDate, Map<?, ?> data) {
+        return null;
     }
 
     @Override

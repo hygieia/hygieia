@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.evaluator;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.CodeQuality;
 import com.capitalone.dashboard.model.CollectorItem;
@@ -36,12 +37,17 @@ public class StaticSecurityAnalysisEvaluator extends Evaluator<SecurityReviewAud
             throw new AuditException("No code quality job configured", AuditException.NO_COLLECTOR_ITEM_CONFIGURED);
         }
 
-        return staticSecurityScanItems.stream().map(item -> evaluate(item, null, beginDate, endDate, null)).collect(Collectors.toList());
+        return staticSecurityScanItems.stream().map(item -> evaluate(item, beginDate, endDate, null)).collect(Collectors.toList());
+    }
+
+    @Override
+    public SecurityReviewAuditResponse evaluate(CollectorItem collectorItem, long beginDate, long endDate, Map<?, ?> data) {
+        return getStaticSecurityScanResponse(collectorItem, beginDate, endDate);
     }
 
     @Override
     public SecurityReviewAuditResponse evaluate(CollectorItem collectorItem, List<CollectorItem> collectorItemList, long beginDate, long endDate, Map<?, ?> data) {
-        return getStaticSecurityScanResponse(collectorItem, beginDate, endDate);
+        return null;
     }
 
     /**

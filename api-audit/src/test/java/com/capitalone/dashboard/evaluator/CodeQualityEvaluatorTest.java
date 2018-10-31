@@ -37,7 +37,7 @@ public class CodeQualityEvaluatorTest {
     @Test
     public void testEvaluate_CodeQualityNotConfigured(){
         CollectorItem c = null;
-        CodeQualityAuditResponse response = codeQualityEvaluator.evaluate(c, null,125634536, 6235263, null);
+        CodeQualityAuditResponse response = codeQualityEvaluator.evaluate(c,125634536, 6235263, null);
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_NOT_CONFIGURED"));
     }
 
@@ -47,7 +47,7 @@ public class CodeQualityEvaluatorTest {
         List<CodeQuality> codeQualities = makeCodeQualityGateDetailsFoundAuditFAIL("cloud-service-parent");
         when(codeQualityRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class),any(Long.class),any(Long.class))).thenReturn(codeQualities);
 
-        CodeQualityAuditResponse response = codeQualityEvaluator.evaluate(createCollectorItem1(0), null,125634536, 6235263, null);
+        CodeQualityAuditResponse response = codeQualityEvaluator.evaluate(createCollectorItem1(0),125634536, 6235263, null);
 
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("COLLECTOR_ITEM_ERROR"));
         Assert.assertEquals(true, response.getMessage().toString().contains("Unable to collect scan results at this point - check Sonar project exist"));
@@ -61,7 +61,7 @@ public class CodeQualityEvaluatorTest {
         when(codeQualityRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class),any(Long.class),any(Long.class))).thenReturn(codeQualities);
         when(collItemConfigHistoryRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class),any(Long.class),any(Long.class))).thenReturn(null);
 
-        CodeQualityAuditResponse response = codeQualityEvaluator.evaluate(createCollectorItem(100), null,125634536, 6235263, null);
+        CodeQualityAuditResponse response = codeQualityEvaluator.evaluate(createCollectorItem(100),125634536, 6235263, null);
 
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_CHECK_IS_CURRENT"));
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_THRESHOLD_BLOCKER_MET"));
@@ -78,7 +78,7 @@ public class CodeQualityEvaluatorTest {
         when(codeQualityRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class),any(Long.class),any(Long.class))).thenReturn(codeQualities);
         when(collItemConfigHistoryRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class),any(Long.class),any(Long.class))).thenReturn(null);
 
-        CodeQualityAuditResponse response = codeQualityEvaluator.evaluate(createCollectorItem(100), null,125634536, 6235263, null);
+        CodeQualityAuditResponse response = codeQualityEvaluator.evaluate(createCollectorItem(100),125634536, 6235263, null);
 
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_CHECK_IS_CURRENT"));
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_THRESHOLD_BLOCKER_MET"));
@@ -98,7 +98,7 @@ public class CodeQualityEvaluatorTest {
         when(codeQualityRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class),any(Long.class),any(Long.class))).thenReturn(codeQualities);
         when(collItemConfigHistoryRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class),any(Long.class),any(Long.class))).thenReturn(null);
 
-        CodeQualityAuditResponse response = codeQualityEvaluator.evaluate(createCollectorItem(100), null,125634536, 6235263, null);
+        CodeQualityAuditResponse response = codeQualityEvaluator.evaluate(createCollectorItem(100),125634536, 6235263, null);
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_THRESHOLD_CRITICAL_FOUND"));
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_CHECK_IS_CURRENT"));
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_THRESHOLD_CODE_COVERAGE_MET"));
@@ -117,7 +117,7 @@ public class CodeQualityEvaluatorTest {
         when(codeQualityRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class),any(Long.class),any(Long.class))).thenReturn(codeQualities);
         when(collItemConfigHistoryRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class),any(Long.class),any(Long.class))).thenReturn(null);
 
-        CodeQualityAuditResponse response = codeQualityEvaluator.evaluate(createCollectorItem(100), null,125634536, 6235263, null);
+        CodeQualityAuditResponse response = codeQualityEvaluator.evaluate(createCollectorItem(100),125634536, 6235263, null);
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_THRESHOLD_CRITICAL_FOUND"));
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_CHECK_IS_CURRENT"));
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_THRESHOLD_CODE_COVERAGE_MET"));

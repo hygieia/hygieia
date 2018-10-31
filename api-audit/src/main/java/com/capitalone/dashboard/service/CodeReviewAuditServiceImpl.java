@@ -63,8 +63,9 @@ public class CodeReviewAuditServiceImpl implements CodeReviewAuditService {
                                         .orElseGet(Collections::emptyList).stream()
                                         .filter(ci -> !repoBranch.equalsIgnoreCase((String) ci.getOptions().get(BRANCH)))
                                         .collect(Collectors.toList());
+            return codeReviewEvaluatorLegacy.evaluate(collectorItem, filteredCollectorItemList, beginDt, endDt, null);
         }
 
-        return codeReviewEvaluatorLegacy.evaluate(collectorItem, filteredCollectorItemList, beginDt, endDt, null);
+        return codeReviewEvaluatorLegacy.evaluate(collectorItem, beginDt, endDt, null);
     }
 }

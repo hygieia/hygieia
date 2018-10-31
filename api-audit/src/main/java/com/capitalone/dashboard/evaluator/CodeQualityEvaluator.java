@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.evaluator;
 
 import com.capitalone.dashboard.common.CommonCodeReview;
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.CodeQuality;
 import com.capitalone.dashboard.model.CodeQualityMetric;
@@ -73,12 +74,12 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
         Map<String, List<CollectorItem>> repoData = new HashMap<>();
         repoData.put("repos", repoItems);
 
-        return codeQualityItems.stream().map(item -> evaluate(item, null, beginDate, endDate, repoData)).collect(Collectors.toList());
+        return codeQualityItems.stream().map(item -> evaluate(item, beginDate, endDate, repoData)).collect(Collectors.toList());
     }
 
 
     @Override
-    public CodeQualityAuditResponse evaluate(CollectorItem collectorItem, List<CollectorItem> collectorItemList, long beginDate, long endDate, Map<?, ?> data) {
+    public CodeQualityAuditResponse evaluate(CollectorItem collectorItem, long beginDate, long endDate, Map<?, ?> data) {
         List<CollectorItem> repoItems;
         if (!MapUtils.isEmpty(data) &&
                 (data.get("repos") instanceof List) &&
@@ -91,6 +92,11 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
             repoItems = new ArrayList<>();
         }
         return getStaticAnalysisResponse(collectorItem, repoItems, beginDate, endDate);
+    }
+
+    @Override
+    public CodeQualityAuditResponse evaluate(CollectorItem collectorItem, List<CollectorItem> collectorItemList, long beginDate, long endDate, Map<?, ?> data) {
+        return null;
     }
 
 

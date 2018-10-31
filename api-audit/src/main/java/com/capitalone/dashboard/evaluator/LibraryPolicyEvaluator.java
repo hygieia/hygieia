@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.evaluator;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
@@ -42,12 +43,17 @@ public class LibraryPolicyEvaluator extends Evaluator<LibraryPolicyAuditResponse
             throw new AuditException("No code quality job configured", AuditException.NO_COLLECTOR_ITEM_CONFIGURED);
         }
 
-        return libraryPolicyItems.stream().map(item -> evaluate(item, null, beginDate, endDate, null)).collect(Collectors.toList());
+        return libraryPolicyItems.stream().map(item -> evaluate(item, beginDate, endDate, null)).collect(Collectors.toList());
+    }
+
+    @Override
+    public LibraryPolicyAuditResponse evaluate(CollectorItem collectorItem, long beginDate, long endDate, Map<?, ?> data) {
+        return getLibraryPolicyAuditResponse(collectorItem, beginDate, endDate);
     }
 
     @Override
     public LibraryPolicyAuditResponse evaluate(CollectorItem collectorItem, List<CollectorItem> collectorItemList, long beginDate, long endDate, Map<?, ?> data) {
-        return getLibraryPolicyAuditResponse(collectorItem, beginDate, endDate);
+        return null;
     }
 
     /**

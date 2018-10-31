@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.evaluator;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
@@ -50,14 +51,18 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
             throw new AuditException("No tests configured", AuditException.NO_COLLECTOR_ITEM_CONFIGURED);
         }
 
-        return testItems.stream().map(item -> evaluate(item, null, beginDate, endDate, null)).collect(Collectors.toList());
+        return testItems.stream().map(item -> evaluate(item, beginDate, endDate, null)).collect(Collectors.toList());
     }
 
     @Override
-    public PerformanceTestAuditResponse evaluate(CollectorItem collectorItem, List<CollectorItem> collectorItemList, long beginDate, long endDate, Map<?, ?> dummy) {
+    public PerformanceTestAuditResponse evaluate(CollectorItem collectorItem, long beginDate, long endDate, Map<?, ?> dummy) {
         return getPerformanceTestAudit(collectorItem, beginDate, endDate);
     }
 
+    @Override
+    public PerformanceTestAuditResponse evaluate(CollectorItem collectorItem, List<CollectorItem> collectorItemList, long beginDate, long endDate, Map<?, ?> data) {
+        return null;
+    }
 
     private PerformanceTestAuditResponse getPerformanceTestAudit(CollectorItem perfItem, long beginDate, long endDate) {
 

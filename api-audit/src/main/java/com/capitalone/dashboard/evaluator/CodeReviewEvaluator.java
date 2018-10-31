@@ -64,20 +64,27 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
             String scmBranch = (String) repoItem.getOptions().get("branch");
             GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(scmUrl);
             String parsedUrl = gitHubParsed.getUrl(); //making sure we have a goot url?
+            CodeReviewAuditResponseV2 reviewResponse = null;
 
-            List<CollectorItem> collectorItemList = new ArrayList<>();
             if (settings.isGithubWebhookEnabled()) {
                 Collector githubCollector = collectorRepository.findByName("GitHub");
-                collectorItemList = collectorItemRepository.findRepoByUrl(githubCollector.getId(), parsedUrl, true);
+                List<CollectorItem> collectorItemList = collectorItemRepository.findRepoByUrl(githubCollector.getId(), parsedUrl, true);
+                reviewResponse = evaluate(repoItem, collectorItemList, beginDate, endDate, null);
+            } else {
+                reviewResponse = evaluate(repoItem, beginDate, endDate, null);
             }
 
-            CodeReviewAuditResponseV2 reviewResponse = evaluate(repoItem, collectorItemList, beginDate, endDate, null);
             reviewResponse.setUrl(parsedUrl);
             reviewResponse.setBranch(scmBranch);
             reviewResponse.setLastUpdated(repoItem.getLastUpdated());
             responseV2s.add(reviewResponse);
         });
         return responseV2s;
+    }
+
+    @Override
+    public CodeReviewAuditResponseV2 evaluate(CollectorItem collectorItem, long beginDate, long endDate, Map<?, ?> data) {
+        return getPeerReviewResponses(collectorItem, new ArrayList<>(), beginDate, endDate);
     }
 
     @Override

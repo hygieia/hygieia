@@ -38,7 +38,7 @@ public class PerformanceTestResultEvaluatorTest {
     @Test
     public void evaluate_COLLECTOR_ITEM_ERROR() {
         CollectorItem c = null;
-        PerformanceTestAuditResponse response = performanceTestResultEvaluator.evaluate(c, null,125634536, 6235263, null);
+        PerformanceTestAuditResponse response = performanceTestResultEvaluator.evaluate(c,125634536, 6235263, null);
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("COLLECTOR_ITEM_ERROR"));
     }
 
@@ -48,7 +48,7 @@ public class PerformanceTestResultEvaluatorTest {
         List<TestResult> tr = makeTestResult("KPI : Avg response times","Success");
 
         when(testResultRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class),any(Long.class),any(Long.class))).thenReturn(tr);
-        PerformanceTestAuditResponse responseV2 = performanceTestResultEvaluator.evaluate(makeCollectorItem(0), null,125634536, 6235263, null);
+        PerformanceTestAuditResponse responseV2 = performanceTestResultEvaluator.evaluate(makeCollectorItem(0),125634536, 6235263, null);
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("PERFORMANCE_COMMIT_IS_CURRENT"));
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("PERFORMANCE_THRESHOLDS_RESPONSE_TIME_FOUND"));
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("PERFORMANCE_MET"));
@@ -63,7 +63,7 @@ public class PerformanceTestResultEvaluatorTest {
         List<TestResult> tr = makeTestResult("KPI : Transaction Per Second","Success");
 
         when(testResultRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class),any(Long.class),any(Long.class))).thenReturn(tr);
-        PerformanceTestAuditResponse responseV2 = performanceTestResultEvaluator.evaluate(makeCollectorItem(0), null,125634536, 6235263, null);
+        PerformanceTestAuditResponse responseV2 = performanceTestResultEvaluator.evaluate(makeCollectorItem(0),125634536, 6235263, null);
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("PERFORMANCE_COMMIT_IS_CURRENT"));
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("PERFORMANCE_THRESHOLDS_TRANSACTIONS_PER_SECOND_FOUND"));
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("PERFORMANCE_MET"));
@@ -76,7 +76,7 @@ public class PerformanceTestResultEvaluatorTest {
         List<TestResult> tr = makeTestResult("KPI : Error Rate Threshold","Success");
 
         when(testResultRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class),any(Long.class),any(Long.class))).thenReturn(tr);
-        PerformanceTestAuditResponse responseV2 = performanceTestResultEvaluator.evaluate(makeCollectorItem(0), null,125634536, 6235263, null);
+        PerformanceTestAuditResponse responseV2 = performanceTestResultEvaluator.evaluate(makeCollectorItem(0),125634536, 6235263, null);
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("PERFORMANCE_COMMIT_IS_CURRENT"));
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("PERFORMANCE_THRESHOLDS_ERROR_RATE_FOUND"));
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("PERFORMANCE_MET"));
@@ -88,7 +88,7 @@ public class PerformanceTestResultEvaluatorTest {
     public void evaluate_AuditStatus_PERFORMANCE_RESULT_STATUS_NULL() {
         List<TestResult> tr = makeTestResult("KPI : Error Rate Threshold",null);
         when(testResultRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class),any(Long.class),any(Long.class))).thenReturn(tr);
-        PerformanceTestAuditResponse responseV2 = performanceTestResultEvaluator.evaluate(makeCollectorItem(0), null,125634536, 6235263, null);
+        PerformanceTestAuditResponse responseV2 = performanceTestResultEvaluator.evaluate(makeCollectorItem(0),125634536, 6235263, null);
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("PERFORMANCE_COMMIT_IS_CURRENT"));
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("PERFORMANCE_THRESHOLDS_ERROR_RATE_FOUND"));
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("PERFORMANCE_MET"));

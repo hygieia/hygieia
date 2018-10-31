@@ -2,6 +2,7 @@ package com.capitalone.dashboard.evaluator;
 
 import com.capitalone.dashboard.ApiSettings;
 import com.capitalone.dashboard.common.CommonCodeReview;
+import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.CommitType;
@@ -39,6 +40,11 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
         this.commitRepository = commitRepository;
         this.gitRequestRepository = gitRequestRepository;
         this.settings = settings;
+    }
+
+    @Override
+    public List<CodeReviewAuditResponse> evaluate(CollectorItem collectorItem, long beginDate, long endDate, Collection<?> data) {
+        return getPeerReviewResponses(collectorItem, new ArrayList<>(), beginDate, endDate);
     }
 
     @Override
