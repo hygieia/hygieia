@@ -8,6 +8,7 @@ import javax.validation.constraints.NotNull;
 public class PerformanceSearchRequest {
     @NotNull
     private ObjectId componentId;
+    private ObjectId collectorItemId;
     private Integer max;
     private Integer numberOfDays;
     private Long dateBegins;
@@ -64,5 +65,13 @@ public class PerformanceSearchRequest {
 
     public boolean validDateRange() {
         return dateBegins != null || dateEnds != null;
+    }
+
+    public ObjectId getCollectorItemId() {
+        return collectorItemId;
+    }
+
+    public void setCollectorItemId(ObjectId collectorItemId) {
+        this.collectorItemId = collectorItemId;
     }
 }

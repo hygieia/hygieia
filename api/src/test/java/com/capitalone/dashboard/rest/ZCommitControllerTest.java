@@ -1,7 +1,10 @@
 package com.capitalone.dashboard.rest;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -16,6 +19,7 @@ import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +63,7 @@ public class ZCommitControllerTest {
 
         when(commitService.search(Mockito.any(CommitRequest.class))).thenReturn(response);
 
-        mockMvc.perform(get("/commit?componentId=" + ObjectId.get()))
+        mockMvc.perform(get("/commit?componentId=" + ObjectId.get() + "&collectorItemId="+ObjectId.get() ))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result", hasSize(1)))
                 .andExpect(jsonPath("$.result[0].scmUrl", is(commit.getScmUrl())))
@@ -68,6 +72,12 @@ public class ZCommitControllerTest {
                 .andExpect(jsonPath("$.result[0].scmCommitTimestamp", is(Ints.saturatedCast(commit.getScmCommitTimestamp()))))
                 .andExpect(jsonPath("$.result[0].scmCommitLog", is(commit.getScmCommitLog())))
                 .andExpect(jsonPath("$.result[0].scmAuthor", is(commit.getScmAuthor())));
+
+        ArgumentCaptor<CommitRequest> commitRequestArgumentCaptor = ArgumentCaptor.forClass(CommitRequest.class);
+        verify(commitService).search(commitRequestArgumentCaptor.capture());
+        CommitRequest commitRequest = commitRequestArgumentCaptor.getValue();
+        assertThat(commitRequest.getCollectorItemId(),is(notNullValue()));
+        assertThat(commitRequest.getComponentId(),is(notNullValue()));
     }
 
     @Test

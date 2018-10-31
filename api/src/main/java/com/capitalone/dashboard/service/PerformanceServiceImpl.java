@@ -103,11 +103,7 @@ public class PerformanceServiceImpl implements PerformanceService {
 
         PerformanceType qualityType = Objects.firstNonNull(request.getType(),
                 PerformanceType.ApplicationPerformance);
-        List<CollectorItem> items = component.getCollectorItems().get(qualityType.collectorType());
-        if (items != null) {
-            item = Iterables.getFirst(items, null);
-        }
-        return item;
+        return component.getCollectorItemMatchingTypeAndCollectorItemId(qualityType.collectorType(),request.getCollectorItemId());
     }
 
 

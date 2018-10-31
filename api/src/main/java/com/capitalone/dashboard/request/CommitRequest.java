@@ -9,6 +9,7 @@ import java.util.List;
 public class CommitRequest {
     @NotNull
     private ObjectId componentId;
+    private ObjectId collectorItemId;
     private Integer numberOfDays;
     private Long commitDateBegins;
     private Long commitDateEnds;
@@ -96,5 +97,13 @@ public class CommitRequest {
 
     public boolean validChangesRange() {
         return changesGreaterThan != null || changesLessThan != null;
+    }
+
+    public ObjectId getCollectorItemId() {
+        return collectorItemId;
+    }
+
+    public void setCollectorItemId(ObjectId collectorItemId) {
+        this.collectorItemId = collectorItemId;
     }
 }

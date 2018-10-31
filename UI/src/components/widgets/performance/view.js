@@ -102,6 +102,8 @@
             var deferred = $q.defer();
             var params = {
                 componentId: $scope.widgetConfig.componentId,
+                collectorItemsId: $scope.widgetConfig.collectorItemIds[0],
+                max:20
             };
 
             console.log($scope.widgetConfig.componentId);
@@ -119,7 +121,7 @@
 
 
 
-                performanceData.appPerformance({componentId: $scope.widgetConfig.componentId,max:20}).then(function(data) {
+                performanceData.appPerformance(params).then(function(data) {
                     processResponse(data.result);
                     deferred.resolve(data.lastUpdated);
                 });

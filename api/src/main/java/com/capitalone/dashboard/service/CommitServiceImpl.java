@@ -51,12 +51,13 @@ public class CommitServiceImpl implements CommitService {
     }
 
     @Override
+    //TODO no tests for this!
     public DataResponse<Iterable<Commit>> search(CommitRequest request) {
         QCommit commit = new QCommit("search");
         BooleanBuilder builder = new BooleanBuilder();
 
         Component component = componentRepository.findOne(request.getComponentId());
-        CollectorItem item = component.getLastUpdatedCollectorItemForType(CollectorType.SCM);
+        CollectorItem item = component.getCollectorItemMatchingTypeAndCollectorItemId(CollectorType.SCM, request.getCollectorItemId());
         if (item == null) {
             Iterable<Commit> results = new ArrayList<>();
             return new DataResponse<>(results, new Date().getTime());
