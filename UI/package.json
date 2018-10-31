@@ -73,7 +73,8 @@
     "phantomjs-prebuilt": "^2.1.16"
   },
   "scripts": {
-    "build": "bower install && gulp build",
+    "postinstall": "bower install",
+    "build": "gulp build",
     "start": "gulp serve"
   }
 }
