@@ -39,19 +39,23 @@
         ctrl.load = function () {
             var caRequest = {
                 componentId: $scope.widgetConfig.componentId,
+                collectorItemIds: $scope.widgetConfig.collectorItemIds,
                 max: 1
             };
             var testRequest = {
                 componentId: $scope.widgetConfig.componentId,
+                collectorItemIds: $scope.widgetConfig.collectorItemIds,
                 types: ['Functional'],
                 max: 1
             };
             var saRequest = {
                 componentId: $scope.widgetConfig.componentId,
+                collectorItemIds: $scope.widgetConfig.collectorItemIds,
                 max: 1
             };
             var libraryPolicyRequest = {
                 componentId: $scope.widgetConfig.componentId,
+                collectorItemIds: $scope.widgetConfig.collectorItemIds,
                 max: 1
             };
             return $q.all([

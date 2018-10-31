@@ -1,7 +1,9 @@
 package com.capitalone.dashboard.rest;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -13,6 +15,7 @@ import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -48,6 +51,7 @@ public class TestResultControllerTest {
     @Before
     public void before() {
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+        Mockito.reset(testResultService);
     }
 
     @Test
@@ -61,7 +65,7 @@ public class TestResultControllerTest {
 
         when(testResultService.search(Mockito.any(TestResultRequest.class))).thenReturn(response);
 
-        mockMvc.perform(get("/quality/test?componentId=" + ObjectId.get()))
+        mockMvc.perform(get("/quality/test?componentId=" + ObjectId.get()+"&collectorItemIds="+ObjectId.get()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result", hasSize(1)))
                 .andExpect(jsonPath("$.result[0].id", is(testResult.getId().toString())))
@@ -98,6 +102,10 @@ public class TestResultControllerTest {
                 .andExpect(jsonPath("$.result[0].testCapabilities[0].testSuites[0].testCases[0].description", is(testCase.getDescription())))
                 .andExpect(jsonPath("$.result[0].testCapabilities[0].testSuites[0].testCases[0].duration", is(intVal(testCase.getDuration()))))
                 .andExpect(jsonPath("$.result[0].testCapabilities[0].testSuites[0].testCases[0].status", is(testCase.getStatus().toString())));
+
+        ArgumentCaptor<TestResultRequest> argumentCaptor = ArgumentCaptor.forClass(TestResultRequest.class);
+        verify(testResultService).search(argumentCaptor.capture());
+        assertThat(argumentCaptor.getValue().getCollectorItemIds(),hasSize(1));
     }
 
     private TestResult makeTestResult() {

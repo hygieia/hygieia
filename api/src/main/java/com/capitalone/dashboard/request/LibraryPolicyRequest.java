@@ -3,10 +3,12 @@ package com.capitalone.dashboard.request;
 import org.bson.types.ObjectId;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 public class LibraryPolicyRequest {
     @NotNull
     private ObjectId componentId;
+    private List<ObjectId> collectorItemIds;
     private Integer max;
     private Integer numberOfDays;
     private Long dateBegins;
@@ -54,5 +56,13 @@ public class LibraryPolicyRequest {
 
     public boolean validDateRange() {
         return dateBegins != null || dateEnds != null;
+    }
+
+    public List<ObjectId> getCollectorItemIds() {
+        return collectorItemIds;
+    }
+
+    public void setCollectorItemIds(List<ObjectId> collectorItemIds) {
+        this.collectorItemIds = collectorItemIds;
     }
 }

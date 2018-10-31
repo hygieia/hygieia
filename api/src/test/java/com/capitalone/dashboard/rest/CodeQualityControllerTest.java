@@ -3,6 +3,8 @@ package com.capitalone.dashboard.rest;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -18,6 +20,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +62,7 @@ public class CodeQualityControllerTest {
 	@Before
 	public void before() {
 		mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+		Mockito.reset(codeQualityService);
 	}
 
 	@Test
@@ -72,7 +76,7 @@ public class CodeQualityControllerTest {
 		when(codeQualityService.search(Mockito.any(CodeQualityRequest.class)))
 				.thenReturn(response);
 		mockMvc.perform(
-				get("/quality/static-analysis?componentId=" + ObjectId.get() + "&max=1"))
+				get("/quality/static-analysis?componentId=" + ObjectId.get() + "&max=1"+ "&collectorItemIds="+ObjectId.get()))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.result", hasSize(1)))
 				.andExpect(
@@ -98,6 +102,10 @@ public class CodeQualityControllerTest {
 				.andExpect(
 						jsonPath("$.result[0].metrics[0].status",
 								is(metric.getStatus().toString())));
+
+		ArgumentCaptor<CodeQualityRequest> codeQualityRequestArgumentCaptor = ArgumentCaptor.forClass(CodeQualityRequest.class);
+		verify(codeQualityService).search(codeQualityRequestArgumentCaptor.capture());
+		assertThat(codeQualityRequestArgumentCaptor.getValue().getCollectorItemIds(), hasSize(1));
 	}
 
 	@Test
@@ -110,7 +118,7 @@ public class CodeQualityControllerTest {
 		when(codeQualityService.search(Mockito.any(CodeQualityRequest.class)))
 				.thenReturn(response);
 		mockMvc.perform(
-				get("/quality/security-analysis?componentId=" + ObjectId.get() + "&max=1"))
+				get("/quality/security-analysis?componentId=" + ObjectId.get() + "&max=1&collectorItemIds="+ObjectId.get()+"&max=1&collectorItemIds="+ObjectId.get()))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.result", hasSize(1)))
 				.andExpect(
@@ -136,6 +144,10 @@ public class CodeQualityControllerTest {
 				.andExpect(
 						jsonPath("$.result[0].metrics[0].status",
 								is(metric.getStatus().toString())));
+
+		ArgumentCaptor<CodeQualityRequest> codeQualityRequestArgumentCaptor = ArgumentCaptor.forClass(CodeQualityRequest.class);
+		verify(codeQualityService).search(codeQualityRequestArgumentCaptor.capture());
+		assertThat(codeQualityRequestArgumentCaptor.getValue().getCollectorItemIds(), hasSize(2));
 	}
 
 	@Test

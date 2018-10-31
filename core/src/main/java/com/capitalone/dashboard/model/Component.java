@@ -4,6 +4,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -93,14 +94,16 @@ public class Component extends BaseModel {
         return collectorItems.get(0);
     }
 
-    public CollectorItem getCollectorItemMatchingTypeAndCollectorItemId(CollectorType type, ObjectId collectorItemId) {
+    public CollectorItem getCollectorItemMatchingTypeAndCollectorItemId(CollectorType type, ObjectId... collectorItemIds) {
+        List<ObjectId> inputList = Arrays.asList(collectorItemIds);
         List<CollectorItem> collectorItems = getCollectorItems().get(type);
         if (null == collectorItems ) {
             return  null;
         }
-        Optional<CollectorItem> found = collectorItems.stream().filter(item -> collectorItemId.equals(item.getId())).findFirst();
+        Optional<CollectorItem> found = collectorItems.stream().filter(item -> inputList.contains(item.getId())).findFirst();
         return found.isPresent() ? found.get() : null;
     }
+
 
     public CollectorItem getLastUpdatedCollectorItemForType(CollectorType type){
 

@@ -11,6 +11,8 @@ import java.util.List;
 public class TestResultRequest {
     @NotNull
     private ObjectId componentId;
+    @NotNull
+    private List<ObjectId> collectorItemIds;
     private Integer max;
     private Long startDateBegins;
     private Long startDateEnds;
@@ -112,5 +114,13 @@ public class TestResultRequest {
 
     public boolean validDurationRange() {
         return durationGreaterThan != null || durationLessThan != null;
+    }
+
+    public List<ObjectId> getCollectorItemIds() {
+        return collectorItemIds;
+    }
+
+    public void setCollectorItemIds(List<ObjectId> collectorItemIds) {
+        this.collectorItemIds = collectorItemIds;
     }
 }

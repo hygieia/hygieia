@@ -30,6 +30,8 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CodeQualityServiceImpl implements CodeQualityService {
@@ -110,16 +112,18 @@ public class CodeQualityServiceImpl implements CodeQualityService {
 
 
     protected CollectorItem getCollectorItem(CodeQualityRequest request) {
-        CollectorItem item = null;
         Component component = componentRepository.findOne(request.getComponentId());
 
         CodeQualityType qualityType = Objects.firstNonNull(request.getType(),
                 CodeQualityType.StaticAnalysis);
-        List<CollectorItem> items = component.getCollectorItems().get(qualityType.collectorType());
-        if (items != null) {
-            item = Iterables.getFirst(items, null);
+        if (component != null) {
+            List<CollectorItem> allInComponent=  component.getCollectorItems(qualityType.collectorType());
+            Optional<CollectorItem> allInWidget = allInComponent.stream().filter(
+                collectorItem -> request.getCollectorItemIds().contains(collectorItem.getCollectorId())
+            ).findFirst();
+            return allInWidget.get();
         }
-        return item;
+        return null;
     }
 
 

@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LibraryPolicyServiceImpl implements LibraryPolicyService {
@@ -92,6 +93,13 @@ public class LibraryPolicyServiceImpl implements LibraryPolicyService {
 
     protected List<CollectorItem> getCollectorItems(LibraryPolicyRequest request) {
         Component component = componentRepository.findOne(request.getComponentId());
-        return (component != null) ? component.getCollectorItems(CollectorType.LibraryPolicy) : null;
+        if (component != null) {
+            List<CollectorItem> allInComponent=  component.getCollectorItems(CollectorType.LibraryPolicy);
+            List<CollectorItem> allInWidget = allInComponent.stream().filter(
+                collectorItem -> request.getCollectorItemIds().contains(collectorItem.getCollectorId())
+            ).collect(Collectors.toList());
+            return allInWidget;
+        }
+        return null;
     }
 }

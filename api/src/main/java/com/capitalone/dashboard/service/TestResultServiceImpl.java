@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class TestResultServiceImpl implements TestResultService {
@@ -57,9 +58,10 @@ public class TestResultServiceImpl implements TestResultService {
         }
         List<TestResult> result = new ArrayList<>();
         validateAllCollectorItems(request, component, result);
-        //One collector per Type. get(0) is hardcoded.
-        if (!CollectionUtils.isEmpty(component.getCollectorItems().get(CollectorType.Test)) && (component.getCollectorItems().get(CollectorType.Test).get(0) != null)) {
-            Collector collector = collectorRepository.findOne(component.getCollectorItems().get(CollectorType.Test).get(0).getCollectorId());
+
+        Optional<CollectorItem> item = component.getCollectorItems().get(CollectorType.Test).stream().filter(collectorItem -> request.getCollectorItemIds().contains(collectorItem.getId())).findFirst();
+        if (item.isPresent()) {
+            Collector collector = collectorRepository.findOne(item.get().getCollectorId());
             if (collector != null) {
                 return new DataResponse<>(pruneToDepth(result, request.getDepth()), collector.getLastExecuted());
             }
