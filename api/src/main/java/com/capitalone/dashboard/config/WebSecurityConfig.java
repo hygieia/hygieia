@@ -2,11 +2,15 @@ package com.capitalone.dashboard.config;
 
 import java.util.List;
 
+import com.capitalone.dashboard.auth.webhook.github.GithubWebHookRequestFilter;
+import com.capitalone.dashboard.auth.webhook.github.GithubWebHookAuthService;
+import com.capitalone.dashboard.settings.ApiSettings;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.Http401AuthenticationEntryPoint;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -35,10 +39,13 @@ import com.capitalone.dashboard.model.AuthType;
 @EnableWebSecurity
 @EnableConfigurationProperties
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@ComponentScan(basePackages = "com.capitalone.dashboard.settings")
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    @Autowired
+    private GithubWebHookAuthService githubWebHookAuthService;
 
     @Autowired
     private AuthenticationResultHandler authenticationResultHandler;
@@ -51,6 +58,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private AuthProperties authProperties;
+
+    @Autowired
+    private ApiSettings apiSettings;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -77,8 +87,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/v2/quality/test").permitAll()
                 .antMatchers(HttpMethod.POST, "/v2/quality/static-analysis").permitAll()
                 .antMatchers(HttpMethod.POST, "/generic-item").permitAll()
-                //Temporary solution to allow Github webhook
-                .antMatchers(HttpMethod.POST, "/commit/github/v3").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(standardLoginRequestFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -86,6 +94,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(ldapLoginRequestFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(apiTokenRequestFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(githubWebhookRequestFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling().authenticationEntryPoint(new Http401AuthenticationEntryPoint("Authorization"));
     }
 
@@ -129,6 +138,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     protected StandardLoginRequestFilter standardLoginRequestFilter() throws Exception {
         return new StandardLoginRequestFilter("/login", authenticationManager(), authenticationResultHandler);
+    }
+
+    @Bean
+    protected GithubWebHookRequestFilter githubWebhookRequestFilter() throws Exception {
+        return new GithubWebHookRequestFilter("/webhook/github/v3", authenticationManager(), githubWebHookAuthService, apiSettings, authenticationResultHandler);
     }
 
     @Bean

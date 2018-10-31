@@ -1,4 +1,4 @@
-package com.capitalone.dashboard;
+package com.capitalone.dashboard.settings;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -18,7 +18,18 @@ public class ApiSettings {
     private boolean logRequest;
     @Value("${pageSize:10}")
     private int pageSize;
-    
+    private String gitHubWebHook;
+    @Value("${githubWebhookEnabled:false}")
+    private boolean githubWebhookEnabled;
+
+    public boolean isGithubWebhookEnabled() { return githubWebhookEnabled; }
+
+    public void setGithubWebhookEnabled(boolean githubWebhookEnabled) { this.githubWebhookEnabled = githubWebhookEnabled; }
+
+    public String getGitHubWebHook() { return gitHubWebHook; }
+
+    public void setGitHubWebHook(String gitHubWebHook) { this.gitHubWebHook = gitHubWebHook; }
+
     public String getKey() {
         return key;
     }
@@ -58,5 +69,4 @@ public class ApiSettings {
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
     }
-
 }

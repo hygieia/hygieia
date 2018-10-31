@@ -14,6 +14,8 @@ public class SCM {
     protected String scmAuthor;
     protected String scmAuthorLogin;
     protected String scmAuthorLDAPDN;
+    protected String scmCommitter;
+    protected String scmCommitterLogin;
     protected List<String> scmParentRevisionNumbers;
     protected long scmCommitTimestamp;
     protected long numberOfChanges;
@@ -51,100 +53,62 @@ public class SCM {
         this.type = type;
     }
 
-    public String getScmUrl() {
-        return scmUrl;
-    }
+    public String getScmUrl() { return scmUrl; }
 
-    public void setScmUrl(String scmUrl) {
-        this.scmUrl = scmUrl;
-    }
+    public void setScmUrl(String scmUrl) { this.scmUrl = scmUrl; }
 
-    public String getScmBranch() {
-		return scmBranch;
-	}
+    public String getScmBranch() { return scmBranch; }
 
-	public void setScmBranch(String scmBranch) {
-		this.scmBranch = scmBranch;
-	}
+	public void setScmBranch(String scmBranch) { this.scmBranch = scmBranch; }
 
-    public String getScmRevisionNumber() {
-        return scmRevisionNumber;
-    }
+    public String getScmRevisionNumber() { return scmRevisionNumber; }
 
-    public void setScmRevisionNumber(String scmRevisionNumber) {
-        this.scmRevisionNumber = scmRevisionNumber;
-    }
+    public void setScmRevisionNumber(String scmRevisionNumber) { this.scmRevisionNumber = scmRevisionNumber; }
 
-    public String getScmCommitLog() {
-        return scmCommitLog;
-    }
+    public String getScmCommitLog() { return scmCommitLog; }
 
-    public void setScmCommitLog(String scmCommitLog) {
-        this.scmCommitLog = scmCommitLog;
-    }
+    public void setScmCommitLog(String scmCommitLog) { this.scmCommitLog = scmCommitLog; }
 
-    public String getScmAuthor() {
-        return scmAuthor;
-    }
+    public String getScmAuthor() { return scmAuthor; }
 
-    public void setScmAuthor(String scmAuthor) {
-        this.scmAuthor = scmAuthor;
-    }
+    public void setScmAuthor(String scmAuthor) { this.scmAuthor = scmAuthor; }
 
-    public String getScmAuthorLogin() {
-        return scmAuthorLogin;
-    }
+    public String getScmAuthorLogin() { return scmAuthorLogin; }
 
-    public void setScmAuthorLogin(String scmAuthorLogin) {
-        this.scmAuthorLogin = scmAuthorLogin;
-    }
+    public void setScmAuthorLogin(String scmAuthorLogin) { this.scmAuthorLogin = scmAuthorLogin; }
     
     // can return null
-    public List<String> getScmParentRevisionNumbers() {
-    	return scmParentRevisionNumbers;
-    }
+    public List<String> getScmParentRevisionNumbers() { return scmParentRevisionNumbers; }
     
     public void setScmParentRevisionNumbers(List<String> scmParentRevisionNumbers) {
     	this.scmParentRevisionNumbers = scmParentRevisionNumbers;
     }
 
-    public long getScmCommitTimestamp() {
-        return scmCommitTimestamp;
-    }
+    public long getScmCommitTimestamp() { return scmCommitTimestamp; }
 
-    public void setScmCommitTimestamp(long scmCommitTimestamp) {
-        this.scmCommitTimestamp = scmCommitTimestamp;
-    }
+    public void setScmCommitTimestamp(long scmCommitTimestamp) { this.scmCommitTimestamp = scmCommitTimestamp; }
 
-    public long getNumberOfChanges() {
-        return numberOfChanges;
-    }
+    public long getNumberOfChanges() { return numberOfChanges; }
 
-    public void setNumberOfChanges(long numberOfChanges) {
-        this.numberOfChanges = numberOfChanges;
-    }
+    public void setNumberOfChanges(long numberOfChanges) { this.numberOfChanges = numberOfChanges; }
 
-    public CommitType getType() {
-        return type;
-    }
+    public CommitType getType() { return type; }
 
-    public void setType(CommitType type) {
-        this.type = type;
-    }
+    public void setType(CommitType type) { this.type = type; }
 
-    public String getPullNumber() {
-        return pullNumber;
-    }
+    public String getPullNumber() { return pullNumber; }
 
-    public void setPullNumber(String pullNumber) {
-        this.pullNumber = pullNumber;
-    }
+    public void setPullNumber(String pullNumber) { this.pullNumber = pullNumber; }
 
-    public String getScmAuthorLDAPDN() {
-        return scmAuthorLDAPDN;
-    }
+    public String getScmAuthorLDAPDN() { return scmAuthorLDAPDN; }
 
-    public void setScmAuthorLDAPDN(String scmAuthorLDAPDN) {
-        this.scmAuthorLDAPDN = scmAuthorLDAPDN;
-    }
+    public void setScmAuthorLDAPDN(String scmAuthorLDAPDN) { this.scmAuthorLDAPDN = scmAuthorLDAPDN; }
+
+    public String getScmCommitter() { return scmCommitter; }
+
+    public void setScmCommitter(String scmCommitter) { this.scmCommitter = scmCommitter; }
+
+    public String getScmCommitterLogin() { return scmCommitterLogin; }
+
+    public void setScmCommitterLogin(String scmCommitterLogin) { this.scmCommitterLogin = scmCommitterLogin; }
 }
