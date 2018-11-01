@@ -34,11 +34,10 @@ To build a Docker image for all components of Hygieia, execute the following ste
 	```bash
 	#Connect to MongoDB
 	docker exec -t -i mongodb2 bash
-
-	#Create dashboard user from the CLI
-	mongo 192.168.64.2/admin  --eval 'db.getSiblingDB("dashboarddb").createUser({user: "dashboarduser", pwd: "dbpassword", roles: [{role: "readWrite", db: "dashboarddb"}]})'
 	```
-	To build the Docker Image for the UI layer, refer to 
+	
+	To build the Docker Image for the UI layer, refer to section, [Docker Image for UI Layer](../UI/ui.md#docker-image-for-ui-layer)
+	
 *	**Step 4: Configure your Environment**
 
 	To configure your environment, create a `docker-compose.override.yml`. The most commonly used properties are listed and the uncommented properties are mandatory for the collector to work:
