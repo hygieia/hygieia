@@ -119,7 +119,7 @@ public class CodeQualityServiceImpl implements CodeQualityService {
         if (component != null) {
             List<CollectorItem> allInComponent=  component.getCollectorItems(qualityType.collectorType());
             Optional<CollectorItem> allInWidget = allInComponent.stream().filter(
-                collectorItem -> request.getCollectorItemIds().contains(collectorItem.getCollectorId())
+                collectorItem -> request.getCollectorItemIds().contains(collectorItem.getId())
             ).findFirst();
             return allInWidget.get();
         }
