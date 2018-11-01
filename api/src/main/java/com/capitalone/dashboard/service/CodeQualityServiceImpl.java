@@ -121,7 +121,7 @@ public class CodeQualityServiceImpl implements CodeQualityService {
             Optional<CollectorItem> allInWidget = allInComponent.stream().filter(
                 collectorItem -> request.getCollectorItemIds().contains(collectorItem.getId())
             ).findFirst();
-            return allInWidget.get();
+            return allInWidget.isPresent() ? allInWidget.get() : null;
         }
         return null;
     }
