@@ -191,7 +191,19 @@ public class CollectorServiceImpl implements CollectorService {
         Collector existing = collectorRepository.findByName(collector.getName());
         if (existing != null) {
             collector.setId(existing.getId());
+            /*
+             * Since this is invoked by api it always needs to be enabled and online,
+             * additionally since this record is fetched from the database existing record
+             * needs to updated with these values.
+             * */
+            existing.setEnabled(true);
+            existing.setOnline(true);
+            existing.setLastExecuted(System.currentTimeMillis());
+            return collectorRepository.save(existing);
         }
+        /*
+         * create a new collector record
+         * */
         return collectorRepository.save(collector);
     }
 
