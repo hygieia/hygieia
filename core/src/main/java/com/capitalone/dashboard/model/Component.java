@@ -65,8 +65,20 @@ public class Component extends BaseModel {
         }
     }
 
+    public void updateCollectorItem(CollectorType collectorType, CollectorItem collectorItem) {
+            List<CollectorItem> existing = new ArrayList<> (collectorItems.get(collectorType));
+            if (!isNewCollectorItem(existing, collectorItem)) {
+                findCollectorItem(existing,collectorItem).setLastUpdated(collectorItem.getLastUpdated());
+                collectorItems.put(collectorType, existing);
+            }
+    }
+
     private boolean isNewCollectorItem (List<CollectorItem> existing, CollectorItem item) {
         return existing.stream().noneMatch(ci -> Objects.equals(ci.getId(), item.getId()));
+    }
+
+    private CollectorItem findCollectorItem (List<CollectorItem> existing, CollectorItem item) {
+        return existing.stream().filter(ci-> Objects.equals(ci.getId(),item.getId())).findFirst().orElse(null);
     }
 
     public CollectorItem getFirstCollectorItemForType(CollectorType type){
