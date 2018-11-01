@@ -9,8 +9,8 @@
         .controller('AdminController', AdminController);
 
 
-    AdminController.$inject = ['$scope', 'dashboardData', '$location', '$uibModal', 'userService', 'authService', 'userData', 'dashboardService', 'templateMangerData', 'paginationWrapperService','$sce'];
-    function AdminController($scope, dashboardData, $location, $uibModal, userService, authService, userData, dashboardService, templateMangerData, paginationWrapperService,$sce) {
+    AdminController.$inject = ['$scope', 'dashboardData', '$location', '$uibModal', 'userService', 'authService', 'userData', 'dashboardService', 'templateMangerData', 'paginationWrapperService','$sce','$q'];
+    function AdminController($scope, dashboardData, $location, $uibModal, userService, authService, userData, dashboardService, templateMangerData, paginationWrapperService,$sce,$q) {
         var ctrl = this;
         if (userService.isAuthenticated() && userService.isAdmin()) {
             $location.path('/admin');
@@ -37,9 +37,13 @@
         ctrl.editToken = editToken;
 
         ctrl.pageChangeHandler = pageChangeHandler;
-        ctrl.totalItems = totalItems;
         ctrl.currentPage = currentPage;
         ctrl.pageSize = pageSize;
+        ctrl.getPageSize = getPageSize;
+        ctrl.search ='';
+        ctrl.filterByTitle = filterByTitle;
+        ctrl.getTotalItems = getTotalItems;
+
 
         $scope.tab = "dashboards";
 
@@ -73,8 +77,44 @@
         ctrl.deleteDashboard = deleteDashboard;
         ctrl.applyTheme = applyTheme;
 
+
+        (function() {
+
+            dashboardData.getPageSize().then(function (data) {
+                pullDashboards();
+            });
+        })();
+
+
+        function pullDashboards(type) {
+            // request dashboards
+            dashboardData.searchByPage({"search": '', "type": type, "size": getPageSize(), "page": 0})
+                .then(processDashboardResponse, processDashboardError);
+
+
+            paginationWrapperService.calculateTotalItems(type)
+                .then (function () {
+                    ctrl.totalItems = paginationWrapperService.getTotalItems();
+                })
+
+        }
+
+        function processDashboardResponse(data) {
+            ctrl.dashboards = paginationWrapperService.processDashboardResponse(data, ctrl.dashboardType);
+        }
+
+        function processDashboardError(data) {
+            ctrl.dashboards = paginationWrapperService.processDashboardError(data);
+        }
+
+        function getPageSize() {
+            return paginationWrapperService.getPageSize();
+        }
+
+
+
+
         // request dashboards
-        dashboardData.search().then(processResponse);
         userData.getAllUsers().then(processUserResponse);
         userData.apitokens().then(processTokenResponse);
         templateMangerData.getAllTemplates().then(processTemplateResponse);
@@ -86,9 +126,10 @@
                 });
         }
 
-        function totalItems() {
+        function getTotalItems() {
             return paginationWrapperService.getTotalItems();
         }
+
 
         function currentPage() {
             return paginationWrapperService.getCurrentPage();
@@ -379,6 +420,14 @@
                 document.getElementById(idKey).type="password";
                 document.getElementById(classKey).className="fa fa-eye";                
             }
+        }
+
+        function filterByTitle (title) {
+            var promises = paginationWrapperService.filterByTitle(title, ctrl.dashboardType);
+            $q.all(promises).then (function() {
+                ctrl.dashboards = paginationWrapperService.getDashboards();
+
+            });
         }
 
     }
