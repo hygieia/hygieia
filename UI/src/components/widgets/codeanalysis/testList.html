@@ -3,7 +3,7 @@
         <div class="widget-heading">
             {{ $ctrl.testTitle }}
         </div>
-        <div  class="widget-body DivWithScroll">
+        <div  class="widget-body divWithScroll">
             <div class="dash-row clickable ca-test-row"
             ng-repeat="test in $ctrl.testData | orderBy:'-details.endTime'" ng-click="$ctrl.details(test.details)"
                  uib-tooltip-html="'<p>{{test.name}}</p>'">

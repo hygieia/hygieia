@@ -41,7 +41,7 @@
             };
             var testRequest = {
                 componentId: $scope.widgetConfig.componentId,
-                types: ['Functional', 'Performance'],
+                types: ['Functional'],
                 max: 1
             };
             var performanceRequest = {
