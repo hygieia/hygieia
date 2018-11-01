@@ -1,6 +1,5 @@
 package jenkins.plugins.hygieia;
 
-import com.capitalone.dashboard.model.GenericCollectorItem;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
@@ -14,13 +13,14 @@ import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
 import hudson.tasks.Publisher;
 import hudson.util.FormValidation;
+import hygieia.utils.HygieiaUtils;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
-import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -328,6 +328,7 @@ public class HygieiaPublisher extends Notifier {
     public static class DescriptorImpl extends BuildStepDescriptor<Publisher> {
 
         public String hygieiaAPIUrl;
+        public String hygieiaAppUrl;
         public String hygieiaToken;
         public String hygieiaJenkinsName;
         private String hygieiaExcludeJobNames;
@@ -335,6 +336,7 @@ public class HygieiaPublisher extends Notifier {
         public boolean hygieiaPublishBuildDataGlobal;
         public boolean hygieiaPublishSonarDataGlobal;
         public List<GenericCollectorItem> hygieiaPublishGenericCollectorItems;
+        public String pluginVersionInfo;
 
         public DescriptorImpl() {
             load();
@@ -344,6 +346,10 @@ public class HygieiaPublisher extends Notifier {
         public String getHygieiaAPIUrl() {
             return hygieiaAPIUrl;
         }
+
+        public String getHygieiaAppUrl() {
+            return hygieiaAppUrl;
+        }    
 
         public String getHygieiaToken() {
             return hygieiaToken;
@@ -367,6 +373,9 @@ public class HygieiaPublisher extends Notifier {
             return hygieiaPublishSonarDataGlobal;
         }
 
+        public String getPluginVersionInfo() {
+            return org.apache.commons.lang3.StringUtils.isNotEmpty(pluginVersionInfo) ? pluginVersionInfo : this.getPlugin().getShortName()+" version "+this.getPlugin().getVersion(); }
+
         public List<GenericCollectorItem> getHygieiaPublishGenericCollectorItems() {
             return hygieiaPublishGenericCollectorItems;
         }
@@ -389,6 +398,7 @@ public class HygieiaPublisher extends Notifier {
         public boolean configure(StaplerRequest sr, JSONObject formData) throws FormException {
             sr.bindJSON(this, formData.getJSONObject("hygieia-publisher"));
             save();
+            this.pluginVersionInfo = this.getPlugin().getShortName()+" version "+this.getPlugin().getVersion();
             return super.configure(sr, formData);
         }
 
@@ -398,7 +408,7 @@ public class HygieiaPublisher extends Notifier {
 
         @Override
         public String getDisplayName() {
-            return "Hygieia Publisher";
+            return "Hygieia Publisher ";
         }
 
         public FormValidation doTestConnection(@QueryParameter("hygieiaAPIUrl") final String hygieiaAPIUrl,
@@ -406,6 +416,8 @@ public class HygieiaPublisher extends Notifier {
                                                @QueryParameter("hygieiaJenkinsName") final String hygieiaJenkinsName,
                                                @QueryParameter("useProxy") final String sUseProxy)  {
 
+            final String SUCCESS_MSG = "Connection to all endpoint(s) successful.";
+            final String WARNING_MSG = "Failed connecting to endpoint(s) - ";
             String hostUrl = hygieiaAPIUrl;
             if (StringUtils.isEmpty(hostUrl)) {
                 hostUrl = this.hygieiaAPIUrl;
@@ -422,13 +434,25 @@ public class HygieiaPublisher extends Notifier {
             if (StringUtils.isEmpty(sUseProxy)) {
                 bProxy = this.useProxy;
             }
-            HygieiaService testHygieiaService = getHygieiaService(hostUrl, targetToken, name, bProxy);
-            if (testHygieiaService != null) {
-                boolean success = testHygieiaService.testConnection();
-                return success ? FormValidation.ok("Success") : FormValidation.error("Failure");
-            } else {
-                return FormValidation.error("Failure");
+
+            List<String> apiEndpoints = Arrays.asList(hostUrl.split(HygieiaUtils.SEPERATOR));
+            System.out.println("hygieiaAPIURL is "+hostUrl);
+            System.out.println("Api Endpoints - "+apiEndpoints);
+            boolean SUCCESS = true;
+            String ERROR_ENDPOINTS = " ";
+            for(String apiEndpoint : apiEndpoints) {
+                HygieiaService testHygieiaService = getHygieiaService(apiEndpoint, targetToken, name, bProxy);
+                if (testHygieiaService != null) {
+                    boolean RESULT = testHygieiaService.testConnection();
+                    SUCCESS = SUCCESS && RESULT;
+                    if (!RESULT){
+                        ERROR_ENDPOINTS = ERROR_ENDPOINTS + apiEndpoint + " ";
+                    }
+                } else {
+                    SUCCESS = Boolean.FALSE;
+                }
             }
+            return SUCCESS ? FormValidation.ok(SUCCESS_MSG) : FormValidation.error(WARNING_MSG + ERROR_ENDPOINTS);
         }
 
     }

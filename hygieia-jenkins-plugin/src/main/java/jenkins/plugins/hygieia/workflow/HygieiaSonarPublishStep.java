@@ -5,7 +5,6 @@ import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import hudson.Extension;
 import hudson.model.Run;
 import hudson.model.TaskListener;
-import hudson.util.ListBoxModel;
 import hygieia.builder.BuildBuilder;
 import hygieia.builder.SonarBuilder;
 import jenkins.model.Jenkins;
@@ -22,7 +21,6 @@ import org.json.simple.parser.ParseException;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URISyntaxException;

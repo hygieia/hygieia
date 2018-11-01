@@ -3,19 +3,24 @@ package com.capitalone.dashboard.service;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.BuildRepository;
+import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.BuildSearchRequest;
 import com.capitalone.dashboard.request.CollectorRequest;
+import com.capitalone.dashboard.response.BuildDataCreateResponse;
 import com.mysema.query.BooleanBuilder;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.bson.types.ObjectId;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 @Service
@@ -25,17 +30,23 @@ public class BuildServiceImpl implements BuildService {
     private final ComponentRepository componentRepository;
     private final CollectorRepository collectorRepository;
     private final CollectorService collectorService;
+    private final DashboardService dashboardService;
+    private final CollectorItemRepository collectorItemRepository;
 
 
     @Autowired
     public BuildServiceImpl(BuildRepository buildRepository,
                             ComponentRepository componentRepository,
                             CollectorRepository collectorRepository,
-                            CollectorService collectorService) {
+                            CollectorService collectorService,
+                            DashboardService dashboardService,
+                            CollectorItemRepository collectorItemRepository) {
         this.buildRepository = buildRepository;
         this.componentRepository = componentRepository;
         this.collectorRepository = collectorRepository;
         this.collectorService = collectorService;
+        this.dashboardService = dashboardService;
+        this.collectorItemRepository = collectorItemRepository;
     }
 
     @Override
@@ -124,6 +135,38 @@ public class BuildServiceImpl implements BuildService {
         return String.format("%s,%s", build.getId().toString(), build.getCollectorItemId().toString());
     }
 
+    @Override
+    public BuildDataCreateResponse createV3(BuildDataCreateRequest request) throws HygieiaException {
+        BuildDataCreateResponse response = new BuildDataCreateResponse();
+        Build build = createBuild(request);
+        try {
+            org.apache.commons.beanutils.BeanUtils.copyProperties(response, build);
+        }
+        catch (IllegalAccessException | InvocationTargetException e) {
+            manualCopy(build, response);
+        }
+        finally {
+            populateDashboardId(response);
+        }
+        return response;
+    }
+
+    private void populateDashboardId(BuildDataCreateResponse response) {
+        if(response != null) {
+            CollectorItem collectorItem = collectorItemRepository.findOne(response.getCollectorItemId());
+            if (collectorItem == null) return;
+
+            List<Dashboard> dashboards = dashboardService.getDashboardsByCollectorItems
+                    (Collections.unmodifiableSet(new HashSet<>(Arrays.asList(collectorItem))), CollectorType.Build);
+            /*
+            * retrieve the dashboardId only if 1 dashboard is associated for this collectorItem
+            * */
+            if(CollectionUtils.isNotEmpty(dashboards) && dashboards.size() == 1) {
+                response.setDashboardId(dashboards.iterator().next().getId());
+            }
+        }
+    }
+
     private Collector createCollector() {
         CollectorRequest collectorReq = new CollectorRequest();
         collectorReq.setName("Hudson");  //for now hardcode it.
@@ -187,5 +230,23 @@ public class BuildServiceImpl implements BuildService {
         build.getCodeRepos().clear();
         build.getCodeRepos().addAll(rbs);
         return buildRepository.save(build); // Save = Update (if ID present) or Insert (if ID not there)
+    }
+    /*
+    * In case the BeanUtils.copy() fails we manually copy the properties of the object and return it back
+    * */
+    private void manualCopy(Build build, BuildDataCreateResponse response) {
+        if(build != null) {
+            response.setId(build.getId());
+            response.setCollectorItemId(build.getCollectorItemId());
+            response.setTimestamp(build.getTimestamp());
+            response.setNumber(build.getNumber());
+            response.setBuildUrl(build.getBuildUrl());
+            response.setStartTime(build.getStartTime());
+            response.setEndTime(build.getEndTime());
+            response.setDuration(build.getDuration());
+            response.setBuildStatus(build.getBuildStatus());
+            response.setStartedBy(build.getStartedBy());
+            response.setLog(build.getLog());
+        }
     }
 }

@@ -1,9 +1,10 @@
-package com.capitalone.dashboard.model;
+package com.capitalone.dashboard.response;
 
+import com.capitalone.dashboard.model.BuildStatus;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bson.types.ObjectId;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class BuildDataCreateResponse {
     private ObjectId id;
@@ -18,8 +19,6 @@ public class BuildDataCreateResponse {
     private BuildStatus buildStatus;
     private String startedBy;
     private String log;
-    private List<RepoBranch> codeRepos = new ArrayList<>();
-    private List<SCM> sourceChangeSet = new ArrayList<>();
 
     public ObjectId getId() {
         return id;
@@ -43,10 +42,6 @@ public class BuildDataCreateResponse {
 
     public void setDashboardId(ObjectId dashboardId) {
         this.dashboardId = dashboardId;
-    }
-
-    public void setSourceChangeSet(List<SCM> sourceChangeSet) {
-        this.sourceChangeSet = sourceChangeSet;
     }
 
     public long getTimestamp() {
@@ -121,20 +116,53 @@ public class BuildDataCreateResponse {
         this.log = log;
     }
 
-    public List<SCM> getSourceChangeSet() {
-        return sourceChangeSet;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        BuildDataCreateResponse that = (BuildDataCreateResponse) o;
+
+        return new EqualsBuilder()
+                .append(timestamp, that.timestamp)
+                .append(id, that.id)
+                .append(collectorItemId, that.collectorItemId)
+                .append(dashboardId, that.dashboardId)
+                .append(number, that.number)
+                .append(buildUrl, that.buildUrl)
+                .append(buildStatus, that.buildStatus)
+                .isEquals();
     }
 
-    public void addSourceChangeSet(SCM scm) {
-        getSourceChangeSet().add(scm);
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(id)
+                .append(collectorItemId)
+                .append(dashboardId)
+                .append(timestamp)
+                .append(number)
+                .append(buildUrl)
+                .append(buildStatus)
+                .toHashCode();
     }
 
-    public List<RepoBranch> getCodeRepos() {
-        return codeRepos;
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("collectorItemId", collectorItemId)
+                .append("dashboardId", dashboardId)
+                .append("timestamp", timestamp)
+                .append("number", number)
+                .append("buildUrl", buildUrl)
+                .append("startTime", startTime)
+                .append("endTime", endTime)
+                .append("duration", duration)
+                .append("buildStatus", buildStatus)
+                .append("startedBy", startedBy)
+                .append("log", log)
+                .toString();
     }
-
-    public void setCodeRepos(List<RepoBranch> codeRepos) {
-        this.codeRepos = codeRepos;
-    }
-
 }

@@ -3,6 +3,7 @@ package com.capitalone.dashboard.rest;
 import com.capitalone.dashboard.editors.CaseInsensitiveBuildStatusEditor;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Build;
+import com.capitalone.dashboard.response.BuildDataCreateResponse;
 import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.request.BuildDataCreateRequest;
@@ -56,6 +57,15 @@ public class BuildController {
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> createBuildv2(@Valid @RequestBody BuildDataCreateRequest request) throws HygieiaException {
         String response = buildService.createV2(request);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+    @RequestMapping(value = "/v3/build", method = POST,
+            consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<BuildDataCreateResponse> createBuildv3(@Valid @RequestBody BuildDataCreateRequest request) throws HygieiaException {
+        BuildDataCreateResponse response = buildService.createV3(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
