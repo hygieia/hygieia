@@ -30,8 +30,6 @@
             ctrl.miniWidgetView = typeof ctrl.minitabs[index] === 'undefined' ? ctrl.minitabs[0].name : ctrl.minitabs[index].name;
         };
 
-        ctrl.showStatusIcon = showStatusIcon;
-        ctrl.showDetail = showDetail;
         ctrl.showLibraryPolicyDetails = showLibraryPolicyDetails;
 
         coveragePieChart({});
@@ -43,7 +41,12 @@
             };
             var testRequest = {
                 componentId: $scope.widgetConfig.componentId,
-                types: ['Functional'],
+                types: ['Functional', 'Performance'],
+                max: 1
+            };
+            var performanceRequest = {
+                componentId: $scope.widgetConfig.componentId,
+                types: ['Performance'],
                 max: 1
             };
             var saRequest = {
@@ -58,7 +61,8 @@
                 libraryPolicyData.libraryPolicyDetails(libraryPolicyRequest).then(processLibraryPolicyResponse),
                 codeAnalysisData.staticDetails(caRequest).then(processCaResponse),
                 codeAnalysisData.securityDetails(saRequest).then(processSaResponse),
-                testSuiteData.details(testRequest).then(processTestResponse)
+                testSuiteData.details(testRequest).then(processTestResponse),
+                testSuiteData.details(performanceRequest).then(processPerfResponse)
 
             ]);
         };
@@ -186,14 +190,25 @@
                 }
                 return issues;
             }
+            function processPerfResponse(response) {
+                var deferred = $q.defer();
 
+                ctrl.perfTests  =  processTestResponseByType(response, "Performance");
+
+                deferred.resolve(response.lastUpdated);
+                return deferred.promise;
+            }
 
             function processTestResponse(response) {
                 var deferred = $q.defer();
 
-                ctrl.testResult = testResult;
+                ctrl.functionalTests = processTestResponseByType(response, "Functional");
 
-                ctrl.functionalTests = [];
+                deferred.resolve(response.lastUpdated);
+                return deferred.promise;
+            }
+            function processTestResponseByType(response, type){
+                var result = [];
                 var index;
                 var totalSize = _.isEmpty(response.result) ? 0 : response.result.length;
                 for (index = 0; index < totalSize; ++index) {
@@ -203,7 +218,7 @@
                         failureCount: 0, successCount: 0, skippedCount: 0, totalCount: 0
                     };
                     // Aggregate the counts of all Functional test suites
-                    var aggregate = _.reduce(_.filter(testResult.testCapabilities, {type: "Functional"}), function (result, capability) {
+                    var aggregate = _.reduce(_.filter(testResult.testCapabilities, {type: type}), function (result, capability) {
                         //New calculation: 3/10/16 - Topo Pal
                         result.failureCount += capability.failedTestSuiteCount;
                         result.successCount += capability.successTestSuiteCount;
@@ -218,7 +233,7 @@
 
 
                     ctrl.executionId = _.isEmpty(response.result) ? "-" : response.result[index].executionId;
-                    ctrl.functionalTests.push({
+                    result.push({
                         name: testResult.description,
                         totalCount: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.totalCount, 0),
                         successCount: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.successCount, 0),
@@ -228,10 +243,8 @@
                         details: testResult
                     });
                 }
-                deferred.resolve(response.lastUpdated);
-                return deferred.promise;
+                return result;
             }
-
             function coveragePieChart(lineCoverage) {
                 lineCoverage.value = lineCoverage.value || 0;
 
@@ -288,10 +301,6 @@
                 return Math.ceil(value / factor) + suffix;
             }
 
-            function showStatusIcon(item) {
-                return item.status && item.status.toLowerCase() !== 'ok';
-            }
-
             ctrl.getDashStatus = function getDashStatus() {
                 if(ctrl.librarySecurityThreatStatus == undefined) return 'ignore';
                 switch (ctrl.librarySecurityThreatStatus.level) {
@@ -310,20 +319,6 @@
                     default:
                         return 'ok';
                 }
-            }
-
-            function showDetail(test) {
-                $uibModal.open({
-                    controller: 'TestDetailsController',
-                    controllerAs: 'testDetails',
-                    templateUrl: 'components/widgets/codeanalysis/testdetails.html',
-                    size: 'lg',
-                    resolve: {
-                        testResult: function () {
-                            return test;
-                        }
-                    }
-                });
             }
 
             function showLibraryPolicyDetails(type,data) {
