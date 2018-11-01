@@ -241,6 +241,8 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
                 if (isNewBuild(job, (Build)buildSummary)) {
                     Build build = hudsonClient.getBuildDetails(((Build)buildSummary)
                             .getBuildUrl(), job.getInstanceUrl());
+                    job.setLastUpdated(System.currentTimeMillis());
+                    hudsonJobRepository.save(job);
                     if (build != null) {
                         build.setCollectorItemId(job.getId());
                         buildRepository.save(build);
@@ -273,6 +275,8 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
 
             for (BaseModel config : configs) {
                 if (config != null && isNewConfig(job, (CollectorItemConfigHistory)config)) {
+                    job.setLastUpdated(System.currentTimeMillis());
+                    hudsonJobRepository.save(job);
                     ((CollectorItemConfigHistory)config).setCollectorItemId(job.getId());
                     configRepository.save((CollectorItemConfigHistory)config);
                     count++;

@@ -191,6 +191,8 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
         for (SonarProject project : sonarProjects) {
             CodeQuality codeQuality = sonarClient.currentCodeQuality(project, metrics);
             if (codeQuality != null && isNewQualityData(project, codeQuality)) {
+                project.setLastUpdated(System.currentTimeMillis());
+                sonarProjectRepository.save(project);
                 codeQuality.setCollectorItemId(project.getId());
                 codeQualityRepository.save(codeQuality);
                 count++;
