@@ -12,8 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -28,7 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class GithubWebHookRequestFilter extends AbstractAuthenticationProcessingFilter {
+public class GithubWebHookRequestFilter extends UsernamePasswordAuthenticationFilter {
     private static final Log LOG = LogFactory.getLog(GithubWebHookRequestFilter.class);
 
     private final GithubWebHookAuthService githubWebHookAuthService;
@@ -40,7 +39,7 @@ public class GithubWebHookRequestFilter extends AbstractAuthenticationProcessing
                                       GithubWebHookAuthService githubWebHookAuthService,
                                       ApiSettings apiSettings,
                                       AuthenticationResultHandler authenticationResultHandler) {
-        super(new AntPathRequestMatcher(path, "POST"));
+        super();
         setAuthenticationManager(authManager);
         setAuthenticationSuccessHandler(authenticationResultHandler);
         setFilterProcessesUrl(path);

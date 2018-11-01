@@ -1,12 +1,8 @@
 package com.capitalone.dashboard.auth.webhook.github;
 
-import com.capitalone.dashboard.model.ApiToken;
 import com.capitalone.dashboard.model.UserInfo;
 import com.capitalone.dashboard.model.UserRole;
-import com.capitalone.dashboard.repository.ApiTokenRepository;
 import com.capitalone.dashboard.repository.UserInfoRepository;
-import com.capitalone.dashboard.service.ApiTokenServiceImpl;
-import com.capitalone.dashboard.settings.ApiSettings;
 import com.capitalone.dashboard.webhook.github.GitHubWebHookSettings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -20,15 +16,13 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 
 @Component
 public class GithubWebHookAuthServiceImpl implements GithubWebHookAuthService {
-    private static final Logger LOGGER = Logger.getLogger(ApiTokenServiceImpl.class);
+    private static final Logger LOGGER = Logger.getLogger(GithubWebHookAuthServiceImpl.class);
 
     private final UserInfoRepository userInfoRepository;
 

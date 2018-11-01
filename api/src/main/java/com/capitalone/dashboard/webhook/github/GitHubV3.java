@@ -26,8 +26,10 @@ import org.springframework.web.client.RestClientException;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public abstract class GitHubV3 {
     private static final Log LOG = LogFactory.getLog(GitHubV3.class);
@@ -136,15 +138,13 @@ public abstract class GitHubV3 {
         Iterable<GitHubRepo> gitHubRepoIterable = getGitHubRepoRepository().findAll(builder.getValue());
 
         if (gitHubRepoIterable != null) {
-            while (gitHubRepoIterable.iterator().hasNext()) {
-                GitHubRepo gitHubRepo = gitHubRepoIterable.iterator().next();
+            for (GitHubRepo gitHubRepo : gitHubRepoIterable) {
                 if (!StringUtils.isEmpty(gitHubRepo.getPersonalAccessToken())
                         && !"null".equalsIgnoreCase(gitHubRepo.getPersonalAccessToken().trim())) {
                     return gitHubRepo;
                 }
             }
         }
-
         return null;
     }
 
