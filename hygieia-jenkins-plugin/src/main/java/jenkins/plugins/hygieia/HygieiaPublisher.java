@@ -408,7 +408,7 @@ public class HygieiaPublisher extends Notifier {
 
         @Override
         public String getDisplayName() {
-            return "Hygieia Publisher ";
+            return "Hygieia Publisher";
         }
 
         public FormValidation doTestConnection(@QueryParameter("hygieiaAPIUrl") final String hygieiaAPIUrl,
