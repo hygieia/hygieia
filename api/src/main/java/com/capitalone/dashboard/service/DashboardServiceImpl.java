@@ -381,12 +381,10 @@ public class DashboardServiceImpl implements DashboardService {
 
 	@Override
 	public List<Dashboard> getOwnedDashboards() {
-
         Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
         List<Dashboard> findByOwnersList = dashboardRepository.findByOwners(owner);
         getAppAndComponentNames(findByOwnersList);
-        Set<Dashboard> myDashboards = new HashSet<Dashboard>(findByOwnersList);
-        return Lists.newArrayList(myDashboards);
+        return findByOwnersList.stream().distinct().collect(Collectors.toList());
 	}
 
     @Override

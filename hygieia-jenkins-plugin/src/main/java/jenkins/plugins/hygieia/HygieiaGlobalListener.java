@@ -46,7 +46,7 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
             if (CollectionUtils.isNotEmpty(apiEndpints)) {
                 for (String apiEndPoint : apiEndpints) {
                     if(StringUtils.isNotEmpty(apiEndPoint)) {
-                        listener.getLogger().println("++++++++++++++++++++++++ Hygieia Publish to API Endpoint - " + (index + 1) + " ++++++++++++++++++++++++++++++++++++");
+                        listener.getLogger().println("Hygieia: *** Publish to API Endpoint - " + (index + 1) + " ***");
                         HygieiaService hygieiaService = getHygieiaService(hygieiaGlobalListenerDescriptor, apiEndPoint);
                         String hygieiaAppUrl = (CollectionUtils.size(appUrls) > index) ? appUrls.get(index) : null;
                         Triple<String, String, BuildDataCreateResponse> buildResponseObject = publishBuildData(run, listener, hygieiaGlobalListenerDescriptor, hygieiaService, hygieiaAppUrl);
@@ -62,10 +62,9 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
 
                         // publish the dashboard link
                         if (StringUtils.isNotEmpty(dashboardLink)) {
-                            listener.getLogger().println("Hygieia: Link to the Hygieia Dashboard - " + dashboardLink);
+                            listener.getLogger().println("Hygieia: Link to the Hygieia Dashboard for API Endpoint "+(index+1)+" - " + dashboardLink);
                         }
                         index++;
-                        listener.getLogger().println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
                     }
                 }
             }
@@ -82,7 +81,6 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
             BuildBuilder builder = getBuildBuilder(run, listener, hygieiaGlobalListenerDescriptor);
 
             HygieiaResponse buildResponse = hygieiaService.publishBuildDataV3(builder.getBuildData());
-            listener.getLogger().println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
             if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
 
                 try {
@@ -94,15 +92,11 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
                     listener.getLogger().println("Hygieia: Auto Published Build Complete Data. Response Code: " + buildResponse.getResponseCode() + ". " + convertedBuildResponseString);
                 } catch (IOException e) {
                     listener.getLogger().println("Hygieia: Publishing Build Complete Data, however error reading response. " + '\n' + e.getMessage());
-                    listener.getLogger().println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                    //Since we are unable to read response we will skip rest of the steps.
                     return null;
                 }
 
             } else {
                 listener.getLogger().println("Hygieia: Failed Publishing Build Complete Data. " + buildResponse.toString());
-                listener.getLogger().println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                //If publish build data fails, skip rest of publishing steps.
                 return null;
             }
         }
