@@ -118,7 +118,6 @@ public class CodeReviewEvaluatorTest {
 
         when(gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(any(ObjectId.class),any(Long.class), any(Long.class))).thenReturn(pullRequestList);
         when(commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(any(ObjectId.class),any(Long.class), any(Long.class))).thenReturn(commitsList);
-        when(apiSettings.isGithubWebhookEnabled()).thenReturn(true);
         when(apiSettings.getServiceAccountOU()).thenReturn(TestConstants.USER_ACCOUNTS);
         when(apiSettings.getServiceAccountOU()).thenReturn(TestConstants.USER_ACCOUNTS);
         when(apiSettings.getCommitLogIgnoreAuditRegEx()).thenReturn("(.)*(Increment_Version_Tag)(.)*");
@@ -129,7 +128,6 @@ public class CodeReviewEvaluatorTest {
 
         when(gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(any(ObjectId.class),any(Long.class), any(Long.class))).thenReturn(pullRequestList);
         when(commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(any(ObjectId.class),any(Long.class), any(Long.class))).thenReturn(commitsList);
-        when(apiSettings.isGithubWebhookEnabled()).thenReturn(true);
 
         responseV2 = codeReviewEvaluator.evaluate(makeCollectorItem(1,"master"), collectorItemList,125634536, 6235263, null);
         Assert.assertFalse(responseV2.getAuditStatuses().contains(CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE));
@@ -148,13 +146,13 @@ public class CodeReviewEvaluatorTest {
         CodeReviewEvaluatorLegacy codeReviewEvaluatorLegacyInstance = new CodeReviewEvaluatorLegacy(commitRepository, gitRequestRepository, apiSettings);
 
         pullRequestList.get(0).setUserId("NotAuthor1");
-        boolean result = codeReviewEvaluatorLegacyInstance.existsApprovedPRForCollectorItem(commit, collectorItem, 12345678L, 12345679L);
+        boolean result = codeReviewEvaluatorLegacyInstance.existsApprovedPRForCollectorItem(collectorItem, commit, collectorItem, 12345678L, 12345679L);
         Assert.assertTrue(result);
 
         pullRequestList = makePullRequests(false);
         when(gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(any(ObjectId.class),any(Long.class), any(Long.class))).thenReturn(pullRequestList);
 
-        result = codeReviewEvaluatorLegacyInstance.existsApprovedPRForCollectorItem(commit, collectorItem, 12345678L, 12345679L);
+        result = codeReviewEvaluatorLegacyInstance.existsApprovedPRForCollectorItem(collectorItem, commit, collectorItem, 12345678L, 12345679L);
         Assert.assertFalse(result);
     }
 
@@ -266,11 +264,11 @@ public class CodeReviewEvaluatorTest {
         CollectorItem item = new CollectorItem();
         item.setCollectorId(ObjectId.get());
         item.setEnabled(true);
+        item.setPushed(true);
         item.getOptions().put("url", "http://github.com/capone/hygieia");
         item.getOptions().put("branch", branch);
         item.setLastUpdated(lastUpdated);
         return item;
-
     }
 
     private List<Commit> makeCommits() {

@@ -66,7 +66,7 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
             String parsedUrl = gitHubParsed.getUrl(); //making sure we have a goot url?
             CodeReviewAuditResponseV2 reviewResponse = null;
 
-            if (settings.isGithubWebhookEnabled()) {
+            if (repoItem.isPushed()) {
                 Collector githubCollector = collectorRepository.findByName("GitHub");
                 List<CollectorItem> collectorItemList = collectorItemRepository.findRepoByUrl(githubCollector.getId(), parsedUrl, true);
                 reviewResponse = evaluate(repoItem, collectorItemList, beginDate, endDate, null);
@@ -168,7 +168,7 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
 
         List<String> allPrCommitShas = new ArrayList<>();
         pullRequests.stream().filter(pr -> "merged".equalsIgnoreCase(pr.getState())).forEach(pr -> {
-            auditPullRequest(pr, commits, allPrCommitShas, reviewAuditResponseV2);
+            auditPullRequest(repoItem, pr, commits, allPrCommitShas, reviewAuditResponseV2);
         });
 
         //check any commits not directly tied to pr
@@ -178,15 +178,18 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
 
         List<Commit> commitsNotDirectlyTiedToPr = new ArrayList<>();
         commits.forEach(commit -> {
-            if ((settings.isGithubWebhookEnabled()
-                    && !allPrCommitShas.contains(commit.getScmRevisionNumber())
-                    && !existsApprovedPROnAnotherBranch(commit, collectorItemList, beginDt, endDt)
-                    && (commit.getType() == CommitType.New))
+            boolean partialDirectCommitsCondition = false;
+            if ( (!allPrCommitShas.contains(commit.getScmRevisionNumber()))
+                    && (commit.getType() == CommitType.New) ) {
+                partialDirectCommitsCondition = true;
+            }
 
-                    || (!settings.isGithubWebhookEnabled()
-                        && !allPrCommitShas.contains(commit.getScmRevisionNumber())
-                        && StringUtils.isEmpty(commit.getPullNumber())
-                        && (commit.getType() == CommitType.New)) ) {
+            if ( (repoItem.isPushed()
+                    && partialDirectCommitsCondition
+                    && !existsApprovedPROnAnotherBranch(repoItem, commit, collectorItemList, beginDt, endDt))
+                    || (!repoItem.isPushed()
+                            && partialDirectCommitsCondition
+                            && StringUtils.isEmpty(commit.getPullNumber())) ) {
                 commitsNotDirectlyTiedToPr.add(commit);
                 // auditServiceAccountChecks includes - check for service account and increment version tag for service account on direct commits.
                 auditServiceAccountChecks(reviewAuditResponseV2, commit);
@@ -196,8 +199,8 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
         return reviewAuditResponseV2;
     }
 
-    protected void auditPullRequest(GitRequest pr, List<Commit> commits, List<String> allPrCommitShas,
-                                    CodeReviewAuditResponseV2 reviewAuditResponseV2) {
+    protected void auditPullRequest(CollectorItem repoItem, GitRequest pr, List<Commit> commits,
+                                    List<String> allPrCommitShas, CodeReviewAuditResponseV2 reviewAuditResponseV2) {
         Optional<Commit> mergeOptionalCommit = commits.stream().filter(c -> Objects.equals(c.getScmRevisionNumber(), pr.getScmRevisionNumber())).findFirst();
         Commit mergeCommit = mergeOptionalCommit.orElse(null);
 
@@ -213,7 +216,7 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
         if (mergeCommit == null) {
             pullRequestAudit.addAuditStatus(CodeReviewAuditStatus.MERGECOMMITER_NOT_FOUND);
         } else {
-            if (settings.isGithubWebhookEnabled()) {
+            if (repoItem.isPushed()) {
                 pullRequestAudit.addAuditStatus(pr.getUserId().equalsIgnoreCase(mergeCommit.getScmCommitterLogin()) ? CodeReviewAuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER : CodeReviewAuditStatus.COMMITAUTHOR_NE_MERGECOMMITER);
             } else {
                 pullRequestAudit.addAuditStatus(pr.getUserId().equalsIgnoreCase(mergeCommit.getScmAuthorLogin()) ? CodeReviewAuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER : CodeReviewAuditStatus.COMMITAUTHOR_NE_MERGECOMMITER);
@@ -230,16 +233,16 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
         reviewAuditResponseV2.addPullRequest(pullRequestAudit);
     }
 
-    protected boolean existsApprovedPROnAnotherBranch(Commit commit, List<CollectorItem> collectorItemList,
+    protected boolean existsApprovedPROnAnotherBranch(CollectorItem repoItem, Commit commit, List<CollectorItem> collectorItemList,
                                                       long beginDt, long endDt) {
         CollectorItem collectorItem = Optional.ofNullable(collectorItemList)
                                         .orElseGet(Collections::emptyList).stream()
-                                        .filter(ci -> existsApprovedPRForCollectorItem(commit, ci, beginDt, endDt))
+                                        .filter(ci -> existsApprovedPRForCollectorItem(repoItem, commit, ci, beginDt, endDt))
                                         .findFirst().orElse(null);
         return (collectorItem != null);
     }
 
-    protected boolean existsApprovedPRForCollectorItem(Commit commit, CollectorItem collectorItem,
+    protected boolean existsApprovedPRForCollectorItem(CollectorItem repoItem, Commit commit, CollectorItem collectorItem,
                                                        long beginDt, long endDt) {
         List<GitRequest> mergedPullRequests = gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(collectorItem.getId(), beginDt-1, endDt+1);
 
@@ -255,7 +258,7 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
                 CodeReviewAuditResponseV2 reviewAuditResponseV2 = new CodeReviewAuditResponseV2();
 
                 // Matching commit found, now make sure the PR for the matching commit passes all the audit checks
-                auditPullRequest(mergedPullRequest, commits, allPrCommitShas, reviewAuditResponseV2);
+                auditPullRequest(repoItem, mergedPullRequest, commits, allPrCommitShas, reviewAuditResponseV2);
                 CodeReviewAuditResponseV2.PullRequestAudit pullRequestAudit = reviewAuditResponseV2.getPullRequests().get(0);
                 if ((pullRequestAudit != null)
                         && codeReviewAuditResponseCheck(pullRequestAudit)) {return true;}

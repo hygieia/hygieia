@@ -57,7 +57,7 @@ public class CodeReviewAuditServiceImpl implements CodeReviewAuditService {
         // This is the list of repos in the database with the same repoUrl, but a different branch.
         List<CollectorItem> collectorItemList = new ArrayList<>();
         List<CollectorItem> filteredCollectorItemList = new ArrayList<>();
-        if (settings.isGithubWebhookEnabled()) {
+        if ((collectorItem != null) && (collectorItem.isPushed())) {
             collectorItemList = collectorItemRepository.findRepoByUrl(githubCollector.getId(), repoUrl, true);
             filteredCollectorItemList = Optional.ofNullable(collectorItemList)
                                         .orElseGet(Collections::emptyList).stream()

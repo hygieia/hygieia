@@ -131,23 +131,26 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
         List<String> allPrCommitShas = new ArrayList<>();
         List<String> mergeCommitShas = new ArrayList<>();
         pullRequests.stream().filter(pr -> "merged".equalsIgnoreCase(pr.getState())).forEach(pr -> {
-            auditPullRequest(pr, commits, mergeCommitShas, allPrCommitShas, allPeerReviews);
+            auditPullRequest(repoItem, pr, commits, mergeCommitShas, allPrCommitShas, allPeerReviews);
         });
 
         //check any commits not directly tied to pr
         CodeReviewAuditResponse codeReviewAuditResponse = new CodeReviewAuditResponse();
         List<Commit> commitsNotDirectlyTiedToPr = new ArrayList<>();
         commits.forEach(commit -> {
-            if ( (settings.isGithubWebhookEnabled()
-                    && !allPrCommitShas.contains(commit.getScmRevisionNumber())
-                    && !existsApprovedPROnAnotherBranch(commit, collectorItemList, beginDt, endDt)
+            boolean partialDirectCommitsCondition = false;
+            if ( (!allPrCommitShas.contains(commit.getScmRevisionNumber()))
                     && (commit.getType() == CommitType.New)
-                    && !mergeCommitShas.contains(commit.getScmRevisionNumber()))
-                 || (!settings.isGithubWebhookEnabled()
-                        && !allPrCommitShas.contains(commit.getScmRevisionNumber())
-                        && StringUtils.isEmpty(commit.getPullNumber())
-                        && (commit.getType() == CommitType.New)
-                        && !mergeCommitShas.contains(commit.getScmRevisionNumber())) ) {
+                    && (!mergeCommitShas.contains(commit.getScmRevisionNumber())) ) {
+                partialDirectCommitsCondition = true;
+            }
+
+            if ( (repoItem.isPushed()
+                    && partialDirectCommitsCondition
+                    && !existsApprovedPROnAnotherBranch(repoItem, commit, collectorItemList, beginDt, endDt))
+                 || (!repoItem.isPushed()
+                        && partialDirectCommitsCondition
+                        && StringUtils.isEmpty(commit.getPullNumber())) ) {
                 commitsNotDirectlyTiedToPr.add(commit);
                 // auditServiceAccountChecks includes - check for service account and increment version tag for service account on direct commits.
                 auditServiceAccountChecks(codeReviewAuditResponse, commit);
@@ -176,7 +179,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
         return allPeerReviews;
     }
 
-    protected void auditPullRequest(GitRequest pr, List<Commit> commits,
+    protected void auditPullRequest(CollectorItem repoItem, GitRequest pr, List<Commit> commits,
                                     List<String> mergeCommitShas, List<String> allPrCommitShas,
                                     List<CodeReviewAuditResponse> allPeerReviews) {
         CodeReviewAuditResponse codeReviewAuditResponse = new CodeReviewAuditResponse();
@@ -196,7 +199,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
             codeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.MERGECOMMITER_NOT_FOUND);
         } else {
             mergeCommitShas.add(mergeCommit.getScmRevisionNumber());
-            if (settings.isGithubWebhookEnabled()) {
+            if (repoItem.isPushed()) {
                 codeReviewAuditResponse.addAuditStatus(pr.getUserId().equalsIgnoreCase(mergeCommit.getScmCommitterLogin()) ? CodeReviewAuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER : CodeReviewAuditStatus.COMMITAUTHOR_NE_MERGECOMMITER);
             } else {
                 codeReviewAuditResponse.addAuditStatus(pr.getUserId().equalsIgnoreCase(mergeCommit.getScmAuthorLogin()) ? CodeReviewAuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER : CodeReviewAuditStatus.COMMITAUTHOR_NE_MERGECOMMITER);
@@ -217,16 +220,16 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
         allPeerReviews.add(codeReviewAuditResponse);
     }
 
-    protected boolean existsApprovedPROnAnotherBranch(Commit commit, List<CollectorItem> collectorItemList,
+    protected boolean existsApprovedPROnAnotherBranch(CollectorItem repoItem, Commit commit, List<CollectorItem> collectorItemList,
                                                       long beginDt, long endDt) {
         CollectorItem collectorItem = Optional.ofNullable(collectorItemList)
                                         .orElseGet(Collections::emptyList).stream()
-                                        .filter(ci -> existsApprovedPRForCollectorItem(commit, ci, beginDt, endDt))
+                                        .filter(ci -> existsApprovedPRForCollectorItem(repoItem, commit, ci, beginDt, endDt))
                                         .findFirst().orElse(null);
         return (collectorItem != null);
     }
 
-    protected boolean existsApprovedPRForCollectorItem(Commit commit, CollectorItem collectorItem,
+    protected boolean existsApprovedPRForCollectorItem(CollectorItem repoItem, Commit commit, CollectorItem collectorItem,
                                                        long beginDt, long endDt) {
         List<GitRequest> mergedPullRequests = gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(collectorItem.getId(), beginDt-1, endDt+1);
 
@@ -243,7 +246,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
                 List<CodeReviewAuditResponse> allPeerReviews = new ArrayList<>();
 
                 // Matching commit found, now make sure the PR for the matching commit passes all the audit checks
-                auditPullRequest(mergedPullRequest, commits, mergeCommitShas, allPrCommitShas, allPeerReviews);
+                auditPullRequest(repoItem, mergedPullRequest, commits, mergeCommitShas, allPrCommitShas, allPeerReviews);
                 CodeReviewAuditResponse codeReviewAuditResponse = allPeerReviews.get(0);
                 if ((codeReviewAuditResponse != null)
                         && codeReviewAuditResponseCheck(codeReviewAuditResponse)) {return true;}
