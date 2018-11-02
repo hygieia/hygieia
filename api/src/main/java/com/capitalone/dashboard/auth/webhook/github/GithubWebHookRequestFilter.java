@@ -63,8 +63,7 @@ public class GithubWebHookRequestFilter extends UsernamePasswordAuthenticationFi
             githubEnterpriseHostExpectedValues = getGithubEnterpriseHostExpectedValues(gitHubWebHookSettings);
         }
 
-        if (!apiSettings.isGithubWebhookEnabled()
-                || StringUtils.isEmpty(userAgent)
+        if (StringUtils.isEmpty(userAgent)
                 || StringUtils.isEmpty(githubEnterpriseHost)
                 || StringUtils.isEmpty(userAgentExpectedValue)
                 || CollectionUtils.isEmpty(githubEnterpriseHostExpectedValues)

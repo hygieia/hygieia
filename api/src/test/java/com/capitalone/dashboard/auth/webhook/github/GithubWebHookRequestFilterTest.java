@@ -73,7 +73,6 @@ public class GithubWebHookRequestFilterTest {
         when(request.getMethod()).thenReturn("POST");
         when(request.getHeader("User-Agent")).thenReturn(userAgentHeader);
         when(request.getHeader("X-GitHub-Enterprise-Host")).thenReturn(githubEnterpriseHostHeader);
-        when(apiSettings.isGithubWebhookEnabled()).thenReturn(true);
         when(apiSettings.getGitHubWebHook()).thenReturn(jsonString);
 
         try {
@@ -93,7 +92,6 @@ public class GithubWebHookRequestFilterTest {
         when(request.getMethod()).thenReturn("POST");
         when(request.getHeader("User-Agent")).thenReturn("something");
         when(request.getHeader("X-GitHub-Enterprise-Host")).thenReturn(githubEnterpriseHostHeader);
-        when(apiSettings.isGithubWebhookEnabled()).thenReturn(true);
         when(apiSettings.getGitHubWebHook()).thenReturn(jsonString);
 
         try {
@@ -110,7 +108,6 @@ public class GithubWebHookRequestFilterTest {
         String jsonString = "{\"token\" : \"c74782b3ca2b57a5230ae7812a\", \"commitTimestampOffset\" : \"5\", \"delimiter\" : \";\", \"userAgent\" : \"GitHub-Hookshot\", \"githubEnterpriseHost\" : \"github.com\", \"databaseUserAccount\" : \"gitHubWebHookUser\"}";
         UserInfo user = new UserInfo();
         when(userInfoRepository.findByUsername(anyString())).thenReturn(user);
-        when(apiSettings.isGithubWebhookEnabled()).thenReturn(true);
         when(apiSettings.getGitHubWebHook()).thenReturn(jsonString);
         Authentication result = filter.attemptAuthentication(request, response);
 

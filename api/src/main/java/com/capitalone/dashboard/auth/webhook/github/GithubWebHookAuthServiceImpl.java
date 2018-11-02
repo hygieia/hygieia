@@ -22,7 +22,7 @@ public class GithubWebHookAuthServiceImpl implements GithubWebHookAuthService {
         Collection<UserRole> roles = new ArrayList<>();
         roles.add(UserRole.ROLE_API);
 
-        return new PreAuthenticatedAuthenticationToken("someUser", null, createAuthorities(roles));
+        return new PreAuthenticatedAuthenticationToken("githubWebHookDummyUser", null, createAuthorities(roles));
     }
 
     private Collection<? extends GrantedAuthority> createAuthorities(Collection<UserRole> authorities) {

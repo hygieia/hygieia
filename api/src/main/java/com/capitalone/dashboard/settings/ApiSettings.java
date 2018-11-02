@@ -19,12 +19,6 @@ public class ApiSettings {
     @Value("${pageSize:10}")
     private int pageSize;
     private String gitHubWebHook;
-    @Value("${githubWebhookEnabled:false}")
-    private boolean githubWebhookEnabled;
-
-    public boolean isGithubWebhookEnabled() { return githubWebhookEnabled; }
-
-    public void setGithubWebhookEnabled(boolean githubWebhookEnabled) { this.githubWebhookEnabled = githubWebhookEnabled; }
 
     public String getGitHubWebHook() { return gitHubWebHook; }
 
