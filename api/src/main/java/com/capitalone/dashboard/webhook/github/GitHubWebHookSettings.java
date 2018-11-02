@@ -7,10 +7,6 @@ public class GitHubWebHookSettings {
     private String delimiter;
     private String userAgent;
     private String githubEnterpriseHost;
-    private String databaseUserAccount;
-
-    public String getDatabaseUserAccount() { return databaseUserAccount; }
-    public void setDatabaseUserAccount(String databaseUserAccount) { this.databaseUserAccount = databaseUserAccount; }
 
     public String getGithubEnterpriseHost() { return githubEnterpriseHost; }
     public void setGithubEnterpriseHost(String githubEnterpriseHost) { this.githubEnterpriseHost = githubEnterpriseHost; }

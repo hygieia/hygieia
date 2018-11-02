@@ -81,9 +81,7 @@ public class GithubWebHookRequestFilter extends UsernamePasswordAuthenticationFi
     @Override
     public Authentication attemptAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws AuthenticationException {
 
-        GitHubWebHookSettings gitHubWebHookSettings = parseAsGitHubWebHook(apiSettings.getGitHubWebHook());
-
-        Authentication authentication = githubWebHookAuthService.getAuthentication(httpServletRequest, gitHubWebHookSettings);
+        Authentication authentication = githubWebHookAuthService.getAuthentication(httpServletRequest);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 

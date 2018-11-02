@@ -55,7 +55,7 @@ public class GithubWebHookRequestFilterTest {
     @Before
     public void setup() {
         path = "/commit/github/v3";
-        githubWebHookAuthService = new GithubWebHookAuthServiceImpl(userInfoRepository);
+        githubWebHookAuthService = new GithubWebHookAuthServiceImpl();
         filter = new GithubWebHookRequestFilter(path, manager, githubWebHookAuthService, apiSettings, resultHandler);
     }
 
@@ -115,15 +115,6 @@ public class GithubWebHookRequestFilterTest {
         Authentication result = filter.attemptAuthentication(request, response);
 
         Assert.assertNotNull(result);
-    }
-
-    @Test(expected = BadCredentialsException.class)
-    public void shouldNotAuthenticate() {
-        String jsonString = "{\"token\" : \"c74782b3ca2b57a5230ae7812a\", \"commitTimestampOffset\" : \"5\", \"delimiter\" : \";\", \"userAgent\" : \"GitHub-Hookshot\", \"githubEnterpriseHost\" : \"github.com\", \"databaseUserAccount\" : \"gitHubWebHookUser\"}";
-        when(userInfoRepository.findByUsername(anyString())).thenReturn(null);
-        when(apiSettings.isGithubWebhookEnabled()).thenReturn(true);
-        when(apiSettings.getGitHubWebHook()).thenReturn(jsonString);
-        filter.attemptAuthentication(request, response);
     }
 
     @Test
