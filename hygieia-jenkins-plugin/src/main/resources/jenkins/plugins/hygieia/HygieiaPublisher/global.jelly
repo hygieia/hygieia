@@ -18,6 +18,9 @@
     <f:entry title="Hygieia Server URL" help="/plugin/hygieia-publisher/help-globalConfig-hygieiaBuildServerUrl.html">
         <f:textbox field="hygieiaAPIUrl" name="hygieiaAPIUrl" value="${descriptor.getHygieiaAPIUrl()}" />
     </f:entry>
+    <f:entry title="Hygieia UI URL" help="/plugin/hygieia-publisher/help-globalConfig-hygieiaAppUrl.html">
+            <f:textbox field="hygieiaAppUrl" name="hygieiaAppUrl" value="${descriptor.getHygieiaAppUrl()}" />
+        </f:entry>
     <f:entry title="Name your Jenkins" help="/plugin/hygieia-publisher/help-globalConfig-hygieiaJenkinsName.html">
         <f:textbox field="hygieiaJenkinsName" name="hygieiaJenkinsName" value="${descriptor.getHygieiaJenkinsName()}" />
     </f:entry>
@@ -27,7 +30,7 @@
     <f:entry title="Publish all build data" help="/plugin/hygieia-publisher/help-globalConfig-hygieiaPublishBuildData.html">
         <f:checkbox field="hygieiaPublishBuildDataGlobal" name="hygieiaPublishBuildDataGlobal" checked="${descriptor.isHygieiaPublishBuildDataGlobal()}" />
     </f:entry>
-    <f:entry title="Publish all sonar scan data" help="/plugin/hygieia-publisher/help-globalConfig-hygieiaPublishBuildData.html">
+    <f:entry title="Publish all sonar scan data" help="/plugin/hygieia-publisher/help-globalConfig-hygieiaPublishSonarData.html">
         <f:checkbox field="hygieiaPublishSonarDataGlobal" name="hygieiaPublishSonarDataGlobal" checked="${descriptor.isHygieiaPublishSonarDataGlobal()}" />
     </f:entry>
     <f:entry title="Publish custom collector items (tool name : regex)" help="/plugin/hygieia-publisher/help-globalConfig-hygieiaPublishBuildData.html">

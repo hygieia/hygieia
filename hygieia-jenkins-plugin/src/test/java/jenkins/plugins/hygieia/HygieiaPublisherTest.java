@@ -6,7 +6,6 @@ import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import com.capitalone.dashboard.request.DeployDataCreateRequest;
 import com.capitalone.dashboard.request.GenericCollectorItemCreateRequest;
 import com.capitalone.dashboard.request.TestDataCreateRequest;
-import hudson.model.Descriptor;
 import hudson.util.FormValidation;
 import junit.framework.TestCase;
 import org.json.simple.JSONObject;
@@ -38,7 +37,6 @@ public class HygieiaPublisherTest extends TestCase {
     public HygieiaPublisherTest(HygieiaServiceStub hygieiaServiceStub, boolean responseBoolean, FormValidation.Kind expectedResult) {
         this.hygieiaServiceStub = hygieiaServiceStub;
         this.responseBoolean = responseBoolean;
-//        this.responseString = responseString;
         this.expectedResult = expectedResult;
     }
 
@@ -81,6 +79,10 @@ public class HygieiaPublisherTest extends TestCase {
         }
 
         public HygieiaResponse publishBuildData(BuildDataCreateRequest request) {
+            return hygieiaResponse;
+        }
+
+        public HygieiaResponse publishBuildDataV3(BuildDataCreateRequest request) {
             return hygieiaResponse;
         }
 
