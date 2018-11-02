@@ -96,7 +96,7 @@ public class LibraryPolicyServiceImpl implements LibraryPolicyService {
         if (component != null) {
             List<CollectorItem> allInComponent=  component.getCollectorItems(CollectorType.LibraryPolicy);
             List<CollectorItem> allInWidget = allInComponent.stream().filter(
-                collectorItem -> request.getCollectorItemIds().contains(collectorItem.getCollectorId())
+                collectorItem -> request.getCollectorItemIds().contains(collectorItem.getId())
             ).collect(Collectors.toList());
             return allInWidget;
         }
