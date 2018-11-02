@@ -1,6 +1,5 @@
 package jenkins.plugins.hygieia.workflow;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -8,7 +7,6 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
-import javax.servlet.ServletException;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;

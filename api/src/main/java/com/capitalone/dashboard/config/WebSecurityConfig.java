@@ -79,6 +79,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/build").permitAll()
                 .antMatchers(HttpMethod.POST, "/deploy").permitAll()
                 .antMatchers(HttpMethod.POST, "/v2/build").permitAll()
+                .antMatchers(HttpMethod.POST, "/v3/build").permitAll()
                 .antMatchers(HttpMethod.POST, "/v2/deploy").permitAll()
                 .antMatchers(HttpMethod.POST, "/performance").permitAll()
                 .antMatchers(HttpMethod.POST, "/artifact").permitAll()

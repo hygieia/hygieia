@@ -8,7 +8,8 @@ import java.util.Set;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-import com.capitalone.dashboard.settings.ApiSettings;
+import com.capitalone.dashboard.ApiSettings;
+import com.capitalone.dashboard.model.BaseModel;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -124,6 +125,24 @@ public class DashboardServiceImpl implements DashboardService {
         }
 
         return dashboard;
+    }
+
+    /**
+     * Get all the dashboards that have the collector items
+     *
+     * @param collectorItems collector items
+     * @param collectorType  type of the collector
+     * @return a list of dashboards
+     */
+    @Override
+    public List<Dashboard> getDashboardsByCollectorItems(Set<CollectorItem> collectorItems, CollectorType collectorType) {
+        if (org.apache.commons.collections4.CollectionUtils.isEmpty(collectorItems)) {
+            return new ArrayList<>();
+        }
+        List<ObjectId> collectorItemIds = collectorItems.stream().map(BaseModel::getId).collect(Collectors.toList());
+        // Find the components that have these collector items
+        List<com.capitalone.dashboard.model.Component> components = componentRepository.findByCollectorTypeAndItemIdIn(collectorType, collectorItemIds);
+        return dashboardRepository.findByApplicationComponentsIn(components);
     }
 
     private Dashboard create(Dashboard dashboard, boolean isUpdate) throws HygieiaException {
@@ -362,13 +381,10 @@ public class DashboardServiceImpl implements DashboardService {
 
 	@Override
 	public List<Dashboard> getOwnedDashboards() {
-		Set<Dashboard> myDashboards = new HashSet<Dashboard>();
-
-		Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
+        Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
         List<Dashboard> findByOwnersList = dashboardRepository.findByOwners(owner);
         getAppAndComponentNames(findByOwnersList);
-		myDashboards.addAll(findByOwnersList);
-        return Lists.newArrayList(myDashboards);
+        return findByOwnersList.stream().distinct().collect(Collectors.toList());
 	}
 
     @Override
