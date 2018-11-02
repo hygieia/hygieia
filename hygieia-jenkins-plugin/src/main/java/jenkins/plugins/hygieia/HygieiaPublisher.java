@@ -436,8 +436,6 @@ public class HygieiaPublisher extends Notifier {
             }
 
             List<String> apiEndpoints = Arrays.asList(hostUrl.split(HygieiaUtils.SEPERATOR));
-            System.out.println("hygieiaAPIURL is "+hostUrl);
-            System.out.println("Api Endpoints - "+apiEndpoints);
             boolean SUCCESS = true;
             String ERROR_ENDPOINTS = " ";
             for(String apiEndpoint : apiEndpoints) {
