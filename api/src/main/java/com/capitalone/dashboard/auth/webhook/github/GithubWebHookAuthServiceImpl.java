@@ -1,6 +1,8 @@
 package com.capitalone.dashboard.auth.webhook.github;
 
 import com.capitalone.dashboard.model.UserRole;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,11 +16,12 @@ import java.util.HashSet;
 
 @Component
 public class GithubWebHookAuthServiceImpl implements GithubWebHookAuthService {
-
-    public GithubWebHookAuthServiceImpl() { }
+    private static final Log LOG = LogFactory.getLog(GithubWebHookAuthServiceImpl.class);
 
     @Override
     public Authentication getAuthentication(HttpServletRequest request) {
+        LOG.info("Pre-Authenticating the api request with user 'githubWebHookDummyUser' ");
+
         Collection<UserRole> roles = new ArrayList<>();
         roles.add(UserRole.ROLE_API);
 
