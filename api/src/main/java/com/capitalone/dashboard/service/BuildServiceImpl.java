@@ -159,7 +159,7 @@ public class BuildServiceImpl implements BuildService {
             org.apache.commons.beanutils.BeanUtils.copyProperties(response, build);
         }
         catch (IllegalAccessException | InvocationTargetException e) {
-            manualCopy(build, response);
+            throw new HygieiaException(e);
         }
         finally {
             populateDashboardId(response);
@@ -247,23 +247,5 @@ public class BuildServiceImpl implements BuildService {
         build.getCodeRepos().clear();
         build.getCodeRepos().addAll(rbs);
         return buildRepository.save(build); // Save = Update (if ID present) or Insert (if ID not there)
-    }
-    /*
-    * In case the BeanUtils.copy() fails we manually copy the properties of the object and return it back
-    * */
-    private void manualCopy(Build build, BuildDataCreateResponse response) {
-        if(build != null) {
-            response.setId(build.getId());
-            response.setCollectorItemId(build.getCollectorItemId());
-            response.setTimestamp(build.getTimestamp());
-            response.setNumber(build.getNumber());
-            response.setBuildUrl(build.getBuildUrl());
-            response.setStartTime(build.getStartTime());
-            response.setEndTime(build.getEndTime());
-            response.setDuration(build.getDuration());
-            response.setBuildStatus(build.getBuildStatus());
-            response.setStartedBy(build.getStartedBy());
-            response.setLog(build.getLog());
-        }
     }
 }

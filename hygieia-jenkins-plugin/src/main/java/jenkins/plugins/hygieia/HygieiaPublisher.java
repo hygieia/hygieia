@@ -331,7 +331,7 @@ public class HygieiaPublisher extends Notifier {
         public String hygieiaAppUrl;
         public String hygieiaToken;
         public String hygieiaJenkinsName;
-        private String hygieiaExcludeJobNames;
+        public String hygieiaExcludeJobNames;
         public boolean useProxy;
         public boolean hygieiaPublishBuildDataGlobal;
         public boolean hygieiaPublishSonarDataGlobal;
@@ -398,7 +398,6 @@ public class HygieiaPublisher extends Notifier {
         public boolean configure(StaplerRequest sr, JSONObject formData) throws FormException {
             sr.bindJSON(this, formData.getJSONObject("hygieia-publisher"));
             save();
-            this.pluginVersionInfo = this.getPlugin().getShortName()+" version "+this.getPlugin().getVersion();
             return super.configure(sr, formData);
         }
 
