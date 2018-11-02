@@ -22,6 +22,7 @@ import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,6 +42,8 @@ import java.util.regex.Pattern;
 
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -71,7 +74,7 @@ public class GitHubCommitV3Test {
     }
 
     @Test
-    public void getCommitsTest() {
+    public void getCommitsTest() throws HygieiaException, ParseException {
         GitHubCommitV3 gitHubCommitV3 = Mockito.spy(this.gitHubCommitV3);
 
         String gitHubWebHook = "{\"token\" : \"token\", \"commitTimestampOffset\" : \"5\", \"notBuiltCommits\":\"test\"}";
@@ -122,6 +125,7 @@ public class GitHubCommitV3Test {
         Assert.assertEquals("author1Name", commit1.getScmAuthor());
         Assert.assertEquals(1, commit1.getNumberOfChanges());
         Assert.assertEquals(collectorItemId, commit1.getCollectorItemId().toString());
+        verify(gitHubCommitV3, times(3)).getCommitNode(anyObject(), anyString(), anyString(), anyObject(), anyString());
 
         Commit commit2 = commitsList.get(1);
         Assert.assertEquals(repoUrl, commit2.getScmUrl());

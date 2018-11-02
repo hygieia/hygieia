@@ -207,13 +207,24 @@ public class GitHubCommitV3 extends GitHubV3 {
 
         // In case of Rebase and Merge, only the last commit in the list of commits on the "merge commit" json should have the PR number.
         // This is because, there should be a corresponding PR in the DB whose "merge_commit_sha" matches the last commit in the list of commits
-        if (!CollectionUtils.isEmpty(commitsWithPullNumber)
-                && (commitsWithPullNumber.size() == 1)
-                && !CollectionUtils.isEmpty(commitsList)
-                && (commitsList.size() > 1)) {
+        if (checkCommitsWithPullNumber(commitsWithPullNumber)
+                && checkCommitsListForSettingPullNumber(commitsList)) {
             Commit commitWithPR = commitsWithPullNumber.get(0);
             commitsList.forEach(commit -> {commit.setPullNumber(commitWithPR.getPullNumber());});
         }
+    }
+
+    private boolean checkCommitsWithPullNumber(List<Commit> commitsWithPullNumber) {
+        if (!CollectionUtils.isEmpty(commitsWithPullNumber)
+                && (commitsWithPullNumber.size() == 1)) { return true; }
+
+        return false;
+    }
+
+    private boolean checkCommitsListForSettingPullNumber(List<Commit> commitsList) {
+        if (!CollectionUtils.isEmpty(commitsList) && (commitsList.size() > 1)) { return true; }
+
+        return false;
     }
 
     protected void setCommitPullNumber (Commit commit) {
