@@ -24,7 +24,9 @@ public class Widget {
 
     public void setCollectorItemIds(List<ObjectId> collectorItemIds) {
         this.collectorItemIds.clear();
-        this.collectorItemIds.addAll(collectorItemIds);
+        if (null != collectorItemIds) {
+            this.collectorItemIds.addAll(collectorItemIds);
+        }
     }
 
     public ObjectId getId() {

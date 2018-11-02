@@ -118,9 +118,9 @@ public class CodeQualityServiceImpl implements CodeQualityService {
                 CodeQualityType.StaticAnalysis);
         if (component != null) {
             List<CollectorItem> allInComponent=  component.getCollectorItems(qualityType.collectorType());
-            Optional<CollectorItem> allInWidget = allInComponent.stream().filter(
+            Optional<CollectorItem> allInWidget = null!=allInComponent? allInComponent.stream().filter(
                 collectorItem -> request.getCollectorItemIds().contains(collectorItem.getId())
-            ).findFirst();
+            ).findFirst(): Optional.empty();
             return allInWidget.isPresent() ? allInWidget.get() : null;
         }
         return null;
