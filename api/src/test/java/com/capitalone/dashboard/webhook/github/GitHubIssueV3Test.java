@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.webhook.github;
 
+import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.settings.ApiSettings;
 import com.capitalone.dashboard.client.RestClient;
 import com.capitalone.dashboard.model.webhook.github.GitHubParsed;
@@ -40,7 +41,7 @@ public class GitHubIssueV3Test {
     @Mock
     private GitRequestRepository gitRequestRepository;
     @Mock
-    private GitHubRepoRepository gitHubRepoRepository;
+    private CollectorItemRepository collectorItemRepository;
     @Mock
     private ApiSettings apiSettings;
     @Mock
@@ -51,7 +52,7 @@ public class GitHubIssueV3Test {
     @Before
     public void init() {
         RestClient restClient = new RestClient(restOperationsSupplier);
-        gitHubIssueV3 = new GitHubIssueV3 (collectorService, restClient, gitRequestRepository, gitHubRepoRepository, apiSettings);
+        gitHubIssueV3 = new GitHubIssueV3 (collectorService, restClient, gitRequestRepository, collectorItemRepository, apiSettings);
     }
 
     @Test

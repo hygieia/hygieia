@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.webhook.github;
 
+import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.settings.ApiSettings;
 import com.capitalone.dashboard.client.RestClient;
 import com.capitalone.dashboard.model.webhook.github.GitHubParsed;
@@ -26,10 +27,10 @@ import org.springframework.web.client.RestClientException;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public abstract class GitHubV3 {
     private static final Log LOG = LogFactory.getLog(GitHubV3.class);
@@ -76,7 +77,7 @@ public abstract class GitHubV3 {
     }
 
     public abstract String process(JSONObject jsonObject) throws MalformedURLException, HygieiaException, ParseException;
-    public abstract QueryDslPredicateExecutor<GitHubRepo> getGitHubRepoRepository();
+    public abstract CollectorItemRepository getCollectorItemRepository();
 
     protected CollectorItem buildCollectorItem (ObjectId collectorId, String repoUrl, String branch) {
         if (StringUtils.isEmpty(repoUrl) || StringUtils.isEmpty(branch)) { return null; }
@@ -113,37 +114,23 @@ public abstract class GitHubV3 {
     protected String getRepositoryToken(String scmUrl) {
         Collector collector = collectorService.createCollector(getCollector());
 
-        Map<String, Object> options = new HashMap<>();
-        options.put(REPO_URL, scmUrl);
+        List<ObjectId> collectorIdList = new ArrayList<>();
+        collectorIdList.add(collector.getId());
 
-        GitHubRepo gitHubRepo = findByCollectorIdAndOptions(collector.getId(), options);
-        if (gitHubRepo == null) { return null; }
+        Iterable<CollectorItem> collectorItemIterable
+                = getCollectorItemRepository().findAllByOptionNameValueAndCollectorIdsIn(REPO_URL, scmUrl, collectorIdList);
+        if (collectorItemIterable == null) { return null; }
 
-        return String.valueOf(gitHubRepo.getOptions().get(TOKEN));
-    }
-
-    protected GitHubRepo findByCollectorIdAndOptions( ObjectId collectorId, Map<String, Object> options) {
-        QCollectorItem item = new QCollectorItem("collectorItem");
-        BooleanBuilder builder = new BooleanBuilder();
-        builder.and(item.collectorId.eq(collectorId));
-        options.keySet().forEach(k -> {
-            builder.and(item.options.get(k).eq(options.get(k)));
-        });
-
-        GitHubRepo gitHubRepoFound = null;
-        Iterable<GitHubRepo> gitHubRepoIterable = getGitHubRepoRepository().findAll(builder.getValue());
-
-        if (gitHubRepoIterable == null) { return gitHubRepoFound; }
-
-        for (GitHubRepo gitHubRepo : gitHubRepoIterable) {
-            if (!StringUtils.isEmpty(gitHubRepo.getPersonalAccessToken())
-                    && !"null".equalsIgnoreCase(gitHubRepo.getPersonalAccessToken().trim())) {
-                gitHubRepoFound = gitHubRepo;
+        String tokenValue = null;
+        for (CollectorItem collectorItem : collectorItemIterable) {
+            String collectorItemTokenValue = String.valueOf(collectorItem.getOptions().get(TOKEN));
+            if (!StringUtils.isEmpty(collectorItemTokenValue)
+                    && !"null".equalsIgnoreCase(collectorItemTokenValue)) {
+                tokenValue = collectorItemTokenValue;
                 break;
             }
         }
-
-        return gitHubRepoFound;
+        return tokenValue;
     }
 
     protected String getLDAPDN(String repoUrl, String user, String token) {

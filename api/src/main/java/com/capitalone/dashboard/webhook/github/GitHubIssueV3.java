@@ -1,20 +1,18 @@
 package com.capitalone.dashboard.webhook.github;
 
+import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.settings.ApiSettings;
 import com.capitalone.dashboard.client.RestClient;
 import com.capitalone.dashboard.model.webhook.github.GitHubParsed;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.GitRequest;
-import com.capitalone.dashboard.model.webhook.github.GitHubRepo;
-import com.capitalone.dashboard.repository.GitHubRepoRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.service.CollectorService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 import org.json.simple.JSONObject;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 import java.net.MalformedURLException;
 import java.util.Map;
@@ -23,20 +21,20 @@ public class GitHubIssueV3 extends GitHubV3 {
     private static final Log LOG = LogFactory.getLog(GitHubIssueV3.class);
 
     private final  GitRequestRepository gitRequestRepository;
-    private final GitHubRepoRepository gitHubRepoRepository;
+    private final CollectorItemRepository collectorItemRepository;
 
     public GitHubIssueV3(CollectorService collectorService,
                          RestClient restClient,
                          GitRequestRepository gitRequestRepository,
-                         GitHubRepoRepository gitHubRepoRepository,
+                         CollectorItemRepository collectorItemRepository,
                          ApiSettings apiSettings) {
         super(collectorService, restClient, apiSettings);
         this.gitRequestRepository =  gitRequestRepository;
-        this.gitHubRepoRepository = gitHubRepoRepository;
+        this.collectorItemRepository = collectorItemRepository;
     }
 
     @Override
-    public QueryDslPredicateExecutor<GitHubRepo> getGitHubRepoRepository() { return this.gitHubRepoRepository; }
+    public CollectorItemRepository getCollectorItemRepository() { return this.collectorItemRepository; }
 
     @Override
     public String process(JSONObject jsonObject) throws MalformedURLException, HygieiaException {

@@ -1,5 +1,7 @@
 package com.capitalone.dashboard.webhook.github;
 
+import com.capitalone.dashboard.repository.CollectorItemRepository;
+import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.settings.ApiSettings;
 import com.capitalone.dashboard.client.RestClient;
 import com.capitalone.dashboard.model.webhook.github.GitHubParsed;
@@ -39,23 +41,23 @@ public class GitHubCommitV3 extends GitHubV3 {
 
     private final CommitRepository commitRepository;
     private final GitRequestRepository gitRequestRepository;
-    private final GitHubRepoRepository gitHubRepoRepository;
+    private final CollectorItemRepository collectorItemRepository;
 
     public GitHubCommitV3(CollectorService collectorService,
                           RestClient restClient,
                           CommitRepository commitRepository,
                           GitRequestRepository gitRequestRepository,
-                          GitHubRepoRepository gitHubRepoRepository,
+                          CollectorItemRepository collectorItemRepository,
                           ApiSettings apiSettings) {
         super(collectorService, restClient, apiSettings);
 
         this.commitRepository = commitRepository;
         this.gitRequestRepository = gitRequestRepository;
-        this.gitHubRepoRepository = gitHubRepoRepository;
+        this.collectorItemRepository = collectorItemRepository;
     }
 
     @Override
-    public QueryDslPredicateExecutor<GitHubRepo> getGitHubRepoRepository() { return this.gitHubRepoRepository; }
+    public CollectorItemRepository getCollectorItemRepository() { return this.collectorItemRepository; }
 
     @Override
     public String process(JSONObject jsonObject) throws MalformedURLException, HygieiaException, ParseException {

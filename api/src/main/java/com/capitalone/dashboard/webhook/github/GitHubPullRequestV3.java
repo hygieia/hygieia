@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.webhook.github;
 
+import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.settings.ApiSettings;
 import com.capitalone.dashboard.client.RestClient;
 import com.capitalone.dashboard.model.webhook.github.GitHubParsed;
@@ -39,7 +40,7 @@ public class GitHubPullRequestV3 extends GitHubV3 {
     private static final Log LOG = LogFactory.getLog(GitHubPullRequestV3.class);
 
     private final GitRequestRepository gitRequestRepository;
-    private final GitHubRepoRepository gitHubRepoRepository;
+    private final CollectorItemRepository collectorItemRepository;
     private final CommitRepository commitRepository;
 
     private Map<String, String> ldapDNMap = new HashMap<>();
@@ -48,17 +49,17 @@ public class GitHubPullRequestV3 extends GitHubV3 {
                                RestClient restClient,
                                GitRequestRepository gitRequestRepository,
                                CommitRepository commitRepository,
-                               GitHubRepoRepository gitHubRepoRepository,
+                               CollectorItemRepository collectorItemRepository,
                                ApiSettings apiSettings) {
         super(collectorService, restClient, apiSettings);
 
         this.gitRequestRepository = gitRequestRepository;
-        this.gitHubRepoRepository = gitHubRepoRepository;
+        this.collectorItemRepository = collectorItemRepository;
         this.commitRepository = commitRepository;
     }
 
     @Override
-    public QueryDslPredicateExecutor<GitHubRepo> getGitHubRepoRepository() { return this.gitHubRepoRepository; }
+    public CollectorItemRepository getCollectorItemRepository() { return this.collectorItemRepository; }
 
     @Override
     public String process(JSONObject prJsonObject) throws MalformedURLException, HygieiaException, ParseException {
@@ -91,7 +92,7 @@ public class GitHubPullRequestV3 extends GitHubV3 {
         String repoToken = getRepositoryToken(gitHubParsed.getUrl());
 
         long end = System.currentTimeMillis();
-        LOG.debug("Time to make gitHubRepoRepository call to fetch repository token = "+(end-start));
+        LOG.debug("Time to make collectorItemRepository call to fetch repository token = "+(end-start));
 
         String token = isPrivate ? repoToken : gitHubWebHookToken;
 

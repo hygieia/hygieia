@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.webhook.github;
 
+import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.settings.ApiSettings;
 import com.capitalone.dashboard.client.RestClient;
 import com.capitalone.dashboard.model.webhook.github.GitHubParsed;
@@ -50,7 +51,7 @@ public class GitHubPullRequestV3Test {
     @Mock
     private GitRequestRepository gitRequestRepository;
     @Mock
-    private GitHubRepoRepository gitHubRepoRepository;
+    private CollectorItemRepository collectorItemRepository;
     @Mock
     private CommitRepository commitRepository;
     @Mock
@@ -65,7 +66,7 @@ public class GitHubPullRequestV3Test {
     @Before
     public void init() {
         restClient = new RestClient(restOperationsSupplier);
-        gitHubPullRequestV3 = new GitHubPullRequestV3 (collectorService, restClient, gitRequestRepository, commitRepository, gitHubRepoRepository, apiSettings);
+        gitHubPullRequestV3 = new GitHubPullRequestV3 (collectorService, restClient, gitRequestRepository, commitRepository, collectorItemRepository, apiSettings);
         payLoadJsonObject = makePullRequestPayloadObject();
     }
 

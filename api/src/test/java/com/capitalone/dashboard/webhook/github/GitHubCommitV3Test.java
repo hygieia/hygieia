@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.webhook.github;
 
+import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.settings.ApiSettings;
 import com.capitalone.dashboard.client.RestClient;
 import com.capitalone.dashboard.model.webhook.github.GitHubParsed;
@@ -11,7 +12,6 @@ import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.webhook.github.GitHubRepo;
 import com.capitalone.dashboard.repository.CommitRepository;
-import com.capitalone.dashboard.repository.GitHubRepoRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.service.CollectorService;
 import com.capitalone.dashboard.util.Supplier;
@@ -57,7 +57,7 @@ public class GitHubCommitV3Test {
     @Mock
     private GitRequestRepository gitRequestRepository;
     @Mock
-    private GitHubRepoRepository gitHubRepoRepository;
+    private CollectorItemRepository collectorItemRepository;
     @Mock
     private ApiSettings apiSettings;
     @Mock
@@ -70,7 +70,7 @@ public class GitHubCommitV3Test {
     public void init() {
         RestClient restClientTemp = new RestClient(restOperationsSupplier);
         restClient = Mockito.spy(restClientTemp);
-        gitHubCommitV3 = new GitHubCommitV3 (collectorService, restClient, commitRepository, gitRequestRepository, gitHubRepoRepository, apiSettings);
+        gitHubCommitV3 = new GitHubCommitV3 (collectorService, restClient, commitRepository, gitRequestRepository, collectorItemRepository, apiSettings);
     }
 
     @Test
@@ -312,31 +312,6 @@ public class GitHubCommitV3Test {
     }
 
     @Test
-    public void findByCollectorIdAndOptionsTest() {
-        GitHubCommitV3 gitHubCommitV3 = Mockito.spy(this.gitHubCommitV3);
-
-        ObjectId collectorId = new ObjectId(createGuid("0123456789abcdef"));
-        Map<String, Object> options = new HashMap<>();
-        options.put("url", "http://hostName/ownerName/orgName/repoName");
-
-        List<GitHubRepo> gitHubRepoList = new ArrayList<>();
-        GitHubRepo repo1 = new GitHubRepo();
-        gitHubRepoList.add(repo1);
-        repo1.setPersonalAccessToken("1");
-
-        GitHubRepo repo2 = new GitHubRepo();
-        gitHubRepoList.add(repo2);
-        repo1.setPersonalAccessToken("1");
-
-        when(gitHubCommitV3.getGitHubRepoRepository().findAll((Predicate) anyObject())).thenReturn(gitHubRepoList);
-
-        GitHubRepo result = gitHubCommitV3.findByCollectorIdAndOptions(collectorId, options);
-
-        Assert.assertNotNull(result);
-        Assert.assertEquals("1", result.getPersonalAccessToken());
-    }
-
-    @Test
     public void getRepositoryTokenTest() {
         GitHubCommitV3 gitHubCommitV3 = Mockito.spy(this.gitHubCommitV3);
 
@@ -346,7 +321,7 @@ public class GitHubCommitV3Test {
         String collectorId = createGuid("0123456789abcdef");
         collector.setId(new ObjectId(collectorId));
 
-        List<GitHubRepo> gitHubRepoList = new ArrayList<>();
+        List<CollectorItem> gitHubRepoList = new ArrayList<>();
         GitHubRepo repo1 = new GitHubRepo();
         gitHubRepoList.add(repo1);
         repo1.setPersonalAccessToken("1");
@@ -356,7 +331,7 @@ public class GitHubCommitV3Test {
         repo1.setPersonalAccessToken("1");
 
         when(collectorService.createCollector(anyObject())).thenReturn(collector);
-        when(gitHubCommitV3.getGitHubRepoRepository().findAll((Predicate) anyObject())).thenReturn(gitHubRepoList);
+        when(gitHubCommitV3.getCollectorItemRepository().findAllByOptionNameValueAndCollectorIdsIn(anyString(), anyString(), anyObject())).thenReturn(gitHubRepoList);
 
         String result = gitHubCommitV3.getRepositoryToken(scmUrl);
 
