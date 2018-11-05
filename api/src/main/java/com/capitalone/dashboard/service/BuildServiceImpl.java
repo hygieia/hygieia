@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.service;
 
+import com.capitalone.dashboard.ApiSettings;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.BuildStatus;
@@ -22,6 +23,7 @@ import com.capitalone.dashboard.response.BuildDataCreateResponse;
 import com.mysema.query.BooleanBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -49,6 +51,8 @@ public class BuildServiceImpl implements BuildService {
     private final DashboardService dashboardService;
     private final CollectorItemRepository collectorItemRepository;
 
+    @Autowired
+    private ApiSettings settings;
 
     @Autowired
     public BuildServiceImpl(BuildRepository buildRepository,
@@ -56,13 +60,15 @@ public class BuildServiceImpl implements BuildService {
                             CollectorRepository collectorRepository,
                             CollectorService collectorService,
                             DashboardService dashboardService,
-                            CollectorItemRepository collectorItemRepository) {
+                            CollectorItemRepository collectorItemRepository,
+                            ApiSettings settings) {
         this.buildRepository = buildRepository;
         this.componentRepository = componentRepository;
         this.collectorRepository = collectorRepository;
         this.collectorService = collectorService;
         this.dashboardService = dashboardService;
         this.collectorItemRepository = collectorItemRepository;
+        this.settings = settings;
     }
 
     @Override
@@ -162,7 +168,9 @@ public class BuildServiceImpl implements BuildService {
             throw new HygieiaException(e);
         }
         finally {
-            populateDashboardId(response);
+            if(BooleanUtils.isTrue(settings.isLookupDashboardForBuildDataCreate())) {
+                populateDashboardId(response);
+            }
         }
         return response;
     }
