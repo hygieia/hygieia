@@ -112,12 +112,12 @@ public class GithubWebHookRequestFilter extends UsernamePasswordAuthenticationFi
     protected List<String> getGithubEnterpriseHostExpectedValues(GitHubWebHookSettings gitHubWebHookSettings) {
         List<String> githubEnterpriseHostExpectedValues = new ArrayList<>();
 
-        if (gitHubWebHookSettings != null) {
-            if (!StringUtils.isEmpty(gitHubWebHookSettings.getGithubEnterpriseHost())
-                    && !StringUtils.isEmpty(gitHubWebHookSettings.getDelimiter())) {
-                String[] hostValues = gitHubWebHookSettings.getGithubEnterpriseHost().split(gitHubWebHookSettings.getDelimiter());
-                Arrays.stream(hostValues).forEach(githubEnterpriseHostExpectedValues::add);
-            }
+        if (gitHubWebHookSettings == null) { return githubEnterpriseHostExpectedValues; }
+
+        if (!StringUtils.isEmpty(gitHubWebHookSettings.getGithubEnterpriseHost())
+                && !StringUtils.isEmpty(gitHubWebHookSettings.getDelimiter())) {
+            String[] hostValues = gitHubWebHookSettings.getGithubEnterpriseHost().split(gitHubWebHookSettings.getDelimiter());
+            Arrays.stream(hostValues).forEach(githubEnterpriseHostExpectedValues::add);
         }
 
         return githubEnterpriseHostExpectedValues;
