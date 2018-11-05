@@ -9,36 +9,17 @@ permalink: builddocker.html
 
 To build a Docker image for all components of Hygieia, execute the following steps:
 
-*	**Step 1: Build the Containers**
+*	**Step 1: Build the Project**
 
 	To package the Hygieia source code into an executable JAR file, run the Maven build from the `\Hygieia` directory of your source code installation:
 
 	```bash
-	mvn docker:build
+	mvn clean install
 	```
 
-*	**Step 2: Start the Container Images**
+*	**Step 2: Configure your Environment**
 
-	Start containers in the background and keep them running:
-
-	```bash
-	docker-compose up -d
-	```
-
-*	**Step 3: Create a User in MongoDB**
-
-	If you login to the container, then you do not have to install MongoDB locally.
-
-	Execute the following commands to connect to MongoDB, and then add dashboard user:
-
-	```bash
-	#Connect to MongoDB
-	docker exec -t -i mongodb2 bash
-	```
-			
-*	**Step 4: Configure your Environment**
-
-	To configure your environment, create a `docker-compose.override.yml`. The most commonly used properties are listed and the uncommented properties are mandatory for the collector to work:
+	To configure your environment, find `docker-compose.override.example.yml` in the root of the project and rename it to `docker-compose.override.yml`. The most commonly used properties are listed and the uncommented properties are mandatory for the collector to work:
 
 	```bash
 	hygieia-github-scm-collector:
@@ -75,19 +56,16 @@ To build a Docker image for all components of Hygieia, execute the following ste
 
 	For generic Docker configuration properties, refer to the [docker-compose.yml](https://github.com/capitalone/Hygieia/blob/master/docker-compose.yml) file.
 
-*	**Step 5: Restart All Services**
+*	**Step 3: Start the Container Images**
 
-	Ensure there is an existing user at start-up.
-
-	```bash
-	#Restarts all stopped and running services
-	docker-compose restart
-	```
-
-	To get the port for the UI Layer, execute the following command:
+	Start containers in the background and keep them running:
 
 	```bash
-	docker port hygieia-ui
+	docker-compose up -d
 	```
+
+*	**Step 4: Create the admin user**
+
+    The UI should now be accessible at [http://localhost:3000](http://localhost:3000). Click "Sign up" and create a user named "admin". You should now be ready to start creating dashboards!
 
 **Note**: You can build Docker images individually for the API and UI layers. For instructions, refer to the the [API](../api/api.md#docker-image-for-api) and [UI](../UI/ui.md#docker-image-for-ui-layer) documentation.
