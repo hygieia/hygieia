@@ -289,15 +289,17 @@ public class GitHubCommitV3 extends GitHubV3 {
         JSONArray edges = (JSONArray) history.get("edges");
         if (CollectionUtils.isEmpty(edges)) { return null; }
 
+        Object nodeFound = null;
         for (Object o : edges) {
             Object node = restClient.getAsObject(o, "node");
             String sha = restClient.getString(node, "oid");
             if (commitId.equalsIgnoreCase(sha)) {
-                return node;
+                nodeFound = node;
+                break;
             }
         }
 
-        return null;
+        return nodeFound;
     }
 
     protected List<String> getParentShas(Object commit) {
