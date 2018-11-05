@@ -129,6 +129,10 @@ public class HygieiaUtils {
         return o1.equals(o2);
     }
 
+    /*
+    * Returns true if any of the input String parameters is empty.
+    * Else, returns false.
+     */
     public static boolean checkForEmptyStringValues(String ... values) {
 		for (String value: values) {
 			if (StringUtils.isEmpty(value)) { return true; }
