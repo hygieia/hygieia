@@ -79,19 +79,17 @@ public abstract class GitHubV3 {
     public abstract QueryDslPredicateExecutor<GitHubRepo> getGitHubRepoRepository();
 
     protected CollectorItem buildCollectorItem (ObjectId collectorId, String repoUrl, String branch) {
-        if (!StringUtils.isEmpty(repoUrl) && !StringUtils.isEmpty(branch)) {
-            CollectorItem collectorItem = new CollectorItem();
-            collectorItem.setCollectorId(collectorId);
-            collectorItem.setEnabled(true);
-            collectorItem.setPushed(true);
-            collectorItem.setLastUpdated(System.currentTimeMillis());
-            collectorItem.getOptions().put(REPO_URL, repoUrl);
-            collectorItem.getOptions().put(BRANCH, branch);
+        if (StringUtils.isEmpty(repoUrl) || StringUtils.isEmpty(branch)) { return null; }
 
-            return collectorItem;
-        }
+        CollectorItem collectorItem = new CollectorItem();
+        collectorItem.setCollectorId(collectorId);
+        collectorItem.setEnabled(true);
+        collectorItem.setPushed(true);
+        collectorItem.setLastUpdated(System.currentTimeMillis());
+        collectorItem.getOptions().put(REPO_URL, repoUrl);
+        collectorItem.getOptions().put(BRANCH, branch);
 
-        return null;
+        return collectorItem;
     }
 
     protected CollectorItem getCollectorItem(String repoUrl, String branch) throws HygieiaException {
@@ -119,12 +117,9 @@ public abstract class GitHubV3 {
         options.put(REPO_URL, scmUrl);
 
         GitHubRepo gitHubRepo = findByCollectorIdAndOptions(collector.getId(), options);
+        if (gitHubRepo == null) { return null; }
 
-        if (gitHubRepo != null) {
-            return String.valueOf(gitHubRepo.getOptions().get(TOKEN));
-        }
-
-        return null;
+        return String.valueOf(gitHubRepo.getOptions().get(TOKEN));
     }
 
     protected GitHubRepo findByCollectorIdAndOptions( ObjectId collectorId, Map<String, Object> options) {
@@ -135,42 +130,44 @@ public abstract class GitHubV3 {
             builder.and(item.options.get(k).eq(options.get(k)));
         });
 
+        GitHubRepo gitHubRepoFound = null;
         Iterable<GitHubRepo> gitHubRepoIterable = getGitHubRepoRepository().findAll(builder.getValue());
 
-        if (gitHubRepoIterable != null) {
-            for (GitHubRepo gitHubRepo : gitHubRepoIterable) {
-                if (!StringUtils.isEmpty(gitHubRepo.getPersonalAccessToken())
-                        && !"null".equalsIgnoreCase(gitHubRepo.getPersonalAccessToken().trim())) {
-                    return gitHubRepo;
-                }
+        if (gitHubRepoIterable == null) { return gitHubRepoFound; }
+
+        for (GitHubRepo gitHubRepo : gitHubRepoIterable) {
+            if (!StringUtils.isEmpty(gitHubRepo.getPersonalAccessToken())
+                    && !"null".equalsIgnoreCase(gitHubRepo.getPersonalAccessToken().trim())) {
+                gitHubRepoFound = gitHubRepo;
+                break;
             }
         }
-        return null;
+
+        return gitHubRepoFound;
     }
 
     protected String getLDAPDN(String repoUrl, String user, String token) {
         if (StringUtils.isEmpty(user)) return null;
         // This is weird. Github does replace the _ in commit author with - in the user api!!!
         String formattedUser = user.replace("_", "-");
+        String ldapLdn = null;
         try {
             GitHubParsed gitHubParsed = new GitHubParsed(repoUrl);
             String apiUrl = gitHubParsed.getBaseApiUrl();
             String queryUrl = apiUrl.concat("users/").concat(formattedUser);
 
             ResponseEntity<String> response = restClient.makeRestCallGet(queryUrl, "token", token);
-            JSONObject jsonObject = null;
             try {
-                jsonObject = restClient.parseAsObject(response);
+                JSONObject jsonObject = restClient.parseAsObject(response);
+                ldapLdn = restClient.getString(jsonObject, "ldap_dn");
             } catch (ParseException e) {
                 LOG.info("Unable to get user information for "+queryUrl,e);
             }
-
-            return restClient.getString(jsonObject, "ldap_dn");
         } catch (MalformedURLException | HygieiaException | RestClientException e) {
             LOG.error("Error getting LDAP_DN For user " + user, e);
         }
 
-        return null;
+        return ldapLdn;
     }
 
     protected GitHubWebHookSettings parseAsGitHubWebHook(String jsonString) {
