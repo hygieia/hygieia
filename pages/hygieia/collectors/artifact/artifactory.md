@@ -76,20 +76,21 @@ The sample `application.properties` file lists parameters with sample values to 
 		artifactory.cron=0 0/5 * * * *
 
 		# Artifactory server (required) - Can provide multiple
-		artifactory.servers[0]=https://www.jfrog.com/artifactory/
-
-		# Artifactory user name (required)
-		artifactory.usernames[0]=bobama
-
-		# Artifactory API key (required)
-		artifactory.apiKeys[0]=s3cr3t
-
-		# The repo to collect artifacts from (required) - Can provide multiple (comma separated for each server)
-		artifactory.repos[0]=prerelease,release
-
+		artifactory.servers[0].url=https://www.jfrog.com/artifactory/
+		
 		# Artifactory REST endpoint
 		artifactory.endpoint=artifactory/
 
+		# Artifactory server - username
+		artifactory.servers[0].username= bobama
+		
+		# Artifactory server - apiKey
+		artifactory.servers[0].apiKey= s3cr3t
+		
+		# Artifactory server - repository 
+		artifactory.servers[0].repoAndPatterns[0].repo=repo1
+		
+		# Artifactory server - patterns - could be multiple
 		# Artifact Regex Patterns
 		# Each artifact found is matched against the following patterns in order (first one wins)
 		# The following capture groups are available:
@@ -99,13 +100,31 @@ The sample `application.properties` file lists parameters with sample values to 
 		#  - version
 		#  - classifier
 		#  - ext
+		
+		# Matches maven artifacts of the form [org]/[module]/[version]/[filename])(.[ext])
+		artifactory.servers[0].repoAndPatterns[0].patterns[0]= 
+		(?<group>.+)[\/](?<artifact>.+)\/(?<version>.+)\/(?<filename>.+)\.(?<ext>.+)
+		
 		# Matches maven artifacts of the form [org]/[module]/[version]/[module]-[version]([-classifier])(.[ext])
-		artifactory.patterns[0]=(?<group>.+)/(?<module>[^/]+)/(?<version>[^/]+)/(?<artifact>\\k<module>)-\\k<version>(-(?<classifier>[^\\.]+))?(\\.(?<ext>.+))?
+		
+		artifactory.servers[0].repoAndPatterns[0].patterns[1]=
+		(?<group>.+)/(?<module>[^/]+)/(?<version>[^/]+)/(?<artifact>\\k<module>)-\\k<version>(-(?<classifier[^\\.]+))?(\\.(?<ext>.+))?
 
 		# Matches ivy files of the form [org]/[module]/[revision]/ivy-[revision](-[classifier]).xml 
-		artifactory.patterns[1]=(?<group>.+)/(?<module>[^/]+)/(?<version>[^/]+)/(?<artifact>ivy)-\\k<version>(-(?<classifier>[^\\.]+))?\\.(?<ext>xml)
+		
+		artifactory.servers[0].repoAndPatterns[0].patterns[2]=
+		(?<group>.+)/(?<module>[^/]+)/(?<version>[^/]+)/(?<artifact>ivy)-\\k<version>(-(?<classifier>[^\\.]+))?\\.(?<ext>xml)
 
-		# Matches ivy artifact files of the form [org]/[module]/[revision]/[type]/[artifact]-[revision](-[classifier])(.[ext])
-		artifactory.patterns[2]=(?<group>.+)/(?<module>[^/]+)/(?<version>[^/]+)/(?<type>[^/]+)/(?<artifact>[^\\.-/]+)-\\k<version>(-(?<classifier>[^\\.]+))?(\\.(?<ext>.+))?
+		# Matches ivy artifact files of the form [org]/[module]/[revision]/[type]/[artifact]-[revision](-[classifier])			(.[ext])
+		
+		artifactory.servers[0].repoAndPatterns[0].patterns[3]=
+		(?<group>.+)/(?<module>[^/]+)/(?<version>[^/]+)/(?<type>[^/]+)/(?<artifact>[^\\.-/]+)-\\k<version>(-(?<classifier>[^\\.]+))?(\\.(?<ext>.+))?
+		
+		# Artifactory mode - possible values (ARTIFACT_BASED, REPO_BASED)
+		artifactory.mode= ARTIFACT_BASED
+		
+		# Collector lastUpdated offset value
+		artifactory.offSet = 3600000
+		
 
 ```
