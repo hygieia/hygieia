@@ -9,6 +9,7 @@ import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.service.CollectorService;
+import com.capitalone.dashboard.util.HygieiaUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -76,7 +77,7 @@ public abstract class GitHubV3 {
     public abstract CollectorItemRepository getCollectorItemRepository();
 
     protected CollectorItem buildCollectorItem (ObjectId collectorId, String repoUrl, String branch) {
-        if (StringUtils.isEmpty(repoUrl) || StringUtils.isEmpty(branch)) { return null; }
+        if (HygieiaUtils.checkForEmptyStringValues(repoUrl, branch)) { return null; }
 
         CollectorItem collectorItem = new CollectorItem();
         collectorItem.setCollectorId(collectorId);
@@ -87,6 +88,14 @@ public abstract class GitHubV3 {
         collectorItem.getOptions().put(BRANCH, branch);
 
         return collectorItem;
+    }
+
+    private boolean checkForEmptyStringValues(String ... values) {
+        for (String value: values) {
+            if (StringUtils.isEmpty(value)) { return true; }
+        }
+
+        return false;
     }
 
     protected CollectorItem getCollectorItem(String repoUrl, String branch) throws HygieiaException {

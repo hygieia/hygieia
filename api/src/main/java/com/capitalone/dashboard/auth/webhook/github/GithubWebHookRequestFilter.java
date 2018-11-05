@@ -2,6 +2,7 @@ package com.capitalone.dashboard.auth.webhook.github;
 
 import com.capitalone.dashboard.auth.AuthenticationResultHandler;
 import com.capitalone.dashboard.settings.ApiSettings;
+import com.capitalone.dashboard.util.HygieiaUtils;
 import com.capitalone.dashboard.webhook.github.GitHubWebHookSettings;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections.CollectionUtils;
@@ -63,10 +64,7 @@ public class GithubWebHookRequestFilter extends UsernamePasswordAuthenticationFi
             githubEnterpriseHostExpectedValues = getGithubEnterpriseHostExpectedValues(gitHubWebHookSettings);
         }
 
-        if (StringUtils.isEmpty(userAgent)
-                || StringUtils.isEmpty(githubEnterpriseHost)
-                || StringUtils.isEmpty(userAgentExpectedValue)
-                || CollectionUtils.isEmpty(githubEnterpriseHostExpectedValues)
+        if (checkForEmptyValues(userAgent, githubEnterpriseHost, userAgentExpectedValue, githubEnterpriseHostExpectedValues)
                 || !userAgent.contains(userAgentExpectedValue)
                 || !checkGithubEnterpriseHost(githubEnterpriseHost, githubEnterpriseHostExpectedValues)) {
             authenticated = false;
@@ -75,6 +73,16 @@ public class GithubWebHookRequestFilter extends UsernamePasswordAuthenticationFi
             authenticated = true;
             super.doFilter(req, res, filterChain);
         }
+    }
+
+    private boolean checkForEmptyValues(String userAgent, String githubEnterpriseHost, String userAgentExpectedValue,
+                                List<String> githubEnterpriseHostExpectedValues) {
+        if (HygieiaUtils.checkForEmptyStringValues(userAgent, githubEnterpriseHost, userAgentExpectedValue)
+                || CollectionUtils.isEmpty(githubEnterpriseHostExpectedValues)) {
+            return true;
+        }
+
+        return false;
     }
 
     @Override

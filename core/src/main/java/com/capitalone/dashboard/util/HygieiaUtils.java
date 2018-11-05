@@ -2,6 +2,7 @@ package com.capitalone.dashboard.util;
 
 
 import org.apache.commons.beanutils.BeanUtilsBean;
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 
 import java.lang.reflect.InvocationTargetException;
@@ -127,4 +128,12 @@ public class HygieiaUtils {
         }
         return o1.equals(o2);
     }
+
+    public static boolean checkForEmptyStringValues(String ... values) {
+		for (String value: values) {
+			if (StringUtils.isEmpty(value)) { return true; }
+		}
+
+		return false;
+	}
 }

@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.webhook.github;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.settings.ApiSettings;
 import com.capitalone.dashboard.client.RestClient;
@@ -9,8 +10,11 @@ import com.capitalone.dashboard.service.CollectorService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.net.MalformedURLException;
 
 import static com.capitalone.dashboard.webhook.github.GitHubPayloadType.Unknown;
 
@@ -51,7 +55,7 @@ public class GitHubHookServiceImpl implements GitHubHookService {
     }
 
     @Override
-    public String createFromGitHubv3(JSONObject request) {
+    public String createFromGitHubv3(JSONObject request) throws ParseException, HygieiaException, MalformedURLException {
         GitHubPayloadType payloadType = getPayLoadType(request);
         GitHubV3 gitHubv3 = null;
         String result = null;
@@ -73,18 +77,13 @@ public class GitHubHookServiceImpl implements GitHubHookService {
                 return Unknown + "Request Type";
         }
 
-        try {
-            long begin = System.currentTimeMillis();
+        long begin = System.currentTimeMillis();
 
-            result = gitHubv3.process(request);
+        result = gitHubv3.process(request);
 
-            long end = System.currentTimeMillis();
+        long end = System.currentTimeMillis();
 
-            LOG.info("Total Time Taken = "+(end-begin)+" milliseconds");
-        } catch (Exception e) {
-            result = e.getMessage();
-            LOG.error("Github Webhook Exception.Type = "+payloadType,e);
-        }
+        LOG.info("Total Time Taken = "+(end-begin)+" milliseconds");
 
         return result;
     }
