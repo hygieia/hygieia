@@ -3,7 +3,6 @@ package com.capitalone.dashboard.repository;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.types.path.PathBuilder;
-import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +16,6 @@ import java.util.Map;
  * A {@link CollectorItem} repository
  */
 public interface CollectorItemRepository extends BaseCollectorItemRepository<CollectorItem>, QueryDslPredicateExecutor<CollectorItem> {
-    String PERSONAL_ACCESS_TOKEN = "personalAccessToken";
 
     //// FIXME: 1/20/16 I really hate this dashboard specific method in the collectoritem repository, should we move the dashboardcollectoritem repository into core?
     @Query(value="{'options.dashboardId': ?1, 'collectorId': ?0 }")
