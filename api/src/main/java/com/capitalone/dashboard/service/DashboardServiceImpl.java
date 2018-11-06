@@ -47,8 +47,6 @@ import com.google.common.collect.Lists;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.capitalone.dashboard.model.CollectorType.*;
-
 @Service
 public class DashboardServiceImpl implements DashboardService {
 
@@ -64,6 +62,7 @@ public class DashboardServiceImpl implements DashboardService {
     private final ScoreDashboardService scoreDashboardService;
     private final CmdbService cmdbService;
     private final String UNDEFINED = "undefined";
+    private final static EnumSet<CollectorType> QualityWidget = EnumSet.of(CollectorType.Test , CollectorType.StaticSecurityScan, CollectorType.CodeQuality, CollectorType.LibraryPolicy);
 
     @Autowired
     private ApiSettings settings;
@@ -298,7 +297,7 @@ public class DashboardServiceImpl implements DashboardService {
         }
 
         // If a collector type is within the code analysis widget, check to see if any of the remaining fields were passed values
-        if(incomingTypes.contains(CollectorType.Test) || incomingTypes.contains(CollectorType.StaticSecurityScan) || incomingTypes.contains(CollectorType.CodeQuality) || incomingTypes.contains(CollectorType.LibraryPolicy) ){
+        if(incomingTypes.stream().anyMatch(QualityWidget::contains)){
             if(!incomingTypes.contains(CollectorType.Test)){
                 component.getCollectorItems().remove(CollectorType.Test);
             }
