@@ -454,7 +454,7 @@ public class GitHubCommitV3Test {
     private WebHookSettings makeWebHookSettings() {
         WebHookSettings webHookSettings = new WebHookSettings();
         GitHubWebHookSettings gitHubWebHookSettings = new GitHubWebHookSettings();
-        webHookSettings.setGitHubWebHookSettings(gitHubWebHookSettings);
+        webHookSettings.setGitHub(gitHubWebHookSettings);
 
         gitHubWebHookSettings.setToken("c74782b3ca2b57a5230ae7812a");
         gitHubWebHookSettings.setCommitTimestampOffset(5);

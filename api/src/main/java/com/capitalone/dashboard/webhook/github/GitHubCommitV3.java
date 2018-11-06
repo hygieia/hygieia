@@ -111,7 +111,7 @@ public class GitHubCommitV3 extends GitHubV3 {
             return commitsList;
         }
 
-        GitHubWebHookSettings gitHubWebHookSettings = webHookSettings.getGitHubWebHookSettings();
+        GitHubWebHookSettings gitHubWebHookSettings = webHookSettings.getGitHub();
 
         if (gitHubWebHookSettings == null) {
             LOG.info("Github Webhook properties not set on the properties file. Returning ...");

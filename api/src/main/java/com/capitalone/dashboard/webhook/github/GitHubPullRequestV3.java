@@ -86,7 +86,7 @@ public class GitHubPullRequestV3 extends GitHubV3 {
             return "Github Webhook properties not set on the properties file";
         }
 
-        GitHubWebHookSettings gitHubWebHookSettings = webHookSettings.getGitHubWebHookSettings();
+        GitHubWebHookSettings gitHubWebHookSettings = webHookSettings.getGitHub();
 
         if (gitHubWebHookSettings == null) {
             return "Github Webhook properties not set on the properties file";

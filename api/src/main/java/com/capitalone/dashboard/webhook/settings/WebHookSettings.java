@@ -6,11 +6,9 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationPropertiesBinding
 public class WebHookSettings {
-    GitHubWebHookSettings gitHubWebHookSettings;
+    GitHubWebHookSettings gitHub;
 
-    public GitHubWebHookSettings getGitHubWebHookSettings() { return gitHubWebHookSettings; }
+    public GitHubWebHookSettings getGitHub() { return gitHub; }
 
-    public void setGitHubWebHookSettings(GitHubWebHookSettings gitHubWebHookSettings) {
-        this.gitHubWebHookSettings = gitHubWebHookSettings;
-    }
+    public void setGitHub(GitHubWebHookSettings gitHub) { this.gitHub = gitHub; }
 }

@@ -53,7 +53,7 @@ public class GithubWebHookRequestFilter extends UsernamePasswordAuthenticationFi
             filterChain.doFilter(request, response);
             return;
         }
-        GitHubWebHookSettings gitHubWebHookSettings = webHookSettings.getGitHubWebHookSettings();
+        GitHubWebHookSettings gitHubWebHookSettings = webHookSettings.getGitHub();
         if (gitHubWebHookSettings == null) { // Authentication Failure
             authenticated = false;
             filterChain.doFilter(request, response);
