@@ -23,7 +23,6 @@ import com.capitalone.dashboard.response.BuildDataCreateResponse;
 import com.mysema.query.BooleanBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -168,7 +167,7 @@ public class BuildServiceImpl implements BuildService {
             throw new HygieiaException(e);
         }
         finally {
-            if(BooleanUtils.isTrue(settings.isLookupDashboardForBuildDataCreate())) {
+            if(settings.isLookupDashboardForBuildDataCreate()) {
                 populateDashboardId(response);
             }
         }

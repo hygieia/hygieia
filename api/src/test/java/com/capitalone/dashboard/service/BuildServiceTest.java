@@ -9,7 +9,9 @@ import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.SCM;
+import com.capitalone.dashboard.model.ScoreDisplayType;
 import com.capitalone.dashboard.repository.BuildRepository;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
@@ -147,6 +149,23 @@ public class BuildServiceTest {
         assertEquals(build.getNumber(), response.getNumber());
     }
 
+    @Test
+    public void createV3WithGoodRequestEnableDashboardLookup() throws HygieiaException {
+        ObjectId collectorId = ObjectId.get();
+        BuildDataCreateRequest request = makeBuildRequest();
+        Build build = makeBuild();
+        List<Dashboard> dashboards = Collections.singletonList(new Dashboard("team", "title", null, null, DashboardType.Team, "configItemAppName", "configItemComponentName", null, false, ScoreDisplayType.HEADER));
+        when(collectorRepository.findOne(collectorId)).thenReturn(new Collector());
+        when(collectorService.createCollector(any(Collector.class))).thenReturn(new Collector());
+        when(collectorService.createCollectorItem(any(CollectorItem.class))).thenReturn(new CollectorItem());
+        when(collectorItemRepository.findOne(any(ObjectId.class))).thenReturn(new CollectorItem());
+        when(buildRepository.save(any(Build.class))).thenReturn(build);
+        when(apiSettings.isLookupDashboardForBuildDataCreate()).thenReturn(Boolean.TRUE);
+        when(dashboardService.getDashboardsByCollectorItems(any(Set.class), any(CollectorType.class))).thenReturn(dashboards);
+        BuildDataCreateResponse response = buildService.createV3(request);
+        assertEquals(build.getStartedBy(), response.getStartedBy());
+        assertEquals(build.getNumber(), response.getNumber());
+    }
 
     private Component makeComponent(ObjectId collectorItemId, ObjectId collectorId) {
         CollectorItem item = new CollectorItem();
