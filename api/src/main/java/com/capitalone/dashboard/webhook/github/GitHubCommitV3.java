@@ -12,6 +12,8 @@ import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.service.CollectorService;
+import com.capitalone.dashboard.webhook.settings.GitHubWebHookSettings;
+import com.capitalone.dashboard.webhook.settings.WebHookSettings;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -24,7 +26,6 @@ import org.springframework.http.ResponseEntity;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -102,10 +103,18 @@ public class GitHubCommitV3 extends GitHubV3 {
         List<Commit> commitsList = new ArrayList<>();
 
         GitHubParsed gitHubParsed = new GitHubParsed(repoUrl);
-        GitHubWebHookSettings gitHubWebHookSettings = parseAsGitHubWebHook(apiSettings.getGitHubWebHook());
+
+        WebHookSettings webHookSettings = apiSettings.getWebHook();
+
+        if (webHookSettings == null) {
+            LOG.info("Github Webhook properties not set on the properties file. Returning ...");
+            return commitsList;
+        }
+
+        GitHubWebHookSettings gitHubWebHookSettings = webHookSettings.getGitHubWebHookSettings();
 
         if (gitHubWebHookSettings == null) {
-            LOG.info("Github Webhook propties not set on the properties file. Returning ...");
+            LOG.info("Github Webhook properties not set on the properties file. Returning ...");
             return commitsList;
         }
 

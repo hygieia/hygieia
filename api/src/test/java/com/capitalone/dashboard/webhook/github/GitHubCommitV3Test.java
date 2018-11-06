@@ -15,6 +15,8 @@ import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.service.CollectorService;
 import com.capitalone.dashboard.util.Supplier;
+import com.capitalone.dashboard.webhook.settings.GitHubWebHookSettings;
+import com.capitalone.dashboard.webhook.settings.WebHookSettings;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
@@ -76,7 +78,6 @@ public class GitHubCommitV3Test {
     public void getCommitsTest() throws HygieiaException, ParseException {
         GitHubCommitV3 gitHubCommitV3 = Mockito.spy(this.gitHubCommitV3);
 
-        String gitHubWebHook = "{\"token\" : \"token\", \"commitTimestampOffset\" : \"5\", \"notBuiltCommits\":[\"test\"]}";
         String repoUrl = "http://hostName/OrgName/OwnerName/RepoName";
         String branch = "master";
 
@@ -98,7 +99,7 @@ public class GitHubCommitV3Test {
         } catch (HygieiaException e) {
             LOG.info(e.getMessage());
         }
-        when(apiSettings.getGitHubWebHook()).thenReturn(gitHubWebHook);
+        when(apiSettings.getWebHook()).thenReturn(makeWebHookSettings());
         try {
             when(gitHubCommitV3.getCommitNode(anyObject(), anyString(), anyString(), anyObject(), anyString())).thenReturn(null);
         } catch (Exception e) {
@@ -448,5 +449,21 @@ public class GitHubCommitV3Test {
         author2.put("login", "senderLogin");
 
         return commitsList;
+    }
+
+    private WebHookSettings makeWebHookSettings() {
+        WebHookSettings webHookSettings = new WebHookSettings();
+        GitHubWebHookSettings gitHubWebHookSettings = new GitHubWebHookSettings();
+        webHookSettings.setGitHubWebHookSettings(gitHubWebHookSettings);
+
+        gitHubWebHookSettings.setToken("c74782b3ca2b57a5230ae7812a");
+        gitHubWebHookSettings.setCommitTimestampOffset(5);
+        gitHubWebHookSettings.setUserAgent("GitHub-Hookshot");
+
+        List<String> githubEnterpriseHosts = new ArrayList<>();
+        gitHubWebHookSettings.setGithubEnterpriseHosts(githubEnterpriseHosts);
+        githubEnterpriseHosts.add("github.com");
+
+        return webHookSettings;
     }
 }

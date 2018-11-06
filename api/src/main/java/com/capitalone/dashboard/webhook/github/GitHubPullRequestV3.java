@@ -14,6 +14,8 @@ import com.capitalone.dashboard.model.Review;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.service.CollectorService;
+import com.capitalone.dashboard.webhook.settings.GitHubWebHookSettings;
+import com.capitalone.dashboard.webhook.settings.WebHookSettings;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -22,7 +24,6 @@ import org.joda.time.DateTime;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 
@@ -79,11 +80,19 @@ public class GitHubPullRequestV3 extends GitHubV3 {
 
         if (postBody == null) { return "No Commits found on the PR. Returning ...";}
 
-        GitHubWebHookSettings gitHubWebHookSettings = parseAsGitHubWebHook(apiSettings.getGitHubWebHook());
-        String gitHubWebHookToken = null;
-        if (gitHubWebHookSettings != null) {
-            gitHubWebHookToken = gitHubWebHookSettings.getToken();
+        WebHookSettings webHookSettings = apiSettings.getWebHook();
+
+        if (webHookSettings == null) {
+            return "Github Webhook properties not set on the properties file";
         }
+
+        GitHubWebHookSettings gitHubWebHookSettings = webHookSettings.getGitHubWebHookSettings();
+
+        if (gitHubWebHookSettings == null) {
+            return "Github Webhook properties not set on the properties file";
+        }
+
+        String gitHubWebHookToken = gitHubWebHookSettings.getToken();
 
         long start = System.currentTimeMillis();
 

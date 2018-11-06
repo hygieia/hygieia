@@ -10,7 +10,6 @@ import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.service.CollectorService;
 import com.capitalone.dashboard.util.HygieiaUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -22,7 +21,6 @@ import org.json.simple.parser.ParseException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -160,19 +158,6 @@ public abstract class GitHubV3 {
         }
 
         return ldapLdn;
-    }
-
-    protected GitHubWebHookSettings parseAsGitHubWebHook(String jsonString) {
-        GitHubWebHookSettings gitHubWebHookSettings = null;
-
-        if (StringUtils.isEmpty(jsonString)) { return gitHubWebHookSettings; }
-
-        try {
-            gitHubWebHookSettings = new ObjectMapper().readValue(jsonString, GitHubWebHookSettings.class);
-        } catch (IOException e) {
-            LOG.info("Could not be converted into "+GitHubWebHookSettings.class.getSimpleName()+": "+jsonString);
-        }
-        return gitHubWebHookSettings;
     }
 
     protected void checkForErrors(JSONObject responseJsonObject) throws HygieiaException, ParseException {

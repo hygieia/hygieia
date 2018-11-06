@@ -3,12 +3,9 @@ package com.capitalone.dashboard.auth.webhook.github;
 import com.capitalone.dashboard.auth.AuthenticationResultHandler;
 import com.capitalone.dashboard.settings.ApiSettings;
 import com.capitalone.dashboard.util.HygieiaUtils;
-import com.capitalone.dashboard.webhook.github.GitHubWebHookSettings;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.capitalone.dashboard.webhook.settings.GitHubWebHookSettings;
+import com.capitalone.dashboard.webhook.settings.WebHookSettings;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -22,13 +19,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public class GithubWebHookRequestFilter extends UsernamePasswordAuthenticationFilter {
-    private static final Log LOG = LogFactory.getLog(GithubWebHookRequestFilter.class);
 
     private final GithubWebHookAuthService githubWebHookAuthService;
     private final ApiSettings apiSettings;
@@ -54,14 +47,21 @@ public class GithubWebHookRequestFilter extends UsernamePasswordAuthenticationFi
         String userAgent = request.getHeader("User-Agent");
         String githubEnterpriseHost = request.getHeader("X-GitHub-Enterprise-Host");
 
-        GitHubWebHookSettings gitHubWebHookSettings = parseAsGitHubWebHook(apiSettings.getGitHubWebHook());
-
-        String userAgentExpectedValue = null;
-        List<String> githubEnterpriseHostExpectedValues = new ArrayList<>();
-        if (gitHubWebHookSettings != null) {
-            userAgentExpectedValue = gitHubWebHookSettings.getUserAgent();
-            githubEnterpriseHostExpectedValues = gitHubWebHookSettings.getGithubEnterpriseHosts();
+        WebHookSettings webHookSettings = apiSettings.getWebHook();
+        if (webHookSettings == null) { // Authentication Failure
+            authenticated = false;
+            filterChain.doFilter(request, response);
+            return;
         }
+        GitHubWebHookSettings gitHubWebHookSettings = webHookSettings.getGitHubWebHookSettings();
+        if (gitHubWebHookSettings == null) { // Authentication Failure
+            authenticated = false;
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String userAgentExpectedValue = gitHubWebHookSettings.getUserAgent();
+        List<String> githubEnterpriseHostExpectedValues = gitHubWebHookSettings.getGithubEnterpriseHosts();
 
         if (checkForEmptyValues(userAgent, githubEnterpriseHost, userAgentExpectedValue, githubEnterpriseHostExpectedValues)
                 || !userAgent.contains(userAgentExpectedValue)
@@ -74,14 +74,16 @@ public class GithubWebHookRequestFilter extends UsernamePasswordAuthenticationFi
         }
     }
 
-    private boolean checkForEmptyValues(String userAgent, String githubEnterpriseHost, String userAgentExpectedValue,
+    protected boolean checkForEmptyValues(String userAgent, String githubEnterpriseHost, String userAgentExpectedValue,
                                 List<String> githubEnterpriseHostExpectedValues) {
+        boolean result = false;
+
         if (HygieiaUtils.checkForEmptyStringValues(userAgent, githubEnterpriseHost, userAgentExpectedValue)
                 || CollectionUtils.isEmpty(githubEnterpriseHostExpectedValues)) {
-            return true;
+            result = true;
         }
 
-        return false;
+        return result;
     }
 
     @Override
@@ -106,18 +108,5 @@ public class GithubWebHookRequestFilter extends UsernamePasswordAuthenticationFi
                                               AuthenticationException failed) throws IOException, ServletException {
 
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Github Webhook Authentication Failed");
-    }
-
-    protected GitHubWebHookSettings parseAsGitHubWebHook(String jsonString) {
-        GitHubWebHookSettings gitHubWebHookSettings = null;
-
-        if (StringUtils.isEmpty(jsonString)) { return gitHubWebHookSettings; }
-
-        try {
-            gitHubWebHookSettings = new ObjectMapper().readValue(jsonString, GitHubWebHookSettings.class);
-        } catch (IOException e) {
-            LOG.info("Could not be converted into "+GitHubWebHookSettings.class.getSimpleName()+": "+jsonString);
-        }
-        return gitHubWebHookSettings;
     }
 }

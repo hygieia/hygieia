@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.settings;
 
+import com.capitalone.dashboard.webhook.settings.WebHookSettings;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -18,11 +19,12 @@ public class ApiSettings {
     private boolean logRequest;
     @Value("${pageSize:10}")
     private int pageSize;
-    private String gitHubWebHook;
 
-    public String getGitHubWebHook() { return gitHubWebHook; }
+    private WebHookSettings webHook;
 
-    public void setGitHubWebHook(String gitHubWebHook) { this.gitHubWebHook = gitHubWebHook; }
+    public WebHookSettings getWebHook() { return webHook; }
+
+    public void setWebHook(WebHookSettings webHook) { this.webHook = webHook; }
 
     public String getKey() {
         return key;

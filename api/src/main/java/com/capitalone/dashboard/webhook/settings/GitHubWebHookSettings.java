@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.webhook.github;
+package com.capitalone.dashboard.webhook.settings;
 
 import java.util.List;
 

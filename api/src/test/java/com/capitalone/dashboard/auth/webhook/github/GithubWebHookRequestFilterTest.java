@@ -4,7 +4,8 @@ import com.capitalone.dashboard.auth.AuthenticationResultHandler;
 import com.capitalone.dashboard.model.UserInfo;
 import com.capitalone.dashboard.repository.UserInfoRepository;
 import com.capitalone.dashboard.settings.ApiSettings;
-import com.capitalone.dashboard.webhook.github.GitHubWebHookSettings;
+import com.capitalone.dashboard.webhook.settings.GitHubWebHookSettings;
+import com.capitalone.dashboard.webhook.settings.WebHookSettings;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +19,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
@@ -67,12 +69,11 @@ public class GithubWebHookRequestFilterTest {
     public void doFilterTest_shouldAuthenticate () {
         String userAgentHeader = "GitHub-Hookshot/cc39a0c";
         String githubEnterpriseHostHeader = "github.com";
-        String jsonString = "{\"token\" : \"c74782b3ca2b57a5230ae7812a\", \"commitTimestampOffset\" : \"5\", \"userAgent\" : \"GitHub-Hookshot\", \"githubEnterpriseHosts\" : [\"github.com\"]}";
 
         when(request.getMethod()).thenReturn("POST");
         when(request.getHeader("User-Agent")).thenReturn(userAgentHeader);
         when(request.getHeader("X-GitHub-Enterprise-Host")).thenReturn(githubEnterpriseHostHeader);
-        when(apiSettings.getGitHubWebHook()).thenReturn(jsonString);
+        when(apiSettings.getWebHook()).thenReturn(makeWebHookSettings());
 
         try {
             filter.doFilter(request, response, filterChain);
@@ -86,12 +87,11 @@ public class GithubWebHookRequestFilterTest {
     @Test
     public void doFilterTest_shouldNotAuthenticate () {
         String githubEnterpriseHostHeader = "github.com";
-        String jsonString = "{\"token\" : \"c74782b3ca2b57a5230ae7812a\", \"commitTimestampOffset\" : \"5\", \"userAgent\" : \"GitHub-Hookshot\", \"githubEnterpriseHosts\" : [\"github.com\"]}";
 
         when(request.getMethod()).thenReturn("POST");
         when(request.getHeader("User-Agent")).thenReturn("something");
         when(request.getHeader("X-GitHub-Enterprise-Host")).thenReturn(githubEnterpriseHostHeader);
-        when(apiSettings.getGitHubWebHook()).thenReturn(jsonString);
+        when(apiSettings.getWebHook()).thenReturn(makeWebHookSettings());
 
         try {
             filter.doFilter(request, response, filterChain);
@@ -104,31 +104,41 @@ public class GithubWebHookRequestFilterTest {
 
     @Test
     public void shouldAuthenticate() {
-        String jsonString = "{\"token\" : \"c74782b3ca2b57a5230ae7812a\", \"commitTimestampOffset\" : \"5\", \"userAgent\" : \"GitHub-Hookshot\", \"githubEnterpriseHosts\" : [\"github.com\"]}";
         UserInfo user = new UserInfo();
         when(userInfoRepository.findByUsername(anyString())).thenReturn(user);
-        when(apiSettings.getGitHubWebHook()).thenReturn(jsonString);
         Authentication result = filter.attemptAuthentication(request, response);
 
         Assert.assertNotNull(result);
     }
 
     @Test
-    public void parseAsGitHubWebHookTest() {
-        String jsonString = "{\"token\" : \"c74782b3ca2b57a5230ae7812a\", \"commitTimestampOffset\" : \"5\", \"userAgent\" : \"GitHub-Hookshot\", \"githubEnterpriseHosts\" : [\"github.com\"]}";
-        GitHubWebHookSettings gitHubWebHookSettings = filter.parseAsGitHubWebHook(jsonString);
+    public void checkForEmptyValuesTest() {
+        List<String> list = new ArrayList<>();
+        list.add("list");
 
-        Assert.assertNotNull(gitHubWebHookSettings.getGithubEnterpriseHosts());
-        Assert.assertEquals("GitHub-Hookshot", gitHubWebHookSettings.getUserAgent());
+        boolean result = filter.checkForEmptyValues("", "githubEnterpriseHost", "userAgentExpectedValue", list);
+        Assert.assertTrue(result);
+
+        result = filter.checkForEmptyValues("userAgent", "githubEnterpriseHost", "userAgentExpectedValue", new ArrayList<>());
+        Assert.assertTrue(result);
+
+        result = filter.checkForEmptyValues("userAgent", "githubEnterpriseHost", "userAgentExpectedValue", list);
+        Assert.assertFalse(result);
     }
 
-    @Test
-    public void getGithubEnterpriseHostExpectedValues() {
-        String jsonString = "{\"token\" : \"c74782b3ca2b57a5230ae7812a\", \"commitTimestampOffset\" : \"5\", \"userAgent\" : \"GitHub-Hookshot\", \"githubEnterpriseHosts\" : [\"github.com\"]}";
-        GitHubWebHookSettings gitHubWebHookSettings = filter.parseAsGitHubWebHook(jsonString);
+    private WebHookSettings makeWebHookSettings() {
+        WebHookSettings webHookSettings = new WebHookSettings();
+        GitHubWebHookSettings gitHubWebHookSettings = new GitHubWebHookSettings();
+        webHookSettings.setGitHubWebHookSettings(gitHubWebHookSettings);
 
-        List<String> result = gitHubWebHookSettings.getGithubEnterpriseHosts();
-        Assert.assertEquals(1, result.size());
-        Assert.assertEquals("github.com", result.get(0));
+        gitHubWebHookSettings.setToken("c74782b3ca2b57a5230ae7812a");
+        gitHubWebHookSettings.setCommitTimestampOffset(5);
+        gitHubWebHookSettings.setUserAgent("GitHub-Hookshot");
+
+        List<String> githubEnterpriseHosts = new ArrayList<>();
+        gitHubWebHookSettings.setGithubEnterpriseHosts(githubEnterpriseHosts);
+        githubEnterpriseHosts.add("github.com");
+
+        return webHookSettings;
     }
 }
