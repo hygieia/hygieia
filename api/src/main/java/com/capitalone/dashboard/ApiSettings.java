@@ -18,6 +18,8 @@ public class ApiSettings {
     private boolean logRequest;
     @Value("${pageSize:10}")
     private int pageSize;
+    @Value("${lookupDashboardForBuildDataCreate:false}")
+    private boolean lookupDashboardForBuildDataCreate;
     
     public String getKey() {
         return key;
@@ -58,5 +60,12 @@ public class ApiSettings {
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
     }
+
+    public boolean isLookupDashboardForBuildDataCreate() { return lookupDashboardForBuildDataCreate; }
+
+    public void setLookupDashboardForBuildDataCreate(boolean lookupDashboardForBuildDataCreate) {
+        this.lookupDashboardForBuildDataCreate = lookupDashboardForBuildDataCreate;
+    }
+
 
 }
