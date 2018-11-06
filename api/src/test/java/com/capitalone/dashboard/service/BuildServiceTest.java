@@ -1,7 +1,7 @@
 package com.capitalone.dashboard.service;
 
+import com.capitalone.dashboard.settings.ApiSettings;
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.Application;
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.Collector;
@@ -32,7 +32,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -55,6 +54,8 @@ public class BuildServiceTest {
     @Mock private DashboardServiceImpl dashboardService;
     @Mock
     private CollectorService collectorService;
+    @Mock
+    private ApiSettings apiSettings;
 
     @Test
     public void search() {
@@ -148,6 +149,23 @@ public class BuildServiceTest {
         assertEquals(build.getNumber(), response.getNumber());
     }
 
+    @Test
+    public void createV3WithGoodRequestEnableDashboardLookup() throws HygieiaException {
+        ObjectId collectorId = ObjectId.get();
+        BuildDataCreateRequest request = makeBuildRequest();
+        Build build = makeBuild();
+        List<Dashboard> dashboards = Collections.singletonList(new Dashboard("team", "title", null, null, DashboardType.Team, "configItemAppName", "configItemComponentName", null, false, ScoreDisplayType.HEADER));
+        when(collectorRepository.findOne(collectorId)).thenReturn(new Collector());
+        when(collectorService.createCollector(any(Collector.class))).thenReturn(new Collector());
+        when(collectorService.createCollectorItem(any(CollectorItem.class))).thenReturn(new CollectorItem());
+        when(collectorItemRepository.findOne(any(ObjectId.class))).thenReturn(new CollectorItem());
+        when(buildRepository.save(any(Build.class))).thenReturn(build);
+        when(apiSettings.isLookupDashboardForBuildDataCreate()).thenReturn(Boolean.TRUE);
+        when(dashboardService.getDashboardsByCollectorItems(any(Set.class), any(CollectorType.class))).thenReturn(dashboards);
+        BuildDataCreateResponse response = buildService.createV3(request);
+        assertEquals(build.getStartedBy(), response.getStartedBy());
+        assertEquals(build.getNumber(), response.getNumber());
+    }
 
     private Component makeComponent(ObjectId collectorItemId, ObjectId collectorId) {
         CollectorItem item = new CollectorItem();

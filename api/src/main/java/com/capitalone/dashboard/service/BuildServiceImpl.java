@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.service;
 
+import com.capitalone.dashboard.settings.ApiSettings;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.BuildStatus;
@@ -49,6 +50,8 @@ public class BuildServiceImpl implements BuildService {
     private final DashboardService dashboardService;
     private final CollectorItemRepository collectorItemRepository;
 
+    @Autowired
+    private ApiSettings settings;
 
     @Autowired
     public BuildServiceImpl(BuildRepository buildRepository,
@@ -56,13 +59,15 @@ public class BuildServiceImpl implements BuildService {
                             CollectorRepository collectorRepository,
                             CollectorService collectorService,
                             DashboardService dashboardService,
-                            CollectorItemRepository collectorItemRepository) {
+                            CollectorItemRepository collectorItemRepository,
+                            ApiSettings settings) {
         this.buildRepository = buildRepository;
         this.componentRepository = componentRepository;
         this.collectorRepository = collectorRepository;
         this.collectorService = collectorService;
         this.dashboardService = dashboardService;
         this.collectorItemRepository = collectorItemRepository;
+        this.settings = settings;
     }
 
     @Override
@@ -162,7 +167,9 @@ public class BuildServiceImpl implements BuildService {
             throw new HygieiaException(e);
         }
         finally {
-            populateDashboardId(response);
+            if(settings.isLookupDashboardForBuildDataCreate()) {
+                populateDashboardId(response);
+            }
         }
         return response;
     }
