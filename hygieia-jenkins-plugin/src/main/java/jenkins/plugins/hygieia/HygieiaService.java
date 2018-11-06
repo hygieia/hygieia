@@ -14,6 +14,8 @@ import java.util.Set;
 public interface HygieiaService {
     HygieiaResponse publishBuildData(BuildDataCreateRequest request);
 
+    HygieiaResponse publishBuildDataV3(BuildDataCreateRequest request);
+
     HygieiaResponse publishArtifactData(BinaryArtifactCreateRequest request);
 
     boolean testConnection();
