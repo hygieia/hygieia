@@ -5,6 +5,7 @@ import com.capitalone.dashboard.util.EncryptionException;
 import com.capitalone.dashboard.util.Supplier;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.simple.JSONArray;
@@ -132,12 +133,7 @@ public class RestClient {
     }
 
     public Integer getInteger(Object obj, String key) throws NumberFormatException{
-        String val = getString(obj, key);
-        if (!StringUtils.isEmpty(val)) {
-            return Integer.parseInt(val);
-        }
-
-        return 0;
+        return NumberUtils.toInt(getString(obj, key));
     }
 
     public Object getAsObject(Object obj, String key) {
@@ -169,12 +165,7 @@ public class RestClient {
     }
 
     public Long getLong(Object obj, String key) throws NumberFormatException{
-        String val = getString(obj, key);
-        if (!StringUtils.isEmpty(val)) {
-            return Long.parseLong(val);
-        }
-
-        return 0L;
+        return NumberUtils.toLong(getString(obj, key));
     }
 
     /**
@@ -185,14 +176,14 @@ public class RestClient {
      * @return String
      */
     public static String decryptString(String string, String key) {
-        if (!StringUtils.isEmpty(string)) {
-            try {
-                return Encryption.decryptString(
-                        string, key);
-            } catch (EncryptionException e) {
-                LOG.error(e.getMessage());
-            }
+        if (StringUtils.isEmpty(string)) { return ""; }
+
+        String result = "";
+        try {
+            result = Encryption.decryptString(string, key);
+        } catch (EncryptionException e) {
+            LOG.error(e.getMessage());
         }
-        return "";
+        return result;
     }
 }

@@ -131,17 +131,4 @@ public class GithubWebHookRequestFilterTest {
         Assert.assertEquals(1, result.size());
         Assert.assertEquals("github.com", result.get(0));
     }
-
-    @Test
-    public void checkGithubEnterpriseHost() {
-        String jsonString = "{\"token\" : \"c74782b3ca2b57a5230ae7812a\", \"commitTimestampOffset\" : \"5\", \"userAgent\" : \"GitHub-Hookshot\", \"githubEnterpriseHosts\" : [\"github.com\"]}";
-        GitHubWebHookSettings gitHubWebHookSettings = filter.parseAsGitHubWebHook(jsonString);
-
-        List<String> githubHostExpectedValues = gitHubWebHookSettings.getGithubEnterpriseHosts();
-        boolean result = filter.checkGithubEnterpriseHost("github.com", githubHostExpectedValues);
-        Assert.assertTrue(result);
-
-        result = filter.checkGithubEnterpriseHost("something", githubHostExpectedValues);
-        Assert.assertFalse(result);
-    }
 }

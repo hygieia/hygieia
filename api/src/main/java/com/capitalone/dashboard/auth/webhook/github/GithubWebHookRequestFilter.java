@@ -65,7 +65,7 @@ public class GithubWebHookRequestFilter extends UsernamePasswordAuthenticationFi
 
         if (checkForEmptyValues(userAgent, githubEnterpriseHost, userAgentExpectedValue, githubEnterpriseHostExpectedValues)
                 || !userAgent.contains(userAgentExpectedValue)
-                || !checkGithubEnterpriseHost(githubEnterpriseHost, githubEnterpriseHostExpectedValues)) {
+                || !githubEnterpriseHostExpectedValues.contains(githubEnterpriseHost)) {
             authenticated = false;
             filterChain.doFilter(request, response);
         } else {
@@ -106,15 +106,6 @@ public class GithubWebHookRequestFilter extends UsernamePasswordAuthenticationFi
                                               AuthenticationException failed) throws IOException, ServletException {
 
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Github Webhook Authentication Failed");
-    }
-
-    protected boolean checkGithubEnterpriseHost(String githubEnterpriseHost, List<String> githubEnterpriseHostExpectedValues) {
-        String value = Optional.ofNullable(githubEnterpriseHostExpectedValues)
-                .orElseGet(Collections::emptyList).stream()
-                .filter(expectedValue -> githubEnterpriseHost.contains(expectedValue))
-                .findFirst().orElse(null);
-
-        return !StringUtils.isEmpty(value);
     }
 
     protected GitHubWebHookSettings parseAsGitHubWebHook(String jsonString) {

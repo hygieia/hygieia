@@ -1,5 +1,7 @@
 package com.capitalone.dashboard.model.webhook.github;
 
+import java.util.Objects;
+
 public class MergeEvent {
     private String mergeSha;
     private String gitRequestNumber;
@@ -54,5 +56,20 @@ public class MergeEvent {
 
     public void setMergedAt(long mergedAt) {
         this.mergedAt = mergedAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MergeEvent)) return false;
+        MergeEvent that = (MergeEvent) o;
+        return Objects.equals(getMergeSha(), that.getMergeSha()) &&
+                Objects.equals(getGitRequestNumber(), that.getGitRequestNumber()) &&
+                Objects.equals(getMergeAuthor(), that.getMergeAuthor());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getMergeSha(), getGitRequestNumber(), getMergeAuthor());
     }
 }
