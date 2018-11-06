@@ -69,6 +69,27 @@ public class DefaultHygieiaService implements HygieiaService {
 
         return new HygieiaResponse(responseCode, responseValue);
     }
+    @Override
+    public HygieiaResponse publishBuildDataV3(BuildDataCreateRequest request) {
+        String responseValue;
+        int responseCode = HttpStatus.SC_NO_CONTENT;
+        try {
+            String jsonString = new String(HygieiaUtils.convertObjectToJsonBytes(request));
+            RestCall restCall = new RestCall(useProxy);
+            RestCall.RestCallResponse callResponse = restCall.makeRestCallPost(hygieiaAPIUrl + "/v3/build", jsonString);
+            responseCode = callResponse.getResponseCode();
+            responseValue = callResponse.getResponseString();
+            if (responseCode != HttpStatus.SC_CREATED) {
+                logger.log(Level.SEVERE, "Hygieia: Build Publisher post may have failed. Response: " + responseCode);
+            }
+            return new HygieiaResponse(responseCode, responseValue);
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Hygieia: Error posting to Hygieia", e);
+            responseValue = "";
+        }
+
+        return new HygieiaResponse(responseCode, responseValue);
+    }
 
     @Override
     public HygieiaResponse publishArtifactData(BinaryArtifactCreateRequest request) {
