@@ -76,7 +76,7 @@ public class GitHubCommitV3Test {
     public void getCommitsTest() throws HygieiaException, ParseException {
         GitHubCommitV3 gitHubCommitV3 = Mockito.spy(this.gitHubCommitV3);
 
-        String gitHubWebHook = "{\"token\" : \"token\", \"commitTimestampOffset\" : \"5\", \"notBuiltCommits\":\"test\"}";
+        String gitHubWebHook = "{\"token\" : \"token\", \"commitTimestampOffset\" : \"5\", \"notBuiltCommits\":[\"test\"]}";
         String repoUrl = "http://hostName/OrgName/OwnerName/RepoName";
         String branch = "master";
 
@@ -253,7 +253,9 @@ public class GitHubCommitV3Test {
         Assert.assertEquals(CommitType.New, commitType);
 
         GitHubWebHookSettings gitHubWebHookSettings = new GitHubWebHookSettings();
-        gitHubWebHookSettings.setNotBuiltCommits("some value");
+        List<String> notBuiltCommitsList = new ArrayList<>();
+        notBuiltCommitsList.add("some value");
+        gitHubWebHookSettings.setNotBuiltCommits(notBuiltCommitsList);
         commitType = gitHubCommitV3.getCommitType(1, "test1", gitHubWebHookSettings, commitExclusionPatterns);
         Assert.assertEquals(CommitType.NotBuilt, commitType);
     }

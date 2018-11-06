@@ -110,14 +110,10 @@ public class GitHubCommitV3 extends GitHubV3 {
         }
 
         List<Pattern> commitExclusionPatterns = new ArrayList<>();
-        if (!StringUtils.isEmpty(gitHubWebHookSettings.getNotBuiltCommits())) {
-            if (!StringUtils.isEmpty(gitHubWebHookSettings.getDelimiter())) {
-                String[] notBuiltCommits = gitHubWebHookSettings.getNotBuiltCommits().split(gitHubWebHookSettings.getDelimiter());
-                Arrays.stream(notBuiltCommits).map(regExStr -> Pattern.compile(regExStr, Pattern.CASE_INSENSITIVE)).forEach(commitExclusionPatterns::add);
-            } else {
-                commitExclusionPatterns.add(Pattern.compile(gitHubWebHookSettings.getNotBuiltCommits(), Pattern.CASE_INSENSITIVE));
-            }
-        }
+        Optional.ofNullable(gitHubWebHookSettings.getNotBuiltCommits())
+            .orElseGet(Collections::emptyList).stream()
+            .map(regExStr -> Pattern.compile(regExStr, Pattern.CASE_INSENSITIVE))
+            .forEach(commitExclusionPatterns::add);
 
         for (Map cObj : commitsObjectList) {
             Object repoMap = restClient.getAsObject(cObj, "repository");
@@ -319,7 +315,7 @@ public class GitHubCommitV3 extends GitHubV3 {
                                        GitHubWebHookSettings gitHubWebHookSettings,
                                        List<Pattern> commitExclusionPatterns) {
         if (parentSize > 1) return CommitType.Merge;
-        if (gitHubWebHookSettings.getNotBuiltCommits() == null) return CommitType.New;
+        if (CollectionUtils.isEmpty(gitHubWebHookSettings.getNotBuiltCommits())) return CommitType.New;
 
         if (!CollectionUtils.isEmpty(commitExclusionPatterns)) {
             for (Pattern pattern : commitExclusionPatterns) {

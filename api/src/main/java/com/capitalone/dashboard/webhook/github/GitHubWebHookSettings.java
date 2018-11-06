@@ -1,21 +1,19 @@
 package com.capitalone.dashboard.webhook.github;
 
+import java.util.List;
+
 public class GitHubWebHookSettings {
     private String token;
     private int commitTimestampOffset;
-    private String notBuiltCommits;
-    private String delimiter;
+    private List<String> notBuiltCommits;
     private String userAgent;
-    private String githubEnterpriseHost;
+    private List<String> githubEnterpriseHosts;
 
-    public String getGithubEnterpriseHost() { return githubEnterpriseHost; }
-    public void setGithubEnterpriseHost(String githubEnterpriseHost) { this.githubEnterpriseHost = githubEnterpriseHost; }
+    public List<String> getGithubEnterpriseHosts() { return githubEnterpriseHosts; }
+    public void setGithubEnterpriseHosts(List<String> githubEnterpriseHosts) { this.githubEnterpriseHosts = githubEnterpriseHosts; }
 
     public String getUserAgent() { return userAgent; }
     public void setUserAgent(String userAgent) { this.userAgent = userAgent; }
-
-    public String getDelimiter() { return delimiter; }
-    public void setDelimiter(String delimiter) { this.delimiter = delimiter; }
 
     public String getToken() { return token; }
     public void setToken(String token) { this.token = token; }
@@ -23,7 +21,7 @@ public class GitHubWebHookSettings {
     public int getCommitTimestampOffset() { return commitTimestampOffset; }
     public void setCommitTimestampOffset(int commitTimestampOffset) { this.commitTimestampOffset = commitTimestampOffset; }
 
-    public String getNotBuiltCommits() { return notBuiltCommits; }
-    public void setNotBuiltCommits(String notBuiltCommits) { this.notBuiltCommits = notBuiltCommits; }
+    public List<String> getNotBuiltCommits() { return notBuiltCommits; }
+    public void setNotBuiltCommits(List<String> notBuiltCommits) { this.notBuiltCommits = notBuiltCommits; }
 }
 

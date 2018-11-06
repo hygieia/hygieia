@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -61,7 +60,7 @@ public class GithubWebHookRequestFilter extends UsernamePasswordAuthenticationFi
         List<String> githubEnterpriseHostExpectedValues = new ArrayList<>();
         if (gitHubWebHookSettings != null) {
             userAgentExpectedValue = gitHubWebHookSettings.getUserAgent();
-            githubEnterpriseHostExpectedValues = getGithubEnterpriseHostExpectedValues(gitHubWebHookSettings);
+            githubEnterpriseHostExpectedValues = gitHubWebHookSettings.getGithubEnterpriseHosts();
         }
 
         if (checkForEmptyValues(userAgent, githubEnterpriseHost, userAgentExpectedValue, githubEnterpriseHostExpectedValues)
@@ -109,20 +108,6 @@ public class GithubWebHookRequestFilter extends UsernamePasswordAuthenticationFi
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Github Webhook Authentication Failed");
     }
 
-    protected List<String> getGithubEnterpriseHostExpectedValues(GitHubWebHookSettings gitHubWebHookSettings) {
-        List<String> githubEnterpriseHostExpectedValues = new ArrayList<>();
-
-        if (gitHubWebHookSettings == null) { return githubEnterpriseHostExpectedValues; }
-
-        if (!StringUtils.isEmpty(gitHubWebHookSettings.getGithubEnterpriseHost())
-                && !StringUtils.isEmpty(gitHubWebHookSettings.getDelimiter())) {
-            String[] hostValues = gitHubWebHookSettings.getGithubEnterpriseHost().split(gitHubWebHookSettings.getDelimiter());
-            Arrays.stream(hostValues).forEach(githubEnterpriseHostExpectedValues::add);
-        }
-
-        return githubEnterpriseHostExpectedValues;
-    }
-
     protected boolean checkGithubEnterpriseHost(String githubEnterpriseHost, List<String> githubEnterpriseHostExpectedValues) {
         String value = Optional.ofNullable(githubEnterpriseHostExpectedValues)
                 .orElseGet(Collections::emptyList).stream()
@@ -135,7 +120,7 @@ public class GithubWebHookRequestFilter extends UsernamePasswordAuthenticationFi
     protected GitHubWebHookSettings parseAsGitHubWebHook(String jsonString) {
         GitHubWebHookSettings gitHubWebHookSettings = null;
 
-        if (org.apache.commons.lang.StringUtils.isEmpty(jsonString)) { return gitHubWebHookSettings; }
+        if (StringUtils.isEmpty(jsonString)) { return gitHubWebHookSettings; }
 
         try {
             gitHubWebHookSettings = new ObjectMapper().readValue(jsonString, GitHubWebHookSettings.class);
