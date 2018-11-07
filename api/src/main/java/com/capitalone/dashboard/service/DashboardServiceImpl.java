@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-import com.capitalone.dashboard.ApiSettings;
+import com.capitalone.dashboard.settings.ApiSettings;
 import com.capitalone.dashboard.model.BaseModel;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;

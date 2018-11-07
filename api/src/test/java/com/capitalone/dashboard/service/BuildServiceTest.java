@@ -1,6 +1,6 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.ApiSettings;
+import com.capitalone.dashboard.settings.ApiSettings;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.BuildStatus;

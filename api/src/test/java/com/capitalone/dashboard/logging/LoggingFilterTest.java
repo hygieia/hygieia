@@ -20,7 +20,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 
-import com.capitalone.dashboard.ApiSettings;
+import com.capitalone.dashboard.settings.ApiSettings;
 import com.capitalone.dashboard.model.RequestLog;
 import com.capitalone.dashboard.repository.RequestLogRepository;
 
