@@ -65,14 +65,19 @@ public class GitHubIssueV3Test {
         String collectorItemId = createGuid("0123456789abcdee");
         existingIssue.setCollectorItemId(new ObjectId(collectorItemId));
 
+        CollectorItem collectorItem = new CollectorItem();
+        collectorItem.setId(new ObjectId(collectorItemId));
+
         GitRequest newIssue = new GitRequest();
 
         when(gitRequestRepository.findByScmUrlIgnoreCaseAndScmBranchIgnoreCaseAndNumberAndRequestTypeIgnoreCase(anyString(), anyString(), anyString(), anyString())).thenReturn(existingIssue);
+        when(collectorService.getCollectorItem(existingIssue.getCollectorItemId())).thenReturn(collectorItem);
 
         gitHubIssueV3.setCollectorItemId(newIssue);
 
         Assert.assertEquals(new ObjectId(id), newIssue.getId());
         Assert.assertEquals(new ObjectId(collectorItemId), newIssue.getCollectorItemId());
+        Assert.assertTrue(collectorItem.isPushed());
     }
 
     @Test

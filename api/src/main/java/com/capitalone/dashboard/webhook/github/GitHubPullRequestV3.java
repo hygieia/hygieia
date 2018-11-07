@@ -264,6 +264,11 @@ public class GitHubPullRequestV3 extends GitHubV3 {
         if (existingPR != null) {
             pull.setId(existingPR.getId());
             pull.setCollectorItemId(existingPR.getCollectorItemId());
+            CollectorItem collectorItem = collectorService.getCollectorItem(existingPR.getCollectorItemId());
+            if (!collectorItem.isPushed()) {
+                collectorItem.setPushed(true);
+                collectorItemRepository.save(collectorItem);
+            }
         } else {
             CollectorItem collectorItem = null;
             GitHubParsed gitHubParsed = new GitHubParsed(pull.getScmUrl());

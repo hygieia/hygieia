@@ -121,6 +121,11 @@ public class GitHubIssueV3 extends GitHubV3 {
         if (existingIssue != null) {
             issue.setId(existingIssue.getId());
             issue.setCollectorItemId(existingIssue.getCollectorItemId());
+            CollectorItem collectorItem = collectorService.getCollectorItem(existingIssue.getCollectorItemId());
+            if (!collectorItem.isPushed()) {
+                collectorItem.setPushed(true);
+                collectorItemRepository.save(collectorItem);
+            }
         } else {
             CollectorItem collectorItem = null;
             try {

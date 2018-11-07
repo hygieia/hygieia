@@ -329,17 +329,21 @@ public class GitHubPullRequestV3Test {
         existingPullRequest.setId(new ObjectId(id));
 
         String collectorItemId = createGuid("0123456789abcdee");
-
         existingPullRequest.setCollectorItemId(new ObjectId(collectorItemId));
+
+        CollectorItem collectorItem = new CollectorItem();
+        collectorItem.setId(new ObjectId(collectorItemId));
 
         GitRequest newPullRequest = new GitRequest();
 
         when(gitRequestRepository.findByScmUrlIgnoreCaseAndScmBranchIgnoreCaseAndNumberAndRequestTypeIgnoreCase(anyString(), anyString(), anyString(), anyString())).thenReturn(existingPullRequest);
+        when(collectorService.getCollectorItem(existingPullRequest.getCollectorItemId())).thenReturn(collectorItem);
 
         gitHubPullRequestV3.setCollectorItemId(newPullRequest);
 
         Assert.assertEquals(new ObjectId(id), newPullRequest.getId());
         Assert.assertEquals(new ObjectId(collectorItemId), newPullRequest.getCollectorItemId());
+        Assert.assertTrue(collectorItem.isPushed());
     }
 
     @Test
