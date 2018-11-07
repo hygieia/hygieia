@@ -1,5 +1,6 @@
-package com.capitalone.dashboard;
+package com.capitalone.dashboard.settings;
 
+import com.capitalone.dashboard.webhook.settings.WebHookSettings;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -20,7 +21,17 @@ public class ApiSettings {
     private int pageSize;
     @Value("${lookupDashboardForBuildDataCreate:false}")
     private boolean lookupDashboardForBuildDataCreate;
-    
+
+    private WebHookSettings webHook;
+
+    public WebHookSettings getWebHook() {
+        return webHook;
+    }
+
+    public void setWebHook(WebHookSettings webHook) {
+        this.webHook = webHook;
+    }
+
     public String getKey() {
         return key;
     }
@@ -66,6 +77,4 @@ public class ApiSettings {
     public void setLookupDashboardForBuildDataCreate(boolean lookupDashboardForBuildDataCreate) {
         this.lookupDashboardForBuildDataCreate = lookupDashboardForBuildDataCreate;
     }
-
-
 }

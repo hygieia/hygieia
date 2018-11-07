@@ -43,4 +43,11 @@ public interface GitRequestRepository  extends CrudRepository<GitRequest, Object
 
     List<GitRequest> findByCollectorItemIdAndMergedAtIsBetween(ObjectId collectorItemId, long beginDate, long endDate);
 
+    GitRequest findByScmUrlIgnoreCaseAndScmBranchIgnoreCaseAndNumberAndRequestTypeIgnoreCase(String scmUrl, String scmBranch, String number, String requestType);
+
+    @Query(value="{'$or':[{'scmRevisionNumber' : ?0}, {'scmMergeEventRevisionNumber' : ?0}]}")
+    GitRequest findByScmRevisionNumberOrScmMergeEventRevisionNumber(String revisionNumber);
+
+    @Query(value="{'commits.scmRevisionNumber' : ?0}")
+    GitRequest findByCommitScmRevisionNumber(String revisionNumber);
 }
