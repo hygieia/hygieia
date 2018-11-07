@@ -134,6 +134,8 @@ public class GitHubCommitV3 extends GitHubV3 {
                 throw new HygieiaException("Failed processing payload. Missing Github API token in Hygieia.", HygieiaException.INVALID_CONFIGURATION);
             }
 
+            String decryptPersonalAccessToken = RestClient.decryptString(gitHubWebHookToken, apiSettings.getKey());
+
             Commit commit = new Commit();
 
             String commitId = restClient.getString(cObj, "id");
@@ -154,7 +156,7 @@ public class GitHubCommitV3 extends GitHubV3 {
 
             commit.setScmCommitTimestamp(commitTimestamp.getMillis());
 
-            Object node = getCommitNode(gitHubParsed, branch, commitId, commitTimestampStepBack, gitHubWebHookToken);
+            Object node = getCommitNode(gitHubParsed, branch, commitId, commitTimestampStepBack, decryptPersonalAccessToken);
             if (node != null) {
                 List<String> parentShas = getParentShas(node);
                 commit.setScmParentRevisionNumbers(parentShas);
@@ -167,7 +169,7 @@ public class GitHubCommitV3 extends GitHubV3 {
                 commit.setScmAuthorLogin(authorLogin);
                 commit.setScmAuthorLDAPDN(senderLDAPDN);
                 if (!StringUtils.isEmpty(senderLDAPDN) && !senderLogin.equalsIgnoreCase(authorLogin)) {
-                    String authorLDAPDNFetched = StringUtils.isEmpty(authorLogin) ? null : getLDAPDN(repoUrl, authorLogin, gitHubWebHookToken);
+                    String authorLDAPDNFetched = StringUtils.isEmpty(authorLogin) ? null : getLDAPDN(repoUrl, authorLogin, decryptPersonalAccessToken);
                     commit.setScmAuthorLDAPDN(authorLDAPDNFetched);
                 }
 
