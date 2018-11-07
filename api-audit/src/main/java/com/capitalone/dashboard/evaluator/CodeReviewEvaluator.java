@@ -178,18 +178,10 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
 
         List<Commit> commitsNotDirectlyTiedToPr = new ArrayList<>();
         commits.forEach(commit -> {
-            boolean partialDirectCommitsCondition = false;
-            if ( (!allPrCommitShas.contains(commit.getScmRevisionNumber()))
-                    && (commit.getType() == CommitType.New) ) {
-                partialDirectCommitsCondition = true;
-            }
+            if (!checkPrCommitsAndCommitType(allPrCommitShas, commit)) { return; }
 
-            if ( (repoItem.isPushed()
-                    && partialDirectCommitsCondition
-                    && !existsApprovedPROnAnotherBranch(repoItem, commit, collectorItemList, beginDt, endDt))
-                    || (!repoItem.isPushed()
-                            && partialDirectCommitsCondition
-                            && StringUtils.isEmpty(commit.getPullNumber())) ) {
+            if ( isCommitEligibleForDirectCommitsForPushedRepo(repoItem, commit, collectorItemList, beginDt, endDt)
+                    || isCommitEligibleForDirectCommitsForPulledRepo(repoItem, commit) ) {
                 commitsNotDirectlyTiedToPr.add(commit);
                 // auditServiceAccountChecks includes - check for service account and increment version tag for service account on direct commits.
                 auditServiceAccountChecks(reviewAuditResponseV2, commit);
@@ -199,14 +191,42 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
         return reviewAuditResponseV2;
     }
 
+    private boolean checkPrCommitsAndCommitType(List<String> allPrCommitShas, Commit commit) {
+        if ( (!allPrCommitShas.contains(commit.getScmRevisionNumber()))
+                && (commit.getType() == CommitType.New) ) { return true; }
+
+        return false;
+    }
+
+    private boolean isCommitEligibleForDirectCommitsForPushedRepo(CollectorItem repoItem, Commit commit,
+                                                                  List<CollectorItem> collectorItemList,
+                                                                  long beginDt, long endDt) {
+        if (repoItem.isPushed()
+                && !existsApprovedPROnAnotherBranch(repoItem, commit, collectorItemList, beginDt, endDt)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isCommitEligibleForDirectCommitsForPulledRepo(CollectorItem repoItem, Commit commit) {
+        if (!repoItem.isPushed() && StringUtils.isEmpty(commit.getPullNumber())) {
+            return true;
+        }
+        return false;
+    }
+
     protected void auditPullRequest(CollectorItem repoItem, GitRequest pr, List<Commit> commits,
                                     List<String> allPrCommitShas, CodeReviewAuditResponseV2 reviewAuditResponseV2) {
-        Optional<Commit> mergeOptionalCommit = commits.stream().filter(c -> Objects.equals(c.getScmRevisionNumber(), pr.getScmRevisionNumber())).findFirst();
-        Commit mergeCommit = mergeOptionalCommit.orElse(null);
+        Commit mergeCommit = Optional.ofNullable(commits)
+                                .orElseGet(Collections::emptyList).stream()
+                                .filter(c -> Objects.equals(c.getScmRevisionNumber(), pr.getScmRevisionNumber()))
+                                .findFirst().orElse(null);
 
         if (mergeCommit == null) {
-            mergeOptionalCommit = commits.stream().filter(c -> Objects.equals(c.getScmRevisionNumber(), pr.getScmMergeEventRevisionNumber())).findFirst();
-            mergeCommit = mergeOptionalCommit.orElse(null);
+            mergeCommit = Optional.ofNullable(commits)
+                            .orElseGet(Collections::emptyList).stream()
+                            .filter(c -> Objects.equals(c.getScmRevisionNumber(), pr.getScmMergeEventRevisionNumber()))
+                            .findFirst().orElse(null);
         }
 
         CodeReviewAuditResponseV2.PullRequestAudit pullRequestAudit = new CodeReviewAuditResponseV2.PullRequestAudit();
@@ -244,25 +264,35 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
 
     protected boolean existsApprovedPRForCollectorItem(CollectorItem repoItem, Commit commit, CollectorItem collectorItem,
                                                        long beginDt, long endDt) {
-        List<GitRequest> mergedPullRequests = gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(collectorItem.getId(), beginDt-1, endDt+1);
+        List<GitRequest> mergedPullRequests
+                = gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(collectorItem.getId(), beginDt-1, endDt+1);
 
-        if (CollectionUtils.isEmpty(mergedPullRequests)) { return false; }
+        List<Commit> commits
+                = commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(collectorItem.getId(), beginDt-1, endDt+1);
 
-        List<Commit> commits = commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(collectorItem.getId(), beginDt-1, endDt+1);
+        GitRequest mergedPullRequestFound
+                = Optional.ofNullable(mergedPullRequests)
+                .orElseGet(Collections::emptyList).stream()
+                .filter(mergedPullRequest -> evaluateMergedPullRequest(repoItem, mergedPullRequest, commit, commits))
+                .findFirst().orElse(null);
 
-        for (GitRequest mergedPullRequest: mergedPullRequests) {
-            Commit matchingCommit = findAMatchingCommit(mergedPullRequest, commit, commits);
+        return (mergedPullRequestFound != null);
+    }
 
-            if (matchingCommit != null) {
-                List<String> allPrCommitShas = new ArrayList<>();
-                CodeReviewAuditResponseV2 reviewAuditResponseV2 = new CodeReviewAuditResponseV2();
+    private boolean evaluateMergedPullRequest (CollectorItem repoItem, GitRequest mergedPullRequest,
+                                               Commit commit, List<Commit> commits) {
+        Commit matchingCommit = findAMatchingCommit(mergedPullRequest, commit, commits);
+        if (matchingCommit == null) { return false; }
 
-                // Matching commit found, now make sure the PR for the matching commit passes all the audit checks
-                auditPullRequest(repoItem, mergedPullRequest, commits, allPrCommitShas, reviewAuditResponseV2);
-                CodeReviewAuditResponseV2.PullRequestAudit pullRequestAudit = reviewAuditResponseV2.getPullRequests().get(0);
-                if ((pullRequestAudit != null)
-                        && codeReviewAuditResponseCheck(pullRequestAudit)) {return true;}
-            }
+        List<String> allPrCommitShas = new ArrayList<>();
+        CodeReviewAuditResponseV2 reviewAuditResponseV2 = new CodeReviewAuditResponseV2();
+
+        // Matching commit found, now make sure the PR for the matching commit passes all the audit checks
+        auditPullRequest(repoItem, mergedPullRequest, commits, allPrCommitShas, reviewAuditResponseV2);
+        CodeReviewAuditResponseV2.PullRequestAudit pullRequestAudit = reviewAuditResponseV2.getPullRequests().get(0);
+
+        if ((pullRequestAudit != null) && codeReviewAuditResponseCheck(pullRequestAudit)) {
+            return true;
         }
 
         return false;
@@ -282,21 +312,23 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
         List<Commit> commitsRelatedToPr = mergedPullRequest.getCommits();
 
         // So, will find the matching commit based on the criteria below for "Merge Only" case.
-        Commit matchingCommit = Optional.ofNullable(commitsRelatedToPr)
-                .orElseGet(Collections::emptyList).stream()
-                .filter(commitRelatedToPr -> checkIfCommitsMatch(commitRelatedToPr, commitToBeFound))
-                .findFirst().orElse(null);
+        Commit matchingCommit
+                = Optional.ofNullable(commitsRelatedToPr)
+                    .orElseGet(Collections::emptyList).stream()
+                    .filter(commitRelatedToPr -> checkIfCommitsMatch(commitRelatedToPr, commitToBeFound))
+                    .findFirst().orElse(null);
         // For "Squash and Merge", or a "Rebase and Merge":
         // The merged commit will not be part of the commits in the PR.
         // The PR will only have the original commits when the PR was opened.
         // Search for the commit in the list of commits on the repo in the db
         if (matchingCommit == null) {
             String pullNumber = mergedPullRequest.getNumber();
-            matchingCommit = Optional.ofNullable(commitsOnTheRepo)
-                    .orElseGet(Collections::emptyList).stream()
-                    .filter(commitOnRepo -> Objects.equals(pullNumber, commitToBeFound.getPullNumber())
+            matchingCommit
+                    = Optional.ofNullable(commitsOnTheRepo)
+                        .orElseGet(Collections::emptyList).stream()
+                        .filter(commitOnRepo -> Objects.equals(pullNumber, commitToBeFound.getPullNumber())
                             && checkIfCommitsMatch(commitOnRepo, commitToBeFound))
-                    .findFirst().orElse(null);
+                        .findFirst().orElse(null);
         }
 
         return matchingCommit;

@@ -2,7 +2,6 @@ package com.capitalone.dashboard.evaluator;
 
 import com.capitalone.dashboard.ApiSettings;
 import com.capitalone.dashboard.common.CommonCodeReview;
-import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.CommitType;
@@ -138,19 +137,11 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
         CodeReviewAuditResponse codeReviewAuditResponse = new CodeReviewAuditResponse();
         List<Commit> commitsNotDirectlyTiedToPr = new ArrayList<>();
         commits.forEach(commit -> {
-            boolean partialDirectCommitsCondition = false;
-            if ( (!allPrCommitShas.contains(commit.getScmRevisionNumber()))
-                    && (commit.getType() == CommitType.New)
-                    && (!mergeCommitShas.contains(commit.getScmRevisionNumber())) ) {
-                partialDirectCommitsCondition = true;
-            }
 
-            if ( (repoItem.isPushed()
-                    && partialDirectCommitsCondition
-                    && !existsApprovedPROnAnotherBranch(repoItem, commit, collectorItemList, beginDt, endDt))
-                 || (!repoItem.isPushed()
-                        && partialDirectCommitsCondition
-                        && StringUtils.isEmpty(commit.getPullNumber())) ) {
+            if (!checkPrCommitsAndMergeCommits(allPrCommitShas, commit, mergeCommitShas)) { return; }
+
+            if (isCommitEligibleForDirectCommitsForPushedRepo(repoItem, commit, collectorItemList, beginDt, endDt)
+                 || isCommitEligibleForDirectCommitsForPulledRepo(repoItem, commit)) {
                 commitsNotDirectlyTiedToPr.add(commit);
                 // auditServiceAccountChecks includes - check for service account and increment version tag for service account on direct commits.
                 auditServiceAccountChecks(codeReviewAuditResponse, commit);
@@ -179,18 +170,50 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
         return allPeerReviews;
     }
 
+    private boolean checkPrCommitsAndMergeCommits(List<String> allPrCommitShas, Commit commit, List<String> mergeCommitShas) {
+        if ( (!allPrCommitShas.contains(commit.getScmRevisionNumber()))
+                && (commit.getType() == CommitType.New)
+                && (!mergeCommitShas.contains(commit.getScmRevisionNumber())) ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean isCommitEligibleForDirectCommitsForPushedRepo(CollectorItem repoItem, Commit commit,
+                                                                  List<CollectorItem> collectorItemList,
+                                                                  long beginDt, long endDt) {
+        if (repoItem.isPushed()
+                && !existsApprovedPROnAnotherBranch(repoItem, commit, collectorItemList, beginDt, endDt)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isCommitEligibleForDirectCommitsForPulledRepo(CollectorItem repoItem, Commit commit) {
+        if (!repoItem.isPushed() && StringUtils.isEmpty(commit.getPullNumber())) {
+            return true;
+        }
+        return false;
+    }
+
     protected void auditPullRequest(CollectorItem repoItem, GitRequest pr, List<Commit> commits,
                                     List<String> mergeCommitShas, List<String> allPrCommitShas,
                                     List<CodeReviewAuditResponse> allPeerReviews) {
         CodeReviewAuditResponse codeReviewAuditResponse = new CodeReviewAuditResponse();
         codeReviewAuditResponse.setPullRequest(pr);
         String mergeSha = pr.getScmRevisionNumber();
-        Optional<Commit> mergeOptionalCommit = commits.stream().filter(c -> Objects.equals(c.getScmRevisionNumber(), mergeSha)).findFirst();
-        Commit mergeCommit = mergeOptionalCommit.orElse(null);
+
+        Commit mergeCommit = Optional.ofNullable(commits)
+                                .orElseGet(Collections::emptyList).stream()
+                                .filter(c -> Objects.equals(c.getScmRevisionNumber(), mergeSha))
+                                .findFirst().orElse(null);
 
         if (mergeCommit == null) {
-            mergeOptionalCommit = commits.stream().filter(c -> Objects.equals(c.getScmRevisionNumber(), pr.getScmMergeEventRevisionNumber())).findFirst();
-            mergeCommit = mergeOptionalCommit.orElse(null);
+            mergeCommit = Optional.ofNullable(commits)
+                            .orElseGet(Collections::emptyList).stream()
+                            .filter(c -> Objects.equals(c.getScmRevisionNumber(), pr.getScmMergeEventRevisionNumber()))
+                            .findFirst().orElse(null);
         }
 
         List<Commit> commitsRelatedToPr = pr.getCommits();
@@ -231,27 +254,36 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
 
     protected boolean existsApprovedPRForCollectorItem(CollectorItem repoItem, Commit commit, CollectorItem collectorItem,
                                                        long beginDt, long endDt) {
-        List<GitRequest> mergedPullRequests = gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(collectorItem.getId(), beginDt-1, endDt+1);
+        List<GitRequest> mergedPullRequests
+                = gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(collectorItem.getId(), beginDt-1, endDt+1);
 
         if (CollectionUtils.isEmpty(mergedPullRequests)) { return false; }
 
-        List<Commit> commits = commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(collectorItem.getId(), beginDt-1, endDt+1);
+        List<Commit> commits
+                = commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(collectorItem.getId(), beginDt-1, endDt+1);
 
-        for (GitRequest mergedPullRequest: mergedPullRequests) {
-            Commit matchingCommit = findAMatchingCommit(mergedPullRequest, commit, commits);
+        GitRequest mergedPullRequestFound
+                = Optional.ofNullable(mergedPullRequests)
+                    .orElseGet(Collections::emptyList).stream()
+                    .filter(mergedPullRequest -> evaluateMergedPullRequest(repoItem, mergedPullRequest, commit, commits))
+                    .findFirst().orElse(null);
 
-            if (matchingCommit != null) {
-                List<String> allPrCommitShas = new ArrayList<>();
-                List<String> mergeCommitShas = new ArrayList<>();
-                List<CodeReviewAuditResponse> allPeerReviews = new ArrayList<>();
+        return (mergedPullRequestFound != null);
+    }
 
-                // Matching commit found, now make sure the PR for the matching commit passes all the audit checks
-                auditPullRequest(repoItem, mergedPullRequest, commits, mergeCommitShas, allPrCommitShas, allPeerReviews);
-                CodeReviewAuditResponse codeReviewAuditResponse = allPeerReviews.get(0);
-                if ((codeReviewAuditResponse != null)
-                        && codeReviewAuditResponseCheck(codeReviewAuditResponse)) {return true;}
-            }
-        }
+    private boolean evaluateMergedPullRequest (CollectorItem repoItem, GitRequest mergedPullRequest,
+                                               Commit commit, List<Commit> commits) {
+        Commit matchingCommit = findAMatchingCommit(mergedPullRequest, commit, commits);
+        if (matchingCommit == null) { return false; }
+
+        List<String> allPrCommitShas = new ArrayList<>();
+        List<String> mergeCommitShas = new ArrayList<>();
+        List<CodeReviewAuditResponse> allPeerReviews = new ArrayList<>();
+        auditPullRequest(repoItem, mergedPullRequest, commits, mergeCommitShas, allPrCommitShas, allPeerReviews);
+        CodeReviewAuditResponse codeReviewAuditResponse = allPeerReviews.get(0);
+
+        if ((codeReviewAuditResponse != null)
+                && codeReviewAuditResponseCheck(codeReviewAuditResponse)) { return true; }
 
         return false;
     }
@@ -270,10 +302,12 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
         List<Commit> commitsRelatedToPr = mergedPullRequest.getCommits();
 
         // So, will find the matching commit based on the criteria below for "Merge Only" case.
-        Commit matchingCommit = Optional.ofNullable(commitsRelatedToPr)
-                .orElseGet(Collections::emptyList).stream()
-                .filter(commitRelatedToPr -> checkIfCommitsMatch(commitRelatedToPr, commitToBeFound))
-                .findFirst().orElse(null);
+        Commit matchingCommit
+                = Optional.ofNullable(commitsRelatedToPr)
+                    .orElseGet(Collections::emptyList).stream()
+                    .filter(commitRelatedToPr -> checkIfCommitsMatch(commitRelatedToPr, commitToBeFound))
+                    .findFirst().orElse(null);
+
         // For "Squash and Merge", or a "Rebase and Merge":
         // The merged commit will not be part of the commits in the PR.
         // The PR will only have the original commits when the PR was opened.
@@ -281,10 +315,10 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
         if (matchingCommit == null) {
             String pullNumber = mergedPullRequest.getNumber();
             matchingCommit = Optional.ofNullable(commitsOnTheRepo)
-                    .orElseGet(Collections::emptyList).stream()
-                    .filter(commitOnRepo -> Objects.equals(pullNumber, commitToBeFound.getPullNumber())
-                            && checkIfCommitsMatch(commitOnRepo, commitToBeFound))
-                    .findFirst().orElse(null);
+                            .orElseGet(Collections::emptyList).stream()
+                            .filter(commitOnRepo -> Objects.equals(pullNumber, commitToBeFound.getPullNumber())
+                                                    && checkIfCommitsMatch(commitOnRepo, commitToBeFound))
+                            .findFirst().orElse(null);
         }
 
         return matchingCommit;
