@@ -270,14 +270,9 @@ public class GitHubPullRequestV3 extends GitHubV3 {
                 collectorItemRepository.save(collectorItem);
             }
         } else {
-            CollectorItem collectorItem = null;
             GitHubParsed gitHubParsed = new GitHubParsed(pull.getScmUrl());
-            try {
-                collectorItem = getCollectorItem(gitHubParsed.getUrl(), pull.getScmBranch());
-                pull.setCollectorItemId(collectorItem.getId());
-            } catch (HygieiaException e) {
-                LOG.error(e);
-            }
+            CollectorItem collectorItem = getCollectorItem(gitHubParsed.getUrl(), pull.getScmBranch());
+            pull.setCollectorItemId(collectorItem.getId());
         }
 
         long end = System.currentTimeMillis();

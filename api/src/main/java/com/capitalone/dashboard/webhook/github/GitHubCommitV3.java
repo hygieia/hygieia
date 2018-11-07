@@ -253,14 +253,9 @@ public class GitHubCommitV3 extends GitHubV3 {
                 collectorItemRepository.save(collectorItem);
             }
         } else {
-            CollectorItem collectorItem = null;
             GitHubParsed gitHubParsed = new GitHubParsed(commit.getScmUrl());
-            try {
-                collectorItem = getCollectorItem(gitHubParsed.getUrl(), commit.getScmBranch());
-                commit.setCollectorItemId(collectorItem.getId());
-            } catch (HygieiaException e) {
-                LOG.error(e);
-            }
+            CollectorItem collectorItem = getCollectorItem(gitHubParsed.getUrl(), commit.getScmBranch());
+            commit.setCollectorItemId(collectorItem.getId());
         }
     }
 

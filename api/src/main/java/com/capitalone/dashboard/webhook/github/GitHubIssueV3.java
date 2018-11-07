@@ -9,8 +9,6 @@ import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.service.CollectorService;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 import org.json.simple.JSONObject;
 
@@ -18,8 +16,6 @@ import java.net.MalformedURLException;
 import java.util.Map;
 
 public class GitHubIssueV3 extends GitHubV3 {
-    private static final Log LOG = LogFactory.getLog(GitHubIssueV3.class);
-
     private final  GitRequestRepository gitRequestRepository;
     private final CollectorItemRepository collectorItemRepository;
 
@@ -65,7 +61,7 @@ public class GitHubIssueV3 extends GitHubV3 {
         return result;
     }
 
-    protected GitRequest getIssue(Map issueMap, GitHubParsed gitHubParsed, String branch) {
+    protected GitRequest getIssue(Map issueMap, GitHubParsed gitHubParsed, String branch) throws HygieiaException, MalformedURLException {
         if (issueMap.isEmpty()) { return null; }
 
         GitRequest issue = new GitRequest();
@@ -115,7 +111,7 @@ public class GitHubIssueV3 extends GitHubV3 {
         return issue;
     }
 
-    protected void setCollectorItemId(GitRequest issue) {
+    protected void setCollectorItemId(GitRequest issue) throws HygieiaException, MalformedURLException {
         GitRequest existingIssue
                 = gitRequestRepository.findByScmUrlIgnoreCaseAndScmBranchIgnoreCaseAndNumberAndRequestTypeIgnoreCase(issue.getScmUrl(), issue.getScmBranch(), issue.getNumber(), "issue");
         if (existingIssue != null) {
@@ -127,13 +123,9 @@ public class GitHubIssueV3 extends GitHubV3 {
                 collectorItemRepository.save(collectorItem);
             }
         } else {
-            CollectorItem collectorItem = null;
-            try {
-                collectorItem = getCollectorItem(issue.getScmUrl(), issue.getScmBranch());
-                issue.setCollectorItemId(collectorItem.getId());
-            } catch (HygieiaException e) {
-                LOG.error(e);
-            }
+            GitHubParsed gitHubParsed = new GitHubParsed(issue.getScmUrl());
+            CollectorItem collectorItem = getCollectorItem(gitHubParsed.getUrl(), issue.getScmBranch());
+            issue.setCollectorItemId(collectorItem.getId());
         }
     }
 }

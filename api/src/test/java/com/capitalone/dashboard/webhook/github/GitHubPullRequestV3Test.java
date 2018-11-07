@@ -154,6 +154,8 @@ public class GitHubPullRequestV3Test {
 
     @Test
     public void buildGitRequestFromPayloadTest() {
+        GitHubPullRequestV3 gitHubPullRequestV3 = Mockito.spy(this.gitHubPullRequestV3);
+
         String repoUrl = "https://hostName/orgName/repoName";
         String branch = "branch";
 
@@ -167,6 +169,10 @@ public class GitHubPullRequestV3Test {
         CollectorItem collectorItem = gitHubPullRequestV3.buildCollectorItem(new ObjectId(collectorId), repoUrl, branch);
         String collectorItemId = createGuid("0123456789abcdee");
         collectorItem.setId(new ObjectId(collectorItemId));
+
+        when(collectorService.createCollector(anyObject())).thenReturn(collector);
+        when(gitHubPullRequestV3.buildCollectorItem(anyObject(), anyString(), anyString())).thenReturn(collectorItem);
+        when(collectorService.createCollectorItem(anyObject())).thenReturn(collectorItem);
 
         GitRequest pull = null;
         try {
