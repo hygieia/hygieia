@@ -39,7 +39,7 @@ public class HygieiaArtifactPublishStep extends AbstractStepImpl {
 	private String artifactDirectory;
 	private String artifactGroup;
 	private String artifactVersion;
-	private String artifactStatus
+	private String artifactStatus;
 
 	public String getArtifactName() {
 		return artifactName;
