@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.model;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Base class to represent the details of a change in a source code management
@@ -59,7 +60,7 @@ public class SCM {
 
     public String getScmBranch() { return scmBranch; }
 
-    public void setScmBranch(String scmBranch) { this.scmBranch = scmBranch; }
+	public void setScmBranch(String scmBranch) { this.scmBranch = scmBranch; }
 
     public String getScmRevisionNumber() { return scmRevisionNumber; }
 
@@ -111,4 +112,23 @@ public class SCM {
     public String getScmCommitterLogin() { return scmCommitterLogin; }
 
     public void setScmCommitterLogin(String scmCommitterLogin) { this.scmCommitterLogin = scmCommitterLogin; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SCM)) return false;
+        SCM scm = (SCM) o;
+        return getScmCommitTimestamp() == scm.getScmCommitTimestamp() &&
+                Objects.equals(getScmUrl(), scm.getScmUrl()) &&
+                Objects.equals(getScmBranch(), scm.getScmBranch()) &&
+                Objects.equals(getScmRevisionNumber(), scm.getScmRevisionNumber()) &&
+                Objects.equals(getScmCommitLog(), scm.getScmCommitLog()) &&
+                Objects.equals(getScmAuthor(), scm.getScmAuthor()) &&
+                Objects.equals(getScmAuthorLogin(), scm.getScmAuthorLogin());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getScmUrl(), getScmBranch(), getScmRevisionNumber(), getScmCommitLog(), getScmAuthor(), getScmAuthorLogin(), getScmCommitTimestamp());
+    }
 }

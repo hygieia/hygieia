@@ -182,6 +182,7 @@ public class NexusIQCollectorTask extends CollectorTask<NexusIQCollector> {
             }
             if (appUpdated) {
                 app.setLastUpdated(System.currentTimeMillis());
+                nexusIQApplicationRepository.save(app);
             }
 
         }

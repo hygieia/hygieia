@@ -1,14 +1,27 @@
 package com.capitalone.dashboard.service;
 
+import com.capitalone.dashboard.settings.ApiSettings;
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.Build;
+import com.capitalone.dashboard.model.BuildStatus;
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.model.QBuild;
+import com.capitalone.dashboard.model.RepoBranch;
 import com.capitalone.dashboard.repository.BuildRepository;
+import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.BuildSearchRequest;
 import com.capitalone.dashboard.request.CollectorRequest;
+import com.capitalone.dashboard.response.BuildDataCreateResponse;
 import com.mysema.query.BooleanBuilder;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +29,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 public class BuildServiceImpl implements BuildService {
@@ -25,17 +47,27 @@ public class BuildServiceImpl implements BuildService {
     private final ComponentRepository componentRepository;
     private final CollectorRepository collectorRepository;
     private final CollectorService collectorService;
+    private final DashboardService dashboardService;
+    private final CollectorItemRepository collectorItemRepository;
 
+    @Autowired
+    private ApiSettings settings;
 
     @Autowired
     public BuildServiceImpl(BuildRepository buildRepository,
                             ComponentRepository componentRepository,
                             CollectorRepository collectorRepository,
-                            CollectorService collectorService) {
+                            CollectorService collectorService,
+                            DashboardService dashboardService,
+                            CollectorItemRepository collectorItemRepository,
+                            ApiSettings settings) {
         this.buildRepository = buildRepository;
         this.componentRepository = componentRepository;
         this.collectorRepository = collectorRepository;
         this.collectorService = collectorService;
+        this.dashboardService = dashboardService;
+        this.collectorItemRepository = collectorItemRepository;
+        this.settings = settings;
     }
 
     @Override
@@ -122,6 +154,41 @@ public class BuildServiceImpl implements BuildService {
     public String createV2(BuildDataCreateRequest request) throws HygieiaException {
         Build build = createBuild(request);
         return String.format("%s,%s", build.getId().toString(), build.getCollectorItemId().toString());
+    }
+
+    @Override
+    public BuildDataCreateResponse createV3(BuildDataCreateRequest request) throws HygieiaException {
+        BuildDataCreateResponse response = new BuildDataCreateResponse();
+        Build build = createBuild(request);
+        try {
+            org.apache.commons.beanutils.BeanUtils.copyProperties(response, build);
+        }
+        catch (IllegalAccessException | InvocationTargetException e) {
+            throw new HygieiaException(e);
+        }
+        finally {
+            if(settings.isLookupDashboardForBuildDataCreate()) {
+                populateDashboardId(response);
+            }
+        }
+        return response;
+    }
+
+    private void populateDashboardId(BuildDataCreateResponse response) {
+            if(response == null) return;
+
+            CollectorItem collectorItem = collectorItemRepository.findOne(response.getCollectorItemId());
+            if (collectorItem == null) return;
+
+            List<Dashboard> dashboards = dashboardService.getDashboardsByCollectorItems
+                    (Collections.singleton(collectorItem), CollectorType.Build);
+            /*
+            * retrieve the dashboardId only if 1 dashboard is associated for this collectorItem
+            * */
+            if(CollectionUtils.isNotEmpty(dashboards) && dashboards.size() == 1) {
+                response.setDashboardId(dashboards.iterator().next().getId());
+            }
+
     }
 
     private Collector createCollector() {
