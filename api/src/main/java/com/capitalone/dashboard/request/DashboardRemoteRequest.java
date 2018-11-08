@@ -156,6 +156,8 @@ public class DashboardRemoteRequest {
 
         boolean pushed = false;
 
+        String niceName;
+
         @NotEmpty
         Map<String, Object> options = new HashMap<>();
 
@@ -185,12 +187,17 @@ public class DashboardRemoteRequest {
             this.pushed = pushed;
         }
 
+        public String getNiceName() { return niceName; }
+
+        public void setNiceName(String niceName) { this.niceName = niceName; }
+
         public CollectorItem toCollectorItem(Collector collector) throws HygieiaException{
             if (options.keySet().containsAll(collector.getUniqueFields().keySet())) {
                 CollectorItem collectorItem = new CollectorItem();
                 collectorItem.setEnabled(true);
                 collectorItem.setPushed(isPushed());
                 collectorItem.setDescription(description);
+                collectorItem.setNiceName(niceName);
                 for (String key : options.keySet()) {
                     if (collector.getAllFields().keySet().contains(key)) {
                         collectorItem.getOptions().put(key, options.get(key));
