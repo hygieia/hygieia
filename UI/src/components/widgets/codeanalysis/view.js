@@ -137,7 +137,7 @@
                 }else{
                     calculatePercentage = knownComponentCount / totalComponentCount; 
                 }
-                if(libraryData.policyAlert !== null && libraryData.policyAlert !== undefined){
+                if(libraryData.policyAlert.length>0 && !angular.isUndefined(libraryData.policyAlert)){
                     if (libraryData.policyAlert[0].policycriticalCount !== null && libraryData.policyAlert[0].policycriticalCount !== undefined) {
                         criticalCountPolicy = libraryData.policyAlert[0].policycriticalCount;
                     }
