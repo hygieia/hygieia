@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.service;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.Set;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-import com.capitalone.dashboard.ApiSettings;
+import com.capitalone.dashboard.settings.ApiSettings;
 import com.capitalone.dashboard.model.BaseModel;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -62,6 +63,7 @@ public class DashboardServiceImpl implements DashboardService {
     private final ScoreDashboardService scoreDashboardService;
     private final CmdbService cmdbService;
     private final String UNDEFINED = "undefined";
+    private final static EnumSet<CollectorType> QualityWidget = EnumSet.of(CollectorType.Test , CollectorType.StaticSecurityScan, CollectorType.CodeQuality, CollectorType.LibraryPolicy);
 
     @Autowired
     private ApiSettings settings;
@@ -290,6 +292,24 @@ public class DashboardServiceImpl implements DashboardService {
                 }
                 // remove all collector items of a type
                 component.getCollectorItems().remove(collector.getCollectorType());
+
+
+            }
+        }
+
+        // If a collector type is within the code analysis widget, check to see if any of the remaining fields were passed values
+        if(incomingTypes.stream().anyMatch(QualityWidget::contains)){
+            if(!incomingTypes.contains(CollectorType.Test)){
+                component.getCollectorItems().remove(CollectorType.Test);
+            }
+            if(!incomingTypes.contains(CollectorType.StaticSecurityScan)){
+                component.getCollectorItems().remove(CollectorType.StaticSecurityScan);
+            }
+            if(!incomingTypes.contains(CollectorType.CodeQuality)){
+                component.getCollectorItems().remove(CollectorType.CodeQuality);
+            }
+            if(!incomingTypes.contains(CollectorType.LibraryPolicy)){
+                component.getCollectorItems().remove(CollectorType.LibraryPolicy);
             }
         }
 

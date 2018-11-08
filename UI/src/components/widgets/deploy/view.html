@@ -1,6 +1,6 @@
 <div class="deploy-view">
     <table class="table">
-        <tr class="dash-row clickable" ng-repeat="environment in deployView.environments" ng-click="deployView.showDetail(environment)">
+        <tr class="dash-row clickable" ng-repeat="environment in deployView.environments | orderBy:['name']" ng-click="deployView.showDetail(environment)">
             <td>
                 <span
                         dash-status="{{environment.failedComponents > 0 ? 
@@ -12,7 +12,7 @@
                 {{environment.name}}
             </td>
             <td class="text-standard-date">
-                {{environment.lastUpdated | fromNow}}
+                {{environment.lastUpdated | date:'MMM d, yyyy'}}
             </td>
             <td class="server-count" ng-class="{'servers-up' : environment.serverUpCount > 0}">
                 {{environment.serverUpCount}}
