@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class CollectorServiceImpl implements CollectorService {
@@ -122,8 +121,11 @@ public class CollectorServiceImpl implements CollectorService {
     }
 
     @Override
-    public CollectorItem getCollectorItem(ObjectId id) {
+    public CollectorItem getCollectorItem(ObjectId id) throws HygieiaException {
         CollectorItem item = collectorItemRepository.findOne(id);
+        if(item == null){
+            throw new HygieiaException("Failed to find collectorItem by Id.", HygieiaException.BAD_DATA);
+        }
         item.setCollector(collectorRepository.findOne(item.getCollectorId()));
         return item;
     }
