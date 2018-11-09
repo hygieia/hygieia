@@ -12,7 +12,7 @@
                 </div>
 
                 <div class="col-md-3 last-updated">
-                    <span>{{::detail.environment.lastUpdated | date:'MMM d, HH:mm:ss'}}</span>
+                    <span>{{::detail.environment.lastUpdated | date:'MMM d, yyyy HH:mm:ss'}}</span>
                 </div>
 
                 <div class="col-md-2 server-count">
@@ -36,13 +36,14 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th colspan="2">Component</th>
+                        <th></th>
+                        <th>Component</th>
                         <th>Time</th>
                         <th>Version</th>
                         <th colspan="2">Resource</th>
                     </tr>
                 </thead>
-                <tbody ng-repeat="unit in detail.environment.units | orderBy:['deployed', 'name'] track by $index">
+                <tbody ng-repeat="unit in detail.environment.units | orderBy:['-lastUpdated', 'name'] track by $index">
                     <tr ng-repeat="server in unit.servers | orderBy:['online', 'name'] track by $index">
                         <td dash-status="{{unit.deployed? detail.statuses.PASS : (detail.environment.ignoreFailure? detail.statuses.IGNORE : detail.statuses.FAIL)}}"></td>
                         <td ng-if="unit.jobUrl">
@@ -51,14 +52,13 @@
                             </a>
                         </td>
                         <td ng-if="!unit.jobUrl">{{::unit.name}}</td>
-                        <td>{{::unit.lastUpdated | date:'MMM d, HH:mm:ss'}}</td>
+                        <td>{{::unit.lastUpdated | date:'MMM d, yyyy HH:mm:ss'}}</td>
                         <td>{{::unit.version}}</td>
                         <td>{{::server.name}}</td>
                         <td ng-show="server.online" class="servers-up"><span class="fa fa-arrow-up"></span></td>
                         <td ng-hide="server.online" class="servers-down"><span class="fa fa-arrow-down"></span></td>
                     </tr>
                     <tr ng-if="!unit.servers || unit.servers.length === 0">
-                        <td dash-status="{{unit.deployed}}"></td>
                         <td dash-status="{{unit.deployed? detail.statuses.PASS : (detail.environment.ignoreFailure? detail.statuses.IGNORE : detail.statuses.FAIL)}}"></td>
                         <td ng-if="unit.jobUrl">
                             <a ng-href="{{::unit.jobUrl}}" target="_blank">
@@ -66,7 +66,7 @@
                             </a>
                         </td>
                         <td ng-if="!unit.jobUrl">{{::unit.name}}</td>
-                        <td>{{::unit.lastUpdated | date:'MMM d, HH:mm:ss'}}</td>
+                        <td>{{::unit.lastUpdated | date:'MMM d, yyyy HH:mm:ss'}}</td>
                         <td>{{::unit.version}}</td>
                         <td colspan="2">N/A</td>
                     </tr>
