@@ -1,0 +1,75 @@
+[
+  {
+    "id": "5ba51c320be2d3f98f795044",
+    "_class": "com.capitalone.dashboard.model.Build",
+    "collectorItemId": "5ba136220be2d32568777fa5",
+    "timestamp": 1537547314372,
+    "number": "148",
+    "buildUrl": "http://localhost:8082/job/c1usercheck/148/",
+    "startTime": 1537547300387,
+    "endTime": 1537547314338,
+    "duration": 13951,
+    "buildStatus": "Success",
+    "codeRepos": [
+      {
+        "url": "https://mygithub.com/myOrg/myRepo",
+        "branch": "refs/remotes/origin/master",
+        "type": "GIT"
+      }
+    ],
+    "sourceChangeSet": []
+  },
+  {
+    "id": "5ba51d120be2d3f98f79504c",
+    "_class": "com.capitalone.dashboard.model.Build",
+    "collectorItemId": "5ba136220be2d32568777fa5",
+    "timestamp": 1537547538123,
+    "number": "149",
+    "buildUrl": "http://localhost:8082/job/c1usercheck/149/",
+    "startTime": 1537547525358,
+    "endTime": 1537547538098,
+    "duration": 12740,
+    "buildStatus": "Success",
+    "codeRepos": [
+      {
+        "url": "https://mygithub.com/myOrg/myRepo",
+        "branch": "refs/remotes/origin/master",
+        "type": "GIT"
+      }
+    ],
+    "sourceChangeSet": []
+  },
+  {
+    "id": "5ba520c40be2d3f98f795054",
+    "_class": "com.capitalone.dashboard.model.Build",
+    "collectorItemId": "5ba136220be2d32568777fa5",
+    "timestamp": 1537548484349,
+    "number": "150",
+    "buildUrl": "http://localhost:8082/job/c1usercheck/150/",
+    "startTime": 1537548473383,
+    "endTime": 1537548484312,
+    "duration": 10929,
+    "buildStatus": "Success",
+    "codeRepos": [
+      {
+        "url": "https://mygithub.com/myOrg/myRepo",
+        "branch": "refs/remotes/origin/master",
+        "type": "GIT"
+      }
+    ],
+    "sourceChangeSet": []
+  },
+  {
+    "id": "5ba520c40be2d3f98f795055",
+    "_class": "com.capitalone.dashboard.model.Build",
+    "collectorItemId": "5ba136220be2d32568777fa5",
+    "timestamp": 1537548484349,
+    "number": "151",
+    "buildUrl": "http://localhost:8082/job/c1usercheck/151/",
+    "startTime": 1537548473383,
+    "endTime": 1537548484312,
+    "duration": 10929,
+    "buildStatus": "Success",
+    "sourceChangeSet": []
+  }
+]

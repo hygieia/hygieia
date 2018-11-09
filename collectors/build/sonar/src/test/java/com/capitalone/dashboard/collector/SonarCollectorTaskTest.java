@@ -52,6 +52,8 @@ public class SonarCollectorTaskTest {
     private static final Double VERSION43 = 4.3;
     private static final Double VERSION54 = 5.4;
     private static final Double VERSION63 = 6.3;
+    private static final String NICENAME1 = "niceName1";
+    private static final String NICENAME2 = "niceName2";
     private static final String QUALITYPROFILE = "cs-default-donotmodify-89073";
     private JSONArray qualityProfiles = new JSONArray();
     private JSONArray profileConfigurationChanges = new JSONArray();                                                           
@@ -149,11 +151,11 @@ public class SonarCollectorTaskTest {
     }
 
     private SonarCollector collectorWithOneServer(Double version) {
-        return SonarCollector.prototype(Collections.singletonList(SERVER1), Collections.singletonList(version), Collections.singletonList(METRICS1));
+        return SonarCollector.prototype(Collections.singletonList(SERVER1), Collections.singletonList(version), Collections.singletonList(METRICS1),Collections.singletonList(NICENAME1));
     }
 
     private SonarCollector collectorWithOnTwoServers(Double version1, Double version2) {
-        return SonarCollector.prototype(Arrays.asList(SERVER1, SERVER2), Arrays.asList(version1, version2), Arrays.asList(METRICS1,METRICS2));
+        return SonarCollector.prototype(Arrays.asList(SERVER1, SERVER2), Arrays.asList(version1, version2), Arrays.asList(METRICS1,METRICS2),Arrays.asList(NICENAME1,NICENAME2));
     }
 
 }

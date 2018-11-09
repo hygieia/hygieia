@@ -1,8 +1,8 @@
 package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.CodeQuality;
-import com.capitalone.dashboard.model.CollectorItemConfigHistory;
 import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorItemConfigHistory;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.ConfigHistOperationType;
 import com.capitalone.dashboard.model.SonarCollector;
@@ -14,17 +14,18 @@ import com.capitalone.dashboard.repository.SonarCollectorRepository;
 import com.capitalone.dashboard.repository.SonarProfileRepostory;
 import com.capitalone.dashboard.repository.SonarProjectRepository;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,7 +68,7 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
 
     @Override
     public SonarCollector getCollector() {
-        return SonarCollector.prototype(sonarSettings.getServers(), sonarSettings.getVersions(), sonarSettings.getMetrics());
+        return SonarCollector.prototype(sonarSettings.getServers(), sonarSettings.getVersions(), sonarSettings.getMetrics(),sonarSettings.getNiceNames());
     }
 
     @Override
@@ -190,6 +191,8 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
         for (SonarProject project : sonarProjects) {
             CodeQuality codeQuality = sonarClient.currentCodeQuality(project, metrics);
             if (codeQuality != null && isNewQualityData(project, codeQuality)) {
+                project.setLastUpdated(System.currentTimeMillis());
+                sonarProjectRepository.save(project);
                 codeQuality.setCollectorItemId(project.getId());
                 codeQualityRepository.save(codeQuality);
                 count++;
@@ -257,20 +260,48 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
         long start = System.currentTimeMillis();
         int count = 0;
         List<SonarProject> newProjects = new ArrayList<>();
+        List<SonarProject> updateProjects = new ArrayList<>();
         for (SonarProject project : projects) {
+            String niceName = getNiceName(project,collector);
             if (!existingProjects.contains(project)) {
                 project.setCollectorId(collector.getId());
                 project.setEnabled(false);
                 project.setDescription(project.getProjectName());
+                project.setNiceName(niceName);
                 newProjects.add(project);
                 count++;
+            }else{
+                int index = existingProjects.indexOf(project);
+                SonarProject s = existingProjects.get(index);
+                if(StringUtils.isEmpty(s.getNiceName())){
+                    s.setNiceName(niceName);
+                    updateProjects.add(s);
+                }
             }
         }
         //save all in one shot
         if (!CollectionUtils.isEmpty(newProjects)) {
             sonarProjectRepository.save(newProjects);
         }
+        if (!CollectionUtils.isEmpty(updateProjects)) {
+            sonarProjectRepository.save(updateProjects);
+        }
         log("New projects", start, count);
+    }
+
+    private String getNiceName(SonarProject project, SonarCollector sonarCollector){
+
+        if (org.springframework.util.CollectionUtils.isEmpty(sonarCollector.getSonarServers())) return "";
+        List<String> servers = sonarCollector.getSonarServers();
+        List<String> niceNames = sonarCollector.getNiceNames();
+        if (org.springframework.util.CollectionUtils.isEmpty(niceNames)) return "";
+        for (int i = 0; i < servers.size(); i++) {
+            if (servers.get(i).equalsIgnoreCase(project.getInstanceUrl()) && (niceNames.size() > i)) {
+                return niceNames.get(i);
+            }
+        }
+        return "";
+
     }
 
     @SuppressWarnings("unused")

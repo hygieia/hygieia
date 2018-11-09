@@ -160,4 +160,9 @@ public class TestSuite {
     public Collection<TestCase> getTestCases() {
         return testCases;
     }
+
+    public void setTestCases(Collection<TestCase> testCases) {
+        this.testCases = testCases;
+    }
+
 }

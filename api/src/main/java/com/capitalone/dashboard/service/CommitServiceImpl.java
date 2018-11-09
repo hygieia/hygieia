@@ -56,7 +56,7 @@ public class CommitServiceImpl implements CommitService {
         BooleanBuilder builder = new BooleanBuilder();
 
         Component component = componentRepository.findOne(request.getComponentId());
-        CollectorItem item = component.getFirstCollectorItemForType(CollectorType.SCM);
+        CollectorItem item = component.getLastUpdatedCollectorItemForType(CollectorType.SCM);
         if (item == null) {
             Iterable<Commit> results = new ArrayList<>();
             return new DataResponse<>(results, new Date().getTime());
@@ -130,8 +130,8 @@ public class CommitServiceImpl implements CommitService {
         private static final String REPO_URL = "url";
         private static final String BRANCH = "branch";
         private static final String SCM_TAG = "scm";
-        public static final String USER_ID = "userID";
-        public static final String PASSWORD = "password";
+        private static final String USER_ID = "userID";
+        private static final String PASSWORD = "password";
 
         private CollectorItem collectorItem;
         private Collector collector;

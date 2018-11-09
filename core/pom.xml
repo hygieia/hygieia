@@ -11,7 +11,7 @@
     <parent>
         <groupId>com.capitalone.dashboard</groupId>
         <artifactId>Hygieia</artifactId>
-        <version>2.0.5-SNAPSHOT</version>
+        <version>3.0.1</version>
     </parent>
 
     <properties>
@@ -94,11 +94,11 @@
             <artifactId>commons-codec</artifactId>
             <version>1.9</version>
         </dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.6</version>
-		</dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.6</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
@@ -114,12 +114,13 @@
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-mongodb</artifactId>
         </dependency>
-        
-	    <dependency>
-	        <groupId>org.springframework.cloud</groupId>
-	        <artifactId>spring-cloud-starter-config</artifactId>
-	        <version>${spring.cloud.version}</version>
-	    </dependency>
+
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
+            <version>${spring.cloud.version}</version>
+        </dependency>
 
         <!-- Query DSL -->
         <dependency>
@@ -139,16 +140,23 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-commons</artifactId>
+            <version>1.11.0.RELEASE</version>
+        </dependency>
+
+
+        <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
         </dependency>
 
         <!-- jasypt spring boot -->
-		<dependency>
-			<groupId>com.github.ulisesbocchio</groupId>
-			<artifactId>jasypt-spring-boot-starter</artifactId>
-			<version>1.9</version>
-		</dependency>
+        <dependency>
+            <groupId>com.github.ulisesbocchio</groupId>
+            <artifactId>jasypt-spring-boot-starter</artifactId>
+            <version>1.9</version>
+        </dependency>
 
         <!-- testing -->
         <dependency>
@@ -201,9 +209,14 @@
             <artifactId>mockito-all</artifactId>
             <version>1.10.19</version>
         </dependency>
-	<dependency>
-	    <groupId>joda-time</groupId>
+        <dependency>
+            <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
-	</dependency>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.1</version>
+        </dependency>
     </dependencies>
 </project>

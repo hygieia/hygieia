@@ -1,0 +1,28 @@
+{
+  "results": [
+    {
+      "repo": "repoName",
+      "path": "dummy/test-dev/1",
+      "name": "manifest.json",
+      "type": "file",
+      "size": 2830,
+      "created": "2018-10-11T14:27:16.031Z",
+      "created_by": "robot",
+      "modified": "2018-10-11T14:38:56.471Z",
+      "modified_by": "robot",
+      "updated": "2018-10-11T14:38:56.471Z",
+      "depth": 4,
+      "actual_md5": "111aadc11ed11b1111df111d16d6c8d821112f1",
+      "actual_sha1": "111aadc11ed11b1111df111d16d6c8d821112f1",
+      "original_md5": "NO_ORIG",
+      "original_sha1": "NO_ORIG",
+      "virtual_repos": [
+        "docker-managed"
+      ]
+    } ],
+"range" : {
+  "start_pos" : 0,
+  "end_pos" : 1,
+  "total" : 1
+}
+}

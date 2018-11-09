@@ -14,7 +14,7 @@
   <parent>
     <groupId>com.capitalone.dashboard</groupId>
     <artifactId>Hygieia</artifactId>
-    <version>2.0.5-SNAPSHOT</version>
+    <version>3.0.1</version>
     <relativePath>../../../</relativePath>
   </parent>
 
@@ -45,7 +45,7 @@
         <artifactId>docker-maven-plugin</artifactId>
         <configuration>
           <skipDockerBuild>false</skipDockerBuild>
-          <imageName>hygieia-github-scm-collector</imageName>
+          <imageName>hygieia-github-graphql-scm-collector</imageName>
           <dockerDirectory>${project.basedir}/docker</dockerDirectory>
           <resources>
             <resource>

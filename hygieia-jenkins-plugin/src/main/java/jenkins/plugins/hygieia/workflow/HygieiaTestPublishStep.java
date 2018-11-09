@@ -2,7 +2,6 @@ package jenkins.plugins.hygieia.workflow;
 
 import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.TestSuiteType;
-import com.capitalone.dashboard.request.BinaryArtifactCreateRequest;
 import com.capitalone.dashboard.request.TestDataCreateRequest;
 import hudson.Extension;
 import hudson.FilePath;
@@ -10,7 +9,6 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-import hygieia.builder.ArtifactBuilder;
 import hygieia.builder.BuildBuilder;
 import hygieia.builder.CucumberTestBuilder;
 import hygieia.transformer.HygieiaConstants;
@@ -28,11 +26,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
-import javax.servlet.ServletException;
-import java.io.IOException;
-import java.util.Set;
 
 
 public class HygieiaTestPublishStep extends AbstractStepImpl {
@@ -126,7 +120,7 @@ public class HygieiaTestPublishStep extends AbstractStepImpl {
             return "Hygieia Test Publish Step";
         }
 
-        public FormValidation doCheckValue(@QueryParameter String value) throws IOException, ServletException {
+        public FormValidation doCheckValue(@QueryParameter String value) {
             if (value.isEmpty()) {
                 return FormValidation.warning("You must fill this box!");
             }
@@ -171,7 +165,7 @@ public class HygieiaTestPublishStep extends AbstractStepImpl {
 
         // This run MUST return a non-Void object, otherwise it will be executed three times!!!! No idea why
         @Override
-        protected Integer run() throws Exception {
+        protected Integer run() {
 
             //default to global config values if not set in step, but allow step to override all global settings
 

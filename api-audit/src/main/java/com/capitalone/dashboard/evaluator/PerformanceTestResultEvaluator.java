@@ -23,9 +23,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -60,13 +62,22 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
     private PerformanceTestAuditResponse getPerformanceTestAudit(CollectorItem perfItem, long beginDate, long endDate) {
 
         PerformanceTestAuditResponse perfReviewResponse = new PerformanceTestAuditResponse();
+        if (perfItem == null) {
+            perfReviewResponse.addAuditStatus(PerformanceTestAuditStatus.COLLECTOR_ITEM_ERROR);
+            return perfReviewResponse;
+        }
         List<TestResult> testResults = testResultRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(perfItem.getId(), beginDate-1, endDate+1);
         List<PerfTest> testlist = new ArrayList<>();
 
         for (TestResult testResult : testResults) {
             if (TestSuiteType.Performance.toString().equalsIgnoreCase(testResult.getType().name())) {
                 Collection<TestCapability> testCapabilities = testResult.getTestCapabilities();
-                for (TestCapability testCapability : testCapabilities) {
+
+                if(!CollectionUtils.isEmpty(testCapabilities)){
+                    Comparator<TestCapability> testCapabilityComparator = Comparator.comparing(TestCapability::getTimestamp);
+                    List<TestCapability> tc = new ArrayList<>(testCapabilities);
+                    Collections.sort(tc,testCapabilityComparator.reversed());
+                    TestCapability testCapability =  tc.get(0);
                     PerfTest test = new PerfTest();
                     List<PerfIndicators> kpilist = new ArrayList<>();
                     Collection<TestSuite> testSuites = testCapability.getTestSuites();
@@ -122,7 +133,7 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
                 testlist.sort(Comparator.comparing(PerfTest::getStartTime).reversed());
                 perfReviewResponse.setLastExecutionTime(testlist.get(0).getStartTime());
                 perfReviewResponse.setResult(testlist);
-                perfReviewResponse.addAuditStatus((int) testlist.stream().filter(list -> list.getResultStatus().matches("Success")).count() > 0 ?
+                perfReviewResponse.addAuditStatus((int) testlist.stream().filter(list -> Optional.ofNullable(list).isPresent() && Optional.ofNullable(list.getResultStatus()).isPresent() && list.getResultStatus().matches("Success")).count() > 0 ?
                         PerformanceTestAuditStatus.PERF_RESULT_AUDIT_OK : PerformanceTestAuditStatus.PERF_RESULT_AUDIT_FAIL);
             }
         }

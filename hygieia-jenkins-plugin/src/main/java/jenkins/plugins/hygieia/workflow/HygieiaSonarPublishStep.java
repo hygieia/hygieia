@@ -5,7 +5,6 @@ import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import hudson.Extension;
 import hudson.model.Run;
 import hudson.model.TaskListener;
-import hudson.util.ListBoxModel;
 import hygieia.builder.BuildBuilder;
 import hygieia.builder.SonarBuilder;
 import jenkins.model.Jenkins;
@@ -22,7 +21,6 @@ import org.json.simple.parser.ParseException;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -97,7 +95,7 @@ public class HygieiaSonarPublishStep extends AbstractStepImpl {
 
         // This run MUST return a non-Void object, otherwise it will be executed three times!!!! No idea why
         @Override
-        protected Integer run() throws Exception {
+        protected Integer run() {
 
             //default to global config values if not set in step, but allow step to override all global settings
 

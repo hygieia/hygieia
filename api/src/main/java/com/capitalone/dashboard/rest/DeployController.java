@@ -56,13 +56,22 @@ public class DeployController {
 
     @RequestMapping(value = "/deploy", method = POST,
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createBuild(@Valid @RequestBody DeployDataCreateRequest request) throws HygieiaException {
+    public ResponseEntity<String> createDeploy(@Valid @RequestBody DeployDataCreateRequest request) throws HygieiaException {
         String response = deployService.create(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
-    
+
+    @RequestMapping(value = "/v2/deploy", method = POST,
+            consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> createDeployV2(@Valid @RequestBody DeployDataCreateRequest request) throws HygieiaException {
+        String response = deployService.createV2(request);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
     @RequestMapping(value = "/deploy/rundeck", method = POST,
             consumes = TEXT_XML_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> createRundeckBuild(HttpServletRequest request,
@@ -81,4 +90,24 @@ public class DeployController {
                 .status(HttpStatus.CREATED)
                 .body(response);        
     }
+
+    @RequestMapping(value = "/v2/deploy/rundeck", method = POST,
+            consumes = TEXT_XML_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> createRundeckBuildV2(HttpServletRequest request,
+                                                     @RequestHeader("X-Rundeck-Notification-Execution-ID") String executionId,
+                                                     @RequestHeader("X-Rundeck-Notification-Trigger") String status) throws HygieiaException{
+        Document doc = null;
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            doc = builder.parse(new InputSource(request.getInputStream()));
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            throw new HygieiaException(e);
+        }
+        String response = deployService.createRundeckBuildV2(doc, request.getParameterMap(), executionId, status);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
 }

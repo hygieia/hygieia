@@ -2,6 +2,7 @@ package com.capitalone.dashboard.rest;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -9,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -23,6 +25,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -61,7 +64,7 @@ public class CodeQualityControllerTest {
 	@Test
 	public void staticQualities() throws Exception {
 		CodeQuality quality = makeCodeQualityStatic();
-		Iterable<CodeQuality> qualities = Arrays.asList(quality);
+		Iterable<CodeQuality> qualities = Collections.singletonList(quality);
 		DataResponse<Iterable<CodeQuality>> response = new DataResponse<>(
 				qualities, 1);
 		CodeQualityMetric metric = makeMetric();
@@ -100,7 +103,7 @@ public class CodeQualityControllerTest {
 	@Test
 	public void securityQualities() throws Exception {
 		CodeQuality quality = makeSecurityAnalysis();
-		Iterable<CodeQuality> qualities = Arrays.asList(quality);
+		Iterable<CodeQuality> qualities = Collections.singletonList(quality);
 		DataResponse<Iterable<CodeQuality>> response = new DataResponse<>(
 				qualities, 1);
 		CodeQualityMetric metric = makeMetric();
@@ -154,6 +157,20 @@ public class CodeQualityControllerTest {
 
     }
 
+	@Test
+	public void insertStaticAnalysisTest1_v2() throws Exception {
+		CodeQualityCreateRequest request = makeCodeQualityRequest();
+		@SuppressWarnings("unused")
+		byte[] content = TestUtil.convertObjectToJsonBytes(request);
+		when(codeQualityService.createV2(Matchers.any(CodeQualityCreateRequest.class))).thenReturn("123456");
+		MvcResult result = mockMvc.perform(post("/v2//quality/static-analysis")
+				.contentType(TestUtil.APPLICATION_JSON_UTF8)
+				.content(TestUtil.convertObjectToJsonBytes(request)))
+				.andExpect(status().isCreated()).andReturn();
+		String s = result.getResponse().getContentAsString();
+		assertEquals(s, "\"123456\"");
+	}
+
     @Test
     public void insertStaticAnalysisTest2() throws Exception {
         CodeQualityCreateRequest request = makeCodeQualityRequest();
@@ -167,6 +184,19 @@ public class CodeQualityControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+	@Test
+	public void insertStaticAnalysisTest2_v2() throws Exception {
+		CodeQualityCreateRequest request = makeCodeQualityRequest();
+		request.setProjectName(null);
+		@SuppressWarnings("unused")
+		byte[] content = TestUtil.convertObjectToJsonBytes(request);
+		when(codeQualityService.createV2(Matchers.any(CodeQualityCreateRequest.class))).thenReturn("1234");
+		mockMvc.perform(post("/v2/quality/static-analysis")
+				.contentType(TestUtil.APPLICATION_JSON_UTF8)
+				.content(TestUtil.convertObjectToJsonBytes(request)))
+				.andExpect(status().isBadRequest());
+	}
+
 
     @Test
     public void insertStaticAnalysisTest3() throws Exception {
@@ -179,6 +209,18 @@ public class CodeQualityControllerTest {
                 .content(TestUtil.convertObjectToJsonBytes(request)))
                 .andExpect(status().isInternalServerError());
     }
+
+	@Test
+	public void insertStaticAnalysisTest3_v2() throws Exception {
+		CodeQualityCreateRequest request = makeCodeQualityRequest();
+		@SuppressWarnings("unused")
+		byte[] content = TestUtil.convertObjectToJsonBytes(request);
+		when(codeQualityService.createV2(Matchers.any(CodeQualityCreateRequest.class))).thenThrow(new HygieiaException("This is bad", HygieiaException.COLLECTOR_CREATE_ERROR));
+		mockMvc.perform(post("/v2/quality/static-analysis")
+				.contentType(TestUtil.APPLICATION_JSON_UTF8)
+				.content(TestUtil.convertObjectToJsonBytes(request)))
+				.andExpect(status().isInternalServerError());
+	}
 
     private CodeQualityCreateRequest makeCodeQualityRequest() {
         CodeQualityCreateRequest quality = new CodeQualityCreateRequest();
