@@ -107,12 +107,10 @@ public class GitHubPullRequestV3 extends GitHubV3 {
             throw new HygieiaException("Failed processing payload. Missing Github API token in Hygieia.", HygieiaException.INVALID_CONFIGURATION);
         }
 
-        String decryptPersonalAccessToken = RestClient.decryptString(token, apiSettings.getKey());
-
         start = System.currentTimeMillis();
         ResponseEntity<String> response = null;
         try {
-            response = restClient.makeRestCallPost(gitHubParsed.getGraphQLUrl(), "token", decryptPersonalAccessToken, postBody);
+            response = restClient.makeRestCallPost(gitHubParsed.getGraphQLUrl(), "token", token, postBody);
         } catch (Exception e) {
             throw new HygieiaException(e);
         }
@@ -134,7 +132,7 @@ public class GitHubPullRequestV3 extends GitHubV3 {
 
         GitRequest pull = buildGitRequestFromPayload(repoUrl, branch, pullRequestObject);
 
-        updateGitRequestWithGraphQLData(pull, repoUrl, branch, prData, decryptPersonalAccessToken);
+        updateGitRequestWithGraphQLData(pull, repoUrl, branch, prData, token);
 
         gitRequestRepository.save(pull);
 
