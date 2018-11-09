@@ -32,4 +32,7 @@ public interface CmdbRepository extends CrudRepository<Cmdb, ObjectId>  {
 
     Cmdb findByConfigurationItemIgnoreCaseOrCommonNameIgnoreCase(String configurationItem, String commonName);
 
+    Cmdb findByItemTypeAndCommonNameContainingIgnoreCase(String type, String commonName);
+
+    Cmdb findByItemTypeAndConfigurationItemIgnoreCase(String type, String configurationItem);
 }

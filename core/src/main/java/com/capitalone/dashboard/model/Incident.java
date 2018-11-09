@@ -24,8 +24,36 @@ public class Incident extends BaseModel {
     private Long closedTime;
     private String closedBy;
     private String closureCode;
-    private String affectedItem;
     private String incidentDescription;
+    private String incidentSysID;
+
+    private String affectedItem;
+    private String affectedItemSysId;
+    private String affectedItemDisplayId;
+    private String affectedItemType;
+
+    private String affectedBusinessServiceItem;
+    private String affectedBusinessServiceItemSysId;
+    private String affectedBusinessServiceItemDisplayId;
+    private String affectedBusinessServiceItemType;
+
+    private boolean attachedToBusinessServiceOnly;
+
+    public String getAffectedItemType() { return affectedItemType; }
+
+    public void setAffectedItemType(String affectedItemType) { this.affectedItemType = affectedItemType; }
+
+    public String getAffectedBusinessServiceItemType() { return affectedBusinessServiceItemType; }
+
+    public void setAffectedBusinessServiceItemType(String affectedBusinessServiceItemType) {
+        this.affectedBusinessServiceItemType = affectedBusinessServiceItemType;
+    }
+
+    public boolean isAttachedToBusinessServiceOnly() { return attachedToBusinessServiceOnly; }
+
+    public void setAttachedToBusinessServiceOnly(boolean attachedToBusinessServiceOnly) {
+        this.attachedToBusinessServiceOnly = attachedToBusinessServiceOnly;
+    }
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
 
@@ -97,9 +125,33 @@ public class Incident extends BaseModel {
 
     public void setAffectedItem(String affectedItem) { this.affectedItem = affectedItem; }
 
+    public String getAffectedItemSysId() { return affectedItemSysId; }
+
+    public String getAffectedItemDisplayId() { return affectedItemDisplayId; }
+
+    public void setAffectedItemDisplayId(String affectedItemDisplayId) { this.affectedItemDisplayId = affectedItemDisplayId; }
+
+    public void setAffectedItemSysId(String affectedItemSysId) { this.affectedItemSysId = affectedItemSysId; }
+
     public String getIncidentDescription() { return incidentDescription; }
 
     public void setIncidentDescription(String incidentDescription) { this.incidentDescription = incidentDescription; }
+
+    public String getIncidentSysID() { return incidentSysID; }
+
+    public void setIncidentSysID(String incidentSysID) { this.incidentSysID = incidentSysID; }
+
+    public String getAffectedBusinessServiceItem() { return affectedBusinessServiceItem; }
+
+    public void setAffectedBusinessServiceItem(String affectedBusinessServiceItem) { this.affectedBusinessServiceItem = affectedBusinessServiceItem; }
+
+    public String getAffectedBusinessServiceItemSysId() { return affectedBusinessServiceItemSysId; }
+
+    public void setAffectedBusinessServiceItemSysId(String affectedBusinessServiceItemSysId) { this.affectedBusinessServiceItemSysId = affectedBusinessServiceItemSysId; }
+
+    public String getAffectedBusinessServiceItemDisplayId() { return affectedBusinessServiceItemDisplayId; }
+
+    public void setAffectedBusinessServiceItemDisplayId(String affectedBusinessServiceItemDisplayId) { this.affectedBusinessServiceItemDisplayId = affectedBusinessServiceItemDisplayId; }
 
     @Override
     public boolean equals(Object compareTo){
