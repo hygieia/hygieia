@@ -128,13 +128,11 @@ public class GitHubCommitV3 extends GitHubV3 {
             Object repoMap = restClient.getAsObject(cObj, "repository");
             boolean isPrivate = restClient.getBoolean(repoMap, "private");
             String repoToken = getRepositoryToken(gitHubParsed.getUrl());
-            String gitHubWebHookToken =  isPrivate ? repoToken : gitHubWebHookSettings.getToken();
+            String gitHubWebHookToken =  isPrivate ? RestClient.decryptString(repoToken, apiSettings.getKey()) : gitHubWebHookSettings.getToken();
 
             if (StringUtils.isEmpty(gitHubWebHookToken)) {
                 throw new HygieiaException("Failed processing payload. Missing Github API token in Hygieia.", HygieiaException.INVALID_CONFIGURATION);
             }
-
-            String decryptPersonalAccessToken = RestClient.decryptString(gitHubWebHookToken, apiSettings.getKey());
 
             Commit commit = new Commit();
 
@@ -156,7 +154,7 @@ public class GitHubCommitV3 extends GitHubV3 {
 
             commit.setScmCommitTimestamp(commitTimestamp.getMillis());
 
-            Object node = getCommitNode(gitHubParsed, branch, commitId, commitTimestampStepBack, decryptPersonalAccessToken);
+            Object node = getCommitNode(gitHubParsed, branch, commitId, commitTimestampStepBack, gitHubWebHookToken);
             if (node != null) {
                 List<String> parentShas = getParentShas(node);
                 commit.setScmParentRevisionNumbers(parentShas);
@@ -169,7 +167,7 @@ public class GitHubCommitV3 extends GitHubV3 {
                 commit.setScmAuthorLogin(authorLogin);
                 commit.setScmAuthorLDAPDN(senderLDAPDN);
                 if (!StringUtils.isEmpty(senderLDAPDN) && !senderLogin.equalsIgnoreCase(authorLogin)) {
-                    String authorLDAPDNFetched = StringUtils.isEmpty(authorLogin) ? null : getLDAPDN(repoUrl, authorLogin, decryptPersonalAccessToken);
+                    String authorLDAPDNFetched = StringUtils.isEmpty(authorLogin) ? null : getLDAPDN(repoUrl, authorLogin, gitHubWebHookToken);
                     commit.setScmAuthorLDAPDN(authorLDAPDNFetched);
                 }
 
