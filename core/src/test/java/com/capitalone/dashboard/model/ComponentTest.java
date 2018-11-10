@@ -138,6 +138,8 @@ public class ComponentTest {
         return c;
     }
 
+
+
     private Component createComponent(long lastUpdated) {
         Component component = new Component();
         component.getCollectorItems().put(CollectorType.SCM, new ArrayList(Collections.singleton(makeCollectorItem(lastUpdated))));

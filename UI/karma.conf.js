@@ -22,18 +22,37 @@ module.exports = function(config) {
       'bower_components/angular-sanitize/angular-sanitize.js',
       'bower_components/angular-bootstrap/ui-bootstrap.js',
       'bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
-      'src/app/dashboard/core/extensions/ng-fitText.js',
+      'bower_components/angular-ui-router/release/angular-ui-router.js',
       'bower_components/angular-chartist.js/dist/angular-chartist.js',
       'bower_components/angular-cookies/angular-cookies.js',
       'bower_components/angular-validation-match/src/angular-validation-match.js',
+      'bower_components/angular-ui-select/dist/select.js',
+      'bower_components/angular-jwt/dist/angular-jwt.js',
+      'bower_components/angular-utils-pagination/dirPagination.js',
+      'bower_components/angular-rateit/dist/ng-rateit.js',
       'bower_components/ng-sortable/dist/ng-sortable.js',
+      'bower_components/chart.js/dist/Chart.js',
+      'bower_components/chartist/dist/chartist.js',
+      'bower_components/angular-chart.js/dist/angular-chart.js',
+      'bower_components/moment/moment.js',
+      'bower_components/jquery/dist/jquery.js',
+      'bower_components/jquery-ui/jquery-ui.js',
+      'bower_components/lodash/lodash.js',
+      'bower_components/gridstack-angular/dist/gridstack-angular.js',
+      'src/app/dashboard/core/extensions/ng-fitText.js',
       'test/appGlobals.js',
       'src/app/app.js',
       'src/app/dashboard/core/module.js',
+      'src/app/dashboard/core/providers/*.js',
+      'src/app/dashboard/directives/*.js',
+      'src/app/dashboard/services/*.js',
+      'src/app/dashboard/core/data-factories/*.js',
+      'src/app/dashboard/core/providers/*.js',
       'src/components/templates/capone.js',
       'src/app/dashboard/core/data-factories/cloud-data.js',
       'src/components/widgets/cloud/view.js',
-      'src/components/widgets/cloud/config.js',
+
+
       'test/**/*.test.js'
     ],
 
@@ -69,20 +88,21 @@ module.exports = function(config) {
 
 
     // enable / disable watching file and executing tests whenever any file changes
-    autoWatch: true,
+    autoWatch: false,
 
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome'],
+    browsers: ['ChromeHeadless'],
 
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
-    singleRun: false,
+    singleRun: true,
 
     // Concurrency level
     // how many browser should be started simultaneous
     concurrency: Infinity
+
   })
 }

@@ -1,41 +1,42 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>UI</artifactId>
-  <packaging>pom</packaging>
-  <name>${project.groupId}:${project.artifactId}</name>
-  <description>Hygieia UI module</description>
-  <url>https://github.com/capitalone/Hygieia</url>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>UI</artifactId>
+    <packaging>pom</packaging>
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Hygieia UI module</description>
+    <url>https://github.com/capitalone/Hygieia</url>
 
-  <parent>
-    <groupId>com.capitalone.dashboard</groupId>
-    <artifactId>Hygieia</artifactId>
-    <version>3.0.1</version>
-  </parent>
-  
-  <properties>
-  	<frontend-maven-plugin.skip>false</frontend-maven-plugin.skip>
-  </properties>
+    <parent>
+        <groupId>com.capitalone.dashboard</groupId>
+        <artifactId>Hygieia</artifactId>
+        <version>3.0.1</version>
+    </parent>
 
-  <build>
-    <plugins>
-        <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <version>2.6</version>
-            <configuration>
-                <descriptor>assembly/bin.xml</descriptor>
-                <tarLongFileMode>posix</tarLongFileMode>
-            </configuration>
-            <executions>
-                <execution>
-                    <id>create-archive</id>
-                    <phase>package</phase>
-                    <goals>
-                        <goal>single</goal>
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>
-	<plugin>
+    <properties>
+        <frontend-maven-plugin.skip>false</frontend-maven-plugin.skip>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <descriptor>assembly/bin.xml</descriptor>
+                    <tarLongFileMode>posix</tarLongFileMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>create-archive</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <executions>
@@ -51,92 +52,103 @@
                             <goal>report</goal>
                         </goals>
                     </execution>
-            </executions>
-        </plugin>
-      <plugin>
-        <groupId>com.github.eirslett</groupId>
-        <artifactId>frontend-maven-plugin</artifactId>
-        <!-- if you have issues with your proxy, be careful https://github.com/eirslett/frontend-maven-plugin/commit/bcd8a7883703e28e3c5346e1f34c64332994e442 -->
-        <version>1.6</version>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <!-- if you have issues with your proxy, be careful https://github.com/eirslett/frontend-maven-plugin/commit/bcd8a7883703e28e3c5346e1f34c64332994e442 -->
+                <version>1.6</version>
 
-				<configuration>
-					<workingDirectory>./</workingDirectory>
-					<skip>${frontend-maven-plugin.skip}</skip>
-				</configuration>
+                <configuration>
+                    <workingDirectory>./</workingDirectory>
+                    <skip>${frontend-maven-plugin.skip}</skip>
+                </configuration>
 
-				<executions>
+                <executions>
 
-          <execution>
-            <id>install node and npm</id>
-            <goals>
-              <goal>install-node-and-npm</goal>
-            </goals>
-            <configuration>
-              <nodeVersion>v6.9.1</nodeVersion>
-              <npmVersion>5.0.1</npmVersion>
-                <nodeDownloadRoot>http://nodejs.org/dist/</nodeDownloadRoot>
-                <npmDownloadRoot>http://registry.npmjs.org/npm/-/</npmDownloadRoot>
-            </configuration>
-          </execution>
+                    <execution>
+                        <id>install node and npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <configuration>
+                            <nodeVersion>v6.9.1</nodeVersion>
+                            <npmVersion>5.0.1</npmVersion>
+                            <nodeDownloadRoot>http://nodejs.org/dist/</nodeDownloadRoot>
+                            <npmDownloadRoot>http://registry.npmjs.org/npm/-/</npmDownloadRoot>
+                        </configuration>
+                    </execution>
 
-          <execution>
-            <id>npm install</id>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-<!-- Optional configuration which provides for running any npm command -->
-            <configuration>
-              <arguments>install --ignore-scripts</arguments>
-            </configuration>
-          </execution>
+                    <execution>
+                        <id>npm install</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <!-- Optional configuration which provides for running any npm command -->
+                        <configuration>
+                            <arguments>install --ignore-scripts</arguments>
+                        </configuration>
+                    </execution>
 
-          <execution>
-            <id>bower install</id>
-            <goals>
-              <goal>bower</goal>
-            </goals>
-            <configuration>
-              <arguments>install</arguments>
-            </configuration>
-          </execution>
+                    <execution>
+                        <id>bower install</id>
+                        <goals>
+                            <goal>bower</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>install</arguments>
+                        </configuration>
+                    </execution>
 
-          <execution>
-            <id>gulp build</id>
-            <goals>
-              <goal>gulp</goal>
-            </goals>
+                    <execution>
+                        <id>jasmine tests</id>
+                        <goals>
+                            <goal>karma</goal>
+                        </goals>
+                        <configuration>
+                            <karmaConfPath>karma.conf.js</karmaConfPath>
+                        </configuration>
+                    </execution>
 
-<!-- optional: the default phase is "generate-resources" -->
-            <phase>generate-resources</phase>
+                    <execution>
+                        <id>gulp build</id>
+                        <goals>
+                            <goal>gulp</goal>
+                        </goals>
 
-            <configuration>
-<!-- optional: if not specified, it will run gulp's default
-        task (and you can remove this whole <configuration> section.) -->
-              <arguments>build</arguments>
-            </configuration>
-          </execution>
+                        <!-- optional: the default phase is "generate-resources"
+                               move it to after the tests have run so that we only package if it works-->
+                        <phase>prepare-package</phase>
 
-        </executions>
+                        <configuration>
+                            <!-- optional: if not specified, it will run gulp's default
+                                    task (and you can remove this whole <configuration> section.) -->
+                            <arguments>build</arguments>
+                        </configuration>
+                    </execution>
 
-      </plugin>
-      <plugin>
-        <groupId>com.spotify</groupId>
-        <artifactId>docker-maven-plugin</artifactId>
-        <configuration>
-	  <skipDockerBuild>false</skipDockerBuild>
-          <imageName>hygieia-ui</imageName>
-	  <skipDockerBuild>false</skipDockerBuild>
-          <dockerDirectory>${project.basedir}/docker</dockerDirectory>
-          <resources>
-             <resource>
-               <targetPath>html</targetPath>
-               <directory>${project.basedir}/dist</directory>
-               <include>*/**</include>
-             </resource>
+                </executions>
 
-           </resources>
-         </configuration>
-      </plugin>
-    </plugins>
-  </build>
+            </plugin>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <configuration>
+                    <skipDockerBuild>false</skipDockerBuild>
+                    <imageName>hygieia-ui</imageName>
+                    <skipDockerBuild>false</skipDockerBuild>
+                    <dockerDirectory>${project.basedir}/docker</dockerDirectory>
+                    <resources>
+                        <resource>
+                            <targetPath>html</targetPath>
+                            <directory>${project.basedir}/dist</directory>
+                            <include>*/**</include>
+                        </resource>
+
+                    </resources>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
