@@ -21,7 +21,7 @@
 
   <groupId>com.capitalone.dashboard</groupId>
   <artifactId>Hygieia</artifactId>
-  <version>3.0.2</version>
+  <version>3.0.1</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
