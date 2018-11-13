@@ -42,7 +42,7 @@ import java.util.stream.Stream;
 public class AuditCollectorUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuditCollectorUtil.class);
-    private static final String HYGIEIA_AUDIT_URL = "/api-audit/dashboardReview";
+    private static final String HYGIEIA_AUDIT_URL = "/dashboardReview";
     private static List<AuditResult> auditResults = new ArrayList<>();
     private static final String AUDITTYPES_PARAM  = "CODE_REVIEW,CODE_QUALITY,STATIC_SECURITY_ANALYSIS,LIBRARY_POLICY,TEST_RESULT,PERF_TEST";
     private enum AUDIT_PARAMS {title,businessService,businessApplication,beginDate,endDate,auditType};
