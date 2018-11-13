@@ -18,7 +18,7 @@ before_script:
   - sudo chown -R $USER:$GROUP $TRAVIS_BUILD_DIR
 
 script:
-  - if [ "$TRAVIS_PULL_REQUEST" != "false" ] || [ "$TRAVIS_BRANCH" = "master" ]; then mvn clean install -q; fi
+  - if [ "$TRAVIS_PULL_REQUEST" != "false" ] || [ "$TRAVIS_BRANCH" = "master" ]; then mvn clean install -q -U; fi
   - if [ "$TRAVIS_PULL_REQUEST" = "false" ] && [[ "$TRAVIS_BRANCH" =~ ^v[0-9]+\.[0-9]+\.[0-9]+.*$ ]]; then cp ./travis-utilities/release.sh . && ./release.sh; fi
 
 notifications:

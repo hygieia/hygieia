@@ -180,7 +180,6 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
-        <module>core</module>
         <module>api</module>
         <module>api-audit</module>
         <module>collectors/audit/nfrr</module>
@@ -230,7 +229,6 @@
     <profile>
       <id>release</id>
       <modules>
-        <module>core</module>
         <module>api</module>
         <module>api-audit</module>
         <module>collectors/artifact/artifactory</module>
