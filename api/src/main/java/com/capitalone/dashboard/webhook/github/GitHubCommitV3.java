@@ -208,12 +208,15 @@ public class GitHubCommitV3 extends GitHubV3 {
             int numberChanges = 0;
             if (cObj.get("added") instanceof List) {
                 numberChanges += ((List) cObj.get("added")).size();
+                commit.setFilesAdded((List) cObj.get("added"));
             }
             if (cObj.get("removed") instanceof List) {
                 numberChanges += ((List) cObj.get("removed")).size();
+                commit.setFilesRemoved((List) cObj.get("removed"));
             }
             if (cObj.get("modified") instanceof List) {
                 numberChanges += ((List) cObj.get("modified")).size();
+                commit.setFilesModified((List) cObj.get("modified"));
             }
 
             commit.setNumberOfChanges(numberChanges);
