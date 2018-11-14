@@ -59,27 +59,30 @@ public class TestExecutionClientImpl implements TestExecutionClient {
         int pageSize = testResultSettings.getPageSize();
 
         boolean hasMore = true;
-        for (int i = 0; hasMore; i += pageSize) {
+        List<Feature> testExecutions = featureRepository.getStoryByType("Test Execution");
+
+        for (int i = 0; hasMore; i += 1) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Obtaining story information starting at index " + i + "...");
             }
             long queryStart = System.currentTimeMillis();
-            List<Feature> testExecutions = this.getTestExecutions(featureRepository.getStoryByType("Test Execution"), i, pageSize);
+
+            List<Feature> pagedTestExecutions = this.getTestExecutions(testExecutions, i, pageSize);
 
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Story information query took " + (System.currentTimeMillis() - queryStart) + " ms");
             }
 
             if (testExecutions != null && !testExecutions.isEmpty()) {
-                updateMongoInfo(testExecutions);
-                count += testExecutions.size();
+                updateMongoInfo(pagedTestExecutions);
+                count += pagedTestExecutions.size();
             }
 
-            LOGGER.info("Loop i " + i + " pageSize " + testExecutions.size());
+            LOGGER.info("Loop i " + i + " pageSize " + pagedTestExecutions.size());
 
             // will result in an extra call if number of results == pageSize
             // but I would rather do that then complicate the jira client implementation
-            if (testExecutions == null || testExecutions.size() < pageSize) {
+            if (pagedTestExecutions == null || pagedTestExecutions.size() < pageSize) {
                 hasMore = false;
                 break;
             }
