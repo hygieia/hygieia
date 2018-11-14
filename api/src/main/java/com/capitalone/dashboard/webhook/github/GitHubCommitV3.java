@@ -204,7 +204,7 @@ public class GitHubCommitV3 extends GitHubV3 {
                 String committerLogin = (committerUserObject == null) ? "unknown" : restClient.getString(committerUserObject, "login");
                 commit.setScmCommitterLogin(committerLogin);
             }
-
+            // added fields to capture files
             int numberChanges = 0;
             if (cObj.get("added") instanceof List) {
                 numberChanges += ((List) cObj.get("added")).size();
