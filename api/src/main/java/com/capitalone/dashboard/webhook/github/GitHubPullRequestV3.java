@@ -107,15 +107,12 @@ public class GitHubPullRequestV3 extends GitHubV3 {
             throw new HygieiaException("Failed processing payload. Missing Github API token in Hygieia.", HygieiaException.INVALID_CONFIGURATION);
         }
 
-        start = System.currentTimeMillis();
         ResponseEntity<String> response = null;
         try {
             response = restClient.makeRestCallPost(gitHubParsed.getGraphQLUrl(), "token", token, postBody);
         } catch (Exception e) {
             throw new HygieiaException(e);
         }
-        end = System.currentTimeMillis();
-        LOG.debug("Time to make GraphQL PR call = "+(end-start));
 
         JSONObject responseJsonObject = restClient.parseAsObject(response);
 

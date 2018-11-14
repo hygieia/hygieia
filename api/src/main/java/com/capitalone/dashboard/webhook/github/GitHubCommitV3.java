@@ -27,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -39,6 +40,8 @@ public class GitHubCommitV3 extends GitHubV3 {
     private final CommitRepository commitRepository;
     private final GitRequestRepository gitRequestRepository;
     private final CollectorItemRepository collectorItemRepository;
+
+    private Map<String, String> ldapDNMap = new HashMap<>();
 
     public GitHubCommitV3(CollectorService collectorService,
                           RestClient restClient,
@@ -127,7 +130,15 @@ public class GitHubCommitV3 extends GitHubV3 {
         for (Map cObj : commitsObjectList) {
             Object repoMap = restClient.getAsObject(cObj, "repository");
             boolean isPrivate = restClient.getBoolean(repoMap, "private");
+
+            long start = System.currentTimeMillis();
+
             String repoToken = getRepositoryToken(gitHubParsed.getUrl());
+
+            long end = System.currentTimeMillis();
+
+            LOG.debug("Time to make collectorItemRepository call to fetch repository token = "+(end-start));
+
             String gitHubWebHookToken =  isPrivate ? RestClient.decryptString(repoToken, apiSettings.getKey()) : gitHubWebHookSettings.getToken();
 
             if (StringUtils.isEmpty(gitHubWebHookToken)) {
@@ -167,7 +178,22 @@ public class GitHubCommitV3 extends GitHubV3 {
                 commit.setScmAuthorLogin(authorLogin);
                 commit.setScmAuthorLDAPDN(senderLDAPDN);
                 if (!StringUtils.isEmpty(senderLDAPDN) && !senderLogin.equalsIgnoreCase(authorLogin)) {
-                    String authorLDAPDNFetched = StringUtils.isEmpty(authorLogin) ? null : getLDAPDN(repoUrl, authorLogin, gitHubWebHookToken);
+                    start = System.currentTimeMillis();
+
+                    String key = repoUrl+authorLogin;
+                    String userLDAP = ldapDNMap.get(key);
+                    if (StringUtils.isEmpty(userLDAP)) {
+                        userLDAP = getLDAPDN(repoUrl, authorLogin, gitHubWebHookToken);
+                        if (!StringUtils.isEmpty(userLDAP)) {
+                            ldapDNMap.put(key, userLDAP);
+                        }
+                    }
+
+                    String authorLDAPDNFetched = StringUtils.isEmpty(authorLogin) ? null : userLDAP;
+
+                    end = System.currentTimeMillis();
+                    LOG.debug("Time to fetch LDAPDN = "+(end-start));
+
                     commit.setScmAuthorLDAPDN(authorLDAPDNFetched);
                 }
 
