@@ -18,8 +18,6 @@ import com.capitalone.dashboard.response.TestResultsAuditResponse;
 import com.capitalone.dashboard.status.PerformanceTestAuditStatus;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,8 +34,6 @@ import java.util.stream.Collectors;
 public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAuditResponse> {
 
     private final TestResultRepository testResultRepository;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(PerformanceTestResultEvaluator.class);
 
 
     @Autowired
@@ -74,16 +70,8 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
         List<PerfTest> testlist = new ArrayList<>();
 
         if (!CollectionUtils.isEmpty(testResults)){
-<<<<<<< Updated upstream
-            LOGGER.info("TESTRESULTS COUNT : " + testResults.size());
             testResults.sort(Comparator.comparing(TestResult::getTimestamp).reversed());
             TestResult testResult = testResults.iterator().next();
-            LOGGER.info("TIMESTAMP : " + testResult.getTimestamp());
-            // for (TestResult testResult : testResults) {
-=======
-            testResults.sort(Comparator.comparing(TestResult::getTimestamp).reversed());
-            TestResult testResult = testResults.iterator().next();
->>>>>>> Stashed changes
             if (TestSuiteType.Performance.toString().equalsIgnoreCase(testResult.getType().name())) {
                 Collection<TestCapability> testCapabilities = testResult.getTestCapabilities();
 
@@ -151,8 +139,6 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
                         PerformanceTestAuditStatus.PERF_RESULT_AUDIT_OK : PerformanceTestAuditStatus.PERF_RESULT_AUDIT_FAIL);
             }
         }
-
-        //}
         if (CollectionUtils.isEmpty(testlist)) {
             perfReviewResponse.addAuditStatus(PerformanceTestAuditStatus.PERF_RESULT_AUDIT_MISSING);
         }else {
