@@ -12,7 +12,7 @@
   <parent>
     <groupId>com.capitalone.dashboard</groupId>
     <artifactId>Hygieia</artifactId>
-    <version>3.0.0</version>
+    <version>3.0.1</version>
     <relativePath>../../..</relativePath>
   </parent>
 
@@ -124,7 +124,7 @@
     <dependency>
       <groupId>com.capitalone.dashboard</groupId>
       <artifactId>core</artifactId>
-      <version>${project.version}</version>
+      <version>3.0.4</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.findbugs</groupId>

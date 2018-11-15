@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class CollectorServiceImpl implements CollectorService {
@@ -122,8 +121,11 @@ public class CollectorServiceImpl implements CollectorService {
     }
 
     @Override
-    public CollectorItem getCollectorItem(ObjectId id) {
+    public CollectorItem getCollectorItem(ObjectId id) throws HygieiaException {
         CollectorItem item = collectorItemRepository.findOne(id);
+        if(item == null){
+            throw new HygieiaException("Failed to find collectorItem by Id.", HygieiaException.BAD_DATA);
+        }
         item.setCollector(collectorRepository.findOne(item.getCollectorId()));
         return item;
     }
@@ -191,7 +193,19 @@ public class CollectorServiceImpl implements CollectorService {
         Collector existing = collectorRepository.findByName(collector.getName());
         if (existing != null) {
             collector.setId(existing.getId());
+            /*
+             * Since this is invoked by api it always needs to be enabled and online,
+             * additionally since this record is fetched from the database existing record
+             * needs to updated with these values.
+             * */
+            existing.setEnabled(true);
+            existing.setOnline(true);
+            existing.setLastExecuted(System.currentTimeMillis());
+            return collectorRepository.save(existing);
         }
+        /*
+         * create a new collector record
+         * */
         return collectorRepository.save(collector);
     }
 

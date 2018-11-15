@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.model.AbstractBuild;
-import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
@@ -43,6 +42,7 @@ public class HygieiaUtils {
     public static final String APPLICATION_JSON_VALUE = "application/json";
     public static final String JOB_URL_SEARCH_PARM = "job/";
     public static final String SEPERATOR = ",";
+    public static final String DASHBOARD_URI = "#/dashboard/";
 
     public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
         ObjectMapper mapper = new CustomObjectMapper();
@@ -50,7 +50,7 @@ public class HygieiaUtils {
         return mapper.writeValueAsBytes(object);
     }
 
-    public static Object convertJsonToObject(String json, Class thisClass) throws IOException {
+    public static <T> T  convertJsonToObject(String json, Class<T> thisClass) throws IOException {
         ObjectMapper mapper = new CustomObjectMapper();
         return mapper.readValue(json, thisClass);
     }

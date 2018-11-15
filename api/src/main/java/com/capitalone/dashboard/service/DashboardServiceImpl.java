@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.service;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -8,7 +9,8 @@ import java.util.Set;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-import com.capitalone.dashboard.ApiSettings;
+import com.capitalone.dashboard.settings.ApiSettings;
+import com.capitalone.dashboard.model.BaseModel;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -61,6 +63,7 @@ public class DashboardServiceImpl implements DashboardService {
     private final ScoreDashboardService scoreDashboardService;
     private final CmdbService cmdbService;
     private final String UNDEFINED = "undefined";
+    private final static EnumSet<CollectorType> QualityWidget = EnumSet.of(CollectorType.Test , CollectorType.StaticSecurityScan, CollectorType.CodeQuality, CollectorType.LibraryPolicy);
 
     @Autowired
     private ApiSettings settings;
@@ -124,6 +127,24 @@ public class DashboardServiceImpl implements DashboardService {
         }
 
         return dashboard;
+    }
+
+    /**
+     * Get all the dashboards that have the collector items
+     *
+     * @param collectorItems collector items
+     * @param collectorType  type of the collector
+     * @return a list of dashboards
+     */
+    @Override
+    public List<Dashboard> getDashboardsByCollectorItems(Set<CollectorItem> collectorItems, CollectorType collectorType) {
+        if (org.apache.commons.collections4.CollectionUtils.isEmpty(collectorItems)) {
+            return new ArrayList<>();
+        }
+        List<ObjectId> collectorItemIds = collectorItems.stream().map(BaseModel::getId).collect(Collectors.toList());
+        // Find the components that have these collector items
+        List<com.capitalone.dashboard.model.Component> components = componentRepository.findByCollectorTypeAndItemIdIn(collectorType, collectorItemIds);
+        return dashboardRepository.findByApplicationComponentsIn(components);
     }
 
     private Dashboard create(Dashboard dashboard, boolean isUpdate) throws HygieiaException {
@@ -271,6 +292,24 @@ public class DashboardServiceImpl implements DashboardService {
                 }
                 // remove all collector items of a type
                 component.getCollectorItems().remove(collector.getCollectorType());
+
+
+            }
+        }
+
+        // If a collector type is within the code analysis widget, check to see if any of the remaining fields were passed values
+        if(incomingTypes.stream().anyMatch(QualityWidget::contains)){
+            if(!incomingTypes.contains(CollectorType.Test)){
+                component.getCollectorItems().remove(CollectorType.Test);
+            }
+            if(!incomingTypes.contains(CollectorType.StaticSecurityScan)){
+                component.getCollectorItems().remove(CollectorType.StaticSecurityScan);
+            }
+            if(!incomingTypes.contains(CollectorType.CodeQuality)){
+                component.getCollectorItems().remove(CollectorType.CodeQuality);
+            }
+            if(!incomingTypes.contains(CollectorType.LibraryPolicy)){
+                component.getCollectorItems().remove(CollectorType.LibraryPolicy);
             }
         }
 
@@ -362,13 +401,10 @@ public class DashboardServiceImpl implements DashboardService {
 
 	@Override
 	public List<Dashboard> getOwnedDashboards() {
-		Set<Dashboard> myDashboards = new HashSet<Dashboard>();
-
-		Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
+        Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
         List<Dashboard> findByOwnersList = dashboardRepository.findByOwners(owner);
         getAppAndComponentNames(findByOwnersList);
-		myDashboards.addAll(findByOwnersList);
-        return Lists.newArrayList(myDashboards);
+        return findByOwnersList.stream().distinct().collect(Collectors.toList());
 	}
 
     @Override
@@ -515,6 +551,7 @@ public class DashboardServiceImpl implements DashboardService {
                         collectorTypesToDelete.add(CollectorType.CodeQuality);
                         collectorTypesToDelete.add(CollectorType.StaticSecurityScan);
                         collectorTypesToDelete.add(CollectorType.LibraryPolicy);
+                        collectorTypesToDelete.add(CollectorType.Test);
                     }
                 }
             }
@@ -563,6 +600,7 @@ public class DashboardServiceImpl implements DashboardService {
             collectorTypesToDelete.add(CollectorType.CodeQuality);
             collectorTypesToDelete.add(CollectorType.StaticSecurityScan);
             collectorTypesToDelete.add(CollectorType.LibraryPolicy);
+            collectorTypesToDelete.add(CollectorType.Test);
         }
         if(componentId!=null){
             Component component = componentRepository.findOne(componentId);
@@ -589,6 +627,7 @@ public class DashboardServiceImpl implements DashboardService {
         if(widgetName.equalsIgnoreCase("performanceanalysis")) return CollectorType.AppPerformance;
         if(widgetName.equalsIgnoreCase("cloud")) return CollectorType.Cloud;
         if(widgetName.equalsIgnoreCase("chatops")) return CollectorType.ChatOps;
+        if(widgetName.equalsIgnoreCase("test")) return CollectorType.Test;
         return null;
     }
 

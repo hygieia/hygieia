@@ -1,6 +1,6 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.ApiSettings;
+import com.capitalone.dashboard.settings.ApiSettings;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.Pipeline;
