@@ -74,7 +74,7 @@
     <dependency>
       <groupId>com.capitalone.dashboard</groupId>
       <artifactId>core</artifactId>
-      <version>3.0.4</version>
+      <version>3.0.6</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
