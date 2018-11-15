@@ -131,7 +131,6 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
                         testlist.add(test);
                     }
                 }
-                
                 testlist.sort(Comparator.comparing(PerfTest::getStartTime).reversed());
                 perfReviewResponse.setLastExecutionTime(testlist.get(0).getStartTime());
                 perfReviewResponse.setResult(testlist);
