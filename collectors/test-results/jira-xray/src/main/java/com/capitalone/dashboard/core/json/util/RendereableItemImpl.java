@@ -1,7 +1,7 @@
 package com.capitalone.dashboard.core.json.util;
 
 /**
- * Created by lucho on 22/08/16.
+ * RenderableItem implementation
  */
 public class RendereableItemImpl implements RendereableItem {
 

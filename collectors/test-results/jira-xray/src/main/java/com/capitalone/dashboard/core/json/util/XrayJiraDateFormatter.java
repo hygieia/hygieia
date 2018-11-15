@@ -8,7 +8,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
- * Created by lucho on 18/08/16.
+ * JiraXRay date formatter.
  */
 public class XrayJiraDateFormatter {
     private final SimpleDateFormat standardDateTimeFormatter=new SimpleDateFormat("dd/MMM/yy hh:mm a");

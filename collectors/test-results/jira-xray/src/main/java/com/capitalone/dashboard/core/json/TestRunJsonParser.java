@@ -2,7 +2,9 @@ package com.capitalone.dashboard.core.json;
 
 import com.atlassian.jira.rest.client.internal.json.JsonObjectParser;
 import com.atlassian.jira.rest.client.internal.json.JsonParseUtil;
-import com.capitalone.dashboard.api.domain.*;
+import com.capitalone.dashboard.api.domain.Comment;
+import com.capitalone.dashboard.api.domain.TestRun;
+import com.capitalone.dashboard.api.domain.TestStep;
 import com.capitalone.dashboard.core.json.util.XrayJiraDateFormatter;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
