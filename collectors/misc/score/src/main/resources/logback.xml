@@ -1,29 +1,30 @@
 <configuration>
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    <!-- encoders are assigned the type
-         ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+  <!-- encoders are assigned the type
+                ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
     <encoder>
       <pattern>%d %-5level %logger{36} - %msg%n</pattern>
     </encoder>
   </appender>
   <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+    <file>/hygieia/collectors/logs/score.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
       <!-- rollover daily -->
-      <fileNamePattern>logs/scorecollector-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-      <timeBasedFileNamingAndTriggeringPolicy
-        class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-        <!-- or whenever the file size reaches 20MB -->
-        <maxFileSize>20MB</maxFileSize>
-      </timeBasedFileNamingAndTriggeringPolicy>
-      <maxHistory>30</maxHistory>
+      <fileNamePattern>/hygieia/collectors/logs/score-%i.log</fileNamePattern>
+      <minIndex>1</minIndex>
+      <maxIndex>10</maxIndex>
     </rollingPolicy>
+
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <maxFileSize>20MB</maxFileSize>
+    </triggeringPolicy>
     <encoder>
       <pattern>%d %-5level %logger{36} - %msg%n</pattern>
     </encoder>
   </appender>
 
   <root level="INFO">
-    <appender-ref ref="ROLLING"/>
-    <appender-ref ref="STDOUT"/>
+    <appender-ref ref="ROLLING" />
+    <appender-ref ref="STDOUT" />
   </root>
 </configuration>
