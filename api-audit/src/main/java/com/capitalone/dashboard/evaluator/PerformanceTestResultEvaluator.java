@@ -74,11 +74,16 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
         List<PerfTest> testlist = new ArrayList<>();
 
         if (!CollectionUtils.isEmpty(testResults)){
+<<<<<<< Updated upstream
             LOGGER.info("TESTRESULTS COUNT : " + testResults.size());
             testResults.sort(Comparator.comparing(TestResult::getTimestamp).reversed());
             TestResult testResult = testResults.iterator().next();
             LOGGER.info("TIMESTAMP : " + testResult.getTimestamp());
             // for (TestResult testResult : testResults) {
+=======
+            testResults.sort(Comparator.comparing(TestResult::getTimestamp).reversed());
+            TestResult testResult = testResults.iterator().next();
+>>>>>>> Stashed changes
             if (TestSuiteType.Performance.toString().equalsIgnoreCase(testResult.getType().name())) {
                 Collection<TestCapability> testCapabilities = testResult.getTestCapabilities();
 
@@ -138,7 +143,7 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
                         testlist.add(test);
                     }
                 }
-
+                
                 testlist.sort(Comparator.comparing(PerfTest::getStartTime).reversed());
                 perfReviewResponse.setLastExecutionTime(testlist.get(0).getStartTime());
                 perfReviewResponse.setResult(testlist);
