@@ -46,7 +46,8 @@ public class TestRunRestClientImpl extends AbstractAsynchronousRestClient implem
     }
 
 
-/**
+    /**
+     * Gets test run using testExecKey & testKey
      *
      * @param testExecKey
      * @param testKey
@@ -59,7 +60,8 @@ public class TestRunRestClientImpl extends AbstractAsynchronousRestClient implem
         return this.getAndParse(uriBuilder.build(),this.testRunParser);
     }
 
-/**
+    /**
+     * Gets test run with testRunId
      *
      * @param testRunId
      * @return
@@ -72,8 +74,9 @@ public class TestRunRestClientImpl extends AbstractAsynchronousRestClient implem
     }
 
 
-/**
+    /**
      * Rest-API call to the /testrun/ with params to updates it's contents.
+     *
      * @param testRunInput
      * @return
      */

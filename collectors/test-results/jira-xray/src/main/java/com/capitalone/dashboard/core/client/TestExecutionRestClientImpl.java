@@ -48,22 +48,6 @@ public class TestExecutionRestClientImpl extends AbstractAsynchronousRestClient 
         return null;
     }
 
-
-    /**
-     * Adds/Removes the test associated with this test execution
-     * @param testExec
-     * @return
-     */
-   /* public Promise<Void> setTests(TestExecution testExec) {
-        UriBuilder uriBuilder=UriBuilder.fromUri(baseUri);
-        uriBuilder.path("testexec").path("{isssue-key}").path("test");
-        return this.postAndParse(uriBuilder.build(testExec.getKey()), testExec, execUpdateGenerator, new JsonObjectParser<Void>() {
-            public Void parse(JSONObject jsonObject) throws JSONException {
-                return null;
-            }
-        });
-    }*/
-
     /**
      * Removes a test from the test execution identified by his test key
      * @param testExecKey
@@ -75,7 +59,6 @@ public class TestExecutionRestClientImpl extends AbstractAsynchronousRestClient 
         uriBuilder.path("testexec").path("{isssue-key}").path("test").path("{ŧest-key");
         return this.delete(uriBuilder.build(testExecKey.getKey(),testKey.getKey()));
     }
-
 
     /**
      * Method who queries the JQL testTestExecution() from the X-RAY plugin. Returning the test-executions related to this test identified by his key.

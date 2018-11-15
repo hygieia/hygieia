@@ -25,12 +25,12 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Collections;
-
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
 
 public class TestExecutionClientImpl implements TestExecutionClient {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(TestExecutionClientImpl.class);
@@ -53,13 +53,18 @@ public class TestExecutionClientImpl implements TestExecutionClient {
         this.collectorItemRepository = collectorItemRepository;
     }
 
-
+    /**
+     * Updates the test result information in MongoDB with Pagination. pageSize is defined in properties
+     *
+     * @return
+     */
     public int updateTestResultInformation() {
         int count = 0;
         int pageSize = testResultSettings.getPageSize();
 
         boolean hasMore = true;
         List<Feature> testExecutions = featureRepository.getStoryByType("Test Execution");
+        List<Feature> manualTestExecutions = this.getManualTestExecutions(testExecutions);
 
         for (int i = 0; hasMore; i += 1) {
             if (LOGGER.isDebugEnabled()) {
@@ -67,13 +72,13 @@ public class TestExecutionClientImpl implements TestExecutionClient {
             }
             long queryStart = System.currentTimeMillis();
 
-            List<Feature> pagedTestExecutions = this.getTestExecutions(testExecutions, i, pageSize);
+            List<Feature> pagedTestExecutions = this.getTestExecutions(manualTestExecutions, i, pageSize);
 
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Story information query took " + (System.currentTimeMillis() - queryStart) + " ms");
             }
 
-            if (testExecutions != null && !testExecutions.isEmpty()) {
+            if (manualTestExecutions != null && !manualTestExecutions.isEmpty()) {
                 updateMongoInfo(pagedTestExecutions);
                 count += pagedTestExecutions.size();
             }
@@ -130,7 +135,7 @@ public class TestExecutionClientImpl implements TestExecutionClient {
                     TestExecution testExecution = new TestExecution(new URI(testExec.getsUrl()), testExec.getsNumber(), Long.parseLong(testExec.getsId()));
                     testResult.setUrl(testExecution.getSelf().toString());
 
-                    restClient= (JiraXRayRestClientImpl) restClientSupplier.get();
+                    restClient = (JiraXRayRestClientImpl) restClientSupplier.get();
                     Iterable<TestExecution.Test> tests = restClient.getTestExecutionClient().getTests(testExecution).claim();
 
                     if (tests != null) {
@@ -196,6 +201,13 @@ public class TestExecutionClientImpl implements TestExecutionClient {
         }
     }
 
+    /**
+     * Get the test cases for a test suite
+     *
+     * @param tests
+     * @param testExec
+     * @return
+     */
     private List<TestCase> getTestCases(Iterable<TestExecution.Test> tests, Feature testExec) {
         List<TestCase> testCases = new ArrayList<>();
 
@@ -242,6 +254,12 @@ public class TestExecutionClientImpl implements TestExecutionClient {
         return testCases;
     }
 
+    /**
+     * Gets the test steps for a test case
+     *
+     * @param testRun
+     * @return
+     */
     private List<TestCaseStep> getTestSteps(TestRun testRun) {
 
         List<TestCaseStep> testSteps = new ArrayList<>();
@@ -265,6 +283,13 @@ public class TestExecutionClientImpl implements TestExecutionClient {
     }
 
 
+    /**
+     * Gets the test cases count map based on the status {pass, fail, skip & unknown}
+     *
+     * @param testExec
+     * @param tests
+     * @return
+     */
     private Map<String,Integer> getTestCountStatusMap(Feature testExec, Iterable<TestExecution.Test> tests) {
 
         Map<String,Integer> map = new HashMap<String,Integer>(4);
@@ -298,21 +323,26 @@ public class TestExecutionClientImpl implements TestExecutionClient {
         return map;
     }
 
-
+    /**
+     * Gets the test step count map based on the status
+     *
+     * @param testRun
+     * @return
+     */
     private Map<String,Integer> getStepCountStatusMap(TestRun testRun) {
         Map<String,Integer> map = new HashMap<>(4);
         int failStepCount = 0, passStepCount = 0, skipStepCount = 0, unknownStepCount = 0;
-//        long start = System.currentTimeMillis();
         for (TestStep testStep : testRun.getSteps()) {
-
-            if (testStep.getStatus().toString().equals("PASS")) {
-                passStepCount++;
-            } else if (testStep.getStatus().toString().equals("FAIL")) {
-                failStepCount++;
-            } else if (testStep.getStatus().equals("SKIP")){
-                skipStepCount++;
-            } else{
-                unknownStepCount++;
+            if (testRun != null) {
+                if (testStep.getStatus().toString().equals("PASS")) {
+                    passStepCount++;
+                } else if (testStep.getStatus().toString().equals("FAIL")) {
+                    failStepCount++;
+                } else if (testStep.getStatus().equals("SKIP")){
+                    skipStepCount++;
+                } else{
+                    unknownStepCount++;
+                }
             }
         }
         map.put("FAILSTEP_COUNT", failStepCount);
@@ -323,6 +353,14 @@ public class TestExecutionClientImpl implements TestExecutionClient {
         return map;
     }
 
+    /**
+     * Gets test executions with pagination
+     *
+     * @param sourceList
+     * @param page
+     * @param pageSize
+     * @return
+     */
     public List<Feature> getTestExecutions(List<Feature> sourceList, int page, int pageSize) {
         if(pageSize <= 0 || page < 0) {
             throw new IllegalArgumentException("invalid page size: " + pageSize);
@@ -334,6 +372,24 @@ public class TestExecutionClientImpl implements TestExecutionClient {
         }
 
         return sourceList.subList(fromIndex, Math.min(fromIndex + pageSize, sourceList.size()));
+    }
+
+    /**
+     * Filters all the manual test executions
+     *
+     * @param testExecutions
+     * @return
+     */
+    public List<Feature> getManualTestExecutions(List<Feature> testExecutions) {
+        List<Feature> manualTestExecutions = new ArrayList<>();
+        String[] automationKeywords = {"automated", "automation"};
+
+        for (Feature testExecution : testExecutions) {
+            if (!Arrays.stream(automationKeywords).parallel().anyMatch(testExecution.getsName().toLowerCase()::contains)) {
+                manualTestExecutions.add(testExecution);
+            }
+        }
+        return manualTestExecutions;
     }
 
     /**
