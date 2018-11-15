@@ -35,6 +35,7 @@ import org.springframework.web.client.RestOperations;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -123,7 +124,7 @@ public class GitHubCommitV3Test {
         Assert.assertEquals("commit1ID", commit1.getScmRevisionNumber());
         Assert.assertEquals("GitHub WebHook Commit 1", commit1.getScmCommitLog());
         Assert.assertEquals("author1Name", commit1.getScmAuthor());
-        Assert.assertEquals(1, commit1.getNumberOfChanges());
+        Assert.assertEquals(7, commit1.getNumberOfChanges());
         Assert.assertEquals(collectorItemId, commit1.getCollectorItemId().toString());
         verify(gitHubCommitV3, times(3)).getCommitNode(anyObject(), anyString(), anyString(), anyObject(), anyString());
 
@@ -133,7 +134,7 @@ public class GitHubCommitV3Test {
         Assert.assertEquals("commit2ID", commit2.getScmRevisionNumber());
         Assert.assertEquals("GitHub WebHook Commit 2", commit2.getScmCommitLog());
         Assert.assertEquals("author2Name", commit2.getScmAuthor());
-        Assert.assertEquals(1, commit2.getNumberOfChanges());
+        Assert.assertEquals(3, commit2.getNumberOfChanges());
         Assert.assertEquals(collectorItemId, commit2.getCollectorItemId().toString());
     }
 
@@ -430,6 +431,10 @@ public class GitHubCommitV3Test {
         author1.put("name", "author1Name");
         author1.put("login", "senderLogin");
 
+        commitsMap1.put("added",Arrays.asList("pom.xml", "cucumber.json", "Test.java"));
+        commitsMap1.put("removed",Arrays.asList(".gitignore", "style.css"));
+        commitsMap1.put("modified",Arrays.asList("Readme.md", "gulp.js"));
+
         Map commitsMap2 = new HashMap();
         commitsList.add(commitsMap2);
 
@@ -447,6 +452,12 @@ public class GitHubCommitV3Test {
 
         author2.put("name", "author2Name");
         author2.put("login", "senderLogin");
+
+        commitsMap2.put("added",null);
+        commitsMap2.put("removed",Arrays.asList(".gitignore", "style.css"));
+        commitsMap2.put("modified",Arrays.asList(""));
+
+
 
         return commitsList;
     }
