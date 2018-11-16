@@ -7,10 +7,10 @@
     </encoder>
   </appender>
   <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>/hygieia/collectors/logs/score.log</file>
+    <file>logs/scoreCollector.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
       <!-- rollover daily -->
-      <fileNamePattern>/hygieia/collectors/logs/score-%i.log</fileNamePattern>
+      <fileNamePattern>logs/scoreCollector-%i.log</fileNamePattern>
       <minIndex>1</minIndex>
       <maxIndex>10</maxIndex>
     </rollingPolicy>
