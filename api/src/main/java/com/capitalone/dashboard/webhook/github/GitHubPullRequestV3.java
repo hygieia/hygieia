@@ -101,23 +101,18 @@ public class GitHubPullRequestV3 extends GitHubV3 {
         long end = System.currentTimeMillis();
         LOG.debug("Time to make collectorItemRepository call to fetch repository token = "+(end-start));
 
-        String token = isPrivate ? repoToken : gitHubWebHookToken;
+        String token = isPrivate ? RestClient.decryptString(repoToken, apiSettings.getKey()) : gitHubWebHookToken;
 
         if (StringUtils.isEmpty(token)) {
             throw new HygieiaException("Failed processing payload. Missing Github API token in Hygieia.", HygieiaException.INVALID_CONFIGURATION);
         }
 
-        String decryptPersonalAccessToken = RestClient.decryptString(token, apiSettings.getKey());
-
-        start = System.currentTimeMillis();
         ResponseEntity<String> response = null;
         try {
-            response = restClient.makeRestCallPost(gitHubParsed.getGraphQLUrl(), "token", decryptPersonalAccessToken, postBody);
+            response = restClient.makeRestCallPost(gitHubParsed.getGraphQLUrl(), "token", token, postBody);
         } catch (Exception e) {
             throw new HygieiaException(e);
         }
-        end = System.currentTimeMillis();
-        LOG.debug("Time to make GraphQL PR call = "+(end-start));
 
         JSONObject responseJsonObject = restClient.parseAsObject(response);
 
@@ -134,7 +129,7 @@ public class GitHubPullRequestV3 extends GitHubV3 {
 
         GitRequest pull = buildGitRequestFromPayload(repoUrl, branch, pullRequestObject);
 
-        updateGitRequestWithGraphQLData(pull, repoUrl, branch, prData, decryptPersonalAccessToken);
+        updateGitRequestWithGraphQLData(pull, repoUrl, branch, prData, token);
 
         gitRequestRepository.save(pull);
 
