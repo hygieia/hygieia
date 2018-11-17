@@ -46,6 +46,7 @@ module.exports = function(config) {
       'src/app/dashboard/core/providers/*.js',
       'src/app/dashboard/directives/*.js',
       'src/app/dashboard/services/*.js',
+      'src/app/dashboard/controllers/editDashboard.js',
       'src/app/dashboard/core/data-factories/*.js',
       'src/app/dashboard/core/providers/*.js',
       'src/components/templates/capone.js',
