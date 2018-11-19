@@ -7,8 +7,10 @@ import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.SCM;
+import com.capitalone.dashboard.model.ServiceAccount;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
+import com.capitalone.dashboard.repository.ServiceAccountRepository;
 import com.capitalone.dashboard.response.CodeReviewAuditResponse;
 import com.capitalone.dashboard.status.CodeReviewAuditStatus;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
@@ -21,9 +23,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.capitalone.dashboard.status.CodeReviewAuditStatus.COLLECTOR_ITEM_ERROR;
 
@@ -34,12 +38,14 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
     private final CommitRepository commitRepository;
     private final GitRequestRepository gitRequestRepository;
     protected final ApiSettings settings;
+    private final ServiceAccountRepository serviceAccountRepository;
 
     @Autowired
-    public CodeReviewEvaluatorLegacy(CommitRepository commitRepository, GitRequestRepository gitRequestRepository, ApiSettings settings) {
+    public CodeReviewEvaluatorLegacy(CommitRepository commitRepository, GitRequestRepository gitRequestRepository, ServiceAccountRepository serviceAccountRepository, ApiSettings settings) {
         this.commitRepository = commitRepository;
         this.gitRequestRepository = gitRequestRepository;
         this.settings = settings;
+        this.serviceAccountRepository = serviceAccountRepository;
     }
 
 
@@ -149,12 +155,12 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
 
             allPrCommitShas.addAll(commitsRelatedToPr.stream().map(SCM::getScmRevisionNumber).collect(Collectors.toList()));
 
-            boolean peerReviewed = CommonCodeReview.computePeerReviewStatus(pr, settings, codeReviewAuditResponse, commits, commitRepository);
+            boolean peerReviewed = CommonCodeReview.computePeerReviewStatus(pr, settings, codeReviewAuditResponse, commits, commitRepository,serviceAccountRepository);
             codeReviewAuditResponse.addAuditStatus(peerReviewed ? CodeReviewAuditStatus.PULLREQ_REVIEWED_BY_PEER : CodeReviewAuditStatus.PULLREQ_NOT_PEER_REVIEWED);
             String sourceRepo = pr.getSourceRepo();
             String targetRepo = pr.getTargetRepo();
             codeReviewAuditResponse.addAuditStatus(sourceRepo == null ? CodeReviewAuditStatus.GIT_FORK_STRATEGY : sourceRepo.equalsIgnoreCase(targetRepo) ? CodeReviewAuditStatus.GIT_BRANCH_STRATEGY : CodeReviewAuditStatus.GIT_FORK_STRATEGY);
-            if (!StringUtils.isEmpty(pr.getMergeAuthorLDAPDN()) && (CommonCodeReview.checkForServiceAccount(pr.getMergeAuthorLDAPDN(), settings))) {
+            if (!StringUtils.isEmpty(pr.getMergeAuthorLDAPDN()) && (CommonCodeReview.checkForServiceAccount(pr.getMergeAuthorLDAPDN(), settings,getAllServiceAccounts(),pr.getMergeAuthor(),null,false))) {
                 codeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.MERGECOMMITER_EQ_SERVICEACCOUNT);
             }
             allPeerReviews.add(codeReviewAuditResponse);
@@ -205,10 +211,12 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
     @SuppressWarnings("Duplicates")
     private void auditDirectCommits(CodeReviewAuditResponse codeReviewAuditResponse, Commit commit) {
 
+        Stream<String> combinedStream = Stream.of(commit.getFilesAdded(), commit.getFilesModified(),commit.getFilesRemoved()).filter(Objects::nonNull).flatMap(Collection::stream);
+        List<String> collectionCombined = combinedStream.collect(Collectors.toList());
         if (StringUtils.isBlank(commit.getScmAuthorLDAPDN())) {
             // Status for commits without login information.
             auditIncrementVersionTag(codeReviewAuditResponse, commit, CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE);
-        } else if (CommonCodeReview.checkForServiceAccount(commit.getScmAuthorLDAPDN(), settings)) {
+        } else if (CommonCodeReview.checkForServiceAccount(commit.getScmAuthorLDAPDN(), settings,getAllServiceAccounts(),commit.getScmAuthor(),collectionCombined,true)) {
             codeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.COMMITAUTHOR_EQ_SERVICEACCOUNT);
             // check for increment version tag and flag Direct commit by Service Account.
             auditIncrementVersionTag(codeReviewAuditResponse, commit, CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_SERVICE_ACCOUNT);
@@ -224,6 +232,11 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
         } else {
             codeReviewAuditResponse.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
         }
+    }
+
+    public Map<String,String> getAllServiceAccounts(){
+        List<ServiceAccount> serviceAccounts = (List<ServiceAccount>) serviceAccountRepository.findAll();
+        return serviceAccounts.stream().collect(Collectors.toMap(ServiceAccount :: getServiceAccountName, ServiceAccount::getFileNames));
     }
 
 }
