@@ -15,7 +15,7 @@ import hudson.tasks.Publisher;
 import hudson.util.FormValidation;
 import hygieia.utils.HygieiaUtils;
 import net.sf.json.JSONObject;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
@@ -335,13 +335,13 @@ public class HygieiaPublisher extends Notifier {
         public boolean useProxy;
         public boolean hygieiaPublishBuildDataGlobal;
         public boolean hygieiaPublishSonarDataGlobal;
+        public boolean showConsoleOutput;
         public List<GenericCollectorItem> hygieiaPublishGenericCollectorItems;
         public String pluginVersionInfo;
 
         public DescriptorImpl() {
             load();
         }
-
 
         public String getHygieiaAPIUrl() {
             return hygieiaAPIUrl;
@@ -373,8 +373,10 @@ public class HygieiaPublisher extends Notifier {
             return hygieiaPublishSonarDataGlobal;
         }
 
+        public boolean isShowConsoleOutput() { return showConsoleOutput; }
+
         public String getPluginVersionInfo() {
-            return org.apache.commons.lang3.StringUtils.isNotEmpty(pluginVersionInfo) ? pluginVersionInfo : this.getPlugin().getShortName()+" version "+this.getPlugin().getVersion(); }
+            return StringUtils.isNotEmpty(pluginVersionInfo) ? pluginVersionInfo : this.getPlugin().getShortName()+" version "+this.getPlugin().getVersion(); }
 
         public List<GenericCollectorItem> getHygieiaPublishGenericCollectorItems() {
             return hygieiaPublishGenericCollectorItems;
