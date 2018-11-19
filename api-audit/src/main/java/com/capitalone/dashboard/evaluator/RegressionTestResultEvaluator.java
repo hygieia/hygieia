@@ -74,11 +74,6 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         return null;
     }
 
-    @Override
-    public TestResultsAuditResponse evaluate(CollectorItem collectorItem, List<CollectorItem> collectorItemList, long beginDate, long endDate, Map<?, ?> dummy) {
-        return null;
-    }
-
     /**
      * Gets the json response from test_results collection with story information based on tags.
      *

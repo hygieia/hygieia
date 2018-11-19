@@ -8,6 +8,7 @@ import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.response.CodeReviewAuditResponse;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +27,7 @@ public class CodeReviewAuditServiceImpl implements CodeReviewAuditService {
     private final CodeReviewEvaluatorLegacy codeReviewEvaluatorLegacy;
     private final ApiSettings settings;
     private static final String BRANCH = "branch";
+    private static final String REPO_URL = "url";
 
     @Autowired
     public CodeReviewAuditServiceImpl(CollectorRepository collectorRepository,
@@ -55,14 +57,20 @@ public class CodeReviewAuditServiceImpl implements CodeReviewAuditService {
         CollectorItem collectorItem = collectorItemRepository.findRepoByUrlAndBranch(githubCollector.getId(), repoUrl, repoBranch, true);
 
         // This is the list of repos in the database with the same repoUrl, but a different branch.
-        List<CollectorItem> collectorItemList = new ArrayList<>();
         List<CollectorItem> filteredCollectorItemList = new ArrayList<>();
         if ((collectorItem != null) && (collectorItem.isPushed())) {
-            collectorItemList = collectorItemRepository.findRepoByUrl(githubCollector.getId(), repoUrl, true);
-            filteredCollectorItemList = Optional.ofNullable(collectorItemList)
-                                        .orElseGet(Collections::emptyList).stream()
-                                        .filter(ci -> !repoBranch.equalsIgnoreCase((String) ci.getOptions().get(BRANCH)))
-                                        .collect(Collectors.toList());
+            List<ObjectId> collectorIdList = new ArrayList<>();
+            collectorIdList.add(githubCollector.getId());
+
+            Iterable<CollectorItem> collectorItemIterable
+                    = collectorItemRepository.findAllByOptionNameValueAndCollectorIdsIn(REPO_URL, repoUrl, collectorIdList);
+
+            for (CollectorItem ci : collectorItemIterable) {
+                if (repoBranch.equalsIgnoreCase((String) ci.getOptions().get(BRANCH))) { continue; }
+
+                filteredCollectorItemList.add(ci);
+            }
+
             return codeReviewEvaluatorLegacy.evaluate(collectorItem, filteredCollectorItemList, beginDt, endDt, null);
         }
 

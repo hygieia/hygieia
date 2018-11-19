@@ -45,11 +45,6 @@ public class StaticSecurityAnalysisEvaluator extends Evaluator<SecurityReviewAud
         return getStaticSecurityScanResponse(collectorItem, beginDate, endDate);
     }
 
-    @Override
-    public SecurityReviewAuditResponse evaluate(CollectorItem collectorItem, List<CollectorItem> collectorItemList, long beginDate, long endDate, Map<?, ?> data) {
-        return null;
-    }
-
     /**
      * Reusable method for constructing the CodeQualityAuditResponse object
      *

@@ -59,11 +59,6 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
         return getPerformanceTestAudit(collectorItem, beginDate, endDate);
     }
 
-    @Override
-    public PerformanceTestAuditResponse evaluate(CollectorItem collectorItem, List<CollectorItem> collectorItemList, long beginDate, long endDate, Map<?, ?> data) {
-        return null;
-    }
-
     private PerformanceTestAuditResponse getPerformanceTestAudit(CollectorItem perfItem, long beginDate, long endDate) {
 
         PerformanceTestAuditResponse perfReviewResponse = new PerformanceTestAuditResponse();

@@ -19,6 +19,7 @@ import com.capitalone.dashboard.status.CodeReviewAuditStatus;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,6 +40,8 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
     private final GitRequestRepository gitRequestRepository;
     private final CollectorRepository collectorRepository;
     protected ApiSettings settings;
+    private static final String BRANCH = "branch";
+    private static final String REPO_URL = "url";
 
     @Autowired
     public CodeReviewEvaluator(CommitRepository commitRepository, GitRequestRepository gitRequestRepository,
@@ -68,7 +71,18 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
 
             if (repoItem.isPushed()) {
                 Collector githubCollector = collectorRepository.findByName("GitHub");
-                List<CollectorItem> collectorItemList = collectorItemRepository.findRepoByUrl(githubCollector.getId(), parsedUrl, true);
+                List<CollectorItem> collectorItemList = new ArrayList<>();
+                List<ObjectId> collectorIdList = new ArrayList<>();
+                collectorIdList.add(githubCollector.getId());
+                Iterable<CollectorItem> collectorItemIterable
+                        = collectorItemRepository.findAllByOptionNameValueAndCollectorIdsIn(REPO_URL, parsedUrl, collectorIdList);
+
+                for (CollectorItem ci : collectorItemIterable) {
+                    if (scmBranch.equalsIgnoreCase((String) ci.getOptions().get(BRANCH))) { continue; }
+
+                    collectorItemList.add(ci);
+                }
+
                 reviewResponse = evaluate(repoItem, collectorItemList, beginDate, endDate, null);
             } else {
                 reviewResponse = evaluate(repoItem, beginDate, endDate, null);
@@ -87,8 +101,7 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
         return getPeerReviewResponses(collectorItem, new ArrayList<>(), beginDate, endDate);
     }
 
-    @Override
-    public CodeReviewAuditResponseV2 evaluate(CollectorItem collectorItem, List<CollectorItem> collectorItemList, long beginDate, long endDate, Map<?, ?> data) {
+    protected CodeReviewAuditResponseV2 evaluate(CollectorItem collectorItem, List<CollectorItem> collectorItemList, long beginDate, long endDate, Map<?, ?> data) {
         return getPeerReviewResponses(collectorItem, collectorItemList, beginDate, endDate);
     }
 

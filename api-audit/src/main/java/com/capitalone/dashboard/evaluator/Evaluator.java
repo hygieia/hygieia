@@ -36,11 +36,9 @@ public abstract class Evaluator<T> {
     @Autowired
     protected ApiSettings settings;
 
-    public  abstract Collection<T> evaluate(Dashboard dashboard, long beginDate, long endDate, Map<?, ?> data) throws AuditException;
+    public abstract Collection<T> evaluate(Dashboard dashboard, long beginDate, long endDate, Map<?, ?> data) throws AuditException;
 
     public abstract T evaluate(CollectorItem collectorItem, long beginDate, long endDate, Map<?, ?> data) throws AuditException, HygieiaException;
-
-    public abstract T evaluate(CollectorItem collectorItem, List<CollectorItem> collectorItemList, long beginDate, long endDate, Map<?, ?> data) throws AuditException, HygieiaException;
 
     /**
      * @param dashboard the dashboard

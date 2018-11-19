@@ -62,11 +62,6 @@ public class BuildEvaluator extends Evaluator<BuildAuditResponse> {
         return getBuildJobAuditResponse(collectorItem, beginDate, endDate, repoItems);
     }
 
-    @Override
-    public BuildAuditResponse evaluate(CollectorItem collectorItem, List<CollectorItem> collectorItemList, long beginDate, long endDate, Map<?, ?> data) {
-        return null;
-    }
-
     private class ParsedRepo {
         String url;
         String branch;

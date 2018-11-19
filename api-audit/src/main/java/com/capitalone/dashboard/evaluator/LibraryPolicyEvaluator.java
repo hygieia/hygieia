@@ -51,11 +51,6 @@ public class LibraryPolicyEvaluator extends Evaluator<LibraryPolicyAuditResponse
         return getLibraryPolicyAuditResponse(collectorItem, beginDate, endDate);
     }
 
-    @Override
-    public LibraryPolicyAuditResponse evaluate(CollectorItem collectorItem, List<CollectorItem> collectorItemList, long beginDate, long endDate, Map<?, ?> data) {
-        return null;
-    }
-
     /**
      * Reusable method for constructing the LibraryPolicyAuditResponse object
      *
