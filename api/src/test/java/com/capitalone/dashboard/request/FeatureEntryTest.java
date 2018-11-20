@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.request;
 
 import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
@@ -8,7 +9,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-import com.capitalone.dashboard.model.FeatureCollector;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +17,7 @@ import java.util.Map;
 public class FeatureEntryTest {
     @Test
     public void FeatureEntry_toCollectorItem_Test() throws HygieiaException {
-        FeatureCollector collector = prototype();
+        Collector collector = prototype();
 
         DashboardRemoteRequest.Entry entry = new DashboardRemoteRequest.FeatureEntry();
 
@@ -47,7 +47,7 @@ public class FeatureEntryTest {
 
     @Test(expected = HygieiaException.class)
     public void FeatureEntry_toCollectorItem_Exception_Test() throws HygieiaException {
-        FeatureCollector collector = prototype();
+        Collector collector = prototype();
 
         DashboardRemoteRequest.Entry entry = new DashboardRemoteRequest.FeatureEntry();
 
@@ -63,8 +63,8 @@ public class FeatureEntryTest {
         entry.toCollectorItem(collector);
     }
 
-    private FeatureCollector prototype() {
-        FeatureCollector protoType = new FeatureCollector();
+    private Collector prototype() {
+        Collector protoType = new Collector();
         protoType.setName(FeatureCollectorConstants.JIRA);
         protoType.setOnline(true);
         protoType.setEnabled(true);
