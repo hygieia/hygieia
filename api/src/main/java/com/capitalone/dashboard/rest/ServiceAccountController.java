@@ -20,7 +20,7 @@ import java.util.Collection;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
-@RequestMapping("/serviceaccount")
+@RequestMapping("/serviceaccount_deprecated")
 @Admin
 public class ServiceAccountController {
 
