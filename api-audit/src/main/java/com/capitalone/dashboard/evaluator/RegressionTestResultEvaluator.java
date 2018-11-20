@@ -1,6 +1,5 @@
 package com.capitalone.dashboard.evaluator;
 
-import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
@@ -36,7 +35,6 @@ import java.util.regex.Pattern;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-
 
 @Component
 public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditResponse> {

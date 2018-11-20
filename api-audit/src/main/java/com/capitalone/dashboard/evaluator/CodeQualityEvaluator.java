@@ -1,7 +1,6 @@
 package com.capitalone.dashboard.evaluator;
 
 import com.capitalone.dashboard.common.CommonCodeReview;
-import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.CodeQuality;
 import com.capitalone.dashboard.model.CodeQualityMetric;
