@@ -3,9 +3,12 @@ package com.capitalone.dashboard.rest;
 import com.capitalone.dashboard.auth.access.Admin;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.ApiToken;
+import com.capitalone.dashboard.model.ServiceAccount;
 import com.capitalone.dashboard.model.UserInfo;
 import com.capitalone.dashboard.request.ApiTokenRequest;
+import com.capitalone.dashboard.request.ServiceAccountRequest;
 import com.capitalone.dashboard.service.ApiTokenService;
+import com.capitalone.dashboard.service.ServiceAccountService;
 import com.capitalone.dashboard.service.UserInfoService;
 import com.capitalone.dashboard.util.EncryptionException;
 import org.bson.types.ObjectId;
@@ -31,11 +34,14 @@ public class AdminController {
     private final UserInfoService userInfoService;
 
     private final ApiTokenService apiTokenService;
-    
+
+    private final ServiceAccountService serviceAccountService;
+
     @Autowired
-    public AdminController(UserInfoService userInfoService, ApiTokenService apiTokenService) {
+    public AdminController(UserInfoService userInfoService, ApiTokenService apiTokenService,ServiceAccountService serviceAccountService) {
         this.userInfoService = userInfoService;
         this.apiTokenService = apiTokenService;
+        this.serviceAccountService = serviceAccountService;
     }
     
     @RequestMapping(path = "/users/addAdmin", method = RequestMethod.POST)
@@ -91,5 +97,46 @@ public class AdminController {
     public Collection<ApiToken> getApiTokens() {
         Collection<ApiToken> tokens = apiTokenService.getApiTokens();
         return tokens;
+    }
+
+    @RequestMapping(value = "/createAccount", method = RequestMethod.POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> createAccount(@Valid @RequestBody ServiceAccountRequest serviceAccountRequest) {
+        try {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(serviceAccountService.createAccount(serviceAccountRequest.getServiceAccount(),
+                            serviceAccountRequest.getFileNames()));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "/updateAccount/{id}", method = RequestMethod.POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> updateAccount(@Valid @RequestBody ServiceAccountRequest serviceAccountRequest, @PathVariable ObjectId id) {
+        try {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(serviceAccountService.updateAccount(serviceAccountRequest.getServiceAccount(),
+                            serviceAccountRequest.getFileNames(),id));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
+    }
+
+    @RequestMapping(path = "/allServiceAccounts", method = RequestMethod.GET)
+    public Collection<ServiceAccount> getAllServiceAccouts() {
+        Collection<ServiceAccount> serviceAccounts = serviceAccountService.getAllServiceAccounts();
+        return serviceAccounts;
+    }
+
+
+    @RequestMapping(path = "/deleteAccount/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<Void> deleteAccount(@PathVariable ObjectId id){
+        serviceAccountService.deleteAccount(id);
+        return ResponseEntity.<Void>noContent().build();
     }
 }
