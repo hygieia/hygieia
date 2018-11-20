@@ -262,6 +262,9 @@ public class DashboardRemoteRequest {
                 collectorItem.setDescription(description);
                 collectorItem.setNiceName(niceName);
                 for (String key : options.keySet()) {
+                    if (!collector.getAllFields().keySet().contains(key)) {
+                        throw new HygieiaException(toolName + " collector does not support field: " + key, HygieiaException.COLLECTOR_ITEM_CREATE_ERROR);
+                    }
                     if (collector.getUniqueFields().keySet().contains(key)) {
                         collectorItem.getOptions().put(key, options.get(key));
                     }
