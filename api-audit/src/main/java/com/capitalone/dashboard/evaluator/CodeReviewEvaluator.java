@@ -10,8 +10,10 @@ import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.SCM;
+import com.capitalone.dashboard.model.ServiceAccount;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
+import com.capitalone.dashboard.repository.ServiceRepository;
 import com.capitalone.dashboard.response.CodeReviewAuditResponseV2;
 import com.capitalone.dashboard.status.CodeReviewAuditStatus;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
@@ -20,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
+import com.capitalone.dashboard.repository.ServiceAccountRepository;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +32,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
@@ -36,12 +40,14 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
     private final CommitRepository commitRepository;
     private final GitRequestRepository gitRequestRepository;
     protected ApiSettings settings;
+    private final ServiceAccountRepository serviceAccountRepository;
 
     @Autowired
-    public CodeReviewEvaluator(CommitRepository commitRepository, GitRequestRepository gitRequestRepository, ApiSettings settings) {
+    public CodeReviewEvaluator(CommitRepository commitRepository, GitRequestRepository gitRequestRepository, ServiceAccountRepository serviceAccountRepository, ApiSettings settings) {
         this.commitRepository = commitRepository;
         this.gitRequestRepository = gitRequestRepository;
         this.settings = settings;
+        this.serviceAccountRepository = serviceAccountRepository;
     }
 
 
@@ -171,7 +177,7 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
 
             allPrCommitShas.addAll(commitsRelatedToPr.stream().map(SCM::getScmRevisionNumber).collect(Collectors.toList()));
 
-            boolean peerReviewed = CommonCodeReview.computePeerReviewStatus(pr, settings, pullRequestAudit, commits, commitRepository);
+            boolean peerReviewed = CommonCodeReview.computePeerReviewStatus(pr, settings, pullRequestAudit, commits, commitRepository,serviceAccountRepository);
             pullRequestAudit.addAuditStatus(peerReviewed ? CodeReviewAuditStatus.PULLREQ_REVIEWED_BY_PEER : CodeReviewAuditStatus.PULLREQ_NOT_PEER_REVIEWED);
             String sourceRepo = pr.getSourceRepo();
             String targetRepo = pr.getTargetRepo();
@@ -206,9 +212,11 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
     }
 
     private void auditDirectCommits(CodeReviewAuditResponseV2 reviewAuditResponseV2, Commit commit) {
+        Stream<String> combinedStream = Stream.of(commit.getFilesAdded(), commit.getFilesModified(),commit.getFilesRemoved()).filter(Objects::nonNull).flatMap(Collection::stream);
+        Collection<String> collectionCombined = combinedStream.collect(Collectors.toList());
         if (StringUtils.isBlank(commit.getScmAuthorLDAPDN())) {
             auditIncrementVersionTag(reviewAuditResponseV2, commit, CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE);
-        } else if (CommonCodeReview.checkForServiceAccount(commit.getScmAuthorLDAPDN(), settings)) {
+        } else if (CommonCodeReview.checkForServiceAccount(commit.getScmAuthorLDAPDN(), settings,getAllServiceAccounts(),commit.getScmAuthor(),collectionCombined.stream().collect(Collectors.toList()),true)) {
             reviewAuditResponseV2.addAuditStatus(CodeReviewAuditStatus.COMMITAUTHOR_EQ_SERVICEACCOUNT);
             auditIncrementVersionTag(reviewAuditResponseV2, commit, CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_SERVICE_ACCOUNT);
         } else {
@@ -223,5 +231,10 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
         } else {
             reviewAuditResponseV2.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
         }
+    }
+
+    public Map<String,String> getAllServiceAccounts(){
+        List<ServiceAccount> serviceAccounts = (List<ServiceAccount>) serviceAccountRepository.findAll();
+        return serviceAccounts.stream().collect(Collectors.toMap(ServiceAccount :: getServiceAccountName, ServiceAccount::getFileNames));
     }
 }
