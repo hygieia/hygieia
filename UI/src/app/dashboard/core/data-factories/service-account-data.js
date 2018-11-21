@@ -7,8 +7,7 @@
 
     function serviceAccountData($http) {
         var testDetailRoute = 'test-data/signup_detail.json';
-        var adminRoute = '/api/serviceaccount';
-        var serviceAccountsRoute = '/api/createAccount';
+        var adminRoute = '/api/admin';
 
         return {
             getAllServiceAccounts: getAllServiceAccounts,
