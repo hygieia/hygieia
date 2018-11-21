@@ -8,8 +8,10 @@ import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.Review;
+import com.capitalone.dashboard.model.ServiceAccount;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
+import com.capitalone.dashboard.repository.ServiceAccountRepository;
 import com.capitalone.dashboard.response.CodeReviewAuditResponseV2;
 import com.capitalone.dashboard.status.CodeReviewAuditStatus;
 import org.bson.types.ObjectId;
@@ -22,6 +24,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,6 +42,8 @@ public class CodeReviewEvaluatorTest {
     private CommitRepository commitRepository;
     @Mock
     private GitRequestRepository gitRequestRepository;
+    @Mock
+    private ServiceAccountRepository serviceAccountRepository;
 
     @Mock
     private ApiSettings apiSettings;
@@ -75,12 +80,22 @@ public class CodeReviewEvaluatorTest {
     }
 
     @Test
+    public void evaluate_COMMITAUTHOR_EQ_SERVICEACCOUNT_WithAllowedUsers() {
+        when(gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(any(ObjectId.class), any(Long.class), any(Long.class))).thenReturn(new ArrayList<GitRequest>());
+        when(commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(any(ObjectId.class), any(Long.class), any(Long.class))).thenReturn(Stream.of(makeCommit("test message","scmRevisionNumber1", "servUserName", null,0L)).collect(Collectors.toList()));
+        when(serviceAccountRepository.findAll()).thenReturn(Stream.of(makeServiceAccount()).collect(Collectors.toList()));
+        CodeReviewAuditResponseV2 responseV2 = codeReviewEvaluator.evaluate(makeCollectorItem(1, "master"), 125634536, 6235263, null);
+        Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("COMMITAUTHOR_EQ_SERVICEACCOUNT"));
+    }
+
+    @Test
     public void evaluate_DIRECT_COMMIT_INCREMENT_VERSION_TAG_SERVICE_ACCOUNT() {
         when(gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(any(ObjectId.class), any(Long.class), any(Long.class))).thenReturn(new ArrayList<GitRequest>());
         when(commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(any(ObjectId.class), any(Long.class), any(Long.class))).thenReturn(Stream.of(makeCommit("[Increment_Version_Tag] preparing 1.5.6","scmRevisionNumber1",null, null,0L)).collect(Collectors.toList()));
         when(apiSettings.getServiceAccountOU()).thenReturn(TestConstants.SERVICE_ACCOUNTS);
         when(apiSettings.getServiceAccountOU()).thenReturn(TestConstants.SERVICE_ACCOUNTS);
         when(apiSettings.getCommitLogIgnoreAuditRegEx()).thenReturn("(.)*(Increment_Version_Tag)(.)*");
+        when(serviceAccountRepository.findAll()).thenReturn(Stream.of(makeServiceAccount()).collect(Collectors.toList()));
         CodeReviewAuditResponseV2 responseV2 = codeReviewEvaluator.evaluate(makeCollectorItem(1,"master"),125634536, 6235263, null);
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("DIRECT_COMMIT_NONCODE_CHANGE_SERVICE_ACCOUNT"));
     }
@@ -92,6 +107,7 @@ public class CodeReviewEvaluatorTest {
         when(apiSettings.getServiceAccountOU()).thenReturn(TestConstants.USER_ACCOUNTS);
         when(apiSettings.getServiceAccountOU()).thenReturn(TestConstants.USER_ACCOUNTS);
         when(apiSettings.getCommitLogIgnoreAuditRegEx()).thenReturn("(.)*(Increment_Version_Tag)(.)*");
+        when(serviceAccountRepository.findAll()).thenReturn(Stream.of(makeServiceAccount()).collect(Collectors.toList()));
         CodeReviewAuditResponseV2 responseV2 = codeReviewEvaluator.evaluate(makeCollectorItem(1,"master"),125634536, 6235263, null);
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("DIRECT_COMMIT_NONCODE_CHANGE_USER_ACCOUNT"));
     }
@@ -121,6 +137,7 @@ public class CodeReviewEvaluatorTest {
         when(apiSettings.getServiceAccountOU()).thenReturn(TestConstants.USER_ACCOUNTS);
         when(apiSettings.getServiceAccountOU()).thenReturn(TestConstants.USER_ACCOUNTS);
         when(apiSettings.getCommitLogIgnoreAuditRegEx()).thenReturn("(.)*(Increment_Version_Tag)(.)*");
+        when(serviceAccountRepository.findAll()).thenReturn(Stream.of(makeServiceAccount()).collect(Collectors.toList()));
         CodeReviewAuditResponseV2 responseV2 = codeReviewEvaluator.evaluate(makeCollectorItem(1,"master"), collectorItemList,125634536, 6235263, null);
         Assert.assertTrue(responseV2.getAuditStatuses().contains(CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE));
 
@@ -142,8 +159,9 @@ public class CodeReviewEvaluatorTest {
 
         when(gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(any(ObjectId.class),any(Long.class), any(Long.class))).thenReturn(pullRequestList);
         when(commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(any(ObjectId.class),any(Long.class), any(Long.class))).thenReturn(commitsList);
+        when(serviceAccountRepository.findAll()).thenReturn(Stream.of(makeServiceAccount()).collect(Collectors.toList()));
 
-        CodeReviewEvaluatorLegacy codeReviewEvaluatorLegacyInstance = new CodeReviewEvaluatorLegacy(commitRepository, gitRequestRepository, apiSettings);
+        CodeReviewEvaluatorLegacy codeReviewEvaluatorLegacyInstance = new CodeReviewEvaluatorLegacy(commitRepository, gitRequestRepository, serviceAccountRepository, apiSettings);
 
         pullRequestList.get(0).setUserId("NotAuthor1");
         boolean result = codeReviewEvaluatorLegacyInstance.existsApprovedPRForCollectorItem(collectorItem, commit, collectorItem, 12345678L, 12345679L);
@@ -210,6 +228,7 @@ public class CodeReviewEvaluatorTest {
         List<String> serviceAccountOU = new ArrayList<>();
         serviceAccountOU.add("CN=hygieiaUser,OU=Service Accounts,DC=basic,DC=ds,DC=industry,DC=com");
         when(apiSettings.getServiceAccountOU()).thenReturn(serviceAccountOU);
+        when(serviceAccountRepository.findAll()).thenReturn(Stream.of(makeServiceAccount()).collect(Collectors.toList()));
 
         codeReviewEvaluator.auditDirectCommits(reviewAuditResponseV2, commit);
         verify(codeReviewEvaluator).auditIncrementVersionTag(reviewAuditResponseV2, commit, CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_SERVICE_ACCOUNT);
@@ -286,20 +305,27 @@ public class CodeReviewEvaluatorTest {
         c.setScmCommitLog(message);
         c.setScmAuthorLDAPDN("CN=hygieiaUser,OU=Service Accounts,DC=basic,DC=ds,DC=industry,DC=com");
         c.setScmRevisionNumber(scmRevisionNumber);
+        c.setType(CommitType.New);
         c.setScmAuthor(author);
         c.setScmAuthorLogin(author);
+        c.setFilesModified(Arrays.asList("pom.xml"));
+        c.setFilesRemoved(Arrays.asList("cucumber.xml"));
+        c.setFilesAdded(Arrays.asList("package.json"));
         c.setScmCommitterLogin(committer);
         c.setScmCommitTimestamp(timeStamp);
-        c.setType(CommitType.New);
         return c;
     }
 
-    private Commit makeCommitWithNoLDAP(String message){
+    private Commit makeCommitWithNoLDAP(String message) {
         Commit c = new Commit();
         c.setId(ObjectId.get());
         c.setScmCommitLog(message);
         c.setScmRevisionNumber("scmRevisionNumber1");
         c.setType(CommitType.New);
         return c;
+    }
+
+    private ServiceAccount makeServiceAccount(){
+        return  new ServiceAccount("servUserName","pom.xml,*.json");
     }
 }

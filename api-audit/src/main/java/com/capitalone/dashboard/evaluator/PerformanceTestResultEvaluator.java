@@ -68,7 +68,9 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
         List<TestResult> testResults = testResultRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(perfItem.getId(), beginDate-1, endDate+1);
         List<PerfTest> testlist = new ArrayList<>();
 
-        for (TestResult testResult : testResults) {
+        if (!CollectionUtils.isEmpty(testResults)){
+            testResults.sort(Comparator.comparing(TestResult::getTimestamp).reversed());
+            TestResult testResult = testResults.iterator().next();
             if (TestSuiteType.Performance.toString().equalsIgnoreCase(testResult.getType().name())) {
                 Collection<TestCapability> testCapabilities = testResult.getTestCapabilities();
 
@@ -128,7 +130,6 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
                         testlist.add(test);
                     }
                 }
-
                 testlist.sort(Comparator.comparing(PerfTest::getStartTime).reversed());
                 perfReviewResponse.setLastExecutionTime(testlist.get(0).getStartTime());
                 perfReviewResponse.setResult(testlist);

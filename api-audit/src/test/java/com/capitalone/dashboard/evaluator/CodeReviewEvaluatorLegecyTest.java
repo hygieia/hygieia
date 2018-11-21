@@ -7,8 +7,10 @@ import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.Review;
+import com.capitalone.dashboard.model.ServiceAccount;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
+import com.capitalone.dashboard.repository.ServiceAccountRepository;
 import com.capitalone.dashboard.response.CodeReviewAuditResponse;
 import com.capitalone.dashboard.status.CodeReviewAuditStatus;
 import org.bson.types.ObjectId;
@@ -36,6 +38,8 @@ public class CodeReviewEvaluatorLegecyTest {
     private CommitRepository commitRepository;
     @Mock
     private GitRequestRepository gitRequestRepository;
+    @Mock
+    private ServiceAccountRepository serviceAccountRepository;
 
     @Mock
     private ApiSettings apiSettings;
@@ -66,8 +70,20 @@ public class CodeReviewEvaluatorLegecyTest {
         when(gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(any(ObjectId.class),any(Long.class), any(Long.class))).thenReturn(new ArrayList<GitRequest>());
         when(commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(any(ObjectId.class),any(Long.class), any(Long.class))).thenReturn(Stream.of(makeCommit("Merge branch master into branch", "scmRevisionNumber1", null, null,0L)).collect(Collectors.toList()));
         when(apiSettings.getServiceAccountOU()).thenReturn(TestConstants.SERVICE_ACCOUNTS);
+        when(serviceAccountRepository.findAll()).thenReturn(Stream.of(makeServiceAccount()).collect(Collectors.toList()));
         List<CodeReviewAuditResponse> responseV2 =  codeReviewEvaluatorLegacy.evaluate(makeCollectorItem(1, "master"),125634536,6235263,null);
         Assert.assertEquals(false, responseV2.get(0).getAuditStatuses().toString().contains("COMMITAUTHOR_EQ_SERVICEACCOUNT"));
+    }
+
+    @Test
+    public void evaluate_COMMITAUTHOR_EQ_SERVICEACCOUNT_WithAllowedUsers() {
+        when(gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(any(ObjectId.class),any(Long.class), any(Long.class))).thenReturn(new ArrayList<GitRequest>());
+        when(commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(any(ObjectId.class),any(Long.class), any(Long.class))).thenReturn(Stream.of(makeCommit("Merge branch master into branch","servUserName",null, null,0L)).collect(Collectors.toList()));
+        when(apiSettings.getServiceAccountOU()).thenReturn(TestConstants.SERVICE_ACCOUNTS);
+        when(serviceAccountRepository.findAll()).thenReturn(Stream.of(makeServiceAccount()).collect(Collectors.toList()));
+
+        List<CodeReviewAuditResponse> responseV2 =  codeReviewEvaluatorLegacy.evaluate(makeCollectorItem(1, "master"),125634536,6235263,null);
+        Assert.assertEquals(true, responseV2.get(1).getAuditStatuses().toString().contains("COMMITAUTHOR_EQ_SERVICEACCOUNT"));
     }
 
     @Test
@@ -76,6 +92,8 @@ public class CodeReviewEvaluatorLegecyTest {
         when(commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(any(ObjectId.class),any(Long.class), any(Long.class))).thenReturn(Stream.of(makeCommit("[Increment_Version_Tag] preparing 1.5.6", "scmRevisionNumber1", null, null,0L)).collect(Collectors.toList()));
         when(apiSettings.getServiceAccountOU()).thenReturn(TestConstants.SERVICE_ACCOUNTS);
         when(apiSettings.getCommitLogIgnoreAuditRegEx()).thenReturn("(.)*(Increment_Version_Tag)(.)*");
+        when(serviceAccountRepository.findAll()).thenReturn(Stream.of(makeServiceAccount()).collect(Collectors.toList()));
+
         List<CodeReviewAuditResponse> responseV2 =  codeReviewEvaluatorLegacy.evaluate(makeCollectorItem(1, "master"),125634536,6235263,null);
         Assert.assertEquals(true, responseV2.get(1).getAuditStatuses().toString().contains("DIRECT_COMMIT_NONCODE_CHANGE_SERVICE_ACCOUNT"));
     }
@@ -86,18 +104,10 @@ public class CodeReviewEvaluatorLegecyTest {
         when(commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(any(ObjectId.class),any(Long.class), any(Long.class))).thenReturn(Stream.of(makeCommit("[Increment_Version_Tag] preparing 1.5.6", "scmRevisionNumber1", null, null,0L)).collect(Collectors.toList()));
         when(apiSettings.getServiceAccountOU()).thenReturn(TestConstants.USER_ACCOUNTS);
         when(apiSettings.getCommitLogIgnoreAuditRegEx()).thenReturn("(.)*(Increment_Version_Tag)(.)*");
+        when(serviceAccountRepository.findAll()).thenReturn(Stream.of(makeServiceAccount()).collect(Collectors.toList()));
+
         List<CodeReviewAuditResponse> responseV2 =  codeReviewEvaluatorLegacy.evaluate(makeCollectorItem(1, "master"),125634536,6235263,null);
         Assert.assertEquals(true, responseV2.get(1).getAuditStatuses().toString().contains("DIRECT_COMMIT_NONCODE_CHANGE_USER_ACCOUNT"));
-    }
-
-    @Test
-    public void evaluate_SCM_AUTHOR_LOGIN_INVALID() {
-        when(gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(any(ObjectId.class),any(Long.class), any(Long.class))).thenReturn(new ArrayList<GitRequest>());
-        when(commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(any(ObjectId.class),any(Long.class), any(Long.class))).thenReturn(Stream.of(makeCommitWithNoLDAP("[Increment_Version_Tag] preparing 1.5.6")).collect(Collectors.toList()));
-        when(apiSettings.getServiceAccountOU()).thenReturn(TestConstants.USER_ACCOUNTS);
-        when(apiSettings.getCommitLogIgnoreAuditRegEx()).thenReturn("(.)*(Increment_Version_Tag)(.)*");
-        List<CodeReviewAuditResponse> responseV2 =  codeReviewEvaluatorLegacy.evaluate(makeCollectorItem(1, "master"),125634536,6235263,null);
-        Assert.assertEquals(true, responseV2.get(1).getAuditStatuses().contains(CodeReviewAuditStatus.SCM_AUTHOR_LOGIN_INVALID));
     }
 
     @Test
@@ -113,6 +123,7 @@ public class CodeReviewEvaluatorLegecyTest {
         when(commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(any(ObjectId.class),any(Long.class), any(Long.class))).thenReturn(commitsList);
         when(apiSettings.getServiceAccountOU()).thenReturn(TestConstants.USER_ACCOUNTS);
         when(apiSettings.getCommitLogIgnoreAuditRegEx()).thenReturn("(.)*(Increment_Version_Tag)(.)*");
+        when(serviceAccountRepository.findAll()).thenReturn(Stream.of(makeServiceAccount()).collect(Collectors.toList()));
 
         List<CodeReviewAuditResponse> responseV2 =  codeReviewEvaluatorLegacy.evaluate(makeCollectorItem(1, "master"), collectorItemList,125634536,6235263,null);
         Assert.assertTrue(responseV2.get(0).getAuditStatuses().contains(CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE));
@@ -131,8 +142,9 @@ public class CodeReviewEvaluatorLegecyTest {
 
         when(gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(any(ObjectId.class),any(Long.class), any(Long.class))).thenReturn(pullRequestList);
         when(commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(any(ObjectId.class),any(Long.class), any(Long.class))).thenReturn(commitsList);
+        when(serviceAccountRepository.findAll()).thenReturn(Stream.of(makeServiceAccount()).collect(Collectors.toList()));
 
-        CodeReviewEvaluatorLegacy codeReviewEvaluatorLegacyInstance = new CodeReviewEvaluatorLegacy(commitRepository, gitRequestRepository, apiSettings);
+        CodeReviewEvaluatorLegacy codeReviewEvaluatorLegacyInstance = new CodeReviewEvaluatorLegacy(commitRepository, gitRequestRepository, serviceAccountRepository, apiSettings);
 
         pullRequestList.get(0).setUserId("NotAuthor1");
         boolean result = codeReviewEvaluatorLegacyInstance.existsApprovedPRForCollectorItem(collectorItem, commit, collectorItem, 12345678L, 12345679L);
@@ -247,6 +259,10 @@ public class CodeReviewEvaluatorLegecyTest {
         c.setScmCommitTimestamp(timeStamp);
         c.setType(CommitType.New);
         return c;
+    }
+
+    private ServiceAccount makeServiceAccount(){
+        return  new ServiceAccount("servUserName","pom.xml,cucumber.json");
     }
 
     private Commit makeCommitWithNoLDAP(String message){
