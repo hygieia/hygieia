@@ -58,7 +58,6 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
         return getPerformanceTestAudit(collectorItem, beginDate, endDate);
     }
 
-
     private PerformanceTestAuditResponse getPerformanceTestAudit(CollectorItem perfItem, long beginDate, long endDate) {
 
         PerformanceTestAuditResponse perfReviewResponse = new PerformanceTestAuditResponse();
