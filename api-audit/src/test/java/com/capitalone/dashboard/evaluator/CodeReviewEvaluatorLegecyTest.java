@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -253,11 +254,14 @@ public class CodeReviewEvaluatorLegecyTest {
         c.setScmCommitLog(message);
         c.setScmAuthorLDAPDN("CN=hygieiaUser,OU=Service Accounts,DC=basic,DC=ds,DC=industry,DC=com");
         c.setScmRevisionNumber(scmRevisionNumber);
+        c.setType(CommitType.New);
         c.setScmAuthor(author);
         c.setScmAuthorLogin(author);
         c.setScmCommitterLogin(committer);
         c.setScmCommitTimestamp(timeStamp);
-        c.setType(CommitType.New);
+        c.setFilesModified(Arrays.asList("pom.xml"));
+        c.setFilesRemoved(Arrays.asList("cucumber.xml"));
+        c.setFilesAdded(Arrays.asList("package.json"));
         return c;
     }
 
