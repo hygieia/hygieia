@@ -112,14 +112,12 @@ Please make sure the httpd is installed, then open the following file and update
 	java -jar api.jar --spring.config.location=C:\[path to]\Hygieia\api\dashboard.properties -Djasypt.encryptor.password=hygieiasecret &
 	```
 	
-	**Option 2: Running all collectors using script
+	**Option 2: Running all collectors using script**
 	
 	-In general, all the collectors can be run using the following command:
 		```java -jar <Path to collector-name.jar> --spring.config.name=<prefix for properties> --spring.config.location=<path to properties file location>```
 	- For detailed instructions on installing each component of Hygieia, see the documentation corresponding to each component.
-	- Example 
-	- Create a script file to start all the collectors 
-	- Example
+	- Create a script file to start all the collectors eg. 
 	``` java -jar /opt/Dashboard/github-scm-collector-*.jar --spring.config.name=github -- 	spring.config.location=/opt/Dashboard/application.properties &
 ```java -jar /opt/Dashboard/jenkins-build-collector-*.jar --spring.config.name=jenkins --spring.config.location=/opt/Dashboard/application.properties &
 java -jar /opt/Dashboard/rally-collector-*.jar --spring.config.name=rally --spring.config.location=/opt/Dashboard/application.properties &
