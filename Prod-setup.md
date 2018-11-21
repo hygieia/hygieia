@@ -12,7 +12,7 @@ folder: hygieia
 ## Prerequisites
 
 The following are the prerequisites to set up Hygieia:
-
+- Install httpd (Redhat/CentOS/Fedora) , apache2(Debian based distriubution)
 - Install Git - Install Git for your platform. For installation steps, see the [**Installing Git**](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) section of Git's documentation.
 - Install Java - Version 1.8 is recommended
 - Install Maven - Version 3.3.9 and above are recommended
@@ -64,26 +64,68 @@ To configure Hygieia, execute the following steps:
 	
 	Set the configurable parameters in the `.properties` file to connect to each component of Hygieia. For more information about the server configuration, see the Spring Boot [documentation](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files).
 
-*	**Step 3: Run Each Component**
+## Setup httpd (instead of default gulp)
+	
+Please make sure the httpd is installed, then open the following file and update the below configuration accordingly. 
+	
+	```# vi /etc/httpd/conf/httpd.conf
+	Listen 80
+	<VirtualHost *:80>
+        ProxyPreserveHost On
+        ProxyPass /api http://localhost:8080/api
+        #ProxyPassReverse /api http://localhost:8080/api
+
+        ServerName <ServerName>
+        ServerAlias is-hygiea-wow *.is-hygieia-wow
+        ServerAdmin <email ID>
+        DocumentRoot <absolute path of the dist folder>   ## eg. /opt/Dashboard/dist/
+	</VirtualHost>
+	....
+	......
+	<Directory "/var/www">
+	    AllowOverride None
+	    # Allow open access:
+	    Require all granted
+	</Directory>
+
+	<Directory /opt/Dashboard/dist/>		## replace the path with your dist folder path. 
+		Options Indexes FollowSymLinks
+		AllowOverride None
+		Require all granted
+	</Directory>
+
+	```
+	
+## Start Webserver
+	``` # systemctl status httpd
+	    # systemctl start httpd
+	    # systemctl status httpd
+	
+	
+## Start collectors
+
+*	**Option 1: Run Each Collector in the background**
 
 	To run the executable file for API module, change directory to 'api\target' and then execute the following command from the command prompt:
 
 	```bash
-	java -jar api.jar --spring.config.location=C:\[path to]\Hygieia\api\dashboard.properties -Djasypt.encryptor.password=hygieiasecret
+	java -jar api.jar --spring.config.location=C:\[path to]\Hygieia\api\dashboard.properties -Djasypt.encryptor.password=hygieiasecret &
 	```
 	
-	To run the UI module, in the command prompt, navigate to `\Hygieia\UI`, and then execute the following command:
+	**Option 2: Running all collectors using script
+	
+	-In general, all the collectors can be run using the following command:
+		```java -jar <Path to collector-name.jar> --spring.config.name=<prefix for properties> --spring.config.location=<path to properties file location>```
+	- For detailed instructions on installing each component of Hygieia, see the documentation corresponding to each component.
+	- Example 
+	- Create a script file to start all the collectors 
+	- Example
+	``` java -jar /opt/Dashboard/github-scm-collector-*.jar --spring.config.name=github -- 	spring.config.location=/opt/Dashboard/application.properties &
+```java -jar /opt/Dashboard/jenkins-build-collector-*.jar --spring.config.name=jenkins --spring.config.location=/opt/Dashboard/application.properties &
+java -jar /opt/Dashboard/rally-collector-*.jar --spring.config.name=rally --spring.config.location=/opt/Dashboard/application.properties &
+java -jar /opt/Dashboard/sonar-codequality-collector-*.jar --spring.config.name=sonar --spring.config.location=/opt/Dashboard/application.properties &
 
-	```bash
-	gulp serve
-	```
+```
 	
-	The dashboard will serve up on port 3000.
 	
-	In general, all the collectors can be run using the following command:
 	
-	```bash
-	java -jar <Path to collector-name.jar> --spring.config.name=<prefix for properties> --spring.config.location=<path to properties file location>
-	```
-	
-	For detailed instructions on installing each component of Hygieia, see the documentation corresponding to each component.
