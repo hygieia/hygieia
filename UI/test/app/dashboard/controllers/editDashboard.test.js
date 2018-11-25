@@ -5,11 +5,23 @@ describe('EditDashboardController', function () {
 
   // controlled data to test with
   var fixedDashboard = {
-    type: "widget",
+    template: "widgets",
     configurationItemBusServName: "serviceName",
     configurationItemBusAppName: "AppName",
     scoreEnabled: false,
-    id: "id"
+    id: "id",
+    owner: "Steve",
+    title: "Dashboard01",
+    activeWidgets: [
+      {type: "build", title: "build01"},
+      {type: "build", title: "build02"},
+      {type: "code", title: "code03"}
+    ],
+    widgets: [
+      {id: "01", name: "build01", collectorItemIds: ["02", "03", "04"]},
+      {id: "01", name: "build01", collectorItemIds: ["04"]},
+      {id: "01", name: "code01", collectorItemIds: ["05"]}
+    ]
   };
   var fixedDashboardItem = {};
   var fixedCmbdData = {};
@@ -51,13 +63,13 @@ describe('EditDashboardController', function () {
   // inject mocks etc into the subject under test
   beforeEach(
     function () {
-      inject(function ($rootScope, $q, $controller) {
+      inject(function ($httpBackend,$rootScope, $q, $controller) {
         var scope = $rootScope.$new();
         dashboardServiceSpy = jasmine.createSpyObj("dashboardService", ["getDashboardTitleOrig", "getBusAppToolTipText", "getBusSerToolTipText"]);
         widgetManagerSpy = jasmine.createSpyObj("widgetManager", ["getWidgets"]);
         userServiceSpy = jasmine.createSpyObj("userservice", ["getUsername", "getAuthType"]);
-        dashboardSpy = jasmine.createSpyObj("dashboardData",["owners","detail"]);
-        usersSpy = jasmine.createSpyObj("userData",["getAllUsers"]);
+        dashboardSpy = jasmine.createSpyObj("dashboardData", ["owners", "detail"]);
+        usersSpy = jasmine.createSpyObj("userData", ["getAllUsers"]);
 
         // setup user
         userServiceSpy.getUsername.and.returnValue("Steve");
@@ -65,7 +77,7 @@ describe('EditDashboardController', function () {
 
         //setup dashboard
         dashboardSpy.owners.and.returnValue($q.when('["Steve"]'));
-        dashboardSpy.detail.and.returnValue($q.when('dashboard'));
+        dashboardSpy.detail.and.returnValue($q.when(fixedDashboard));
 
         //setup users
         usersSpy.getAllUsers.and.returnValue($q.when('["Steve"]'));
@@ -82,12 +94,17 @@ describe('EditDashboardController', function () {
           widgetManager: widgetManagerSpy,
           $q: $q
         });
+        // expect the view to be got
+        $httpBackend.whenGET('app/dashboard/views/site.html').respond("TEXT");
+        // trigger angular digest to resolve all those promises
+        $rootScope.$apply();
       });
     })
 
   describe("create controller", function () {
     it("should have setup the controller", function () {
-
+      expect(controller.selectWidgetsDisabled).toBe(false);
+      expect(controller.activeWidgets.length).toBe(3);
     })
   })
 });
