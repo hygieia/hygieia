@@ -36,7 +36,6 @@ import java.util.regex.Pattern;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-
 @Component
 public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditResponse> {
 
@@ -69,7 +68,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
     }
 
     @Override
-    public TestResultsAuditResponse evaluate(CollectorItem collectorItem, long beginDate, long endDate, Map<?, ?> dummy) {
+    public TestResultsAuditResponse evaluate(CollectorItem collectorItem, long beginDate, long endDate, Map<?, ?> data) {
         return null;
     }
 
