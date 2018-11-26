@@ -107,15 +107,12 @@ public class GitHubPullRequestV3 extends GitHubV3 {
             throw new HygieiaException("Failed processing payload. Missing Github API token in Hygieia.", HygieiaException.INVALID_CONFIGURATION);
         }
 
-        start = System.currentTimeMillis();
         ResponseEntity<String> response = null;
         try {
             response = restClient.makeRestCallPost(gitHubParsed.getGraphQLUrl(), "token", token, postBody);
         } catch (Exception e) {
             throw new HygieiaException(e);
         }
-        end = System.currentTimeMillis();
-        LOG.debug("Time to make GraphQL PR call = "+(end-start));
 
         JSONObject responseJsonObject = restClient.parseAsObject(response);
 
@@ -262,15 +259,15 @@ public class GitHubPullRequestV3 extends GitHubV3 {
         if (existingPR != null) {
             pull.setId(existingPR.getId());
             pull.setCollectorItemId(existingPR.getCollectorItemId());
-        } else {
-            CollectorItem collectorItem = null;
-            GitHubParsed gitHubParsed = new GitHubParsed(pull.getScmUrl());
-            try {
-                collectorItem = getCollectorItem(gitHubParsed.getUrl(), pull.getScmBranch());
-                pull.setCollectorItemId(collectorItem.getId());
-            } catch (HygieiaException e) {
-                LOG.error(e);
+            CollectorItem collectorItem = collectorService.getCollectorItem(existingPR.getCollectorItemId());
+            if (!collectorItem.isPushed()) {
+                collectorItem.setPushed(true);
+                collectorItemRepository.save(collectorItem);
             }
+        } else {
+            GitHubParsed gitHubParsed = new GitHubParsed(pull.getScmUrl());
+            CollectorItem collectorItem = getCollectorItem(gitHubParsed.getUrl(), pull.getScmBranch());
+            pull.setCollectorItemId(collectorItem.getId());
         }
 
         long end = System.currentTimeMillis();

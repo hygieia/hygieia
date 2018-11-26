@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.evaluator;
 
 import com.capitalone.dashboard.common.CommonCodeReview;
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.CollectorItem;
@@ -60,7 +61,6 @@ public class BuildEvaluator extends Evaluator<BuildAuditResponse> {
         List<CollectorItem> repoItems = (List<CollectorItem>) data.get("repos");
         return getBuildJobAuditResponse(collectorItem, beginDate, endDate, repoItems);
     }
-
 
     private class ParsedRepo {
         String url;

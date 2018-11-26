@@ -9,6 +9,7 @@
         <li role="presentation" ng-class="{active:tab === 'apitokens'}"><a href ng-click="navigateToTab('apitokens')">Generate ApiTokens</a></li>
         <li role="presentation"  ng-class="{active:tab === 'templates'}"><a href ng-click="navigateToTab('templates')">Manage Templates</a></li>
         <li role="presentation" ng-class="{active:tab === 'configurations'}"><a href ng-click="navigateToTab('configurations')">General Configurations</a></li>
+        <li role="presentation" ng-class="{active:tab === 'auditconfig'}"><a href ng-click="navigateToTab('auditconfig')">Audit Configurations</a></li>
       </ul>
     </div>
 
@@ -302,6 +303,64 @@
       </div>
    </div>
 </div>
+
+
+            <div ng-show="tab === 'auditconfig'">
+                <div class="widget-modal">
+                    <div class="widget-modal-heading">
+                        Audit Configurations
+                    </div>
+                    <div class="widget-modal-body">
+                        <form class="auditConfigForm" name="auditConfigForm"
+                              novalidate="novalidate">
+
+
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="text-center" ng-hide="ctrl.serviceAccounts">Loading Service Accounts...</div>
+                                    <div ng-show="error">
+                                        {{error.data}}
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-xs-15">
+                                            <div class="btn-block col-xs-15">
+                                                <span class="col-xs-3"><h3>Service Account</h3></span>
+                                                <span class="col-xs-3"><h3>File Types</h3></span>
+                                                <span class="col-xs-6"><button type="button" class="btn btn-primary btn-wide pull-right" ng-click="ctrl.addServiceAccount()">New</button>
+                                            </span>
+                                            </div>
+
+                                            <input type="text" class="form-control" id="accountSearch" placeholder="Filter service accounts" ng-model="accountSearch">
+
+
+                                            <div class="dash-modal-row delete-dashboard-row clearfix"
+                                                 ng-repeat="account in ctrl.serviceAccounts | filter:{serviceAccountName:accountSearch}">
+                                                <div class="btn-block col-xs-15">
+                                                    <span class="col-xs-3">{{account.serviceAccountName}}</span>
+                                                    <span class="col-xs-3">{{account.fileNames}}</span>
+                                                    <a href delete-confirm title="Are you sure you want to delete?" confirm-action="ctrl.deleteAccount(account.id)">
+                                                        <dash-trash class="clickable pull-right"></dash-trash>
+                                                    </a>
+                                                    <dash-edit class="clickable pull-right" ng-click="ctrl.editAccount(account)"></dash-edit>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+
+                                    <div class="text-center" ng-show="ctrl.serviceAccounts && !ctrl.serviceAccounts.length">
+                                        No results
+                                    </div>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
 
 
         </div>

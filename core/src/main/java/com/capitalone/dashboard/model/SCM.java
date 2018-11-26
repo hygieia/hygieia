@@ -10,7 +10,7 @@ import java.util.Objects;
 public class SCM {
     protected String scmUrl;
     protected String scmBranch; // For SCM that don't have branch in the url
-	protected String scmRevisionNumber;
+    protected String scmRevisionNumber;
     protected String scmCommitLog;
     protected String scmAuthor;
     protected String scmAuthorLogin;
@@ -26,7 +26,7 @@ public class SCM {
     public SCM(){
 
     }
-    
+
     public SCM(SCM scm) {
         this.scmUrl = scm.scmUrl;
         this.scmBranch = scm.scmBranch;
@@ -77,12 +77,12 @@ public class SCM {
     public String getScmAuthorLogin() { return scmAuthorLogin; }
 
     public void setScmAuthorLogin(String scmAuthorLogin) { this.scmAuthorLogin = scmAuthorLogin; }
-    
+
     // can return null
     public List<String> getScmParentRevisionNumbers() { return scmParentRevisionNumbers; }
-    
+
     public void setScmParentRevisionNumbers(List<String> scmParentRevisionNumbers) {
-    	this.scmParentRevisionNumbers = scmParentRevisionNumbers;
+        this.scmParentRevisionNumbers = scmParentRevisionNumbers;
     }
 
     public long getScmCommitTimestamp() { return scmCommitTimestamp; }
