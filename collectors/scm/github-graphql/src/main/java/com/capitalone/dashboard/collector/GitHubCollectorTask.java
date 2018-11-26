@@ -34,6 +34,7 @@ import org.springframework.web.client.RestClientException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -140,6 +141,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         Set<ObjectId> gitID = new HashSet<>();
         gitID.add(collector.getId());
         gitHubRepoRepository.findByCollectorIdIn(gitID).stream().filter(Objects::nonNull).forEach(repo -> {
+            if (repo.isPushed()) {return;}
             repo.setEnabled(uniqueIDs.contains(repo.getId()));
             repoList.add(repo);
         });
@@ -323,8 +325,18 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
 
     private List<GitHubRepo> enabledRepos(Collector collector) {
         List<GitHubRepo> repos = gitHubRepoRepository.findEnabledGitHubRepos(collector.getId());
-        repos.sort(Comparator.comparing(GitHubRepo::getLastUpdated));
-        return repos;
+
+        List<GitHubRepo> pulledRepos
+                = Optional.ofNullable(repos)
+                    .orElseGet(Collections::emptyList).stream()
+                    .filter(pulledRepo -> !pulledRepo.isPushed())
+                    .collect(Collectors.toList());
+
+        if (CollectionUtils.isEmpty(pulledRepos)) { return new ArrayList<>(); }
+
+        pulledRepos.sort(Comparator.comparing(GitHubRepo::getLastUpdated));
+
+        return pulledRepos;
     }
 
     private boolean isNewCommit(GitHubRepo repo, Commit commit) {

@@ -36,7 +36,7 @@ public abstract class GitHubV3 {
     private static final String PASSWORD = "password";
     private static final String TOKEN = "personalAccessToken";
 
-    private final CollectorService collectorService;
+    protected final CollectorService collectorService;
     protected final RestClient restClient;
     protected final ApiSettings apiSettings;
 

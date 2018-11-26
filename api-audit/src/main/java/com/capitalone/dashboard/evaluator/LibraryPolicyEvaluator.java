@@ -5,12 +5,12 @@ import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.LibraryPolicyResult;
+import com.capitalone.dashboard.model.LibraryPolicyThreatDisposition;
 import com.capitalone.dashboard.model.LibraryPolicyThreatLevel;
 import com.capitalone.dashboard.model.LibraryPolicyType;
 import com.capitalone.dashboard.repository.LibraryPolicyResultsRepository;
 import com.capitalone.dashboard.response.LibraryPolicyAuditResponse;
 import com.capitalone.dashboard.status.LibraryPolicyAuditStatus;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.SetUtils;
@@ -39,7 +39,7 @@ public class LibraryPolicyEvaluator extends Evaluator<LibraryPolicyAuditResponse
 
         List<CollectorItem> libraryPolicyItems = getCollectorItems(dashboard, "codeanalysis", CollectorType.LibraryPolicy);
         if (CollectionUtils.isEmpty(libraryPolicyItems)) {
-            throw new AuditException("No code quality job configured", AuditException.NO_COLLECTOR_ITEM_CONFIGURED);
+            throw new AuditException("No library policy project configured", AuditException.NO_COLLECTOR_ITEM_CONFIGURED);
         }
 
         return libraryPolicyItems.stream().map(item -> evaluate(item, beginDate, endDate, null)).collect(Collectors.toList());
@@ -54,14 +54,13 @@ public class LibraryPolicyEvaluator extends Evaluator<LibraryPolicyAuditResponse
      * Reusable method for constructing the LibraryPolicyAuditResponse object
      *
      * @param collectorItem Collector item
-     * @param beginDate Begin Date
-     * @param endDate End Date
+     * @param beginDate     Begin Date
+     * @param endDate       End Date
      * @return SecurityReviewAuditResponse
      */
     private LibraryPolicyAuditResponse getLibraryPolicyAuditResponse(CollectorItem collectorItem, long beginDate, long endDate) {
         List<LibraryPolicyResult> libraryPolicyResults = libraryPolicyResultsRepository.findByCollectorItemIdAndEvaluationTimestampIsBetweenOrderByTimestampDesc(collectorItem.getId(), beginDate - 1, endDate + 1);
 
-        ObjectMapper mapper = new ObjectMapper();
         LibraryPolicyAuditResponse libraryPolicyAuditResponse = new LibraryPolicyAuditResponse();
 
         if (CollectionUtils.isEmpty(libraryPolicyResults)) {
@@ -78,22 +77,42 @@ public class LibraryPolicyEvaluator extends Evaluator<LibraryPolicyAuditResponse
         Set<LibraryPolicyResult.Threat> licenseThreats = !MapUtils.isEmpty(returnPolicyResult.getThreats()) ? returnPolicyResult.getThreats().get(LibraryPolicyType.License) : SetUtils.EMPTY_SET;
 
 
+        boolean isOk = true;
         //License Threats
-        if (licenseThreats.stream().anyMatch(threat -> Objects.equals(threat.getLevel(), LibraryPolicyThreatLevel.Critical) && (threat.getCount() > 0))) {
+        if (licenseThreats.stream().anyMatch(threat -> Objects.equals(threat.getLevel(), LibraryPolicyThreatLevel.Critical) && hasViolations(threat))) {
             libraryPolicyAuditResponse.addAuditStatus(LibraryPolicyAuditStatus.LIBRARY_POLICY_FOUND_CRITICAL_LICENSE);
+            isOk = false;
         }
-        if (licenseThreats.stream().anyMatch(threat -> Objects.equals(threat.getLevel(), LibraryPolicyThreatLevel.High) && (threat.getCount() > 0))) {
+
+        if (licenseThreats.stream().anyMatch(threat -> Objects.equals(threat.getLevel(), LibraryPolicyThreatLevel.High) && hasViolations(threat))) {
             libraryPolicyAuditResponse.addAuditStatus(LibraryPolicyAuditStatus.LIBRARY_POLICY_FOUND_HIGH_LICENSE);
+            isOk = false;
         }
 
         //Security Threats
-        if (securityThreats.stream().anyMatch(threat -> Objects.equals(threat.getLevel(), LibraryPolicyThreatLevel.Critical) && (threat.getCount() > 0))) {
+        if (securityThreats.stream().anyMatch(threat -> Objects.equals(threat.getLevel(), LibraryPolicyThreatLevel.Critical) && hasViolations(threat))) {
             libraryPolicyAuditResponse.addAuditStatus(LibraryPolicyAuditStatus.LIBRARY_POLICY_FOUND_CRITICAL_SECURITY);
+            isOk = false;
         }
-        if (securityThreats.stream().anyMatch(threat -> Objects.equals(threat.getLevel(), LibraryPolicyThreatLevel.High) && (threat.getCount() > 0))) {
+
+        if (securityThreats.stream().anyMatch(threat -> Objects.equals(threat.getLevel(), LibraryPolicyThreatLevel.High) && hasViolations(threat))) {
             libraryPolicyAuditResponse.addAuditStatus(LibraryPolicyAuditStatus.LIBRARY_POLICY_FOUND_HIGH_SECURITY);
+            isOk = false;
         }
+
+        if (isOk) {
+            libraryPolicyAuditResponse.addAuditStatus(LibraryPolicyAuditStatus.LIBRARY_POLICY_AUDIT_OK);
+        }
+
         return libraryPolicyAuditResponse;
     }
 
+
+    private boolean hasViolations(LibraryPolicyResult.Threat threat) {
+        if (MapUtils.isEmpty(threat.getDispositionCounts())) {
+            return threat.getCount() > 0;
+        }
+        return threat.getDispositionCounts().containsKey(LibraryPolicyThreatDisposition.Open) &&
+                (threat.getDispositionCounts().get(LibraryPolicyThreatDisposition.Open) > 0);
+    }
 }
