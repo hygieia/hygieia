@@ -23,6 +23,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.web.client.RestOperations;
 
+import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -55,7 +56,7 @@ public class GitHubIssueV3Test {
     }
 
     @Test
-    public void saveCollectorItemIdExistingIssueTest() {
+    public void saveCollectorItemIdExistingIssueTest() throws MalformedURLException, HygieiaException {
         GitHubIssueV3 gitHubIssueV3 = Mockito.spy(this.gitHubIssueV3);
 
         GitRequest existingIssue = new GitRequest();
@@ -65,18 +66,23 @@ public class GitHubIssueV3Test {
         String collectorItemId = createGuid("0123456789abcdee");
         existingIssue.setCollectorItemId(new ObjectId(collectorItemId));
 
+        CollectorItem collectorItem = new CollectorItem();
+        collectorItem.setId(new ObjectId(collectorItemId));
+
         GitRequest newIssue = new GitRequest();
 
         when(gitRequestRepository.findByScmUrlIgnoreCaseAndScmBranchIgnoreCaseAndNumberAndRequestTypeIgnoreCase(anyString(), anyString(), anyString(), anyString())).thenReturn(existingIssue);
+        when(collectorService.getCollectorItem(existingIssue.getCollectorItemId())).thenReturn(collectorItem);
 
         gitHubIssueV3.setCollectorItemId(newIssue);
 
         Assert.assertEquals(new ObjectId(id), newIssue.getId());
         Assert.assertEquals(new ObjectId(collectorItemId), newIssue.getCollectorItemId());
+        Assert.assertTrue(collectorItem.isPushed());
     }
 
     @Test
-    public void saveCollectorItemIdNewIssueTest() {
+    public void saveCollectorItemIdNewIssueTest() throws MalformedURLException, HygieiaException {
         GitHubIssueV3 gitHubIssueV3 = Mockito.spy(this.gitHubIssueV3);
 
         GitRequest newIssue = new GitRequest();
@@ -109,13 +115,30 @@ public class GitHubIssueV3Test {
     }
 
     @Test
-    public void getIssueTest() {
+    public void getIssueTest() throws MalformedURLException, HygieiaException {
+        GitHubIssueV3 gitHubIssueV3 = Mockito.spy(this.gitHubIssueV3);
+
         GitHubParsed gitHubParsed = null;
         try {
             gitHubParsed = new GitHubParsed("http://hostName/orgName/repoName.git");
         } catch (Exception e) {
             LOG.error(e.getMessage());
         }
+
+        String repoUrl = "http://hostName/orgName/repoName";
+        String branch = "master";
+
+        Collector collector = gitHubIssueV3.getCollector();
+        String collectorId = createGuid("0123456789abcdef");
+        collector.setId(new ObjectId(collectorId));
+
+        CollectorItem collectorItem = gitHubIssueV3.buildCollectorItem(new ObjectId(collectorId), repoUrl, branch);
+        String collectorItemId = createGuid("0123456789abcdee");
+        collectorItem.setId(new ObjectId(collectorItemId));
+
+        when(collectorService.createCollector(anyObject())).thenReturn(collector);
+        when(gitHubIssueV3.buildCollectorItem(anyObject(), anyString(), anyString())).thenReturn(collectorItem);
+        when(collectorService.createCollectorItem(anyObject())).thenReturn(collectorItem);
 
         GitRequest issue = gitHubIssueV3.getIssue(makeIssue(), gitHubParsed, "master");
 
