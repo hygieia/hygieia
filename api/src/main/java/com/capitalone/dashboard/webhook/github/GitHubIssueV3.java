@@ -118,10 +118,9 @@ public class GitHubIssueV3 extends GitHubV3 {
             issue.setId(existingIssue.getId());
             issue.setCollectorItemId(existingIssue.getCollectorItemId());
             CollectorItem collectorItem = collectorService.getCollectorItem(existingIssue.getCollectorItemId());
-            if (!collectorItem.isPushed()) {
-                collectorItem.setPushed(true);
-                collectorItemRepository.save(collectorItem);
-            }
+            collectorItem.setEnabled(true);
+            collectorItem.setPushed(true);
+            collectorItemRepository.save(collectorItem);
         } else {
             GitHubParsed gitHubParsed = new GitHubParsed(issue.getScmUrl());
             CollectorItem collectorItem = getCollectorItem(gitHubParsed.getUrl(), issue.getScmBranch());
