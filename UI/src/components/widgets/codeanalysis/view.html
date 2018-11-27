@@ -283,31 +283,11 @@
 
         <!-- Test Results tab-->
         <div class="container-fluid" ng-if="caWidget.miniWidgetView == 'Tests'">
-            <div class="row">
-                <div class="col-xs-12"><br>
-                    <div class="widget ">
-                        <div class="widget-heading">
-                            Functional tests
-                        </div>
-                        <div class="widget-body">
-                            <table class="table">
-                                <tr class="dash-row clickable" ng-click="caWidget.showDetail(test.details)"
-                                    ng-repeat="test in caWidget.functionalTests">
-                                    <td><span dash-status="{{ test.status }}"
-                                              ng-if="caWidget.showStatusIcon(test)"></span></td>
-                                    <td class="ca-name">{{test.name}}</td>
-                                    <td></td>
-                                    <td class="ca-value"
-                                        ng-class="{'widget-font-fail': (test.failureCount > 0) || (test.successCount == 0)}">
-                                        {{test.successPercent}}
-                                    </td>
-                                    <td class="text-small-date">{{test.details.endTime | fromNow |limitTo:3}}</td>
-                                </tr>
-                            </table>
-
-                        </div>
-                    </div>
-                </div>
+            <div class="row" ng-if="caWidget.functionalTests.length > 0">
+                <test-list test-title="Functional" test-Data="caWidget.functionalTests"></test-list>
+            </div>
+            <div class="row" ng-if="caWidget.perfTests.length > 0">
+                <test-list test-title="Performance" test-Data="caWidget.perfTests"></test-list>
             </div>
         </div>
         <!-- Test Results tab-->

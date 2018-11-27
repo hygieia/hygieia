@@ -2,6 +2,7 @@ package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Build;
+import com.capitalone.dashboard.response.BuildDataCreateResponse;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.BuildSearchRequest;
@@ -17,4 +18,6 @@ public interface BuildService {
     DataResponse<Iterable<Build>> search(BuildSearchRequest request);
 
     String create(BuildDataCreateRequest request) throws HygieiaException;
+    String createV2(BuildDataCreateRequest request) throws HygieiaException;
+    BuildDataCreateResponse createV3(BuildDataCreateRequest request) throws HygieiaException;
 }

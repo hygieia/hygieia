@@ -45,7 +45,7 @@ public interface CollectorService {
      * @param id id
      * @return CollectorItem
      */
-    CollectorItem getCollectorItem(ObjectId id);
+    CollectorItem getCollectorItem(ObjectId id) throws HygieiaException;
 
     /**
      * Creates a new CollectorItem. If a CollectorItem already exists with the

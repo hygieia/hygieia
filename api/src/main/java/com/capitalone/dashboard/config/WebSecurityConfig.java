@@ -2,19 +2,25 @@ package com.capitalone.dashboard.config;
 
 import java.util.List;
 
+import com.capitalone.dashboard.auth.webhook.github.GithubWebHookRequestFilter;
+import com.capitalone.dashboard.auth.webhook.github.GithubWebHookAuthService;
+import com.capitalone.dashboard.settings.ApiSettings;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.Http401AuthenticationEntryPoint;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configurers.ldap.LdapAuthenticationProviderConfigurer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.ldap.authentication.NullLdapAuthoritiesPopulator;
 import org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAuthenticationProvider;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -33,10 +39,13 @@ import com.capitalone.dashboard.model.AuthType;
 @EnableWebSecurity
 @EnableConfigurationProperties
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@ComponentScan(basePackages = "com.capitalone.dashboard.settings")
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    @Autowired
+    private GithubWebHookAuthService githubWebHookAuthService;
 
     @Autowired
     private AuthenticationResultHandler authenticationResultHandler;
@@ -49,6 +58,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private AuthProperties authProperties;
+
+    @Autowired
+    private ApiSettings apiSettings;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -66,13 +78,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //TODO: Secure with API Key
                 .antMatchers(HttpMethod.POST, "/build").permitAll()
                 .antMatchers(HttpMethod.POST, "/deploy").permitAll()
+                .antMatchers(HttpMethod.POST, "/v2/build").permitAll()
+                .antMatchers(HttpMethod.POST, "/v3/build").permitAll()
+                .antMatchers(HttpMethod.POST, "/v2/deploy").permitAll()
                 .antMatchers(HttpMethod.POST, "/performance").permitAll()
                 .antMatchers(HttpMethod.POST, "/artifact").permitAll()
                 .antMatchers(HttpMethod.POST, "/quality/test").permitAll()
                 .antMatchers(HttpMethod.POST, "/quality/static-analysis").permitAll()
+                .antMatchers(HttpMethod.POST, "/v2/quality/test").permitAll()
+                .antMatchers(HttpMethod.POST, "/v2/quality/static-analysis").permitAll()
                 .antMatchers(HttpMethod.POST, "/generic-item").permitAll()
-                //Temporary solution to allow Github webhook
-                .antMatchers(HttpMethod.POST, "/commit/github/v3").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(standardLoginRequestFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -80,6 +95,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(ldapLoginRequestFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(apiTokenRequestFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(githubWebhookRequestFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling().authenticationEntryPoint(new Http401AuthenticationEntryPoint("Authorization"));
     }
 
@@ -108,15 +124,26 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         String ldapServerUrl = authProperties.getLdapServerUrl();
         String ldapUserDnPattern = authProperties.getLdapUserDnPattern();
         if (StringUtils.isNotBlank(ldapServerUrl) && StringUtils.isNotBlank(ldapUserDnPattern)) {
-            auth.ldapAuthentication()
+            LdapAuthenticationProviderConfigurer<AuthenticationManagerBuilder> ldapAuthConfigurer = auth.ldapAuthentication();
+
+            ldapAuthConfigurer
                     .userDnPatterns(ldapUserDnPattern)
                     .contextSource().url(ldapServerUrl);
+
+            if (authProperties.isLdapDisableGroupAuthorization()) {
+                ldapAuthConfigurer.ldapAuthoritiesPopulator(new NullLdapAuthoritiesPopulator());
+            }
         }
     }
 
     @Bean
     protected StandardLoginRequestFilter standardLoginRequestFilter() throws Exception {
         return new StandardLoginRequestFilter("/login", authenticationManager(), authenticationResultHandler);
+    }
+
+    @Bean
+    protected GithubWebHookRequestFilter githubWebhookRequestFilter() throws Exception {
+        return new GithubWebHookRequestFilter("/webhook/github/v3", authenticationManager(), githubWebHookAuthService, apiSettings, authenticationResultHandler);
     }
 
     @Bean

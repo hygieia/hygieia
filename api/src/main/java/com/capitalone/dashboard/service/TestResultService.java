@@ -11,5 +11,7 @@ public interface TestResultService {
 
     DataResponse<Iterable<TestResult>> search(TestResultRequest request);
     String create(TestDataCreateRequest request) throws HygieiaException;
+    String createV2(TestDataCreateRequest request) throws HygieiaException;
     String createPerf(PerfTestDataCreateRequest request) throws HygieiaException;
+    String createPerfV2(PerfTestDataCreateRequest request) throws HygieiaException;
 }

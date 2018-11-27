@@ -9,7 +9,7 @@
     <parent>
         <groupId>com.capitalone.dashboard</groupId>
         <artifactId>Hygieia</artifactId>
-        <version>2.0.5-SNAPSHOT</version>
+        <version>3.0.1</version>
     </parent>
 
     <properties>
@@ -79,7 +79,7 @@
     <dependency>
       <groupId>com.capitalone.dashboard</groupId>
       <artifactId>core</artifactId>
-      <version>${project.version}</version>
+      <version>3.0.7.4</version>
     </dependency>
 
 <!-- Spring Libraries -->

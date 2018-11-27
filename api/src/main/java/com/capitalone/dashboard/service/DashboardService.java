@@ -1,7 +1,10 @@
 package com.capitalone.dashboard.service;
 
 import java.util.List;
+import java.util.Set;
 
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
 import org.bson.types.ObjectId;
 
 import com.capitalone.dashboard.misc.HygieiaException;
@@ -54,6 +57,14 @@ public interface DashboardService {
      * @param id unique identifier of Dashboard to delete
      */
     void delete(ObjectId id);
+
+    /**
+     * Retrieves a list of Dashboards for a set of CollectorItems and CollectorType.
+     *
+     * @param collectorItems - Set of CollectorItems
+     * @param collectorType - Type of Collector i.e. build, SCM etc
+     */
+    List<Dashboard> getDashboardsByCollectorItems(Set<CollectorItem> collectorItems, CollectorType collectorType);
 
     /**
      * Associate a CollectorItem to a Component

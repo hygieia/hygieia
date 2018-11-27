@@ -19,7 +19,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import hudson.remoting.Callable;
 import org.powermock.api.mockito.PowerMockito;
@@ -31,7 +30,6 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(PowerMockRunner.class)
