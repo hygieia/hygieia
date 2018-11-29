@@ -41,7 +41,7 @@
             };
             var testRequest = {
                 componentId: $scope.widgetConfig.componentId,
-                types: ['Functional'],
+                types: ['Functional','Manual'],
                 max: 1
             };
             var performanceRequest = {
@@ -218,7 +218,7 @@
                         failureCount: 0, successCount: 0, skippedCount: 0, totalCount: 0
                     };
                     // Aggregate the counts of all Functional test suites
-                    var aggregate = _.reduce(_.filter(testResult.testCapabilities, {type: type}), function (result, capability) {
+                    var aggregate = _.reduce(_.filter(testResult.testCapabilities), function (result, capability) {
                         //New calculation: 3/10/16 - Topo Pal
                         result.failureCount += capability.failedTestSuiteCount;
                         result.successCount += capability.successTestSuiteCount;
