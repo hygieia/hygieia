@@ -23,7 +23,6 @@
                 serviceAccountData
                     .createAccount(account)
                     .success(function (response) {
-                        console.log(response);
                         $uibModalInstance.close();
                     })
                     .error(function (response) {

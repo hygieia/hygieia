@@ -147,17 +147,21 @@ public class GitHubCommitV3Test {
         existingCommit.setId(new ObjectId(id));
 
         String collectorItemId = createGuid("0123456789abcdee");
-
         existingCommit.setCollectorItemId(new ObjectId(collectorItemId));
+
+        CollectorItem collectorItem = new CollectorItem();
+        collectorItem.setId(new ObjectId(collectorItemId));
 
         Commit newCommit = new Commit();
 
         when(commitRepository.findByScmRevisionNumberAndScmUrlIgnoreCaseAndScmBranchIgnoreCase(anyString(), anyString(), anyString())).thenReturn(existingCommit);
+        when(collectorService.getCollectorItem(existingCommit.getCollectorItemId())).thenReturn(collectorItem);
 
         gitHubCommitV3.setCollectorItemId(newCommit);
 
         Assert.assertEquals(new ObjectId(id), newCommit.getId());
         Assert.assertEquals(new ObjectId(collectorItemId), newCommit.getCollectorItemId());
+        Assert.assertTrue(collectorItem.isPushed());
     }
 
     @Test

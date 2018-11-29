@@ -1,0 +1,270 @@
+{
+  "dashboardTitle": "TestSSA",
+  "businessService": "TestBusServ",
+  "businessApplication": "confItem",
+  "review": {
+    "LIBRARY_POLICY": [
+      {
+        "lastExecutionTime": 1.522879797193E12,
+        "libraryPolicyResult": {
+          "collectorItemId": "5ad5f605c23b391cfa1c01a4",
+          "timestamp": 1.523984079768E12,
+          "evaluationTimestamp": 1.522879797193E12,
+          "threats": {
+            "License": [
+              {
+                "level": "Medium",
+                "components": [
+                  "com.amazonaws:aws-java-sdk-sqs-1.11.28.jar##Open",
+                  "ch.qos.logback:logback-classic-1.1.11.jar##Closed",
+                  "ch.qos.logback:logback-core-1.1.11.jar##Closed",
+                  "junit:junit-4.11.jar##Closed",
+                  "highcharts:highcharts-3d-4.2.1.js",
+                  "highcharts:highcharts-4.2.1.js",
+                  "net.masterthought:cucumber-reporting-2.0.0.jar##Closed"
+                ],
+                "count": 7.0,
+                "dispositionCounts": {
+                  "Open": 1.0,
+                  "Closed": 6.0
+                }
+              },
+              {
+                "level": "None",
+                "components": [
+                  "org.springframework:spring-test-4.3.10.RELEASE.jar##Closed",
+                  "org.jsoup:jsoup-1.8.3.jar##Closed",
+                  "com.amazonaws:jmespath-java-1.0.jar##Closed",
+                  "org.springframework.retry:spring-retry-1.2.1.RELEASE.jar##Closed",
+                  "com.amazonaws:aws-java-sdk-kms-1.11.28.jar##Closed",
+                  "com.fasterxml.jackson.core:jackson-core-2.8.9.jar##Closed",
+                  "org.springframework.batch:spring-batch-infrastructure-3.0.8.RELEASE.jar##Closed",
+                  "com.fasterxml.jackson.core:jackson-annotations-2.8.0.jar##Closed",
+                  "com.google.code.gson:gson-2.8.1.jar##Closed",
+                  "org.slf4j:slf4j-api-1.7.25.jar##Closed",
+                  "org.springframework.boot:spring-boot-test-autoconfigure-1.5.6.RELEASE.jar##Closed",
+                  "com.vaadin.external.google:android-json-0.0.20131108.vaadin1.jar##Closed",
+                  "com.jayway.jsonpath:json-path-2.2.0.jar##Closed",
+                  "org.springframework.batch:spring-batch-core-3.0.8.RELEASE.jar##Closed",
+                  "org.apache.logging.log4j:log4j-api-2.7.jar##Closed",
+                  "org.apache.httpcomponents:httpclient-4.5.3.jar##Closed",
+                  "org.springframework.boot:spring-boot-starter-logging-1.5.6.RELEASE.jar##Closed",
+                  "org.assertj:assertj-core-2.6.0.jar##Closed",
+                  "org.slf4j:jul-to-slf4j-1.7.25.jar##Closed",
+                  "jquery:jquery-1.12.1.min.js",
+                  ":aws-temporary-credentials-provider-2.1.3.jar##Closed",
+                  "com.fasterxml.jackson.core:jackson-databind-2.8.9.jar##Closed",
+                  "org.springframework:spring-beans-4.3.10.RELEASE.jar##Closed",
+                  "org.apache.velocity:velocity-1.7.jar##Closed",
+                  "org.springframework.boot:spring-boot-starter-test-1.5.6.RELEASE.jar##Closed",
+                  "commons-logging:commons-logging-1.1.3.jar##Closed",
+                  "org.springframework.boot:spring-boot-1.5.6.RELEASE.jar##Closed",
+                  "org.springframework:spring-jdbc-4.3.10.RELEASE.jar##Closed",
+                  "com.amazonaws:aws-java-sdk-autoscaling-1.11.28.jar##Closed",
+                  "org.springframework.batch:spring-batch-test-3.0.6.RELEASE.jar##Closed",
+                  "org.springframework.boot:spring-boot-starter-batch-1.5.6.RELEASE.jar##Closed",
+                  "net.minidev:json-smart-2.2.1.jar##Closed",
+                  "org.springframework:spring-expression-4.3.10.RELEASE.jar##Closed",
+                  "joda-time:joda-time-2.9.9.jar##Closed",
+                  "ajkovar:json2html-master_2010-10-24",
+                  "org.springframework.boot:spring-boot-test-1.5.6.RELEASE.jar##Closed",
+                  "com.amazonaws:aws-java-sdk-sns-1.11.28.jar##Closed",
+                  "org.springframework:spring-context-4.3.10.RELEASE.jar##Closed",
+                  "org.springframework.boot:spring-boot-starter-jdbc-1.5.6.RELEASE.jar##Closed",
+                  "org.hamcrest:hamcrest-all-1.3.jar##Closed",
+                  "org.springframework:spring-aop-4.3.10.RELEASE.jar##Closed",
+                  "org.apache.logging.log4j:log4j-core-2.7.jar##Closed",
+                  "com.amazonaws:aws-java-sdk-core-1.11.28.jar##Closed",
+                  "org.apache.tomcat:tomcat-jdbc-8.0.15.jar##Closed",
+                  "org.springframework.boot:spring-boot-autoconfigure-1.5.6.RELEASE.jar##Closed",
+                  "commons-codec:commons-codec-1.10.jar##Closed",
+                  "velocity-tools:velocity-tools-1.4.jar##Closed",
+                  "org.slf4j:jcl-over-slf4j-1.7.25.jar##Closed",
+                  "org.slf4j:log4j-over-slf4j-1.7.25.jar##Closed",
+                  "org.skyscreamer:jsonassert-1.4.0.jar##Closed",
+                  "net.minidev:accessors-smart-1.1.jar##Closed",
+                  "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor-2.8.9.jar##Closed",
+                  "org.yaml:snakeyaml-1.17.jar##Closed",
+                  "org.apache.commons:commons-lang3-3.4.jar##Closed",
+                  "org.ow2.asm:asm-5.0.3.jar##Closed",
+                  "org.hamcrest:hamcrest-core-1.3.jar##Closed",
+                  "commons-io:commons-io-2.4.jar##Closed",
+                  "org.springframework:spring-core-4.3.10.RELEASE.jar##Closed",
+                  "org.mockito:mockito-core-1.10.19.jar##Closed",
+                  "org.apache.httpcomponents:httpcore-4.4.6.jar##Closed",
+                  "org.springframework:spring-tx-4.3.10.RELEASE.jar##Closed",
+                  "org.springframework.boot:spring-boot-starter-1.5.6.RELEASE.jar##Closed",
+                  "com.amazonaws:aws-java-sdk-sts-1.11.28.jar##Closed",
+                  "org.codehaus.jettison:jettison-1.2.jar##Closed",
+                  "javax.batch:javax.batch-api-1.0.jar##Closed",
+                  "org.postgresql:postgresql-9.4-1201-jdbc41.jar##Closed",
+                  "com.amazonaws:aws-java-sdk-cloudformation-1.11.28.jar##Closed",
+                  "net.lingala.zip4j:zip4j-1.3.2.jar##Closed",
+                  "com.ibm.jbatch:com.ibm.jbatch-tck-spi-1.0.jar##Closed",
+                  "org.springframework:spring-web-4.3.10.RELEASE.jar##Closed",
+                  "org.objenesis:objenesis-2.1.jar##Closed",
+                  "org.codehaus.plexus:plexus-utils-3.0.22.jar##Closed",
+                  "commons-collections:commons-collections-3.2.2.jar##Closed",
+                  "commons-lang:commons-lang-2.4.jar##Closed",
+                  "com.amazonaws:aws-java-sdk-s3-1.11.28.jar##Closed",
+                  "org.hamcrest:hamcrest-library-1.3.jar##Closed",
+                  "todc-bootstrap:bootstrap-3.3.6-3.3.6.min.js",
+                  "com.thoughtworks.xstream:xstream-1.4.7.jar##Closed",
+                  "org.apache.tomcat:tomcat-juli-8.0.15.jar##Closed",
+                  ":1522879711159_ais-extensions-to-s3.zip",
+                  ":ais-extensions-to-s3.jar##Open"
+                ],
+                "count": 81.0,
+                "dispositionCounts": {
+                  "Open": 1.0,
+                  "Closed": 80.0
+                }
+              },
+              {
+                "level": "High",
+                "components": [
+                  "xpp3:xpp3_min-1.1.4c.jar##Closed",
+                  "xmlpull:xmlpull-1.1.3.1.jar##Closed"
+                ],
+                "count": 2.0,
+                "dispositionCounts": {
+                  "Closed": 2.0
+                }
+              }
+            ],
+            "Security": [
+              {
+                "level": "High",
+                "components": [
+                  "ch.qos.logback:logback-classic-1.1.11.jar##Closed",
+                  "ch.qos.logback:logback-core-1.1.11.jar##Closed",
+                  "com.fasterxml.jackson.core:jackson-databind-2.8.9.jar##Closed",
+                  "org.apache.logging.log4j:log4j-core-2.7.jar##Closed"
+                ],
+                "count": 4.0,
+                "dispositionCounts": {
+                  "Closed": 4.0
+                }
+              },
+              {
+                "level": "None",
+                "components": [
+                  "com.amazonaws:aws-java-sdk-sqs-1.11.28.jar##Closed",
+                  "org.springframework:spring-test-4.3.10.RELEASE.jar##Closed",
+                  "org.jsoup:jsoup-1.8.3.jar##Closed",
+                  "com.amazonaws:jmespath-java-1.0.jar##Closed",
+                  "org.springframework.retry:spring-retry-1.2.1.RELEASE.jar##Closed",
+                  "com.amazonaws:aws-java-sdk-kms-1.11.28.jar##Closed",
+                  "com.fasterxml.jackson.core:jackson-core-2.8.9.jar##Closed",
+                  "org.springframework.batch:spring-batch-infrastructure-3.0.8.RELEASE.jar##Closed",
+                  "com.fasterxml.jackson.core:jackson-annotations-2.8.0.jar##Closed",
+                  "com.google.code.gson:gson-2.8.1.jar##Closed",
+                  "xpp3:xpp3_min-1.1.4c.jar##Closed",
+                  "org.slf4j:slf4j-api-1.7.25.jar##Closed",
+                  "org.springframework.boot:spring-boot-test-autoconfigure-1.5.6.RELEASE.jar##Closed",
+                  "com.vaadin.external.google:android-json-0.0.20131108.vaadin1.jar##Closed",
+                  "com.jayway.jsonpath:json-path-2.2.0.jar##Closed",
+                  "org.springframework.batch:spring-batch-core-3.0.8.RELEASE.jar##Closed",
+                  "org.apache.logging.log4j:log4j-api-2.7.jar##Closed",
+                  "org.apache.httpcomponents:httpclient-4.5.3.jar##Closed",
+                  "org.springframework.boot:spring-boot-starter-logging-1.5.6.RELEASE.jar##Closed",
+                  "org.assertj:assertj-core-2.6.0.jar##Closed",
+                  "org.slf4j:jul-to-slf4j-1.7.25.jar##Closed",
+                  ":aws-temporary-credentials-provider-2.1.3.jar##Closed",
+                  "org.springframework:spring-beans-4.3.10.RELEASE.jar##Closed",
+                  "org.apache.velocity:velocity-1.7.jar##Closed",
+                  "org.springframework.boot:spring-boot-starter-test-1.5.6.RELEASE.jar##Closed",
+                  "commons-logging:commons-logging-1.1.3.jar##Closed",
+                  "org.springframework.boot:spring-boot-1.5.6.RELEASE.jar##Closed",
+                  "org.springframework:spring-jdbc-4.3.10.RELEASE.jar##Closed",
+                  "com.amazonaws:aws-java-sdk-autoscaling-1.11.28.jar##Closed",
+                  "org.springframework.batch:spring-batch-test-3.0.6.RELEASE.jar##Closed",
+                  "org.springframework.boot:spring-boot-starter-batch-1.5.6.RELEASE.jar##Closed",
+                  "net.minidev:json-smart-2.2.1.jar##Closed",
+                  "junit:junit-4.11.jar##Closed",
+                  "org.springframework:spring-expression-4.3.10.RELEASE.jar##Closed",
+                  "joda-time:joda-time-2.9.9.jar##Closed",
+                  "ajkovar:json2html-master_2010-10-24",
+                  "org.springframework.boot:spring-boot-test-1.5.6.RELEASE.jar##Closed",
+                  "com.amazonaws:aws-java-sdk-sns-1.11.28.jar##Closed",
+                  "org.springframework:spring-context-4.3.10.RELEASE.jar##Closed",
+                  "org.springframework.boot:spring-boot-starter-jdbc-1.5.6.RELEASE.jar##Closed",
+                  "org.hamcrest:hamcrest-all-1.3.jar##Closed",
+                  "org.springframework:spring-aop-4.3.10.RELEASE.jar##Closed",
+                  "highcharts:highcharts-3d-4.2.1.js",
+                  "com.amazonaws:aws-java-sdk-core-1.11.28.jar##Closed",
+                  "org.apache.tomcat:tomcat-jdbc-8.0.15.jar##Closed",
+                  "org.springframework.boot:spring-boot-autoconfigure-1.5.6.RELEASE.jar##Closed",
+                  "commons-codec:commons-codec-1.10.jar##Closed",
+                  "velocity-tools:velocity-tools-1.4.jar##Closed",
+                  "org.slf4j:jcl-over-slf4j-1.7.25.jar##Closed",
+                  "highcharts:highcharts-4.2.1.js",
+                  "org.slf4j:log4j-over-slf4j-1.7.25.jar##Closed",
+                  "org.skyscreamer:jsonassert-1.4.0.jar##Closed",
+                  "net.minidev:accessors-smart-1.1.jar##Closed",
+                  "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor-2.8.9.jar##Closed",
+                  "org.yaml:snakeyaml-1.17.jar##Closed",
+                  "org.apache.commons:commons-lang3-3.4.jar##Closed",
+                  "org.ow2.asm:asm-5.0.3.jar##Closed",
+                  "org.hamcrest:hamcrest-core-1.3.jar##Closed",
+                  "commons-io:commons-io-2.4.jar##Closed",
+                  "net.masterthought:cucumber-reporting-2.0.0.jar##Closed",
+                  "org.springframework:spring-core-4.3.10.RELEASE.jar##Closed",
+                  "org.mockito:mockito-core-1.10.19.jar##Closed",
+                  "org.apache.httpcomponents:httpcore-4.4.6.jar##Closed",
+                  "org.springframework:spring-tx-4.3.10.RELEASE.jar##Closed",
+                  "org.springframework.boot:spring-boot-starter-1.5.6.RELEASE.jar##Closed",
+                  "com.amazonaws:aws-java-sdk-sts-1.11.28.jar##Closed",
+                  "org.codehaus.jettison:jettison-1.2.jar##Closed",
+                  "javax.batch:javax.batch-api-1.0.jar##Closed",
+                  "org.postgresql:postgresql-9.4-1201-jdbc41.jar##Closed",
+                  "com.amazonaws:aws-java-sdk-cloudformation-1.11.28.jar##Closed",
+                  "net.lingala.zip4j:zip4j-1.3.2.jar##Closed",
+                  "com.ibm.jbatch:com.ibm.jbatch-tck-spi-1.0.jar##Closed",
+                  "org.springframework:spring-web-4.3.10.RELEASE.jar##Closed",
+                  "org.objenesis:objenesis-2.1.jar##Closed",
+                  "org.codehaus.plexus:plexus-utils-3.0.22.jar##Closed",
+                  "commons-collections:commons-collections-3.2.2.jar##Closed",
+                  "commons-lang:commons-lang-2.4.jar##Closed",
+                  "com.amazonaws:aws-java-sdk-s3-1.11.28.jar##Closed",
+                  "org.hamcrest:hamcrest-library-1.3.jar##Closed",
+                  "xmlpull:xmlpull-1.1.3.1.jar##Closed",
+                  "todc-bootstrap:bootstrap-3.3.6-3.3.6.min.js",
+                  "org.apache.tomcat:tomcat-juli-8.0.15.jar##Closed",
+                  ":1522879711159_ais-extensions-to-s3.zip",
+                  ":ais-extensions-to-s3.jar##Open"
+                ],
+                "count": 84.0,
+                "dispositionCounts": {
+                  "Open": 1.0,
+                  "Closed": 83.0
+                }
+              },
+              {
+                "level": "Medium",
+                "components": [
+                  "jquery:jquery-1.12.1.min.js#Closed",
+                  "com.thoughtworks.xstream:xstream-1.4.7.jar##Closed"
+                ],
+                "count": 2.0,
+                "dispositionCounts": {
+                  "Closed": 2.0
+                }
+              }
+            ]
+          },
+          "policyAlert": [],
+          "id": "5ad626cfc23b392c8f61ea1b"
+        },
+        "auditStatuses": [
+          "LIBRARY_POLICY_AUDIT_OK"
+        ],
+        "lastUpdated": 0.0
+      }
+    ]
+  },
+  "auditStatuses": [
+    "DASHBOARD_LIBRARY_POLICY_ANALYSIS_CONFIGURED"
+  ],
+  "lastUpdated": 0
+}
