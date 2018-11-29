@@ -246,33 +246,11 @@ public class DashboardRemoteRequest {
         @Override
         public Map<String, Object> toWidgetOptions() {
             Map<String, Object> opts = new HashMap<>();
-            opts.put("id", "feature0");
+            opts.put("id", getWidgetId());
             options.keySet().forEach(key -> {
                 opts.put(key, options.get(key));
             });
             return opts;
-        }
-
-        @Override
-        public CollectorItem toCollectorItem(Collector collector) throws HygieiaException {
-            if (options.keySet().containsAll(collector.getUniqueFields().keySet())) {
-                CollectorItem collectorItem = new CollectorItem();
-                collectorItem.setEnabled(true);
-                collectorItem.setPushed(isPushed());
-                collectorItem.setDescription(description);
-                collectorItem.setNiceName(niceName);
-                for (String key : options.keySet()) {
-                    if (!collector.getAllFields().keySet().contains(key)) {
-                        throw new HygieiaException(toolName + " collector does not support field: " + key, HygieiaException.COLLECTOR_ITEM_CREATE_ERROR);
-                    }
-                    if (collector.getUniqueFields().keySet().contains(key)) {
-                        collectorItem.getOptions().put(key, options.get(key));
-                    }
-                }
-                return collectorItem;
-            } else {
-                throw new HygieiaException("Missing required fields. " + toolName + " collector required fields are: " + String.join(", ", collector.getUniqueFields().keySet()), HygieiaException.COLLECTOR_ITEM_CREATE_ERROR);
-            }
         }
     }
 

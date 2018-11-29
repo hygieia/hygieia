@@ -16,82 +16,34 @@ import java.util.Map;
 @RunWith(MockitoJUnitRunner.class)
 public class FeatureEntryTest {
     @Test
-    public void FeatureEntry_toCollectorItem_Test() throws HygieiaException {
-        Collector collector = prototype();
-
+    public void FeatureEntry_toWidgetOptions_Test() throws HygieiaException {
         DashboardRemoteRequest.Entry entry = new DashboardRemoteRequest.FeatureEntry();
 
         Map<String, Object> allOptions = new HashMap<>();
-        allOptions.put(FeatureCollectorConstants.TOOL_TYPE, "Jira");
-        allOptions.put(FeatureCollectorConstants.PROJECT_NAME, "TestProject");
-        allOptions.put(FeatureCollectorConstants.PROJECT_ID, "123");
-        allOptions.put(FeatureCollectorConstants.TEAM_NAME, "TestTeam");
-        allOptions.put(FeatureCollectorConstants.TEAM_ID, "321");
-        allOptions.put(FeatureCollectorConstants.ESTIMATE_METRIC_TYPE, "storypoints");
-        allOptions.put(FeatureCollectorConstants.SPRINT_TYPE, "kanban");
-        allOptions.put(FeatureCollectorConstants.LIST_TYPE, "epics");
-        allOptions.put(FeatureCollectorConstants.SHOW_STATUS, "showStatus");
+        allOptions.put("featureTool", "Jira");
+        allOptions.put("projectName", "TestProject");
+        allOptions.put("projectId", "123");
+        allOptions.put("teamName", "TestTeam");
+        allOptions.put("teamId", "321");
+        allOptions.put("estimateMetricType", "storypoints");
+        allOptions.put("sprintType", "kanban");
+        allOptions.put("listType", "epics");
+        allOptions.put("showStatus", "showStatus");
 
         entry.setOptions(allOptions);
+        Map<String, Object> options = entry.toWidgetOptions();
 
-        CollectorItem collectorItem = entry.toCollectorItem(collector);
+        Assert.assertEquals(10, options.size());
 
-        Map<String, Object> options = collectorItem.getOptions();
-        Assert.assertEquals(5, options.size());
-        Assert.assertEquals("Jira", options.get(FeatureCollectorConstants.TOOL_TYPE));
-        Assert.assertEquals("TestProject", options.get(FeatureCollectorConstants.PROJECT_NAME));
-        Assert.assertEquals("123", options.get(FeatureCollectorConstants.PROJECT_ID));
-        Assert.assertEquals("TestTeam", options.get(FeatureCollectorConstants.TEAM_NAME));
-        Assert.assertEquals("321", options.get(FeatureCollectorConstants.TEAM_ID));
-    }
-
-    @Test(expected = HygieiaException.class)
-    public void FeatureEntry_toCollectorItem_Exception_Test() throws HygieiaException {
-        Collector collector = prototype();
-
-        DashboardRemoteRequest.Entry entry = new DashboardRemoteRequest.FeatureEntry();
-
-        Map<String, Object> allOptions = new HashMap<>();
-        allOptions.put(FeatureCollectorConstants.TOOL_TYPE, "Jira");
-        allOptions.put(FeatureCollectorConstants.PROJECT_NAME, "TestProject");
-        allOptions.put(FeatureCollectorConstants.PROJECT_ID, "123");
-        allOptions.put(FeatureCollectorConstants.TEAM_NAME, "TestTeam");
-        allOptions.put(FeatureCollectorConstants.TEAM_ID, "321");
-        allOptions.put("SomeNonAllowedOption", "SomeNonAllowedOption");
-        entry.setOptions(allOptions);
-
-        entry.toCollectorItem(collector);
-    }
-
-    private Collector prototype() {
-        Collector protoType = new Collector();
-        protoType.setName(FeatureCollectorConstants.JIRA);
-        protoType.setOnline(true);
-        protoType.setEnabled(true);
-        protoType.setCollectorType(CollectorType.AgileTool);
-        protoType.setLastExecuted(System.currentTimeMillis());
-
-        Map<String, Object> allOptions = new HashMap<>();
-        allOptions.put(FeatureCollectorConstants.TOOL_TYPE, "");
-        allOptions.put(FeatureCollectorConstants.PROJECT_NAME, "");
-        allOptions.put(FeatureCollectorConstants.PROJECT_ID, "");
-        allOptions.put(FeatureCollectorConstants.TEAM_NAME, "");
-        allOptions.put(FeatureCollectorConstants.TEAM_ID, "");
-        allOptions.put(FeatureCollectorConstants.ESTIMATE_METRIC_TYPE, "");
-        allOptions.put(FeatureCollectorConstants.SPRINT_TYPE, "");
-        allOptions.put(FeatureCollectorConstants.LIST_TYPE, "");
-        allOptions.put(FeatureCollectorConstants.SHOW_STATUS, "");
-        protoType.setAllFields(allOptions);
-
-        Map<String, Object> uniqueOptions = new HashMap<>();
-        uniqueOptions.put(FeatureCollectorConstants.TOOL_TYPE, "");
-        uniqueOptions.put(FeatureCollectorConstants.PROJECT_NAME, "");
-        uniqueOptions.put(FeatureCollectorConstants.PROJECT_ID, "");
-        uniqueOptions.put(FeatureCollectorConstants.TEAM_NAME, "");
-        uniqueOptions.put(FeatureCollectorConstants.TEAM_ID, "");
-
-        protoType.setUniqueFields(uniqueOptions);
-
-        return protoType;
+        Assert.assertEquals("feature0", options.get("id"));
+        Assert.assertEquals("Jira", options.get("featureTool"));
+        Assert.assertEquals("TestProject", options.get("projectName"));
+        Assert.assertEquals("123", options.get("projectId"));
+        Assert.assertEquals("TestTeam", options.get("teamName"));
+        Assert.assertEquals("321", options.get("teamId"));
+        Assert.assertEquals("storypoints", options.get("estimateMetricType"));
+        Assert.assertEquals("kanban", options.get("sprintType"));
+        Assert.assertEquals("epics", options.get("listType"));
+        Assert.assertEquals("showStatus", options.get("showStatus"));
     }
 }
