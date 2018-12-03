@@ -47,15 +47,10 @@ public class GitRequestServiceImpl implements GitRequestService {
         QGitRequest gitRequest = new QGitRequest("search");
         BooleanBuilder builder = new BooleanBuilder();
 
+        CollectorItem item = null;
         Component component = componentRepository.findOne(request.getComponentId());
-        if (component == null) {
-            Iterable<GitRequest> results = new ArrayList<>();
-            return new DataResponse<>(results, new Date().getTime());
-        }
-
-        CollectorItem item = component.getFirstCollectorItemForType(CollectorType.SCM);
-
-        if (item == null) {
+        if ( (component == null)
+                || ((item = component.getFirstCollectorItemForType(CollectorType.SCM)) == null) ) {
             Iterable<GitRequest> results = new ArrayList<>();
             return new DataResponse<>(results, new Date().getTime());
         }
