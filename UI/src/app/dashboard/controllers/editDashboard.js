@@ -66,6 +66,7 @@
         ctrl.saveWidgets = saveWidgets;
         ctrl.onConfigurationItemBusAppSelect = onConfigurationItemBusAppSelect;
         ctrl.submitScoreSettings = submitScoreSettings;
+        ctrl.removeWidget = removeWidget;
 
         ctrl.validBusServName = isValidBusServName();
         ctrl.validBusAppName = isValidBusAppName();
@@ -85,7 +86,9 @@
             ctrl.widgets = widgetManager.getWidgets();
             if(response.template =='widgets'){
                 ctrl.selectWidgetsDisabled = false;
-                ctrl.activeWidgets = response.activeWidgets;
+                response.activeWidgets.forEach(function(activeWidget){
+                    ctrl.activeWidgets[activeWidget.title]=activeWidget;
+                });
             }else{
                 ctrl.selectWidgetsDisabled = true;
                 _.map(ctrl.widgets, function (value, key) {
@@ -251,10 +254,19 @@
             return valid;
         }
 
+        function removeWidget(title) {
+            delete ctrl.activeWidgets[title];
+        }
+
         // Save template - after edit
         function saveWidgets(form) {
             findSelectedWidgets();
             if(form.$valid ){
+                var activeWidgets;
+                ctrl.selectedWidgets.forEach(function(widget, index){
+                  //TODO we could just go around here and make up a title... but it would be better to preserve
+                    activeWidgets.push();
+                });
                 var submitData = {
                     activeWidgets: ctrl.selectedWidgets
                 };

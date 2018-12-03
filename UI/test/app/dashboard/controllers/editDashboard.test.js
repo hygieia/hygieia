@@ -18,9 +18,9 @@ describe('EditDashboardController', function () {
       {type: "code", title: "code03"}
     ],
     widgets: [
-      {id: "01", name: "build01", collectorItemIds: ["02", "03", "04"]},
-      {id: "01", name: "build01", collectorItemIds: ["04"]},
-      {id: "01", name: "code01", collectorItemIds: ["05"]}
+      {id: "01", name: "build", collectorItemIds: ["02", "03", "04"]},
+      {id: "01", name: "build", collectorItemIds: ["04"]},
+      {id: "01", name: "code", collectorItemIds: ["05"]}
     ]
   };
   var fixedDashboardItem = {};
@@ -104,7 +104,25 @@ describe('EditDashboardController', function () {
   describe("create controller", function () {
     it("should have setup the controller", function () {
       expect(controller.selectWidgetsDisabled).toBe(false);
-      expect(controller.activeWidgets.length).toBe(3);
+      expect(Object.keys(controller.activeWidgets).length).toBe(3);
+      expect(Object.values(controller.activeWidgets)).toEqual([{type: "build", title: "build01"},
+        {type: "build", title: "build02"},
+        {type: "code", title: "code03"}]);
+      // I suspect we'll have to do something with the widgets as well..
+      expect(controller.widgetSelections.length).toBe(3)
+    })
+  })
+
+  describe("modify widgets", function() {
+    it("should remove the active widget", function() {
+      controller.removeWidget("build02");
+
+      expect(Object.keys(controller.activeWidgets).length).toBe(2);
+      expect(Object.values(controller.activeWidgets)).toEqual([
+        {type: "build", title: "build01"},
+        {type: "code", title: "code03"}
+      ]);
+      expect(controller.widgetSelections.length).toBe(2)
     })
   })
 });

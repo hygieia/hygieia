@@ -151,16 +151,24 @@
                 <div class="col-xs-12 gap">
                     <label class="modal-label">Add/Remove Widgets</label>
                     <form name="editForm">
-                        <ul class="list-animate list-group text-left">
-                            <li class="list-group-item" ng-repeat="(title,enabled) in ctrl.widgetSelections"
-                                ng-if="title!='product' && title!='monitor2' && title!='undefined'">
-                                <span class="fa fa-lg left-icon"></span>
-                                <input type="checkbox" name="widgetSelections" ng-disabled="ctrl.selectWidgetsDisabled" ng-model="ctrl.widgetSelections[title]">
-                                <span>{{title | uppercase}}</span>
-                            </li>
-
-                        </ul>
-
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div gridstack class="grid-stack" options="options" on-change="ctrl.onChange(event,items)" on-drag-start="ctrl.onDragStart(event,ui)" on-drag-stop="ctrl.onDragStop(event,ui)" on-resize-start="ctrl.onResizeStart(event,ui)" on-resize-stop="ctrl.onResizeStop(event,ui)">
+                                    <div gridstack-item ng-repeat="(title, w) in activeWidgets" class="grid-stack-item" gs-item-x="w.x" gs-item-y="w.y"
+                                         gs-item-width="w.width" gs-item-height="w.height" gs-item-autopos="1">
+                                        <div class="grid-stack-item-content widget">
+                                            <div class="widget-body-config">
+                                                <div>
+                                                    <div class="fa fa-cog fa-lg"></div>
+                                                    <div class="fa fa-lg fa-trash widget-trash" ng-click="ctrl.removeWidget(title)"></div>
+                                                    <div>{{title}}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="button-row row text-center">
                             <button type="submit" class="btn btn-primary btn-wide" ng-click="ctrl.saveWidgets(editForm)" ng-disabled="ctrl.selectWidgetsDisabled">Save
                             </button>
