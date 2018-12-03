@@ -15,12 +15,13 @@ import com.capitalone.dashboard.model.TestCaseStep;
 import com.capitalone.dashboard.model.TestCapability;
 import com.capitalone.dashboard.model.TestSuite;
 import com.capitalone.dashboard.model.TestSuiteType;
+import com.capitalone.dashboard.model.TestResultCollector;
+import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.TestResultCollectorRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
-import org.bson.types.ObjectId;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
@@ -31,6 +32,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import java.util.Optional;
 
 public class TestExecutionClientImpl implements TestExecutionClient {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(TestExecutionClientImpl.class);
@@ -110,23 +112,16 @@ public class TestExecutionClientImpl implements TestExecutionClient {
 
         if (currentPagedTestExecutions != null) {
             List<TestResult> testResultsToSave = new ArrayList<>();
-            ObjectId collectorItemId;
 
             for (Feature testExec : currentPagedTestExecutions) {
 
                 // Set collectoritemid for manual test results
-                if (testExec.getsTeamID() != null) {
-                    collectorItemId = this.collectorItemRepository.findByJiraTeamId(testExec.getsTeamID()).getId();
-                } else if (testExec.getsProjectID() != null) {
-                    collectorItemId = this.collectorItemRepository.findByJiraProjectId(testExec.getsProjectID()).getId();
-                } else {
-                    CollectorItem collectorItem = new CollectorItem();
-                    collectorItemId = collectorItem.getId();
+                CollectorItem collectorItem = createCollectorItem(testExec);
+                TestResult testResult = testResultRepository.findByCollectorItemId(collectorItem.getId());
+                if(testResult == null) {
+                    testResult = new TestResult();
                 }
-
-                TestResult testResult = new TestResult();
-
-                testResult.setCollectorItemId(collectorItemId);
+                testResult.setCollectorItemId(collectorItem.getId());
                 testResult.setDescription(testExec.getsName());
 
                 testResult.setTargetAppName(testExec.getsProjectName());
@@ -213,13 +208,13 @@ public class TestExecutionClientImpl implements TestExecutionClient {
 
         for (TestExecution.Test test : tests) {
             TestCase testCase = new TestCase();
-
-            try {
                 TestRun testRun = restClient.getTestRunClient().getTestRun(testExec.getsNumber(), test.getKey()).claim();
 
                 testCase.setId(testRun.getId().toString());
                 testCase.setDescription(test.toString());
-                if (testRun.getSteps() != null) {
+                Iterable<TestStep> testStep = testRun.getSteps();
+                Optional<Iterable<TestStep>> optionalTestSteps = Optional.ofNullable(testStep);
+                if (optionalTestSteps.isPresent()) {
                     int totalSteps = (int) testRun.getSteps().spliterator().getExactSizeIfKnown();
                     Map<String,Integer> stepCountByStatus = this.getStepCountStatusMap(testRun);
 
@@ -244,10 +239,6 @@ public class TestExecutionClientImpl implements TestExecutionClient {
 
                     testCase.setTestSteps(this.getTestSteps(testRun));
                 }
-
-            } catch (Exception e) {
-                LOGGER.error("Unable to get the Test Step: " + e);
-            }
             testCases.add(testCase);
         }
 
@@ -414,5 +405,29 @@ public class TestExecutionClientImpl implements TestExecutionClient {
         }
 
         return data;
+    }
+
+    private CollectorItem createCollectorItem(Feature testExec) {
+        List<TestResultCollector> collector = testResultCollectorRepository.findByCollectorTypeAndName(CollectorType.Test, "Jira XRay");
+        TestResultCollector collector1 = collector.get(0);
+        CollectorItem existing = collectorItemRepository.findByCollectorIdNiceNameAndJobName(collector1.getId(), "Manual", testExec.getsName());
+        CollectorItem tempCi = new CollectorItem();
+        Optional<CollectorItem> optionalCollectorItem = Optional.ofNullable(existing);
+        if(optionalCollectorItem.isPresent()) {
+            tempCi.setId(existing.getId());
+        }else {
+            tempCi.setCollectorId(collector1.getId());
+            tempCi.setDescription("JIRAXRay:" + testExec.getsName());
+            tempCi.setPushed(true);
+            tempCi.setLastUpdated(System.currentTimeMillis());
+            tempCi.setNiceName("Manual");
+            Map<String, Object> option = new HashMap<>();
+            option.put("jobName", testExec.getsName());
+            option.put("instanceUrl", testExec.getsUrl());
+            tempCi.getOptions().putAll(option);
+            collectorItemRepository.save(tempCi);
+        }
+        return tempCi;
+
     }
 }

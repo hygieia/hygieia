@@ -21,7 +21,7 @@ public class TestResultCollector extends Collector {
         protoType.setName(FeatureCollectorConstants.JIRA_XRAY);
         protoType.setOnline(true);
         protoType.setEnabled(true);
-        protoType.setCollectorType(CollectorType.TestResult);
+        protoType.setCollectorType(CollectorType.Test);
         protoType.setLastExecuted(System.currentTimeMillis());
 
         return protoType;
