@@ -11,7 +11,7 @@
       <!-- rollover daily -->
       <fileNamePattern>logs/scorecollector-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
       <timeBasedFileNamingAndTriggeringPolicy
-        class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+              class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
         <!-- or whenever the file size reaches 20MB -->
         <maxFileSize>20MB</maxFileSize>
       </timeBasedFileNamingAndTriggeringPolicy>
