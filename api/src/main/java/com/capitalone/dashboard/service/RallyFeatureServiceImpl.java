@@ -76,6 +76,9 @@ public class RallyFeatureServiceImpl implements RallyFeatureService {
 		collectorId = collector.get().getId();
 		
 		Component component = componentRepository.findOne(request.getComponentId());
+		if (component == null) {
+			return null;
+		}
 		
 		List<CollectorItem> collectorItems = component.getCollectorItems(CollectorType.AgileTool);
 		

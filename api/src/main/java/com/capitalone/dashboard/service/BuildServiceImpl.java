@@ -73,6 +73,11 @@ public class BuildServiceImpl implements BuildService {
     @Override
     public DataResponse<Iterable<Build>> search(BuildSearchRequest request) {
         Component component = componentRepository.findOne(request.getComponentId());
+        if (component == null) {
+            Iterable<Build> results = new ArrayList<>();
+            return new DataResponse<>(results, new Date().getTime());
+        }
+
         CollectorItem item = component.getFirstCollectorItemForType(CollectorType.Build);
         if (item == null) {
             Iterable<Build> results = new ArrayList<>();

@@ -1,18 +1,13 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.Collector;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.DataResponse;
-import com.capitalone.dashboard.model.GitRequest;
-import com.capitalone.dashboard.model.QGitRequest;
+import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.request.GitRequestRequest;
 import com.mysema.query.BooleanBuilder;
+import com.vividsolutions.jts.util.CollectionUtil;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -53,7 +48,12 @@ public class GitRequestServiceImpl implements GitRequestService {
         BooleanBuilder builder = new BooleanBuilder();
 
         Component component = componentRepository.findOne(request.getComponentId());
-        CollectorItem item = component.getCollectorItems().get(CollectorType.SCM).get(0);
+        if (component == null) {
+            Iterable<GitRequest> results = new ArrayList<>();
+            return new DataResponse<>(results, new Date().getTime());
+        }
+
+        CollectorItem item = component.getFirstCollectorItemForType(CollectorType.SCM);
 
         if (item == null) {
             Iterable<GitRequest> results = new ArrayList<>();
@@ -61,6 +61,7 @@ public class GitRequestServiceImpl implements GitRequestService {
         }
 
         builder.and(gitRequest.collectorItemId.eq(item.getId()));
+
         if (request.getNumberOfDays() != null) {
             long endTimeTarget = new LocalDate().minusDays(request.getNumberOfDays()).toDate().getTime();
             builder.and(gitRequest.timestamp.goe(endTimeTarget));
