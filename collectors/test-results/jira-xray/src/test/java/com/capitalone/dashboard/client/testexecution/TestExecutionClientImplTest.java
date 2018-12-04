@@ -15,25 +15,30 @@ import com.capitalone.dashboard.core.client.testexecution.TestExecutionClientImp
 import com.capitalone.dashboard.core.json.util.RendereableItem;
 import com.capitalone.dashboard.core.json.util.RendereableItemImpl;
 import com.capitalone.dashboard.model.TestResult;
-import com.capitalone.dashboard.model.TestSuite;
-import com.capitalone.dashboard.model.TestSuiteType;
-import com.capitalone.dashboard.model.TestCase;
 import com.capitalone.dashboard.model.TestCapability;
-import com.capitalone.dashboard.model.TestCaseStatus;
+import com.capitalone.dashboard.model.TestSuiteType;
+import com.capitalone.dashboard.model.TestSuite;
 import com.capitalone.dashboard.model.Feature;
+import com.capitalone.dashboard.model.TestCaseStatus;
+import com.capitalone.dashboard.model.TestCase;
 import com.capitalone.dashboard.model.TestCaseStep;
-import com.capitalone.dashboard.repository.CollectorItemRepository;
-import com.capitalone.dashboard.repository.FeatureRepository;
-import com.capitalone.dashboard.repository.TestResultCollectorRepository;
+import com.capitalone.dashboard.model.TestResultCollector;
+import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.repository.TestResultRepository;
+import com.capitalone.dashboard.repository.TestResultCollectorRepository;
+import com.capitalone.dashboard.repository.FeatureRepository;
+import com.capitalone.dashboard.repository.CollectorItemRepository;
+
+import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Captor;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
@@ -127,7 +132,7 @@ public class TestExecutionClientImplTest {
 
     @Test
     public void updateMongoTestResultInformation(){
-
+        Mockito.when(testResultCollectorRepository.findByCollectorTypeAndName(Matchers.any(), Matchers.anyString())).thenReturn(createCollector());
         Mockito.when(featureRepository.getStoryByType("Test Execution")).thenReturn(createFeature());
         int cnt = testExecutionClientimpl.updateTestResultInformation();
         Assert.assertEquals(1, cnt);
@@ -206,6 +211,18 @@ public class TestExecutionClientImplTest {
 
 
         return tests;
+    }
+
+    private List<TestResultCollector> createCollector(){
+        List<TestResultCollector> collector = new ArrayList<>();
+        TestResultCollector collector1 = new TestResultCollector();
+        ObjectId objectId = new ObjectId();
+        collector1.setId(objectId);
+        collector1.setCollectorType(CollectorType.Test);
+        collector1.setName("JIRA Xray");
+        collector.add(collector1);
+        return collector;
+
     }
 
 
