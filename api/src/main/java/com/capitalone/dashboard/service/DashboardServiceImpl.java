@@ -31,6 +31,8 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -49,7 +51,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
-
+    private static final Log LOG = LogFactory.getLog(DashboardServiceImpl.class);
     private final DashboardRepository dashboardRepository;
     private final ComponentRepository componentRepository;
     private final CollectorRepository collectorRepository;
@@ -263,6 +265,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public Component associateCollectorToComponent(ObjectId componentId, List<ObjectId> collectorItemIds) {
+        final String METHOD_NAME = "DashboardServiceImpl.associateCollectorToComponent :";
         if (componentId == null || collectorItemIds == null) {
             // Not all widgets gather data from collectors
             return null;
@@ -278,6 +281,10 @@ public class DashboardServiceImpl implements DashboardService {
         HashMap<ObjectId, CollectorItem> toSaveCollectorItems = new HashMap<>();
         for (ObjectId collectorItemId : collectorItemIds) {
             CollectorItem collectorItem = collectorItemRepository.findOne(collectorItemId);
+            if(collectorItem == null) {
+                LOG.warn(METHOD_NAME + " Bad CollectorItemId passed in the request : " + collectorItemId);
+                continue;
+            }
             Collector collector = collectorRepository.findOne(collectorItem.getCollectorId());
             if (!incomingTypes.contains(collector.getCollectorType())) {
                 incomingTypes.add(collector.getCollectorType());
