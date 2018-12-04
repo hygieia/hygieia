@@ -154,12 +154,10 @@
                 if (libraryData.threats) {
                     if (libraryData.threats.License) {
                         ctrl.libraryLicenseThreats = libraryData.threats.License;
-                        ctrl.libraryLicenseThreatStatus = getLibraryPolicyStatus(libraryData.threats.License)
                         ctrl.libraryLicenseThreatCount = getLevelCount(libraryData.threats.License)
                     }
                     if (libraryData.threats.Security) {
                         ctrl.librarySecurityThreats = libraryData.threats.Security;
-                        ctrl.librarySecurityThreatStatus = getLibraryPolicyStatus(libraryData.threats.Security)
                         ctrl.librarySecurityThreatCount = getLevelCount(libraryData.threats.Security)
                     }
                     ctrl.knownComponentCount = knownComponentCount;
@@ -271,30 +269,6 @@
 
                 return {counts: counts};
             };
-
-            function getLibraryPolicyStatus(threats) {
-                var highest = 0; //ok
-                var highestCount = 0;
-                for (var i = 0; i < threats.length; ++i) {
-                    var level = threats[i].level;
-                    var count = threats[i].count;
-                    if ((level.toLowerCase() === 'critical') && (count > 0) && (highest < 4)) {
-                        highest = 4;
-                        highestCount = count;
-                    }
-                    if ((level.toLowerCase() === 'high') && (count > 0) && (highest < 3)) {
-                        highest = 3;
-                        highestCount = count;
-                    } else if ((level.toLowerCase() === 'medium') && (count > 0) && (highest < 2)) {
-                        highest = 2;
-                        highestCount = count;
-                    } else if ((level.toLowerCase() === 'low') && (count > 0) && (highest < 1)) {
-                        highest = 1;
-                        highestCount = count;
-                    }
-                }
-                return {level: highest, count: highestCount};
-            }
 
             function getMetric(metrics, metricName, title) {
                 title = title || metricName;
