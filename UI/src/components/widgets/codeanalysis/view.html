@@ -260,20 +260,22 @@
                         License- <small>View All <i class="fa fa-arrow-right" aria-hidden="true"></i></small>
                     </div>
                     <div class="dash-row">
-                        <div ng-repeat="level in levels">
-                            {{level}} ({{libraryPolicyDetails.getLevelCount(caWidget.libraryLicenseThreats).level}})
+                        <div ng-repeat="(level, count) in caWidget.libraryLicenseThreatCount.counts" ng-if="count > 0">
+                            <span dash-status="{{caWidget.getDashStatus(level)}}"></span> {{level}} ({{count}})
                         </div>
                     </div>
                 </td>
                 <td>
 
                     <div class="dash-row clickable"
-                                    ng-click="caWidget.showLibraryPolicyDetails('Security', caWidget.libraryPolicyDetails)">
+                         ng-click="caWidget.showLibraryPolicyDetails('Security', caWidget.libraryPolicyDetails)">
                         Security- <small>View All <i class="fa fa-arrow-right" aria-hidden="true"></i></small>
                     </div>
-                        <span dash-status="{{caWidget.getDashStatus(caWidget.librarySecurityThreatStatus)}}"></span>Security <span>
-                            ({{(caWidget.librarySecurityThreatStatus) ? caWidget.librarySecurityThreatStatus.count : 0}})
-                        </span>
+                    <div class="dash-row">
+                        <div ng-repeat="(level, count) in caWidget.librarySecurityThreatCount.counts" ng-if="count > 0">
+                                <span dash-status="{{caWidget.getDashStatus(level)}}"></span> {{level}} ({{count}})
+                        </div>
+                    </div>
                 </td>
                 </tr>
 

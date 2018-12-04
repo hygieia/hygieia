@@ -155,10 +155,12 @@
                     if (libraryData.threats.License) {
                         ctrl.libraryLicenseThreats = libraryData.threats.License;
                         ctrl.libraryLicenseThreatStatus = getLibraryPolicyStatus(libraryData.threats.License)
+                        ctrl.libraryLicenseThreatCount = getLevelCount(libraryData.threats.License)
                     }
                     if (libraryData.threats.Security) {
                         ctrl.librarySecurityThreats = libraryData.threats.Security;
                         ctrl.librarySecurityThreatStatus = getLibraryPolicyStatus(libraryData.threats.Security)
+                        ctrl.librarySecurityThreatCount = getLevelCount(libraryData.threats.Security)
                     }
                     ctrl.knownComponentCount = knownComponentCount;
                     ctrl.knownComponentCountPercentage = Math.round(calculatePercentage * 100);
@@ -253,20 +255,18 @@
                 };
             }
 
-            ctrl.getLevelCount = function getLevelCount(threats) {
+            function getLevelCount(threats) {
                 var counts = {};
                 var level;
 
-                counts['critical'] = 0;
-                counts['high'] = 0;
-                counts['medium'] = 0;
-                counts['low'] = 0;
-
-
+                counts['Critical'] = 0;
+                counts['High'] = 0;
+                counts['Medium'] = 0;
+                counts['Low'] = 0;
 
                 for (var i = 0; i < threats.length; ++i) {
-                    level = threats[i].level.toLowerCase();
-                    counts[level]++;
+                    level = threats[i].level;
+                    counts[level]=threats[i].count;
                 }
 
                 return {counts: counts};
