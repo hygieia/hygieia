@@ -1,17 +1,8 @@
 package com.capitalone.dashboard.service;
 
+import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.settings.ApiSettings;
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.Build;
-import com.capitalone.dashboard.model.BuildStatus;
-import com.capitalone.dashboard.model.Collector;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.DashboardType;
-import com.capitalone.dashboard.model.SCM;
-import com.capitalone.dashboard.model.ScoreDisplayType;
 import com.capitalone.dashboard.repository.BuildRepository;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
@@ -25,6 +16,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.joda.time.LocalDate;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -66,7 +58,7 @@ public class BuildServiceTest {
         BuildSearchRequest request = new BuildSearchRequest();
         request.setComponentId(componentId);
 
-        when(componentRepository.findOne(request.getComponentId())).thenReturn(makeComponent(collectorItemId, collectorId));
+        when(componentRepository.findOne(request.getComponentId())).thenReturn(makeComponent(collectorItemId, collectorId, true));
         when(collectorRepository.findOne(collectorId)).thenReturn(new Collector());
 
         buildService.search(request);
@@ -74,6 +66,37 @@ public class BuildServiceTest {
         verify(buildRepository, times(1)).findAll(argThat(hasPredicate("build.collectorItemId = " + collectorItemId.toString())));
     }
 
+    @Test
+    public void search_Empty_Response_No_CollectorItems() {
+        ObjectId componentId = ObjectId.get();
+        ObjectId collectorItemId = ObjectId.get();
+        ObjectId collectorId = ObjectId.get();
+
+        BuildSearchRequest request = new BuildSearchRequest();
+        request.setComponentId(componentId);
+
+        when(componentRepository.findOne(request.getComponentId())).thenReturn(makeComponent(collectorItemId, collectorId, false));
+        when(collectorRepository.findOne(collectorId)).thenReturn(new Collector());
+
+        DataResponse<Iterable<Build>> response = buildService.search(request);
+
+        List<Build> result = (List<Build>) response.getResult();
+        Assert.assertEquals(0, result.size());
+    }
+
+    @Test
+    public void search_Empty_Response_No_Component() {
+        ObjectId collectorId = ObjectId.get();
+        BuildSearchRequest request = new BuildSearchRequest();
+
+        when(componentRepository.findOne(request.getComponentId())).thenReturn(null);
+        when(collectorRepository.findOne(collectorId)).thenReturn(new Collector());
+
+        DataResponse<Iterable<Build>> response = buildService.search(request);
+
+        List<Build> result = (List<Build>) response.getResult();
+        Assert.assertEquals(0, result.size());
+    }
 
     @Test
     public void search_14days() {
@@ -85,7 +108,7 @@ public class BuildServiceTest {
         request.setComponentId(componentId);
         request.setNumberOfDays(14);
 
-        when(componentRepository.findOne(request.getComponentId())).thenReturn(makeComponent(collectorItemId, collectorId));
+        when(componentRepository.findOne(request.getComponentId())).thenReturn(makeComponent(collectorItemId, collectorId, true));
         when(collectorRepository.findOne(collectorId)).thenReturn(new Collector());
 
         buildService.search(request);
@@ -167,12 +190,15 @@ public class BuildServiceTest {
         assertEquals(build.getNumber(), response.getNumber());
     }
 
-    private Component makeComponent(ObjectId collectorItemId, ObjectId collectorId) {
+    private Component makeComponent(ObjectId collectorItemId, ObjectId collectorId, boolean populateCollectorItems) {
         CollectorItem item = new CollectorItem();
         item.setId(collectorItemId);
         item.setCollectorId(collectorId);
         Component c = new Component();
-        c.getCollectorItems().put(CollectorType.Build, Collections.singletonList(item));
+        if (populateCollectorItems) {
+            c.getCollectorItems().put(CollectorType.Build, Collections.singletonList(item));
+        }
+
         return c;
     }
 
