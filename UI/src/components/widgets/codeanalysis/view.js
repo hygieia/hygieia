@@ -253,6 +253,25 @@
                 };
             }
 
+            ctrl.getLevelCount = function getLevelCount(threats) {
+                var counts = {};
+                var level;
+
+                counts['critical'] = 0;
+                counts['high'] = 0;
+                counts['medium'] = 0;
+                counts['low'] = 0;
+
+
+
+                for (var i = 0; i < threats.length; ++i) {
+                    level = threats[i].level.toLowerCase();
+                    counts[level]++;
+                }
+
+                return {counts: counts};
+            };
+
             function getLibraryPolicyStatus(threats) {
                 var highest = 0; //ok
                 var highestCount = 0;
@@ -301,19 +320,19 @@
                 return Math.ceil(value / factor) + suffix;
             }
 
-            ctrl.getDashStatus = function getDashStatus(status) {
-                if(status == undefined) return 'ignore';
-                switch (status.level) {
-                    case 4:
+            ctrl.getDashStatus = function getDashStatus(level) {
+                if(level == undefined) return 'ignore';
+                switch (level.toLowerCase()) {
+                    case 'critical':
                         return 'critical';
 
-                    case 3:
+                    case 'high':
                         return 'alert';
 
-                    case 2:
+                    case 'medium':
                         return 'warning';
 
-                    case 1:
+                    case 'low':
                         return 'ignore';
 
                     default:

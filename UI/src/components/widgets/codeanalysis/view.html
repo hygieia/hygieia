@@ -234,7 +234,7 @@
                     <div>
                     <span class="compHeader">{{caWidget.knownComponentCount}} COMPONENTS IDENTIFIED</span>
                     <span class="comSubHeader">{{caWidget.knownComponentCountPercentage}}% OF ALL COMPONENTS ARE IDENTIFIED
-                    </span>         
+                    </span>
                     </div>    
                 </td>
                 <td  width="40%" class="table-td">
@@ -255,15 +255,15 @@
                 </tr>
                 <tr>
                 <td>
-
                     <div class="dash-row clickable"
-                                    ng-click="caWidget.showLibraryPolicyDetails('License', caWidget.libraryPolicyDetails)">
+                         ng-click="caWidget.showLibraryPolicyDetails('License', caWidget.libraryPolicyDetails)">
                         License- <small>View All <i class="fa fa-arrow-right" aria-hidden="true"></i></small>
                     </div>
-                        <span dash-status="{{caWidget.getDashStatus(caWidget.libraryLicenseThreatStatus)}}"></span>License <span>
-                            ({{(caWidget.libraryLicenseThreatStatus) ? caWidget.libraryLicenseThreatStatus.count : 0}})
-                        </span>
-
+                    <div class="dash-row">
+                        <div ng-repeat="level in levels">
+                            {{level}} ({{libraryPolicyDetails.getLevelCount(caWidget.libraryLicenseThreats).level}})
+                        </div>
+                    </div>
                 </td>
                 <td>
 
@@ -279,6 +279,7 @@
 
             </tbody>
             </table>
+
                         </div>
                     </div>
                 </div>
