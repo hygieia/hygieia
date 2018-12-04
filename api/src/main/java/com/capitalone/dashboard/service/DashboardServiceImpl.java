@@ -1,38 +1,21 @@
 package com.capitalone.dashboard.service;
 
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.ArrayList;
-import java.util.stream.Collectors;
-
-import com.capitalone.dashboard.settings.ApiSettings;
-import com.capitalone.dashboard.model.BaseModel;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
 import com.capitalone.dashboard.auth.AuthenticationUtil;
 import com.capitalone.dashboard.auth.exceptions.UserNotFoundException;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuthType;
+import com.capitalone.dashboard.model.BaseModel;
+import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
-import com.capitalone.dashboard.model.Owner;
-import com.capitalone.dashboard.model.Widget;
-import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.ScoreDisplayType;
+import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
@@ -41,16 +24,34 @@ import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.PipelineRepository;
 import com.capitalone.dashboard.repository.ServiceRepository;
 import com.capitalone.dashboard.repository.UserInfoRepository;
+import com.capitalone.dashboard.settings.ApiSettings;
 import com.capitalone.dashboard.util.UnsafeDeleteException;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
-
+    private static final Log LOG = LogFactory.getLog(DashboardServiceImpl.class);
     private final DashboardRepository dashboardRepository;
     private final ComponentRepository componentRepository;
     private final CollectorRepository collectorRepository;
@@ -144,7 +145,8 @@ public class DashboardServiceImpl implements DashboardService {
         List<ObjectId> collectorItemIds = collectorItems.stream().map(BaseModel::getId).collect(Collectors.toList());
         // Find the components that have these collector items
         List<com.capitalone.dashboard.model.Component> components = componentRepository.findByCollectorTypeAndItemIdIn(collectorType, collectorItemIds);
-        return dashboardRepository.findByApplicationComponentsIn(components);
+        List<ObjectId> componentIds = (List) components.stream().map(BaseModel::getId).collect(Collectors.toList());
+        return dashboardRepository.findByApplicationComponentIdsIn(componentIds);
     }
 
     private Dashboard create(Dashboard dashboard, boolean isUpdate) throws HygieiaException {
@@ -263,6 +265,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public Component associateCollectorToComponent(ObjectId componentId, List<ObjectId> collectorItemIds) {
+        final String METHOD_NAME = "DashboardServiceImpl.associateCollectorToComponent :";
         if (componentId == null || collectorItemIds == null) {
             // Not all widgets gather data from collectors
             return null;
@@ -278,6 +281,10 @@ public class DashboardServiceImpl implements DashboardService {
         HashMap<ObjectId, CollectorItem> toSaveCollectorItems = new HashMap<>();
         for (ObjectId collectorItemId : collectorItemIds) {
             CollectorItem collectorItem = collectorItemRepository.findOne(collectorItemId);
+            if(collectorItem == null) {
+                LOG.warn(METHOD_NAME + " Bad CollectorItemId passed in the request : " + collectorItemId);
+                continue;
+            }
             Collector collector = collectorRepository.findOne(collectorItem.getCollectorId());
             if (!incomingTypes.contains(collector.getCollectorType())) {
                 incomingTypes.add(collector.getCollectorType());
