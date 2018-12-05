@@ -68,7 +68,7 @@ To configure Hygieia, execute the following steps:
 	
 Once httpd is installed in your production environment, open the file ```/etc/httpd/conf/httpd.conf to update``` the following configuration:
 	
-	```
+	
 	# vi /etc/httpd/conf/httpd.conf
 	Listen 80
 	<VirtualHost *:80>
@@ -95,14 +95,13 @@ Once httpd is installed in your production environment, open the file ```/etc/ht
 		Require all granted
 	</Directory>
 
-	```
 	
 ## Start Webserver
-	```
+	
 	# systemctl status httpd
-	    # systemctl start httpd
-	    # systemctl status httpd 
-	 ```
+	# systemctl start httpd
+	# systemctl status httpd 
+	
 	    
 ## Start collectors
 
