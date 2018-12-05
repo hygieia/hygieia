@@ -212,7 +212,8 @@
 
 		function processCollectorItemResponse(response) {
 			var postObj = {
-				name : "repo",
+				name : $scope.title,
+				type: 'repo',
 				options:{
 					id: widgetConfig.options.id
 				},

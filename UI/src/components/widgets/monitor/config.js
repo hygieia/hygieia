@@ -161,7 +161,8 @@
 
             $q.all(promises).then(function (responses) {
                 var widgetResponse = {
-                    name: 'monitor',
+                    name: $scope.title,
+                    type: 'monitor',
                     options: {
                         id: modalData.widgetConfig.options.id
                     }

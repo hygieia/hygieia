@@ -34,7 +34,8 @@
             console.log(paCollectorItem);
             if (paCollectorItem) collectorItems.push(paCollectorItem.id);
             var postObj = {
-                name: 'performanceanalysis',
+                name: $scope.title,
+                type: 'performanceanalysis',
                 options: {
                     id: widgetConfig.options.id
                 },

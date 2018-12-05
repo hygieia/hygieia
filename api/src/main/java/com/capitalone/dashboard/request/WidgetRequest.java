@@ -8,6 +8,7 @@ import java.util.Map;
 
 public class WidgetRequest {
     private String name;
+    private String type;
     private ObjectId componentId;
     private List<ObjectId> collectorItemIds;
     private Map<String, Object> options;
@@ -44,9 +45,18 @@ public class WidgetRequest {
         this.options = options;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public Widget widget() {
         Widget widget = new Widget();
         widget.setName(name);
+        widget.setType(type);
         widget.setComponentId(componentId);
         if ((options != null) && !options.isEmpty()) {
             widget.getOptions().put("id",options.get("id"));

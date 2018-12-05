@@ -835,6 +835,7 @@ public class DashboardServiceTest {
         Widget w = new Widget();
         w.setId(id);
         w.setName("updated");
+        w.setType("updated");
         return w;
     }
     private Cmdb getConfigItem(String name){

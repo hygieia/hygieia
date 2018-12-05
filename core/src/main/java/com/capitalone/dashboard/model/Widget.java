@@ -14,6 +14,7 @@ import java.util.Map;
 public class Widget {
     private ObjectId id;
     private String name;
+    private String type;
     private ObjectId componentId;
     private Map<String,Object> options = new HashMap<>();
     private List<ObjectId> collectorItemIds = new ArrayList<>();
@@ -55,6 +56,14 @@ public class Widget {
 
     public Map<String, Object> getOptions() {
         return options;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override

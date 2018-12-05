@@ -125,7 +125,8 @@
             }
             var form = document.configForm;
             var postObj = {
-                name: 'codeanalysis',
+                name: $scope.title,
+                type: 'codeanalysis',
                 options: {
                     id: widgetConfig.options.id
                   },

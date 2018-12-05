@@ -57,7 +57,8 @@
             var teamId= ctrl.selectedTeamObject.teamId;
             var teamName= ctrl.selectedTeamObject.teamName;
                 var postObj = {
-                    name: 'TEAM',
+                    name: $scope.title,
+                    type: 'TEAM',
                     options: {
                         id: widgetConfig.options.id,
                         teamId:teamId,

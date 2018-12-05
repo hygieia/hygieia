@@ -37,7 +37,8 @@
         function passDataToView() {
 
             var postObj = {
-                name: 'cloud',
+                name: $scope.title,
+                type: 'cloud',
                 options: {
                     id: widgetConfig.options.id,
                     accountNumber: ctrl.accountNumber,

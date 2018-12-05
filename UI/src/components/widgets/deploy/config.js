@@ -146,7 +146,8 @@
             if (valid) {
                 var form = document.configForm;
                 var postObj = {
-                    name: 'deploy',
+                    name: $scope.title,
+                    type: 'deploy',
                     options: {
                         id: widgetConfig.options.id,
                         aggregateServers: form.aggregateServers.checked,

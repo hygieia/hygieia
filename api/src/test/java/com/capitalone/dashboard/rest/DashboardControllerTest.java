@@ -325,7 +325,7 @@ public class DashboardControllerTest {
         ObjectId collId = ObjectId.get();
         List<ObjectId> collIds = Collections.singletonList(collId);
         Map<String, Object> options = new WidgetOptionsBuilder().put("option1", 1).put("option2", "2").get();
-        WidgetRequest request = makeWidgetRequest("build", compId, collIds, options);
+        WidgetRequest request = makeWidgetRequest("build01","build", compId, collIds, options);
         Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team, configItemAppName, configItemComponentName);
         Widget widgetWithId = request.widget();
         widgetWithId.setId(ObjectId.get());
@@ -338,7 +338,8 @@ public class DashboardControllerTest {
                 .content(TestUtil.convertObjectToJsonBytes(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.widget.id", is(widgetWithId.getId().toString())))
-                .andExpect(jsonPath("$.widget.name", is("build")))
+                .andExpect(jsonPath("$.widget.name", is("build01")))
+                .andExpect(jsonPath("$.widget.type", is("build")))
                 .andExpect(jsonPath("$.widget.componentId", is(compId.toString())))
                 .andExpect(jsonPath("$.component.id", is(component.getId().toString())))
                 .andExpect(jsonPath("$.component.name", is(component.getName())))
@@ -353,9 +354,9 @@ public class DashboardControllerTest {
         ObjectId collId = ObjectId.get();
         List<ObjectId> collIds = Collections.singletonList(collId);
         Map<String, Object> options = new WidgetOptionsBuilder().put("option1", 2).put("option2", "3").get();
-        WidgetRequest request = makeWidgetRequest("build", compId, collIds, options);
+        WidgetRequest request = makeWidgetRequest("build02","build", compId, collIds, options);
         Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team, configItemAppName, configItemComponentName);
-        Widget widget = makeWidget(widgetId, "build", compId, options);
+        Widget widget = makeWidget(widgetId, "build02","build", compId, options);
         when(dashboardService.get(dashId)).thenReturn(d1);
         when(dashboardService.getWidget(d1, widgetId)).thenReturn(widget);
         when(dashboardService.updateWidget(Matchers.any(Dashboard.class), Matchers.any(Widget.class))).thenReturn(widget);
@@ -373,9 +374,9 @@ public class DashboardControllerTest {
         ObjectId collId = ObjectId.get();
         List<ObjectId> collIds = Collections.singletonList(collId);
         Map<String, Object> options = new WidgetOptionsBuilder().put("option1", 2).put("option2", "3").get();
-        WidgetRequest request = makeWidgetRequest("build", compId, collIds, options);
+        WidgetRequest request = makeWidgetRequest("build01","build", compId, collIds, options);
         Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team, configItemAppName, configItemComponentName);
-        Widget widget = makeWidget(widgetId, "build", compId, options);
+        Widget widget = makeWidget(widgetId, "build01","build", compId, options);
         when(dashboardService.get(dashId)).thenReturn(d1);
         when(dashboardService.getWidget(d1, widgetId)).thenReturn(widget);
         dashboardService.deleteWidget(Matchers.any(Dashboard.class), Matchers.any(Widget.class),Matchers.any(ObjectId.class));
@@ -424,18 +425,20 @@ public class DashboardControllerTest {
         return request;
     }
 
-    private Widget makeWidget(ObjectId widgetId, String name, ObjectId compId, Map<String, Object> options) {
+    private Widget makeWidget(ObjectId widgetId, String name, String type, ObjectId compId, Map<String, Object> options) {
         Widget widget = new Widget();
         widget.setId(widgetId);
+        widget.setType(type);
         widget.setName(name);
         widget.setComponentId(compId);
         widget.getOptions().putAll(options);
         return widget;
     }
-    private WidgetRequest makeWidgetRequest(String name, ObjectId componentId,
+    private WidgetRequest makeWidgetRequest(String name, String type, ObjectId componentId,
                                             List<ObjectId> collIds, Map<String, Object> options) {
         WidgetRequest request = new WidgetRequest();
         request.setName(name);
+        request.setType(type);
         request.setComponentId(componentId);
         request.setCollectorItemIds(collIds);
         request.setOptions(options);

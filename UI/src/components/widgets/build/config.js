@@ -59,7 +59,8 @@
             if (valid) {
                 var form = document.buildConfigForm;
                 var postObj = {
-                    name: 'build',
+                    name: $scope.title,
+                    type: 'build',
                     options: {
                     	id: widgetConfig.options.id,
                         buildDurationThreshold: parseFloat(form.buildDurationThreshold.value),

@@ -282,7 +282,8 @@
 
 		function processCollectorItemResponse(response) {
 			var postObj = {
-				name : 'feature',
+				name : $scope.title,
+				type: 'feature',
 				options : {
 					id : widgetConfig.options.id,
 					featureTool: ctrl.collectorId.value,

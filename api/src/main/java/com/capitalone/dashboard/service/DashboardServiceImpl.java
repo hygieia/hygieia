@@ -550,6 +550,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public void deleteWidget(Dashboard dashboard, Widget widget,ObjectId componentId) {
+        // this should be a remove
         int index = dashboard.getWidgets().indexOf(widget);
         dashboard.getWidgets().set(index, null);
         List<Widget> widgets = dashboard.getWidgets();
@@ -561,12 +562,13 @@ public class DashboardServiceImpl implements DashboardService {
         dashboard.setWidgets(updatedWidgets);
         dashboardRepository.save(dashboard);
 
-        String widgetName = widget.getName();
+        // pretty sure we should run off the widget name here to find the collector items on that widget config
+        String widgetType = widget.getType();
 
         List<CollectorType> collectorTypesToDelete = new ArrayList<>();
-        CollectorType cType = findCollectorType(widgetName);
+        CollectorType cType = findCollectorType(widgetType);
         collectorTypesToDelete.add(cType);
-        if(widgetName.equalsIgnoreCase("codeanalysis")){
+        if(widgetType.equalsIgnoreCase("codeanalysis")){
             collectorTypesToDelete.add(CollectorType.CodeQuality);
             collectorTypesToDelete.add(CollectorType.StaticSecurityScan);
             collectorTypesToDelete.add(CollectorType.LibraryPolicy);

@@ -151,6 +151,16 @@
                 <div class="col-xs-12 gap">
                     <label class="modal-label">Add/Remove Widgets</label>
                     <form name="editForm">
+
+                        <div class="sidebar">
+                            <ul>
+                                <li ng-repeat="(title, widget) in ctrl.widgets"  ng-if="
+                                title!='product' && title!='monitor2' && title!='cloud' && title!='pipeline'">
+                                    <a id="{{title}}-add-button" ng-click="ctrl.addWidget(title, $event)">
+                                    {{title}}</a></li>
+                            </ul>
+                            <br>
+                        </div>
                         <div class="row">
                             <div class="col-md-12">
                                 <div gridstack class="grid-stack" options="options" on-change="ctrl.onChange(event,items)" on-drag-start="ctrl.onDragStart(event,ui)" on-drag-stop="ctrl.onDragStop(event,ui)" on-resize-start="ctrl.onResizeStart(event,ui)" on-resize-stop="ctrl.onResizeStop(event,ui)">
