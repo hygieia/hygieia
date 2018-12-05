@@ -18,9 +18,9 @@ describe('EditDashboardController', function () {
       {type: "code", title: "code03"}
     ],
     widgets: [
-      {id: "01", name: "build", collectorItemIds: ["02", "03", "04"]},
-      {id: "01", name: "build", collectorItemIds: ["04"]},
-      {id: "01", name: "code", collectorItemIds: ["05"]}
+      {id: "01", name: "build01", type: "build", collectorItemIds: ["02", "03", "04"]},
+      {id: "02", name: "build02", type: "build", collectorItemIds: ["04"]},
+      {id: "03", name: "code03", type: "code", collectorItemIds: ["05"]}
     ]
   };
   var fixedDashboardItem = {};
@@ -109,7 +109,8 @@ describe('EditDashboardController', function () {
         {type: "build", title: "build02"},
         {type: "code", title: "code03"}]);
       // I suspect we'll have to do something with the widgets as well..
-      expect(controller.widgetSelections.length).toBe(3)
+      expect(Object.keys(controller.widgetSelections)).toEqual(["build01","build02","code03"]);
+      expect(Object.values(controller.widgetSelections).length).toBe(3);
     })
   })
 
@@ -122,7 +123,7 @@ describe('EditDashboardController', function () {
         {type: "build", title: "build01"},
         {type: "code", title: "code03"}
       ]);
-      expect(controller.widgetSelections.length).toBe(2)
+      expect(Object.keys(controller.widgetSelections)).toEqual(["build01","code03"]);
     })
   })
 });

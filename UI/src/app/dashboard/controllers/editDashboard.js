@@ -82,34 +82,25 @@
 
         function processDashboardDetail(response){
             var data = response;
-            ctrl.activeWidgets=[];
-            ctrl.widgets = widgetManager.getWidgets();
-            if(response.template =='widgets'){
-                ctrl.selectWidgetsDisabled = false;
-                response.activeWidgets.forEach(function(activeWidget){
-                    ctrl.activeWidgets[activeWidget.title]=activeWidget;
+          // collection to hold selected widgets
+          ctrl.widgetSelections={};
+          // collection to hold active widgets
+          ctrl.activeWidgets=[];
+          ctrl.widgets = widgetManager.getWidgets();
+          if(response.template =='widgets'){
+              ctrl.selectWidgetsDisabled = false;
+              response.activeWidgets.forEach(function(activeWidget){
+                  ctrl.activeWidgets[activeWidget.title]=activeWidget;
                 });
+              response.widgets.forEach(function(widgetConfig){
+                  ctrl.widgetSelections[widgetConfig.name]=widgetConfig;
+                })
             }else{
-                ctrl.selectWidgetsDisabled = true;
-                _.map(ctrl.widgets, function (value, key) {
+              ctrl.selectWidgetsDisabled = true;
+              _.map(ctrl.widgets, function (value, key) {
                     ctrl.activeWidgets.push(key);
                 });
             }
-            // collection to hold selected widgets
-            ctrl.widgetSelections={};
-            // iterate through widgets and add existing widgets for dashboard
-            _.map(ctrl.widgets, function (value, key) {
-                if(key!='')
-                    if(ctrl.activeWidgets.indexOf(key)>-1){
-                        ctrl.widgetSelections[key] = true;
-                    }else{
-                        ctrl.widgetSelections[key] = false;
-                    }
-            });
-            _(ctrl.widgets).forEach(function (widget) {
-                var wd = widget;
-                ctrl.widgetSelections[widget.title]= false;
-            });
         }
 
         function processUserResponse(response) {
@@ -256,6 +247,7 @@
 
         function removeWidget(title) {
             delete ctrl.activeWidgets[title];
+            delete ctrl.widgetSelections[title];
         }
 
         // Save template - after edit
