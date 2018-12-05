@@ -99,9 +99,8 @@ Once httpd is installed in your production environment, open the file ```/etc/ht
 ## Start Webserver
 	``` # systemctl status httpd
 	    # systemctl start httpd
-	    # systemctl status httpd
-	
-	```
+	    # systemctl status httpd ```
+	    
 ## Start collectors
 
 *	**Option 1: Running Each Collector in the Background**
@@ -115,13 +114,17 @@ Once httpd is installed in your production environment, open the file ```/etc/ht
 *	**Option 2: Running All Collectors using Script**
 	
 	- In general, you can run the collectors using the following command:
-		```java -jar <Path to collector-name.jar> --spring.config.name=<prefix for properties> --spring.config.location=<path to properties file location> ```
+		```
+		java -jar <Path to collector-name.jar> --spring.config.name=<prefix for properties> --spring.config.location=<path to properties file location> 
+		```
 	- For detailed instructions on installing each component of Hygieia, see the documentation corresponding to each component.
 	- Create a script file to start all the collectors eg. 
-	```java -jar /opt/Dashboard/github-scm-collector-*.jar --spring.config.name=github -- 	spring.config.location=/opt/Dashboard/application.properties &  
-	```java -jar /opt/Dashboard/jenkins-build-collector-*.jar --spring.config.name=jenkins --spring.config.location=/opt/Dashboard/application.properties &
-	```java -jar /opt/Dashboard/rally-collector-*.jar --spring.config.name=rally --spring.config.location=/opt/Dashboard/application.properties & 
-	```java -jar /opt/Dashboard/sonar-codequality-collector-*.jar --spring.config.name=sonar --spring.config.location=/opt/Dashboard/application.properties & ```
+	```
+	java -jar /opt/Dashboard/github-scm-collector-*.jar --spring.config.name=github -- 	spring.config.location=/opt/Dashboard/application.properties &  
+	java -jar /opt/Dashboard/jenkins-build-collector-*.jar --spring.config.name=jenkins --spring.config.location=/opt/Dashboard/application.properties &
+	java -jar /opt/Dashboard/rally-collector-*.jar --spring.config.name=rally --spring.config.location=/opt/Dashboard/application.properties & 
+	java -jar /opt/Dashboard/sonar-codequality-collector-*.jar --spring.config.name=sonar --spring.config.location=/opt/Dashboard/application.properties & 
+	```
 	
 	
 	
