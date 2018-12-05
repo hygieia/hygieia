@@ -11,6 +11,7 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 /**
  * This class will generate a JSON Object for a Test Run
@@ -95,7 +96,8 @@ public class TestRunJsonGenerator implements JsonGenerator<TestRun> {
 
         Iterable<Defect> all;
 
-        if( testRun.getVersion()!=0 && testRun.getOldVersion().getDefects()!=null) {
+        Optional<Iterable<Defect>> defectsOpt = Optional.ofNullable(testRun.getOldVersion().getDefects());
+        if( testRun.getVersion()!=0 && defectsOpt.isPresent()) {
             all= Iterables.concat(testRun.getOldVersion().getDefects(),testRun.getDefects());
         }
         else {
@@ -106,7 +108,7 @@ public class TestRunJsonGenerator implements JsonGenerator<TestRun> {
             ArrayList<Defect> oldDef = new ArrayList<Defect>();
             ArrayList<Defect> newDef = new ArrayList<Defect>();
 
-            if(testRun.getOldVersion().getDefects()!=null) {
+            if(defectsOpt.isPresent()) {
                 Iterables.addAll(oldDef, testRun.getOldVersion().getDefects());
             }
             Iterables.addAll(newDef, testRun.getDefects());

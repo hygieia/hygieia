@@ -114,7 +114,7 @@ public class TestStep extends BasicIssue implements Versionable<TestStep> {
         return defects;
     }
 
-    public enum Status {TODO, EXECUTING, ABORTED, FAIL, PASS}
+    public enum Status {TODO, EXECUTING, ABORTED, FAIL, PASS, SKIP}
 
     public Status getStatus() {
         return status;
