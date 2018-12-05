@@ -2,9 +2,9 @@
 title: Initial Setup of Hygieia
 tags:
 keywords:
-summary: Instructions to install all components of Hygieia
+summary: Instructions to install all components of Hygieia in the production environment
 sidebar: hygieia_sidebar
-permalink: setup.html
+permalink: Prod_setup.html
 folder: hygieia
 
 ---
@@ -64,9 +64,9 @@ To configure Hygieia, execute the following steps:
 	
 	Set the configurable parameters in the `.properties` file to connect to each component of Hygieia. For more information about the server configuration, see the Spring Boot [documentation](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files).
 
-## Setup httpd (instead of default gulp)
+## Httpd Setup (Instead of Default Gulp)
 	
-Please make sure the httpd is installed, then open the following file and update the below configuration accordingly. 
+Once httpd is installed in your production environment, open the file ```/etc/httpd/conf/httpd.conf to update``` the following configuration:
 	
 	```# vi /etc/httpd/conf/httpd.conf
 	Listen 80
@@ -101,10 +101,10 @@ Please make sure the httpd is installed, then open the following file and update
 	    # systemctl start httpd
 	    # systemctl status httpd
 	
-	
+	```
 ## Start collectors
 
-*	**Option 1: Run Each Collector in the background**
+*	**Option 1: Running Each Collector in the Background**
 
 	To run the executable file for API module, change directory to 'api\target' and then execute the following command from the command prompt:
 
@@ -112,9 +112,9 @@ Please make sure the httpd is installed, then open the following file and update
 	java -jar api.jar --spring.config.location=C:\[path to]\Hygieia\api\dashboard.properties -Djasypt.encryptor.password=hygieiasecret &
 	```
 	
-*	**Option 2: Running all collectors using script**
+*	**Option 2: Running All Collectors using Script**
 	
-	- In general, all the collectors can be run using the following command:
+	- In general, you can run the collectors using the following command:
 		```java -jar <Path to collector-name.jar> --spring.config.name=<prefix for properties> --spring.config.location=<path to properties file location> ```
 	- For detailed instructions on installing each component of Hygieia, see the documentation corresponding to each component.
 	- Create a script file to start all the collectors eg. 
