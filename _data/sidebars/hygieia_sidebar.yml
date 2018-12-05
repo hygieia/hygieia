@@ -32,6 +32,9 @@ entries:
     - title: Setup Instructions
       url: /setup.html
       output: web, pdf
+    - title: Prod Setup Instructions
+      url: /Prod-setup.html
+      output: web, pdf
     - title: Database 
       url: /database.html
       output: web, pdf
@@ -43,8 +46,8 @@ entries:
       output: web, pdf
     - title: UI 
       url: /ui.html
-      output: web, pdf
-      
+      output: web, pdf    
+   
   - title: Configuration 
     output: web, pdf
     folderitems:
