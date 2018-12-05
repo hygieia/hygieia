@@ -16,13 +16,15 @@ import com.capitalone.dashboard.model.TestCapability;
 import com.capitalone.dashboard.model.TestSuite;
 import com.capitalone.dashboard.model.TestSuiteType;
 import com.capitalone.dashboard.model.FeatureIssueLink;
+
+import com.capitalone.dashboard.model.TestResultCollector;
+import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.TestResultCollectorRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.google.common.collect.Lists;
-import org.bson.types.ObjectId;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
@@ -127,23 +129,16 @@ public class TestExecutionClientImpl implements TestExecutionClient {
 
         if (currentPagedTestExecutions != null) {
             List<TestResult> testResultsToSave = new ArrayList<>();
-            ObjectId collectorItemId;
 
             for (Feature testExec : currentPagedTestExecutions) {
 
                 // Set collectoritemid for manual test results
-                if (testExec.getsTeamID() != null) {
-                    collectorItemId = this.collectorItemRepository.findByJiraTeamId(testExec.getsTeamID()).getId();
-                } else if (testExec.getsProjectID() != null) {
-                    collectorItemId = this.collectorItemRepository.findByJiraProjectId(testExec.getsProjectID()).getId();
-                } else {
-                    CollectorItem collectorItem = new CollectorItem();
-                    collectorItemId = collectorItem.getId();
+                CollectorItem collectorItem = createCollectorItem(testExec);
+                TestResult testResult = testResultRepository.findByCollectorItemId(collectorItem.getId());
+                if(testResult == null) {
+                    testResult = new TestResult();
                 }
-
-                TestResult testResult = new TestResult();
-
-                testResult.setCollectorItemId(collectorItemId);
+                testResult.setCollectorItemId(collectorItem.getId());
                 testResult.setDescription(testExec.getsName());
 
                 testResult.setTargetAppName(testExec.getsProjectName());
@@ -296,6 +291,8 @@ public class TestExecutionClientImpl implements TestExecutionClient {
         return map;
     }
 
+    // This method needs a core project update, so temporarily warnings suppressed
+    @SuppressWarnings("PMD")
     private TestCase createTestCase(TestExecution.Test test, TestRun testRun, Feature feature) {
         TestCase testCase = new TestCase();
         testCase.setId(testRun.getId().toString());
@@ -325,7 +322,7 @@ public class TestExecutionClientImpl implements TestExecutionClient {
                 testCase.setStatus(TestCaseStatus.Unknown);
             }
 
-            Set<String> tags = getStoryIds(feature.getIssueLinks());
+             Set<String> tags = getStoryIds(feature.getIssueLinks());
             // Temporarily commented for core project update
             // testCase.setTags(tags);
             testCase.setTestSteps(this.getTestSteps(testRun));
@@ -424,5 +421,29 @@ public class TestExecutionClientImpl implements TestExecutionClient {
         }
 
         return data;
+    }
+
+    private CollectorItem createCollectorItem(Feature testExec) {
+        List<TestResultCollector> collector = testResultCollectorRepository.findByCollectorTypeAndName(CollectorType.Test, "Jira XRay");
+        TestResultCollector collector1 = collector.get(0);
+        CollectorItem existing = collectorItemRepository.findByCollectorIdNiceNameAndJobName(collector1.getId(), "Manual", testExec.getsName());
+        CollectorItem tempCollItem = new CollectorItem();
+        Optional<CollectorItem> optionalCollectorItem = Optional.ofNullable(existing);
+        if(optionalCollectorItem.isPresent()) {
+            tempCollItem.setId(existing.getId());
+        }else {
+            tempCollItem.setCollectorId(collector1.getId());
+            tempCollItem.setDescription("JIRAXRay:" + testExec.getsName());
+            tempCollItem.setPushed(true);
+            tempCollItem.setLastUpdated(System.currentTimeMillis());
+            tempCollItem.setNiceName("Manual");
+            Map<String, Object> option = new HashMap<>();
+            option.put("jobName", testExec.getsName());
+            option.put("instanceUrl", testExec.getsUrl());
+            tempCollItem.getOptions().putAll(option);
+            collectorItemRepository.save(tempCollItem);
+        }
+        return tempCollItem;
+
     }
 }
