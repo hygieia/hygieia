@@ -230,6 +230,7 @@ public class DashboardServiceImpl implements DashboardService {
                 for (CollectorItem i : items) {
                     if (CollectionUtils.isEmpty(customRepositoryQuery.findComponents(i.getCollectorId(),type,i))) {
                         i.setEnabled(false);
+                        i.setLastUpdated(System.currentTimeMillis());
                         collectorItemRepository.save(i);
                     }
                 }
@@ -294,13 +295,12 @@ public class DashboardServiceImpl implements DashboardService {
                     for (CollectorItem ci : cItems) {
                         //if item is orphaned, disable it. Otherwise keep it enabled.
                         ci.setEnabled(!isLonely(ci, collector, component));
+                        ci.setLastUpdated(System.currentTimeMillis());
                         toSaveCollectorItems.put(ci.getId(), ci);
                     }
                 }
                 // remove all collector items of a type
                 component.getCollectorItems().remove(collector.getCollectorType());
-
-
             }
         }
 
@@ -325,6 +325,7 @@ public class DashboardServiceImpl implements DashboardService {
             CollectorItem collectorItem = collectorItemRepository.findOne(collectorItemId);
             //the new collector items must be set to true
             collectorItem.setEnabled(true);
+            collectorItem.setLastUpdated(System.currentTimeMillis());
             Collector collector = collectorRepository.findOne(collectorItem.getCollectorId());
             component.addCollectorItem(collector.getCollectorType(), collectorItem);
             toSaveCollectorItems.put(collectorItemId, collectorItem);

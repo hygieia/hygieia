@@ -115,6 +115,7 @@ public class CollectorServiceImpl implements CollectorService {
                 item.setCollectorId(productCollector.getId());
                 item.getOptions().put("dashboardId", dashboard.getId().toString());
                 item.setDescription(dashboard.getTitle());
+                item.setLastUpdated(System.currentTimeMillis());
                 collectorItemRepository.save(item);
             }
         }
@@ -137,6 +138,7 @@ public class CollectorServiceImpl implements CollectorService {
         if (existing != null) {
             item.setId(existing.getId());
         }
+        item.setLastUpdated(System.currentTimeMillis());
         return collectorItemRepository.save(item);
     }
 
@@ -152,8 +154,11 @@ public class CollectorServiceImpl implements CollectorService {
         if (!CollectionUtils.isEmpty(existing)) {
             CollectorItem existingItem = existing.get(0);
             existingItem.getOptions().putAll(item.getOptions());
+            existingItem.setLastUpdated(System.currentTimeMillis());
             return collectorItemRepository.save(existingItem);
         }
+        item.setLastUpdated(System.currentTimeMillis());
+
         return collectorItemRepository.save(item);
     }
 
@@ -169,6 +174,7 @@ public class CollectorServiceImpl implements CollectorService {
         //Flow is here because there is only one collector item with the same collector id and niceName. So, update with
         // the new info - keep the same collector item id. Save = Update or Insert.
         item.setId(existing.getId());
+        item.setLastUpdated(System.currentTimeMillis());
 
         return collectorItemRepository.save(item);
     }
@@ -184,6 +190,7 @@ public class CollectorServiceImpl implements CollectorService {
         //Flow is here because there is only one collector item with the same collector id and niceName. So, update with
         // the new info - keep the same collector item id. Save = Update or Insert.
         item.setId(existing.getId());
+        item.setLastUpdated(System.currentTimeMillis());
 
         return collectorItemRepository.save(item);
     }

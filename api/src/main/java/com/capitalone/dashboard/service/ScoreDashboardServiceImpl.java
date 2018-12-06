@@ -83,6 +83,7 @@ public class ScoreDashboardServiceImpl implements ScoreDashboardService {
     }
 
     scoreCollectorItem.setEnabled(false);
+    scoreCollectorItem.setLastUpdated(System.currentTimeMillis());
 
     return this.collectorItemRepository.save(scoreCollectorItem);
   }
