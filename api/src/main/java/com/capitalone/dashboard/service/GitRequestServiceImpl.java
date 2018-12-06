@@ -55,7 +55,7 @@ public class GitRequestServiceImpl implements GitRequestService {
         CollectorItem item = null;
         Component component = componentRepository.findOne(request.getComponentId());
         if ( (component == null)
-                || ((item = component.getFirstCollectorItemForType(CollectorType.SCM)) == null) ) {
+                || ((item = component.getLastUpdatedCollectorItemForType(CollectorType.SCM)) == null) ) {
             Iterable<GitRequest> results = new ArrayList<>();
             return new DataResponse<>(results, new Date().getTime());
         }

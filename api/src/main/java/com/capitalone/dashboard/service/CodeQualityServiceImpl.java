@@ -115,16 +115,10 @@ public class CodeQualityServiceImpl implements CodeQualityService {
             return null;
         }
 
-        CollectorItem item = null;
-        CodeQualityType qualityType = Objects.firstNonNull(request.getType(),
-                CodeQualityType.StaticAnalysis);
-        List<CollectorItem> items = component.getCollectorItems().get(qualityType.collectorType());
-        if (items != null) {
-            item = Iterables.getFirst(items, null);
-        }
-        return item;
-    }
+        CodeQualityType qualityType = Objects.firstNonNull(request.getType(), CodeQualityType.StaticAnalysis);
 
+        return component.getLastUpdatedCollectorItemForType(qualityType.collectorType());
+    }
 
     protected CodeQuality createCodeQuality(CodeQualityCreateRequest request) throws HygieiaException {
         /*
