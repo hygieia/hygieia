@@ -145,7 +145,7 @@ public class DashboardServiceImpl implements DashboardService {
         List<ObjectId> collectorItemIds = collectorItems.stream().map(BaseModel::getId).collect(Collectors.toList());
         // Find the components that have these collector items
         List<com.capitalone.dashboard.model.Component> components = componentRepository.findByCollectorTypeAndItemIdIn(collectorType, collectorItemIds);
-        List<ObjectId> componentIds = (List) components.stream().map(BaseModel::getId).collect(Collectors.toList());
+        List<ObjectId> componentIds = components.stream().map(BaseModel::getId).collect(Collectors.toList());
         return dashboardRepository.findByApplicationComponentIdsIn(componentIds);
     }
 
@@ -323,6 +323,10 @@ public class DashboardServiceImpl implements DashboardService {
         //Last step: add collector items that came in
         for (ObjectId collectorItemId : collectorItemIds) {
             CollectorItem collectorItem = collectorItemRepository.findOne(collectorItemId);
+            if(collectorItem == null) {
+                LOG.warn(METHOD_NAME + " Bad CollectorItemId passed in the incoming request : " + collectorItemId);
+                continue;
+            }
             //the new collector items must be set to true
             collectorItem.setEnabled(true);
             Collector collector = collectorRepository.findOne(collectorItem.getCollectorId());
@@ -499,7 +503,7 @@ public class DashboardServiceImpl implements DashboardService {
         return update(dashboard);
     }
     @Override
-    public DataResponse<Iterable<Dashboard>> getByBusinessService(String app) throws HygieiaException {
+    public DataResponse<Iterable<Dashboard>> getByBusinessService(String app) {
         Cmdb cmdb =  cmdbService.configurationItemByConfigurationItem(app);
         Iterable<Dashboard> rt = null;
 
@@ -509,7 +513,7 @@ public class DashboardServiceImpl implements DashboardService {
         return new DataResponse<>(rt, System.currentTimeMillis());
     }
     @Override
-    public DataResponse<Iterable<Dashboard>> getByBusinessApplication(String component) throws HygieiaException {
+    public DataResponse<Iterable<Dashboard>> getByBusinessApplication(String component) {
         Cmdb cmdb =  cmdbService.configurationItemByConfigurationItem(component);
         Iterable<Dashboard> rt = null;
 
@@ -519,7 +523,7 @@ public class DashboardServiceImpl implements DashboardService {
         return new DataResponse<>(rt, System.currentTimeMillis());
     }
     @Override
-    public DataResponse<Iterable<Dashboard>> getByServiceAndApplication(String component, String app) throws HygieiaException {
+    public DataResponse<Iterable<Dashboard>> getByServiceAndApplication(String component, String app) {
         Cmdb cmdbCompItem =  cmdbService.configurationItemByConfigurationItem(component);
         Cmdb cmdbAppItem =  cmdbService.configurationItemByConfigurationItem(app);
         Iterable<Dashboard> rt = null;
