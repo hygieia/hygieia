@@ -324,7 +324,11 @@ public class DashboardServiceImpl implements DashboardService {
             CollectorItem collectorItem = collectorItemRepository.findOne(collectorItemId);
             //the new collector items must be set to true
             collectorItem.setEnabled(true);
-            collectorItem.setLastUpdated(System.currentTimeMillis());
+            CollectorItem existingCollectorItem = toSaveCollectorItems.get(collectorItem.getId());
+            if ( (existingCollectorItem == null)
+                    || !compareMaps(collectorItem.getOptions(), existingCollectorItem.getOptions()) ) {
+                collectorItem.setLastUpdated(System.currentTimeMillis());
+            }
             Collector collector = collectorRepository.findOne(collectorItem.getCollectorId());
             component.addCollectorItem(collector.getCollectorType(), collectorItem);
             toSaveCollectorItems.put(collectorItemId, collectorItem);
@@ -341,6 +345,23 @@ public class DashboardServiceImpl implements DashboardService {
         return component;
     }
 
+    protected boolean compareMaps (Map<String, Object> map1, Map<String, Object> map2) {
+        if (map1 == null || map2 == null)
+            return false;
+
+        Set<String> map1KeySet = map1.keySet();
+        Set<String> map2KeySet = map2.keySet();
+
+        if (!map1KeySet.equals(map2KeySet))
+            return false;
+
+        for (String key : map1.keySet()) {
+            if (!map1.get(key).equals(map2.get(key)))
+                return false;
+        }
+
+        return true;
+    }
 
     private boolean isLonely(CollectorItem item, Collector collector, Component component) {
         List<Component> components = customRepositoryQuery.findComponents(collector, item);
