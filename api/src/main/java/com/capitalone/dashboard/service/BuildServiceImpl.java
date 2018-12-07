@@ -1,6 +1,5 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.settings.ApiSettings;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.BuildStatus;
@@ -20,6 +19,7 @@ import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.BuildSearchRequest;
 import com.capitalone.dashboard.request.CollectorRequest;
 import com.capitalone.dashboard.response.BuildDataCreateResponse;
+import com.capitalone.dashboard.settings.ApiSettings;
 import com.mysema.query.BooleanBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -39,6 +39,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class BuildServiceImpl implements BuildService {
@@ -249,11 +250,15 @@ public class BuildServiceImpl implements BuildService {
         build.setCollectorItemId(collectorItem.getId());
         build.setSourceChangeSet(request.getSourceChangeSet());
         build.setTimestamp(System.currentTimeMillis());
-        Set<RepoBranch> rbs = new HashSet<>();
-        rbs.addAll(build.getCodeRepos());
-        rbs.addAll(request.getCodeRepos());
+        Set<RepoBranch> repoBranches = new HashSet<>();
+        repoBranches.addAll(build.getCodeRepos());
+        repoBranches.addAll(request.getCodeRepos());
+
+        List<String> excludeRepoPattern = CollectionUtils.isNotEmpty(settings.getWebHook().getJenkinsBuild().getExcludeCodeReposInBuild()) ? settings.getWebHook().getJenkinsBuild().getExcludeCodeReposInBuild() : new ArrayList<>();
+        Set<RepoBranch> excludeRepoBranches  = repoBranches.stream().filter(repo -> excludeRepoPattern.contains(repo.getUrl())).collect(Collectors.toSet());
+        repoBranches.removeAll(excludeRepoBranches);
         build.getCodeRepos().clear();
-        build.getCodeRepos().addAll(rbs);
+        build.getCodeRepos().addAll(repoBranches);
         return buildRepository.save(build); // Save = Update (if ID present) or Insert (if ID not there)
     }
 }
