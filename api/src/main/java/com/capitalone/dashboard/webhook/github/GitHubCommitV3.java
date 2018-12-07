@@ -277,7 +277,6 @@ public class GitHubCommitV3 extends GitHubV3 {
             CollectorItem collectorItem = collectorService.getCollectorItem(existingCommit.getCollectorItemId());
             collectorItem.setEnabled(true);
             collectorItem.setPushed(true);
-            collectorItem.setLastUpdated(System.currentTimeMillis());
             collectorItemRepository.save(collectorItem);
         } else {
             GitHubParsed gitHubParsed = new GitHubParsed(commit.getScmUrl());
