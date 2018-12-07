@@ -16,11 +16,31 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.Application;
+import com.capitalone.dashboard.model.Widget;
+import com.capitalone.dashboard.model.Cmdb;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Service;
+import com.capitalone.dashboard.model.Owner;
+import com.capitalone.dashboard.model.UserInfo;
+import com.capitalone.dashboard.model.AuthType;
+import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.ScoreDisplayType;
+
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -47,10 +67,6 @@ import com.capitalone.dashboard.repository.ServiceRepository;
 import com.capitalone.dashboard.repository.UserInfoRepository;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-
-import javax.validation.constraints.AssertFalse;
-import javax.validation.constraints.AssertTrue;
-
 
 @RunWith(MockitoJUnitRunner.class)
 public class DashboardServiceTest {
