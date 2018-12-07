@@ -295,7 +295,6 @@ public class DashboardServiceImpl implements DashboardService {
                     for (CollectorItem ci : cItems) {
                         //if item is orphaned, disable it. Otherwise keep it enabled.
                         ci.setEnabled(!isLonely(ci, collector, component));
-                        ci.setLastUpdated(System.currentTimeMillis());
                         toSaveCollectorItems.put(ci.getId(), ci);
                     }
                 }
