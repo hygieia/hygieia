@@ -7,16 +7,13 @@ import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -248,7 +245,12 @@ public class DashboardRemoteRequest {
 
         @Override
         public Map<String, Object> toWidgetOptions() {
-            return null;
+            Map<String, Object> opts = new HashMap<>();
+            opts.put("id", getWidgetId());
+            options.keySet().forEach(key -> {
+                opts.put(key, options.get(key));
+            });
+            return opts;
         }
     }
 
@@ -553,6 +555,7 @@ public class DashboardRemoteRequest {
         all.addAll(securityScanEntries);
         all.addAll(functionalTestEntries);
         all.addAll(deploymentEntries);
+        all.addAll(featureEntries);
         return all;
     }
 }

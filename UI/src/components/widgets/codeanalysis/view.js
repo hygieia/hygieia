@@ -301,9 +301,9 @@
                 return Math.ceil(value / factor) + suffix;
             }
 
-            ctrl.getDashStatus = function getDashStatus() {
-                if(ctrl.librarySecurityThreatStatus == undefined) return 'ignore';
-                switch (ctrl.librarySecurityThreatStatus.level) {
+            ctrl.getDashStatus = function getDashStatus(status) {
+                if(status == undefined) return 'ignore';
+                switch (status.level) {
                     case 4:
                         return 'critical';
 

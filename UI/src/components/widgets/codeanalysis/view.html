@@ -257,16 +257,16 @@
                 <td>
                     <div class="dash-row clickable"
                                     ng-click="caWidget.showLibraryPolicyDetails('License', caWidget.libraryPolicyDetails)">
-                        <span dash-status="{{caWidget.getDashStatus()}}"></span>License <span>
-                            {{(caWidget.libraryLicenseThreatStatus) ? caWidget.libraryLicenseThreatStatus.count : 0}}
+                        <span dash-status="{{caWidget.getDashStatus(caWidget.libraryLicenseThreatStatus)}}"></span>License <span>
+                            ({{(caWidget.libraryLicenseThreatStatus) ? caWidget.libraryLicenseThreatStatus.count : 0}})
                         </span>
                     </div>
                 </td>
                 <td>
                     <div class="dash-row clickable"
                                     ng-click="caWidget.showLibraryPolicyDetails('Security', caWidget.libraryPolicyDetails)">
-                        <span dash-status="{{caWidget.getDashStatus()}}"></span>Security <span>
-                            {{(caWidget.librarySecurityThreatStatus) ? caWidget.librarySecurityThreatStatus.count : 0}}
+                        <span dash-status="{{caWidget.getDashStatus(caWidget.librarySecurityThreatStatus)}}"></span>Security <span>
+                            ({{(caWidget.librarySecurityThreatStatus) ? caWidget.librarySecurityThreatStatus.count : 0}})
                         </span>
                     </div>
                 </td>
