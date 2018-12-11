@@ -40,13 +40,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -330,7 +324,7 @@ public class DashboardServiceImpl implements DashboardService {
             collectorItem.setEnabled(true);
             CollectorItem existingCollectorItem = toSaveCollectorItems.get(collectorItem.getId());
             if ( (existingCollectorItem == null)
-                    || !compareMaps(collectorItem.getOptions(), existingCollectorItem.getOptions()) ) {
+                    || compareMaps(collectorItem.getOptions(), existingCollectorItem.getOptions()) ) {
                 collectorItem.setLastUpdated(System.currentTimeMillis());
             }
             Collector collector = collectorRepository.findOne(collectorItem.getCollectorId());
@@ -353,18 +347,11 @@ public class DashboardServiceImpl implements DashboardService {
         if (map1 == null || map2 == null)
             return false;
 
-        Set<String> map1KeySet = map1.keySet();
-        Set<String> map2KeySet = map2.keySet();
-
-        if (!map1KeySet.equals(map2KeySet))
+        if (!map1.keySet().equals(map2.keySet()))
             return false;
 
-        for (String key : map1.keySet()) {
-            if (!map1.get(key).equals(map2.get(key)))
-                return false;
-        }
-
-        return true;
+        return map1.entrySet().stream().filter(value1 ->
+                !Objects.equals(value1.getValue(), map2.get(value1.getKey()))).findAny().isPresent();
     }
 
     private boolean isLonely(CollectorItem item, Collector collector, Component component) {

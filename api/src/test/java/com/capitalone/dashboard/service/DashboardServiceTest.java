@@ -868,7 +868,7 @@ public class DashboardServiceTest {
         jsonArray2.add("value2");
 
         boolean result = dashboardService.compareMaps(map1, map2);
-        Assert.assertTrue(result);
+        Assert.assertFalse(result);
 
         jsonArray1 = new JSONArray();
         map1.put("valueArray", jsonArray1);
@@ -877,7 +877,7 @@ public class DashboardServiceTest {
         jsonArray1.add("value2");
 
         result = dashboardService.compareMaps(map1, map2);
-        Assert.assertFalse(result);
+        Assert.assertTrue(result);
     }
 
     private Dashboard makeTeamDashboard(String template, String title, String appName, String owner,String configItemBusServName,String configItemBusAppName, String... compNames) {
