@@ -345,10 +345,10 @@ public class DashboardServiceImpl implements DashboardService {
 
     protected boolean compareMaps (Map<String, Object> map1, Map<String, Object> map2) {
         if (map1 == null || map2 == null)
-            return false;
+            return true;
 
         if (!map1.keySet().equals(map2.keySet()))
-            return false;
+            return true;
 
         return map1.entrySet().stream().filter(value1 ->
                 !Objects.equals(value1.getValue(), map2.get(value1.getKey()))).findAny().isPresent();
