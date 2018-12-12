@@ -119,25 +119,32 @@
                 var deferred = $q.defer();
                 var libraryData = (response === null) || _.isEmpty(response.result) ? {} : response.result[0];
                 ctrl.libraryPolicyDetails = libraryData;
-                var totalComponentCount = 0;
-                var knownComponentCount = 0;
+                var totalComponentCount;
+                var knownComponentCount;
                 var calculatePercentage;
-                var criticalCountPolicy = 0;
-                var severeCountPolicy = 0;
-                var moderateCountPolicy = 0;
-                var policyAffectedCount =0;
+                var criticalCountPolicy;
+                var severeCountPolicy;
+                var moderateCountPolicy;
+                var policyAffectedCount;
                 if (libraryData.totalComponentCount !== null && libraryData.totalComponentCount !== undefined) {
                     totalComponentCount = libraryData.totalComponentCount;
                 }    
                 if (libraryData.knownComponentCount !== null && libraryData.knownComponentCount !== undefined) {
                     knownComponentCount = libraryData.knownComponentCount;
-                }            
-                if(isNaN(knownComponentCount / totalComponentCount)){
-                    calculatePercentage = 0;
-                }else{
-                    calculatePercentage = knownComponentCount / totalComponentCount; 
+                }
+                if (knownComponentCount || totalComponentCount) {
+                    if(isNaN(knownComponentCount / totalComponentCount)){
+                        calculatePercentage = 0;
+                    }else{
+                        calculatePercentage = knownComponentCount / totalComponentCount;
+                    }
                 }
                 if(angular.isDefined(libraryData.policyAlert) && libraryData.policyAlert.length>0){
+                    criticalCountPolicy = 0;
+                    severeCountPolicy = 0;
+                    moderateCountPolicy = 0;
+                    policyAffectedCount =0;
+
                     if (libraryData.policyAlert[0].policycriticalCount !== null && libraryData.policyAlert[0].policycriticalCount !== undefined) {
                         criticalCountPolicy = libraryData.policyAlert[0].policycriticalCount;
                     }
@@ -256,6 +263,7 @@
             function getLevelCount(threats) {
                 var counts = {};
                 var level;
+                var total = 0;
 
                 counts['Critical'] = 0;
                 counts['High'] = 0;
@@ -264,10 +272,13 @@
 
                 for (var i = 0; i < threats.length; ++i) {
                     level = threats[i].level;
-                    counts[level]=threats[i].count;
+                    if (level != 'None') {
+                        counts[level]=threats[i].count;
+                        total += threats[i].count;
+                    }
                 }
 
-                return {counts: counts};
+                return {counts: counts, total: total};
             };
 
             function getMetric(metrics, metricName, title) {

@@ -1,18 +1,19 @@
 <div class="row ca-view">
 
-    <div >
+    <div>
         <div class="container-fluid">
             <ul class="nav nav-tabs">
-                <li class="text-standard auth-modal-tab" ng-repeat="tab in caWidget.minitabs" ng-click="caWidget.miniToggleView($index)"
+                <li class="text-standard auth-modal-tab" ng-repeat="tab in caWidget.minitabs"
+                    ng-click="caWidget.miniToggleView($index)"
                     ng-class="tab.name == caWidget.miniWidgetView ? 'active' : ''">
-                    <a class="textColor-Performance" data-toggle="tab" >{{tab.name}}</a>
+                    <a class="textColor-Performance" data-toggle="tab">{{tab.name}}</a>
 
                 </li>
                 </span>
             </ul>
         </div>
         <div class="container-fluid" ng-if="caWidget.miniWidgetView == 'Static Analysis'">
-           <div >
+            <div>
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="widget">
@@ -142,7 +143,8 @@
                                 <div class="col-lg-12 col-sm-6">
                                     <div class="widget">
 
-                                        <div class="widget-body" fit-text=".build-summary-count > span" fit-text-max="40">
+                                        <div class="widget-body" fit-text=".build-summary-count > span"
+                                             fit-text-max="40">
                                             <div class="widget ca-coverage">
                                                 <div class="widget-heading">
                                                     Code coverage
@@ -220,65 +222,74 @@
                 <div class="col-xs-12"><br>
                     <div class="widget ca-tests" ng-if="caWidget.libraryPolicyDetails != null">
                         <div class="widget-body">
-            <table class="table" border="0">
-            <tbody>
-                <tr>
-                <td width="60%" class="table-td">
-                    <div class="chartDimens">
-                    <chartist class="ct-chart ct-chart-donut ct-golden-section" 
-                    chartist-data="caWidget.donutData" 
-                    chartist-chart-type="Pie" 
-                    chartist-chart-options="caWidget.donutOptions">
-                    </chartist>
-                    </div>
-                    <div>
-                    <span class="compHeader">{{caWidget.knownComponentCount}} COMPONENTS IDENTIFIED</span>
-                    <span class="comSubHeader">{{caWidget.knownComponentCountPercentage}}% OF ALL COMPONENTS ARE IDENTIFIED
-                    </span>
-                    </div>    
-                </td>
-                <td  width="40%" class="table-td">
-                <div class="tableTdColum tdBgCol1">
-                {{caWidget.criticalCountPolicy}}
-                </div>
-                <div class="tableTdColum tdBgCol2 tdMarginLeft">
-                {{caWidget.severeCountPolicy}}
-                </div>
-                <div class="tableTdColum tdBgCol3 tdMarginLeft">
-                {{caWidget.moderateCountPolicy}}
-                </div>
-                <div class="clrBoth">
-                <span class="spanCol">POLICY ALERTS</span>
-                <span class="comSubHeader">AFFECTING {{caWidget.policyAffectedCompCount}} COMPONENTS</span>
-                </div>
-                </td>
-                </tr>
-                <tr></tr>
-                <td>
-                    <div class="dash-row clickable"
-                         ng-click="caWidget.showLibraryPolicyDetails('License', caWidget.libraryPolicyDetails)">
-                        License- <small>View All <i class="fa fa-arrow-right" aria-hidden="true"></i></small>
-                    </div>
-                    <div class="dash-row">
-                        <div ng-repeat="(level, count) in caWidget.libraryLicenseThreatCount.counts" ng-if="count > 0">
-                            <span dash-status="{{caWidget.getDashStatus(level)}}"></span> {{level}} ({{count}})
-                        </div>
-                    </div>
-                </td>
-                <td>
-                    <div class="dash-row clickable"
-                         ng-click="caWidget.showLibraryPolicyDetails('Security', caWidget.libraryPolicyDetails)">
-                        Security- <small>View All <i class="fa fa-arrow-right" aria-hidden="true"></i></small>
-                    </div>
-                    <div class="dash-row">
-                        <div ng-repeat="(level, count) in caWidget.librarySecurityThreatCount.counts" ng-if="count > 0">
-                                <span dash-status="{{caWidget.getDashStatus(level)}}"></span> {{level}} ({{count}})
-                        </div>
-                    </div>
-                </td>
-                </tr>
-            </tbody>
-            </table>
+                            <table class="table" border="0">
+                                <tbody>
+                                <tr ng-if="caWidget.knownComponentCount || caWidget.criticalCountPolicy">
+                                    <td width="60%" class="table-td">
+                                        <div class="chartDimens">
+                                            <chartist class="ct-chart ct-chart-donut ct-golden-section"
+                                                      chartist-data="caWidget.donutData"
+                                                      chartist-chart-type="Pie"
+                                                      chartist-chart-options="caWidget.donutOptions">
+                                            </chartist>
+                                        </div>
+                                        <div>
+                                            <span class="compHeader">{{caWidget.knownComponentCount}} COMPONENTS IDENTIFIED</span>
+                                            <span class="comSubHeader">{{caWidget.knownComponentCountPercentage}}% OF ALL COMPONENTS ARE IDENTIFIED
+                        </span>
+                                        </div>
+                                    </td>
+                                    <td width="40%" class="table-td">
+                                        <div class="tableTdColum tdBgCol1">
+                                            {{caWidget.criticalCountPolicy}}
+                                        </div>
+                                        <div class="tableTdColum tdBgCol2 tdMarginLeft">
+                                            {{caWidget.severeCountPolicy}}
+                                        </div>
+                                        <div class="tableTdColum tdBgCol3 tdMarginLeft">
+                                            {{caWidget.moderateCountPolicy}}
+                                        </div>
+                                        <div class="clrBoth">
+                                            <span class="spanCol">POLICY ALERTS</span>
+                                            <span class="comSubHeader">AFFECTING {{caWidget.policyAffectedCompCount}} COMPONENTS</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr></tr>
+                                <tr ng-if="caWidget.librarySecurityThreatCount || caWidget.libraryLicenseThreatCount">
+                                    <td width="50%">
+                                        <div class="dash-row clickable"
+                                             ng-click="caWidget.showLibraryPolicyDetails('License', caWidget.libraryPolicyDetails)">
+                                            License ({{ caWidget.libraryLicenseThreatCount ? caWidget.libraryLicenseThreatCount.total : 0 }})
+                                            <small ng-if="caWidget.libraryLicenseThreatCount.total > 0"><i
+                                                    class="fa fa-arrow-right" aria-hidden="true"></i></small>
+                                        </div>
+                                        <div class="dash-row">
+                                            <div ng-repeat="(level, count) in caWidget.libraryLicenseThreatCount.counts"
+                                                 ng-if="count > 0">
+                                                <span dash-status="{{caWidget.getDashStatus(level)}}"></span> {{level}}
+                                                ({{count}})
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td width="50%">
+                                        <div class="dash-row clickable"
+                                             ng-click="caWidget.showLibraryPolicyDetails('Security', caWidget.libraryPolicyDetails)">
+                                            Security ({{ caWidget.librarySecurityThreatCount ? caWidget.librarySecurityThreatCount.total : 0 }})
+                                            <small ng-if="caWidget.librarySecurityThreatCount.total > 0"><i
+                                                    class="fa fa-arrow-right" aria-hidden="true"></i></small>
+                                        </div>
+                                        <div class="dash-row">
+                                            <div ng-repeat="(level, count) in caWidget.librarySecurityThreatCount.counts"
+                                                 ng-if="count > 0">
+                                                <span dash-status="{{caWidget.getDashStatus(level)}}"></span> {{level}}
+                                                ({{count}})
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
 
                         </div>
                     </div>
