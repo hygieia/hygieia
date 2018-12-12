@@ -1,6 +1,5 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.settings.ApiSettings;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.BuildStatus;
@@ -10,6 +9,7 @@ import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.model.SCM;
 import com.capitalone.dashboard.model.ScoreDisplayType;
 import com.capitalone.dashboard.model.DataResponse;
@@ -20,6 +20,9 @@ import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.BuildSearchRequest;
 import com.capitalone.dashboard.response.BuildDataCreateResponse;
+import com.capitalone.dashboard.settings.ApiSettings;
+import com.capitalone.dashboard.webhook.settings.JenkinsBuildWebHookSettings;
+import com.capitalone.dashboard.webhook.settings.WebHookSettings;
 import com.mysema.query.types.Predicate;
 import org.bson.types.ObjectId;
 import org.hamcrest.Description;
@@ -34,6 +37,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -58,6 +62,9 @@ public class BuildServiceTest {
     private CollectorService collectorService;
     @Mock
     private ApiSettings apiSettings;
+
+    @Mock
+    private WebHookSettings webHookSettings;
 
     @Test
     public void search() {
@@ -141,6 +148,8 @@ public class BuildServiceTest {
         Build build = makeBuild();
 
         when(buildRepository.save(any(Build.class))).thenReturn(build);
+        when(apiSettings.getWebHook()).thenReturn(webHookSettings);
+        when(webHookSettings.getJenkinsBuild()).thenReturn(jenkinsSettings());
         String response = buildService.create(request);
         String expected = build.getId().toString();
         assertEquals(response, expected);
@@ -159,6 +168,8 @@ public class BuildServiceTest {
         Build build = makeBuild();
 
         when(buildRepository.save(any(Build.class))).thenReturn(build);
+        when(apiSettings.getWebHook()).thenReturn(webHookSettings);
+        when(webHookSettings.getJenkinsBuild()).thenReturn(jenkinsSettings());
         String response = buildService.createV2(request);
         String expected = build.getId().toString() + "," + build.getCollectorItemId();
         assertEquals(response, expected);
@@ -177,6 +188,8 @@ public class BuildServiceTest {
         List<Dashboard> dashboards = new ArrayList<>();
         when(buildRepository.save(any(Build.class))).thenReturn(build);
         when(dashboardService.getDashboardsByCollectorItems(any(Set.class),any(CollectorType.class))).thenReturn(dashboards);
+        when(apiSettings.getWebHook()).thenReturn(webHookSettings);
+        when(webHookSettings.getJenkinsBuild()).thenReturn(jenkinsSettings());
         BuildDataCreateResponse response = buildService.createV3(request);
         assertEquals(build.getStartedBy(), response.getStartedBy());
         assertEquals(build.getNumber(), response.getNumber());
@@ -195,6 +208,8 @@ public class BuildServiceTest {
         when(buildRepository.save(any(Build.class))).thenReturn(build);
         when(apiSettings.isLookupDashboardForBuildDataCreate()).thenReturn(Boolean.TRUE);
         when(dashboardService.getDashboardsByCollectorItems(any(Set.class), any(CollectorType.class))).thenReturn(dashboards);
+        when(apiSettings.getWebHook()).thenReturn(webHookSettings);
+        when(webHookSettings.getJenkinsBuild()).thenReturn(jenkinsSettings());
         BuildDataCreateResponse response = buildService.createV3(request);
         assertEquals(build.getStartedBy(), response.getStartedBy());
         assertEquals(build.getNumber(), response.getNumber());
@@ -267,6 +282,12 @@ public class BuildServiceTest {
         build.setCollectorItemId(ObjectId.get());
         build.getSourceChangeSet().add(makeScm());
         return build;
+    }
+
+    private JenkinsBuildWebHookSettings jenkinsSettings() {
+        JenkinsBuildWebHookSettings settings = new JenkinsBuildWebHookSettings();
+        settings.setExcludeCodeReposInBuild(Arrays.asList("https://github.kdc.capitalone.com/bogie/jenkins-pipeline-library"));
+        return settings;
     }
 
 }
