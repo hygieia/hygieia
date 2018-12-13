@@ -189,6 +189,11 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
             serviceName = service.getConfigurationItem();
         }
         List<String> activeWidgets = new ArrayList<>();
-        return new Dashboard(true, metaData.getTemplate(), metaData.getTitle(), application, metaData.getOwner(), DashboardType.fromString(metaData.getType()), serviceName, appName,activeWidgets, false, ScoreDisplayType.HEADER);
+
+        Dashboard dashboard = new Dashboard(true, metaData.getTemplate(), metaData.getTitle(), application, metaData.getOwner(), DashboardType.fromString(metaData.getType()), serviceName, appName,activeWidgets, false, ScoreDisplayType.HEADER);
+
+        //remoteCreated is actually ignored in Dashboard construction method, so set it again.
+        dashboard.setRemoteCreated(true);
+        return dashboard;
     }
 }
