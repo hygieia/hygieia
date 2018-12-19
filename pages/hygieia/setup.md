@@ -19,7 +19,11 @@ The following are the prerequisites to set up Hygieia:
 
 ## Download or Clone Hygieia
 
-If you do not already have Hygieia installed, you can download or clone Hygieia from the [GitHub repo](https://github.com/capitalone/Hygieia). For information on cloning a repository, see the [**Cloning a Repository**](https://help.github.com/articles/cloning-a-repository/) section of GitHub's Documentation.
+## Download or Clone Hygieia
+
+If you do not already have Hygieia installed, you can download or clone Hygieia from the [GitHub repo](https://github.com/capitalone/Hygieia). Make sure that you also download the [hygieia-core](https://github.com/Hygieia/hygieia-core) as well. **Hygieia will not run if you do not also download and run the core.** 
+
+For information on cloning a repository, see the [**Cloning a Repository**](https://help.github.com/articles/cloning-a-repository/) section of GitHub's Documentation.
  
 ## Build Hygieia
 
@@ -31,7 +35,13 @@ To configure Hygieia, execute the following steps:
 
 *	**Step 1: Run Maven Build**
 
-	In the command line/terminal, run the following command from the `\Hygieia` directory of your source code installation:
+	First you must build the Hygieia core. In the command line/terminal, run the following command from the `\hygieia-core` directory:
+	
+	```bash 
+	mvn clean install package
+	```
+	
+	After the core is successfully built, you will be able to build the Hygieia project. In the command line/terminal, run the following command from the `\Hygieia` directory of your source code installation:
 	 
 	```bash
 	mvn clean install package
