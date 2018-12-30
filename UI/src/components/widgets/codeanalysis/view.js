@@ -119,25 +119,32 @@
                 var deferred = $q.defer();
                 var libraryData = (response === null) || _.isEmpty(response.result) ? {} : response.result[0];
                 ctrl.libraryPolicyDetails = libraryData;
-                var totalComponentCount = 0;
-                var knownComponentCount = 0;
+                var totalComponentCount;
+                var knownComponentCount;
                 var calculatePercentage;
-                var criticalCountPolicy = 0;
-                var severeCountPolicy = 0;
-                var moderateCountPolicy = 0;
-                var policyAffectedCount =0;
+                var criticalCountPolicy;
+                var severeCountPolicy;
+                var moderateCountPolicy;
+                var policyAffectedCount;
                 if (libraryData.totalComponentCount !== null && libraryData.totalComponentCount !== undefined) {
                     totalComponentCount = libraryData.totalComponentCount;
                 }    
                 if (libraryData.knownComponentCount !== null && libraryData.knownComponentCount !== undefined) {
                     knownComponentCount = libraryData.knownComponentCount;
-                }            
-                if(isNaN(knownComponentCount / totalComponentCount)){
-                    calculatePercentage = 0;
-                }else{
-                    calculatePercentage = knownComponentCount / totalComponentCount; 
+                }
+                if (knownComponentCount || totalComponentCount) {
+                    if(isNaN(knownComponentCount / totalComponentCount)){
+                        calculatePercentage = 0;
+                    }else{
+                        calculatePercentage = knownComponentCount / totalComponentCount;
+                    }
                 }
                 if(angular.isDefined(libraryData.policyAlert) && libraryData.policyAlert.length>0){
+                    criticalCountPolicy = 0;
+                    severeCountPolicy = 0;
+                    moderateCountPolicy = 0;
+                    policyAffectedCount =0;
+
                     if (libraryData.policyAlert[0].policycriticalCount !== null && libraryData.policyAlert[0].policycriticalCount !== undefined) {
                         criticalCountPolicy = libraryData.policyAlert[0].policycriticalCount;
                     }
@@ -154,11 +161,11 @@
                 if (libraryData.threats) {
                     if (libraryData.threats.License) {
                         ctrl.libraryLicenseThreats = libraryData.threats.License;
-                        ctrl.libraryLicenseThreatStatus = getLibraryPolicyStatus(libraryData.threats.License)
+                        ctrl.libraryLicenseThreatCount = getLevelCount(libraryData.threats.License)
                     }
                     if (libraryData.threats.Security) {
                         ctrl.librarySecurityThreats = libraryData.threats.Security;
-                        ctrl.librarySecurityThreatStatus = getLibraryPolicyStatus(libraryData.threats.Security)
+                        ctrl.librarySecurityThreatCount = getLevelCount(libraryData.threats.Security)
                     }
                     ctrl.knownComponentCount = knownComponentCount;
                     ctrl.knownComponentCountPercentage = Math.round(calculatePercentage * 100);
@@ -253,29 +260,26 @@
                 };
             }
 
-            function getLibraryPolicyStatus(threats) {
-                var highest = 0; //ok
-                var highestCount = 0;
+            function getLevelCount(threats) {
+                var counts = {};
+                var level;
+                var total = 0;
+
+                counts['Critical'] = 0;
+                counts['High'] = 0;
+                counts['Medium'] = 0;
+                counts['Low'] = 0;
+
                 for (var i = 0; i < threats.length; ++i) {
-                    var level = threats[i].level;
-                    var count = threats[i].count;
-                    if ((level.toLowerCase() === 'critical') && (count > 0) && (highest < 4)) {
-                        highest = 4;
-                        highestCount = count;
-                    }
-                    if ((level.toLowerCase() === 'high') && (count > 0) && (highest < 3)) {
-                        highest = 3;
-                        highestCount = count;
-                    } else if ((level.toLowerCase() === 'medium') && (count > 0) && (highest < 2)) {
-                        highest = 2;
-                        highestCount = count;
-                    } else if ((level.toLowerCase() === 'low') && (count > 0) && (highest < 1)) {
-                        highest = 1;
-                        highestCount = count;
+                    level = threats[i].level;
+                    if (level != 'None') {
+                        counts[level]=threats[i].count;
+                        total += threats[i].count;
                     }
                 }
-                return {level: highest, count: highestCount};
-            }
+
+                return {counts: counts, total: total};
+            };
 
             function getMetric(metrics, metricName, title) {
                 title = title || metricName;
@@ -301,19 +305,19 @@
                 return Math.ceil(value / factor) + suffix;
             }
 
-            ctrl.getDashStatus = function getDashStatus(status) {
-                if(status == undefined) return 'ignore';
-                switch (status.level) {
-                    case 4:
+            ctrl.getDashStatus = function getDashStatus(level) {
+                if(level == undefined) return 'ignore';
+                switch (level.toLowerCase()) {
+                    case 'critical':
                         return 'critical';
 
-                    case 3:
+                    case 'high':
                         return 'alert';
 
-                    case 2:
+                    case 'medium':
                         return 'warning';
 
-                    case 1:
+                    case 'low':
                         return 'ignore';
 
                     default:
