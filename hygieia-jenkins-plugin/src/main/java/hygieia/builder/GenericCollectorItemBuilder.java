@@ -9,21 +9,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 public class GenericCollectorItemBuilder {
-    private static final Logger logger = Logger.getLogger(GenericCollectorItemBuilder.class.getName());
 
     private String buildId;
-    private String jenkinsName;
     private String toolName;
     private String pattern;
 
     private Run<?, ?> run;
 
-    public GenericCollectorItemBuilder(Run<?, ?> run, String jenkinsName,  String toolName, String pattern, String buildId) {
-        this.jenkinsName = jenkinsName;
+    public GenericCollectorItemBuilder(Run<?, ?> run, String toolName, String pattern, String buildId) {
         this.buildId = buildId;
         this.toolName = toolName;
         this.pattern = ".*" + Pattern.quote(pattern) + "(.*)";
