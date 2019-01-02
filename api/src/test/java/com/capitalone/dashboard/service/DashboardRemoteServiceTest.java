@@ -4,6 +4,7 @@ import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.CmdbRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.request.DashboardRemoteRequest;
 import org.bson.types.ObjectId;
@@ -24,6 +25,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -36,6 +38,8 @@ public class DashboardRemoteServiceTest {
     @Mock
     private CollectorRepository collectorRepository;
     @Mock
+    private ComponentRepository componentRepository;
+    @Mock
     private UserInfoService userInfoService;
     @Mock
     private DashboardService dashboardService;
@@ -44,6 +48,8 @@ public class DashboardRemoteServiceTest {
 
     @InjectMocks
     private DashboardRemoteServiceImpl dashboardRemoteService;
+    @InjectMocks
+    private DashboardServiceImpl dashboardServiceImpl;
 
     private static final String configItemBusServName = "ASVTEST";
     private static final String configItemBusAppName = "BAPTEST";
@@ -143,7 +149,7 @@ public class DashboardRemoteServiceTest {
         }
     }
     @Test
-    public void remoteCreateDuplicateDashoard() throws HygieiaException {
+    public void remoteCreateDuplicateDashboard() throws HygieiaException {
         Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "validuser","","", "comp1","comp2");
         ObjectId objectId = ObjectId.get();
         expected.setId(objectId);
@@ -296,6 +302,65 @@ public class DashboardRemoteServiceTest {
         component.addCollectorItem(CollectorType.Build, item);
 
         assertThat(dashboardRemoteService.remoteCreate(request, false), is(expected));
+    }
+    @Test
+    public void remoteCreateLibraryScan() throws HygieiaException {
+        Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "someuser","","", "comp1","comp2");
+        ObjectId objectId = ObjectId.get();
+        expected.setId(objectId);
+        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "someuser", null, "team", "", "");
+        List<DashboardRemoteRequest.LibraryScanEntry> entries = new ArrayList<>();
+        DashboardRemoteRequest.LibraryScanEntry validLibraryScan = new DashboardRemoteRequest.LibraryScanEntry();
+
+        validLibraryScan.setToolName("NexusIQ");
+        Map options = new HashMap();
+        options.put("applicationId", "applicationIdTest");
+        options.put("applicationName", "testApplicationName");
+        options.put("publicId", "123456");
+        options.put("instanceUrl", "http://test.com");
+        validLibraryScan.setOptions(options);
+        entries.add(validLibraryScan);
+        request.setLibraryScanEntries(entries);
+        Component componentTest = new Component();
+
+
+        Map<CollectorType, List<CollectorItem>> collectorItems = new HashMap<>();
+
+        List<CollectorItem> collectorItemsList = new ArrayList<>();
+        collectorItemsList.add( makeCollectorItem());
+        collectorItems.put(CollectorType.Test ,collectorItemsList);
+        componentTest.setCollectorItems(collectorItems);
+
+        when(componentRepository.findOne(any(ObjectId.class))).thenReturn(componentTest);
+        when(userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())).thenReturn(true);
+        when(dashboardRepository.findByTitle(request.getMetaData().getTitle())).thenReturn(new ArrayList<>());
+        when(dashboardService.create(Matchers.any(Dashboard.class))).thenReturn(expected);
+        when(dashboardService.get(objectId)).thenReturn(expected);
+
+        List<Collector> collectors = new ArrayList<>();
+        Collector nexusIQCollector = makeCollector("NexusIQ", CollectorType.LibraryPolicy);
+        Map uniqueFields = new HashMap();
+        uniqueFields.put("applicationName", "");
+        uniqueFields.put("instanceUrl", "");
+        nexusIQCollector.setUniqueFields(uniqueFields);
+
+        Map allFields = new HashMap();
+        allFields.put("applicationId", "");
+        allFields.put("applicationName", "");
+        allFields.put("publicId", "");
+        allFields.put("instanceUrl", "");
+        nexusIQCollector.setAllFields(allFields);
+
+        collectors.add(nexusIQCollector);
+
+        when( collectorRepository.findByCollectorTypeAndName(validLibraryScan.getType(), validLibraryScan.getToolName()) ).thenReturn(collectors);
+
+        CollectorItem item = makeCollectorItem();
+
+        when(  collectorService.createCollectorItemSelectOptions(Matchers.any(CollectorItem.class), Matchers.any(Map.class), Matchers.any(Map.class) ) ).thenReturn(item);
+
+        assertThat(dashboardRemoteService.remoteCreate(request, false), is(expected));
+
     }
     private Dashboard makeTeamDashboard(String template, String title, String appName, String owner,String configItemBusServName,String configItemBusAppName, String... compNames) {
         Application app = new Application(appName);
