@@ -327,7 +327,7 @@ public class BuildServiceTest {
         JenkinsBuildWebHookSettings settings = new JenkinsBuildWebHookSettings();
         settings.setEnableFilterLibraryRepos(true);
         settings.setExcludeLibraryRepoThreshold(3);
-        settings.setExcludeCodeReposInBuild(Arrays.asList("https://github.kdc.capitalone.com/bogie/jenkins-pipeline-library"));
+        settings.setExcludeCodeReposInBuild(Arrays.asList("https://github.com/someorg/somerepo"));
         return settings;
     }
 
