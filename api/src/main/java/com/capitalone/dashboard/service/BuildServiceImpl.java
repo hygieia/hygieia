@@ -3,6 +3,7 @@ package com.capitalone.dashboard.service;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.BuildStatus;
+import com.capitalone.dashboard.model.CodeReposBuilds;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
@@ -12,6 +13,7 @@ import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.model.QBuild;
 import com.capitalone.dashboard.model.RepoBranch;
 import com.capitalone.dashboard.repository.BuildRepository;
+import com.capitalone.dashboard.repository.CodeReposBuildsRepository;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
@@ -20,9 +22,11 @@ import com.capitalone.dashboard.request.BuildSearchRequest;
 import com.capitalone.dashboard.request.CollectorRequest;
 import com.capitalone.dashboard.response.BuildDataCreateResponse;
 import com.capitalone.dashboard.settings.ApiSettings;
+import com.google.common.collect.Sets;
 import com.mysema.query.BooleanBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.bson.types.ObjectId;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -39,7 +43,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class BuildServiceImpl implements BuildService {
@@ -50,6 +53,7 @@ public class BuildServiceImpl implements BuildService {
     private final CollectorService collectorService;
     private final DashboardService dashboardService;
     private final CollectorItemRepository collectorItemRepository;
+    private final CodeReposBuildsRepository codeReposBuildsRepository;
 
     @Autowired
     private ApiSettings settings;
@@ -61,7 +65,8 @@ public class BuildServiceImpl implements BuildService {
                             CollectorService collectorService,
                             DashboardService dashboardService,
                             CollectorItemRepository collectorItemRepository,
-                            ApiSettings settings) {
+                            ApiSettings settings,
+                            CodeReposBuildsRepository codeReposBuildsRepository) {
         this.buildRepository = buildRepository;
         this.componentRepository = componentRepository;
         this.collectorRepository = collectorRepository;
@@ -69,6 +74,7 @@ public class BuildServiceImpl implements BuildService {
         this.dashboardService = dashboardService;
         this.collectorItemRepository = collectorItemRepository;
         this.settings = settings;
+        this.codeReposBuildsRepository = codeReposBuildsRepository;
     }
 
     @Override
@@ -253,10 +259,32 @@ public class BuildServiceImpl implements BuildService {
         Set<RepoBranch> repoBranches = new HashSet<>();
         repoBranches.addAll(build.getCodeRepos());
         repoBranches.addAll(request.getCodeRepos());
-
-        List<String> excludeRepoPattern = CollectionUtils.isNotEmpty(settings.getWebHook().getJenkinsBuild().getExcludeCodeReposInBuild()) ? settings.getWebHook().getJenkinsBuild().getExcludeCodeReposInBuild() : new ArrayList<>();
-        Set<RepoBranch> excludeRepoBranches  = repoBranches.stream().filter(repo -> excludeRepoPattern.contains(repo.getUrl())).collect(Collectors.toSet());
-        repoBranches.removeAll(excludeRepoBranches);
+        /*
+        * This is a Quick fix until feature toggle via ff4j is implemented which is coming up soon
+        * */
+        boolean  filterLibraryRepos = settings.getWebHook() != null && settings.getWebHook().getJenkinsBuild() != null
+                && settings.getWebHook().getJenkinsBuild().isEnableFilterLibraryRepos();
+        if(filterLibraryRepos && CollectionUtils.isNotEmpty(repoBranches)) {
+            for (RepoBranch repoBranch : repoBranches) {
+                final String codeRepo = StringUtils.lowerCase(repoBranch.getUrl());
+                CodeReposBuilds entity = codeReposBuildsRepository.findByCodeRepo(codeRepo);
+                if(entity == null) {
+                    entity = new CodeReposBuilds();
+                }
+                Set<ObjectId> buildCollectorItems = Sets.newHashSet(entity.getBuildCollectorItems());
+                int threshold = settings.getWebHook().getJenkinsBuild().getExcludeLibraryRepoThreshold();
+                if (CollectionUtils.size(buildCollectorItems) > threshold) {
+                    // remove the repoBranch from Build
+                    repoBranches.remove(repoBranch);
+                }
+                entity.setCodeRepo(codeRepo);
+                buildCollectorItems.add(collectorItem.getId());
+                entity.getBuildCollectorItems().clear();
+                entity.getBuildCollectorItems().addAll(buildCollectorItems);
+                entity.setTimestamp(System.currentTimeMillis());
+                codeReposBuildsRepository.save(entity);
+            }
+        }
         build.getCodeRepos().clear();
         build.getCodeRepos().addAll(repoBranches);
         return buildRepository.save(build); // Save = Update (if ID present) or Insert (if ID not there)
