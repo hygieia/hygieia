@@ -346,6 +346,22 @@
                 }
             });
         }
+
+        // Returns whether or not the provided widget is empty based on the given values
+        ctrl.isEmptyWidget = function isEmptyWidget(widgetValues) {
+            // Assume no data
+            var isEmpty = true;
+
+            // Check if any of the values have data (not empty)
+            for (var i=0; i < widgetValues.length; i++) {
+                // if data exists, widget is not empty
+                if (widgetValues[i]) {
+                    isEmpty = false;
+                }
+            }
+
+            return isEmpty;
+        }
     }
 })
 ();

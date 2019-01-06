@@ -12,8 +12,9 @@
         </div>
         <div class="container-fluid" ng-if="caWidget.miniWidgetView == 'Static Analysis'">
             <div>
-                <div class="row">
-                    <div class="col-sm-6" ng-if="caWidget.issues.statusMessage">
+                <div class="row"
+                     hide-empty="{{caWidget.isEmptyWidget([caWidget.issues[0].statusMessage, caWidget.qualityGate.value, caWidget.rulesCompliance.value, caWidget.technicalDebt.formattedValue])}}">
+                    <div class="col-sm-6">
                         <div class="widget">
                             <div class="widget-body">
                                 <div class="widget ca-issues">
@@ -47,7 +48,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-6" ng-if="caWidget.qualityGate.value || caWidget.rulesCompliance.value || caWidget.technicalDebt.formattedValue">
+                    <div class="col-sm-6">
                         <!--Version, Quality gate, Technical debt section -->
                         <div class="widget">
                             <br>
@@ -107,8 +108,8 @@
                     </div>
                 </div>
                 <br>
-                <div class="row">
-                    <div class="col-sm-6" ng-if="caWidget.unitTests.name">
+                <div class="row" hide-empty="{{caWidget.isEmptyWidget([caWidget.unitTests[0].status, caWidget.linesofCode.value, true])}}">
+                    <div class="col-sm-6">
                         <div class="widget average-build-duration">
                             <!--Unit test section -->
                             <div class="widget-body">
@@ -138,7 +139,7 @@
                         </div>
                     </div>
                     <!--Code coverage section-->
-                    <div class="col-md-6" ng-if="caWidget.linesofCode.value">
+                    <div class="col-md-6">
                         <div class="widget">
                             <div class="widget-body" fit-text=".build-summary-count > span" fit-text-max="40">
                                 <div class="widget ca-coverage">
@@ -174,14 +175,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="widget-body" ng-if="!(caWidget.issues.statusMessage || caWidget.qualityGate.value || caWidget.rulesCompliance.value || caWidget.technicalDebt.formattedValue || caWidget.unitTests.name || caWidget.linesofCode.value)">
-                            No data found.
-                        </div>
-                    </div>
                     <!--Code coverage section-->
-
                 </div>
+                {{ result }}
             </div>
         </div>
 
