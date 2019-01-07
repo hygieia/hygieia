@@ -103,17 +103,10 @@ public class DeployBuilder {
                 
                 bac.setArtifactVersion(artifactVersion);
                 bac.setArtifactName(artifactName);
-                
-                BuildBuilder buildBuilder;
 
-                if (run instanceof WorkflowRun) {
-                    buildBuilder = new BuildBuilder(run, jenkinsName, listener, result, false);
-
-                } else {
-                    buildBuilder = new BuildBuilder((AbstractBuild) run, jenkinsName, listener, true, false);
-                }
-
-                BuildDataCreateRequest buildDataCreateRequest = buildBuilder.getBuildData();
+                BuildDataCreateRequest buildDataCreateRequest = (run instanceof WorkflowRun)
+                        ? new BuildBuilder().createBuildRequestFromRun(run, jenkinsName, listener, result, false)
+                        : new BuildBuilder().createBuildRequest((AbstractBuild) run, jenkinsName, listener, true, false);
 
                 bac.setDeployStatus(buildDataCreateRequest.getBuildStatus());
                 bac.setDuration(buildDataCreateRequest.getDuration());

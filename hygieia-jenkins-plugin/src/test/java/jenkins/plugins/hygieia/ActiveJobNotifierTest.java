@@ -6,7 +6,6 @@ import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import com.capitalone.dashboard.request.DeployDataCreateRequest;
 import com.capitalone.dashboard.request.TestDataCreateRequest;
-import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.model.Build;
 import hudson.model.BuildListener;
@@ -50,7 +49,6 @@ public class ActiveJobNotifierTest {
     @Mock
     private Build mockBuild;
 
-
     @Mock
     private HygieiaService mockHygieiaService;
 
@@ -74,9 +72,6 @@ public class ActiveJobNotifierTest {
 
     @Mock
     private HygieiaPublisher.DescriptorImpl mockDescriptor;
-
-    @Mock
-    private EnvVars mockEnvVars;
 
     private ActiveJobNotifier activeJobNotifier;
     private HygieiaResponse hygieiaResponse;

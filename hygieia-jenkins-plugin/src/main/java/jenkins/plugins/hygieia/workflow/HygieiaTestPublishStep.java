@@ -180,18 +180,18 @@ public class HygieiaTestPublishStep extends AbstractStepImpl {
             HygieiaService hygieiaService = getHygieiaService(hygieiaDesc.getHygieiaAPIUrl(), hygieiaDesc.getHygieiaToken(),
                     hygieiaDesc.getHygieiaJenkinsName(), hygieiaDesc.isUseProxy());
 
-            BuildBuilder buildBuilder = new BuildBuilder(run, hygieiaDesc.getHygieiaJenkinsName(), listener, BuildStatus.fromString(step.buildStatus), false);
-            HygieiaResponse buildResponse = hygieiaService.publishBuildData(buildBuilder.getBuildData());
+            HygieiaResponse buildResponse = hygieiaService.publishBuildData(new BuildBuilder()
+                    .createBuildRequestFromRun(run, hygieiaDesc.getHygieiaJenkinsName(),
+                            listener, BuildStatus.fromString(step.buildStatus), false));
 
             if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
                 listener.getLogger().println("Hygieia: Published Build Data For Test Publishing. " + buildResponse.toString());
             } else {
                 listener.getLogger().println("Hygieia: Failed Publishing Build Data for Test Publishing. " + buildResponse.toString());
             }
-            CucumberTestBuilder cucumberTestBuilder = new CucumberTestBuilder(run, listener, BuildStatus.fromString(step.buildStatus), filepath, step.testApplicationName,
+            TestDataCreateRequest request = new CucumberTestBuilder().getTestDataCreateRequest(run, listener, BuildStatus.fromString(step.buildStatus), filepath, step.testApplicationName,
                     step.testEnvironmentName, step.testType, step.testFileNamePattern, step.testResultsDirectory,
                     hygieiaDesc.getHygieiaJenkinsName(), buildResponse.getResponseValue());
-            TestDataCreateRequest request = cucumberTestBuilder.getTestDataCreateRequest();
             if (request != null) {
                 HygieiaResponse testResponse = hygieiaService.publishTestResults(request);
                 if (testResponse.getResponseCode() == HttpStatus.SC_CREATED) {
@@ -205,7 +205,6 @@ public class HygieiaTestPublishStep extends AbstractStepImpl {
 
             return buildResponse.getResponseCode();
         }
-
 
         //streamline unit testing
         HygieiaService getHygieiaService(String hygieiaAPIUrl, String hygieiaToken, String hygieiaJenkinsName, boolean useProxy) {
