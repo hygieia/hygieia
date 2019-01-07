@@ -272,7 +272,7 @@ public class BuildServiceImpl implements BuildService {
                     entity = new CodeReposBuilds();
                 }
                 int threshold = settings.getWebHook().getJenkinsBuild().getExcludeLibraryRepoThreshold();
-                if (CollectionUtils.size(buildCollectorItems) > threshold) {
+                if (CollectionUtils.size(entity.getBuildCollectorItems()) > threshold) {
                     // remove the repoBranch from Build
                     repoBranches.remove(repoBranch);
                 }
