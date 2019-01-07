@@ -77,10 +77,10 @@ public class SonarBuilder {
     private static final int DEFAULT_QUERY_INTERVAL = 10;
     private static final int DEFAULT_QUERY_MAX_ATTEMPTS = 30;
 
-    public SonarBuilder() {
+    private SonarBuilder() {
     }
 
-    public static final SonarBuilder getInstance() {
+    public static SonarBuilder getInstance() {
         return new SonarBuilder();
     }
 
