@@ -13,29 +13,28 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Logger;
 
 import static hygieia.utils.HygieiaUtils.getRepoBranch;
 
 public class BuildBuilder {
 
-    private static final Logger logger = Logger.getLogger(ArtifactBuilder.class.getName());
     private AbstractBuild<?, ?> build;
     private Run<?, ?> run;
     private String jenkinsName;
     private TaskListener listener;
     private boolean isComplete;
-    private BuildDataCreateRequest request;
     private BuildStatus result;
-    boolean buildChangeSet;
+    private boolean buildChangeSet;
 
     public BuildBuilder(AbstractBuild<?, ?> build, String jenkinsName, TaskListener listener, boolean isComplete, boolean buildChangeSet) {
         this.build = build;
         this.jenkinsName = jenkinsName;
         this.listener = listener;
-        this.isComplete = isComplete;
         this.buildChangeSet = buildChangeSet;
-        createBuildRequest();
+        this.isComplete = isComplete;
+        if(!isComplete) {
+            this.result =BuildStatus.InProgress;
+        }
     }
 
     public BuildBuilder(Run<?, ?> run, String jenkinsName, TaskListener listener, BuildStatus result, boolean buildChangeSet) {
@@ -46,67 +45,65 @@ public class BuildBuilder {
         this.buildChangeSet = buildChangeSet;
         if (run instanceof AbstractBuild) {
             this.build = (AbstractBuild<?, ?>) run;
-            this.isComplete = !(Objects.equals(BuildStatus.InProgress, result));
-            createBuildRequest();
-        } else {
-            createBuildRequestFromRun();
         }
     }
 
-    private void createBuildRequestFromRun() {
-        request = new BuildDataCreateRequest();
-        request.setNiceName(jenkinsName);
-        request.setJobName(HygieiaUtils.getJobPath(run));
-        request.setBuildUrl(HygieiaUtils.getBuildUrl(run));
-        request.setJobUrl(HygieiaUtils.getJobUrl(run));
-        request.setInstanceUrl(HygieiaUtils.getInstanceUrl(run, listener));
-        request.setNumber(HygieiaUtils.getBuildNumber(run));
-        request.setStartTime(run.getStartTimeInMillis());
-        request.setBuildStatus(result.toString());
+    private BuildDataCreateRequest createBuildRequestFromRun() {
+        BuildDataCreateRequest request = new BuildDataCreateRequest();
+        request.setNiceName(this.jenkinsName);
+        request.setJobName(HygieiaUtils.getJobPath(this.run));
+        request.setBuildUrl(HygieiaUtils.getBuildUrl(this.run));
+        request.setJobUrl(HygieiaUtils.getJobUrl(this.run));
+        request.setInstanceUrl(HygieiaUtils.getInstanceUrl(this.run, this.listener));
+        request.setNumber(HygieiaUtils.getBuildNumber(this.run));
+        request.setStartTime(this.run.getStartTimeInMillis());
+        request.setBuildStatus(this.result.toString());
 
-        if (!result.equals(BuildStatus.InProgress)) {
-            request.setDuration(System.currentTimeMillis() - run.getStartTimeInMillis());
+        if (!this.result.equals(BuildStatus.InProgress)) {
+            request.setDuration(System.currentTimeMillis() - this.run.getStartTimeInMillis());
             request.setEndTime(System.currentTimeMillis());
-            if (buildChangeSet) {
-                request.setCodeRepos(getRepoBranch(run));
-                WorkflowRun wr = (WorkflowRun) run;
+            if (this.buildChangeSet) {
+                request.setCodeRepos(getRepoBranch(this.run));
+                WorkflowRun wr = (WorkflowRun) this.run;
                 request.setSourceChangeSet(getCommitList(wr.getChangeSets()));
             }
         }
+        return request;
     }
 
-    private void createBuildRequest() {
-        request = new BuildDataCreateRequest();
-        request.setNiceName(jenkinsName);
-        request.setJobName(HygieiaUtils.getJobPath(build));
-        request.setBuildUrl(HygieiaUtils.getBuildUrl(build));
-        request.setJobUrl(HygieiaUtils.getJobUrl(build));
-        request.setInstanceUrl(HygieiaUtils.getInstanceUrl(build, listener));
-        request.setNumber(HygieiaUtils.getBuildNumber(build));
-        request.setStartTime(build.getStartTimeInMillis());
-        if (isComplete) {
-            request.setBuildStatus(Objects.requireNonNull(build.getResult()).toString());
-            request.setDuration(build.getDuration());
-            request.setEndTime(build.getStartTimeInMillis() + build.getDuration());
-            if (buildChangeSet) {
-                request.setCodeRepos(getRepoBranch(build));
-                ChangeLogSet<? extends ChangeLogSet.Entry> sets = build.getChangeSet();
+    private BuildDataCreateRequest createBuildRequest() {
+        BuildDataCreateRequest request = new BuildDataCreateRequest();
+        boolean isBuildComplete = this.isComplete || !(Objects.equals(BuildStatus.InProgress, this.result));
+        request.setNiceName(this.jenkinsName);
+        request.setJobName(HygieiaUtils.getJobPath(this.build));
+        request.setBuildUrl(HygieiaUtils.getBuildUrl(this.build));
+        request.setJobUrl(HygieiaUtils.getJobUrl(this.build));
+        request.setInstanceUrl(HygieiaUtils.getInstanceUrl(this.build, this.listener));
+        request.setNumber(HygieiaUtils.getBuildNumber(this.build));
+        request.setStartTime(this.build.getStartTimeInMillis());
+        if (isBuildComplete) {
+            request.setBuildStatus(Objects.requireNonNull(this.build.getResult()).toString());
+            request.setDuration(this.build.getDuration());
+            request.setEndTime(this.build.getStartTimeInMillis() + this.build.getDuration());
+            if (this.buildChangeSet) {
+                request.setCodeRepos(getRepoBranch(this.build));
+                ChangeLogSet<? extends ChangeLogSet.Entry> sets = this.build.getChangeSet();
                 List<ChangeLogSet<? extends ChangeLogSet.Entry>> changeLogSets = sets.isEmptySet() ? Collections.<ChangeLogSet<? extends ChangeLogSet.Entry>>emptyList() : Collections.<ChangeLogSet<? extends ChangeLogSet.Entry>>singletonList(sets);
                 request.setSourceChangeSet(getCommitList(changeLogSets));
             }
         } else {
             request.setBuildStatus(BuildStatus.InProgress.toString());
         }
+        return request;
     }
 
     public BuildDataCreateRequest getBuildData() {
-        return request;
+        return (run == null || run instanceof AbstractBuild) ? createBuildRequest() : createBuildRequestFromRun();
     }
 
     private List<SCM> getCommitList(List<ChangeLogSet<? extends ChangeLogSet.Entry>> changeLogSets) {
         CommitBuilder commitBuilder = new CommitBuilder(changeLogSets);
         return commitBuilder.getCommits();
     }
-
 
 }

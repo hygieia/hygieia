@@ -7,20 +7,18 @@ import com.capitalone.dashboard.request.DeployDataCreateRequest;
 import com.capitalone.dashboard.request.TestDataCreateRequest;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
-import hygieia.builder.*;
-
+import hygieia.builder.ArtifactBuilder;
+import hygieia.builder.BuildBuilder;
+import hygieia.builder.CucumberTestBuilder;
+import hygieia.builder.DeployBuilder;
+import hygieia.builder.SonarBuilder;
 import org.apache.commons.httpclient.HttpStatus;
 import org.json.simple.parser.ParseException;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Set;
-import java.util.logging.Logger;
 
 @SuppressWarnings("rawtypes")
 public class ActiveJobNotifier implements FineGrainedNotifier {
-
-    private static final Logger logger = Logger.getLogger(ActiveJobNotifier.class.getName());
 
     private HygieiaPublisher publisher;
     private BuildListener listener;
@@ -71,7 +69,7 @@ public class ActiveJobNotifier implements FineGrainedNotifier {
         publishBuild = publishBuild && !publisher.getDescriptor().isHygieiaPublishBuildDataGlobal() && !publisher.getDescriptor().isHygieiaPublishSonarDataGlobal();
 
         if (publishBuild) {
-            BuildBuilder builder = new BuildBuilder(r, publisher.getDescriptor().getHygieiaJenkinsName(), listener, true, true);
+            BuildBuilder builder = new BuildBuilder(r, publisher.getDescriptor().getHygieiaJenkinsName(),listener, BuildStatus.fromString(r.getResult().toString()), true);
             HygieiaResponse buildResponse = getHygieiaService(r).publishBuildData(builder.getBuildData());
             if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
                 listener.getLogger().println("Hygieia: Published Build Complete Data. " + buildResponse.toString());
@@ -137,7 +135,7 @@ public class ActiveJobNotifier implements FineGrainedNotifier {
                     } else {
                         listener.getLogger().println("Hygieia: Published Sonar Result. Nothing to publish");
                     }
-                } catch (IOException | URISyntaxException | ParseException e) {
+                } catch (ParseException e) {
                     listener.getLogger().println("Hygieia: Publishing error" + '\n' + e.getMessage());
                 }
 

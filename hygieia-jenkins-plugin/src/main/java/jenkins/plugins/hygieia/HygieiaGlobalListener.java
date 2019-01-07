@@ -20,7 +20,6 @@ import org.json.simple.parser.ParseException;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -139,7 +138,7 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
             } else {
                 if (showConsoleOutput) { listener.getLogger().println("Hygieia: Auto Published Sonar Result. Nothing to publish"); }
             }
-        } catch (IOException | URISyntaxException | ParseException e) {
+        } catch (ParseException e) {
             if (showConsoleOutput) { listener.getLogger().println("Hygieia: Error Auto Publishing Sonar data." + '\n' + e.getMessage()); }
         }
     }
@@ -181,7 +180,7 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
     }
 
     protected GenericCollectorItemBuilder getGenericCollectorItemBuilder(Run run, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, String toolName, String pattern, String convertedBuildResponseString) {
-        return new GenericCollectorItemBuilder(run, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), toolName, pattern, convertedBuildResponseString);
+        return new GenericCollectorItemBuilder(run, toolName, pattern, convertedBuildResponseString);
     }
 
     protected HygieiaService getHygieiaService(HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, String apiEndpoint) {
