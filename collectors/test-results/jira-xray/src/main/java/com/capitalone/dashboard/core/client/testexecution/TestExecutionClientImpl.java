@@ -15,12 +15,16 @@ import com.capitalone.dashboard.model.TestCaseStep;
 import com.capitalone.dashboard.model.TestCapability;
 import com.capitalone.dashboard.model.TestSuite;
 import com.capitalone.dashboard.model.TestSuiteType;
+import com.capitalone.dashboard.model.FeatureIssueLink;
+
+import com.capitalone.dashboard.model.TestResultCollector;
+import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.TestResultCollectorRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
-import org.bson.types.ObjectId;
+import com.google.common.collect.Lists;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
@@ -31,6 +35,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.stream.Collectors;
 
 public class TestExecutionClientImpl implements TestExecutionClient {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(TestExecutionClientImpl.class);
@@ -41,6 +50,7 @@ public class TestExecutionClientImpl implements TestExecutionClient {
     private final CollectorItemRepository collectorItemRepository;
     private JiraXRayRestClientImpl restClient;
     private final JiraXRayRestClientSupplier restClientSupplier;
+    private List<TestCase> testCases = new ArrayList<>();
 
     public TestExecutionClientImpl(TestResultRepository testResultRepository, TestResultCollectorRepository testResultCollectorRepository,
                                    FeatureRepository featureRepository, CollectorItemRepository collectorItemRepository,
@@ -53,6 +63,15 @@ public class TestExecutionClientImpl implements TestExecutionClient {
         this.collectorItemRepository = collectorItemRepository;
     }
 
+    public void setTestCases(List<TestCase> testCases) {
+        this.testCases = testCases;
+    }
+    private enum TEST_STATUS_COUNT_ATTRIBUTES {
+        PASS_COUNT, FAIL_COUNT, SKIP_COUNT, UNKNOWN_COUNT
+    }
+    private enum TEST_STEP_STATUS_COUNT_ATTRIBUTES {
+        PASSSTEP_COUNT, FAILSTEP_COUNT, SKIPSTEP_COUNT, UNKNOWNSTEP_COUNT
+    }
     /**
      * Updates the test result information in MongoDB with Pagination. pageSize is defined in properties
      *
@@ -110,23 +129,16 @@ public class TestExecutionClientImpl implements TestExecutionClient {
 
         if (currentPagedTestExecutions != null) {
             List<TestResult> testResultsToSave = new ArrayList<>();
-            ObjectId collectorItemId;
 
             for (Feature testExec : currentPagedTestExecutions) {
 
                 // Set collectoritemid for manual test results
-                if (testExec.getsTeamID() != null) {
-                    collectorItemId = this.collectorItemRepository.findByJiraTeamId(testExec.getsTeamID()).getId();
-                } else if (testExec.getsProjectID() != null) {
-                    collectorItemId = this.collectorItemRepository.findByJiraProjectId(testExec.getsProjectID()).getId();
-                } else {
-                    CollectorItem collectorItem = new CollectorItem();
-                    collectorItemId = collectorItem.getId();
+                CollectorItem collectorItem = createCollectorItem(testExec);
+                TestResult testResult = testResultRepository.findByCollectorItemId(collectorItem.getId());
+                if(testResult == null) {
+                    testResult = new TestResult();
                 }
-
-                TestResult testResult = new TestResult();
-
-                testResult.setCollectorItemId(collectorItemId);
+                testResult.setCollectorItemId(collectorItem.getId());
                 testResult.setDescription(testExec.getsName());
 
                 testResult.setTargetAppName(testExec.getsProjectName());
@@ -142,8 +154,8 @@ public class TestExecutionClientImpl implements TestExecutionClient {
                         int totalCount = (int) tests.spliterator().getExactSizeIfKnown();
 
                         Map<String,Integer> testCountByStatus = this.getTestCountStatusMap(testExec, tests);
-                        int failCount = testCountByStatus.get("FAIL_COUNT");
-                        int passCount = testCountByStatus.get("PASS_COUNT");
+                        int failCount = testCountByStatus.get(TEST_STATUS_COUNT_ATTRIBUTES.FAIL_COUNT.name());
+                        int passCount = testCountByStatus.get(TEST_STATUS_COUNT_ATTRIBUTES.PASS_COUNT.name());
 
                         List<TestCapability> capabilities = new ArrayList<>();
                         TestCapability capability = new TestCapability();
@@ -183,7 +195,7 @@ public class TestExecutionClientImpl implements TestExecutionClient {
                             capability.setSkippedTestSuiteCount(1);
                         }
 
-                        testSuite.setTestCases(this.getTestCases(tests, testExec));
+                        testSuite.setTestCases(this.getTestCases());
                         testSuites.add(testSuite);
                         capability.setTestSuites(testSuites);
                         capabilities.add(capability);
@@ -204,54 +216,10 @@ public class TestExecutionClientImpl implements TestExecutionClient {
     /**
      * Get the test cases for a test suite
      *
-     * @param tests
-     * @param testExec
-     * @return
+     * @return testCases
      */
-    private List<TestCase> getTestCases(Iterable<TestExecution.Test> tests, Feature testExec) {
-        List<TestCase> testCases = new ArrayList<>();
-
-        for (TestExecution.Test test : tests) {
-            TestCase testCase = new TestCase();
-
-            try {
-                TestRun testRun = restClient.getTestRunClient().getTestRun(testExec.getsNumber(), test.getKey()).claim();
-
-                testCase.setId(testRun.getId().toString());
-                testCase.setDescription(test.toString());
-                if (testRun.getSteps() != null) {
-                    int totalSteps = (int) testRun.getSteps().spliterator().getExactSizeIfKnown();
-                    Map<String,Integer> stepCountByStatus = this.getStepCountStatusMap(testRun);
-
-                    int failSteps = stepCountByStatus.get("FAILSTEP_COUNT");
-                    int passSteps = stepCountByStatus.get("PASSSTEP_COUNT");
-                    int skipSteps = stepCountByStatus.get("SKIPSTEP_COUNT");
-                    int unknownSteps = stepCountByStatus.get("UNKNOWNSTEP_COUNT");
-                    testCase.setTotalTestStepCount(totalSteps);
-                    testCase.setFailedTestStepCount(failSteps);
-                    testCase.setSuccessTestStepCount(passSteps);
-                    testCase.setSkippedTestStepCount(skipSteps);
-                    testCase.setUnknownStatusCount(unknownSteps);
-                    if(failSteps > 0) {
-                        testCase.setStatus(TestCaseStatus.Failure);
-                    } else if (skipSteps > 0){
-                        testCase.setStatus(TestCaseStatus.Skipped);
-                    } else if(passSteps > 0){
-                        testCase.setStatus(TestCaseStatus.Success);
-                    } else {
-                        testCase.setStatus(TestCaseStatus.Unknown);
-                    }
-
-                    testCase.setTestSteps(this.getTestSteps(testRun));
-                }
-
-            } catch (Exception e) {
-                LOGGER.error("Unable to get the Test Step: " + e);
-            }
-            testCases.add(testCase);
-        }
-
-        return testCases;
+    private List<TestCase> getTestCases() {
+        return this.testCases;
     }
 
     /**
@@ -292,35 +260,80 @@ public class TestExecutionClientImpl implements TestExecutionClient {
      */
     private Map<String,Integer> getTestCountStatusMap(Feature testExec, Iterable<TestExecution.Test> tests) {
 
-        Map<String,Integer> map = new HashMap<String,Integer>(4);
-        int failCount = 0;
-        int passCount = 0;
-        int skipCount = 0;
-        int unknownCount = 0;
+        Map<String,Integer> map = new HashMap<String, Integer>(TEST_STATUS_COUNT_ATTRIBUTES.values().length);
+        int failTestCount = 0, passTestCount = 0, skipTestCount = 0, unknownTestCount = 0;
 
-        for (TestExecution.Test test : tests) {
-            try {
-                TestRun testRun = restClient.getTestRunClient().getTestRun(testExec.getsNumber(), test.getKey()).claim();
-                if (testRun != null) {
-                    if (testRun.getStatus().toString().equals("FAIL")) {
-                        failCount++;
-                    }else if (testRun.getStatus().toString().equals("PASS")) {
-                        passCount++;
-                    }else if (testRun.getStatus().toString().equals("SKIP")){
-                        skipCount++;
-                    }else{
-                        unknownCount++;
-                    }
+        List<TestCase> testCases = new ArrayList<>();
+
+        for(TestExecution.Test test : tests){
+            Optional<TestRun> testRunOpt = Optional.ofNullable(restClient.getTestRunClient().getTestRun(testExec.getsNumber(), test.getKey()).claim());
+            if(testRunOpt.isPresent()){
+                TestRun testRun = testRunOpt.get();
+                if(testRun.getStatus().equals(TestRun.Status.FAIL)){
+                    failTestCount++;
+                }else if(testRun.getStatus().equals(TestRun.Status.PASS)){
+                    passTestCount++;
+                }else if (testRun.getStatus().equals(TestRun.Status.SKIP)){
+                    skipTestCount++;
+                }else{
+                    unknownTestCount++;
                 }
-            } catch (Exception e) {
-                LOGGER.error("Unable to get the Test Run: " + e);
+                TestCase testCase = createTestCase(test, testRun, testExec);
+                testCases.add(testCase);
+                }
             }
-        }
-        map.put("FAIL_COUNT", failCount);
-        map.put("PASS_COUNT", passCount);
-        map.put("SKIP_COUNT", skipCount);
-        map.put("UNKNOWN_COUNT", unknownCount);
+            this.setTestCases(testCases);
+
+        map.put(TEST_STATUS_COUNT_ATTRIBUTES.PASS_COUNT.name(), passTestCount);
+        map.put(TEST_STATUS_COUNT_ATTRIBUTES.FAIL_COUNT.name(), failTestCount);
+        map.put(TEST_STATUS_COUNT_ATTRIBUTES.SKIP_COUNT.name(), skipTestCount);
+        map.put(TEST_STATUS_COUNT_ATTRIBUTES.UNKNOWN_COUNT.name(), unknownTestCount);
         return map;
+    }
+
+    // This method needs a core project update, so temporarily warnings suppressed
+    @SuppressWarnings("PMD")
+    private TestCase createTestCase(TestExecution.Test test, TestRun testRun, Feature feature) {
+        TestCase testCase = new TestCase();
+        testCase.setId(testRun.getId().toString());
+        testCase.setDescription(test.toString());
+        Optional<Iterable<TestStep>> testStepsOpt = Optional.ofNullable(testRun.getSteps());
+        if (testStepsOpt.isPresent()) {
+            int totalSteps = (int) testRun.getSteps().spliterator().getExactSizeIfKnown();
+            Map<String, Integer> stepCountByStatus = this.getStepCountStatusMap(testRun);
+            int failSteps = stepCountByStatus.get(TEST_STEP_STATUS_COUNT_ATTRIBUTES.FAILSTEP_COUNT.name());
+            int passSteps = stepCountByStatus.get(TEST_STEP_STATUS_COUNT_ATTRIBUTES.PASSSTEP_COUNT.name());
+            int skipSteps = stepCountByStatus.get(TEST_STEP_STATUS_COUNT_ATTRIBUTES.SKIPSTEP_COUNT.name());
+            int unknownSteps = stepCountByStatus.get(TEST_STEP_STATUS_COUNT_ATTRIBUTES.UNKNOWNSTEP_COUNT.name());
+
+            testCase.setTotalTestStepCount(totalSteps);
+            testCase.setFailedTestStepCount(failSteps);
+            testCase.setSuccessTestStepCount(passSteps);
+            testCase.setSkippedTestStepCount(skipSteps);
+            testCase.setUnknownStatusCount(unknownSteps);
+
+            if (failSteps > 0) {
+                testCase.setStatus(TestCaseStatus.Failure);
+            } else if (skipSteps > 0) {
+                testCase.setStatus(TestCaseStatus.Skipped);
+            } else if (passSteps > 0) {
+                testCase.setStatus(TestCaseStatus.Success);
+            } else {
+                testCase.setStatus(TestCaseStatus.Unknown);
+            }
+
+             Set<String> tags = getStoryIds(feature.getIssueLinks());
+            // Temporarily commented for core project update
+            // testCase.setTags(tags);
+            testCase.setTestSteps(this.getTestSteps(testRun));
+        }
+        return testCase;
+    }
+
+    private Set<String> getStoryIds(Collection<FeatureIssueLink> issueLinks) {
+        Set<String> tags = new HashSet<>();
+        issueLinks.forEach(issueLink -> tags.add(issueLink.getTargetIssueKey()));
+        return tags;
     }
 
     /**
@@ -330,26 +343,21 @@ public class TestExecutionClientImpl implements TestExecutionClient {
      * @return
      */
     private Map<String,Integer> getStepCountStatusMap(TestRun testRun) {
-        Map<String,Integer> map = new HashMap<>(4);
+        Map<String,Integer> map = new HashMap<>(TEST_STEP_STATUS_COUNT_ATTRIBUTES.values().length);
         int failStepCount = 0, passStepCount = 0, skipStepCount = 0, unknownStepCount = 0;
-        for (TestStep testStep : testRun.getSteps()) {
-            if (testRun != null) {
-                if (testStep.getStatus().toString().equals("PASS")) {
-                    passStepCount++;
-                } else if (testStep.getStatus().toString().equals("FAIL")) {
-                    failStepCount++;
-                } else if (testStep.getStatus().equals("SKIP")){
-                    skipStepCount++;
-                } else{
-                    unknownStepCount++;
-                }
-            }
-        }
-        map.put("FAILSTEP_COUNT", failStepCount);
-        map.put("PASSSTEP_COUNT", passStepCount);
-        map.put("SKIPSTEP_COUNT", skipStepCount);
-        map.put("UNKNOWNSTEP_COUNT", unknownStepCount);
 
+        List<TestStep> testSteps = Lists.newArrayList(testRun.getSteps());
+        passStepCount = testSteps.stream().filter(testStep -> testStep.getStatus().equals(TestStep.Status.PASS)).collect(Collectors.toList()).size();
+        failStepCount = testSteps.stream().filter(testStep -> testStep.getStatus().equals(TestStep.Status.FAIL)).collect(Collectors.toList()).size();
+        skipStepCount = testSteps.stream().filter(testStep -> testStep.getStatus().equals(TestStep.Status.SKIP)).collect(Collectors.toList()).size();
+        unknownStepCount = testSteps.stream().filter(testStep -> !testStep.getStatus().equals(TestStep.Status.PASS) ||
+                !testStep.getStatus().equals(TestStep.Status.FAIL) || testStep.getStatus().equals(TestStep.Status.SKIP)
+        ).collect(Collectors.toList()).size();
+
+        map.put(TEST_STEP_STATUS_COUNT_ATTRIBUTES.FAILSTEP_COUNT.name(), failStepCount);
+        map.put(TEST_STEP_STATUS_COUNT_ATTRIBUTES.PASSSTEP_COUNT.name(), passStepCount);
+        map.put(TEST_STEP_STATUS_COUNT_ATTRIBUTES.SKIPSTEP_COUNT.name(), skipStepCount);
+        map.put(TEST_STEP_STATUS_COUNT_ATTRIBUTES.UNKNOWNSTEP_COUNT.name(), unknownStepCount);
         return map;
     }
 
@@ -370,7 +378,6 @@ public class TestExecutionClientImpl implements TestExecutionClient {
         if(sourceList == null || sourceList.size() < fromIndex){
             return Collections.emptyList();
         }
-
         return sourceList.subList(fromIndex, Math.min(fromIndex + pageSize, sourceList.size()));
     }
 
@@ -414,5 +421,29 @@ public class TestExecutionClientImpl implements TestExecutionClient {
         }
 
         return data;
+    }
+
+    private CollectorItem createCollectorItem(Feature testExec) {
+        List<TestResultCollector> collector = testResultCollectorRepository.findByCollectorTypeAndName(CollectorType.Test, "Jira XRay");
+        TestResultCollector collector1 = collector.get(0);
+        CollectorItem existing = collectorItemRepository.findByCollectorIdNiceNameAndJobName(collector1.getId(), "Manual", testExec.getsName());
+        CollectorItem tempCollItem = new CollectorItem();
+        Optional<CollectorItem> optionalCollectorItem = Optional.ofNullable(existing);
+        if(optionalCollectorItem.isPresent()) {
+            tempCollItem.setId(existing.getId());
+        }else {
+            tempCollItem.setCollectorId(collector1.getId());
+            tempCollItem.setDescription("JIRAXRay:" + testExec.getsName());
+            tempCollItem.setPushed(true);
+            tempCollItem.setLastUpdated(System.currentTimeMillis());
+            tempCollItem.setNiceName("Manual");
+            Map<String, Object> option = new HashMap<>();
+            option.put("jobName", testExec.getsName());
+            option.put("instanceUrl", testExec.getsUrl());
+            tempCollItem.getOptions().putAll(option);
+            collectorItemRepository.save(tempCollItem);
+        }
+        return tempCollItem;
+
     }
 }

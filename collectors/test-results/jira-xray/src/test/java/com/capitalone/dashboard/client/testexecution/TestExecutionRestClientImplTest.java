@@ -10,10 +10,7 @@ import com.capitalone.dashboard.api.domain.TestExecution;
 import com.capitalone.dashboard.api.domain.TestRun;
 import com.capitalone.dashboard.core.client.TestExecutionRestClientImpl;
 import com.capitalone.dashboard.core.json.TestArrayJsonParser;
-import com.capitalone.dashboard.model.TestResult;
-import com.capitalone.dashboard.repository.FeatureRepository;
-import com.capitalone.dashboard.repository.TestResultCollectorRepository;
-import com.capitalone.dashboard.repository.TestResultRepository;
+
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
@@ -21,15 +18,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Captor;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.net.URI;
-import java.util.List;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(TestExecutionRestClientImpl.class)
@@ -42,19 +36,7 @@ public class TestExecutionRestClientImplTest {
     private DisposableHttpClient httpClient;
     @Mock
     private Promise pr;
-    @Mock
-    FeatureRepository featureRepository;
-    @Mock
-    TestResultRepository testResultRepository;
-    @Mock
-    TestResultCollectorRepository testResultCollectorRepository;
-    TestExecutionRestClientImpl testExecutionRestClient;
-    @Mock
-    JiraXRayRestClient jiraXRayRestClient;
-    @Mock
-    private TestResultSettings testResultSettings;
-    @Captor
-    ArgumentCaptor<List<TestResult>> captor;
+
 
 
     @Before

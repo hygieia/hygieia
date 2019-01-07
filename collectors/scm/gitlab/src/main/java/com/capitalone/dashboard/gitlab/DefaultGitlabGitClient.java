@@ -13,6 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestOperations;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.capitalone.dashboard.collector.GitlabSettings;
 import com.capitalone.dashboard.gitlab.model.GitlabCommit;
 import com.capitalone.dashboard.model.Commit;
@@ -25,6 +28,9 @@ import com.capitalone.dashboard.util.Supplier;
 
 @Component
 public class DefaultGitlabGitClient implements  GitlabGitClient {
+
+	
+    private static final Log LOG = LogFactory.getLog(DefaultGitlabGitClient.class);
 
     //Gitlab max results per page. Reduces amount of network calls.
     private static final int RESULTS_PER_PAGE = 100;
@@ -57,6 +63,7 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
 		int nextPage = 1;
 		while (hasMorePages) {
 			ResponseEntity<GitlabCommit[]> response = makeRestCall(apiUrl, apiToken);
+			LOG.info("page " + nextPage + ": " + response.getStatusCode());
 			List<Commit> pageOfCommits = responseMapper.map(response.getBody(), repo.getRepoUrl(), repo.getBranch());
 			commits.addAll(pageOfCommits);
 			if (pageOfCommits.size() < RESULTS_PER_PAGE) {

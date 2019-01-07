@@ -58,7 +58,6 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
         return getPerformanceTestAudit(collectorItem, beginDate, endDate);
     }
 
-
     private PerformanceTestAuditResponse getPerformanceTestAudit(CollectorItem perfItem, long beginDate, long endDate) {
 
         PerformanceTestAuditResponse perfReviewResponse = new PerformanceTestAuditResponse();
@@ -69,7 +68,9 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
         List<TestResult> testResults = testResultRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(perfItem.getId(), beginDate-1, endDate+1);
         List<PerfTest> testlist = new ArrayList<>();
 
-        for (TestResult testResult : testResults) {
+        if (!CollectionUtils.isEmpty(testResults)){
+            testResults.sort(Comparator.comparing(TestResult::getTimestamp).reversed());
+            TestResult testResult = testResults.iterator().next();
             if (TestSuiteType.Performance.toString().equalsIgnoreCase(testResult.getType().name())) {
                 Collection<TestCapability> testCapabilities = testResult.getTestCapabilities();
 
@@ -131,8 +132,8 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
                 }
 
                 testlist.sort(Comparator.comparing(PerfTest::getStartTime).reversed());
-                perfReviewResponse.setLastExecutionTime(testlist.get(0).getStartTime());
                 perfReviewResponse.setResult(testlist);
+                perfReviewResponse.setLastExecutionTime(CollectionUtils.isEmpty(testlist)?0L:testlist.get(0).getStartTime());
                 perfReviewResponse.addAuditStatus((int) testlist.stream().filter(list -> Optional.ofNullable(list).isPresent() && Optional.ofNullable(list.getResultStatus()).isPresent() && list.getResultStatus().matches("Success")).count() > 0 ?
                         PerformanceTestAuditStatus.PERF_RESULT_AUDIT_OK : PerformanceTestAuditStatus.PERF_RESULT_AUDIT_FAIL);
             }

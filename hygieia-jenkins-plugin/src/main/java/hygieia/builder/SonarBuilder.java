@@ -17,9 +17,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
-import java.lang.InterruptedException;
-import java.lang.String;
-import java.lang.Thread;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
@@ -27,8 +24,6 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-
-import static hygieia.utils.HygieiaUtils.getSafePositiveInteger;
 
 public class SonarBuilder {
     private static final Logger logger = Logger.getLogger(SonarBuilder.class.getName());
@@ -78,52 +73,30 @@ public class SonarBuilder {
     private static final String METRIC = "metric";
     private static final int HOURS_IN_DAY = 8;
 
-    private String sonarServer;
-    private String sonarProjectName;
-    private String sonarProjectID;
-    private String buildId;
+    private Run<?, ?> run;
     private TaskListener listener;
-
-    private String sonarCEAPIUrl;
+    private String jenkinsName;
     private int ceQueryIntervalInSeconds;
     private int ceQueryMaxAttempts;
-    private String jenkinsName;
+    private String buildId;
     private boolean useProxy;
 
-    private double sonarVersion;
-    private String sonarBuildLink;
-
-    private Run<?, ?> run;
 
     private static final int DEFAULT_QUERY_INTERVAL = 10;
     private static final int DEFAULT_QUERY_MAX_ATTEMPTS = 30;
 
 
     public SonarBuilder(Run<?, ?> run, TaskListener listener, String jenkinsName, String ceQueryIntervalInSeconds, String ceQueryMaxAttempts, String buildId, boolean useProxy)  {
+        this.run = run;
         this.listener = listener;
         this.jenkinsName = jenkinsName;
-        this.ceQueryIntervalInSeconds = getSafePositiveInteger(ceQueryIntervalInSeconds, DEFAULT_QUERY_INTERVAL);
-        this.ceQueryMaxAttempts = getSafePositiveInteger(ceQueryMaxAttempts, DEFAULT_QUERY_MAX_ATTEMPTS);
+        this.ceQueryIntervalInSeconds = HygieiaUtils.getSafePositiveInteger(ceQueryIntervalInSeconds, DEFAULT_QUERY_INTERVAL);
+        this.ceQueryMaxAttempts = HygieiaUtils.getSafePositiveInteger(ceQueryMaxAttempts, DEFAULT_QUERY_MAX_ATTEMPTS);
         this.buildId = HygieiaUtils.getBuildCollectionId(buildId);
         this.useProxy = useProxy;
-        this.run = run;
     }
 
-    protected void setSonarDetails(Run run) throws IOException, URISyntaxException, ParseException {
-        sonarBuildLink = extractSonarProjectURLFromLogs(run);
-        if (!StringUtils.isEmpty(sonarBuildLink)) {
-            this.sonarProjectName = getSonarProjectName(sonarBuildLink);
-            this.sonarServer = sonarBuildLink.substring(0, sonarBuildLink.indexOf("/dashboard/index/" + this.sonarProjectName));
-            this.sonarVersion = getSonarVersion();
-            this.sonarProjectID = getSonarProjectID(this.sonarProjectName, sonarVersion);
-        }
-        String sonarCEAPILink = extractSonarProcessingStatusUrlFromLogs(run);
-        if (!StringUtils.isEmpty(sonarCEAPILink)) {
-            this.sonarCEAPIUrl = sonarCEAPILink;
-        }
-    }
-
-    public double getSonarVersion() {
+    private double getSonarVersion(String sonarServer) {
         RestCall restCall = new RestCall(useProxy);
         String url = sonarServer + URL_VERSION;
         RestCall.RestCallResponse callResponse = restCall.makeRestCallGet(url);
@@ -143,16 +116,22 @@ public class SonarBuilder {
      * From Sonar 5.2+, the final analysis is now an asynchronous and the status
      * of the sonar analysis needs to be determined from the Sonar CE API
      *
-     * @param restCall
+     * @param restCall RestCall
      * @return true after Compute Engine has completed processing or it is an old Sonar version.
      * Else returns false
-     * @throws ParseException
+     * @throws ParseException ParseException
      */
     private boolean sonarProcessingComplete(RestCall restCall) throws ParseException {
         // Sonar 5.2+ check if the sonar ce api url exists. If not,
         // then the project is using old sonar version and hence
         // request to Compute Engine api is not required.
-        if (StringUtils.isEmpty(this.sonarCEAPIUrl)) {
+        String sonarCEAPIUrl = "";
+        try {
+            sonarCEAPIUrl = extractSonarProcessingStatusUrlFromLogs(run);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (StringUtils.isEmpty(sonarCEAPIUrl)) {
             // request to CE API is not required as Sonar Version < 5.2
             return true;
         }
@@ -163,7 +142,7 @@ public class SonarBuilder {
         // Return true as soon as the status changes to SUCCESS
         for (int i = 0; i < this.ceQueryMaxAttempts; i++) {
             // get the status of sonar analysis using Sonar CE API
-            RestCall.RestCallResponse ceAPIResponse = restCall.makeRestCallGet(this.sonarCEAPIUrl);
+            RestCall.RestCallResponse ceAPIResponse = restCall.makeRestCallGet(sonarCEAPIUrl);
             int responseCodeCEAPI = ceAPIResponse.getResponseCode();
             if (responseCodeCEAPI == HttpStatus.SC_OK) {
                 String taskStatus = getSonarTaskStatus(ceAPIResponse.getResponseString());
@@ -200,9 +179,9 @@ public class SonarBuilder {
 
     /***
      * Parses the task status as returned from Sonar's CE API
-     * @param ceTaskResponse
+     * @param ceTaskResponse String
      * @return value of status element in the CE API Response
-     * @throws org.json.simple.parser.ParseException
+     * @throws ParseException org.json.simple.parser.ParseException
      */
     private String getSonarTaskStatus(String ceTaskResponse) throws org.json.simple.parser.ParseException {
         JSONObject ceTaskResponseObject = (JSONObject) new org.json.simple.parser.JSONParser().parse(ceTaskResponse);
@@ -211,19 +190,35 @@ public class SonarBuilder {
     }
 
 
-    public CodeQualityCreateRequest getSonarMetrics() throws ParseException, IOException, URISyntaxException {
-        setSonarDetails(this.run);
+    public CodeQualityCreateRequest getSonarMetrics() throws ParseException {
+        String sonarServer = "";
+        double sonarVersion = 0.0;
+        String sonarProjectID = "";
+        String sonarBuildLink = "";
+        try {
+            sonarBuildLink = extractSonarProjectURLFromLogs(this.run);
+            if (!StringUtils.isEmpty(sonarBuildLink)) {
+                String sonarProjectName = getSonarProjectName(sonarBuildLink);
+                sonarServer = sonarBuildLink.substring(0, sonarBuildLink.indexOf("/dashboard/index/" + sonarProjectName));
+                sonarVersion = getSonarVersion(sonarServer);
+                sonarProjectID = getSonarProjectID(sonarProjectName, sonarVersion, sonarServer);
+            }
+        }
+        catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
+
         if (StringUtils.isEmpty(sonarServer) || StringUtils.isEmpty(sonarProjectID)) return null;
 
         if (sonarVersion >= 6.3) {
-            return getSonarMetricsPost6_3();
+            return getSonarMetricsPost6_3(sonarServer, sonarProjectID, sonarBuildLink);
         } else {
-            return getSonarMetricsPre6_3();
+            return getSonarMetricsPre6_3(sonarServer, sonarProjectID);
         }
     }
 
 
-    public CodeQualityCreateRequest getSonarMetricsPre6_3() throws ParseException {
+    private CodeQualityCreateRequest getSonarMetricsPre6_3(String sonarServer, String sonarProjectID) throws ParseException {
         String url = String.format(sonarServer + URL_METRIC_FRAGMENT_PRE_6_3, sonarProjectID, METRICS_PRE6_3);
         RestCall restCall = new RestCall(useProxy);
         //sonar 5.2+ changes - CE api
@@ -232,7 +227,7 @@ public class SonarBuilder {
             int responseCode = callResponse.getResponseCode();
             if (responseCode == HttpStatus.SC_OK) {
                 String resp = callResponse.getResponseString();
-                return buildQualityRequest_PRE6_3(resp);
+                return buildQualityRequest_PRE6_3(resp, sonarServer, sonarProjectID);
             }
             listener.getLogger().println("Hygieia Publisher: Sonar Connection Failed: " + url + ". Response: " + responseCode);
             return null;
@@ -243,8 +238,9 @@ public class SonarBuilder {
     }
 
 
-    private CodeQualityCreateRequest buildQualityRequest_PRE6_3(String json) throws ParseException {
+    private CodeQualityCreateRequest buildQualityRequest_PRE6_3(String json, String sonarServer, String sonarProjectID) throws ParseException {
         JSONArray jsonArray = (JSONArray) new JSONParser().parse(json);
+
         if (!jsonArray.isEmpty()) {
             JSONObject prjData = (JSONObject) jsonArray.get(0);
             CodeQualityCreateRequest codeQuality = new CodeQualityCreateRequest();
@@ -291,7 +287,7 @@ public class SonarBuilder {
     }
 
 
-    public CodeQualityCreateRequest getSonarMetricsPost6_3() throws ParseException {
+    private CodeQualityCreateRequest getSonarMetricsPost6_3(String sonarServer, String sonarProjectID, String sonarBuildLink) throws ParseException {
         String url = String.format(
                 sonarServer + URL_METRICS_FRAGMENT_POST6_3, sonarProjectID, METRICS_POST6_3);
         RestCall restCall = new RestCall(useProxy);
@@ -378,7 +374,7 @@ public class SonarBuilder {
      * is now processed asynchronously on server. Sonar provides an API called Compute Engine (CE)
      * whihc needs to be polled regularly to determine status of the analysis. URL of CE API can be taken from logs
      */
-    public String extractSonarProcessingStatusUrlFromLogs(Run run) throws IOException {
+    private String extractSonarProcessingStatusUrlFromLogs(Run run) throws IOException {
         return HygieiaUtils.getMatchFromLog(run, URL_PROCESSING_STATUS_FRAGMENT);
     }
 
@@ -390,15 +386,15 @@ public class SonarBuilder {
         } else return "";
     }
 
-    private String getSonarProjectID(String project, double sonarVersion) throws ParseException {
+    private String getSonarProjectID(String project, double sonarVersion, String sonarServer) throws ParseException {
         if (sonarVersion < 6.3) {
-            return getSonarProjectID_PRE6_3(project);
+            return getSonarProjectID_PRE6_3(project, sonarServer);
         } else {
-            return getSonarProjectID_POST6_3(project);
+            return getSonarProjectID_POST6_3(project, sonarServer);
         }
     }
 
-    private String getSonarProjectID_PRE6_3(String project) throws ParseException {
+    private String getSonarProjectID_PRE6_3(String project, String sonarServer) throws ParseException {
         String url = String.format(sonarServer + URL_PROJECT_ID_FRAGMENT_PRE6_3, project);
         RestCall restCall = new RestCall(useProxy);
         RestCall.RestCallResponse callResponse = restCall.makeRestCallGet(url);
@@ -413,7 +409,7 @@ public class SonarBuilder {
         return "";
     }
 
-    private String getSonarProjectID_POST6_3(String project) throws ParseException {
+    private String getSonarProjectID_POST6_3(String project, String sonarServer) throws ParseException {
         String url = String.format(sonarServer + URL_PROJECT_ID_FRAGMENT_POST6_3, project);
         RestCall restCall = new RestCall(useProxy);
         RestCall.RestCallResponse callResponse = restCall.makeRestCallGet(url);
@@ -458,10 +454,6 @@ public class SonarBuilder {
         remainingDuration = remainingDuration - (hours * 60);
         int minutes = remainingDuration.intValue();
 
-        return format(days, hours, minutes, isNegative);
-    }
-
-    private static String format(int days, int hours, int minutes, boolean isNegative) {
         StringBuilder message = new StringBuilder();
         if (days > 0) {
             message.append(String.format(DAYS_FORMAT, isNegative ? (-1 * days) : days));
@@ -477,21 +469,19 @@ public class SonarBuilder {
         return message.toString();
     }
 
-    private static boolean displayHours(int days, int hours) {
+    private boolean displayHours(int days, int hours) {
         return hours > 0 && days < 10;
     }
 
-    private static boolean displayMinutes(int days, int hours, int minutes) {
+    private boolean displayMinutes(int days, int hours, int minutes) {
         return minutes > 0 && hours < 10 && days == 0;
     }
 
-    private static void addSpaceIfNeeded(StringBuilder message) {
+    private void addSpaceIfNeeded(StringBuilder message) {
         if (message.length() > 0) {
             message.append(" ");
         }
     }
-
-
 
     private long timestamp(JSONObject json, String key) {
         Object obj = json.get(key);

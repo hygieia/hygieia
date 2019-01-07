@@ -274,15 +274,14 @@ public class GitHubCommitV3 extends GitHubV3 {
         if (existingCommit != null) {
             commit.setId(existingCommit.getId());
             commit.setCollectorItemId(existingCommit.getCollectorItemId());
+            CollectorItem collectorItem = collectorService.getCollectorItem(existingCommit.getCollectorItemId());
+            collectorItem.setEnabled(true);
+            collectorItem.setPushed(true);
+            collectorItemRepository.save(collectorItem);
         } else {
-            CollectorItem collectorItem = null;
             GitHubParsed gitHubParsed = new GitHubParsed(commit.getScmUrl());
-            try {
-                collectorItem = getCollectorItem(gitHubParsed.getUrl(), commit.getScmBranch());
-                commit.setCollectorItemId(collectorItem.getId());
-            } catch (HygieiaException e) {
-                LOG.error(e);
-            }
+            CollectorItem collectorItem = getCollectorItem(gitHubParsed.getUrl(), commit.getScmBranch());
+            commit.setCollectorItemId(collectorItem.getId());
         }
     }
 

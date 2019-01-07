@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.api.domain;
 
 import com.atlassian.jira.rest.client.api.domain.BasicIssue;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,6 +9,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * This class will get the details from a Test Run
@@ -37,7 +39,8 @@ public class TestRun extends BasicIssue implements Versionable<TestRun> {
         super(self,key,id);
     }
 
-    public TestRun(URI self, String key, Long id, Status status, Date startedOn, Date finishedOn, String assignee, String executedBy, Iterable<TestStep>steps) {
+    public TestRun(URI self, String key, Long id, Status status, Date startedOn, Date finishedOn, String assignee,
+                   String executedBy, Iterable<TestStep>steps) {
         super(self, key, id);
         this.status=status;
         this.assignee=assignee;
@@ -54,30 +57,29 @@ public class TestRun extends BasicIssue implements Versionable<TestRun> {
 
     // TODO: ADD CLONE TO ARRAYS USED IN THE TEST RUN
     public final TestRun cloneTestRun() throws CloneNotSupportedException {
-        TestRun myTestRun= null;
-            myTestRun = new TestRun(super.getSelf(),super.getKey(),super.getId());
-            if(this.executedBy!=null)
-                myTestRun.setExecutedBy(this.executedBy);
-            if(this.comment!=null){
-                myTestRun.setComment(this.comment.cloneComment());
-            }
-            if(this.status!=null){
-            myTestRun.setStatus(this.status);
-            }
-            if(this.assignee!=null)
-                myTestRun.setAssignee(this.assignee);
-            if(this.startedOn!=null)
-                myTestRun.setStartedOn((Date) this.startedOn.clone());
-            if(this.finishedOn!=null)
-                myTestRun.setFinishedOn((Date) this.finishedOn.clone());
-            if(this.defects!=null){
-                List<Defect> cloneDefects=new ArrayList<Defect>();
-                for(Defect def:this.defects){
-                    cloneDefects.add(def.cloneDefect());
-                }
-                myTestRun.setDefects(cloneDefects);
-            }
-        return myTestRun;
+
+        TestRun testRun = new TestRun(super.getSelf(),super.getKey(),super.getId());
+        List<Defect> cloneDefects=new ArrayList<Defect>();
+
+        Optional<String> executedByOpt = Optional.ofNullable(this.executedBy);
+        Optional<Comment> commentOpt = Optional.ofNullable(this.comment);
+        Optional<Status> statusOpt = Optional.ofNullable(this.status);
+        Optional<String> assigneeOpt = Optional.ofNullable(this.assignee);
+        Optional<Date> startedOnOpt = Optional.ofNullable(this.startedOn);
+        Optional<Date> finishedOnOpt = Optional.ofNullable(this.finishedOn);
+        Optional<Iterable<Defect>> defectsOpt = Optional.ofNullable(this.defects);
+
+        executedByOpt.ifPresent(executedBy -> testRun.setExecutedBy(executedBy));
+        commentOpt.ifPresent(comment -> testRun.setComment(comment));
+        statusOpt.ifPresent(status -> testRun.setStatus(status));
+        assigneeOpt.ifPresent(assignee -> testRun.setAssignee(assignee));
+        startedOnOpt.ifPresent(startedOn -> testRun.setStartedOn(startedOn));
+        finishedOnOpt.ifPresent(finishedOn -> testRun.setFinishedOn(finishedOn));
+        defectsOpt.ifPresent((Iterable<Defect> defects) -> defects.forEach(defect -> cloneDefects.add(defect.cloneDefect())));
+        if (!CollectionUtils.isEmpty(cloneDefects)){
+            testRun.setDefects(cloneDefects);
+        }
+        return testRun;
     }
 
     public Status getStatus() {
@@ -212,7 +214,7 @@ public class TestRun extends BasicIssue implements Versionable<TestRun> {
     }
 
 
-    public enum Status{TODO,EXECUTING,ABORTED,FAIL,PASS}
+    public enum Status{TODO,EXECUTING,ABORTED,FAIL,PASS,SKIP}
 
 
 }

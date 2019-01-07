@@ -22,8 +22,6 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
 import javax.inject.Inject;
-import java.io.IOException;
-import java.net.URISyntaxException;
 
 
 public class HygieiaSonarPublishStep extends AbstractStepImpl {
@@ -135,7 +133,7 @@ public class HygieiaSonarPublishStep extends AbstractStepImpl {
                 } else {
                     listener.getLogger().println("Hygieia: Published Sonar Result. Nothing to publish");
                 }
-            } catch (IOException | URISyntaxException | ParseException e) {
+            } catch (ParseException e) {
                 listener.getLogger().println("Hygieia: Publishing error" + '\n' + e.getMessage());
             }
 

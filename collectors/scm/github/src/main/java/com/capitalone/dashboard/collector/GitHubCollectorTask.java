@@ -30,10 +30,12 @@ import org.springframework.web.client.RestClientException;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -147,14 +149,13 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         Set<ObjectId> gitID = new HashSet<>();
         gitID.add(collector.getId());
         for (GitHubRepo repo : gitHubRepoRepository.findByCollectorIdIn(gitID)) {
-            if (repo != null) {
-                repo.setEnabled(uniqueIDs.contains(repo.getId()));
-                repoList.add(repo);
-            }
+            if (repo.isPushed()) {continue;}
+
+            repo.setEnabled(uniqueIDs.contains(repo.getId()));
+            repoList.add(repo);
         }
         gitHubRepoRepository.save(repoList);
     }
-
 
     @Override
     public void collect(Collector collector) {
@@ -281,7 +282,17 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
     }
 
     private List<GitHubRepo> enabledRepos(Collector collector) {
-        return gitHubRepoRepository.findEnabledGitHubRepos(collector.getId());
+        List<GitHubRepo> repos = gitHubRepoRepository.findEnabledGitHubRepos(collector.getId());
+
+        List<GitHubRepo> pulledRepos
+                = Optional.ofNullable(repos)
+                .orElseGet(Collections::emptyList).stream()
+                .filter(pulledRepo -> !pulledRepo.isPushed())
+                .collect(Collectors.toList());
+
+        if (CollectionUtils.isEmpty(pulledRepos)) { return new ArrayList<>(); }
+
+        return pulledRepos;
     }
 
 
