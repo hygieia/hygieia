@@ -109,9 +109,9 @@ public class HygieiaSonarPublishStep extends AbstractStepImpl {
             HygieiaService hygieiaService = getHygieiaService(hygieiaDesc.getHygieiaAPIUrl(), hygieiaDesc.getHygieiaToken(),
                     hygieiaDesc.getHygieiaJenkinsName(), hygieiaDesc.isUseProxy());
 
-            BuildBuilder buildBuilder = new BuildBuilder(run, hygieiaDesc.getHygieiaJenkinsName(), listener, BuildStatus.Success, false);
-            HygieiaResponse buildResponse = hygieiaService.publishBuildData(buildBuilder.getBuildData());
-
+            HygieiaResponse buildResponse = hygieiaService.publishBuildData(new BuildBuilder()
+                    .createBuildRequestFromRun(run, hygieiaDesc.getHygieiaJenkinsName(),
+                            listener, BuildStatus.Success, false));
 
             if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
                 listener.getLogger().println("Hygieia: Published Build Data For Sonar Publishing. " + buildResponse.toString());
@@ -120,9 +120,8 @@ public class HygieiaSonarPublishStep extends AbstractStepImpl {
             }
 
             try {
-                SonarBuilder sonarBuilder = new SonarBuilder(run, listener, hygieiaDesc.getHygieiaJenkinsName(), step.getCeQueryIntervalInSeconds(),
+                CodeQualityCreateRequest request = SonarBuilder.getInstance().getSonarMetrics(run, listener, hygieiaDesc.getHygieiaJenkinsName(), step.getCeQueryIntervalInSeconds(),
                         step.getCeQueryMaxAttempts(), buildResponse.getResponseValue(), hygieiaDesc.isUseProxy());
-                CodeQualityCreateRequest request = sonarBuilder.getSonarMetrics();
                 if (request != null) {
                     HygieiaResponse sonarResponse = hygieiaService.publishSonarResults(request);
                     if (sonarResponse.getResponseCode() == HttpStatus.SC_CREATED) {
