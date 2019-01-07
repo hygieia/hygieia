@@ -1,11 +1,15 @@
 package hygieia.builder;
 
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.BuildStatus;
+import com.capitalone.dashboard.model.TestCapability;
+import com.capitalone.dashboard.model.TestCaseStatus;
+import com.capitalone.dashboard.model.TestResult;
+import com.capitalone.dashboard.model.TestSuite;
+import com.capitalone.dashboard.model.TestSuiteType;
 import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.TestDataCreateRequest;
 import hudson.EnvVars;
 import hudson.FilePath;
-import hudson.model.AbstractBuild;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hygieia.transformer.CucumberJsonToTestResultTransformer;
@@ -39,22 +43,6 @@ public class CucumberTestBuilder {
     private String applicationName;
     private String environmentName;
     private BuildDataCreateRequest buildDataCreateRequest;
-
-    public CucumberTestBuilder(AbstractBuild build, TaskListener listener, String applicationName, String environmentName, String testType, String filePattern, String directory, String jenkinsName, String buildId) {
-        run = build;
-        BuildBuilder buildBuilder = new BuildBuilder(build,jenkinsName,listener,true,false);
-        this.buildDataCreateRequest = buildBuilder.getBuildData();
-        this.buildId = HygieiaUtils.getBuildCollectionId(buildId);
-        this.listener = listener;
-        this.applicationName = applicationName.trim();
-        this.environmentName = environmentName.trim();
-        this.testType = testType;
-        this.filePattern = filePattern.trim();
-        this.jenkinsName = jenkinsName.trim();
-        rootDirectory = build.getWorkspace().withSuffix(directory);
-        buildTestResults();
-    }
-
 
     public CucumberTestBuilder(Run run, TaskListener listener, BuildStatus buildStatus, FilePath filePath, String applicationName, String environmentName, String testType, String filePattern, String directory, String jenkinsName, String buildId) {
         this.run = run;
