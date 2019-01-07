@@ -39,7 +39,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -256,7 +255,7 @@ public class BuildServiceImpl implements BuildService {
         build.setCollectorItemId(collectorItem.getId());
         build.setSourceChangeSet(request.getSourceChangeSet());
         build.setTimestamp(System.currentTimeMillis());
-        Set<RepoBranch> repoBranches = new HashSet<>();
+        Set<RepoBranch> repoBranches = Sets.newHashSet();
         repoBranches.addAll(build.getCodeRepos());
         repoBranches.addAll(request.getCodeRepos());
         /*
@@ -265,22 +264,20 @@ public class BuildServiceImpl implements BuildService {
         boolean  filterLibraryRepos = settings.getWebHook() != null && settings.getWebHook().getJenkinsBuild() != null
                 && settings.getWebHook().getJenkinsBuild().isEnableFilterLibraryRepos();
         if(filterLibraryRepos && CollectionUtils.isNotEmpty(repoBranches)) {
-            for (RepoBranch repoBranch : repoBranches) {
+            Set<RepoBranch> copyRepoBranches = Sets.newHashSet(repoBranches);
+            for (RepoBranch repoBranch : copyRepoBranches) {
                 final String codeRepo = StringUtils.lowerCase(repoBranch.getUrl());
                 CodeReposBuilds entity = codeReposBuildsRepository.findByCodeRepo(codeRepo);
                 if(entity == null) {
                     entity = new CodeReposBuilds();
                 }
-                Set<ObjectId> buildCollectorItems = Sets.newHashSet(entity.getBuildCollectorItems());
                 int threshold = settings.getWebHook().getJenkinsBuild().getExcludeLibraryRepoThreshold();
-                if (CollectionUtils.size(buildCollectorItems) > threshold) {
+                if (CollectionUtils.size(entity.getBuildCollectorItems()) > threshold) {
                     // remove the repoBranch from Build
                     repoBranches.remove(repoBranch);
                 }
                 entity.setCodeRepo(codeRepo);
-                buildCollectorItems.add(collectorItem.getId());
-                entity.getBuildCollectorItems().clear();
-                entity.getBuildCollectorItems().addAll(buildCollectorItems);
+                entity.getBuildCollectorItems().add(collectorItem.getId());
                 entity.setTimestamp(System.currentTimeMillis());
                 codeReposBuildsRepository.save(entity);
             }

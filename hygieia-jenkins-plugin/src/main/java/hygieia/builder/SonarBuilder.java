@@ -73,18 +73,30 @@ public class SonarBuilder {
     private static final String METRIC = "metric";
     private static final int HOURS_IN_DAY = 8;
 
+    private Run<?, ?> run;
+    private TaskListener listener;
+    private String jenkinsName;
+    private int ceQueryIntervalInSeconds;
+    private int ceQueryMaxAttempts;
+    private String buildId;
+    private boolean useProxy;
+
 
     private static final int DEFAULT_QUERY_INTERVAL = 10;
     private static final int DEFAULT_QUERY_MAX_ATTEMPTS = 30;
 
-    private SonarBuilder() {
+
+    public SonarBuilder(Run<?, ?> run, TaskListener listener, String jenkinsName, String ceQueryIntervalInSeconds, String ceQueryMaxAttempts, String buildId, boolean useProxy)  {
+        this.run = run;
+        this.listener = listener;
+        this.jenkinsName = jenkinsName;
+        this.ceQueryIntervalInSeconds = HygieiaUtils.getSafePositiveInteger(ceQueryIntervalInSeconds, DEFAULT_QUERY_INTERVAL);
+        this.ceQueryMaxAttempts = HygieiaUtils.getSafePositiveInteger(ceQueryMaxAttempts, DEFAULT_QUERY_MAX_ATTEMPTS);
+        this.buildId = HygieiaUtils.getBuildCollectionId(buildId);
+        this.useProxy = useProxy;
     }
 
-    public static final SonarBuilder getInstance() {
-        return new SonarBuilder();
-    }
-
-    private double getSonarVersion(TaskListener listener, String sonarServer, boolean useProxy) {
+    private double getSonarVersion(String sonarServer) {
         RestCall restCall = new RestCall(useProxy);
         String url = sonarServer + URL_VERSION;
         RestCall.RestCallResponse callResponse = restCall.makeRestCallGet(url);
@@ -109,13 +121,11 @@ public class SonarBuilder {
      * Else returns false
      * @throws ParseException ParseException
      */
-    private boolean sonarProcessingComplete(Run<?, ?> run, TaskListener listener, RestCall restCall, String ceQueryIntervalInSecondsString, String ceQueryMaxAttemptsString) throws ParseException {
+    private boolean sonarProcessingComplete(RestCall restCall) throws ParseException {
         // Sonar 5.2+ check if the sonar ce api url exists. If not,
         // then the project is using old sonar version and hence
         // request to Compute Engine api is not required.
         String sonarCEAPIUrl = "";
-        int ceQueryIntervalInSeconds = HygieiaUtils.getSafePositiveInteger(ceQueryIntervalInSecondsString, DEFAULT_QUERY_INTERVAL);
-        int ceQueryMaxAttempts = HygieiaUtils.getSafePositiveInteger(ceQueryMaxAttemptsString, DEFAULT_QUERY_MAX_ATTEMPTS);
         try {
             sonarCEAPIUrl = extractSonarProcessingStatusUrlFromLogs(run);
         } catch (IOException e) {
@@ -130,7 +140,7 @@ public class SonarBuilder {
         // status of sonar analysis. After every attempt if CE API is not yet
         // ready, sleep for configured interval period.
         // Return true as soon as the status changes to SUCCESS
-        for (int i = 0; i < ceQueryMaxAttempts; i++) {
+        for (int i = 0; i < this.ceQueryMaxAttempts; i++) {
             // get the status of sonar analysis using Sonar CE API
             RestCall.RestCallResponse ceAPIResponse = restCall.makeRestCallGet(sonarCEAPIUrl);
             int responseCodeCEAPI = ceAPIResponse.getResponseCode();
@@ -142,7 +152,7 @@ public class SonarBuilder {
                         // Wait the configured interval then retry
                         listener.getLogger().println("Waiting for report processing to complete...");
                         try {
-                            Thread.sleep(ceQueryIntervalInSeconds * 1000);
+                            Thread.sleep(this.ceQueryIntervalInSeconds * 1000);
                         } catch (InterruptedException ie) {
                             listener.getLogger().println("Sonar report processing errored while getting the status...");
                             return false;
@@ -180,18 +190,18 @@ public class SonarBuilder {
     }
 
 
-    public CodeQualityCreateRequest getSonarMetrics(Run<?, ?> run, TaskListener listener, String jenkinsName, String ceQueryIntervalInSeconds, String ceQueryMaxAttempts, String buildId, boolean useProxy) throws ParseException {
+    public CodeQualityCreateRequest getSonarMetrics() throws ParseException {
         String sonarServer = "";
         double sonarVersion = 0.0;
         String sonarProjectID = "";
         String sonarBuildLink = "";
         try {
-            sonarBuildLink = extractSonarProjectURLFromLogs(run);
+            sonarBuildLink = extractSonarProjectURLFromLogs(this.run);
             if (!StringUtils.isEmpty(sonarBuildLink)) {
                 String sonarProjectName = getSonarProjectName(sonarBuildLink);
                 sonarServer = sonarBuildLink.substring(0, sonarBuildLink.indexOf("/dashboard/index/" + sonarProjectName));
-                sonarVersion = getSonarVersion(listener, sonarServer, useProxy);
-                sonarProjectID = getSonarProjectID(sonarProjectName, sonarVersion, sonarServer, useProxy);
+                sonarVersion = getSonarVersion(sonarServer);
+                sonarProjectID = getSonarProjectID(sonarProjectName, sonarVersion, sonarServer);
             }
         }
         catch (IOException | URISyntaxException e) {
@@ -201,23 +211,23 @@ public class SonarBuilder {
         if (StringUtils.isEmpty(sonarServer) || StringUtils.isEmpty(sonarProjectID)) return null;
 
         if (sonarVersion >= 6.3) {
-            return getSonarMetricsPost6_3(sonarServer, sonarProjectID, sonarBuildLink,  useProxy, jenkinsName, buildId);
+            return getSonarMetricsPost6_3(sonarServer, sonarProjectID, sonarBuildLink);
         } else {
-            return getSonarMetricsPre6_3(run, listener, sonarServer, sonarProjectID, useProxy, jenkinsName, buildId, ceQueryIntervalInSeconds, ceQueryMaxAttempts);
+            return getSonarMetricsPre6_3(sonarServer, sonarProjectID);
         }
     }
 
 
-    private CodeQualityCreateRequest getSonarMetricsPre6_3(Run<?, ?> run, TaskListener listener, String sonarServer, String sonarProjectID, boolean useProxy, String jenkinsName, String buildId, String ceQueryIntervalInSeconds, String ceQueryMaxAttempts) throws ParseException {
+    private CodeQualityCreateRequest getSonarMetricsPre6_3(String sonarServer, String sonarProjectID) throws ParseException {
         String url = String.format(sonarServer + URL_METRIC_FRAGMENT_PRE_6_3, sonarProjectID, METRICS_PRE6_3);
         RestCall restCall = new RestCall(useProxy);
         //sonar 5.2+ changes - CE api
-        if (sonarProcessingComplete(run, listener, restCall, ceQueryIntervalInSeconds, ceQueryMaxAttempts)) {
+        if (sonarProcessingComplete(restCall)) {
             RestCall.RestCallResponse callResponse = restCall.makeRestCallGet(url);
             int responseCode = callResponse.getResponseCode();
             if (responseCode == HttpStatus.SC_OK) {
                 String resp = callResponse.getResponseString();
-                return buildQualityRequest_PRE6_3(resp, sonarServer, sonarProjectID, jenkinsName, buildId);
+                return buildQualityRequest_PRE6_3(resp, sonarServer, sonarProjectID);
             }
             listener.getLogger().println("Hygieia Publisher: Sonar Connection Failed: " + url + ". Response: " + responseCode);
             return null;
@@ -228,7 +238,7 @@ public class SonarBuilder {
     }
 
 
-    private CodeQualityCreateRequest buildQualityRequest_PRE6_3(String json, String sonarServer, String sonarProjectID, String jenkinsName, String buildId) throws ParseException {
+    private CodeQualityCreateRequest buildQualityRequest_PRE6_3(String json, String sonarServer, String sonarProjectID) throws ParseException {
         JSONArray jsonArray = (JSONArray) new JSONParser().parse(json);
 
         if (!jsonArray.isEmpty()) {
@@ -277,7 +287,7 @@ public class SonarBuilder {
     }
 
 
-    private CodeQualityCreateRequest getSonarMetricsPost6_3(String sonarServer, String sonarProjectID, String sonarBuildLink, boolean useProxy, String jenkinsName, String buildId) throws ParseException {
+    private CodeQualityCreateRequest getSonarMetricsPost6_3(String sonarServer, String sonarProjectID, String sonarBuildLink) throws ParseException {
         String url = String.format(
                 sonarServer + URL_METRICS_FRAGMENT_POST6_3, sonarProjectID, METRICS_POST6_3);
         RestCall restCall = new RestCall(useProxy);
@@ -376,15 +386,15 @@ public class SonarBuilder {
         } else return "";
     }
 
-    private String getSonarProjectID(String project, double sonarVersion, String sonarServer, boolean useProxy) throws ParseException {
+    private String getSonarProjectID(String project, double sonarVersion, String sonarServer) throws ParseException {
         if (sonarVersion < 6.3) {
-            return getSonarProjectID_PRE6_3(project, sonarServer, useProxy);
+            return getSonarProjectID_PRE6_3(project, sonarServer);
         } else {
-            return getSonarProjectID_POST6_3(project, sonarServer, useProxy);
+            return getSonarProjectID_POST6_3(project, sonarServer);
         }
     }
 
-    private String getSonarProjectID_PRE6_3(String project, String sonarServer, boolean useProxy) throws ParseException {
+    private String getSonarProjectID_PRE6_3(String project, String sonarServer) throws ParseException {
         String url = String.format(sonarServer + URL_PROJECT_ID_FRAGMENT_PRE6_3, project);
         RestCall restCall = new RestCall(useProxy);
         RestCall.RestCallResponse callResponse = restCall.makeRestCallGet(url);
@@ -399,7 +409,7 @@ public class SonarBuilder {
         return "";
     }
 
-    private String getSonarProjectID_POST6_3(String project, String sonarServer, boolean useProxy) throws ParseException {
+    private String getSonarProjectID_POST6_3(String project, String sonarServer) throws ParseException {
         String url = String.format(sonarServer + URL_PROJECT_ID_FRAGMENT_POST6_3, project);
         RestCall restCall = new RestCall(useProxy);
         RestCall.RestCallResponse callResponse = restCall.makeRestCallGet(url);
