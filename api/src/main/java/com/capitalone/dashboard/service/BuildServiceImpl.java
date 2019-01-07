@@ -39,7 +39,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -256,7 +255,7 @@ public class BuildServiceImpl implements BuildService {
         build.setCollectorItemId(collectorItem.getId());
         build.setSourceChangeSet(request.getSourceChangeSet());
         build.setTimestamp(System.currentTimeMillis());
-        Set<RepoBranch> repoBranches = new HashSet<>();
+        Set<RepoBranch> repoBranches = Sets.newConcurrentHashSet();
         repoBranches.addAll(build.getCodeRepos());
         repoBranches.addAll(request.getCodeRepos());
         /*
@@ -271,7 +270,7 @@ public class BuildServiceImpl implements BuildService {
                 if(entity == null) {
                     entity = new CodeReposBuilds();
                 }
-                Set<ObjectId> buildCollectorItems = Sets.newHashSet(entity.getBuildCollectorItems());
+                Set<ObjectId> buildCollectorItems = Sets.newConcurrentHashSet(entity.getBuildCollectorItems());
                 int threshold = settings.getWebHook().getJenkinsBuild().getExcludeLibraryRepoThreshold();
                 if (CollectionUtils.size(buildCollectorItems) > threshold) {
                     // remove the repoBranch from Build
