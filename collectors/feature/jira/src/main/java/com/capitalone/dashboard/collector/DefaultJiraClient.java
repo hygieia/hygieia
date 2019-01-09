@@ -140,6 +140,11 @@ public class DefaultJiraClient implements JiraClient {
 
                 IssueResult temp = getFeaturesFromQueryURL(url, epicMap);
 
+                //For issues collected in board mode, overwrite the team information
+                temp.getFeatures().forEach(f -> {
+                    f.setsTeamID(board.getTeamId());
+                    f.setsTeamName(board.getName());
+                });
                 result.addAll(temp.getFeatures());
                 isLast = temp.getTotal() == result.size() || CollectionUtils.isEmpty(temp.getFeatures());
                 startAt += temp.getPageSize() + 1;
