@@ -26,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestOperations;
 
 import java.nio.charset.StandardCharsets;
@@ -59,23 +60,25 @@ public class DefaultJiraClient implements JiraClient {
     private static final String TEMPO_TEAMS_REST_SUFFIX = "rest/tempo-teams/1/team";
     private static final String BOARD_TEAMS_REST_SUFFIX = "rest/agile/1.0/board";
     private static final String PROJECT_REST_SUFFIX = "rest/api/2/project";
-    private static final String ISSUE_BY_PROJECT_REST_SUFFIX_BY_DATE = "rest/api/2/search?jql=project=%s and issueType in ('%s') and updatedDate>='%s'&startAt=%s";
-    private static final String ISSUE_BY_BOARD_REST_SUFFIX_BY_DATE = "rest/agile/1.0/board/%s/issue?jql=issueType in ('%s') and updatedDate>='%s'&startAt=%s";
+    private static final String ISSUE_BY_PROJECT_REST_SUFFIX_BY_DATE = "rest/api/2/search?jql=project=%s and issueType in ('%s') and updatedDate>='%s'&fields=%s&startAt=%s";
+    private static final String ISSUE_BY_BOARD_REST_SUFFIX_BY_DATE = "rest/agile/1.0/board/%s/issue?jql=issueType in ('%s') and updatedDate>='%s'&fields=%s&startAt=%s";
     private static final String EPIC_REST_SUFFIX = "rest/agile/1.0/issue/%s";
     private static final String SPRINT_REST_SUFFIX = "rest/agile/1.0/sprint/%s";
 
 
 
-    private static final String ISSUE_FIELDS = "";
+    private static final String STATIC_ISSUE_FIELDS = "id,key,issuetype,status,summary,updated,project,issuelinks,assignee,sprint,aggregatetimeoriginalestimate,timeoriginalestimate";
 
     private static final int JIRA_BOARDS_PAGING = 50;
     private final FeatureSettings featureSettings;
     private final RestOperations restOperations;
+    private static String issueFields;
 
     @Autowired
     public DefaultJiraClient(FeatureSettings featureSettings, Supplier<RestOperations> restOperationsSupplier) {
         this.featureSettings = featureSettings;
         this.restOperations = restOperationsSupplier.get();
+        issueFields = STATIC_ISSUE_FIELDS + ',' + featureSettings.getJiraTeamFieldName() + ',' + featureSettings.getJiraSprintDataFieldName() + ',' +featureSettings.getJiraEpicIdFieldName();
     }
 
 
@@ -190,7 +193,7 @@ public class DefaultJiraClient implements JiraClient {
             try {
                 String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/")
                         + ISSUE_BY_BOARD_REST_SUFFIX_BY_DATE;
-                url = String.format(url, board.getTeamId(), issueTypes, lookbackDate, startAt);
+                url = String.format(url, board.getTeamId(), issueTypes, lookbackDate, issueFields,startAt);
 
                 IssueResult temp = getFeaturesFromQueryURL(url, epicMap);
 
@@ -236,7 +239,7 @@ public class DefaultJiraClient implements JiraClient {
             try {
                 String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/")
                         + ISSUE_BY_PROJECT_REST_SUFFIX_BY_DATE;
-                url = String.format(url, project.getpId(), issueTypes, lookbackDate, startAt);
+                url = String.format(url, project.getpId(), issueTypes, lookbackDate, issueFields, startAt);
 
                 IssueResult temp = getFeaturesFromQueryURL(url, epicMap);
 
@@ -282,7 +285,7 @@ public class DefaultJiraClient implements JiraClient {
                     result.getFeatures().add(feature);
                 });
             }
-        } catch (HttpClientErrorException he) {
+        } catch (HttpClientErrorException | HttpServerErrorException he) {
             LOGGER.error("ERROR collecting issues. Url = " + url, he);
         }
         return result;

@@ -115,8 +115,8 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 
         try {
             long startTime = System.currentTimeMillis();
-            updateTeamInformation(collector);
-            updateProjectInformation(collector);
+//            updateTeamInformation(collector);
+//            updateProjectInformation(collector);
             updateStoryInformation(collector);
             log("Finished", startTime);
         } catch (Exception e) {
