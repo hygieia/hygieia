@@ -25,6 +25,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestOperations;
 
 import java.nio.charset.StandardCharsets;
@@ -54,6 +55,7 @@ import static com.capitalone.dashboard.utils.Utilities.getString;
 @Component
 public class DefaultJiraClient implements JiraClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultJiraClient.class);
+
     private static final String TEMPO_TEAMS_REST_SUFFIX = "rest/tempo-teams/1/team";
     private static final String BOARD_TEAMS_REST_SUFFIX = "rest/agile/1.0/board";
     private static final String PROJECT_REST_SUFFIX = "rest/api/2/project";
@@ -62,6 +64,9 @@ public class DefaultJiraClient implements JiraClient {
     private static final String EPIC_REST_SUFFIX = "rest/agile/1.0/issue/%s";
     private static final String SPRINT_REST_SUFFIX = "rest/agile/1.0/sprint/%s";
 
+
+
+    private static final String ISSUE_FIELDS = "";
 
     private static final int JIRA_BOARDS_PAGING = 50;
     private final FeatureSettings featureSettings;
@@ -73,6 +78,55 @@ public class DefaultJiraClient implements JiraClient {
         this.restOperations = restOperationsSupplier.get();
     }
 
+
+    /**
+     * Get all the Scope (Project in Jira terms)
+     *
+     * @return List of Scope
+     */
+    @Override
+    public List<Scope> getProjects() {
+        List<Scope> result = new ArrayList<>();
+
+        try {
+            String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/")
+                    + PROJECT_REST_SUFFIX;
+            ResponseEntity<String> responseEntity = makeRestCall(url);
+            String responseBody = responseEntity.getBody();
+
+            JSONParser parser = new JSONParser();
+
+            JSONArray projects = (JSONArray) parser.parse(responseBody);
+
+            if (!CollectionUtils.isEmpty(projects)) {
+                for (Object obj : projects) {
+                    JSONObject jo = (JSONObject) obj;
+                    String pId = getString(jo, "id");
+                    String pName = getString(jo, "name").trim();
+                    if (!StringUtils.isEmpty(pName)) {
+                        Scope scope = new Scope();
+                        scope.setpId(pId);
+                        scope.setName(pName);
+                        scope.setProjectPath(pName);
+                        scope.setBeginDate("");
+                        // endDate - does not exist for jira
+                        scope.setEndDate("");
+                        // changeDate - does not exist for jira
+                        scope.setChangeDate("");
+                        // assetState - does not exist for jira
+                        // isDeleted - does not exist for jira
+                        scope.setIsDeleted("False");
+                        result.add(scope);
+                    }
+                }
+            }
+        } catch (ParseException pe) {
+            LOGGER.error("Parser exception when parsing teams", pe);
+        } catch (HygieiaException e) {
+            LOGGER.error("Error in calling JIRA API", e);
+        }
+        return result;
+    }
 
     /**
      * Get all the teams using Jira Rest API
@@ -157,36 +211,6 @@ public class DefaultJiraClient implements JiraClient {
         return result;
     }
 
-
-    private IssueResult getFeaturesFromQueryURL(String url, Map<String, Epic> epicMap) throws HygieiaException, ParseException {
-        JSONParser parser = new JSONParser();
-        ResponseEntity<String> responseEntity = makeRestCall(url);
-        String responseBody = responseEntity.getBody();
-        JSONObject bodyObject = (JSONObject) parser.parse(responseBody);
-        IssueResult result = new IssueResult();
-        if (bodyObject != null) {
-            long pageSize = getLong(bodyObject, "maxResults");
-            long total = getLong(bodyObject, "total");
-            result.setPageSize(pageSize);
-            result.setTotal(total);
-            JSONArray issueArray = (JSONArray) bodyObject.get("issues");
-            if (CollectionUtils.isEmpty(issueArray)) {
-                return result;
-            }
-
-            issueArray.forEach(issue -> {
-                Feature feature = getFeature((JSONObject) issue);
-                String epicId = feature.getsEpicID();
-                if (!StringUtils.isEmpty(epicId)) {
-                    Epic epic = epicMap.containsKey(epicId) ? epicMap.get(epicId) : getEpic(epicId);
-                    processEpicData(feature, epic);
-                }
-                result.getFeatures().add(feature);
-            });
-        }
-        return result;
-    }
-
     /**
      * Get list of Features (Issues in Jira terms) given a project.
      *
@@ -227,6 +251,43 @@ public class DefaultJiraClient implements JiraClient {
         }
         return result;
     }
+
+
+
+    private IssueResult getFeaturesFromQueryURL(String url, Map<String, Epic> epicMap) throws HygieiaException, ParseException {
+        JSONParser parser = new JSONParser();
+        IssueResult result = new IssueResult();
+        try {
+            ResponseEntity<String> responseEntity = makeRestCall(url);
+            String responseBody = responseEntity.getBody();
+            JSONObject bodyObject = (JSONObject) parser.parse(responseBody);
+
+            if (bodyObject != null) {
+                long pageSize = getLong(bodyObject, "maxResults");
+                long total = getLong(bodyObject, "total");
+                result.setPageSize(pageSize);
+                result.setTotal(total);
+                JSONArray issueArray = (JSONArray) bodyObject.get("issues");
+                if (CollectionUtils.isEmpty(issueArray)) {
+                    return result;
+                }
+
+                issueArray.forEach(issue -> {
+                    Feature feature = getFeature((JSONObject) issue);
+                    String epicId = feature.getsEpicID();
+                    if (!StringUtils.isEmpty(epicId)) {
+                        Epic epic = epicMap.containsKey(epicId) ? epicMap.get(epicId) : getEpic(epicId);
+                        processEpicData(feature, epic);
+                    }
+                    result.getFeatures().add(feature);
+                });
+            }
+        } catch (HttpClientErrorException he) {
+            LOGGER.error("ERROR collecting issues. Url = " + url, he);
+        }
+        return result;
+    }
+
 
     /**
      * Construct Feature object
@@ -421,7 +482,7 @@ public class DefaultJiraClient implements JiraClient {
      * @param feature
      * @param assignee
      */
-    private void processAssigneeData(Feature feature, JSONObject assignee) {
+    private static void processAssigneeData(Feature feature, JSONObject assignee) {
         if (assignee == null) {
             feature.setsOwnersUsername(Collections.EMPTY_LIST);
             feature.setsOwnersShortName(Collections.EMPTY_LIST);
@@ -490,55 +551,6 @@ public class DefaultJiraClient implements JiraClient {
             jiraIssueLinks.add(jiraIssueLink);
         });
         return jiraIssueLinks;
-    }
-
-    /**
-     * Get all the Scope (Project in Jira terms)
-     *
-     * @return List of Scope
-     */
-    @Override
-    public List<Scope> getProjects() {
-        List<Scope> result = new ArrayList<>();
-
-        try {
-            String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/")
-                    + PROJECT_REST_SUFFIX;
-            ResponseEntity<String> responseEntity = makeRestCall(url);
-            String responseBody = responseEntity.getBody();
-
-            JSONParser parser = new JSONParser();
-
-            JSONArray projects = (JSONArray) parser.parse(responseBody);
-
-            if (!CollectionUtils.isEmpty(projects)) {
-                for (Object obj : projects) {
-                    JSONObject jo = (JSONObject) obj;
-                    String pId = getString(jo, "id");
-                    String pName = getString(jo, "name").trim();
-                    if (!StringUtils.isEmpty(pName)) {
-                        Scope scope = new Scope();
-                        scope.setpId(pId);
-                        scope.setName(pName);
-                        scope.setProjectPath(pName);
-                        scope.setBeginDate("");
-                        // endDate - does not exist for jira
-                        scope.setEndDate("");
-                        // changeDate - does not exist for jira
-                        scope.setChangeDate("");
-                        // assetState - does not exist for jira
-                        // isDeleted - does not exist for jira
-                        scope.setIsDeleted("False");
-                        result.add(scope);
-                    }
-                }
-            }
-        } catch (ParseException pe) {
-            LOGGER.error("Parser exception when parsing teams", pe);
-        } catch (HygieiaException e) {
-            LOGGER.error("Error in calling JIRA API", e);
-        }
-        return result;
     }
 
     /**
