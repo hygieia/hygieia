@@ -1,17 +1,21 @@
 package hygieia.builder;
 
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.BuildStatus;
+import com.capitalone.dashboard.model.TestCapability;
+import com.capitalone.dashboard.model.TestCaseStatus;
+import com.capitalone.dashboard.model.TestResult;
+import com.capitalone.dashboard.model.TestSuite;
+import com.capitalone.dashboard.model.TestSuiteType;
 import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.TestDataCreateRequest;
+import com.google.common.collect.Lists;
 import hudson.EnvVars;
 import hudson.FilePath;
-import hudson.model.AbstractBuild;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hygieia.transformer.CucumberJsonToTestResultTransformer;
 import hygieia.utils.HygieiaUtils;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
@@ -25,61 +29,18 @@ import java.util.logging.Logger;
 
 public class CucumberTestBuilder {
     private static final Logger logger = Logger.getLogger(CucumberTestBuilder.class.getName());
-//    private AbstractBuild build;
-//    private HygieiaPublisher publisher;
-    private Run run;
-    private TaskListener listener;
-    private String buildId;
-    private TestResult testResult;
-
-    private FilePath rootDirectory;
-    private String filePattern;
-    private String jenkinsName;
-    private String testType;
-    private String applicationName;
-    private String environmentName;
-    private BuildDataCreateRequest buildDataCreateRequest;
-
-    public CucumberTestBuilder(AbstractBuild build, TaskListener listener, String applicationName, String environmentName, String testType, String filePattern, String directory, String jenkinsName, String buildId) {
-        run = build;
-        BuildBuilder buildBuilder = new BuildBuilder(build,jenkinsName,listener,true,false);
-        this.buildDataCreateRequest = buildBuilder.getBuildData();
-        this.buildId = HygieiaUtils.getBuildCollectionId(buildId);
-        this.listener = listener;
-        this.applicationName = applicationName.trim();
-        this.environmentName = environmentName.trim();
-        this.testType = testType;
-        this.filePattern = filePattern.trim();
-        this.jenkinsName = jenkinsName.trim();
-        rootDirectory = build.getWorkspace().withSuffix(directory);
-        buildTestResults();
+    public CucumberTestBuilder() {
     }
 
-
-    public CucumberTestBuilder(Run run, TaskListener listener, BuildStatus buildStatus, FilePath filePath, String applicationName, String environmentName, String testType, String filePattern, String directory, String jenkinsName, String buildId) {
-        this.run = run;
-        this.buildId = HygieiaUtils.getBuildCollectionId(buildId);
-        BuildBuilder buildBuilder = new BuildBuilder(run,jenkinsName, listener, buildStatus, false);
-        this.buildDataCreateRequest = buildBuilder.getBuildData();
-        this.listener = listener;
-        this.applicationName = applicationName.trim();
-        this.environmentName = environmentName.trim();
-        this.testType = testType;
-        this.filePattern = filePattern.trim();
-        rootDirectory = filePath.withSuffix(directory);
-        this.jenkinsName = jenkinsName.trim();
-        buildTestResults();
-    }
-
-    private void buildTestResults() {
-
+    private TestResult buildTestResults(Run run, TaskListener listener, String filePattern, FilePath filePath, String directory, BuildDataCreateRequest buildDataCreateRequest, String testType) {
         List<FilePath> testFiles = null;
         try {
             EnvVars envVars = run.getEnvironment(listener);
+            FilePath rootDirectory = filePath.withSuffix(directory);
             if (envVars != null) {
                 filePattern = envVars.expand(filePattern);
             }
-            testFiles = HygieiaUtils.getArtifactFiles(rootDirectory, filePattern, new ArrayList<FilePath>());
+            testFiles = Lists.newArrayList(HygieiaUtils.getArtifactFiles(rootDirectory, filePattern, new ArrayList<FilePath>()));
             listener.getLogger().println("Hygieia Test Result Publisher - Looking for file pattern '" + filePattern + "' in directory " + rootDirectory.getRemote());
         } catch (IOException e) {
             e.printStackTrace();
@@ -88,10 +49,11 @@ public class CucumberTestBuilder {
             e.printStackTrace();
             listener.getLogger().println("Hygieia Test Result Publisher - InterruptedException on " + Arrays.toString(e.getStackTrace()));
         }
-        testResult = buildTestResultObject(getCapabilities(testFiles != null ? testFiles : new ArrayList<FilePath>()));
+        List<TestCapability> capabilities = getCapabilities(testFiles, listener, String.valueOf(buildDataCreateRequest.getNumber()));
+        return buildTestResultObject(capabilities, buildDataCreateRequest, testType);
     }
 
-    private List<TestCapability> getCapabilities(List<FilePath> testFiles) {
+    private List<TestCapability> getCapabilities(List<FilePath> testFiles, TaskListener listener, String executionId) {
         List<TestCapability> capabilities = new ArrayList<>();
         JSONParser parser = new JSONParser();
         CucumberJsonToTestResultTransformer cucumberTransformer = new CucumberJsonToTestResultTransformer();
@@ -139,7 +101,7 @@ public class CucumberTestBuilder {
                 cap.setUnknownStatusTestSuiteCount(testSuiteUnknownCount);
                 cap.setTotalTestSuiteCount(testSuites.size());
                 cap.setDuration(duration);
-                cap.setExecutionId(String.valueOf(buildDataCreateRequest.getNumber()));
+                cap.setExecutionId(executionId);
                 capabilities.add(cap);
             } catch (FileNotFoundException e) {
                 listener.getLogger().println("Hygieia Publisher: Test File Not Found: " + file.getRemote());
@@ -169,7 +131,7 @@ public class CucumberTestBuilder {
     }
 
 
-    private TestResult buildTestResultObject(List<TestCapability> capabilities) {
+    private TestResult buildTestResultObject(List<TestCapability> capabilities, BuildDataCreateRequest buildDataCreateRequest, String testType) {
         if (!capabilities.isEmpty()) {
             // There are test suites so let's construct a TestResult to encapsulate these results
             TestResult testResult = new TestResult();
@@ -211,23 +173,12 @@ public class CucumberTestBuilder {
         return null;
     }
 
-    // Helper Methods
+    public TestDataCreateRequest getTestDataCreateRequest(Run run, TaskListener listener, BuildStatus buildStatus, FilePath filePath, String applicationName, String environmentName, String testType, String filePattern, String directory, String jenkinsName, String buildId) {
 
-    private String getString(JSONObject json, String key) {
-        return (String) json.get(key);
-    }
+        BuildDataCreateRequest buildDataCreateRequest = new BuildBuilder()
+                .createBuildRequestFromRun(run, jenkinsName, listener, buildStatus, false);
 
-    private long getLong(JSONObject json, String key) {
-        Object value = json.get(key);
-        return value == null ? 0 : (Long) value;
-    }
-
-    private JSONArray getJsonArray(JSONObject json, String key) {
-        Object array = json.get(key);
-        return array == null ? new JSONArray() : (JSONArray) array;
-    }
-
-    public TestDataCreateRequest getTestDataCreateRequest() {
+        TestResult testResult = buildTestResults(run, listener, filePattern, filePath, directory, buildDataCreateRequest, testType);
 
         if (testResult != null) {
             TestDataCreateRequest request = new TestDataCreateRequest();
