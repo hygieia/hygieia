@@ -17,7 +17,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
@@ -35,7 +35,7 @@ public class GenericCollectorItemBuilderTest {
 
     @Test
     public void getRequestEmptyLog() throws IOException {
-        GenericCollectorItemBuilder gib = new GenericCollectorItemBuilder(run,"my jenkins", "mytool", "this is a pattern", "5ba16a0b0be2d34a64291205,56c39f487fab7c63c8f947aa");
+        GenericCollectorItemBuilder gib = GenericCollectorItemBuilder.getInstance();
         when(run.getParent()).thenReturn(job);
         PowerMockito.mockStatic(Jenkins.class);
         PowerMockito.when(Jenkins.getInstance()).thenReturn(mockJenkins);
@@ -43,21 +43,21 @@ public class GenericCollectorItemBuilderTest {
 
         Reader reader = new StringReader("");
         when(run.getLogReader()).thenReturn(reader);
-        List<GenericCollectorItemCreateRequest> requests = gib.getRequests();
+        List<GenericCollectorItemCreateRequest> requests = gib.getRequests(run,"mytool", "this is a pattern", "5ba16a0b0be2d34a64291205,56c39f487fab7c63c8f947aa");
 
         assertEquals(requests.size(), 0);
     }
 
     @Test
     public void getRequestOneMatch() throws IOException {
-        GenericCollectorItemBuilder gib = new GenericCollectorItemBuilder(run,"my jenkins", "mytool", "this is a pattern", "5ba16a0b0be2d34a64291205,56c39f487fab7c63c8f947aa");
+        GenericCollectorItemBuilder gib = GenericCollectorItemBuilder.getInstance();
         when(run.getParent()).thenReturn(job);
         PowerMockito.mockStatic(Jenkins.class);
         PowerMockito.when(Jenkins.getInstance()).thenReturn(mockJenkins);
         PowerMockito.when(mockJenkins.getRootUrl()).thenReturn("http://myjenkins.com");
         Reader reader = new StringReader("this is a pattern http://whatever");
         when(run.getLogReader()).thenReturn(reader);
-        List<GenericCollectorItemCreateRequest> requests = gib.getRequests();
+        List<GenericCollectorItemCreateRequest> requests = gib.getRequests(run,"mytool", "this is a pattern", "5ba16a0b0be2d34a64291205,56c39f487fab7c63c8f947aa");
 
         assertEquals(requests.size(), 1);
         GenericCollectorItemCreateRequest request = requests.get(0);
@@ -70,14 +70,14 @@ public class GenericCollectorItemBuilderTest {
 
     @Test
     public void getRequestTwoMatches() throws IOException {
-        GenericCollectorItemBuilder gib = new GenericCollectorItemBuilder(run,"my jenkins", "mytool", "this is a pattern", "5ba16a0b0be2d34a64291205,56c39f487fab7c63c8f947aa");
+        GenericCollectorItemBuilder gib = GenericCollectorItemBuilder.getInstance();
         when(run.getParent()).thenReturn(job);
         PowerMockito.mockStatic(Jenkins.class);
         PowerMockito.when(Jenkins.getInstance()).thenReturn(mockJenkins);
         PowerMockito.when(mockJenkins.getRootUrl()).thenReturn("http://myjenkins.com");
         Reader reader = new StringReader("this is a pattern http://whatever  \n this is a pattern http://another.whatever");
         when(run.getLogReader()).thenReturn(reader);
-        List<GenericCollectorItemCreateRequest> requests = gib.getRequests();
+        List<GenericCollectorItemCreateRequest> requests = gib.getRequests(run,"mytool", "this is a pattern", "5ba16a0b0be2d34a64291205,56c39f487fab7c63c8f947aa");
 
         assertEquals(requests.size(), 2);
         GenericCollectorItemCreateRequest request = requests.get(0);
@@ -95,7 +95,7 @@ public class GenericCollectorItemBuilderTest {
 
     @Test
     public void getRequestNoMatch() throws IOException {
-        GenericCollectorItemBuilder gib = new GenericCollectorItemBuilder(run,"my jenkins", "mytool", "this is a pattern", "5ba16a0b0be2d34a64291205,56c39f487fab7c63c8f947aa");
+        GenericCollectorItemBuilder gib = GenericCollectorItemBuilder.getInstance();
         when(run.getParent()).thenReturn(job);
         PowerMockito.mockStatic(Jenkins.class);
         PowerMockito.when(Jenkins.getInstance()).thenReturn(mockJenkins);
@@ -103,7 +103,7 @@ public class GenericCollectorItemBuilderTest {
 
         Reader reader = new StringReader("this is not a pattern");
         when(run.getLogReader()).thenReturn(reader);
-        List<GenericCollectorItemCreateRequest> requests = gib.getRequests();
+        List<GenericCollectorItemCreateRequest> requests = gib.getRequests(run,"mytool", "this is a pattern", "5ba16a0b0be2d34a64291205,56c39f487fab7c63c8f947aa");
 
         assertEquals(requests.size(), 0);
     }

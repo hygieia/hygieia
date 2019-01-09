@@ -114,7 +114,11 @@ public class DefaultSonar6Client implements SonarClient {
     }
 
     private JSONArray getProjects(String url, String key, int pages, JSONArray jsonArray) throws ParseException {
-       for (int start=1;start<=pages;start++){
+        int maxPages = 20;
+        if(pages <= maxPages) {
+            maxPages = pages;
+        }
+       for (int start=1;start<=maxPages;start++){
             getProjects(url, key, jsonArray, start);
         }
         return  jsonArray;
