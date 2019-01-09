@@ -115,14 +115,9 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 
         try {
             long startTime = System.currentTimeMillis();
-            updateTeamInformation(collector);
-
+//            updateTeamInformation(collector);
 //            updateProjectInformation(collector);
-
-            List<Scope> projects = projectRepository.findByCollectorId(collector.getId());
-            updateStoryInformation(projects, collector);
-
-
+            updateStoryInformation(collector);
             log("Finished", startTime);
         } catch (Exception e) {
             // catch exception here so we don't blow up the collector completely
@@ -132,6 +127,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 
     /**
      * Update team information
+     *
      * @param collector
      */
     private void updateTeamInformation(FeatureCollector collector) {
@@ -157,6 +153,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 
     /**
      * Update project information
+     *
      * @param collector
      * @return List of projects
      */
@@ -182,9 +179,10 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 
     /**
      * Is Jira set up in boards or teams?
+     *
      * @return JiraMode: Board or Team
      */
-    private JiraMode getJiraMode () {
+    private JiraMode getJiraMode() {
         try {
             List<Team> teams = jiraClient.getTeams();
             LOGGER.info("Jira has Teampo Team enabled. Will fetch teams.");
@@ -198,34 +196,54 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 
     /**
      * Update story/feature information for all the projects one at a time
-     * @param projects
+     *
      * @param collector
      */
-    private void updateStoryInformation(List<Scope> projects, Collector collector) {
+    private void updateStoryInformation(FeatureCollector collector) {
 
         long storyDataStart = System.currentTimeMillis();
         AtomicLong count = new AtomicLong();
-        int totalProjects = projects.size();
-        projects.forEach(project -> {
-            LOGGER.info("Collecting " + count.incrementAndGet() + " of " + totalProjects + " projects.");
-            try {
-                List<Feature> features = jiraClient.getIssues(project);
-                features.forEach(f -> {
-                    f.setCollectorId(collector.getId());
-                    Feature existing = featureRepository.findByCollectorIdAndSId(collector.getId(),f.getsId());
-                    if (existing != null) {
-                        f.setId(existing.getId());
-                    }
-                    project.setLastCollected(System.currentTimeMillis());
-                    projectRepository.save(project);
-                    featureRepository.save(f);
-                });
 
-            } catch (HygieiaException e) {
-                LOGGER.error("Unable to update story information for project: " + project.getName(), e);
+        if (collector.getMode().equals(JiraMode.Team)) {
+            List<Scope> projects = projectRepository.findByCollectorId(collector.getId());
+            projects.forEach(project -> {
+                LOGGER.info("Collecting " + count.incrementAndGet() + " of " + projects.size() + " projects.");
+
+                long lastCollection = System.currentTimeMillis();
+                List<Feature> features = jiraClient.getIssues(project);
+                saveFeatures(features, collector);
+                project.setLastCollected(lastCollection); //set it after everything is successfully done
+                projectRepository.save(project);
+
+                log("Story Data Collected", storyDataStart, count.intValue());
+            });
+        } else {
+            List<Team> boards = teamRepository.findByCollectorId(collector.getId());
+            boards.forEach(board -> {
+                LOGGER.info("Collecting " + count.incrementAndGet() + " of " + boards.size() + " boards.");
+
+                long lastCollection = System.currentTimeMillis();
+                List<Feature> features = jiraClient.getIssues(board);
+                saveFeatures(features, collector);
+                board.setLastCollected(lastCollection); //set it after everything is successfully done
+                teamRepository.save(board);
+
+                log("Story Data Collected", storyDataStart, count.intValue());
+            });
+        }
+
+    }
+
+    private void saveFeatures(List<Feature> features, FeatureCollector collector) {
+        features.forEach(f -> {
+            f.setCollectorId(collector.getId());
+            Feature existing = featureRepository.findByCollectorIdAndSId(collector.getId(), f.getsId());
+            if (existing != null) {
+                f.setId(existing.getId());
             }
+            featureRepository.save(f);
         });
-        log("Story Data Collected", storyDataStart, count.intValue());
+
     }
 
 }

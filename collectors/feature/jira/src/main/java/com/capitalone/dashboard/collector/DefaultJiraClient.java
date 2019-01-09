@@ -5,6 +5,7 @@ import com.capitalone.dashboard.model.Epic;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.FeatureIssueLink;
 import com.capitalone.dashboard.model.FeatureStatus;
+import com.capitalone.dashboard.model.IssueResult;
 import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.model.Sprint;
 import com.capitalone.dashboard.model.Team;
@@ -56,8 +57,8 @@ public class DefaultJiraClient implements JiraClient {
     private static final String TEMPO_TEAMS_REST_SUFFIX = "rest/tempo-teams/1/team";
     private static final String BOARD_TEAMS_REST_SUFFIX = "rest/agile/1.0/board";
     private static final String PROJECT_REST_SUFFIX = "rest/api/2/project";
-    private static final String ISSUE_REST_SUFFIX_BY_DAY = "rest/api/2/search?jql=project=%s and issueType in ('%s') and updatedDate>=-%sd&startAt=%s";
-    private static final String ISSUE_REST_SUFFIX_BY_DATE = "rest/api/2/search?jql=project=%s and issueType in ('%s') and updatedDate>='%s'&startAt=%s";
+    private static final String ISSUE_BY_PROJECT_REST_SUFFIX_BY_DATE = "rest/api/2/search?jql=project=%s and issueType in ('%s') and updatedDate>='%s'&startAt=%s";
+    private static final String ISSUE_BY_BOARD_REST_SUFFIX_BY_DATE = "rest/agile/1.0/board/%s/issue?jql=issueType in ('%s') and updatedDate>='%s'&startAt=%s";
     private static final String EPIC_REST_SUFFIX = "rest/agile/1.0/issue/%s";
     private static final String SPRINT_REST_SUFFIX = "rest/agile/1.0/sprint/%s";
 
@@ -75,6 +76,7 @@ public class DefaultJiraClient implements JiraClient {
 
     /**
      * Get all the teams using Jira Rest API
+     *
      * @return List of Teams
      */
     @Override
@@ -110,7 +112,80 @@ public class DefaultJiraClient implements JiraClient {
 
     /**
      * Get list of Features (Issues in Jira terms) given a project.
-     * @param  project
+     *
+     * @param board
+     * @return List of Feature
+     */
+    @Override
+    public List<Feature> getIssues(Team board) {
+        Map<String, Epic> epicMap = new HashMap<>();
+
+        if (featureSettings.getJiraIssueTypeNames() == null) {
+            LOGGER.error("Missing jira issue type names in settings");
+            return Collections.EMPTY_LIST;
+        }
+
+        String lookbackDate = getUpdatedSince(board.getLastCollected());
+        String issueTypes = String.join(",", featureSettings.getJiraIssueTypeNames());
+
+        List<Feature> result = new ArrayList<>();
+        boolean isLast = false;
+        long startAt = 0;
+
+        while (!isLast) {
+            try {
+                String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/")
+                        + ISSUE_BY_BOARD_REST_SUFFIX_BY_DATE;
+                url = String.format(url, board.getTeamId(), issueTypes, lookbackDate, startAt);
+
+                IssueResult temp = getFeaturesFromQueryURL(url, epicMap);
+
+                result.addAll(temp.getFeatures());
+                isLast = temp.getTotal() == result.size() || CollectionUtils.isEmpty(temp.getFeatures());
+                startAt += temp.getPageSize() + 1;
+            } catch (ParseException pe) {
+                LOGGER.error("Parser exception when parsing issue", pe);
+            } catch (HygieiaException e) {
+                LOGGER.error("Error in calling JIRA API", e);
+            }
+        }
+        return result;
+    }
+
+
+    private IssueResult getFeaturesFromQueryURL(String url, Map<String, Epic> epicMap) throws HygieiaException, ParseException {
+        JSONParser parser = new JSONParser();
+        ResponseEntity<String> responseEntity = makeRestCall(url);
+        String responseBody = responseEntity.getBody();
+        JSONObject bodyObject = (JSONObject) parser.parse(responseBody);
+        IssueResult result = new IssueResult();
+        if (bodyObject != null) {
+            long pageSize = getLong(bodyObject, "maxResults");
+            long total = getLong(bodyObject, "total");
+            result.setPageSize(pageSize);
+            result.setTotal(total);
+            JSONArray issueArray = (JSONArray) bodyObject.get("issues");
+            if (CollectionUtils.isEmpty(issueArray)) {
+                return result;
+            }
+
+            issueArray.forEach(issue -> {
+                Feature feature = getFeature((JSONObject) issue);
+                String epicId = feature.getsEpicID();
+                if (!StringUtils.isEmpty(epicId)) {
+                    Epic epic = epicMap.containsKey(epicId) ? epicMap.get(epicId) : getEpic(epicId);
+                    processEpicData(feature, epic);
+                }
+                result.getFeatures().add(feature);
+            });
+        }
+        return result;
+    }
+
+    /**
+     * Get list of Features (Issues in Jira terms) given a project.
+     *
+     * @param project
      * @return List of Feature
      */
     @Override
@@ -121,43 +196,26 @@ public class DefaultJiraClient implements JiraClient {
             LOGGER.error("Missing jira issue type names in settings");
         }
 
-        String lookbackDate= getUpdatedSince(project);
+        String lookbackDate = getUpdatedSince(project.getLastCollected());
         String issueTypes = String.join(",", featureSettings.getJiraIssueTypeNames());
 
         List<Feature> result = new ArrayList<>();
         boolean isLast = false;
         long startAt = 0;
-        JSONParser parser = new JSONParser();
+
         while (!isLast) {
             try {
                 String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/")
-                        + ISSUE_REST_SUFFIX_BY_DATE;
+                        + ISSUE_BY_PROJECT_REST_SUFFIX_BY_DATE;
                 url = String.format(url, project.getpId(), issueTypes, lookbackDate, startAt);
 
-                ResponseEntity<String> responseEntity = makeRestCall(url);
-                String responseBody = responseEntity.getBody();
-                JSONObject bodyObject = (JSONObject) parser.parse(responseBody);
-                if (bodyObject != null) {
-                    long pageSize = getLong(bodyObject, "maxResults");
-                    long total = getLong(bodyObject, "total");
-                    JSONArray issueArray = (JSONArray) bodyObject.get("issues");
-                    if (CollectionUtils.isEmpty(issueArray)) {
-                        break;
-                    }
-                    issueArray.forEach(issue -> {
-                        Feature feature = getFeature((JSONObject) issue);
-                        String epicId = feature.getsEpicID();
-                        if (!StringUtils.isEmpty(epicId)) {
-                            Epic epic = epicMap.containsKey(epicId) ? epicMap.get(epicId) : getEpic(epicId);
-                            processEpicData(feature, epic);
-                        }
-                        result.add(feature);
-                    });
-                    isLast = result.size() == total;
-                    startAt += pageSize + 1;
-                }
+                IssueResult temp = getFeaturesFromQueryURL(url, epicMap);
+
+                result.addAll(temp.getFeatures());
+                isLast = temp.getTotal() == result.size() || CollectionUtils.isEmpty(temp.getFeatures());
+                startAt += temp.getPageSize() + 1;
             } catch (ParseException pe) {
-                LOGGER.error("Parser exception when parsing teams", pe);
+                LOGGER.error("Parser exception when parsing issue", pe);
             } catch (HygieiaException e) {
                 LOGGER.error("Error in calling JIRA API", e);
             }
@@ -167,6 +225,7 @@ public class DefaultJiraClient implements JiraClient {
 
     /**
      * Construct Feature object
+     *
      * @param issue
      * @return Feature
      */
@@ -193,10 +252,17 @@ public class DefaultJiraClient implements JiraClient {
                 String statusString = getString(statusCategory, "name");
                 FeatureStatus normalizedStatus;
                 switch (statusString) {
-                    case "To Do" : normalizedStatus = FeatureStatus.BACKLOG; break;
-                    case "Done"  : normalizedStatus = FeatureStatus.DONE; break;
-                    case "In Progress" : normalizedStatus = FeatureStatus.IN_PROGRESS; break;
-                    default: normalizedStatus = FeatureStatus.BACKLOG;
+                    case "To Do":
+                        normalizedStatus = FeatureStatus.BACKLOG;
+                        break;
+                    case "Done":
+                        normalizedStatus = FeatureStatus.DONE;
+                        break;
+                    case "In Progress":
+                        normalizedStatus = FeatureStatus.IN_PROGRESS;
+                        break;
+                    default:
+                        normalizedStatus = FeatureStatus.BACKLOG;
                 }
                 feature.setsState(normalizedStatus.getStatus());
                 feature.setsStatus(feature.getsState());
@@ -270,7 +336,7 @@ public class DefaultJiraClient implements JiraClient {
         JSONArray issueLinkArray = (JSONArray) fields.get("issuelinks");
         feature.setIssueLinks(getIssueLinks(issueLinkArray));
 
-        Sprint sprint= getSprint(fields);
+        Sprint sprint = getSprint(fields);
         if (sprint != null) {
             processSprintData(feature, sprint);
         }
@@ -282,6 +348,7 @@ public class DefaultJiraClient implements JiraClient {
 
     /**
      * Process Epic data for a feature, updating the passed in feature
+     *
      * @param feature
      * @param epic
      */
@@ -318,6 +385,7 @@ public class DefaultJiraClient implements JiraClient {
 
     /**
      * Process Sprint data for a feature, updating the passed in feature
+     *
      * @param feature
      * @param sprint
      */
@@ -344,6 +412,7 @@ public class DefaultJiraClient implements JiraClient {
 
     /**
      * Process Assignee data for a feature, updating the passed in feature
+     *
      * @param feature
      * @param assignee
      */
@@ -368,6 +437,7 @@ public class DefaultJiraClient implements JiraClient {
 
     /**
      * Get Array of issuesLinks
+     *
      * @param issueLinkArray
      * @return List of FeatureIssueLink
      */
@@ -419,6 +489,7 @@ public class DefaultJiraClient implements JiraClient {
 
     /**
      * Get all the Scope (Project in Jira terms)
+     *
      * @return List of Scope
      */
     @Override
@@ -467,6 +538,7 @@ public class DefaultJiraClient implements JiraClient {
 
     /**
      * Get a list of Boards. It's saved as Team in Hygieia
+     *
      * @return List of Team
      */
     @Override
@@ -519,6 +591,7 @@ public class DefaultJiraClient implements JiraClient {
 
     /**
      * Get Epic using Jira API
+     *
      * @param epicKey
      * @return epic
      */
@@ -559,7 +632,6 @@ public class DefaultJiraClient implements JiraClient {
     ////////////////// Helper Methods ////////////////////
 
 
-
     private ResponseEntity<String> makeRestCall(String url) throws HygieiaException {
         String jiraAccess = featureSettings.getJiraCredentials();
         if (StringUtils.isEmpty(jiraAccess)) {
@@ -584,12 +656,12 @@ public class DefaultJiraClient implements JiraClient {
         return headers;
     }
 
-    private String getUpdatedSince(Scope project) {
+    private String getUpdatedSince(long lastCollected) {
         LocalDateTime since = LocalDateTime.now();
-        if (project.getLastCollected() == 0) {
+        if (lastCollected == 0) {
             since = since.minusDays(featureSettings.getFirstRunHistoryDays());
         } else {
-            since = LocalDateTime.ofInstant(Instant.ofEpochMilli(project.getLastCollected()), ZoneId.systemDefault());
+            since = LocalDateTime.ofInstant(Instant.ofEpochMilli(lastCollected), ZoneId.systemDefault());
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
         return since.format(formatter);

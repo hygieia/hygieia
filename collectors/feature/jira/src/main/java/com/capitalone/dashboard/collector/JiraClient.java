@@ -10,7 +10,9 @@ import java.util.List;
 
 public interface JiraClient {
 
-	List<Feature> getIssues(Scope project) throws HygieiaException;
+    List<Feature> getIssues(Team board);
+
+    List<Feature> getIssues(Scope project);
 
 	List<Scope> getProjects();
 
