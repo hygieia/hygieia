@@ -19,7 +19,6 @@ import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.request.DashboardRemoteRequest;
 import com.capitalone.dashboard.request.WidgetRequest;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,10 +94,10 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
                 List< CollectorItem > list = new ArrayList<>();
                 Component component = componentRepository.findOne( dashboard.getApplication().getComponents().get(0).getId() );
 
-                list.addAll( retrieveCollectorItemsByType( request.getFunctionalTestEntries() , component, CollectorType.Test ) );
-                list.addAll( retrieveCollectorItemsByType( request.getSecurityScanEntries() , component, CollectorType.StaticSecurityScan ) );
-                list.addAll( retrieveCollectorItemsByType( request.getStaticCodeEntries() , component, CollectorType.CodeQuality ) );
-                list.addAll( retrieveCollectorItemsByType( request.getLibraryScanEntries() , component, CollectorType.LibraryPolicy ) );
+                list.addAll( component.getCollectorItems(CollectorType.Test ));
+                list.addAll( component.getCollectorItems(CollectorType.StaticSecurityScan ) );
+                list.addAll( component.getCollectorItems(CollectorType.CodeQuality ) );
+                list.addAll( component.getCollectorItems(CollectorType.LibraryPolicy ) );
 
                 List< ObjectId > collectorItemIdList = list.stream().map( CollectorItem::getId).collect(Collectors.toList() );
                 widgetRequest.getCollectorItemIds().addAll( collectorItemIdList );
@@ -120,24 +119,6 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
             }
         }
         return (dashboard != null) ? dashboardService.get(dashboard.getId()) : null;
-    }
-
-    /**
-     * Returns the collectorItems currently associated to a dashboard, for a given CollectorType, when that CollectorType is not being passed in the request
-     * @param entry request entry
-     * @param component Component used to search in
-     * @param type CollectorType used as the search key
-     * @return list of collectorItems that match the given type in a component
-     */
-    private  List< CollectorItem > retrieveCollectorItemsByType( List< ? > entry, Component component, CollectorType type ){
-        List< CollectorItem > list = new ArrayList<>();
-
-        Map< CollectorType, List< CollectorItem > > map = component.getCollectorItems();
-        if( CollectionUtils.isEmpty( entry ) && MapUtils.getObject( map, type ) != null){
-            list.addAll( component.getCollectorItems( type ) );
-        }
-
-        return list;
     }
 
     /**

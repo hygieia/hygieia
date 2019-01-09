@@ -83,7 +83,13 @@ public class DashboardRemoteServiceTest {
         Component component = componentRepository.findOne(dashboard.get(0).getApplication().getComponents().get(0).getId());
         assertEquals(2, component.getCollectorItems().get(CollectorType.SCM).size());
     }
-
+    @Test
+    public void remoteCreateEmptyEntry() throws IOException, HygieiaException {
+        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/Remote-Request-Base.json");
+        Dashboard dashboard = dashboardRemoteService.remoteCreate(request, false);
+        assertNotNull(dashboard);
+        assertEquals(request.getMetaData().getTitle(),dashboard.getTitle());
+    }
     @Test
     public void remoteCreateInvalidUser() throws IOException {
         DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/0-Remote-Update-Repo.json");
@@ -296,5 +302,4 @@ public class DashboardRemoteServiceTest {
         Gson gson = GsonUtil.getGson();
         return gson.fromJson(getExpectedJSON(fileName), new TypeToken<DashboardRemoteRequest>(){}.getType());
     }
-
 }
