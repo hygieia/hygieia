@@ -15,26 +15,32 @@
 
 echo "SPRING_DATA_MONGODB_HOST: $SPRING_DATA_MONGODB_HOST"
 echo "SPRING_DATA_MONGODB_PORT: $SPRING_DATA_MONGODB_PORT"
-
-
+echo "SPRING_DATA_MONGODB_PASSWORD: $SPRING_DATA_MONGODB_PASSWORD"
+echo "SPRING_DATA_MONGODB_USERNAME: $SPRING_DATA_MONGODB_USERNAME"
+echo "SPRING_DATA_MONGODB_DATABASE: $SPRING_DATA_MONGODB_DATABASE"
+echo "KEY: $KEY"
 cat > $PROP_FILE <<EOF
 #Database Name - default is test
-dbname=${SPRING_DATA_MONGODB_DATABASE:-dashboarddb}
+dbname=${SPRING_DATA_MONGODB_DATABASE:-DASHDB}
 
 #Database HostName - default is localhost
-dbhost=${SPRING_DATA_MONGODB_HOST:-db}
+dbhost=${SPRING_DATA_MONGODB_HOST:-192.168.0.203}
 
 #Database Port - default is 27017
 dbport=${SPRING_DATA_MONGODB_PORT:-27017}
 
 #Database Username - default is blank
-dbusername=${SPRING_DATA_MONGODB_USERNAME:-dashboarduser}
+dbusername=${SPRING_DATA_MONGODB_USERNAME:-}
 
 #Database Password - default is blank
-dbpassword=${SPRING_DATA_MONGODB_PASSWORD:-dbpassword}
+dbpassword=${SPRING_DATA_MONGODB_PASSWORD:-}
+
+
+#dbhostport
+dbhostport=${SPRING_DATA_MONGODB_HOST}:${SPRING_DATA_MONGODB_PORT}
 
 #API encryption key. Optional. See http://capitalone.github.io/Hygieia/setup.html#encryption-for-private-repos	
-key=${KEY:-}
+key=${KEY:-OLXa7OVhKvSYC79AoXnZbZ4muibQQGiw}
 
 logRequest=${LOG_REQUEST:-false}
 logSplunkRequest=${LOG_SPLUNK_REQUEST:-false}
@@ -70,9 +76,6 @@ auth.authenticationProviders=${AUTH_AUTHENTICATION_PROVIDERS:-STANDARD}
 # Needed if you want to query ldap
 # auth.ldapBindUser=${AUTH_LDAP_BIND_USER:-}
 # auth.ldapBindPass=${AUTH_LDAP_BIND_PASS:-}
-
-# Disable LDAP group Authorization, avoid '[LDAP: error code 32 - No Such Object]' with some LDAP servers
-# auth.ldapDisableGroupAuthorization=${AUTH_LDAP_DISABLE_GROUP_AUTHORIZATION:-false}
 
 #Monitor Widget proxy credentials
 # monitor.proxy.username=${MONITOR_PROXY_USERNAME:-}
