@@ -12,6 +12,16 @@ import java.util.Map;
  * @author KFK884
  */
 public class FeatureCollector extends Collector {
+	private JiraMode mode = JiraMode.Board;
+
+	public JiraMode getMode() {
+		return mode;
+	}
+
+	private void setMode(JiraMode mode) {
+		this.mode = mode;
+	}
+
 	/**
 	 * Creates a static prototype of the Feature Collector, which includes any
 	 * specific settings or configuration required for the use of this
@@ -19,8 +29,9 @@ public class FeatureCollector extends Collector {
 	 *
 	 * @return A configured Feature Collector prototype
 	 */
-	public static FeatureCollector prototype() {
+	public static FeatureCollector prototype(JiraMode mode) {
 		FeatureCollector protoType = new FeatureCollector();
+		protoType.mode = mode;
 		protoType.setName(FeatureCollectorConstants.JIRA);
 		protoType.setOnline(true);
         protoType.setEnabled(true);
