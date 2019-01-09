@@ -286,7 +286,7 @@ public class DefaultJiraClient implements JiraClient {
                 });
             }
         } catch (HttpClientErrorException | HttpServerErrorException he) {
-            LOGGER.error("ERROR collecting issues. Url = " + url, he);
+            LOGGER.error("ERROR collecting issues. Url = " + url, he.getMessage());
         }
         return result;
     }

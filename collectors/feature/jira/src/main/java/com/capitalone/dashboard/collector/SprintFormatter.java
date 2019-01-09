@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toMap;
 
 public class SprintFormatter {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultJiraClient.class);
     static Sprint parseSprint(JSONArray customArray) {
         if (CollectionUtils.isEmpty(customArray)) return null;
         Pattern pattern = Pattern.compile("\\[(.*?)\\]");
@@ -48,7 +48,8 @@ public class SprintFormatter {
                 sprint.setName(MapUtils.getString(sprintMap, "name", ""));
                 sprint.setRapidViewId(MapUtils.getString(sprintMap, "rapidView", ""));
                 sprint.setStartDateStr(MapUtils.getString(sprintMap, "startDate", ""));
-                if (sprint.getStartDateStr().equalsIgnoreCase("<null>")) {
+                if (StringUtils.isEmpty(sprint.getStartDateStr()) || sprint.getStartDateStr().equalsIgnoreCase("<null>")) {
+                    LOGGER.info("ERROR: Sprint start date is bad. Sprint ID=" + sprint.getRapidViewId());
                     continue;
                 }
                 sprint.setState(MapUtils.getString(sprintMap, "state", ""));
