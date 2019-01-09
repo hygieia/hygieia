@@ -12,7 +12,8 @@
         </div>
         <div class="container-fluid" ng-if="caWidget.miniWidgetView == 'Static Analysis'">
             <div>
-                <div class="row" hide-empty="{{[caWidget.issues, caWidget.qualityGate, caWidget.rulesCompliance, caWidget.technicalDebt]}}">
+                {{[caWidget.issues[0].formattedValue, caWidget.qualityGate.value, caWidget.rulesCompliance.value, caWidget.technicalDebt.formattedValue]}}
+                <div class="row" hide-empty="['{{ caWidget.issues[0].formattedValue.toString() }}', false]">
                     <div class="col-sm-6">
                         <div class="widget">
                             <div class="widget-body">
@@ -106,8 +107,10 @@
                         <!--Version, Quality gate, Technical debt section -->
                     </div>
                 </div>
+                {{data}}
+                {{result}}
                 <br>
-                <div class="row" hide-empty="{{[caWidget.unitTests[0].status, caWidget.linesofCode.value]}}">
+                <div class="row">
                     <div class="col-sm-6">
                         <div class="widget average-build-duration">
                             <!--Unit test section -->
