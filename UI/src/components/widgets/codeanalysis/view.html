@@ -12,8 +12,10 @@
         </div>
         <div class="container-fluid" ng-if="caWidget.miniWidgetView == 'Static Analysis'">
             <div>
-                {{[caWidget.issues[0].formattedValue, caWidget.qualityGate.value, caWidget.rulesCompliance.value, caWidget.technicalDebt.formattedValue]}}
+                <!--{{[caWidget.issues[0].formattedValue, caWidget.qualityGate.value, caWidget.rulesCompliance.value, caWidget.technicalDebt.formattedValue]}}-->
                 <div class="row" hide-empty="['{{ caWidget.issues[0].formattedValue.toString() }}', false]">
+                    <div class="row" ng-if=!result><div class="col-md-12"><div class="widget-body"><br>No data found.</div></div></div>
+
                     <div class="col-sm-6">
                         <div class="widget">
                             <div class="widget-body">
@@ -107,8 +109,6 @@
                         <!--Version, Quality gate, Technical debt section -->
                     </div>
                 </div>
-                {{data}}
-                {{result}}
                 <br>
                 <div class="row">
                     <div class="col-sm-6">
