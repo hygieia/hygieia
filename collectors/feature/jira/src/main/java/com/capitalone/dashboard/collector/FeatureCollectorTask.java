@@ -73,7 +73,12 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
     @Override
     public FeatureCollector getCollector() {
         JiraMode mode = getJiraMode();
-        return FeatureCollector.prototype(mode);
+        FeatureCollector collector = FeatureCollector.prototype(mode);
+        FeatureCollector existing = featureCollectorRepository.findByName(collector.getName());
+        if (existing != null) {
+            collector.setLastRefreshTime(existing.getLastRefreshTime());
+        }
+        return collector;
     }
 
     /**
@@ -113,14 +118,15 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 
         try {
             long startTime = System.currentTimeMillis();
-            long lastExecutionTime = collector.getLastExecuted();
-            long diff = TimeUnit.MILLISECONDS.toHours(startTime - lastExecutionTime);
+            long diff = TimeUnit.MILLISECONDS.toHours(startTime - collector.getLastRefreshTime());
             if (diff > featureSettings.getRefreshTeamAndProjectHours()) {
                 LOGGER.info("Hours since last run = " + diff + ". Collector is about to refresh Team/Board information");
                 updateTeamOrBoardInformation(collector);
                 if (collector.getMode().equals(JiraMode.Team)) {
                     updateProjectInformation(collector);
                 }
+                collector.setLastRefreshTime(System.currentTimeMillis());
+                featureCollectorRepository.save(collector);
             } else {
                 LOGGER.info("Hours since last run = " + diff + ". Collector is only collecting updated/new issues.");
             }

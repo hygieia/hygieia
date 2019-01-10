@@ -154,7 +154,6 @@ public class DefaultJiraClient implements JiraClient {
                         result.add(boardProject);
                         count = count + 1;
                     }
-//                    isLast = (boolean) teamsJson.get("isLast");
                     isLast = (boolean) teamsJson.get("isLast");
                     LOGGER.info("JIRA Collector collected " + count + " teams and their associated projects");
                     if (!isLast) {

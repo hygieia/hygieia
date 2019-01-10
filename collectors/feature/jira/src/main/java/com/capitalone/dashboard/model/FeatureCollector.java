@@ -13,6 +13,7 @@ import java.util.Map;
  */
 public class FeatureCollector extends Collector {
 	private JiraMode mode = JiraMode.Board;
+	private long lastRefreshTime;
 
 	public JiraMode getMode() {
 		return mode;
@@ -20,6 +21,14 @@ public class FeatureCollector extends Collector {
 
 	private void setMode(JiraMode mode) {
 		this.mode = mode;
+	}
+
+	public long getLastRefreshTime() {
+		return lastRefreshTime;
+	}
+
+	public void setLastRefreshTime(long lastRefreshTime) {
+		this.lastRefreshTime = lastRefreshTime;
 	}
 
 	/**
