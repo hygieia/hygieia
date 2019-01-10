@@ -26,10 +26,14 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
-
 import java.net.MalformedURLException;
-import java.util.*;
-
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.Collections;
 
 public class GitHubPullRequestV3 extends GitHubV3 {
     private static final Log LOG = LogFactory.getLog(GitHubPullRequestV3.class);
