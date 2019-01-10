@@ -3,16 +3,18 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.model.Sprint;
 import com.capitalone.dashboard.testutil.GsonUtil;
 import com.google.gson.Gson;
+import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.json.simple.JSONArray;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class SprintFormatterTest {
 

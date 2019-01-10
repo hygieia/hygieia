@@ -1,7 +1,6 @@
 package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.Sprint;
-import com.capitalone.dashboard.utils.Utilities;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
@@ -9,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
-import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;

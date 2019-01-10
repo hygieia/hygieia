@@ -17,6 +17,9 @@ public class FeatureSettings {
 	private int pageSize;
 	@Value("${feature.firstRunHistoryDays:30}")
 	private int firstRunHistoryDays;
+	// After this number of hours since the last run, we will refresh boards/teams and projects
+	@Value("${feature.refreshTeamAndProjectHours:24}")
+	private int refreshTeamAndProjectHours;
 	// Jira-connection details
 	private String jiraBaseUrl;
 	private String jiraQueryEndpoint;
@@ -202,4 +205,11 @@ public class FeatureSettings {
         this.jiraTeamFieldName = jiraTeamFieldName;
     }
 
+    public int getRefreshTeamAndProjectHours() {
+        return refreshTeamAndProjectHours;
+    }
+
+    public void setRefreshTeamAndProjectHours(int refreshTeamAndProjectHours) {
+        this.refreshTeamAndProjectHours = refreshTeamAndProjectHours;
+    }
 }

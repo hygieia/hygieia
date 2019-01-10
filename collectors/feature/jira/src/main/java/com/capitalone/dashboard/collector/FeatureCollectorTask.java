@@ -1,6 +1,6 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.BoardProject;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.FeatureCollector;
@@ -12,22 +12,21 @@ import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.ScopeRepository;
 import com.capitalone.dashboard.repository.TeamRepository;
-import com.capitalone.dashboard.util.CoreFeatureSettings;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestClientException;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 /**
  * Collects {@link FeatureCollector} data from feature content source system.
@@ -101,7 +100,6 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
     @Override
     public void collect(FeatureCollector collector) {
         logBanner(featureSettings.getJiraBaseUrl());
-        int count = 0;
 
         String proxyUrl = featureSettings.getJiraProxyUrl();
         String proxyPort = featureSettings.getJiraProxyPort();
@@ -115,8 +113,17 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 
         try {
             long startTime = System.currentTimeMillis();
-            updateTeamInformation(collector);
-            updateProjectInformation(collector);
+            long lastExecutionTime = collector.getLastExecuted();
+            long diff = TimeUnit.MILLISECONDS.toHours(startTime - lastExecutionTime);
+            if (diff > featureSettings.getRefreshTeamAndProjectHours()) {
+                LOGGER.info("Hours since last run = " + diff + ". Collector is about to refresh Team/Board information");
+                updateTeamOrBoardInformation(collector);
+                if (collector.getMode().equals(JiraMode.Team)) {
+                    updateProjectInformation(collector);
+                }
+            } else {
+                LOGGER.info("Hours since last run = " + diff + ". Collector is only collecting updated/new issues.");
+            }
             updateStoryInformation(collector);
             log("Finished", startTime);
         } catch (Exception e) {
@@ -130,9 +137,36 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
      *
      * @param collector
      */
-    private void updateTeamInformation(FeatureCollector collector) {
+    private void updateTeamOrBoardInformation(FeatureCollector collector) {
         long teamDataStart = System.currentTimeMillis();
-        List<Team> teams = Objects.equals(collector.getMode(), JiraMode.Team) ? jiraClient.getTeams() : jiraClient.getBoards();
+        List<Team> teams;
+        List<BoardProject> boardProjects;
+        if (Objects.equals(collector.getMode(), JiraMode.Team)) {
+            teams = jiraClient.getTeams();
+        } else {
+            boardProjects = jiraClient.getBoards();
+            teams = boardProjects.stream().map(BoardProject::getTeam).collect(Collectors.toList());
+
+            Set<Scope> projects = boardProjects
+                    .stream()
+                    .flatMap(b -> b.getProjects().stream()).collect(Collectors.toSet());
+
+            projects.forEach(p -> {
+                p.setCollectorId(collector.getId());
+                Set<Team> matchingTeams = boardProjects.stream()
+                        .filter(bp -> bp.getProjects().stream()
+                                .anyMatch(x -> Objects.equals(x.getCollectorId(), p.getCollectorId()) && x.getpId().equalsIgnoreCase(p.getpId())))
+                        .map(BoardProject::getTeam)
+                        .collect(Collectors.toSet());
+                p.setTeams(matchingTeams);
+                Scope existing = projectRepository.findByCollectorIdAndPId(collector.getId(), p.getpId());
+                if (existing != null) {
+                    p.setId(existing.getId());
+                }
+                projectRepository.save(p);
+            });
+        }
+
         teams.forEach(newTeam -> {
             String teamId = newTeam.getTeamId();
             newTeam.setCollectorId(collector.getId());
@@ -148,6 +182,10 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
                 }
             }
         });
+
+
+
+
         log("Team/Board Data Collected", teamDataStart, teams.size());
     }
 
@@ -157,9 +195,9 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
      * @param collector
      * @return List of projects
      */
-    private List<Scope> updateProjectInformation(Collector collector) {
+    private Set<Scope> updateProjectInformation(Collector collector) {
         long projectDataStart = System.currentTimeMillis();
-        List<Scope> projects = jiraClient.getProjects();
+        Set<Scope> projects = jiraClient.getProjects();
 
         projects.forEach(jiraScope -> {
             jiraScope.setCollectorId(collector.getId());
@@ -184,7 +222,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
      */
     private JiraMode getJiraMode() {
         try {
-            List<Team> teams = jiraClient.getTeams();
+            jiraClient.getTeams();
             LOGGER.info("Jira has Teampo Team enabled. Will fetch teams.");
             return JiraMode.Team;
         } catch (HttpClientErrorException hce) {

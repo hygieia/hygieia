@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.BoardProject;
 import com.capitalone.dashboard.model.Epic;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.FeatureIssueLink;
@@ -37,9 +38,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import static com.capitalone.dashboard.utils.Utilities.getLong;
 import static com.capitalone.dashboard.utils.Utilities.getString;
@@ -63,8 +66,7 @@ public class DefaultJiraClient implements JiraClient {
     private static final String ISSUE_BY_PROJECT_REST_SUFFIX_BY_DATE = "rest/api/2/search?jql=project=%s and issueType in ('%s') and updatedDate>='%s'&fields=%s&startAt=%s";
     private static final String ISSUE_BY_BOARD_REST_SUFFIX_BY_DATE = "rest/agile/1.0/board/%s/issue?jql=issueType in ('%s') and updatedDate>='%s'&fields=%s&startAt=%s";
     private static final String EPIC_REST_SUFFIX = "rest/agile/1.0/issue/%s";
-    private static final String SPRINT_REST_SUFFIX = "rest/agile/1.0/sprint/%s";
-
+    private static final String BOARD_PROJECTS_REST_SUFFIX = "rest/agile/1.0/board/%s/project";
 
 
     private static final String STATIC_ISSUE_FIELDS = "id,key,issuetype,status,summary,updated,project,issuelinks,assignee,sprint,aggregatetimeoriginalestimate,timeoriginalestimate";
@@ -72,13 +74,13 @@ public class DefaultJiraClient implements JiraClient {
     private static final int JIRA_BOARDS_PAGING = 50;
     private final FeatureSettings featureSettings;
     private final RestOperations restOperations;
-    private static String issueFields;
+    private String issueFields = "";
 
     @Autowired
     public DefaultJiraClient(FeatureSettings featureSettings, Supplier<RestOperations> restOperationsSupplier) {
         this.featureSettings = featureSettings;
         this.restOperations = restOperationsSupplier.get();
-        issueFields = STATIC_ISSUE_FIELDS + ',' + featureSettings.getJiraTeamFieldName() + ',' + featureSettings.getJiraSprintDataFieldName() + ',' +featureSettings.getJiraEpicIdFieldName();
+        issueFields = STATIC_ISSUE_FIELDS + ',' + featureSettings.getJiraTeamFieldName() + ',' + featureSettings.getJiraSprintDataFieldName() + ',' + featureSettings.getJiraEpicIdFieldName();
     }
 
 
@@ -88,8 +90,7 @@ public class DefaultJiraClient implements JiraClient {
      * @return List of Scope
      */
     @Override
-    public List<Scope> getProjects() {
-        List<Scope> result = new ArrayList<>();
+    public Set<Scope> getProjects() {
 
         try {
             String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/")
@@ -101,35 +102,140 @@ public class DefaultJiraClient implements JiraClient {
 
             JSONArray projects = (JSONArray) parser.parse(responseBody);
 
-            if (!CollectionUtils.isEmpty(projects)) {
-                for (Object obj : projects) {
-                    JSONObject jo = (JSONObject) obj;
-                    String pId = getString(jo, "id");
-                    String pName = getString(jo, "name").trim();
-                    if (!StringUtils.isEmpty(pName)) {
-                        Scope scope = new Scope();
-                        scope.setpId(pId);
-                        scope.setName(pName);
-                        scope.setProjectPath(pName);
-                        scope.setBeginDate("");
-                        // endDate - does not exist for jira
-                        scope.setEndDate("");
-                        // changeDate - does not exist for jira
-                        scope.setChangeDate("");
-                        // assetState - does not exist for jira
-                        // isDeleted - does not exist for jira
-                        scope.setIsDeleted("False");
-                        result.add(scope);
-                    }
-                }
-            }
+            return parseAsScopes(projects);
+
         } catch (ParseException pe) {
             LOGGER.error("Parser exception when parsing teams", pe);
         } catch (HygieiaException e) {
             LOGGER.error("Error in calling JIRA API", e);
         }
+        return Collections.EMPTY_SET;
+    }
+
+
+    /**
+     * Get a list of Boards. It's saved as Team in Hygieia
+     *
+     * @return List of Team
+     */
+    @Override
+    public List<BoardProject> getBoards() {
+        int count = 0;
+        int startAt = 0;
+        boolean isLast = false;
+        List<BoardProject> result = new ArrayList<>();
+        while (!isLast) {
+            try {
+                String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/")
+                        + BOARD_TEAMS_REST_SUFFIX + "?startAt=" + startAt;
+                ResponseEntity<String> responseEntity = makeRestCall(url);
+
+                String responseBody = responseEntity.getBody();
+
+                JSONParser parser = new JSONParser();
+                JSONObject teamsJson = (JSONObject) parser.parse(responseBody);
+
+                if (teamsJson != null) {
+                    JSONArray valuesArray = (JSONArray) teamsJson.get("values");
+                    for (Object obj : valuesArray) {
+                        JSONObject jo = (JSONObject) obj;
+                        String teamId = getString(jo, "id");
+                        String teamName = getString(jo, "name");
+                        String teamType = getString(jo, "type");
+                        BoardProject boardProject = new BoardProject();
+                        Team team = new Team(teamId, teamName);
+                        team.setTeamType(teamType);
+                        team.setChangeDate("");
+                        team.setAssetState("Active");
+                        team.setIsDeleted("False");
+                        Set<Scope> projects = getProjectsForBoard(team.getTeamId());
+                        boardProject.setProjects(projects);
+                        boardProject.setTeam(team);
+                        result.add(boardProject);
+                        count = count + 1;
+                    }
+//                    isLast = (boolean) teamsJson.get("isLast");
+                    isLast = (boolean) teamsJson.get("isLast");
+                    LOGGER.info("JIRA Collector collected " + count + " teams and their associated projects");
+                    if (!isLast) {
+                        startAt += JIRA_BOARDS_PAGING + 1;
+                    }
+
+                } else {
+                    isLast = true;
+                }
+            } catch (ParseException pe) {
+                LOGGER.error("Parser exception when parsing teams", pe);
+            } catch (HygieiaException e) {
+                LOGGER.error("Error in calling JIRA API", e);
+            }
+        }
         return result;
     }
+
+    private Set<Scope> parseAsScopes(JSONArray projects) {
+        Set<Scope> result = new HashSet<>();
+        if (!CollectionUtils.isEmpty(projects)) {
+            for (Object obj : projects) {
+                JSONObject jo = (JSONObject) obj;
+                String pId = getString(jo, "id");
+                String pName = getString(jo, "name").trim();
+                if (!StringUtils.isEmpty(pName)) {
+                    Scope scope = new Scope();
+                    scope.setpId(pId);
+                    scope.setName(pName);
+                    scope.setProjectPath(pName);
+                    scope.setBeginDate("");
+                    // endDate - does not exist for jira
+                    scope.setEndDate("");
+                    // changeDate - does not exist for jira
+                    scope.setChangeDate("");
+                    // assetState - does not exist for jira
+                    // isDeleted - does not exist for jira
+                    scope.setIsDeleted("False");
+                    result.add(scope);
+                }
+            }
+        }
+        return result;
+    }
+
+    private Set<Scope> getProjectsForBoard(String teamId) {
+        int startAt = 0;
+        boolean isLast = false;
+        Set<Scope> result = new HashSet<>();
+        while (!isLast) {
+            try {
+                String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/")
+                        + BOARD_PROJECTS_REST_SUFFIX + "?startAt=" + startAt;
+                url = String.format(url, teamId);
+                ResponseEntity<String> responseEntity = makeRestCall(url);
+
+                String responseBody = responseEntity.getBody();
+
+                JSONParser parser = new JSONParser();
+                JSONObject projectsJson = (JSONObject) parser.parse(responseBody);
+
+                if (projectsJson != null) {
+                    JSONArray valuesArray = (JSONArray) projectsJson.get("values");
+                    result.addAll(parseAsScopes(valuesArray));
+                    isLast = (boolean) projectsJson.get("isLast");
+
+                    if (!isLast) {
+                        startAt = startAt + JIRA_BOARDS_PAGING;
+                    }
+                } else {
+                    isLast = true;
+                }
+            } catch (ParseException pe) {
+                LOGGER.error("Parser exception when parsing projects for board", pe);
+            } catch (HygieiaException e) {
+                LOGGER.error("Error in calling JIRA API", e);
+            }
+        }
+        return result;
+    }
+
 
     /**
      * Get all the teams using Jira Rest API
@@ -193,7 +299,7 @@ public class DefaultJiraClient implements JiraClient {
             try {
                 String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/")
                         + ISSUE_BY_BOARD_REST_SUFFIX_BY_DATE;
-                url = String.format(url, board.getTeamId(), issueTypes, lookbackDate, issueFields,startAt);
+                url = String.format(url, board.getTeamId(), issueTypes, lookbackDate, issueFields, startAt);
 
                 IssueResult temp = getFeaturesFromQueryURL(url, epicMap);
 
@@ -256,7 +362,6 @@ public class DefaultJiraClient implements JiraClient {
     }
 
 
-
     private IssueResult getFeaturesFromQueryURL(String url, Map<String, Epic> epicMap) throws HygieiaException, ParseException {
         JSONParser parser = new JSONParser();
         IssueResult result = new IssueResult();
@@ -298,6 +403,7 @@ public class DefaultJiraClient implements JiraClient {
      * @param issue
      * @return Feature
      */
+    @SuppressWarnings("PMD.NPathComplexity")
     private Feature getFeature(JSONObject issue) {
         Feature feature = new Feature();
         feature.setsId(getString(issue, "id"));
@@ -315,28 +421,9 @@ public class DefaultJiraClient implements JiraClient {
         }
 
         JSONObject status = (JSONObject) fields.get("status");
-        if (status != null) {
-            JSONObject statusCategory = (JSONObject) status.get("statusCategory");
-            if (statusCategory != null) {
-                String statusString = getString(statusCategory, "name");
-                FeatureStatus normalizedStatus;
-                switch (statusString) {
-                    case "To Do":
-                        normalizedStatus = FeatureStatus.BACKLOG;
-                        break;
-                    case "Done":
-                        normalizedStatus = FeatureStatus.DONE;
-                        break;
-                    case "In Progress":
-                        normalizedStatus = FeatureStatus.IN_PROGRESS;
-                        break;
-                    default:
-                        normalizedStatus = FeatureStatus.BACKLOG;
-                }
-                feature.setsState(normalizedStatus.getStatus());
-                feature.setsStatus(feature.getsState());
-            }
-        }
+        String sStatus = getStatus(status);
+        feature.setsState(sStatus);
+        feature.setsStatus(feature.getsState());
 
         String summary = getString(fields, "summary");
         feature.setsName(summary);
@@ -414,6 +501,40 @@ public class DefaultJiraClient implements JiraClient {
         return feature;
     }
 
+    /**
+     * Get status
+     * @param status
+     * @return status
+     */
+    private String getStatus(JSONObject status) {
+        if (status == null) {
+            return "";
+        }
+        JSONObject statusCategory = (JSONObject) status.get("statusCategory");
+        if (statusCategory == null) {
+            return "";
+        }
+
+        String statusString = getString(statusCategory, "name");
+        FeatureStatus normalizedStatus;
+        switch (statusString) {
+            case "To Do":
+                normalizedStatus = FeatureStatus.BACKLOG;
+                break;
+            case "Done":
+                normalizedStatus = FeatureStatus.DONE;
+                break;
+            case "In Progress":
+                normalizedStatus = FeatureStatus.IN_PROGRESS;
+                break;
+            default:
+                normalizedStatus = FeatureStatus.BACKLOG;
+                break;
+
+        }
+        return normalizedStatus.getStatus();
+    }
+
 
     /**
      * Process Epic data for a feature, updating the passed in feature
@@ -485,18 +606,14 @@ public class DefaultJiraClient implements JiraClient {
      * @param feature
      * @param assignee
      */
+    @SuppressWarnings("PMD.NPathComplexity")
     private static void processAssigneeData(Feature feature, JSONObject assignee) {
         if (assignee == null) {
-            feature.setsOwnersUsername(Collections.EMPTY_LIST);
-            feature.setsOwnersShortName(Collections.EMPTY_LIST);
-            feature.setsOwnersID(Collections.EMPTY_LIST);
-            feature.setsOwnersFullName(Collections.EMPTY_LIST);
             return;
         }
         String key = getString(assignee, "key");
         String name = getString(assignee, "name");
         String displayName = getString(assignee, "displayName");
-
         feature.setsOwnersID(key != null ? Collections.singletonList(key) : Collections.EMPTY_LIST);
         feature.setsOwnersUsername(name != null ? Collections.singletonList(name) : Collections.EMPTY_LIST);
         feature.setsOwnersShortName(feature.getsOwnersUsername());
@@ -554,58 +671,6 @@ public class DefaultJiraClient implements JiraClient {
             jiraIssueLinks.add(jiraIssueLink);
         });
         return jiraIssueLinks;
-    }
-
-    /**
-     * Get a list of Boards. It's saved as Team in Hygieia
-     *
-     * @return List of Team
-     */
-    @Override
-    public List<Team> getBoards() {
-        int startAt = 0;
-        boolean isLast = false;
-        List<Team> result = new ArrayList<>();
-        while (!isLast) {
-            try {
-                String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/")
-                        + BOARD_TEAMS_REST_SUFFIX + "?startAt=" + startAt;
-                ResponseEntity<String> responseEntity = makeRestCall(url);
-
-                String responseBody = responseEntity.getBody();
-
-                JSONParser parser = new JSONParser();
-                JSONObject teamsJson = (JSONObject) parser.parse(responseBody);
-
-                if (teamsJson != null) {
-                    JSONArray valuesArray = (JSONArray) teamsJson.get("values");
-                    for (Object obj : valuesArray) {
-                        JSONObject jo = (JSONObject) obj;
-                        String teamId = getString(jo, "id");
-                        String teamName = getString(jo, "name");
-                        String teamType = getString(jo, "type");
-                        Team team = new Team(teamId, teamName);
-                        team.setTeamType(teamType);
-                        team.setChangeDate("");
-                        team.setAssetState("Active");
-                        team.setIsDeleted("False");
-                        result.add(team);
-                    }
-                    isLast = (boolean) teamsJson.get("isLast");
-
-                    if (!isLast) {
-                        startAt = startAt + JIRA_BOARDS_PAGING;
-                    }
-                } else {
-                    isLast = true;
-                }
-            } catch (ParseException pe) {
-                LOGGER.error("Parser exception when parsing teams", pe);
-            } catch (HygieiaException e) {
-                LOGGER.error("Error in calling JIRA API", e);
-            }
-        }
-        return result;
     }
 
 

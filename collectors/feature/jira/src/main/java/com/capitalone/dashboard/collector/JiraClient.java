@@ -1,12 +1,13 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.BoardProject;
 import com.capitalone.dashboard.model.Epic;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.model.Team;
 
 import java.util.List;
+import java.util.Set;
 
 public interface JiraClient {
 
@@ -14,9 +15,9 @@ public interface JiraClient {
 
     List<Feature> getIssues(Scope project);
 
-	List<Scope> getProjects();
+	Set<Scope> getProjects();
 
-	List<Team> getBoards();
+	List<BoardProject> getBoards();
 
 	List<Team> getTeams();
 	
