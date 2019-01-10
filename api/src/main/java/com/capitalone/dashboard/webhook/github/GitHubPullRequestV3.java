@@ -28,11 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 
 import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 
 public class GitHubPullRequestV3 extends GitHubV3 {
@@ -472,11 +468,15 @@ public class GitHubPullRequestV3 extends GitHubV3 {
     protected void updateMatchingCommitsInDb(Commit commit, GitRequest pull) {
         long start = System.currentTimeMillis();
 
-        Commit commitInDb = commitRepository.findByScmRevisionNumberAndScmAuthorIgnoreCaseAndScmCommitLogAndScmCommitTimestamp(commit.getScmRevisionNumber(), commit.getScmAuthor(), commit.getScmCommitLog(), commit.getScmCommitTimestamp());
-        if (commitInDb != null) {
-            commitInDb.setPullNumber(pull.getNumber());
-            commitRepository.save(commitInDb);
-        }
+        List<Commit> commitsInDb
+                = commitRepository.findByScmRevisionNumberAndScmAuthorIgnoreCaseAndScmCommitLogAndScmCommitTimestamp(commit.getScmRevisionNumber(), commit.getScmAuthor(), commit.getScmCommitLog(), commit.getScmCommitTimestamp());
+
+        Optional.ofNullable(commitsInDb)
+            .orElseGet(Collections::emptyList)
+            .forEach(commitInDb -> {
+                commitInDb.setPullNumber(pull.getNumber());
+                commitRepository.save(commitInDb);
+            });
 
         long end = System.currentTimeMillis();
 
