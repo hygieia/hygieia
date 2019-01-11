@@ -243,7 +243,7 @@ public class GitHubPullRequestV3Test {
 
         List<Commit> dbCommit = new ArrayList<>();
         dbCommit.add(new Commit());
-        when(commitRepository.findByScmRevisionNumberAndScmAuthorIgnoreCaseAndScmCommitLogAndScmCommitTimestamp(anyString(), anyString(), anyString(), anyLong())).thenReturn(dbCommit);
+        when(commitRepository.findAllByScmRevisionNumberAndScmAuthorIgnoreCaseAndScmCommitLogAndScmCommitTimestamp(anyString(), anyString(), anyString(), anyLong())).thenReturn(dbCommit);
 
         JSONObject statusJsonObject = makeStatusObject();
         JSONObject commitsJsonObject = makeCommitsObject();
@@ -313,7 +313,7 @@ public class GitHubPullRequestV3Test {
 
         List<Commit> dbCommitList = new ArrayList<>();
         dbCommitList.add(new Commit());
-        when(commitRepository.findByScmRevisionNumberAndScmAuthorIgnoreCaseAndScmCommitLogAndScmCommitTimestamp(anyString(), anyString(), anyString(), anyLong())).thenReturn(dbCommitList);
+        when(commitRepository.findAllByScmRevisionNumberAndScmAuthorIgnoreCaseAndScmCommitLogAndScmCommitTimestamp(anyString(), anyString(), anyString(), anyLong())).thenReturn(dbCommitList);
 
         gitHubPullRequestV3.updateMatchingCommitsInDb(commit, pull);
 
@@ -373,7 +373,7 @@ public class GitHubPullRequestV3Test {
         String collectorItemId = createGuid("0123456789abcdee");
         collectorItem.setId(new ObjectId(collectorItemId));
 
-        when(commitRepository.findByScmRevisionNumberAndScmUrlIgnoreCaseAndScmBranchIgnoreCaseOrderByTimestampAsc(anyString(), anyString(), anyString())).thenReturn(null);
+        when(commitRepository.findAllByScmRevisionNumberAndScmUrlIgnoreCaseAndScmBranchIgnoreCaseOrderByTimestampAsc(anyString(), anyString(), anyString())).thenReturn(null);
         when(collectorService.createCollector(anyObject())).thenReturn(collector);
         when(gitHubPullRequestV3.buildCollectorItem(anyObject(), anyString(), anyString())).thenReturn(collectorItem);
         when(collectorService.createCollectorItem(anyObject())).thenReturn(collectorItem);

@@ -156,7 +156,7 @@ public class GitHubCommitV3Test {
 
         Commit newCommit = new Commit();
 
-        when(commitRepository.findByScmRevisionNumberAndScmUrlIgnoreCaseAndScmBranchIgnoreCaseOrderByTimestampAsc(anyString(), anyString(), anyString())).thenReturn(commitList);
+        when(commitRepository.findAllByScmRevisionNumberAndScmUrlIgnoreCaseAndScmBranchIgnoreCaseOrderByTimestampAsc(anyString(), anyString(), anyString())).thenReturn(commitList);
         when(collectorService.getCollectorItem(existingCommit.getCollectorItemId())).thenReturn(collectorItem);
 
         gitHubCommitV3.setCollectorItemId(newCommit);
@@ -184,7 +184,7 @@ public class GitHubCommitV3Test {
         String collectorItemId = createGuid("0123456789abcdee");
         collectorItem.setId(new ObjectId(collectorItemId));
 
-        when(commitRepository.findByScmRevisionNumberAndScmUrlIgnoreCaseAndScmBranchIgnoreCaseOrderByTimestampAsc(anyString(), anyString(), anyString())).thenReturn(null);
+        when(commitRepository.findAllByScmRevisionNumberAndScmUrlIgnoreCaseAndScmBranchIgnoreCaseOrderByTimestampAsc(anyString(), anyString(), anyString())).thenReturn(null);
         when(collectorService.createCollector(anyObject())).thenReturn(collector);
         when(gitHubCommitV3.buildCollectorItem(anyObject(), anyString(), anyString())).thenReturn(collectorItem);
         when(collectorService.createCollectorItem(anyObject())).thenReturn(collectorItem);

@@ -271,7 +271,7 @@ public class GitHubCommitV3 extends GitHubV3 {
 
     protected void setCollectorItemId (Commit commit) throws MalformedURLException, HygieiaException {
         List<Commit> existingCommits
-                = commitRepository.findByScmRevisionNumberAndScmUrlIgnoreCaseAndScmBranchIgnoreCaseOrderByTimestampAsc(commit.getScmRevisionNumber(), commit.getScmUrl(), commit.getScmBranch());
+                = commitRepository.findAllByScmRevisionNumberAndScmUrlIgnoreCaseAndScmBranchIgnoreCaseOrderByTimestampAsc(commit.getScmRevisionNumber(), commit.getScmUrl(), commit.getScmBranch());
 
         if (!CollectionUtils.isEmpty(existingCommits)) {
             commit.setId(existingCommits.get(0).getId());
