@@ -210,10 +210,10 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
                 long lastCollection = System.currentTimeMillis();
                 List<Feature> features = jiraClient.getIssues(project);
                 saveFeatures(features, collector);
+                log("Story Data Collected since " + LocalDateTime.ofInstant(Instant.ofEpochMilli(project.getLastCollected()), ZoneId.systemDefault()), storyDataStart, features.size());
+
                 project.setLastCollected(lastCollection); //set it after everything is successfully done
                 projectRepository.save(project);
-
-                log("Story Data Collected since " + LocalDateTime.ofInstant(Instant.ofEpochMilli(project.getLastCollected()), ZoneId.systemDefault()), storyDataStart, features.size());
             });
         } else {
             List<Team> boards = teamRepository.findByCollectorId(collector.getId());
@@ -222,10 +222,10 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
                 long lastCollection = System.currentTimeMillis();
                 List<Feature> features = jiraClient.getIssues(board);
                 saveFeatures(features, collector);
+                log("Story Data Collected since " + LocalDateTime.ofInstant(Instant.ofEpochMilli(board.getLastCollected()), ZoneId.systemDefault()), storyDataStart, features.size());
+
                 board.setLastCollected(lastCollection); //set it after everything is successfully done
                 teamRepository.save(board);
-
-                log("Story Data Collected since " + LocalDateTime.ofInstant(Instant.ofEpochMilli(board.getLastCollected()), ZoneId.systemDefault()), storyDataStart, features.size());
             });
         }
 

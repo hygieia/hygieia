@@ -179,7 +179,7 @@ public class DefaultJiraClient implements JiraClient {
                         count = count + 1;
                     }
                     isLast = (boolean) teamsJson.get("isLast");
-                    LOGGER.info("JIRA Collector collected " + count + " teams");
+                    LOGGER.info("JIRA Collector collected " + count + " boards");
                     if (!isLast) {
                         startAt += JIRA_BOARDS_PAGING + 1;
                     }
