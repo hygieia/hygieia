@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.model;
 
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
+import org.apache.commons.collections.MapUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,16 +13,7 @@ import java.util.Map;
  * @author KFK884
  */
 public class FeatureCollector extends Collector {
-	private JiraMode mode = JiraMode.Board;
 	private long lastRefreshTime;
-
-	public JiraMode getMode() {
-		return mode;
-	}
-
-	private void setMode(JiraMode mode) {
-		this.mode = mode;
-	}
 
 	public long getLastRefreshTime() {
 		return lastRefreshTime;
@@ -31,6 +23,9 @@ public class FeatureCollector extends Collector {
 		this.lastRefreshTime = lastRefreshTime;
 	}
 
+	public JiraMode getMode() {
+		return (JiraMode) MapUtils.getObject(this.getProperties(),"mode", JiraMode.Board);
+	}
 	/**
 	 * Creates a static prototype of the Feature Collector, which includes any
 	 * specific settings or configuration required for the use of this
@@ -40,7 +35,7 @@ public class FeatureCollector extends Collector {
 	 */
 	public static FeatureCollector prototype(JiraMode mode) {
 		FeatureCollector protoType = new FeatureCollector();
-		protoType.mode = mode;
+
 		protoType.setName(FeatureCollectorConstants.JIRA);
 		protoType.setOnline(true);
         protoType.setEnabled(true);
@@ -67,6 +62,10 @@ public class FeatureCollector extends Collector {
 		uniqueOptions.put(FeatureCollectorConstants.TEAM_ID, "");
 
 		protoType.setUniqueFields(uniqueOptions);
+
+		Map<String, Object> properties = new HashMap<>();
+		properties.put("mode", mode);
+		protoType.setProperties(properties);
 
 		return protoType;
 	}

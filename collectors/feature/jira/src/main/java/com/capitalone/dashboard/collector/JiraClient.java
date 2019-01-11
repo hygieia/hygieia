@@ -1,6 +1,5 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.model.BoardProject;
 import com.capitalone.dashboard.model.Epic;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.Scope;
@@ -17,7 +16,7 @@ public interface JiraClient {
 
 	Set<Scope> getProjects();
 
-	List<BoardProject> getBoards();
+	List<Team> getBoards();
 
 	List<Team> getTeams();
 	

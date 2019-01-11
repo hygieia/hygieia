@@ -16,36 +16,6 @@
     <relativePath>../../..</relativePath>
   </parent>
 
-  <repositories>
-    <repository>
-      <id>atlassian-public</id>
-      <url>https://maven.atlassian.com/repository/public</url>
-      <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>daily</updatePolicy>
-        <checksumPolicy>warn</checksumPolicy>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-        <checksumPolicy>warn</checksumPolicy>
-      </releases>
-    </repository>
-  </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>atlassian-public</id>
-      <url>https://maven.atlassian.com/repository/public</url>
-      <releases>
-        <enabled>true</enabled>
-        <checksumPolicy>warn</checksumPolicy>
-      </releases>
-      <snapshots>
-        <checksumPolicy>warn</checksumPolicy>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
-
   <distributionManagement>
     <snapshotRepository>
       <id>ossrh</id>
@@ -62,8 +32,6 @@
     <java.version>1.8</java.version>
     <junit.version>4.11</junit.version>
     <final.name>jira-feature-collector</final.name>
-    <httpasyncclient.version>4.0-beta3-atlassian-1</httpasyncclient.version>
-    <httpclient.version>4.2.1-atlassian-2</httpclient.version>
   </properties>
 
   <build>
@@ -142,23 +110,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-    </dependency>
-    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.antlr</groupId>
-      <artifactId>ST4</artifactId>
-      <version>4.0.8</version>
-    </dependency>
-    <dependency>
-      <groupId>org.antlr</groupId>
-      <artifactId>antlr4-runtime</artifactId>
-      <version>4.3</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>

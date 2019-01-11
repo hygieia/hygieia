@@ -67,7 +67,15 @@ public class FeatureSettings {
 
     private String jiraStoryPointsFieldName;
 
-    private String jiraTeamFieldName;
+	/**
+	 * Its a custom field in JIRA, set it here
+	 */
+	private String jiraTeamFieldName;
+
+	/**
+	 * If you want to select boards in the Hygieia UI
+	 */
+	private boolean jiraBoardAsTeam;
 
 	public String getCron() {
 		return cron;
@@ -212,4 +220,12 @@ public class FeatureSettings {
     public void setRefreshTeamAndProjectHours(int refreshTeamAndProjectHours) {
         this.refreshTeamAndProjectHours = refreshTeamAndProjectHours;
     }
+
+	public boolean isJiraBoardAsTeam() {
+		return jiraBoardAsTeam;
+	}
+
+	public void setJiraBoardAsTeam(boolean jiraBoardAsTeam) {
+		this.jiraBoardAsTeam = jiraBoardAsTeam;
+	}
 }

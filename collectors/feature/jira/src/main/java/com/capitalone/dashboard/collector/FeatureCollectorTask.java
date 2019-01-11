@@ -1,6 +1,5 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.model.BoardProject;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.FeatureCollector;
@@ -19,14 +18,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 
 /**
  * Collects {@link FeatureCollector} data from feature content source system.
@@ -72,7 +72,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
      */
     @Override
     public FeatureCollector getCollector() {
-        JiraMode mode = getJiraMode();
+        JiraMode mode = featureSettings.isJiraBoardAsTeam() ? JiraMode.Board : JiraMode.Team;
         FeatureCollector collector = FeatureCollector.prototype(mode);
         FeatureCollector existing = featureCollectorRepository.findByName(collector.getName());
         if (existing != null) {
@@ -119,14 +119,14 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         try {
             long startTime = System.currentTimeMillis();
             long diff = TimeUnit.MILLISECONDS.toHours(startTime - collector.getLastRefreshTime());
+            LOGGER.info("JIRA Collector is set to work in " + collector.getMode() + " mode");
             if (diff > featureSettings.getRefreshTeamAndProjectHours()) {
                 LOGGER.info("Hours since last run = " + diff + ". Collector is about to refresh Team/Board information");
-                updateTeamOrBoardInformation(collector);
-                if (collector.getMode().equals(JiraMode.Team)) {
-                    updateProjectInformation(collector);
-                }
+                List<Team> teams = updateTeamInformation(collector);
+                Set<Scope> scopes = updateProjectInformation(collector);
                 collector.setLastRefreshTime(System.currentTimeMillis());
                 featureCollectorRepository.save(collector);
+                LOGGER.info("Collected " + teams.size() + " teams and " + scopes.size() + " projects");
             } else {
                 LOGGER.info("Hours since last run = " + diff + ". Collector is only collecting updated/new issues.");
             }
@@ -142,37 +142,11 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
      * Update team information
      *
      * @param collector
+     * @return list of teams collected
      */
-    private void updateTeamOrBoardInformation(FeatureCollector collector) {
-        long teamDataStart = System.currentTimeMillis();
-        List<Team> teams;
-        List<BoardProject> boardProjects;
-        if (Objects.equals(collector.getMode(), JiraMode.Team)) {
-            teams = jiraClient.getTeams();
-        } else {
-            boardProjects = jiraClient.getBoards();
-            teams = boardProjects.stream().map(BoardProject::getTeam).collect(Collectors.toList());
-
-            Set<Scope> projects = boardProjects
-                    .stream()
-                    .flatMap(b -> b.getProjects().stream()).collect(Collectors.toSet());
-
-            projects.forEach(p -> {
-                p.setCollectorId(collector.getId());
-                Set<Team> matchingTeams = boardProjects.stream()
-                        .filter(bp -> bp.getProjects().stream()
-                                .anyMatch(x -> Objects.equals(x.getCollectorId(), p.getCollectorId()) && x.getpId().equalsIgnoreCase(p.getpId())))
-                        .map(BoardProject::getTeam)
-                        .collect(Collectors.toSet());
-                p.setTeams(matchingTeams);
-                Scope existing = projectRepository.findByCollectorIdAndPId(collector.getId(), p.getpId());
-                if (existing != null) {
-                    p.setId(existing.getId());
-                }
-                projectRepository.save(p);
-            });
-        }
-
+    private List<Team> updateTeamInformation(FeatureCollector collector) {
+        long projectDataStart = System.currentTimeMillis();
+        List<Team> teams = featureSettings.isJiraBoardAsTeam() ? jiraClient.getBoards() : jiraClient.getTeams();
         teams.forEach(newTeam -> {
             String teamId = newTeam.getTeamId();
             newTeam.setCollectorId(collector.getId());
@@ -188,11 +162,8 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
                 }
             }
         });
-
-
-
-
-        log("Team/Board Data Collected", teamDataStart, teams.size());
+        log(collector.getMode() + " Data Collected", projectDataStart, teams.size());
+        return teams;
     }
 
     /**
@@ -221,22 +192,6 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         return projects;
     }
 
-    /**
-     * Is Jira set up in boards or teams?
-     *
-     * @return JiraMode: Board or Team
-     */
-    private JiraMode getJiraMode() {
-        try {
-            jiraClient.getTeams();
-            LOGGER.info("Jira has Teampo Team enabled. Will fetch teams.");
-            return JiraMode.Team;
-        } catch (HttpClientErrorException hce) {
-            LOGGER.info("Jira does not have Teampo Team enabled. Will fetch boards.");
-            return JiraMode.Board;
-        }
-    }
-
 
     /**
      * Update story/feature information for all the projects one at a time
@@ -244,11 +199,10 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
      * @param collector
      */
     private void updateStoryInformation(FeatureCollector collector) {
-
         long storyDataStart = System.currentTimeMillis();
         AtomicLong count = new AtomicLong();
 
-        if (collector.getMode().equals(JiraMode.Team)) {
+        if (Objects.equals(collector.getMode(), JiraMode.Team)) {
             List<Scope> projects = projectRepository.findByCollectorId(collector.getId());
             projects.forEach(project -> {
                 LOGGER.info("Collecting " + count.incrementAndGet() + " of " + projects.size() + " projects.");
@@ -259,24 +213,24 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
                 project.setLastCollected(lastCollection); //set it after everything is successfully done
                 projectRepository.save(project);
 
-                log("Story Data Collected", storyDataStart, count.intValue());
+                log("Story Data Collected since " + LocalDateTime.ofInstant(Instant.ofEpochMilli(project.getLastCollected()), ZoneId.systemDefault()), storyDataStart, features.size());
             });
         } else {
             List<Team> boards = teamRepository.findByCollectorId(collector.getId());
             boards.forEach(board -> {
                 LOGGER.info("Collecting " + count.incrementAndGet() + " of " + boards.size() + " boards.");
-
                 long lastCollection = System.currentTimeMillis();
                 List<Feature> features = jiraClient.getIssues(board);
                 saveFeatures(features, collector);
                 board.setLastCollected(lastCollection); //set it after everything is successfully done
                 teamRepository.save(board);
 
-                log("Story Data Collected", storyDataStart, count.intValue());
+                log("Story Data Collected since " + LocalDateTime.ofInstant(Instant.ofEpochMilli(board.getLastCollected()), ZoneId.systemDefault()), storyDataStart, features.size());
             });
         }
 
     }
+
 
     private void saveFeatures(List<Feature> features, FeatureCollector collector) {
         features.forEach(f -> {

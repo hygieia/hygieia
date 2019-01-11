@@ -1,7 +1,6 @@
 package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.BoardProject;
 import com.capitalone.dashboard.model.Epic;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.FeatureIssueLink;
@@ -74,7 +73,7 @@ public class DefaultJiraClient implements JiraClient {
     private static final int JIRA_BOARDS_PAGING = 50;
     private final FeatureSettings featureSettings;
     private final RestOperations restOperations;
-    private String issueFields = "";
+    private String issueFields;
 
     @Autowired
     public DefaultJiraClient(FeatureSettings featureSettings, Supplier<RestOperations> restOperationsSupplier) {
@@ -112,6 +111,35 @@ public class DefaultJiraClient implements JiraClient {
         return Collections.EMPTY_SET;
     }
 
+    private static Set<Scope> parseAsScopes(JSONArray projects) {
+        Set<Scope> result = new HashSet<>();
+        if (CollectionUtils.isEmpty(projects)) {
+            return Collections.EMPTY_SET;
+        }
+
+        for (Object obj : projects) {
+            JSONObject jo = (JSONObject) obj;
+            String pId = getString(jo, "id");
+            String pName = getString(jo, "name").trim();
+            if (!StringUtils.isEmpty(pName)) {
+                Scope scope = new Scope();
+                scope.setpId(pId);
+                scope.setName(pName);
+                scope.setProjectPath(pName);
+                scope.setBeginDate("");
+                // endDate - does not exist for jira
+                scope.setEndDate("");
+                // changeDate - does not exist for jira
+                scope.setChangeDate("");
+                // assetState - does not exist for jira
+                // isDeleted - does not exist for jira
+                scope.setIsDeleted("False");
+                result.add(scope);
+            }
+        }
+
+        return result;
+    }
 
     /**
      * Get a list of Boards. It's saved as Team in Hygieia
@@ -119,11 +147,11 @@ public class DefaultJiraClient implements JiraClient {
      * @return List of Team
      */
     @Override
-    public List<BoardProject> getBoards() {
+    public List<Team> getBoards() {
         int count = 0;
         int startAt = 0;
         boolean isLast = false;
-        List<BoardProject> result = new ArrayList<>();
+        List<Team> result = new ArrayList<>();
         while (!isLast) {
             try {
                 String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/")
@@ -142,20 +170,16 @@ public class DefaultJiraClient implements JiraClient {
                         String teamId = getString(jo, "id");
                         String teamName = getString(jo, "name");
                         String teamType = getString(jo, "type");
-                        BoardProject boardProject = new BoardProject();
                         Team team = new Team(teamId, teamName);
                         team.setTeamType(teamType);
                         team.setChangeDate("");
                         team.setAssetState("Active");
                         team.setIsDeleted("False");
-                        Set<Scope> projects = getProjectsForBoard(team.getTeamId());
-                        boardProject.setProjects(projects);
-                        boardProject.setTeam(team);
-                        result.add(boardProject);
+                        result.add(team);
                         count = count + 1;
                     }
                     isLast = (boolean) teamsJson.get("isLast");
-                    LOGGER.info("JIRA Collector collected " + count + " teams and their associated projects");
+                    LOGGER.info("JIRA Collector collected " + count + " teams");
                     if (!isLast) {
                         startAt += JIRA_BOARDS_PAGING + 1;
                     }
@@ -172,32 +196,6 @@ public class DefaultJiraClient implements JiraClient {
         return result;
     }
 
-    private Set<Scope> parseAsScopes(JSONArray projects) {
-        Set<Scope> result = new HashSet<>();
-        if (!CollectionUtils.isEmpty(projects)) {
-            for (Object obj : projects) {
-                JSONObject jo = (JSONObject) obj;
-                String pId = getString(jo, "id");
-                String pName = getString(jo, "name").trim();
-                if (!StringUtils.isEmpty(pName)) {
-                    Scope scope = new Scope();
-                    scope.setpId(pId);
-                    scope.setName(pName);
-                    scope.setProjectPath(pName);
-                    scope.setBeginDate("");
-                    // endDate - does not exist for jira
-                    scope.setEndDate("");
-                    // changeDate - does not exist for jira
-                    scope.setChangeDate("");
-                    // assetState - does not exist for jira
-                    // isDeleted - does not exist for jira
-                    scope.setIsDeleted("False");
-                    result.add(scope);
-                }
-            }
-        }
-        return result;
-    }
 
     private Set<Scope> getProjectsForBoard(String teamId) {
         int startAt = 0;
@@ -275,7 +273,7 @@ public class DefaultJiraClient implements JiraClient {
     /**
      * Get list of Features (Issues in Jira terms) given a project.
      *
-     * @param board
+     * @param  board
      * @return List of Feature
      */
     @Override
@@ -502,6 +500,7 @@ public class DefaultJiraClient implements JiraClient {
 
     /**
      * Get status
+     *
      * @param status
      * @return status
      */
