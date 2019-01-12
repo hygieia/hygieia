@@ -79,7 +79,11 @@ public class DefaultJiraClient implements JiraClient {
     public DefaultJiraClient(FeatureSettings featureSettings, Supplier<RestOperations> restOperationsSupplier) {
         this.featureSettings = featureSettings;
         this.restOperations = restOperationsSupplier.get();
-        issueFields = STATIC_ISSUE_FIELDS + ',' + featureSettings.getJiraTeamFieldName() + ',' + featureSettings.getJiraSprintDataFieldName() + ',' + featureSettings.getJiraEpicIdFieldName();
+        issueFields = STATIC_ISSUE_FIELDS + ','
+                + featureSettings.getJiraTeamFieldName() + ','
+                + featureSettings.getJiraSprintDataFieldName() + ','
+                + featureSettings.getJiraEpicIdFieldName() + ','
+                + featureSettings.getJiraStoryPointsFieldName();
     }
 
 
