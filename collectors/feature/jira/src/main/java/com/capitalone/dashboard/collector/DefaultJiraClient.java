@@ -115,7 +115,7 @@ public class DefaultJiraClient implements JiraClient {
         return Collections.EMPTY_SET;
     }
 
-    private static Set<Scope> parseAsScopes(JSONArray projects) {
+    protected static Set<Scope> parseAsScopes(JSONArray projects) {
         Set<Scope> result = new HashSet<>();
         if (CollectionUtils.isEmpty(projects)) {
             return Collections.EMPTY_SET;
@@ -199,44 +199,6 @@ public class DefaultJiraClient implements JiraClient {
         }
         return result;
     }
-
-
-    private Set<Scope> getProjectsForBoard(String teamId) {
-        int startAt = 0;
-        boolean isLast = false;
-        Set<Scope> result = new HashSet<>();
-        while (!isLast) {
-            try {
-                String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/")
-                        + BOARD_PROJECTS_REST_SUFFIX + "?startAt=" + startAt;
-                url = String.format(url, teamId);
-                ResponseEntity<String> responseEntity = makeRestCall(url);
-
-                String responseBody = responseEntity.getBody();
-
-                JSONParser parser = new JSONParser();
-                JSONObject projectsJson = (JSONObject) parser.parse(responseBody);
-
-                if (projectsJson != null) {
-                    JSONArray valuesArray = (JSONArray) projectsJson.get("values");
-                    result.addAll(parseAsScopes(valuesArray));
-                    isLast = (boolean) projectsJson.get("isLast");
-
-                    if (!isLast) {
-                        startAt = startAt + JIRA_BOARDS_PAGING;
-                    }
-                } else {
-                    isLast = true;
-                }
-            } catch (ParseException pe) {
-                LOGGER.error("Parser exception when parsing projects for board", pe);
-            } catch (HygieiaException e) {
-                LOGGER.error("Error in calling JIRA API", e);
-            }
-        }
-        return result;
-    }
-
 
     /**
      * Get all the teams using Jira Rest API
@@ -405,7 +367,7 @@ public class DefaultJiraClient implements JiraClient {
      * @return Feature
      */
     @SuppressWarnings("PMD.NPathComplexity")
-    private Feature getFeature(JSONObject issue) {
+    protected Feature getFeature(JSONObject issue) {
         Feature feature = new Feature();
         feature.setsId(getString(issue, "id"));
         feature.setsNumber(getString(issue, "key"));
@@ -545,7 +507,7 @@ public class DefaultJiraClient implements JiraClient {
      * @param epic
      */
 
-    private static void processEpicData(Feature feature, Epic epic) {
+    protected static void processEpicData(Feature feature, Epic epic) {
         feature.setsEpicID(epic.getId());
         feature.setsEpicIsDeleted("false");
         feature.setsEpicName(epic.getName());
@@ -558,7 +520,7 @@ public class DefaultJiraClient implements JiraClient {
         feature.setsEpicUrl(epic.getUrl());
     }
 
-    private Sprint getSprint(JSONObject fields) {
+    protected Sprint getSprint(JSONObject fields) {
         JSONObject sprintJson = (JSONObject) fields.get("sprint");
         if (sprintJson != null) {
             Sprint sprint = new Sprint();
@@ -581,7 +543,8 @@ public class DefaultJiraClient implements JiraClient {
      * @param feature
      * @param sprint
      */
-    private void processSprintData(Feature feature, Sprint sprint) {
+    protected void processSprintData(Feature feature, Sprint sprint) {
+
         // sSprintChangeDate - does not exist in Jira
         feature.setsSprintChangeDate("");
         // sSprintIsDeleted - does not exist in Jira
@@ -609,7 +572,7 @@ public class DefaultJiraClient implements JiraClient {
      * @param assignee
      */
     @SuppressWarnings("PMD.NPathComplexity")
-    private static void processAssigneeData(Feature feature, JSONObject assignee) {
+    protected static void processAssigneeData(Feature feature, JSONObject assignee) {
         if (assignee == null) {
             return;
         }
@@ -629,7 +592,7 @@ public class DefaultJiraClient implements JiraClient {
      * @param issueLinkArray
      * @return List of FeatureIssueLink
      */
-    private static List<FeatureIssueLink> getIssueLinks(JSONArray issueLinkArray) {
+    protected static List<FeatureIssueLink> getIssueLinks(JSONArray issueLinkArray) {
         if (issueLinkArray == null) {
             return Collections.EMPTY_LIST;
         }
@@ -743,7 +706,7 @@ public class DefaultJiraClient implements JiraClient {
         return headers;
     }
 
-    private String getUpdatedSince(long lastCollected) {
+    protected String getUpdatedSince(long lastCollected) {
         LocalDateTime since = LocalDateTime.now();
         if (lastCollected == 0) {
             since = since.minusDays(featureSettings.getFirstRunHistoryDays());

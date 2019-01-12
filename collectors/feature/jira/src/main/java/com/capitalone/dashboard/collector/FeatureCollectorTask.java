@@ -144,7 +144,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
      * @param collector
      * @return list of teams collected
      */
-    private List<Team> updateTeamInformation(FeatureCollector collector) {
+    protected List<Team> updateTeamInformation(FeatureCollector collector) {
         long projectDataStart = System.currentTimeMillis();
         List<Team> teams = featureSettings.isJiraBoardAsTeam() ? jiraClient.getBoards() : jiraClient.getTeams();
         teams.forEach(newTeam -> {
@@ -172,7 +172,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
      * @param collector
      * @return List of projects
      */
-    private Set<Scope> updateProjectInformation(Collector collector) {
+    protected Set<Scope> updateProjectInformation(Collector collector) {
         long projectDataStart = System.currentTimeMillis();
         Set<Scope> projects = jiraClient.getProjects();
 
@@ -198,7 +198,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
      *
      * @param collector
      */
-    private void updateStoryInformation(FeatureCollector collector) {
+    protected void updateStoryInformation(FeatureCollector collector) {
         long storyDataStart = System.currentTimeMillis();
         AtomicLong count = new AtomicLong();
 
