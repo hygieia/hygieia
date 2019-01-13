@@ -186,27 +186,26 @@
 
         <!--Security scan tab-->
         <div class="container-fluid" ng-if="caWidget.miniWidgetView == 'Security'">
-            <div class="row">
-                <div class="col-xs-12"><br>
-                    <div class="widget ca-security">
-                        <div class="widget-body">
-                            <table class="table" ng-if="caWidget.securityIssues.length > 0">
-                                <tr class="dash-row" ng-repeat="issue in caWidget.securityIssues track by issue.name"
-                                    ng-class="{'clickable': !!issue.statusMessage}"
-                                    popover-html-unsafe="{{issue.statusMessage}}"
-                                    popover-trigger="focus"
-                                    popover-placement="left"
-                                    tabindex="0">
-                                    <td>
-                                        <span dash-status="{{ issue.status }}"
-                                              ng-if="caWidget.showStatusIcon(issue)"></span>
-                                    </td>
-                                    <td class="ca-name">{{issue.name}}</td>
-                                    <td class="ca-value">{{issue.formattedValue}}</td>
-                                </tr>
-                            </table>
-                            <div ng-if="caWidget.securityIssues.length < 1">
-                                No data found.
+            <div hide-empty="['{{ caWidget.securityIssues[0].formattedValue }}']">
+                <div class="row">
+                    <div class="col-xs-12"><br>
+                        <div class="widget ca-security">
+                            <div class="widget-body">
+                                <table class="table" ng-if="caWidget.securityIssues.length > 0">
+                                    <tr class="dash-row" ng-repeat="issue in caWidget.securityIssues track by issue.name"
+                                        ng-class="{'clickable': !!issue.statusMessage}"
+                                        popover-html-unsafe="{{issue.statusMessage}}"
+                                        popover-trigger="focus"
+                                        popover-placement="left"
+                                        tabindex="0">
+                                        <td>
+                                            <span dash-status="{{ issue.status }}"
+                                                  ng-if="caWidget.showStatusIcon(issue)"></span>
+                                        </td>
+                                        <td class="ca-name">{{issue.name}}</td>
+                                        <td class="ca-value">{{issue.formattedValue}}</td>
+                                    </tr>
+                                </table>
                             </div>
                         </div>
                     </div>
