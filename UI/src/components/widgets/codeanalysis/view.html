@@ -12,103 +12,103 @@
         </div>
         <div class="container-fluid" ng-if="caWidget.miniWidgetView == 'Static Analysis'">
             <div>
-                <!--{{[caWidget.issues[0].formattedValue, caWidget.qualityGate.value, caWidget.rulesCompliance.value, caWidget.technicalDebt.formattedValue]}}-->
-                <div class="row" hide-empty="['{{ caWidget.issues[0].formattedValue.toString() }}', false]">
-                    <div class="row" ng-if=!result><div class="col-md-12"><div class="widget-body"><br>No data found.</div></div></div>
-
-                    <div class="col-sm-6">
-                        <div class="widget">
-                            <div class="widget-body">
-                                <div class="widget ca-issues">
-                                    <br>
-                                    <a ng-href="{{caWidget.reportUrl ? caWidget.reportUrl : ''}}" target="_blank">
+                <div hide-empty="['{{ caWidget.issues[0].formattedValue.toString() }}']">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="widget">
+                                <div class="widget-body">
+                                    <div class="widget ca-issues">
+                                        <br>
+                                        <a ng-href="{{caWidget.reportUrl ? caWidget.reportUrl : ''}}" target="_blank">
                                         <span class="report-link pull-left">
                                             View All <i class="fa fa-arrow-right" aria-hidden="true"></i>
                                         </span>
-                                    </a> <br>
-                                    <!-- Blocker, Critical, Major Issues section -->
-                                    <div class="widget-body">
-                                        <table class="table">
-                                            <tr class="dash-row"
-                                                ng-repeat="issue in caWidget.issues track by issue.name"
-                                                ng-class="{'clickable': !!issue.statusMessage}"
-                                                popover-html-unsafe="{{issue.statusMessage}}"
-                                                popover-trigger="focus"
-                                                popover-placement="left"
-                                                tabindex="0">
-                                                <td>
+                                        </a> <br>
+                                        <!-- Blocker, Critical, Major Issues section -->
+                                        <div class="widget-body">
+                                            <table class="table">
+                                                <tr class="dash-row"
+                                                    ng-repeat="issue in caWidget.issues track by issue.name"
+                                                    ng-class="{'clickable': !!issue.statusMessage}"
+                                                    popover-html-unsafe="{{issue.statusMessage}}"
+                                                    popover-trigger="focus"
+                                                    popover-placement="left"
+                                                    tabindex="0">
+                                                    <td>
                                                     <span dash-status="{{ issue.status }}"
                                                           ng-if="caWidget.showStatusIcon(issue)"></span>
-                                                </td>
-                                                <td class="ca-name">{{issue.name}}</td>
-                                                <td class="ca-value">{{issue.formattedValue}}</td>
-                                            </tr>
-                                        </table>
+                                                    </td>
+                                                    <td class="ca-name">{{issue.name}}</td>
+                                                    <td class="ca-value">{{issue.formattedValue}}</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <!-- Blocker, Critical, Major Issues section -->
                                     </div>
-                                    <!-- Blocker, Critical, Major Issues section -->
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <!--Version, Quality gate, Technical debt section -->
-                        <div class="widget">
-                            <br>
-                            <div class="widget-heading">
-                                Version {{ caWidget.versionNumber }}
-                            </div>
-                            <div class="widget-body">
-                                <div class="widget ca-version">
-                                    <div class="widget-body">
-                                        <div class="clearfix" fit-text=".ca-value span" fit-text-max="99px">
-                                            <div ng-if="caWidget.showQualityGate" class="col-sm-6">
-                                                <div class="ca-value ca-status-{{ caWidget.qualityGate.value || 'OK'}}">
+                        <div class="col-sm-6">
+                            <!--Version, Quality gate, Technical debt section -->
+                            <div class="widget">
+                                <br>
+                                <div class="widget-heading">
+                                    Version {{ caWidget.versionNumber }}
+                                </div>
+                                <div class="widget-body">
+                                    <div class="widget ca-version">
+                                        <div class="widget-body">
+                                            <div class="clearfix" fit-text=".ca-value span" fit-text-max="99px">
+                                                <div ng-if="caWidget.showQualityGate" class="col-sm-6">
+                                                    <div class="ca-value ca-status-{{ caWidget.qualityGate.value || 'OK'}}">
                                                 <span ng-show="caWidget.qualityGate.value">
                                                     <span ng-if="caWidget.qualityGate.value ==='ERROR'"
                                                           class="fa fa-exclamation-triangle fa-3x widget-font-fail"></span>
                                                     <span ng-if="caWidget.qualityGate.value !=='ERROR'"
                                                           class="fa fa-check-square fa-3x widget-font-pass"></span>
                                                 </span>
+                                                    </div>
+                                                    <div class="clearfix"></div>
+                                                    <div class="ca-label">Quality<br/>Gate</div>
                                                 </div>
-                                                <div class="clearfix"></div>
-                                                <div class="ca-label">Quality<br/>Gate</div>
-                                            </div>
-                                            <div ng-if="!caWidget.showQualityGate" class="col-sm-6">
-                                                <div class="ca-value ca-status-{{ caWidget.rulesCompliance.status || 'Ok'}}"
-                                                     ng-class="{'clickable': !!caWidget.rulesCompliance.statusMessage}"
-                                                     popover-html-unsafe="{{caWidget.rulesCompliance.statusMessage}}"
-                                                     popover-trigger="focus"
-                                                     popover-placement="right"
-                                                     tabindex="0">
+                                                <div ng-if="!caWidget.showQualityGate" class="col-sm-6">
+                                                    <div class="ca-value ca-status-{{ caWidget.rulesCompliance.status || 'Ok'}}"
+                                                         ng-class="{'clickable': !!caWidget.rulesCompliance.statusMessage}"
+                                                         popover-html-unsafe="{{caWidget.rulesCompliance.statusMessage}}"
+                                                         popover-trigger="focus"
+                                                         popover-placement="right"
+                                                         tabindex="0">
                                                     <span ng-show="caWidget.rulesCompliance.value">
                                                     {{ caWidget.rulesCompliance.value | number:1 }}<small
                                                             class="percent">%</small>
                                                     </span>
-                                                    <span ng-hide="caWidget.rulesCompliance.value">-</span>
+                                                        <span ng-hide="caWidget.rulesCompliance.value">-</span>
+                                                    </div>
+                                                    <div class="clearfix"></div>
+                                                    <div class="ca-label">Rules<br/>Compliance</div>
                                                 </div>
-                                                <div class="clearfix"></div>
-                                                <div class="ca-label">Rules<br/>Compliance</div>
-                                            </div>
-                                            <div class="col-sm-6">
-                                                <div class="ca-value ca-status-{{ caWidget.technicalDebt.status || 'Ok'}}"
-                                                     ng-class="{'clickable': !!caWidget.technicalDebt.statusMessage}"
-                                                     popover-html-unsafe="{{caWidget.technicalDebt.statusMessage}}"
-                                                     popover-trigger="focus"
-                                                     popover-placement="right"
-                                                     tabindex="0">
-                                                    <span>{{ caWidget.technicalDebt.formattedValue }}</span>
+                                                <div class="col-sm-6">
+                                                    <div class="ca-value ca-status-{{ caWidget.technicalDebt.status || 'Ok'}}"
+                                                         ng-class="{'clickable': !!caWidget.technicalDebt.statusMessage}"
+                                                         popover-html-unsafe="{{caWidget.technicalDebt.statusMessage}}"
+                                                         popover-trigger="focus"
+                                                         popover-placement="right"
+                                                         tabindex="0">
+                                                        <span>{{ caWidget.technicalDebt.formattedValue }}</span>
+                                                    </div>
+                                                    <div class="clearfix"></div>
+                                                    <div class="ca-label">Technical<br/>Debt</div>
                                                 </div>
-                                                <div class="clearfix"></div>
-                                                <div class="ca-label">Technical<br/>Debt</div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            <!--Version, Quality gate, Technical debt section -->
                         </div>
-                        <!--Version, Quality gate, Technical debt section -->
                     </div>
                 </div>
+
                 <br>
                 <div class="row">
                     <div class="col-sm-6">
@@ -179,6 +179,7 @@
                     </div>
                     <!--Code coverage section-->
                 </div>
+                {{testResult}}
             </div>
         </div>
 
