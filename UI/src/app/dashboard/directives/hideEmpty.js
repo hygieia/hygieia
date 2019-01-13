@@ -23,7 +23,14 @@
                         if(hideWidget) {
                             // element.hide();
                             element.children().first().hide();
-                            element.append('<div id="noDataMsg" class="row"><div class="col-md-12"><div class="widget-body"><br>No data found.</div></div></div>');
+                            scope.testElement = document.getElementById('noDataMsg');
+                            // if "no data found" already added, make sure it is shown. Otherwise, append it to the HTML
+                            if (document.getElementById('noDataMsg')){
+                                angular.element(document.getElementById('noDataMsg')).show();
+                            } else {
+                                element.append('<div id="noDataMsg" class="row"><div class="col-md-12"><div class="widget-body"><br>No data found.</div></div></div>');
+
+                            }
                             scope.result = "hide";
 
                         }
