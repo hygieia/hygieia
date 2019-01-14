@@ -270,11 +270,13 @@ public class GitHubCommitV3 extends GitHubV3 {
     }
 
     protected void setCollectorItemId (Commit commit) throws MalformedURLException, HygieiaException {
-        Commit existingCommit = commitRepository.findByScmRevisionNumberAndScmUrlIgnoreCaseAndScmBranchIgnoreCase(commit.getScmRevisionNumber(), commit.getScmUrl(), commit.getScmBranch());
-        if (existingCommit != null) {
-            commit.setId(existingCommit.getId());
-            commit.setCollectorItemId(existingCommit.getCollectorItemId());
-            CollectorItem collectorItem = collectorService.getCollectorItem(existingCommit.getCollectorItemId());
+        List<Commit> existingCommits
+                = commitRepository.findAllByScmRevisionNumberAndScmUrlIgnoreCaseAndScmBranchIgnoreCaseOrderByTimestampAsc(commit.getScmRevisionNumber(), commit.getScmUrl(), commit.getScmBranch());
+
+        if (!CollectionUtils.isEmpty(existingCommits)) {
+            commit.setId(existingCommits.get(0).getId());
+            commit.setCollectorItemId(existingCommits.get(0).getCollectorItemId());
+            CollectorItem collectorItem = collectorService.getCollectorItem(existingCommits.get(0).getCollectorItemId());
             collectorItem.setEnabled(true);
             collectorItem.setPushed(true);
             collectorItemRepository.save(collectorItem);
