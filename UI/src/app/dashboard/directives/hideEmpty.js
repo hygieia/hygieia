@@ -34,7 +34,7 @@
                             if (noDataFound.length > 0) {
                                 noDataFound.show();
                             } else {
-                                element.append('<div id="noDataMsg" class="row"><div class="col-md-12"><div class="widget-body"><br>No data found.</div></div></div>');
+                                element.append('<div id="noDataMsg" class="row"><div class="col-md-12">No data found.</div></div>');
                             }
                         } else {
                             // display the widget and hide "No data found" message
