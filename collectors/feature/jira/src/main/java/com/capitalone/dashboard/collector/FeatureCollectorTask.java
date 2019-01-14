@@ -29,6 +29,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 /**
  * Collects {@link FeatureCollector} data from feature content source system.
@@ -126,6 +127,8 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
                 LOGGER.info("Hours since last run = " + diff + ". Collector is about to refresh Team/Board information");
                 List<Team> teams = updateTeamInformation(collector);
                 Set<Scope> scopes = updateProjectInformation(collector);
+
+                refreshValidIssues(collector, teams, scopes);
                 collector.setLastRefreshTime(System.currentTimeMillis());
                 featureCollectorRepository.save(collector);
                 LOGGER.info("Collected " + teams.size() + " teams and " + scopes.size() + " projects");
@@ -139,6 +142,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
             LOGGER.error("Failed to collect jira information", e);
         }
     }
+
 
     /**
      * Update team information
@@ -156,12 +160,8 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
             if (existing == null) {
                 teamRepository.save(newTeam);
             } else {
-                if (!Objects.equals(existing.getName(), newTeam.getName()) ||
-                        !Objects.equals(existing.getTeamType(), newTeam.getTeamType()) ||
-                        !Objects.equals(existing.getIsDeleted(), newTeam.getIsDeleted())) {
-                    newTeam.setId(existing.getId());
-                    teamRepository.save(newTeam);
-                }
+                newTeam.setId(existing.getId());
+                teamRepository.save(newTeam);
             }
         });
         log(collector.getMode() + " Data Collected", projectDataStart, teams.size());
@@ -184,10 +184,8 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
             if (existing == null) {
                 projectRepository.save(jiraScope);
             } else {
-                if (!Objects.equals(existing, jiraScope)) {
-                    jiraScope.setId(existing.getId());
-                    projectRepository.save(jiraScope);
-                }
+                jiraScope.setId(existing.getId());
+                projectRepository.save(jiraScope);
             }
         });
         log("Project Data Collected", projectDataStart, projects.size());
@@ -237,6 +235,12 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 
     }
 
+    /**
+     * Save features to repository
+     * @param features
+     * @param collector
+     */
+
     private void saveFeatures(List<Feature> features, FeatureCollector collector) {
         features.forEach(f -> {
             f.setCollectorId(collector.getId());
@@ -249,6 +253,11 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
     }
 
 
+    /**
+     * Update all features with the latest Epic Information, if any.
+     * @param epicList
+     * @param collector
+     */
     private void updateFeaturesWithLatestEpics(List<Epic> epicList, FeatureCollector collector) {
         epicList.stream().filter(Epic::isRecentUpdate).forEach(e -> {
             List<Feature> existing = featureRepository.findAllByCollectorIdAndSEpicID(collector.getId(), e.getId());
@@ -267,5 +276,28 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
             });
         });
     }
+
+    /**
+     * Get a list of all issue ids for a given board or project and delete ones that are not in JIRA anymore
+     * @param collector
+     * @param teams
+     * @param scopes
+     */
+    private void refreshValidIssues(FeatureCollector collector, List<Team> teams, Set<Scope> scopes) {
+        long refreshValidIssuesStart = System.currentTimeMillis();
+        List<String> lookUpIds = collector.getMode().equals(JiraMode.Board) ? teams.stream().map(Team::getTeamId).collect(Collectors.toList()) : scopes.stream().map(s -> s.getpId()).collect(Collectors.toList());
+        lookUpIds.forEach(l -> {
+            LOGGER.info("Refreshing issues for " + collector.getMode() + " ID:" + l);
+            List<String> issueIds = jiraClient.getAllIssueIds(l, collector.getMode());
+            List<Feature> existingFeatures = Objects.equals(collector.getMode(), JiraMode.Board) ? featureRepository.findAllByCollectorIdAndSTeamID(collector.getId(), l) : featureRepository.findAllByCollectorIdAndSProjectID(collector.getId(), l);
+            List<Feature> deletedFeatures = existingFeatures.stream().filter(e -> !issueIds.contains(e.getsId())).collect(Collectors.toList());
+            deletedFeatures.forEach(d -> {
+                LOGGER.info("Deleting Feature " + d.getsId() + ':' + d.getsName());
+                featureRepository.delete(d);
+            });
+        });
+        log(collector.getMode() + " Issues Refreshed ", refreshValidIssuesStart);
+    }
+
 
 }

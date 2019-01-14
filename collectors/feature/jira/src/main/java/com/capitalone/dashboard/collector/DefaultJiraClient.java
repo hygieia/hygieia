@@ -7,6 +7,7 @@ import com.capitalone.dashboard.model.FeatureEpicResult;
 import com.capitalone.dashboard.model.FeatureIssueLink;
 import com.capitalone.dashboard.model.FeatureStatus;
 import com.capitalone.dashboard.model.IssueResult;
+import com.capitalone.dashboard.model.JiraMode;
 import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.model.Sprint;
 import com.capitalone.dashboard.model.Team;
@@ -36,8 +37,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -69,6 +68,7 @@ public class DefaultJiraClient implements JiraClient {
     private static final String ISSUE_BY_BOARD_REST_SUFFIX_BY_DATE = "rest/agile/1.0/board/%s/issue?jql=issueType in (%s) and updatedDate>='%s'&fields=%s&startAt=%s";
     private static final String EPIC_REST_SUFFIX = "rest/agile/1.0/issue/%s";
 
+    private static final String ISSUE_BY_BOARD_FULL_REFRESH_REST_SUFFIX = "rest/agile/1.0/%s/%s/issue?jql=issueType in (%s) and updatedDate>='%s'&fields=id&startAt=%s";
 
     private static final String STATIC_ISSUE_FIELDS = "id,key,issuetype,status,summary,created,updated,project,issuelinks,assignee,sprint,epic,aggregatetimeoriginalestimate,timeoriginalestimate";
 
@@ -79,6 +79,7 @@ public class DefaultJiraClient implements JiraClient {
     private final FeatureSettings featureSettings;
     private final RestOperations restOperations;
     private String issueFields;
+    private static JSONParser parser = new JSONParser();
 
     @Autowired
     public DefaultJiraClient(FeatureSettings featureSettings, Supplier<RestOperations> restOperationsSupplier) {
@@ -105,8 +106,6 @@ public class DefaultJiraClient implements JiraClient {
                     + PROJECT_REST_SUFFIX;
             ResponseEntity<String> responseEntity = makeRestCall(url);
             String responseBody = responseEntity.getBody();
-
-            JSONParser parser = new JSONParser();
 
             JSONArray projects = (JSONArray) parser.parse(responseBody);
 
@@ -162,44 +161,46 @@ public class DefaultJiraClient implements JiraClient {
         boolean isLast = false;
         List<Team> result = new ArrayList<>();
         while (!isLast) {
+            String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/")
+                    + BOARD_TEAMS_REST_SUFFIX + "?startAt=" + startAt;
             try {
-                String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/")
-                        + BOARD_TEAMS_REST_SUFFIX + "?startAt=" + startAt;
                 ResponseEntity<String> responseEntity = makeRestCall(url);
-
                 String responseBody = responseEntity.getBody();
-
-                JSONParser parser = new JSONParser();
                 JSONObject teamsJson = (JSONObject) parser.parse(responseBody);
 
                 if (teamsJson != null) {
                     JSONArray valuesArray = (JSONArray) teamsJson.get("values");
-                    for (Object obj : valuesArray) {
-                        JSONObject jo = (JSONObject) obj;
-                        String teamId = getString(jo, "id");
-                        String teamName = getString(jo, "name");
-                        String teamType = getString(jo, "type");
-                        Team team = new Team(teamId, teamName);
-                        team.setTeamType(teamType);
-                        team.setChangeDate("");
-                        team.setAssetState("Active");
-                        team.setIsDeleted("False");
-                        result.add(team);
-                        count = count + 1;
+                    if (!CollectionUtils.isEmpty(valuesArray)) {
+                        for (Object obj : valuesArray) {
+                            JSONObject jo = (JSONObject) obj;
+                            String teamId = getString(jo, "id");
+                            String teamName = getString(jo, "name");
+                            String teamType = getString(jo, "type");
+                            Team team = new Team(teamId, teamName);
+                            team.setTeamType(teamType);
+                            team.setChangeDate("");
+                            team.setAssetState("Active");
+                            team.setIsDeleted("False");
+                            result.add(team);
+                            count = count + 1;
+                        }
+                        isLast = (boolean) teamsJson.get("isLast");
+                        LOGGER.info("JIRA Collector collected " + count + " boards");
+                        if (!isLast) {
+                            startAt += JIRA_BOARDS_PAGING;
+                        }
+                    } else {
+                        isLast = true;
                     }
-                    isLast = (boolean) teamsJson.get("isLast");
-                    LOGGER.info("JIRA Collector collected " + count + " boards");
-                    if (!isLast) {
-                        startAt += JIRA_BOARDS_PAGING + 1;
-                    }
-
                 } else {
                     isLast = true;
                 }
             } catch (ParseException pe) {
+                isLast = true;
                 LOGGER.error("Parser exception when parsing teams", pe);
-            } catch (HygieiaException e) {
-                LOGGER.error("Error in calling JIRA API", e);
+            } catch (HygieiaException | HttpClientErrorException | HttpServerErrorException e) {
+                isLast = true;
+                LOGGER.error("Error in calling JIRA API: " + url , e.getMessage());
             }
         }
         return result;
@@ -218,7 +219,6 @@ public class DefaultJiraClient implements JiraClient {
                     + TEMPO_TEAMS_REST_SUFFIX;
             ResponseEntity<String> responseEntity = makeRestCall(url);
             String responseBody = responseEntity.getBody();
-            JSONParser parser = new JSONParser();
             JSONArray teamsJson = (JSONArray) parser.parse(responseBody);
             if (teamsJson != null) {
                 for (Object obj : teamsJson) {
@@ -261,13 +261,11 @@ public class DefaultJiraClient implements JiraClient {
         long startAt = 0;
 
         while (!isLast) {
+            String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/")
+                    + ISSUE_BY_BOARD_REST_SUFFIX_BY_DATE;
+            url = String.format(url, board.getTeamId(), issueTypes, lookBackDate, issueFields, startAt);
             try {
-                String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/")
-                        + ISSUE_BY_BOARD_REST_SUFFIX_BY_DATE;
-                url = String.format(url, board.getTeamId(), issueTypes, lookBackDate, issueFields, startAt);
-
                 IssueResult temp = getFeaturesFromQueryURL(url, epicMap);
-
                 //For issues collected in board mode, overwrite the team information
                 temp.getFeatures().forEach(f -> {
                     f.setsTeamID(board.getTeamId());
@@ -275,11 +273,13 @@ public class DefaultJiraClient implements JiraClient {
                 });
                 features.addAll(temp.getFeatures());
                 isLast = temp.getTotal() == features.size() || CollectionUtils.isEmpty(temp.getFeatures());
-                startAt += temp.getPageSize() + 1;
+                startAt += temp.getPageSize();
             } catch (ParseException pe) {
+                isLast = true;
                 LOGGER.error("Parser exception when parsing issue", pe);
-            } catch (HygieiaException e) {
-                LOGGER.error("Error in calling JIRA API", e);
+            } catch (HygieiaException | HttpClientErrorException | HttpServerErrorException e) {
+                isLast = true;
+                LOGGER.error("Error in calling JIRA API: " + url , e.getMessage());
             }
         }
         featureEpicResult.setFeatureList(features);
@@ -317,7 +317,7 @@ public class DefaultJiraClient implements JiraClient {
 
                 features.addAll(temp.getFeatures());
                 isLast = temp.getTotal() == features.size() || CollectionUtils.isEmpty(temp.getFeatures());
-                startAt += temp.getPageSize() + 1;
+                startAt += temp.getPageSize();
             } catch (ParseException pe) {
                 LOGGER.error("Parser exception when parsing issue", pe);
             } catch (HygieiaException e) {
@@ -331,7 +331,6 @@ public class DefaultJiraClient implements JiraClient {
 
 
     private IssueResult getFeaturesFromQueryURL(String url, Map<String, Epic> epicMap) throws HygieiaException, ParseException {
-        JSONParser parser = new JSONParser();
         IssueResult result = new IssueResult();
         try {
             ResponseEntity<String> responseEntity = makeRestCall(url);
@@ -356,13 +355,16 @@ public class DefaultJiraClient implements JiraClient {
                         saveEpic(issueJson, epicMap, true);
                         return;
                     }
-                    Feature feature = getFeature((JSONObject) issue);
-                    String epicId = feature.getsEpicID();
-                    if (!StringUtils.isEmpty(epicId)) {
-                        Epic epic = epicMap.containsKey(epicId) ? epicMap.get(epicId) : getEpic(epicId, epicMap);
-                        processEpicData(feature, epic);
+
+                    if (JIRA_STORY.equalsIgnoreCase(type)) {
+                        Feature feature = getFeature((JSONObject) issue);
+                        String epicId = feature.getsEpicID();
+                        if (!StringUtils.isEmpty(epicId)) {
+                            Epic epic = epicMap.containsKey(epicId) ? epicMap.get(epicId) : getEpic(epicId, epicMap);
+                            processEpicData(feature, epic);
+                        }
+                        result.getFeatures().add(feature);
                     }
-                    result.getFeatures().add(feature);
                 });
             }
         } catch (HttpClientErrorException | HttpServerErrorException he) {
@@ -423,7 +425,7 @@ public class DefaultJiraClient implements JiraClient {
             originalEstimate = estimate.intValue();
         } else if (aggEstimate != 0) {
             // this value is in seconds
-            originalEstimate = Math.round((float) aggEstimate / 60);
+            originalEstimate = Math.round((float) aggEstimate / 3600);
         }
 
         feature.setsEstimateTime(originalEstimate);
@@ -670,7 +672,6 @@ public class DefaultJiraClient implements JiraClient {
             String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/") + String.format(EPIC_REST_SUFFIX, epicKey);
             ResponseEntity<String> responseEntity = makeRestCall(url);
             String responseBody = responseEntity.getBody();
-            JSONParser parser = new JSONParser();
             JSONObject issue = (JSONObject) parser.parse(responseBody);
 
             if (issue == null) {
@@ -707,6 +708,56 @@ public class DefaultJiraClient implements JiraClient {
             epicMap.put(epic.getId(), epic);
         }
         return epic;
+    }
+
+    @Override
+    public List<String> getAllIssueIds(String id, JiraMode mode) {
+        int count = 0;
+        int startAt = 0;
+        boolean isLast = false;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+        String updatedDate = LocalDateTime.now().minusDays(featureSettings.getFirstRunHistoryDays()).format(formatter);
+        String issueTypes = featureSettings.getJiraIssueTypeNames() == null ? DEFAULT_ISSUE_TYPES : String.join(",", featureSettings.getJiraIssueTypeNames());
+        List<String> result = new ArrayList<>();
+        while (!isLast) {
+
+            String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/") + ISSUE_BY_BOARD_FULL_REFRESH_REST_SUFFIX;
+            url = String.format(url, mode.toString().toLowerCase(), id, issueTypes, updatedDate, startAt);
+            try {
+                ResponseEntity<String> responseEntity = makeRestCall(url);
+
+                String responseBody = responseEntity.getBody();
+                JSONObject jsonObject = (JSONObject) parser.parse(responseBody);
+
+                if (jsonObject != null) {
+                    JSONArray valuesArray = (JSONArray) jsonObject.get("issues");
+                    if (!CollectionUtils.isEmpty(valuesArray)) {
+                        for (Object obj : valuesArray) {
+                            String sId = getString((JSONObject) obj, "id");
+                            result.add(sId);
+                            count = count + 1;
+                        }
+                        long total = getLong(jsonObject, "total");
+                        long maxResults = getLong(jsonObject, "maxResults");
+                        isLast = total == result.size();
+
+                        startAt += maxResults;
+                    } else {
+                        isLast = true;
+                    }
+
+                } else {
+                    isLast = true;
+                }
+            } catch (ParseException pe) {
+                isLast = true;
+                LOGGER.error("Parser exception when parsing issue refresh json", pe);
+            } catch (HygieiaException | HttpClientErrorException | HttpServerErrorException e) {
+                isLast = true;
+                LOGGER.error("Error in calling JIRA API: " + url , e.getMessage());
+            }
+        }
+        return result;
     }
 
 
