@@ -6,7 +6,8 @@
  *
  * Additions added so that if there are multiple widgets within section, the error message will only be displayed once- if it is NOT already displayed
  *
- * TODO: Add additional functionality to determine if there is already data within the widget so "No data found" is only displayed on a completely empty widget **Should only be an issue for the Static Analysis widget where there are two groups of widgets
+ * TODO: Add additional functionality to determine if there is already data within the widget so "No data found" is only displayed on a completely empty widget **Should only be an issue for widgets where there are two groups (ex: Static Analysis and Tests)
+ * TODO: Account for empty arrays (currently checking for first value)
  */
 (function () {
     'use strict';
