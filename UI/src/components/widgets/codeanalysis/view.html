@@ -12,6 +12,7 @@
         </div>
         <div class="container-fluid" ng-if="caWidget.miniWidgetView == 'Static Analysis'">
             <div>
+                <br>
                 <div hide-empty="['{{ caWidget.issues[0].formattedValue }}', '{{ caWidget.qualityGate.value }}', '{{ caWidget.rulesCompliance.value }}', '{{ caWidget.technicalDebt.formattedValue }}']">
                     <div class="row">
                         <div class="col-sm-6">
@@ -108,8 +109,6 @@
                         </div>
                     </div>
                 </div>
-
-                <br>
                 <div hide-empty="['{{ caWidget.unitTests[0].formattedValue }}', '{{ caWidget.linesofCode.value }}']">
                     <div class="row">
                         <div class="col-sm-6">
@@ -186,6 +185,7 @@
 
         <!--Security scan tab-->
         <div class="container-fluid" ng-if="caWidget.miniWidgetView == 'Security'">
+            <br>
             <div hide-empty="['{{ caWidget.securityIssues[0].formattedValue }}']">
                 <div class="row">
                     <div class="col-xs-12"><br>
@@ -297,6 +297,7 @@
         </div>
         <!-- Test Results tab-->
         <div class="container-fluid" ng-if="caWidget.miniWidgetView == 'Tests'">
+            <br>
             <div hide-empty="['{{ caWidget.functionalTests[0] }}']">
                 <div class="row">
                     <test-list test-title="Functional" test-Data="caWidget.functionalTests"></test-list>
