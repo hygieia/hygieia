@@ -3,6 +3,7 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Epic;
 import com.capitalone.dashboard.model.Feature;
+import com.capitalone.dashboard.model.FeatureEpicResult;
 import com.capitalone.dashboard.model.FeatureIssueLink;
 import com.capitalone.dashboard.model.FeatureStatus;
 import com.capitalone.dashboard.model.IssueResult;
@@ -35,6 +36,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -67,8 +70,11 @@ public class DefaultJiraClient implements JiraClient {
     private static final String EPIC_REST_SUFFIX = "rest/agile/1.0/issue/%s";
 
 
-    private static final String STATIC_ISSUE_FIELDS = "id,key,issuetype,status,summary,updated,project,issuelinks,assignee,sprint,aggregatetimeoriginalestimate,timeoriginalestimate";
+    private static final String STATIC_ISSUE_FIELDS = "id,key,issuetype,status,summary,created,updated,project,issuelinks,assignee,sprint,epic,aggregatetimeoriginalestimate,timeoriginalestimate";
 
+    private static final String DEFAULT_ISSUE_TYPES = "Story,Epic";
+    private static final String JIRA_STORY = "7";
+    private static final String JIRA_EPIC = "6";
     private static final int JIRA_BOARDS_PAGING = 50;
     private final FeatureSettings featureSettings;
     private final RestOperations restOperations;
@@ -238,22 +244,19 @@ public class DefaultJiraClient implements JiraClient {
     /**
      * Get list of Features (Issues in Jira terms) given a project.
      *
-     * @param  board
+     * @param board
      * @return List of Feature
      */
     @Override
-    public List<Feature> getIssues(Team board) {
+    public FeatureEpicResult getIssues(Team board) {
         Map<String, Epic> epicMap = new HashMap<>();
+        FeatureEpicResult featureEpicResult = new FeatureEpicResult();
 
-        if (featureSettings.getJiraIssueTypeNames() == null) {
-            LOGGER.error("Missing jira issue type names in settings");
-            return Collections.EMPTY_LIST;
-        }
+        String lookBackDate = getUpdatedSince(board.getLastCollected());
 
-        String lookbackDate = getUpdatedSince(board.getLastCollected());
-        String issueTypes = String.join(",", featureSettings.getJiraIssueTypeNames());
+        String issueTypes = featureSettings.getJiraIssueTypeNames() == null ? DEFAULT_ISSUE_TYPES : String.join(",", featureSettings.getJiraIssueTypeNames());
 
-        List<Feature> result = new ArrayList<>();
+        List<Feature> features = new ArrayList<>();
         boolean isLast = false;
         long startAt = 0;
 
@@ -261,7 +264,7 @@ public class DefaultJiraClient implements JiraClient {
             try {
                 String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/")
                         + ISSUE_BY_BOARD_REST_SUFFIX_BY_DATE;
-                url = String.format(url, board.getTeamId(), issueTypes, lookbackDate, issueFields, startAt);
+                url = String.format(url, board.getTeamId(), issueTypes, lookBackDate, issueFields, startAt);
 
                 IssueResult temp = getFeaturesFromQueryURL(url, epicMap);
 
@@ -270,8 +273,8 @@ public class DefaultJiraClient implements JiraClient {
                     f.setsTeamID(board.getTeamId());
                     f.setsTeamName(board.getName());
                 });
-                result.addAll(temp.getFeatures());
-                isLast = temp.getTotal() == result.size() || CollectionUtils.isEmpty(temp.getFeatures());
+                features.addAll(temp.getFeatures());
+                isLast = temp.getTotal() == features.size() || CollectionUtils.isEmpty(temp.getFeatures());
                 startAt += temp.getPageSize() + 1;
             } catch (ParseException pe) {
                 LOGGER.error("Parser exception when parsing issue", pe);
@@ -279,7 +282,9 @@ public class DefaultJiraClient implements JiraClient {
                 LOGGER.error("Error in calling JIRA API", e);
             }
         }
-        return result;
+        featureEpicResult.setFeatureList(features);
+        featureEpicResult.getEpicList().addAll(epicMap.values());
+        return featureEpicResult;
     }
 
     /**
@@ -289,17 +294,16 @@ public class DefaultJiraClient implements JiraClient {
      * @return List of Feature
      */
     @Override
-    public List<Feature> getIssues(Scope project) {
+    public FeatureEpicResult getIssues(Scope project) {
         Map<String, Epic> epicMap = new HashMap<>();
+        FeatureEpicResult featureEpicResult = new FeatureEpicResult();
 
-        if (featureSettings.getJiraIssueTypeNames() == null) {
-            LOGGER.error("Missing jira issue type names in settings");
-        }
+        String lookBackDate = getUpdatedSince(project.getLastCollected());
 
-        String lookbackDate = getUpdatedSince(project.getLastCollected());
-        String issueTypes = String.join(",", featureSettings.getJiraIssueTypeNames());
+        String issueTypes = featureSettings.getJiraIssueTypeNames() == null ? DEFAULT_ISSUE_TYPES : String.join(",", featureSettings.getJiraIssueTypeNames());
 
-        List<Feature> result = new ArrayList<>();
+        List<Feature> features = new ArrayList<>();
+
         boolean isLast = false;
         long startAt = 0;
 
@@ -307,12 +311,12 @@ public class DefaultJiraClient implements JiraClient {
             try {
                 String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/")
                         + ISSUE_BY_PROJECT_REST_SUFFIX_BY_DATE;
-                url = String.format(url, project.getpId(), issueTypes, lookbackDate, issueFields, startAt);
+                url = String.format(url, project.getpId(), issueTypes, lookBackDate, issueFields, startAt);
 
                 IssueResult temp = getFeaturesFromQueryURL(url, epicMap);
 
-                result.addAll(temp.getFeatures());
-                isLast = temp.getTotal() == result.size() || CollectionUtils.isEmpty(temp.getFeatures());
+                features.addAll(temp.getFeatures());
+                isLast = temp.getTotal() == features.size() || CollectionUtils.isEmpty(temp.getFeatures());
                 startAt += temp.getPageSize() + 1;
             } catch (ParseException pe) {
                 LOGGER.error("Parser exception when parsing issue", pe);
@@ -320,7 +324,9 @@ public class DefaultJiraClient implements JiraClient {
                 LOGGER.error("Error in calling JIRA API", e);
             }
         }
-        return result;
+        featureEpicResult.setFeatureList(features);
+        featureEpicResult.getEpicList().addAll(epicMap.values());
+        return featureEpicResult;
     }
 
 
@@ -343,10 +349,17 @@ public class DefaultJiraClient implements JiraClient {
                 }
 
                 issueArray.forEach(issue -> {
+                    JSONObject issueJson = (JSONObject) issue;
+                    String type = getIssueType(issueJson);
+
+                    if (JIRA_EPIC.equals(type)) {
+                        saveEpic(issueJson, epicMap, true);
+                        return;
+                    }
                     Feature feature = getFeature((JSONObject) issue);
                     String epicId = feature.getsEpicID();
                     if (!StringUtils.isEmpty(epicId)) {
-                        Epic epic = epicMap.containsKey(epicId) ? epicMap.get(epicId) : getEpic(epicId);
+                        Epic epic = epicMap.containsKey(epicId) ? epicMap.get(epicId) : getEpic(epicId, epicMap);
                         processEpicData(feature, epic);
                     }
                     result.getFeatures().add(feature);
@@ -356,6 +369,12 @@ public class DefaultJiraClient implements JiraClient {
             LOGGER.error("ERROR collecting issues. " + he.getResponseBodyAsString() + ". Url = " + url);
         }
         return result;
+    }
+
+    private static String getIssueType(JSONObject issueJson) {
+        JSONObject fields = (JSONObject) issueJson.get("fields");
+        JSONObject issueType = (JSONObject) fields.get("issuetype");
+        return getString(issueType, "id");
     }
 
 
@@ -373,8 +392,9 @@ public class DefaultJiraClient implements JiraClient {
 
         JSONObject fields = (JSONObject) issue.get("fields");
 
+        JSONObject epic = (JSONObject) fields.get("epic");
         String epicId = getString(fields, featureSettings.getJiraEpicIdFieldName());
-        feature.setsEpicID(epicId != null ? epicId : "");
+        feature.setsEpicID(epic != null ? getString(epic, "id") : epicId);
 
         JSONObject issueType = (JSONObject) fields.get("issuetype");
         if (issueType != null) {
@@ -469,7 +489,7 @@ public class DefaultJiraClient implements JiraClient {
      * @param status
      * @return status
      */
-    private String getStatus(JSONObject status) {
+    private static String getStatus(JSONObject status) {
         if (status == null) {
             return "";
         }
@@ -645,7 +665,7 @@ public class DefaultJiraClient implements JiraClient {
      * @return epic
      */
     @Override
-    public Epic getEpic(String epicKey) {
+    public Epic getEpic(String epicKey, Map<String, Epic> epicMap) {
         try {
             String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/") + String.format(EPIC_REST_SUFFIX, epicKey);
             ResponseEntity<String> responseEntity = makeRestCall(url);
@@ -657,24 +677,36 @@ public class DefaultJiraClient implements JiraClient {
                 return null;
             }
 
-            Epic epic = new Epic();
-            epic.setId(epicKey);
-            epic.setNumber(getString(issue, "key"));
-            JSONObject fields = (JSONObject) issue.get("fields");
-            epic.setName(getString(fields, "summary"));
-            epic.setChangeDate(getString(fields, "updated"));
-            epic.setBeginDate(getString(fields, "created"));
-            epic.setEndDate(getString(fields, "resolutiondate"));
-            JSONObject status = (JSONObject) fields.get("status");
-            epic.setStatus(getString(status, "name"));
-            epic.setUrl(featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/") + "browse/" + epic.getNumber());
-            return epic;
+            return saveEpic(issue, epicMap, false);
         } catch (ParseException pe) {
             LOGGER.error("Parser exception when parsing teams", pe);
         } catch (HygieiaException e) {
             LOGGER.error("Error in calling JIRA API", e);
         }
         return null;
+    }
+
+    private Epic saveEpic(JSONObject issueJson, Map<String, Epic> epicMap, boolean recentUpdate) {
+        Epic epic = new Epic();
+        epic.setId(getString(issueJson, "id"));
+        epic.setNumber(getString(issueJson, "key"));
+        JSONObject fields = (JSONObject) issueJson.get("fields");
+        epic.setName(getString(fields, "summary"));
+        epic.setChangeDate(getString(fields, "updated"));
+        epic.setBeginDate(getString(fields, "created"));
+        epic.setEndDate(getString(fields, "resolutiondate"));
+        JSONObject status = (JSONObject) fields.get("status");
+        epic.setStatus(getString(status, "name"));
+        epic.setRecentUpdate(recentUpdate);
+        epic.setUrl(featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/") + "browse/" + epic.getNumber());
+        if (epicMap.containsKey(epic.getId())) {
+            if (recentUpdate) {
+                epicMap.put(epic.getId(), epic);
+            }
+        } else {
+            epicMap.put(epic.getId(), epic);
+        }
+        return epic;
     }
 
 

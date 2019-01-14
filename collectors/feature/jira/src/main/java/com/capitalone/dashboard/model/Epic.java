@@ -11,6 +11,7 @@ public class Epic {
     private String endDate;
     private String status;
     private String url;
+    private boolean recentUpdate;
 
     public String getId() {
         return id;
@@ -74,6 +75,14 @@ public class Epic {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public boolean isRecentUpdate() {
+        return recentUpdate;
+    }
+
+    public void setRecentUpdate(boolean recentUpdate) {
+        this.recentUpdate = recentUpdate;
     }
 
     @Override

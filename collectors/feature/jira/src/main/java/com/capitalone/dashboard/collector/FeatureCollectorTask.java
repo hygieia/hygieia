@@ -1,8 +1,10 @@
 package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.Epic;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.FeatureCollector;
+import com.capitalone.dashboard.model.FeatureEpicResult;
 import com.capitalone.dashboard.model.JiraMode;
 import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.model.Team;
@@ -208,8 +210,10 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
                 LOGGER.info("Collecting " + count.incrementAndGet() + " of " + projects.size() + " projects.");
 
                 long lastCollection = System.currentTimeMillis();
-                List<Feature> features = jiraClient.getIssues(project);
+                FeatureEpicResult featureEpicResult = jiraClient.getIssues(project);
+                List<Feature> features = featureEpicResult.getFeatureList();
                 saveFeatures(features, collector);
+                updateFeaturesWithLatestEpics(featureEpicResult.getEpicList(), collector);
                 log("Story Data Collected since " + LocalDateTime.ofInstant(Instant.ofEpochMilli(project.getLastCollected()), ZoneId.systemDefault()), storyDataStart, features.size());
 
                 project.setLastCollected(lastCollection); //set it after everything is successfully done
@@ -220,8 +224,10 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
             boards.forEach(board -> {
                 LOGGER.info("Collecting " + count.incrementAndGet() + " of " + boards.size() + " boards.");
                 long lastCollection = System.currentTimeMillis();
-                List<Feature> features = jiraClient.getIssues(board);
+                FeatureEpicResult featureEpicResult = jiraClient.getIssues(board);
+                List<Feature> features = featureEpicResult.getFeatureList();
                 saveFeatures(features, collector);
+                updateFeaturesWithLatestEpics(featureEpicResult.getEpicList(), collector);
                 log("Story Data Collected since " + LocalDateTime.ofInstant(Instant.ofEpochMilli(board.getLastCollected()), ZoneId.systemDefault()), storyDataStart, features.size());
 
                 board.setLastCollected(lastCollection); //set it after everything is successfully done
@@ -230,7 +236,6 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         }
 
     }
-
 
     private void saveFeatures(List<Feature> features, FeatureCollector collector) {
         features.forEach(f -> {
@@ -241,7 +246,26 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
             }
             featureRepository.save(f);
         });
+    }
 
+
+    private void updateFeaturesWithLatestEpics(List<Epic> epicList, FeatureCollector collector) {
+        epicList.stream().filter(Epic::isRecentUpdate).forEach(e -> {
+            List<Feature> existing = featureRepository.findAllByCollectorIdAndSEpicID(collector.getId(), e.getId());
+            existing.forEach(ex -> {
+                if (!ex.getsEpicChangeDate().equalsIgnoreCase(e.getChangeDate()) ||
+                        !ex.getsEpicAssetState().equalsIgnoreCase(e.getStatus()) ||
+                        !ex.getsEpicName().equalsIgnoreCase(e.getName()) ||
+                        !ex.getsEpicBeginDate().equalsIgnoreCase(e.getBeginDate())
+                ) {
+                    ex.setsEpicAssetState(e.getStatus());
+                    ex.setsEpicBeginDate(e.getBeginDate());
+                    ex.setsEpicChangeDate(e.getChangeDate());
+                    ex.setsEpicName(e.getName());
+                    featureRepository.save(ex);
+                }
+            });
+        });
     }
 
 }
