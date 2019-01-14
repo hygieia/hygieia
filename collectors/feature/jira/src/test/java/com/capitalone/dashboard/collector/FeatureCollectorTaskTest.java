@@ -114,14 +114,20 @@ public class FeatureCollectorTaskTest {
     @Test
     public void addProjectInformation() throws IOException{
         Set<Scope> expected = getExpectedScopeResponse("./expected/scope-expected.json");
-        doReturn(new ResponseEntity<>(getExpectedJSON("projectResponse.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        doReturn(new ResponseEntity<>(getExpectedJSON("projectresponse.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
         Set<Scope> actual = featureCollectorTask.updateProjectInformation(featureCollectorRepository.findByName("Jira"));
 
         assertEquals(expected, actual);
     }
     //@Test
-    public void updateProjectInformation() throws IOException{
-
+    public void updateProjectName() throws IOException{
+        Set<Scope> expected = getExpectedScopeResponse("./expected/scope-update-expected.json");
+        doReturn(new ResponseEntity<>(getExpectedJSON("projectresponse-update.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        Set<Scope> actual = featureCollectorTask.updateProjectInformation(featureCollectorRepository.findByName("Jira"));
+        assertEquals(expected,actual);
+        for(Scope scope: expected){
+            assertEquals(projectRepository.getScopeById(scope.getpId()).get(0).getName(),scope.getName());
+        }
     }
     //@Test
     public void addStoryInformation() throws IOException{
