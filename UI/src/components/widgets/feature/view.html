@@ -10,22 +10,24 @@
                     Team: <em>{{ctrl.teamName}}</em>
                 </div>
 			</div>
-
-			<div class="widget-heading">
-				<div class="iteration-change-btn text-standard-sm">Iteration:
-					<button id="next-btn" class="pull-right btn-default btn-xm active" ng-show="ctrl.numberOfSprintTypes === 2" ng-click="ctrl.animateAgileView(true)">>></button>
-					<button id="pause-btn" class="pull-right btn-default btn-xm active" ng-show="ctrl.numberOfSprintTypes === 2" ng-click="ctrl.pauseAgileView()" ng-model="ctrl.pausePlaySymbol">{{ctrl.pausePlaySymbol}}</button>
-				</div>
-				<div ng-repeat="iteration in ctrl.iterations">
-					<div class="col-xs-2.5 text-lg pull-right">
-						{{iteration.tilEnd}}
+			<h1> test</h1>
+			<div hide-empty="['{{ ctrl.iterations[0].name }}']">
+				<div class="widget-heading">
+					<div class="iteration-change-btn text-standard-sm">Iteration:
+						<button id="next-btn" class="pull-right btn-default btn-xm active" ng-show="ctrl.numberOfSprintTypes === 2" ng-click="ctrl.animateAgileView(true)">>></button>
+						<button id="pause-btn" class="pull-right btn-default btn-xm active" ng-show="ctrl.numberOfSprintTypes === 2" ng-click="ctrl.pauseAgileView()" ng-model="ctrl.pausePlaySymbol">{{ctrl.pausePlaySymbol}}</button>
 					</div>
-					<div class="col-xs-9.5 text-lg dash-overflow feature-link" ng-if="iteration.url !== undefined && iteration.url !== null && iteration.url !== ''">
-                        <a ng-href="{{::iteration.url}}" target="_blank">{{iteration.name}}</a>
-                    </div>
-                    <div class="col-xs-9.5 text-lg dash-overflow" ng-if="iteration.url === undefined || iteration.url === null || iteration.url === ''">
-                        {{iteration.name}}
-                    </div>
+					<div ng-repeat="iteration in ctrl.iterations">
+						<div class="col-xs-2.5 text-lg pull-right">
+							{{iteration.tilEnd}}
+						</div>
+						<div class="col-xs-9.5 text-lg dash-overflow feature-link" ng-if="iteration.url !== undefined && iteration.url !== null && iteration.url !== ''">
+							<a ng-href="{{::iteration.url}}" target="_blank">{{iteration.name}}</a>
+						</div>
+						<div class="col-xs-9.5 text-lg dash-overflow" ng-if="iteration.url === undefined || iteration.url === null || iteration.url === ''">
+							{{iteration.name}}
+						</div>
+					</div>
 				</div>
 			</div>
 
