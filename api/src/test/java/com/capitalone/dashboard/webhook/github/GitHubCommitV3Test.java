@@ -142,7 +142,9 @@ public class GitHubCommitV3Test {
     public void setCollectorItemIdExistingCommitTest() throws MalformedURLException, HygieiaException {
         GitHubCommitV3 gitHubCommitV3 = Mockito.spy(this.gitHubCommitV3);
 
+        List<Commit> commitList = new ArrayList<>();
         Commit existingCommit = new Commit();
+        commitList.add(existingCommit);
         String id = createGuid("0123456789abcdef");
         existingCommit.setId(new ObjectId(id));
 
@@ -154,7 +156,7 @@ public class GitHubCommitV3Test {
 
         Commit newCommit = new Commit();
 
-        when(commitRepository.findByScmRevisionNumberAndScmUrlIgnoreCaseAndScmBranchIgnoreCase(anyString(), anyString(), anyString())).thenReturn(existingCommit);
+        when(commitRepository.findAllByScmRevisionNumberAndScmUrlIgnoreCaseAndScmBranchIgnoreCaseOrderByTimestampAsc(anyString(), anyString(), anyString())).thenReturn(commitList);
         when(collectorService.getCollectorItem(existingCommit.getCollectorItemId())).thenReturn(collectorItem);
 
         gitHubCommitV3.setCollectorItemId(newCommit);
@@ -182,7 +184,7 @@ public class GitHubCommitV3Test {
         String collectorItemId = createGuid("0123456789abcdee");
         collectorItem.setId(new ObjectId(collectorItemId));
 
-        when(commitRepository.findByScmRevisionNumberAndScmUrlIgnoreCaseAndScmBranchIgnoreCase(anyString(), anyString(), anyString())).thenReturn(null);
+        when(commitRepository.findAllByScmRevisionNumberAndScmUrlIgnoreCaseAndScmBranchIgnoreCaseOrderByTimestampAsc(anyString(), anyString(), anyString())).thenReturn(null);
         when(collectorService.createCollector(anyObject())).thenReturn(collector);
         when(gitHubCommitV3.buildCollectorItem(anyObject(), anyString(), anyString())).thenReturn(collectorItem);
         when(collectorService.createCollectorItem(anyObject())).thenReturn(collectorItem);

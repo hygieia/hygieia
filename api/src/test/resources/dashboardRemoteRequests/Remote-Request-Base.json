@@ -1,0 +1,15 @@
+{
+  "metaData":
+  {
+    "applicationName":"test1",
+    "componentName":"test1",
+    "owner":
+    {
+      "authType":"STANDARD",
+      "username":"topopal"
+    },
+    "template":"CapOne",
+    "title":"testTitle",
+    "type":"Team"
+  }
+}
