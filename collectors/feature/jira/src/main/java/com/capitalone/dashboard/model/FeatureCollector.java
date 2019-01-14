@@ -24,10 +24,7 @@ public class FeatureCollector extends Collector {
 	}
 
 	public JiraMode getMode() {
-		if (getProperties().containsKey("mode")) {
-			return JiraMode.fromString((String) getProperties().get("mode"));
-		}
-		return JiraMode.Board;
+		return (JiraMode) MapUtils.getObject(this.getProperties(),"mode", JiraMode.Board);
 	}
 	/**
 	 * Creates a static prototype of the Feature Collector, which includes any
