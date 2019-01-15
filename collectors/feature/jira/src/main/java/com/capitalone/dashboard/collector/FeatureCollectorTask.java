@@ -127,8 +127,9 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
                 LOGGER.info("Hours since last run = " + diff + ". Collector is about to refresh Team/Board information");
                 List<Team> teams = updateTeamInformation(collector);
                 Set<Scope> scopes = updateProjectInformation(collector);
-
-                refreshValidIssues(collector, teams, scopes);
+                if (collector.getLastExecuted() > 0) {
+                    refreshValidIssues(collector, teams, scopes);
+                }
                 collector.setLastRefreshTime(System.currentTimeMillis());
                 featureCollectorRepository.save(collector);
                 LOGGER.info("Collected " + teams.size() + " teams and " + scopes.size() + " projects");
@@ -237,6 +238,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 
     /**
      * Save features to repository
+     *
      * @param features
      * @param collector
      */
@@ -255,6 +257,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 
     /**
      * Update all features with the latest Epic Information, if any.
+     *
      * @param epicList
      * @param collector
      */
@@ -262,14 +265,8 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         epicList.stream().filter(Epic::isRecentUpdate).forEach(e -> {
             List<Feature> existing = featureRepository.findAllByCollectorIdAndSEpicID(collector.getId(), e.getId());
             existing.forEach(ex -> {
-                if (!ex.getsEpicChangeDate().equalsIgnoreCase(e.getChangeDate()) ||
-                        !ex.getsEpicAssetState().equalsIgnoreCase(e.getStatus()) ||
-                        !ex.getsEpicName().equalsIgnoreCase(e.getName()) ||
-                        !ex.getsEpicBeginDate().equalsIgnoreCase(e.getBeginDate())
-                ) {
+                if (!ex.getsEpicAssetState().equalsIgnoreCase(e.getStatus()) || !ex.getsEpicName().equalsIgnoreCase(e.getName())) {
                     ex.setsEpicAssetState(e.getStatus());
-                    ex.setsEpicBeginDate(e.getBeginDate());
-                    ex.setsEpicChangeDate(e.getChangeDate());
                     ex.setsEpicName(e.getName());
                     featureRepository.save(ex);
                 }
@@ -279,6 +276,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 
     /**
      * Get a list of all issue ids for a given board or project and delete ones that are not in JIRA anymore
+     *
      * @param collector
      * @param teams
      * @param scopes

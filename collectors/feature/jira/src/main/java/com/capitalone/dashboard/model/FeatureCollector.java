@@ -40,7 +40,6 @@ public class FeatureCollector extends Collector {
 		protoType.setOnline(true);
         protoType.setEnabled(true);
 		protoType.setCollectorType(CollectorType.AgileTool);
-		protoType.setLastExecuted(System.currentTimeMillis());
 
 		Map<String, Object> allOptions = new HashMap<>();
 		allOptions.put(FeatureCollectorConstants.TOOL_TYPE, "");
