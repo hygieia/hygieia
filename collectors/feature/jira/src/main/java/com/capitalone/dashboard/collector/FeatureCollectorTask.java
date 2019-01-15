@@ -14,12 +14,14 @@ import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.ScopeRepository;
 import com.capitalone.dashboard.repository.TeamRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
+import com.capitalone.dashboard.utils.Utilities;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -154,9 +156,11 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
     protected List<Team> updateTeamInformation(FeatureCollector collector) {
         long projectDataStart = System.currentTimeMillis();
         List<Team> teams = featureSettings.isJiraBoardAsTeam() ? jiraClient.getBoards() : jiraClient.getTeams();
+        //Add or update teams that we got from api
         teams.forEach(newTeam -> {
             String teamId = newTeam.getTeamId();
             newTeam.setCollectorId(collector.getId());
+            LOGGER.info(String.format("Adding %s:%s-%s", collector.getMode(), teamId, newTeam.getName()));
             Team existing = teamRepository.findByTeamId(teamId);
             if (existing == null) {
                 teamRepository.save(newTeam);
@@ -165,7 +169,21 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
                 teamRepository.save(newTeam);
             }
         });
-        log(collector.getMode() + " Data Collected", projectDataStart, teams.size());
+        log(collector.getMode() + " Data Collected. Added ", projectDataStart, teams.size());
+        projectDataStart = System.currentTimeMillis();
+
+        // Delete the ones that are gone from JIRA
+        List<Team> existingTeams = teamRepository.findByCollectorId(collector.getId());
+        Set<String> newTeamIds = teams.stream().map(Team::getTeamId).collect(Collectors.toSet());
+        Set<Team> toDelete = existingTeams.stream().filter(e -> !newTeamIds.contains(e.getTeamId())).collect(Collectors.toSet());
+
+        if (!CollectionUtils.isEmpty(toDelete)) {
+            toDelete.forEach(td -> {
+                LOGGER.info(String.format("Deleting %s:%s-%s", collector.getMode(), td.getTeamId(), td.getName()));
+            });
+            teamRepository.delete(toDelete);
+            log(collector.getMode() + " Data Collected. Deleted ", projectDataStart, toDelete.size());
+        }
         return teams;
     }
 
@@ -177,9 +195,11 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
      */
     protected Set<Scope> updateProjectInformation(Collector collector) {
         long projectDataStart = System.currentTimeMillis();
+        //Add or update teams that we got from api
         Set<Scope> projects = jiraClient.getProjects();
 
         projects.forEach(jiraScope -> {
+            LOGGER.info(String.format("Adding :%s-%s", jiraScope.getpId(), jiraScope.getName()));
             jiraScope.setCollectorId(collector.getId());
             Scope existing = projectRepository.findByCollectorIdAndPId(collector.getId(), jiraScope.getpId());
             if (existing == null) {
@@ -190,6 +210,18 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
             }
         });
         log("Project Data Collected", projectDataStart, projects.size());
+
+        // Delete the ones that are gone from JIRA
+        List<Scope> existingProjects = projectRepository.findByCollectorId(collector.getId());
+        Set<String> newProjectIds = projects.stream().map(Scope::getpId).collect(Collectors.toSet());
+        Set<Scope> toDelete = existingProjects.stream().filter(e -> !newProjectIds.contains(e.getpId())).collect(Collectors.toSet());
+        if (!CollectionUtils.isEmpty(toDelete)) {
+            toDelete.forEach(td -> {
+                LOGGER.info(String.format("Deleting :%s-%s", td.getpId(), td.getName()));
+            });
+            projectRepository.delete(toDelete);
+            log( "Project Data Collected. Deleted ", projectDataStart, toDelete.size());
+        }
         return projects;
     }
 
@@ -264,12 +296,10 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
     private void updateFeaturesWithLatestEpics(List<Epic> epicList, FeatureCollector collector) {
         epicList.stream().filter(Epic::isRecentUpdate).forEach(e -> {
             List<Feature> existing = featureRepository.findAllByCollectorIdAndSEpicID(collector.getId(), e.getId());
-            existing.forEach(ex -> {
-                if (!ex.getsEpicAssetState().equalsIgnoreCase(e.getStatus()) || !ex.getsEpicName().equalsIgnoreCase(e.getName())) {
-                    ex.setsEpicAssetState(e.getStatus());
-                    ex.setsEpicName(e.getName());
-                    featureRepository.save(ex);
-                }
+            existing.stream().filter(ex -> isEpicChanged(ex, e)).forEach(ex -> {
+                ex.setsEpicAssetState(e.getStatus());
+                ex.setsEpicName(e.getName());
+                featureRepository.save(ex);
             });
         });
     }
@@ -283,7 +313,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
      */
     private void refreshValidIssues(FeatureCollector collector, List<Team> teams, Set<Scope> scopes) {
         long refreshValidIssuesStart = System.currentTimeMillis();
-        List<String> lookUpIds = collector.getMode().equals(JiraMode.Board) ? teams.stream().map(Team::getTeamId).collect(Collectors.toList()) : scopes.stream().map(s -> s.getpId()).collect(Collectors.toList());
+        List<String> lookUpIds = Objects.equals(collector.getMode(), JiraMode.Board) ? teams.stream().map(Team::getTeamId).collect(Collectors.toList()) : scopes.stream().map(Scope::getpId).collect(Collectors.toList());
         lookUpIds.forEach(l -> {
             LOGGER.info("Refreshing issues for " + collector.getMode() + " ID:" + l);
             List<String> issueIds = jiraClient.getAllIssueIds(l, collector.getMode());
@@ -298,4 +328,26 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
     }
 
 
+    // Checks if epic information on a feature needs update
+    private static boolean isEpicChanged(Feature feature, Epic epic) {
+        if (!feature.getsEpicAssetState().equalsIgnoreCase(epic.getStatus())) {
+            return true;
+        }
+        if (!feature.getsEpicName().equalsIgnoreCase(epic.getName())) {
+            return true;
+        }
+        if (!feature.getsEpicNumber().equalsIgnoreCase(epic.getNumber())) {
+            return true;
+        }
+        if (!StringUtils.isEmpty(feature.getChangeDate()) && !StringUtils.isEmpty(epic.getChangeDate()) &&
+                !Objects.equals(Utilities.parseDateWithoutFraction(feature.getChangeDate()), Utilities.parseDateWithoutFraction(epic.getChangeDate()))) {
+            return true;
+        }
+        if (!StringUtils.isEmpty(feature.getsEpicBeginDate()) && !StringUtils.isEmpty(epic.getBeginDate()) &&
+                !Objects.equals(Utilities.parseDateWithoutFraction(feature.getsEpicBeginDate()), Utilities.parseDateWithoutFraction(epic.getBeginDate()))) {
+            return true;
+        }
+        return !StringUtils.isEmpty(feature.getsEpicEndDate()) && !StringUtils.isEmpty(epic.getEndDate()) &&
+                !Objects.equals(Utilities.parseDateWithoutFraction(feature.getsEpicEndDate()), Utilities.parseDateWithoutFraction(epic.getEndDate()));
+    }
 }
