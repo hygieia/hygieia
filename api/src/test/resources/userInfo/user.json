@@ -1,0 +1,12 @@
+{
+  "username" : "topopal",
+  "authorities" : [
+    "ROLE_USER"
+  ],
+  "authType" : "STANDARD",
+  "firstName" : "",
+  "middleName" : "",
+  "lastName" : "",
+  "displayName" : "",
+  "emailAddress" : ""
+}

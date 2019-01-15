@@ -42,7 +42,7 @@
             };
             var testRequest = {
                 componentId: $scope.widgetConfig.componentId,
-                types: ['Functional'],
+                types: ['Functional','Manual'],
                 max: 1
             };
             var performanceRequest = {
@@ -214,9 +214,6 @@
 
         function processTestResponse(response) {
             var deferred = $q.defer();
-
-            ctrl.functionalTests = processTestResponseByType(response, "Functional");
-
             deferred.resolve(response.lastUpdated);
             return deferred.promise;
         }
