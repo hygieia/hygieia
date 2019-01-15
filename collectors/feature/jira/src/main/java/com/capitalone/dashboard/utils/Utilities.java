@@ -1,10 +1,6 @@
 package com.capitalone.dashboard.utils;
 
-import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
-
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 public class Utilities {
     public static String getString(JSONObject json, String key) {
