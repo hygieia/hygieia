@@ -532,7 +532,7 @@ public class DefaultJiraClient implements JiraClient {
         feature.setsEpicID(epic.getId());
         feature.setsEpicIsDeleted("false");
         feature.setsEpicName(epic.getName());
-        feature.setsNumber(epic.getNumber());
+        feature.setsEpicNumber(epic.getNumber());
         feature.setsEpicType("");
         feature.setsEpicAssetState(epic.getStatus());
         feature.setsEpicBeginDate(epic.getBeginDate());
