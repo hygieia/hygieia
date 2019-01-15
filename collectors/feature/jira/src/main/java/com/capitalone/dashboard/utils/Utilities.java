@@ -1,6 +1,10 @@
 package com.capitalone.dashboard.utils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 public class Utilities {
     public static String getString(JSONObject json, String key) {
@@ -19,5 +23,13 @@ public class Utilities {
         Object o = json.get(key);
         if (o == null) return 0;
         return (Long) o;
+    }
+
+    //This is weird but way faster than Java date time formatter etc.
+    public static String parseDateWithoutFraction(String date) {
+        if (date.length() < 20) {
+            return date;
+        }
+        return date.substring(0, 19);
     }
 }
