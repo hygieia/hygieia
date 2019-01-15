@@ -333,12 +333,10 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         if (!feature.getsEpicAssetState().equalsIgnoreCase(epic.getStatus())) {
             return true;
         }
-        if (!feature.getsEpicName().equalsIgnoreCase(epic.getName())) {
+        if (!feature.getsEpicName().equalsIgnoreCase(epic.getName()) || feature.getsEpicNumber().equalsIgnoreCase(epic.getNumber())) {
             return true;
         }
-        if (!feature.getsEpicNumber().equalsIgnoreCase(epic.getNumber())) {
-            return true;
-        }
+
         if (!StringUtils.isEmpty(feature.getChangeDate()) && !StringUtils.isEmpty(epic.getChangeDate()) &&
                 !Objects.equals(Utilities.parseDateWithoutFraction(feature.getChangeDate()), Utilities.parseDateWithoutFraction(epic.getChangeDate()))) {
             return true;
