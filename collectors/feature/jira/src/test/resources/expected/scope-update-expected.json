@@ -10,17 +10,5 @@
     "changeDate" : "",
     "isDeleted" : "False",
     "lastCollected" : 0
-  },
-  {
-    "id" : "5c38f39587cd1f53ca81e995",
-    "collectorId" : "5c38f2f087cd1f53ca81bd3d",
-    "pId" : "115001",
-    "name" : "Project 4 updated",
-    "projectPath" : "Project 4 updated",
-    "beginDate" : "",
-    "endDate" : "",
-    "changeDate" : "",
-    "isDeleted" : "False",
-    "lastCollected" : 0
   }
 ]

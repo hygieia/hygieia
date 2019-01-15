@@ -4,9 +4,12 @@ import com.capitalone.dashboard.common.TestUtils;
 import com.capitalone.dashboard.config.FongoConfig;
 import com.capitalone.dashboard.config.TestConfig;
 
+import com.capitalone.dashboard.model.Feature;
+import com.capitalone.dashboard.model.FeatureCollector;
 import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.model.Team;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
+import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.ScopeRepository;
 import com.capitalone.dashboard.repository.TeamRepository;
 import com.capitalone.dashboard.testutil.GsonUtil;
@@ -16,6 +19,7 @@ import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;
+import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,6 +40,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -71,35 +78,43 @@ public class FeatureCollectorTaskTest {
     private TeamRepository teamRepository;
     @Autowired
     private ScopeRepository projectRepository;
+    @Autowired
+    private FeatureRepository featureRepository;
+
+    private FeatureCollector featureCollector;
     @Before
     public void loadStuff() throws IOException {
-        TestUtils.loadFeature(featureCollectorRepository);
+        TestUtils.loadCollectorFeature(featureCollectorRepository);
         TestUtils.loadTeams(teamRepository);
         TestUtils.loadScope(projectRepository);
+        TestUtils.loadFeature(featureRepository);
         when(restOperationsSupplier.get()).thenReturn(rest);
         defaultJiraClient = new DefaultJiraClient(featureSettings,restOperationsSupplier);
+        featureSettings.setJiraBoardAsTeam(true);
+        featureCollectorTask = new FeatureCollectorTask(null,featureRepository,teamRepository,projectRepository,featureCollectorRepository,featureSettings,defaultJiraClient);
 
-        featureCollectorTask = new FeatureCollectorTask(null,null,teamRepository,projectRepository,featureCollectorRepository,featureSettings,defaultJiraClient);
+        featureCollector = featureCollectorTask.getCollector();
+        featureCollector.setId(new ObjectId("5c38f2f087cd1f53ca81bd3d"));
     }
    @Test
     public void addBoardAsTeamInformation() throws IOException{
        List<Team> expected = getExpectedReviewResponse("./expected/boardasteam-expected.json");
        doReturn(new ResponseEntity<>(getExpectedJSON("boardsresponse.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
-       List<Team> actual = featureCollectorTask.updateTeamInformation(featureCollectorTask.getCollector());
+       List<Team> actual = featureCollectorTask.updateTeamInformation(featureCollector);
 
         assertEquals(expected, actual);
     }
     @Test
     public void updateTeamAsBoardInformation() throws IOException{
         doReturn(new ResponseEntity<>(getExpectedJSON("boardsresponse-update.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
-        List<Team> expected = featureCollectorTask.updateTeamInformation(featureCollectorTask.getCollector());
+        List<Team> expected = featureCollectorTask.updateTeamInformation(featureCollector);
 
         assertNotNull(teamRepository.findByName(expected.get(0).getName()));
     }
     @Test
     public void updateTeamAsBoardType() throws IOException{
         doReturn(new ResponseEntity<>(getExpectedJSON("boardsresponse-update-1.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
-        List<Team> expected = featureCollectorTask.updateTeamInformation(featureCollectorTask.getCollector());
+        List<Team> expected = featureCollectorTask.updateTeamInformation(featureCollector);
 
         assertEquals(TEAM_TYPE_SCRUM,teamRepository.findByTeamId(expected.get(0).getTeamId()).getTeamType());
     }
@@ -115,23 +130,47 @@ public class FeatureCollectorTaskTest {
     public void addProjectInformation() throws IOException{
         Set<Scope> expected = getExpectedScopeResponse("./expected/scope-expected.json");
         doReturn(new ResponseEntity<>(getExpectedJSON("projectresponse.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
-        Set<Scope> actual = featureCollectorTask.updateProjectInformation(featureCollectorRepository.findByName("Jira"));
-
-        assertEquals(expected, actual);
+        featureCollectorTask.updateProjectInformation(featureCollector);
+        List<Scope> actual = projectRepository.getScopeById("13700");
+        assertThat(actual.toArray()[0]).isEqualToIgnoringGivenFields(expected.toArray()[0],"id");
     }
-    //@Test
+    @Test
     public void updateProjectName() throws IOException{
         Set<Scope> expected = getExpectedScopeResponse("./expected/scope-update-expected.json");
         doReturn(new ResponseEntity<>(getExpectedJSON("projectresponse-update.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
-        Set<Scope> actual = featureCollectorTask.updateProjectInformation(featureCollectorRepository.findByName("Jira"));
-        assertEquals(expected,actual);
-        for(Scope scope: expected){
-            assertEquals(projectRepository.getScopeById(scope.getpId()).get(0).getName(),scope.getName());
-        }
+
+        featureCollectorTask.updateProjectInformation(featureCollector);
+        List<Scope> actual = projectRepository.getScopeById("137001");
+        assertThat(actual.toArray()[0]).isEqualToIgnoringGivenFields(expected.toArray()[0],"id");
+
+    }
+    @Test
+    public void addStoryInformationTypeStory() throws IOException{
+
+        List<Feature> expected = getExpectedFeature("./expected/feature-story-expected.json");
+        doReturn(new ResponseEntity<>("{}", HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        doReturn(new ResponseEntity<>(getExpectedJSON("issueresponse-story.json"), HttpStatus.OK)).when(rest).exchange(contains("board/999"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        featureCollectorTask.updateStoryInformation(featureCollector);
+        List<Feature> actual = featureRepository.getStoryByTeamID(expected.get(0).getsTeamID());
+
+        assertThat(actual.toArray()[0]).isEqualToIgnoringGivenFields(expected.toArray()[0],"id", "issueLinks");
     }
     //@Test
-    public void addStoryInformation() throws IOException{
+    public void addStoryInformationTypeEpic() throws IOException{
+        List<Feature> expected = getExpectedFeature("./expected/feature-epic-expected.json");
+        doReturn(new ResponseEntity<>("{}", HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        doReturn(new ResponseEntity<>(getExpectedJSON("issueresponse-combo.json"), HttpStatus.OK)).when(rest).exchange(contains("board/999"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        featureCollectorTask.updateStoryInformation(featureCollector);
+        List<Feature> actual = featureRepository.getStoryByTeamID(expected.get(0).getsTeamID());
+        assertThat(actual.toArray()[0]).isEqualToIgnoringGivenFields(expected.toArray()[0],"id", "issueLinks");
 
+    }
+   // @Test
+    public void addStoryInformationTypeAll() throws IOException{
+        doReturn(new ResponseEntity<>(getExpectedJSON("issueresponse-combo.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        featureCollectorTask.updateStoryInformation(featureCollector);
+        featureRepository.findAll();
+        assertEquals("","");
     }
     //@Test
     public void updateStoryInformation() throws IOException{
@@ -159,5 +198,9 @@ public class FeatureCollectorTaskTest {
     private Set<Scope> getExpectedScopeResponse (String fileName) throws IOException {
         Gson gson = GsonUtil.getGson();
         return gson.fromJson(getExpectedJSON(fileName), new TypeToken<Set<Scope>>(){}.getType());
+    }
+    private List<Feature> getExpectedFeature (String fileName) throws IOException {
+        Gson gson = GsonUtil.getGson();
+        return gson.fromJson(getExpectedJSON(fileName), new TypeToken<List<Feature>>(){}.getType());
     }
 }

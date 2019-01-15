@@ -9,16 +9,5 @@
   "changeDate" : "",
   "isDeleted" : "False",
   "lastCollected" : 0
-  },
-  {
-  "collectorId" : "5c38f2f087cd1f53ca81bd3d",
-  "pId" : "11500",
-  "name" : "Project 2",
-  "projectPath" : "Project 2",
-  "beginDate" : "",
-  "endDate" : "",
-  "changeDate" : "",
-  "isDeleted" : "False",
-  "lastCollected" : 0
   }
 ]
