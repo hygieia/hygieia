@@ -1,5 +1,7 @@
+
 package jenkins.plugins.hygieia;
 
+import com.capitalone.dashboard.model.TestSuiteType;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
@@ -13,6 +15,8 @@ import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
 import hudson.tasks.Publisher;
 import hudson.util.FormValidation;
+import hudson.util.ListBoxModel;
+import hygieia.transformer.HygieiaConstants;
 import hygieia.utils.HygieiaUtils;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
@@ -380,6 +384,18 @@ public class HygieiaPublisher extends Notifier {
 
         public List<GenericCollectorItem> getHygieiaPublishGenericCollectorItems() {
             return hygieiaPublishGenericCollectorItems;
+        }
+
+        public ListBoxModel doFillTestTypeItems(String testType) {
+            ListBoxModel model = new ListBoxModel();
+
+            model.add(HygieiaConstants.UNIT_TEST_DISPLAY, TestSuiteType.Unit.toString());
+            model.add(HygieiaConstants.INTEGRATION_TEST_DISPLAY, TestSuiteType.Integration.toString());
+            model.add(HygieiaConstants.FUNCTIONAL_TEST_DISPLAY, TestSuiteType.Functional.toString());
+            model.add(HygieiaConstants.REGRESSION_TEST_DISPLAY, TestSuiteType.Regression.toString());
+            model.add(HygieiaConstants.PERFORMANCE_TEST_DISPLAY, TestSuiteType.Performance.toString());
+            model.add(HygieiaConstants.SECURITY_TEST_DISPLAY, TestSuiteType.Security.toString());
+            return model;
         }
 
         public boolean isApplicable(Class<? extends AbstractProject> aClass) {
