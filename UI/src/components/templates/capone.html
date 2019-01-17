@@ -40,6 +40,10 @@
             <div class="col-md-6">
                 <widget name="build"></widget>
                 <div class="container-fluid">
+                    <div class="iteration-change-btn text-standard-sm">
+                        <button id="next-btn" class="pull-right btn-default btn-xm active" ng-click="ctrl.animateCodeAnalysisView(true)"><i class="fa fa-fast-forward"></i></button>
+                        <button id="{{ctrl.pausePlaySymbol}}-btn" class="pull-right btn-default btn-xm active" ng-click="ctrl.pauseCodeAnalysisView()" ng-model="ctrl.pausePlaySymbol"><i class="fa fa-{{ctrl.pausePlaySymbol}}"></i></button>
+                    </div>
                     <ul class="nav nav-tabs">
                         <li class="text-lg auth-modal-tab" ng-repeat="tab in template.minitabs" ng-click="template.miniToggleView($index)"
                             ng-class="tab.name == template.miniWidgetView ? 'active' : ''">
@@ -48,7 +52,9 @@
                         </li>
                         </span>
                     </ul>
+
                 </div>
+
                 <div class="container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.miniWidgetView == 'Quality'">
                     <div class="row">
                         <div class="col-xs-12">
