@@ -38,7 +38,7 @@
         ctrl.changeDetect = null;
         ctrl.pauseQualityView = pauseQualityView;
         ctrl.animateQualityView = animateQualityView;
-        ctrl.pausePlaySymbol = "||";
+        ctrl.pausePlaySymbol = "pause";
 
         coveragePieChart({});
 
@@ -65,6 +65,7 @@
                 componentId: $scope.widgetConfig.componentId,
                 max: 1
             };
+
             return $q.all([
                 libraryPolicyData.libraryPolicyDetails(libraryPolicyRequest).then(processLibraryPolicyResponse),
                 codeAnalysisData.staticDetails(caRequest).then(processCaResponse),
@@ -380,15 +381,6 @@
         ctrl.startTimeout();
 
         /**
-         * Triggered by the resolution of the data factory promises, iterations
-         * types are detected from their resolutions and then initialized based
-         * on data results.  This is a one time action per promise resolution.
-         */
-        function detectIterationChange() {
-            animateQualityView(false);
-        }
-
-        /**
          * Animates quality view switching
          */
         function animateQualityView(resetTimer) {
@@ -413,10 +405,10 @@
          */
         function pauseQualityView() {
             if (timeoutPromise.$$state.value === "canceled") {
-                ctrl.pausePlaySymbol = "||";
+                ctrl.pausePlaySymbol = "pause";
                 ctrl.startTimeout();
             } else {
-                ctrl.pausePlaySymbol = ">";
+                ctrl.pausePlaySymbol = "play";
                 ctrl.stopTimeout();
             }
         };
