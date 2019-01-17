@@ -84,6 +84,11 @@
   </build>
 
   <dependencies>
+      <dependency>
+          <groupId>org.hibernate</groupId>
+          <artifactId>hibernate-validator</artifactId>
+          <version>5.2.4.Final</version>
+      </dependency>
     <dependency>
       <groupId>com.capitalone.dashboard</groupId>
       <artifactId>core</artifactId>

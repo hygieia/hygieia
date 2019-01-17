@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -39,6 +40,10 @@ public class GitCollectorTask extends CollectorTask<Collector> {
     private final GitClient gitClient;
     private final GitSettings gitSettings;
     private final ComponentRepository dbComponentRepository;
+
+    @Inject
+    private PullRequestCollector pullRequestCollector;
+
 
     @Autowired
     public GitCollectorTask(TaskScheduler taskScheduler,
@@ -98,7 +103,7 @@ public class GitCollectorTask extends CollectorTask<Collector> {
      */
 
     private void clean(Collector collector) {
-        Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
+        Set<ObjectId> uniqueIDs = new HashSet<>();
         /**
          * Logic: For each component, retrieve the collector item list of the type SCM.
          * Store their IDs in a unique set ONLY if their collector IDs match with Bitbucket collectors ID.
@@ -138,9 +143,12 @@ public class GitCollectorTask extends CollectorTask<Collector> {
         long start = System.currentTimeMillis();
         int repoCount = 0;
         int commitCount = 0;
+        int pullCount = 0;
 
         clean(collector);
         for (GitRepo repo : enabledRepos(collector)) {
+            long lastExecutionTime = repo.getLastUpdated();
+
             boolean firstRun = false;
             if (repo.getLastUpdateTime() == null) firstRun = true;
             LOG.debug(repo.getOptions().toString() + "::" + repo.getBranch());
@@ -160,12 +168,18 @@ public class GitCollectorTask extends CollectorTask<Collector> {
             commitRepository.save(newCommits);
             commitCount += newCommits.size();
 
-            repo.setLastUpdateTime(Calendar.getInstance().getTime());
+
             if (!commits.isEmpty()) {
                 // It appears that the first commit in the list is the HEAD of the branch
                 repo.setLastUpdateCommit(commits.get(0).getScmRevisionNumber());
             }
 
+            // Step 2: Get all the Pull Requests
+            LOG.info(repo.getOptions().toString() + "::" + repo.getBranch() + "::get pulls");
+
+            pullCount += pullRequestCollector.getPullRequests(repo, "all", lastExecutionTime);
+
+            repo.setLastUpdateTime(Calendar.getInstance().getTime());
             gitRepoRepository.save(repo);
 
             repoCount++;
@@ -190,3 +204,19 @@ public class GitCollectorTask extends CollectorTask<Collector> {
                 repo.getId(), commit.getScmRevisionNumber()) == null;
     }
 }
+
+/*
+ * Copyright 2019 Pandora Media, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * See accompanying LICENSE file or you may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
