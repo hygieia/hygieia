@@ -37,6 +37,7 @@
         var timeoutPromise = null;
         ctrl.changeDetect = null;
         ctrl.pauseQualityView = pauseQualityView;
+        ctrl.animateQualityView = animateQualityView;
         ctrl.pausePlaySymbol = "||";
 
         coveragePieChart({});
@@ -398,7 +399,7 @@
             if (newIndex >= ctrl.minitabs.length){
                 ctrl.miniWidgetView = ctrl.minitabs[0].name;
             } else {
-                ctrl.miniWidgetView = ctrl.minitabs[newIndex]
+                ctrl.miniWidgetView = ctrl.minitabs[newIndex].name;
             }
 
             if (resetTimer && timeoutPromise.$$state.value != "canceled") {
