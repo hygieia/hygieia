@@ -214,6 +214,9 @@
 
         function processTestResponse(response) {
             var deferred = $q.defer();
+
+            ctrl.functionalTests = processTestResponseByType(response, "Functional");
+            
             deferred.resolve(response.lastUpdated);
             return deferred.promise;
         }
