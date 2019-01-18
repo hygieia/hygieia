@@ -333,7 +333,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         if (!feature.getsEpicAssetState().equalsIgnoreCase(epic.getStatus())) {
             return true;
         }
-        if (!feature.getsEpicName().equalsIgnoreCase(epic.getName()) || feature.getsEpicNumber().equalsIgnoreCase(epic.getNumber())) {
+        if (!feature.getsEpicName().equalsIgnoreCase(epic.getName()) || !feature.getsEpicNumber().equalsIgnoreCase(epic.getNumber())) {
             return true;
         }
 

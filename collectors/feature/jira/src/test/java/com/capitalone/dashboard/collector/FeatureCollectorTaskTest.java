@@ -20,6 +20,9 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,6 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.contains;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -82,6 +86,7 @@ public class FeatureCollectorTaskTest {
     private FeatureRepository featureRepository;
 
     private FeatureCollector featureCollector;
+
     @Before
     public void loadStuff() throws IOException {
         TestUtils.loadCollectorFeature(featureCollectorRepository);
@@ -96,24 +101,50 @@ public class FeatureCollectorTaskTest {
         featureCollector = featureCollectorTask.getCollector();
         featureCollector.setId(new ObjectId("5c38f2f087cd1f53ca81bd3d"));
     }
+    @Test
+    public void shouldCollect() throws IOException {
+        doReturn(new ResponseEntity<>(getExpectedJSON("response/projectresponse.json"), HttpStatus.OK)).when(rest).exchange(contains("api/2/project"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        doReturn(new ResponseEntity<>(getExpectedJSON("response/boardsresponse.json"), HttpStatus.OK)).when(rest).exchange(contains("/rest/agile/1.0/board"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+
+        featureCollectorTask.collect(featureCollector);
+        assertNotNull(teamRepository.findByTeamId("8"));
+        assertNotNull(teamRepository.findByTeamId("16"));
+        assertNotNull(teamRepository.findByTeamId("17"));
+        assertNotNull(teamRepository.findByTeamId("125"));
+
+    }
+    @Test
+    public void validateTeamCleanUp() throws IOException {
+        doReturn(new ResponseEntity<>(getExpectedJSON("response/projectresponse.json"), HttpStatus.OK)).when(rest).exchange(contains("api/2/project"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        String issueResponseQuery = "&fields=id,key,issuetype,status,summary,created,updated,project,issuelinks,assignee,sprint,epic,aggregatetimeoriginalestimate,timeoriginalestimate,customfield_11248,customfield_10007,customfield_10003,customfield_10004";
+        doReturn(new ResponseEntity<>(getExpectedJSON("response/issueresponse-combo.json"), HttpStatus.OK)).when(rest).exchange(contains(issueResponseQuery), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        doReturn(new ResponseEntity<>(getExpectedJSON("response/issueresponse-empty.json"), HttpStatus.OK)).when(rest).exchange(contains("/issue?jql=issueType"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        doReturn(new ResponseEntity<>(getExpectedJSON("response/boardsresponse.json"), HttpStatus.OK)).when(rest).exchange(contains("/rest/agile/1.0/board?"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+
+        featureCollector.setLastExecuted(System.currentTimeMillis());
+        featureCollectorTask.collect(featureCollector);
+        assertNull(teamRepository.findByTeamId("999"));
+        assertNull(teamRepository.findByTeamId("998"));
+
+    }
    @Test
     public void addBoardAsTeamInformation() throws IOException{
        List<Team> expected = getExpectedReviewResponse("./expected/boardasteam-expected.json");
-       doReturn(new ResponseEntity<>(getExpectedJSON("boardsresponse.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+       doReturn(new ResponseEntity<>(getExpectedJSON("response/boardsresponse.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
        List<Team> actual = featureCollectorTask.updateTeamInformation(featureCollector);
 
         assertEquals(expected, actual);
     }
     @Test
     public void updateTeamAsBoardInformation() throws IOException{
-        doReturn(new ResponseEntity<>(getExpectedJSON("boardsresponse-update.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        doReturn(new ResponseEntity<>(getExpectedJSON("response/boardsresponse-update.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
         List<Team> expected = featureCollectorTask.updateTeamInformation(featureCollector);
 
         assertNotNull(teamRepository.findByName(expected.get(0).getName()));
     }
     @Test
     public void updateTeamAsBoardType() throws IOException{
-        doReturn(new ResponseEntity<>(getExpectedJSON("boardsresponse-update-1.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        doReturn(new ResponseEntity<>(getExpectedJSON("response/boardsresponse-update-1.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
         List<Team> expected = featureCollectorTask.updateTeamInformation(featureCollector);
 
         assertEquals(TEAM_TYPE_SCRUM,teamRepository.findByTeamId(expected.get(0).getTeamId()).getTeamType());
@@ -129,7 +160,7 @@ public class FeatureCollectorTaskTest {
     @Test
     public void addProjectInformation() throws IOException{
         Set<Scope> expected = getExpectedScopeResponse("./expected/scope-expected.json");
-        doReturn(new ResponseEntity<>(getExpectedJSON("projectresponse.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        doReturn(new ResponseEntity<>(getExpectedJSON("response/projectresponse.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
         featureCollectorTask.updateProjectInformation(featureCollector);
         List<Scope> actual = projectRepository.getScopeById("13700");
         assertThat(actual.toArray()[0]).isEqualToIgnoringGivenFields(expected.toArray()[0],"id");
@@ -137,43 +168,69 @@ public class FeatureCollectorTaskTest {
     @Test
     public void updateProjectName() throws IOException{
         Set<Scope> expected = getExpectedScopeResponse("./expected/scope-update-expected.json");
-        doReturn(new ResponseEntity<>(getExpectedJSON("projectresponse-update.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        doReturn(new ResponseEntity<>(getExpectedJSON("response/projectresponse-update.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
 
         featureCollectorTask.updateProjectInformation(featureCollector);
         List<Scope> actual = projectRepository.getScopeById("137001");
         assertThat(actual.toArray()[0]).isEqualToIgnoringGivenFields(expected.toArray()[0],"id");
 
     }
+
     @Test
-    public void addStoryInformationTypeStory() throws IOException{
-
-        List<Feature> expected = getExpectedFeature("./expected/feature-story-expected.json");
-        doReturn(new ResponseEntity<>("{}", HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
-        doReturn(new ResponseEntity<>(getExpectedJSON("issueresponse-story.json"), HttpStatus.OK)).when(rest).exchange(contains("board/999"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
-        featureCollectorTask.updateStoryInformation(featureCollector);
-        List<Feature> actual = featureRepository.getStoryByTeamID(expected.get(0).getsTeamID());
-
-        assertThat(actual.toArray()[0]).isEqualToIgnoringGivenFields(expected.toArray()[0],"id", "issueLinks");
-    }
-    //@Test
-    public void addStoryInformationTypeEpic() throws IOException{
+    public void addStoryInformation() throws IOException{
         List<Feature> expected = getExpectedFeature("./expected/feature-epic-expected.json");
-        doReturn(new ResponseEntity<>("{}", HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
-        doReturn(new ResponseEntity<>(getExpectedJSON("issueresponse-combo.json"), HttpStatus.OK)).when(rest).exchange(contains("board/999"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        String epicId = expected.get(0).getsEpicID();
+        doReturn(new ResponseEntity<>(getExpectedJSON("response/issueresponse-empty.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        doReturn(new ResponseEntity<>(getExpectedJSON("response/epicresponse.json"), HttpStatus.OK)).when(rest).exchange(contains("/rest/agile/1.0/issue/"+epicId), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        doReturn(new ResponseEntity<>(getExpectedJSON("response/issueresponse-story.json"), HttpStatus.OK)).when(rest).exchange(contains("board/999"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
         featureCollectorTask.updateStoryInformation(featureCollector);
         List<Feature> actual = featureRepository.getStoryByTeamID(expected.get(0).getsTeamID());
-        assertThat(actual.toArray()[0]).isEqualToIgnoringGivenFields(expected.toArray()[0],"id", "issueLinks");
+
+        assertThat(actual.toArray()[0]).isEqualToIgnoringGivenFields(expected.toArray()[0],"id", "issueLinks","sSprintUrl");
+        assertThat( actual.get(0).getIssueLinks().toArray()[0]).isEqualToIgnoringGivenFields( expected.get(0).getIssueLinks().toArray()[0],"id");
 
     }
-   // @Test
+    @Test
     public void addStoryInformationTypeAll() throws IOException{
-        doReturn(new ResponseEntity<>(getExpectedJSON("issueresponse-combo.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+
+        List<Feature> expected = getExpectedFeature("./expected/feature-epic-expected.json");
+        String epicId = expected.get(0).getsEpicID();
+        doReturn(new ResponseEntity<>(getExpectedJSON("response/issueresponse-empty.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        doReturn(new ResponseEntity<>(getExpectedJSON("response/epicresponse.json"), HttpStatus.OK)).when(rest).exchange(contains("/rest/agile/1.0/issue/"+epicId), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        doReturn(new ResponseEntity<>(getExpectedJSON("response/issueresponse-combo.json"), HttpStatus.OK)).when(rest).exchange(contains("board/999"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
         featureCollectorTask.updateStoryInformation(featureCollector);
-        featureRepository.findAll();
-        assertEquals("","");
+        List<Feature> actual = featureRepository.getStoryByTeamID(expected.get(0).getsTeamID());
+
+        assertThat(actual.toArray()[0]).isEqualToIgnoringGivenFields(expected.toArray()[0],"id", "issueLinks","sSprintUrl");
+
     }
-    //@Test
-    public void updateStoryInformation() throws IOException{
+    @Test
+    public void updateFeatureEpicName() throws IOException{
+
+        List<Feature> expected = getExpectedFeature("./expected/feature-epic-expected.json");
+        String epicId = expected.get(0).getsEpicID();
+        expected.get(0).setsEpicName("Update Epic Name");
+        doReturn(new ResponseEntity<>(getExpectedJSON("response/issueresponse-empty.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        doReturn(new ResponseEntity<>(getExpectedJSON("response/epicresponse.json"), HttpStatus.OK)).when(rest).exchange(contains("/rest/agile/1.0/issue/"+epicId), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        doReturn(new ResponseEntity<>(getExpectedJSON("response/issueresponse-combo-update.json"), HttpStatus.OK)).when(rest).exchange(contains("board/999"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        featureCollectorTask.updateStoryInformation(featureCollector);
+        List<Feature> actual = featureRepository.getStoryByTeamID(expected.get(0).getsTeamID());
+
+        assertThat(actual.toArray()[0]).isEqualToIgnoringGivenFields(expected.toArray()[0],"id", "issueLinks","sSprintUrl");
+
+    }
+    @Test
+    public void updateEpicBeginDate() throws IOException{
+
+        List<Feature> expected = getExpectedFeature("./expected/feature-epic-expected.json");
+        String epicId = expected.get(0).getsEpicID();
+        doReturn(new ResponseEntity<>(getExpectedJSON("response/issueresponse-empty.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        doReturn(new ResponseEntity<>(getExpectedJSON("response/epicresponse.json"), HttpStatus.OK)).when(rest).exchange(contains("/rest/agile/1.0/issue/"+epicId), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        doReturn(new ResponseEntity<>(getExpectedJSON("response/issueresponse-combo-update-1.json"), HttpStatus.OK)).when(rest).exchange(contains("board/999"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        featureCollectorTask.updateStoryInformation(featureCollector);
+        List<Feature> actual = featureRepository.getStoryByTeamID(expected.get(0).getsTeamID());
+
+        assertThat(actual.toArray()[0]).isEqualToIgnoringGivenFields(expected.toArray()[0],"id", "issueLinks","sSprintUrl");
 
     }
     //@Test
@@ -184,7 +241,11 @@ public class FeatureCollectorTaskTest {
     public void updateStoryInformationMultiTypes() throws IOException{
 
     }
-
+    private JSONObject parseObject(String json) throws ParseException{
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) parser.parse(json);
+        return jsonObject;
+    }
     private String getExpectedJSON(String fileName) throws IOException {
         String path = "./" + fileName;
         URL fileUrl = Resources.getResource(path);
