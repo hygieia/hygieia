@@ -54,7 +54,7 @@ public class DefaultJiraClientTest {
     private FeatureSettings featureSettings;
 
     @Before
-    public void loadStuff() throws IOException {
+    public void loadStuff() {
         when(restOperationsSupplier.get()).thenReturn(rest);
 
         defaultJiraClient = new DefaultJiraClient(featureSettings,restOperationsSupplier);
@@ -86,7 +86,7 @@ public class DefaultJiraClientTest {
         assertThat(projects.stream().count()).isEqualTo(2);
     }
     @Test
-    public void getProjectsParseException() throws IOException{
+    public void getProjectsParseException(){
         doReturn(new ResponseEntity<>("{}", HttpStatus.OK)).when(rest).exchange(contains("api/2/project"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
         ParseException excep = new ParseException("org.json.simple.JSONObject cannot be cast to org.json.simple.JSONArray",0);
 

@@ -149,14 +149,6 @@ public class FeatureCollectorTaskTest {
 
         assertEquals(TEAM_TYPE_SCRUM,teamRepository.findByTeamId(expected.get(0).getTeamId()).getTeamType());
     }
-    //@Test
-    public void addTeamAsBoardInformation() throws IOException{
-
-    }
-    //@Test
-    public void updateBoardAsTeamInformation() throws IOException{
-
-    }
     @Test
     public void addProjectInformation() throws IOException{
         Set<Scope> expected = getExpectedScopeResponse("./expected/scope-expected.json");
@@ -233,19 +225,7 @@ public class FeatureCollectorTaskTest {
         assertThat(actual.toArray()[0]).isEqualToIgnoringGivenFields(expected.toArray()[0],"id", "issueLinks","sSprintUrl");
 
     }
-    //@Test
-    public void addStoryInformationMultiTypes() throws IOException{
 
-    }
-    //@Test
-    public void updateStoryInformationMultiTypes() throws IOException{
-
-    }
-    private JSONObject parseObject(String json) throws ParseException{
-        JSONParser parser = new JSONParser();
-        JSONObject jsonObject = (JSONObject) parser.parse(json);
-        return jsonObject;
-    }
     private String getExpectedJSON(String fileName) throws IOException {
         String path = "./" + fileName;
         URL fileUrl = Resources.getResource(path);
