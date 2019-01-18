@@ -272,7 +272,7 @@ public class DefaultJiraClient implements JiraClient {
                     f.setsTeamName(board.getName());
                 });
                 features.addAll(temp.getFeatures());
-                isLast = temp.getTotal() < temp.getPageSize();
+                isLast = temp.getTotal() < startAt || temp.getTotal() == 0;
                 startAt += temp.getPageSize();
             } catch (ParseException pe) {
                 isLast = true;
