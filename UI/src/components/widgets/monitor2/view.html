@@ -3,19 +3,17 @@
         <div class="widget-heading">
             Our Monitored Instances
         </div>
-        <div class="widget-body">
-            <div class="monitor2-row dash-row clickable"
-                 ng-repeat="monitor2 in ctrl.monitor2es | orderBy: ['name']"
-                 ng-click="ctrl.openStatusWindow(monitor2)">
-                <span class="pull-left" dash-status="{{monitor2.status}}"></span>
-                <div class="dash-overflow">{{monitor2.name}}</div>
+        <div hide-empty="['{{ ctrl.monitor2es[0] }}']">
+            <div class="widget-body">
+                <div class="monitor2-row dash-row clickable"
+                     ng-repeat="monitor2 in ctrl.monitor2es | orderBy: ['name']"
+                     ng-click="ctrl.openStatusWindow(monitor2)">
+                    <span class="pull-left" dash-status="{{monitor2.status}}"></span>
+                    <div class="dash-overflow">{{monitor2.name}}</div>
+                </div>
             </div>
         </div>
     </div>
-
-    <p class="text-center" ng-if="!ctrl.monitor2es.length">
-        No Monitored Instances Configured
-    </p>
 </div>
 
 <!-- A modal used to modify-->
