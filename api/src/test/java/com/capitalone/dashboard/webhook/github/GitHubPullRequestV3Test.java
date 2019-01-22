@@ -32,6 +32,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.web.client.RestOperations;
 
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -240,8 +241,9 @@ public class GitHubPullRequestV3Test {
         GitHubPullRequestV3 gitHubPullRequestV3 = Mockito.spy(this.gitHubPullRequestV3);
         when(gitHubPullRequestV3.getLDAPDN(anyString(), anyString(), anyString())).thenReturn("authorLDAPDN");
 
-        Commit dbCommit = new Commit();
-        when(commitRepository.findByScmRevisionNumberAndScmAuthorIgnoreCaseAndScmCommitLogAndScmCommitTimestamp(anyString(), anyString(), anyString(), anyLong())).thenReturn(dbCommit);
+        List<Commit> dbCommit = new ArrayList<>();
+        dbCommit.add(new Commit());
+        when(commitRepository.findAllByScmRevisionNumberAndScmAuthorIgnoreCaseAndScmCommitLogAndScmCommitTimestamp(anyString(), anyString(), anyString(), anyLong())).thenReturn(dbCommit);
 
         JSONObject statusJsonObject = makeStatusObject();
         JSONObject commitsJsonObject = makeCommitsObject();
@@ -257,7 +259,7 @@ public class GitHubPullRequestV3Test {
         Assert.assertEquals("authorLDAPDN", commit.getScmAuthorLDAPDN());
         Assert.assertEquals("Author1Oid", commit.getScmRevisionNumber());
         Assert.assertEquals("GithubWebhook Commit 2", commit.getScmCommitLog());
-        verify(commitRepository).save(dbCommit);
+        verify(commitRepository).save(dbCommit.get(0));
     }
 
     @Test
@@ -309,13 +311,14 @@ public class GitHubPullRequestV3Test {
         GitRequest pull = new GitRequest();
         pull.setNumber("2");
 
-        Commit dbCommit = new Commit();
-        when(commitRepository.findByScmRevisionNumberAndScmAuthorIgnoreCaseAndScmCommitLogAndScmCommitTimestamp(anyString(), anyString(), anyString(), anyLong())).thenReturn(dbCommit);
+        List<Commit> dbCommitList = new ArrayList<>();
+        dbCommitList.add(new Commit());
+        when(commitRepository.findAllByScmRevisionNumberAndScmAuthorIgnoreCaseAndScmCommitLogAndScmCommitTimestamp(anyString(), anyString(), anyString(), anyLong())).thenReturn(dbCommitList);
 
         gitHubPullRequestV3.updateMatchingCommitsInDb(commit, pull);
 
-        Assert.assertEquals("2", dbCommit.getPullNumber());
-        verify(commitRepository).save(dbCommit);
+        Assert.assertEquals("2", dbCommitList.get(0).getPullNumber());
+        verify(commitRepository).save(dbCommitList.get(0));
     }
 
     @Test
@@ -370,7 +373,7 @@ public class GitHubPullRequestV3Test {
         String collectorItemId = createGuid("0123456789abcdee");
         collectorItem.setId(new ObjectId(collectorItemId));
 
-        when(commitRepository.findByScmRevisionNumberAndScmUrlIgnoreCaseAndScmBranchIgnoreCase(anyString(), anyString(), anyString())).thenReturn(null);
+        when(commitRepository.findAllByScmRevisionNumberAndScmUrlIgnoreCaseAndScmBranchIgnoreCaseOrderByTimestampAsc(anyString(), anyString(), anyString())).thenReturn(null);
         when(collectorService.createCollector(anyObject())).thenReturn(collector);
         when(gitHubPullRequestV3.buildCollectorItem(anyObject(), anyString(), anyString())).thenReturn(collectorItem);
         when(collectorService.createCollectorItem(anyObject())).thenReturn(collectorItem);
