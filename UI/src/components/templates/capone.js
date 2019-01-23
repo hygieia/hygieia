@@ -50,9 +50,10 @@
         /** Auto Cycle variables */
         var timeoutPromise = null;
         ctrl.changeDetect = null;
+        ctrl.pausePlaySymbol = "pause";
         ctrl.pauseCodeAnalysisView = pauseCodeAnalysisView;
         ctrl.animateCodeAnalysisView = animateCodeAnalysisView;
-        ctrl.pausePlaySymbol = "pause";
+
 
         /**
          * Changes timeout boolean based on agile iterations available,
