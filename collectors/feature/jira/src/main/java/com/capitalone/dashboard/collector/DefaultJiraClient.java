@@ -64,11 +64,11 @@ public class DefaultJiraClient implements JiraClient {
     private static final String TEMPO_TEAMS_REST_SUFFIX = "rest/tempo-teams/1/team";
     private static final String BOARD_TEAMS_REST_SUFFIX = "rest/agile/1.0/board";
     private static final String PROJECT_REST_SUFFIX = "rest/api/2/project";
-    private static final String ISSUE_BY_PROJECT_REST_SUFFIX_BY_DATE = "rest/api/2/search?jql=project=%s and issueType in (%s) and updatedDate>='%s'&fields=%s&startAt=%s";
-    private static final String ISSUE_BY_BOARD_REST_SUFFIX_BY_DATE = "rest/agile/1.0/board/%s/issue?jql=issueType in (%s) and updatedDate>='%s'&fields=%s&startAt=%s";
+    private static final String ISSUE_BY_PROJECT_REST_SUFFIX_BY_DATE = "rest/api/2/search?jql=project=%s and issueType in ('%s') and updatedDate>='%s'&fields=%s&startAt=%s";
+    private static final String ISSUE_BY_BOARD_REST_SUFFIX_BY_DATE = "rest/agile/1.0/board/%s/issue?jql=issueType in ('%s') and updatedDate>='%s'&fields=%s&startAt=%s";
     private static final String EPIC_REST_SUFFIX = "rest/agile/1.0/issue/%s";
 
-    private static final String ISSUE_BY_BOARD_FULL_REFRESH_REST_SUFFIX = "rest/agile/1.0/%s/%s/issue?jql=issueType in (%s) and updatedDate>='%s'&fields=id&startAt=%s";
+    private static final String ISSUE_BY_BOARD_FULL_REFRESH_REST_SUFFIX = "rest/agile/1.0/%s/%s/issue?jql=issueType in ('%s') and updatedDate>='%s'&fields=id&startAt=%s";
 
     private static final String STATIC_ISSUE_FIELDS = "id,key,issuetype,status,summary,created,updated,project,issuelinks,assignee,sprint,epic,aggregatetimeoriginalestimate,timeoriginalestimate";
 
@@ -263,7 +263,7 @@ public class DefaultJiraClient implements JiraClient {
         while (!isLast) {
             String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/")
                     + ISSUE_BY_BOARD_REST_SUFFIX_BY_DATE;
-            url = String.format(url, board.getTeamId(), issueTypes, lookBackDate, issueFields, startAt);
+            url = String.format(url, board.getTeamId(), issueTypes.replaceAll(",", "','"), lookBackDate, issueFields, startAt);
             try {
                 IssueResult temp = getFeaturesFromQueryURL(url, epicMap);
                 //For issues collected in board mode, overwrite the team information
@@ -311,7 +311,7 @@ public class DefaultJiraClient implements JiraClient {
             try {
                 String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/")
                         + ISSUE_BY_PROJECT_REST_SUFFIX_BY_DATE;
-                url = String.format(url, project.getpId(), issueTypes, lookBackDate, issueFields, startAt);
+                url = String.format(url, project.getpId(), issueTypes.replaceAll(",", "','"), lookBackDate, issueFields, startAt);
 
                 IssueResult temp = getFeaturesFromQueryURL(url, epicMap);
 
@@ -722,7 +722,7 @@ public class DefaultJiraClient implements JiraClient {
         while (!isLast) {
 
             String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/") + ISSUE_BY_BOARD_FULL_REFRESH_REST_SUFFIX;
-            url = String.format(url, mode.toString().toLowerCase(), id, issueTypes, updatedDate, startAt);
+            url = String.format(url, mode.toString().toLowerCase(), id, issueTypes.replaceAll(",", "','"), updatedDate, startAt);
             try {
                 ResponseEntity<String> responseEntity = makeRestCall(url);
 
