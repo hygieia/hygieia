@@ -30,6 +30,7 @@ notifications:
   email:
     recipients:
       - tapabrata.pal@capitalone.com
+      - brock.beatty@capitalone.com
       - nireesh.thiruveedula@capitalone.com
       - Stephen.Hughes@capitalone.com
       - Prashant.Parekh@capitalone.com
