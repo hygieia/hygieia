@@ -1,5 +1,6 @@
 package jenkins.plugins.hygieia;
 
+import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import com.capitalone.dashboard.request.GenericCollectorItemCreateRequest;
 import com.capitalone.dashboard.response.BuildDataCreateResponse;
@@ -96,9 +97,11 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
         BuildDataCreateResponse buildDataResponse = null;
         boolean publishBuildData = hygieiaGlobalListenerDescriptor.isHygieiaPublishBuildDataGlobal() || hygieiaGlobalListenerDescriptor.isHygieiaPublishSonarDataGlobal();
         boolean showConsoleOutput = hygieiaGlobalListenerDescriptor.isShowConsoleOutput();
+        BuildStatus buildStatus = HygieiaUtils.getBuildStatus(run.getResult());
         if (publishBuildData) {
-            BuildBuilder builder = getBuildBuilder(run, listener, hygieiaGlobalListenerDescriptor);
-            HygieiaResponse buildResponse = hygieiaService.publishBuildDataV3(builder.getBuildData());
+            HygieiaResponse buildResponse = hygieiaService.publishBuildDataV3(
+                    new BuildBuilder().createBuildRequestFromRun(run, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(),
+                            listener, buildStatus, true));
             if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
                 try {
                     buildDataResponse = HygieiaUtils.convertJsonToObject(buildResponse.getResponseValue(), BuildDataCreateResponse.class);
@@ -126,8 +129,8 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
         boolean showConsoleOutput = hygieiaGlobalListenerDescriptor.isShowConsoleOutput();
         try {
             // Quickfix by using convertedBuildResponseString to make it work with current SonarBuilder will revisit later.
-            SonarBuilder sonarBuilder = getSonarBuilder(convertedBuildResponseString, run, listener, hygieiaGlobalListenerDescriptor);
-            CodeQualityCreateRequest request = sonarBuilder.getSonarMetrics();
+            CodeQualityCreateRequest request = buildCodeQualityCreateRequest(run, listener, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(),
+                    convertedBuildResponseString, hygieiaGlobalListenerDescriptor.isUseProxy());
             if (request != null) {
                 HygieiaResponse sonarResponse = hygieiaService.publishSonarResults(request);
                 if (sonarResponse.getResponseCode() == HttpStatus.SC_CREATED) {
@@ -148,17 +151,12 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
         boolean showConsoleOutput = hygieiaGlobalListenerDescriptor.isShowConsoleOutput();
         List<HygieiaPublisher.GenericCollectorItem> items = hygieiaGlobalListenerDescriptor.getHygieiaPublishGenericCollectorItems();
         for (HygieiaPublisher.GenericCollectorItem item : items) {
-            GenericCollectorItemBuilder genericCollectorItemBuilder = getGenericCollectorItemBuilder(run, hygieiaGlobalListenerDescriptor, item.toolName, item.pattern, convertedBuildResponseString);
             try {
-                List<GenericCollectorItemCreateRequest> genericCollectorItemCreateRequests = genericCollectorItemBuilder.getRequests();
+                List<GenericCollectorItemCreateRequest> genericCollectorItemCreateRequests = GenericCollectorItemBuilder.getInstance().getRequests(run, item.toolName, item.pattern, convertedBuildResponseString);
                 if (CollectionUtils.isEmpty(genericCollectorItemCreateRequests)) continue;
                 for (GenericCollectorItemCreateRequest gcir : genericCollectorItemCreateRequests) {
                     HygieiaResponse genericItemResponse = hygieiaService.publishGenericCollectorItemData(gcir);
-                    if (genericItemResponse.getResponseCode() == HttpStatus.SC_CREATED) {
-                        if (showConsoleOutput) { listener.getLogger().println("Hygieia: Auto Published " + gcir.getToolName() + " Data. " + genericItemResponse.toString()); }
-                    } else {
-                        if (showConsoleOutput) { listener.getLogger().println("Hygieia: Auto Published " + gcir.getToolName() + " Data. " + genericItemResponse.toString()); }
-                    }
+                    if (showConsoleOutput) { listener.getLogger().println("Hygieia: Auto Published " + gcir.getToolName() + " Data. " + genericItemResponse.toString()); }
                 }
             } catch (IOException e) {
                 if (showConsoleOutput) { listener.getLogger().println("Hygieia: Error Auto Publishing Generic Collector Item data." + '\n' + e.getMessage()); }
@@ -166,21 +164,13 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
         }
     }
 
+    protected CodeQualityCreateRequest buildCodeQualityCreateRequest(Run run, TaskListener listener, String jenkinsName, String convertedBuildResponseString, boolean useProxy) throws ParseException {
+       return SonarBuilder.getInstance().getSonarMetrics(run, listener, jenkinsName, null,
+                null, convertedBuildResponseString, useProxy);
+    }
+
     protected HygieiaPublisher.DescriptorImpl getDescriptor() {
         return Objects.requireNonNull(Jenkins.getInstance()).getDescriptorByType(HygieiaPublisher.DescriptorImpl.class);
-    }
-
-    protected BuildBuilder getBuildBuilder(Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor) {
-        return new BuildBuilder(run, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), listener, HygieiaUtils.getBuildStatus(run.getResult()), true);
-    }
-
-    protected SonarBuilder getSonarBuilder(String buildResponse, Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor) {
-        return new SonarBuilder(run, listener, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), null,
-                null, buildResponse, hygieiaGlobalListenerDescriptor.isUseProxy());
-    }
-
-    protected GenericCollectorItemBuilder getGenericCollectorItemBuilder(Run run, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, String toolName, String pattern, String convertedBuildResponseString) {
-        return new GenericCollectorItemBuilder(run, toolName, pattern, convertedBuildResponseString);
     }
 
     protected HygieiaService getHygieiaService(HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, String apiEndpoint) {
