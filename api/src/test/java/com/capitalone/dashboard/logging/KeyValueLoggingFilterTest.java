@@ -75,7 +75,7 @@ public class KeyValueLoggingFilterTest {
         
         ReflectionTestUtils.setField(filter, "appName", appName);
         ReflectionTestUtils.setField(filter, "version", appVersion);
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         buffer.append(requestUrl);
         when(request.getRequestURL()).thenReturn(buffer);
         when(request.getRemoteAddr()).thenReturn(remoteAddress);
