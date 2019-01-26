@@ -2,6 +2,8 @@ describe('EditDashboardController', function () {
 
   // the subject under test
   var controller;
+  var $templateCache;
+  var $scope;
 
   // controlled data to test with
   var fixedDashboard = {
@@ -63,8 +65,9 @@ describe('EditDashboardController', function () {
   // inject mocks etc into the subject under test
   beforeEach(
     function () {
-      inject(function ($httpBackend,$rootScope, $q, $controller) {
-        var scope = $rootScope.$new();
+      inject(function ($httpBackend,$rootScope, _$templateCache_, $q, $controller) {
+        $templateCache = _$templateCache_;
+        $scope = $rootScope.$new();
         dashboardServiceSpy = jasmine.createSpyObj("dashboardService", ["getDashboardTitleOrig", "getBusAppToolTipText", "getBusSerToolTipText"]);
         widgetManagerSpy = jasmine.createSpyObj("widgetManager", ["getWidgets"]);
         userServiceSpy = jasmine.createSpyObj("userservice", ["getUsername", "getAuthType"]);
@@ -84,7 +87,7 @@ describe('EditDashboardController', function () {
 
         controller = $controller('EditDashboardController', {
           $uibModalInstance: {},
-          $scope: scope,
+          $scope: $scope,
           dashboardData: dashboardSpy,
           userData: usersSpy,
           userService: userServiceSpy,
@@ -99,7 +102,7 @@ describe('EditDashboardController', function () {
         // trigger angular digest to resolve all those promises
         $rootScope.$apply();
       });
-    })
+    });
 
   describe("create controller", function () {
     it("should have setup the controller", function () {
@@ -124,6 +127,14 @@ describe('EditDashboardController', function () {
         {type: "code", title: "code03"}
       ]);
       expect(Object.keys(controller.widgetSelections)).toEqual(["build01","code03"]);
+    })
+  })
+
+  describe("template", function() {
+    it("should render", function() {
+      var html = $templateCache.get('editDashboard.html');
+      $scope.digest();
+      var view = $compile(angular.element(html))(scope);
     })
   })
 });

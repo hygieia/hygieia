@@ -131,6 +131,28 @@ public class ComponentTest {
       Assert.assertNull(result);
     }
 
+    @Test
+    public void testDuplicateCollectorItemsAllowed() {
+        Component component = createComponent(1537473333333L);
+        CollectorItem c1 = new CollectorItem();
+        ObjectId collectorItemId = ObjectId.get();
+        c1.setId(collectorItemId);
+        c1.setLastUpdated(1537476665987L);
+
+        //pre-check
+        List<CollectorItem> collectorItems = component.getCollectorItems(CollectorType.SCM);
+        Assert.assertEquals(1, collectorItems.size());
+
+        // add in duplicates
+        component.addCollectorItem(CollectorType.SCM,c1);
+        component.addCollectorItem(CollectorType.SCM,c1);
+
+        // make sure we have 2
+        List<CollectorItem> collectorItemsAfter = component.getCollectorItems(CollectorType.SCM);
+        Assert.assertEquals(3, collectorItemsAfter.size());
+
+    }
+
     private CollectorItem makeCollectorItem(long lastUpdated) {
         CollectorItem c = new CollectorItem();
         c.setId(ObjectId.get());

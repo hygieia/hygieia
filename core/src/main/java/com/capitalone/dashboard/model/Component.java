@@ -54,6 +54,12 @@ public class Component extends BaseModel {
         return collectorItems.get(type);
     }
 
+    /**
+     * Note multiple and repeated collector items need to be allowed here so that multiple widgets can
+     * have the same collector item, and when we add/remove them we don't delete them all.
+     * @param collectorType
+     * @param collectorItem
+     */
     public void addCollectorItem(CollectorType collectorType, CollectorItem collectorItem) {
         // Currently only one collectorItem per collectorType is supported
         if (collectorItems.get(collectorType) == null) {
@@ -62,10 +68,8 @@ public class Component extends BaseModel {
             collectorItems.put(collectorType,newList);
         } else {
             List<CollectorItem> existing = new ArrayList<> (collectorItems.get(collectorType));
-            if (isNewCollectorItem(existing, collectorItem)) {
-                existing.add(collectorItem);
-                collectorItems.put(collectorType, existing);
-            }
+            existing.add(collectorItem);
+            collectorItems.put(collectorType, existing);
         }
     }
 
@@ -73,7 +77,6 @@ public class Component extends BaseModel {
             List<CollectorItem> existing = new ArrayList<> (collectorItems.get(collectorType));
             if (!isNewCollectorItem(existing, collectorItem)) {
                 findCollectorItem(existing,collectorItem).setLastUpdated(collectorItem.getLastUpdated());
-                collectorItems.put(collectorType, existing);
             }
     }
 
