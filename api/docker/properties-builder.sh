@@ -38,7 +38,7 @@ dbpassword=${SPRING_DATA_MONGODB_PASSWORD:-dbpassword}
 dbhostport=${SPRING_DATA_MONGODB_HOST}:${SPRING_DATA_MONGODB_PORT}
 
 
-#API encryption key. Optional. See http://capitalone.github.io/Hygieia/setup.html#encryption-for-private-repos	
+#API encryption key. Optional. See https://hygieia.github.io/Hygieia/setup.html#encryption-for-private-repos	
 key=${KEY:-}
 
 logRequest=${LOG_REQUEST:-false}
