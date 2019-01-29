@@ -186,7 +186,7 @@ public final class ClientUtil {
 		if ((nativeRs != null) && !(nativeRs.isEmpty())) {
 			start = nativeRs.indexOf('[') + 1;
 			end = nativeRs.length() - 1;
-			StringBuffer interrimBuf = new StringBuffer(nativeRs);
+			StringBuilder interrimBuf = new StringBuilder(nativeRs);
 			interrimChar = interrimBuf.subSequence(start, end);
 			String interrimStr = interrimChar.toString();
 
