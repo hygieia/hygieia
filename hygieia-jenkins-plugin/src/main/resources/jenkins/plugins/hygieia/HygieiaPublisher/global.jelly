@@ -41,7 +41,7 @@
             <f:textbox field="toolName" name="toolName" clazz="required" checkMessage="Required!" value="${hygieiaPublishGenericCollectorItems.toolName}"/>
             <f:textbox field="pattern" name="pattern" clazz="required" checkMessage="Required!" value="${hygieiaPublishGenericCollectorItems.pattern}"/>
             <div align="right">
-                <f:repeatableDeleteButton/>
+                <f:repeatableDeleteButton value="Delete"/>
             </div>
         </f:repeatable>
     </f:entry>
