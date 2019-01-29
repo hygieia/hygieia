@@ -44,9 +44,9 @@ public class ActiveJobNotifier implements FineGrainedNotifier {
         if (publish) {
             HygieiaResponse response = getHygieiaService(r).publishBuildData(new BuildBuilder().createBuildRequest(r, publisher.getDescriptor().getHygieiaJenkinsName(), listener, false, true));
             if (response.getResponseCode() == HttpStatus.SC_CREATED) {
-                listener.getLogger().println("Hygieia: Published Build Complete Data. " + response.toString());
+                listener.getLogger().println("Hygieia: Published Build Start Data. " + response.toString());
             } else {
-                listener.getLogger().println("Hygieia: Failed Publishing Build Complete Data. " + response.toString());
+                listener.getLogger().println("Hygieia: Failed Publishing Build Start Data. " + response.toString());
             }
         }
 
@@ -71,7 +71,7 @@ public class ActiveJobNotifier implements FineGrainedNotifier {
             HygieiaResponse buildResponse = getHygieiaService(r)
                     .publishBuildData(new BuildBuilder()
                             .createBuildRequestFromRun(r, publisher.getDescriptor().getHygieiaJenkinsName(),
-                                    listener, BuildStatus.fromString(r.getResult().toString()), true));
+                                    listener, BuildStatus.fromString(String.valueOf(r.getResult())), true));
             if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
                 listener.getLogger().println("Hygieia: Published Build Complete Data. " + buildResponse.toString());
             } else {
