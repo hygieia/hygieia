@@ -4,12 +4,14 @@ import com.capitalone.dashboard.model.BuildStatus;
 import hudson.Extension;
 import hudson.model.Run;
 import hudson.model.TaskListener;
+import hudson.util.ListBoxModel;
 import hygieia.builder.BuildBuilder;
 import jenkins.model.Jenkins;
 import jenkins.plugins.hygieia.DefaultHygieiaService;
 import jenkins.plugins.hygieia.HygieiaPublisher;
 import jenkins.plugins.hygieia.HygieiaResponse;
 import jenkins.plugins.hygieia.HygieiaService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepImpl;
@@ -58,6 +60,15 @@ public class HygieiaBuildPublishStep extends AbstractStepImpl {
 		public String getDisplayName() {
 			return "Hygieia Build Publish Step";
 		}
+
+		public ListBoxModel doFillBuildStatusItems() {
+			ListBoxModel model = new ListBoxModel();
+			model.add("Success", BuildStatus.Success.toString());
+			model.add("Failure", BuildStatus.Failure.toString());
+			model.add("Unstable", BuildStatus.Unstable.toString());
+			model.add("Aborted", BuildStatus.Aborted.toString());
+			return model;
+		}
 	}
 
 	public static class HygieiaBuildPublishStepExecution
@@ -91,6 +102,14 @@ public class HygieiaBuildPublishStep extends AbstractStepImpl {
 			}
 			HygieiaPublisher.DescriptorImpl hygieiaDesc = jenkins
 					.getDescriptorByType(HygieiaPublisher.DescriptorImpl.class);
+
+			// Skip the publish if publish is enabled in global preferences.
+			boolean skipPublish = hygieiaDesc.isHygieiaPublishBuildDataGlobal()
+					|| hygieiaDesc.isHygieiaPublishSonarDataGlobal()
+					|| CollectionUtils.isNotEmpty(hygieiaDesc.getHygieiaPublishGenericCollectorItems());
+
+			if(skipPublish) { return new ArrayList<>();}
+
 			List<String> hygieiaAPIUrls = Arrays.asList(hygieiaDesc.getHygieiaAPIUrl().split(";"));
 			List<Integer> responseCodes = new ArrayList<>();
 			for (String hygieiaAPIUrl : hygieiaAPIUrls) {
