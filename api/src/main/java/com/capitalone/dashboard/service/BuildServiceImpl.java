@@ -1,22 +1,47 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.Build;
+import com.capitalone.dashboard.model.BuildStatus;
+import com.capitalone.dashboard.model.CodeReposBuilds;
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.model.QBuild;
+import com.capitalone.dashboard.model.RepoBranch;
 import com.capitalone.dashboard.repository.BuildRepository;
+import com.capitalone.dashboard.repository.CodeReposBuildsRepository;
+import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.BuildSearchRequest;
 import com.capitalone.dashboard.request.CollectorRequest;
+import com.capitalone.dashboard.response.BuildDataCreateResponse;
+import com.capitalone.dashboard.settings.ApiSettings;
+import com.google.common.collect.Sets;
 import com.mysema.query.BooleanBuilder;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.bson.types.ObjectId;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 public class BuildServiceImpl implements BuildService {
@@ -25,24 +50,38 @@ public class BuildServiceImpl implements BuildService {
     private final ComponentRepository componentRepository;
     private final CollectorRepository collectorRepository;
     private final CollectorService collectorService;
+    private final DashboardService dashboardService;
+    private final CollectorItemRepository collectorItemRepository;
+    private final CodeReposBuildsRepository codeReposBuildsRepository;
 
+    @Autowired
+    private ApiSettings settings;
 
     @Autowired
     public BuildServiceImpl(BuildRepository buildRepository,
                             ComponentRepository componentRepository,
                             CollectorRepository collectorRepository,
-                            CollectorService collectorService) {
+                            CollectorService collectorService,
+                            DashboardService dashboardService,
+                            CollectorItemRepository collectorItemRepository,
+                            ApiSettings settings,
+                            CodeReposBuildsRepository codeReposBuildsRepository) {
         this.buildRepository = buildRepository;
         this.componentRepository = componentRepository;
         this.collectorRepository = collectorRepository;
         this.collectorService = collectorService;
+        this.dashboardService = dashboardService;
+        this.collectorItemRepository = collectorItemRepository;
+        this.settings = settings;
+        this.codeReposBuildsRepository = codeReposBuildsRepository;
     }
 
     @Override
     public DataResponse<Iterable<Build>> search(BuildSearchRequest request) {
+        CollectorItem item = null;
         Component component = componentRepository.findOne(request.getComponentId());
-        CollectorItem item = component.getFirstCollectorItemForType(CollectorType.Build);
-        if (item == null) {
+        if ( (component == null)
+                || ((item = component.getFirstCollectorItemForType(CollectorType.Build)) == null) ) {
             Iterable<Build> results = new ArrayList<>();
             return new DataResponse<>(results, new Date().getTime());
         }
@@ -84,8 +123,7 @@ public class BuildServiceImpl implements BuildService {
         return new DataResponse<>(result, collector.getLastExecuted());
     }
 
-    @Override
-    public String create(BuildDataCreateRequest request) throws HygieiaException {
+    protected Build createBuild(BuildDataCreateRequest request) throws HygieiaException {
         /**
          * Step 1: create Collector if not there
          * Step 2: create Collector item if not there
@@ -109,7 +147,54 @@ public class BuildServiceImpl implements BuildService {
             throw new HygieiaException("Failed inserting/updating build information.", HygieiaException.ERROR_INSERTING_DATA);
         }
 
+        return build;
+
+    }
+
+    @Override
+    public String create(BuildDataCreateRequest request) throws HygieiaException {
+        Build build = createBuild(request);
         return build.getId().toString();
+    }
+
+    @Override
+    public String createV2(BuildDataCreateRequest request) throws HygieiaException {
+        Build build = createBuild(request);
+        return String.format("%s,%s", build.getId().toString(), build.getCollectorItemId().toString());
+    }
+
+    @Override
+    public BuildDataCreateResponse createV3(BuildDataCreateRequest request) throws HygieiaException {
+        BuildDataCreateResponse response = new BuildDataCreateResponse();
+        Build build = createBuild(request);
+        try {
+            org.apache.commons.beanutils.BeanUtils.copyProperties(response, build);
+        }
+        catch (IllegalAccessException | InvocationTargetException e) {
+            throw new HygieiaException(e);
+        }
+        finally {
+            if(settings.isLookupDashboardForBuildDataCreate()) {
+                populateDashboardId(response);
+            }
+        }
+        return response;
+    }
+
+    private void populateDashboardId(BuildDataCreateResponse response) {
+            if(response == null) return;
+
+            CollectorItem collectorItem = collectorItemRepository.findOne(response.getCollectorItemId());
+            if (collectorItem == null) return;
+
+            List<Dashboard> dashboards = dashboardService.getDashboardsByCollectorItems
+                    (Collections.singleton(collectorItem), CollectorType.Build);
+            /*
+            * retrieve the dashboardId only if 1 dashboard is associated for this collectorItem
+            * */
+            if(CollectionUtils.isNotEmpty(dashboards) && dashboards.size() == 1) {
+                response.setDashboardId(dashboards.iterator().next().getId());
+            }
 
     }
 
@@ -170,11 +255,35 @@ public class BuildServiceImpl implements BuildService {
         build.setCollectorItemId(collectorItem.getId());
         build.setSourceChangeSet(request.getSourceChangeSet());
         build.setTimestamp(System.currentTimeMillis());
-        Set<RepoBranch> rbs = new HashSet<>();
-        rbs.addAll(build.getCodeRepos());
-        rbs.addAll(request.getCodeRepos());
+        Set<RepoBranch> repoBranches = Sets.newHashSet();
+        repoBranches.addAll(build.getCodeRepos());
+        repoBranches.addAll(request.getCodeRepos());
+        /*
+        * This is a Quick fix until feature toggle via ff4j is implemented which is coming up soon
+        * */
+        boolean  filterLibraryRepos = settings.getWebHook() != null && settings.getWebHook().getJenkinsBuild() != null
+                && settings.getWebHook().getJenkinsBuild().isEnableFilterLibraryRepos();
+        if(filterLibraryRepos && CollectionUtils.isNotEmpty(repoBranches)) {
+            Set<RepoBranch> copyRepoBranches = Sets.newHashSet(repoBranches);
+            for (RepoBranch repoBranch : copyRepoBranches) {
+                final String codeRepo = StringUtils.lowerCase(repoBranch.getUrl());
+                CodeReposBuilds entity = codeReposBuildsRepository.findByCodeRepo(codeRepo);
+                if(entity == null) {
+                    entity = new CodeReposBuilds();
+                }
+                int threshold = settings.getWebHook().getJenkinsBuild().getExcludeLibraryRepoThreshold();
+                if (CollectionUtils.size(entity.getBuildCollectorItems()) > threshold) {
+                    // remove the repoBranch from Build
+                    repoBranches.remove(repoBranch);
+                }
+                entity.setCodeRepo(codeRepo);
+                entity.getBuildCollectorItems().add(collectorItem.getId());
+                entity.setTimestamp(System.currentTimeMillis());
+                codeReposBuildsRepository.save(entity);
+            }
+        }
         build.getCodeRepos().clear();
-        build.getCodeRepos().addAll(rbs);
+        build.getCodeRepos().addAll(repoBranches);
         return buildRepository.save(build); // Save = Update (if ID present) or Insert (if ID not there)
     }
 }

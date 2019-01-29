@@ -70,11 +70,11 @@ public class CodeQualityServiceImpl implements CodeQualityService {
         return searchType(request);
     }
 
-    protected DataResponse<Iterable<CodeQuality>> emptyResponse() {
+    private DataResponse<Iterable<CodeQuality>> emptyResponse() {
         return new DataResponse<>(null, System.currentTimeMillis());
     }
 
-    public DataResponse<Iterable<CodeQuality>> searchType(CodeQualityRequest request) {
+    private DataResponse<Iterable<CodeQuality>> searchType(CodeQualityRequest request) {
         CollectorItem item = getCollectorItem(request);
         if (item == null) {
             return emptyResponse();
@@ -110,9 +110,12 @@ public class CodeQualityServiceImpl implements CodeQualityService {
 
 
     protected CollectorItem getCollectorItem(CodeQualityRequest request) {
-        CollectorItem item = null;
         Component component = componentRepository.findOne(request.getComponentId());
+        if (component == null) {
+            return null;
+        }
 
+        CollectorItem item = null;
         CodeQualityType qualityType = Objects.firstNonNull(request.getType(),
                 CodeQualityType.StaticAnalysis);
         List<CollectorItem> items = component.getCollectorItems().get(qualityType.collectorType());
@@ -123,12 +126,11 @@ public class CodeQualityServiceImpl implements CodeQualityService {
     }
 
 
-    @Override
-    public String create(CodeQualityCreateRequest request) throws HygieiaException {
-        /**
-         * Step 1: create Collector if not there
-         * Step 2: create Collector item if not there
-         * Step 3: Insert Quality data if new. If existing, update it.
+    protected CodeQuality createCodeQuality(CodeQualityCreateRequest request) throws HygieiaException {
+        /*
+          Step 1: create Collector if not there
+          Step 2: create Collector item if not there
+          Step 3: Insert Quality data if new. If existing, update it.
          */
         Collector collector = createCollector();
 
@@ -145,13 +147,25 @@ public class CodeQualityServiceImpl implements CodeQualityService {
         CodeQuality quality = createCodeQuality(collectorItem, request);
 
         if (quality == null) {
-            throw new HygieiaException("Failed inserting/updating Quality information.", HygieiaException.ERROR_INSERTING_DATA);
+            throw new HygieiaException("Failed inserting/updating Code Quality information.", HygieiaException.ERROR_INSERTING_DATA);
         }
 
-        return quality.getId().toString();
+        return quality;
 
     }
 
+    @Override
+    public String create(CodeQualityCreateRequest request) throws HygieiaException {
+        CodeQuality quality = createCodeQuality(request);
+        return quality.getId().toString();
+    }
+
+    @Override
+    public String createV2(CodeQualityCreateRequest request) throws HygieiaException {
+        CodeQuality quality = createCodeQuality(request);
+        return quality.getId().toString() + "," + quality.getCollectorItemId().toString();
+
+    }
 
     private Collector createCollector() {
         CollectorRequest collectorReq = new CollectorRequest();

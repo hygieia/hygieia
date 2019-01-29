@@ -5,33 +5,77 @@ import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.CommitStatus;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.Review;
+import com.capitalone.dashboard.model.ServiceAccount;
 import com.capitalone.dashboard.repository.CommitRepository;
+import com.capitalone.dashboard.repository.ServiceAccountRepository;
 import com.capitalone.dashboard.response.AuditReviewResponse;
 import com.capitalone.dashboard.status.CodeReviewAuditStatus;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.AbstractMap;
+import java.util.Collections;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@RunWith(MockitoJUnitRunner.class)
 public class CommonCodeReviewTest {
 
     private ApiSettings apiSettings = new ApiSettings();
     @Mock
     private CommitRepository commitRepository;
+    @Mock
+    private ServiceAccountRepository serviceAccountRepository;
     @Test
     public void testCheckForServiceAccount() {
 
         apiSettings.setServiceAccountOU(TestConstants.SERVICE_ACCOUNTS);
-        Assert.assertEquals(true, CommonCodeReview.checkForServiceAccount("CN=hygieiaUser,OU=Service Accounts,DC=basic,DC=ds,DC=industry,DC=com", apiSettings));
+        Assert.assertEquals(true, CommonCodeReview.checkForServiceAccount("CN=hygieiaUser,OU=Service Accounts,DC=basic,DC=ds,DC=industry,DC=com", apiSettings,null,null,null,false,new AuditReviewResponse()));
     }
 
     @Test
     public void testCheckForServiceAccountForAllUsers() {
         apiSettings.setServiceAccountOU(TestConstants.SERVICE_ACCOUNTS);
-        Assert.assertEquals(false, CommonCodeReview.checkForServiceAccount("CN=hygieiaUser,OU=Developers,OU=All Users,DC=basic,DC=ds,DC=industry,DC=com", apiSettings));
+        Assert.assertEquals(false, CommonCodeReview.checkForServiceAccount("CN=hygieiaUser,OU=Developers,OU=All Users,DC=basic,DC=ds,DC=industry,DC=com", apiSettings,null,null,null,false,new AuditReviewResponse()));
+    }
+
+
+    @Test
+    public void testCheckForServiceAccountForAllowedServiceAccountsMatch() {
+        apiSettings.setServiceAccountOU(TestConstants.SERVICE_ACCOUNTS);
+        Map<String,String> allowedUsers =  Collections.unmodifiableMap(Stream.of(
+                new AbstractMap.SimpleEntry<>("allowedUser1", "pom.xml,test.json"),
+                new AbstractMap.SimpleEntry<>("allowedUser2", "test.java"))
+                .collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())));
+        Assert.assertEquals(true, CommonCodeReview.checkForServiceAccount("CN=hygieiaUser,OU=Developers,OU=All Users,DC=basic,DC=ds,DC=industry,DC=com", apiSettings,allowedUsers,"allowedUser1",Stream.of("test.json").collect(Collectors.toList()), true,new AuditReviewResponse()));
+    }
+
+    @Test
+    public void testCheckForServiceAccountForAllowedServiceAccountsWildcardMatch() {
+        AuditReviewResponse<CodeReviewAuditStatus> auditStatusAuditReviewResponse = new AuditReviewResponse();
+        apiSettings.setServiceAccountOU(TestConstants.SERVICE_ACCOUNTS);
+        Map<String,String> allowedUsers =  Collections.unmodifiableMap(Stream.of(
+                new AbstractMap.SimpleEntry<>("allowedUser1", "pom.xml,test.json"),
+                new AbstractMap.SimpleEntry<>("allowedUser2", "*.java"))
+                .collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())));
+        Assert.assertEquals(true, CommonCodeReview.checkForServiceAccount("CN=hygieiaUser,OU=Developers,OU=All Users,DC=basic,DC=ds,DC=industry,DC=com", apiSettings,allowedUsers,"allowedUser2",Stream.of("test.java").collect(Collectors.toList()), true,auditStatusAuditReviewResponse));
+        Assert.assertEquals(true, auditStatusAuditReviewResponse.getAuditStatuses().toString().contains("SCM_AUTHOR_WHITELISTED_USER"));
+    }
+
+    @Test
+    public void testCheckForServiceAccountForAllowedServiceAccountsNonMatch() {
+        apiSettings.setServiceAccountOU(TestConstants.SERVICE_ACCOUNTS);
+        Map<String,String> allowedUsers =  Collections.unmodifiableMap(Stream.of(
+                new AbstractMap.SimpleEntry<>("allowedUser1", "pom.xml,test.json"),
+                new AbstractMap.SimpleEntry<>("allowedUser2", "*.java"))
+                .collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())));
+        Assert.assertEquals(false, CommonCodeReview.checkForServiceAccount("CN=hygieiaUser,OU=Developers,OU=All Users,DC=basic,DC=ds,DC=industry,DC=com", apiSettings,allowedUsers,"allowedUser2",Stream.of("test.md").collect(Collectors.toList()), true,new AuditReviewResponse()));
     }
 
 
@@ -40,8 +84,9 @@ public class CommonCodeReviewTest {
         apiSettings.setServiceAccountOU(TestConstants.SERVICE_ACCOUNTS);
         apiSettings.setPeerReviewContexts("context");
         apiSettings.setPeerReviewApprovalText("approved by");
+        Mockito.when(serviceAccountRepository.findAll()).thenReturn(Stream.of(makeServiceAccount()).collect(Collectors.toList()));
         AuditReviewResponse<CodeReviewAuditStatus> codeReviewAuditRequestAuditReviewResponse = new AuditReviewResponse<>();
-        Assert.assertEquals(false, CommonCodeReview.computePeerReviewStatus(makeGitRequest("Service Accounts"), apiSettings, codeReviewAuditRequestAuditReviewResponse, Stream.of(makeCommit()).collect(Collectors.toList()),commitRepository));
+        Assert.assertEquals(false, CommonCodeReview.computePeerReviewStatus(makeGitRequest("Service Accounts"), apiSettings, codeReviewAuditRequestAuditReviewResponse, Stream.of(makeCommit()).collect(Collectors.toList()),commitRepository,serviceAccountRepository));
         Assert.assertEquals(true, codeReviewAuditRequestAuditReviewResponse.getAuditStatuses().toString().contains("PEER_REVIEW_BY_SERVICEACCOUNT"));
     }
 
@@ -50,8 +95,9 @@ public class CommonCodeReviewTest {
         apiSettings.setServiceAccountOU(TestConstants.SERVICE_ACCOUNTS);
         apiSettings.setPeerReviewContexts("context");
         apiSettings.setPeerReviewApprovalText("approved by");
+        Mockito.when(serviceAccountRepository.findAll()).thenReturn(Stream.of(makeServiceAccount()).collect(Collectors.toList()));
         AuditReviewResponse<CodeReviewAuditStatus> codeReviewAuditRequestAuditReviewResponse = new AuditReviewResponse<>();
-        Assert.assertEquals(false, CommonCodeReview.computePeerReviewStatus(makeGitRequest("All Users"), apiSettings, codeReviewAuditRequestAuditReviewResponse, Stream.of(makeCommit()).collect(Collectors.toList()),commitRepository));
+        Assert.assertEquals(false, CommonCodeReview.computePeerReviewStatus(makeGitRequest("All Users"), apiSettings, codeReviewAuditRequestAuditReviewResponse, Stream.of(makeCommit()).collect(Collectors.toList()),commitRepository,serviceAccountRepository));
         Assert.assertEquals(Boolean.TRUE,codeReviewAuditRequestAuditReviewResponse.getAuditStatuses().contains(CodeReviewAuditStatus.PEER_REVIEW_GHR));
         Assert.assertEquals(Boolean.TRUE,codeReviewAuditRequestAuditReviewResponse.getAuditStatuses().contains(CodeReviewAuditStatus.PEER_REVIEW_BY_SERVICEACCOUNT));
         Assert.assertEquals(Boolean.TRUE,codeReviewAuditRequestAuditReviewResponse.getAuditStatuses().contains(CodeReviewAuditStatus.PEER_REVIEW_GHR_SELF_APPROVAL));
@@ -91,5 +137,9 @@ public class CommonCodeReviewTest {
         r.setState("approved");
         r.setAuthorLDAPDN("CN=hygieiaUser,OU=Service Accounts,DC=basic,DC=ds,DC=industry,DC=com");
         return r;
+    }
+
+    private ServiceAccount makeServiceAccount(){
+        return new ServiceAccount("servUserName","pom.xml,test.json");
     }
 }

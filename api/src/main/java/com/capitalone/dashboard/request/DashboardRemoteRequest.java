@@ -7,16 +7,13 @@ import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -156,6 +153,8 @@ public class DashboardRemoteRequest {
 
         boolean pushed = false;
 
+        String niceName;
+
         @NotEmpty
         Map<String, Object> options = new HashMap<>();
 
@@ -185,12 +184,17 @@ public class DashboardRemoteRequest {
             this.pushed = pushed;
         }
 
+        public String getNiceName() { return niceName; }
+
+        public void setNiceName(String niceName) { this.niceName = niceName; }
+
         public CollectorItem toCollectorItem(Collector collector) throws HygieiaException{
             if (options.keySet().containsAll(collector.getUniqueFields().keySet())) {
                 CollectorItem collectorItem = new CollectorItem();
                 collectorItem.setEnabled(true);
                 collectorItem.setPushed(isPushed());
                 collectorItem.setDescription(description);
+                collectorItem.setNiceName(niceName);
                 for (String key : options.keySet()) {
                     if (collector.getAllFields().keySet().contains(key)) {
                         collectorItem.getOptions().put(key, options.get(key));
@@ -241,7 +245,12 @@ public class DashboardRemoteRequest {
 
         @Override
         public Map<String, Object> toWidgetOptions() {
-            return null;
+            Map<String, Object> opts = new HashMap<>();
+            opts.put("id", getWidgetId());
+            options.keySet().forEach(key -> {
+                opts.put(key, options.get(key));
+            });
+            return opts;
         }
     }
 
@@ -271,15 +280,15 @@ public class DashboardRemoteRequest {
             Map<String, Object> opts = new HashMap<>();
             opts.put("name", "repo");
             opts.put("id", "repo0");
-            for (String key : options.keySet()) {
-                if("url".equalsIgnoreCase(key)){
-                    GitHubParsedUrl gitHubParsed = new GitHubParsedUrl((String)options.get(key));
+            options.keySet().forEach(key -> {
+                if ("url".equalsIgnoreCase(key)) {
+                    GitHubParsedUrl gitHubParsed = new GitHubParsedUrl((String) options.get(key));
                     String repoUrl = gitHubParsed.getUrl();
                     opts.put(key, repoUrl);
-                }else{
+                } else {
                     opts.put(key, options.get(key));
                 }
-             }
+            });
             Map<String, String> scm = new HashMap<>();
             scm.put("name", toolName);
             scm.put("value", toolName);
@@ -344,7 +353,6 @@ public class DashboardRemoteRequest {
         public Map<String, Object> toWidgetOptions() {
             Map<String, Object> opts = new HashMap<>();
             opts.put("id", getWidgetId());
-            opts.put("testJobNames", Arrays.asList(""));
             return opts;
         }
     }
@@ -374,7 +382,6 @@ public class DashboardRemoteRequest {
         public Map<String, Object> toWidgetOptions() {
             Map<String, Object> opts = new HashMap<>();
             opts.put("id", getWidgetId());
-            opts.put("testJobNames", Arrays.asList(""));
             return opts;
         }
 
@@ -404,7 +411,6 @@ public class DashboardRemoteRequest {
         public Map<String, Object> toWidgetOptions() {
             Map<String, Object> opts = new HashMap<>();
             opts.put("id", getWidgetId());
-            opts.put("testJobNames", Arrays.asList(""));
             return opts;
         }
     }
@@ -433,7 +439,6 @@ public class DashboardRemoteRequest {
         public Map<String, Object> toWidgetOptions() {
             Map<String, Object> opts = new HashMap<>();
             opts.put("id", getWidgetId());
-            opts.put("testJobNames",Arrays.asList(""));
             return opts;
         }
     }
@@ -550,6 +555,7 @@ public class DashboardRemoteRequest {
         all.addAll(securityScanEntries);
         all.addAll(functionalTestEntries);
         all.addAll(deploymentEntries);
+        all.addAll(featureEntries);
         return all;
     }
 }

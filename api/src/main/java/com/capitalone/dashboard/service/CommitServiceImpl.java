@@ -43,11 +43,11 @@ public class CommitServiceImpl implements CommitService {
     public CommitServiceImpl(CommitRepository commitRepository,
                              ComponentRepository componentRepository,
                              CollectorRepository collectorRepository,
-                             CollectorService colllectorService) {
+                             CollectorService collectorService) {
         this.commitRepository = commitRepository;
         this.componentRepository = componentRepository;
         this.collectorRepository = collectorRepository;
-        this.collectorService = colllectorService;
+        this.collectorService = collectorService;
     }
 
     @Override
@@ -55,12 +55,15 @@ public class CommitServiceImpl implements CommitService {
         QCommit commit = new QCommit("search");
         BooleanBuilder builder = new BooleanBuilder();
 
+        CollectorItem item = null;
         Component component = componentRepository.findOne(request.getComponentId());
-        CollectorItem item = component.getFirstCollectorItemForType(CollectorType.SCM);
-        if (item == null) {
+
+        if ( (component == null)
+                || ((item = component.getLastUpdatedCollectorItemForType(CollectorType.SCM)) == null) ) {
             Iterable<Commit> results = new ArrayList<>();
             return new DataResponse<>(results, new Date().getTime());
         }
+
         builder.and(commit.collectorItemId.eq(item.getId()));
 
         if (request.getNumberOfDays() != null) {
@@ -130,8 +133,8 @@ public class CommitServiceImpl implements CommitService {
         private static final String REPO_URL = "url";
         private static final String BRANCH = "branch";
         private static final String SCM_TAG = "scm";
-        public static final String USER_ID = "userID";
-        public static final String PASSWORD = "password";
+        private static final String USER_ID = "userID";
+        private static final String PASSWORD = "password";
 
         private CollectorItem collectorItem;
         private Collector collector;

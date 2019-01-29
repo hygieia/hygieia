@@ -5,6 +5,7 @@ import com.capitalone.dashboard.model.Application;
 import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
@@ -12,6 +13,7 @@ import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.model.ScoreDisplayType;
 import com.capitalone.dashboard.repository.CmdbRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.CustomRepositoryQuery;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.request.DashboardRemoteRequest;
@@ -26,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class DashboardRemoteServiceImpl implements DashboardRemoteService {
@@ -36,12 +39,13 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
     private final CollectorService collectorService;
     private final UserInfoService userInfoService;
     private final CmdbRepository cmdbRepository;
-
+    private final ComponentRepository componentRepository;
 
     @Autowired
     public DashboardRemoteServiceImpl(
             CollectorRepository collectorRepository,
-            CustomRepositoryQuery customRepositoryQuery, DashboardRepository dashboardRepository, DashboardService dashboardService, CollectorService collectorService, UserInfoService userInfoService, CmdbRepository cmdbRepository) {
+            CustomRepositoryQuery customRepositoryQuery,
+            DashboardRepository dashboardRepository, DashboardService dashboardService, CollectorService collectorService, UserInfoService userInfoService, CmdbRepository cmdbRepository, ComponentRepository componentRepository) {
         this.collectorRepository = collectorRepository;
         this.customRepositoryQuery = customRepositoryQuery;
         this.dashboardRepository = dashboardRepository;
@@ -49,6 +53,7 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
         this.collectorService = collectorService;
         this.userInfoService = userInfoService;
         this.cmdbRepository = cmdbRepository;
+        this.componentRepository = componentRepository;
     }
 
     @Override
@@ -60,7 +65,7 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
             throw new HygieiaException("Invalid owner information or authentication type. Owner first needs to sign up in Hygieia", HygieiaException.BAD_DATA);
         }
 
-        List<Dashboard> dashboards = dashboardRepository.findByTitle(request.getMetaData().getTitle());
+        List<Dashboard> dashboards = findExistingDashboardsFromRequest( request );
         if (!CollectionUtils.isEmpty(dashboards)) {
             dashboard = dashboards.get(0);
             if (!isUpdate) {
@@ -73,35 +78,31 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
 
         } else {
             if (isUpdate) {
-                throw new HygieiaException("Dashboard " + request.getMetaData().getTitle() +  "does not exist.", HygieiaException.BAD_DATA);
+                throw new HygieiaException("Dashboard " + request.getMetaData().getTitle() +  " does not exist.", HygieiaException.BAD_DATA);
             }
             dashboard = dashboardService.create(requestToDashboard(request));
         }
 
         List<DashboardRemoteRequest.Entry> entries = request.getAllEntries();
-        Map<String, WidgetRequest> allWidgetRequests = new HashMap<>();
-
-        for (DashboardRemoteRequest.Entry entry : entries) {
-            List<Collector> collectors = collectorRepository.findByCollectorTypeAndName(entry.getType(), entry.getToolName());
-            if (CollectionUtils.isEmpty(collectors)) {
-                throw new HygieiaException(entry.getToolName() + " collector is not available.", HygieiaException.BAD_DATA);
-            }
-            Collector collector = collectors.get(0);
-            WidgetRequest widgetRequest = allWidgetRequests.get(entry.getWidgetName());
-
-            if (widgetRequest == null) {
-                widgetRequest = entryToWidgetRequest(dashboard, entry, collector);
-                allWidgetRequests.put(entry.getWidgetName(), widgetRequest);
-            } else {
-                CollectorItem item = entryToCollectorItem(entry, collector);
-                if (item != null) {
-                    widgetRequest.getCollectorItemIds().add(item.getId());
-                }
-            }
-        }
-
+        Map<String, WidgetRequest> allWidgetRequests = generateRequestWidgetList( entries, dashboard);
+        //adds widgets
         for (String key : allWidgetRequests.keySet()) {
             WidgetRequest widgetRequest = allWidgetRequests.get(key);
+
+            if( key.equals( "codeanalysis" ) ){
+
+                List< CollectorItem > list = new ArrayList<>();
+                Component component = componentRepository.findOne( dashboard.getApplication().getComponents().get(0).getId() );
+
+                list.addAll( component.getCollectorItems(CollectorType.Test ));
+                list.addAll( component.getCollectorItems(CollectorType.StaticSecurityScan ) );
+                list.addAll( component.getCollectorItems(CollectorType.CodeQuality ) );
+                list.addAll( component.getCollectorItems(CollectorType.LibraryPolicy ) );
+
+                List< ObjectId > collectorItemIdList = list.stream().map( CollectorItem::getId).collect(Collectors.toList() );
+                widgetRequest.getCollectorItemIds().addAll( collectorItemIdList );
+            }
+
             Component component = dashboardService.associateCollectorToComponent(
                     dashboard.getApplication().getComponents().get(0).getId(), widgetRequest.getCollectorItemIds());
             Widget newWidget = widgetRequest.widget();
@@ -118,6 +119,54 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
             }
         }
         return (dashboard != null) ? dashboardService.get(dashboard.getId()) : null;
+    }
+
+    /**
+     * Generates a Widget Request list of Widgets to be created from the request
+     * @param entries
+     * @param dashboard
+     * @return Map< String, WidgetRequest > list of Widgets to be created
+     * @throws HygieiaException
+     */
+    private  Map < String, WidgetRequest > generateRequestWidgetList( List < DashboardRemoteRequest.Entry > entries, Dashboard dashboard ) throws HygieiaException {
+        Map< String, WidgetRequest > allWidgetRequests = new HashMap<>();
+        //builds widgets
+        for ( DashboardRemoteRequest.Entry entry : entries ) {
+
+            List < Collector > collectors = collectorRepository.findByCollectorTypeAndName( entry.getType(), entry.getToolName() );
+            if ( CollectionUtils.isEmpty( collectors ) ) {
+                throw new HygieiaException( entry.getToolName() + " collector is not available.", HygieiaException.BAD_DATA );
+            }
+            Collector collector = collectors.get( 0 );
+            WidgetRequest widgetRequest = allWidgetRequests.get( entry.getWidgetName() );
+
+            if ( widgetRequest == null ) {
+                widgetRequest = entryToWidgetRequest( dashboard, entry, collector) ;
+                allWidgetRequests.put( entry.getWidgetName(), widgetRequest );
+            } else {
+                CollectorItem item = entryToCollectorItem( entry, collector );
+                if ( item != null ) {
+                    widgetRequest.getCollectorItemIds().add( item.getId() );
+                }
+            }
+        }
+        return allWidgetRequests;
+    }
+    /**
+     * Takes a DashboardRemoteRequest. If the request contains a Business Service and Business Application then returns dashboard. Otherwise,
+     * Checks dashboards for existing Title and returns dashboards.
+     * @param request
+     * @return  List< Dashboard >
+     */
+    private List< Dashboard > findExistingDashboardsFromRequest( DashboardRemoteRequest request ) {
+        String businessService = request.getMetaData().getBusinessService();
+        String businessApplication = request.getMetaData().getBusinessApplication();
+
+        if( !StringUtils.isEmpty( businessService ) && !StringUtils.isEmpty( businessApplication ) ){
+           return dashboardRepository.findAllByConfigurationItemBusServNameContainingIgnoreCaseAndConfigurationItemBusAppNameContainingIgnoreCase( businessService, businessApplication );
+        }else {
+           return dashboardRepository.findByTitle( request.getMetaData().getTitle() );
+        }
     }
 
 

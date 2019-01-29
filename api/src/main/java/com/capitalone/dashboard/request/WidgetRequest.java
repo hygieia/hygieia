@@ -49,7 +49,13 @@ public class WidgetRequest {
         widget.setName(name);
         widget.setComponentId(componentId);
         if ((options != null) && !options.isEmpty()) {
-            widget.getOptions().putAll(options);
+            widget.getOptions().put("id",options.get("id"));
+            if("build".equalsIgnoreCase(name)){
+                widget.getOptions().put("buildDurationThreshold",3);
+                widget.getOptions().put("consecutiveFailureThreshold",5);
+            } else if ("feature".equalsIgnoreCase(name)) {
+                widget.getOptions().putAll(options);
+            }
         }
         return widget;
     }

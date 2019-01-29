@@ -5,7 +5,6 @@ import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import hudson.Extension;
 import hudson.model.Run;
 import hudson.model.TaskListener;
-import hudson.util.ListBoxModel;
 import hygieia.builder.BuildBuilder;
 import hygieia.builder.SonarBuilder;
 import jenkins.model.Jenkins;
@@ -22,10 +21,7 @@ import org.json.simple.parser.ParseException;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
-import java.io.IOException;
-import java.net.URISyntaxException;
 
 
 public class HygieiaSonarPublishStep extends AbstractStepImpl {
@@ -97,7 +93,7 @@ public class HygieiaSonarPublishStep extends AbstractStepImpl {
 
         // This run MUST return a non-Void object, otherwise it will be executed three times!!!! No idea why
         @Override
-        protected Integer run() throws Exception {
+        protected Integer run() {
 
             //default to global config values if not set in step, but allow step to override all global settings
 
@@ -113,9 +109,9 @@ public class HygieiaSonarPublishStep extends AbstractStepImpl {
             HygieiaService hygieiaService = getHygieiaService(hygieiaDesc.getHygieiaAPIUrl(), hygieiaDesc.getHygieiaToken(),
                     hygieiaDesc.getHygieiaJenkinsName(), hygieiaDesc.isUseProxy());
 
-            BuildBuilder buildBuilder = new BuildBuilder(run, hygieiaDesc.getHygieiaJenkinsName(), listener, BuildStatus.Success, false);
-            HygieiaResponse buildResponse = hygieiaService.publishBuildData(buildBuilder.getBuildData());
-
+            HygieiaResponse buildResponse = hygieiaService.publishBuildData(new BuildBuilder()
+                    .createBuildRequestFromRun(run, hygieiaDesc.getHygieiaJenkinsName(),
+                            listener, BuildStatus.Success, false));
 
             if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
                 listener.getLogger().println("Hygieia: Published Build Data For Sonar Publishing. " + buildResponse.toString());
@@ -124,9 +120,8 @@ public class HygieiaSonarPublishStep extends AbstractStepImpl {
             }
 
             try {
-                SonarBuilder sonarBuilder = new SonarBuilder(run, listener, hygieiaDesc.getHygieiaJenkinsName(), step.getCeQueryIntervalInSeconds(),
+                CodeQualityCreateRequest request = SonarBuilder.getInstance().getSonarMetrics(run, listener, hygieiaDesc.getHygieiaJenkinsName(), step.getCeQueryIntervalInSeconds(),
                         step.getCeQueryMaxAttempts(), buildResponse.getResponseValue(), hygieiaDesc.isUseProxy());
-                CodeQualityCreateRequest request = sonarBuilder.getSonarMetrics();
                 if (request != null) {
                     HygieiaResponse sonarResponse = hygieiaService.publishSonarResults(request);
                     if (sonarResponse.getResponseCode() == HttpStatus.SC_CREATED) {
@@ -137,7 +132,7 @@ public class HygieiaSonarPublishStep extends AbstractStepImpl {
                 } else {
                     listener.getLogger().println("Hygieia: Published Sonar Result. Nothing to publish");
                 }
-            } catch (IOException | URISyntaxException | ParseException e) {
+            } catch (ParseException e) {
                 listener.getLogger().println("Hygieia: Publishing error" + '\n' + e.getMessage());
             }
 

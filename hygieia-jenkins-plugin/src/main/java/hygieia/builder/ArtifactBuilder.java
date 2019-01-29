@@ -10,19 +10,22 @@ import hudson.scm.ChangeLogSet;
 import hygieia.utils.HygieiaUtils;
 import jenkins.plugins.hygieia.HygieiaPublisher;
 import jenkins.plugins.hygieia.workflow.HygieiaArtifactPublishStep;
+import org.apache.commons.io.FilenameUtils;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 
 import java.io.IOException;
-import java.util.*;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
-import org.apache.commons.io.FilenameUtils;
 import static hygieia.utils.HygieiaUtils.getEnvironment;
 
 
 public class ArtifactBuilder {
 
-    private static final Logger logger = Logger.getLogger(ArtifactBuilder.class.getName());
     private Run<?, ?> run;
     private TaskListener listener;
     private String hygieiaBuildId;
@@ -33,9 +36,6 @@ public class ArtifactBuilder {
     private String version;
     private FilePath rootDirectory;
 
-
-    private Set<BinaryArtifactCreateRequest> artifacts = new HashSet<>();
-
     public ArtifactBuilder(AbstractBuild<?, ?> build, HygieiaPublisher publisher, TaskListener listener, String hygieiaBuildId) {
         //fixme: Need to fix the run and build dual!
         this.run = build;
@@ -44,11 +44,9 @@ public class ArtifactBuilder {
         filePattern = hygieiaArtifact.getArtifactName().trim();
         group = hygieiaArtifact.getArtifactGroup().trim();
         version = hygieiaArtifact.getArtifactVersion().trim();
-        this.hygieiaBuildId = hygieiaBuildId;
+        this.hygieiaBuildId = HygieiaUtils.getBuildCollectionId(hygieiaBuildId);
         this.listener = listener;
-        this.rootDirectory = new FilePath(build.getWorkspace(), directory);
-
-        buildArtifacts();
+        this.rootDirectory = new FilePath(Objects.requireNonNull(build.getWorkspace()), directory);
     }
 
     public ArtifactBuilder(Run<?, ?> run, FilePath filePath, HygieiaArtifactPublishStep publisher, TaskListener listener, String hygieiaBuildId) {
@@ -57,16 +55,14 @@ public class ArtifactBuilder {
         filePattern = publisher.getArtifactName().trim();
         group = publisher.getArtifactGroup().trim();
         version = publisher.getArtifactVersion().trim();
-        this.hygieiaBuildId = hygieiaBuildId;
+        this.hygieiaBuildId = HygieiaUtils.getBuildCollectionId(hygieiaBuildId);
         this.listener = listener;
         this.rootDirectory = new FilePath(filePath, directory);
-        buildArtifacts();
     }
 
-    private void buildArtifacts() {
-
+    private Set<BinaryArtifactCreateRequest> buildArtifacts() {
         List<ChangeLogSet<? extends ChangeLogSet.Entry>> changeLogSets = new ArrayList<>();
-
+        Set<BinaryArtifactCreateRequest> artifacts = new HashSet<>();
         EnvVars envVars = getEnvironment(run, listener);
         if (envVars != null) {
             version = envVars.expand(version);
@@ -74,7 +70,6 @@ public class ArtifactBuilder {
             directory = envVars.expand(directory);
             filePattern = envVars.expand(filePattern);
         }
-
 
         listener.getLogger().println("Hygieia Build Artifact Publisher - Looking for file pattern '" + filePattern + "' in directory " + rootDirectory);
         try {
@@ -141,9 +136,11 @@ public class ArtifactBuilder {
         } catch (InterruptedException e) {
             listener.getLogger().println("Hygieia BuildArtifact Publisher - InterruptedException on " + rootDirectory);
         }
+
+        return artifacts;
     }
 
     public Set<BinaryArtifactCreateRequest> getArtifacts() {
-        return artifacts;
+        return buildArtifacts();
     }
 }

@@ -145,95 +145,111 @@ public class TestConfig {
     @Bean
     public PaginationHeaderUtility paginationHeaderUtility() {
 
-    	return Mockito.mock(PaginationHeaderUtility.class);
+        return Mockito.mock(PaginationHeaderUtility.class);
     }
 
-	@Bean
-	public TeamService teamService() {
-		return Mockito.mock(TeamService.class);
-	}
-
-	@Bean
-	public GitRequestService gitRequestService() {
-		return Mockito.mock(GitRequestService.class);
-  	}
-  
     @Bean
-	public LibraryPolicyService libraryPolicyService() {
-		return Mockito.mock(LibraryPolicyService.class);
-	}
+    public TeamService teamService() {
+        return Mockito.mock(TeamService.class);
+    }
 
-	@Bean
-	public MaturityModelService maturityModelService() {
-		return Mockito.mock(MaturityModelService.class);
-	}
-
-	@Bean
-	public PerformanceService performanceService(){
-		return Mockito.mock(PerformanceService.class);
-	}
-
-	@Bean
-	public Monitor2Service monitor2Service(){
-		return Mockito.mock(Monitor2Service.class);
-	}
-
-	@Bean
-	public AuthProperties authProperties() {
-	    return Mockito.mock(AuthProperties.class);
-  }
-  
     @Bean
-	public UserInfoService userInfoService() {
-	    return Mockito.mock(UserInfoService.class);
-	}
-    
+    public GitRequestService gitRequestService() {
+        return Mockito.mock(GitRequestService.class);
+    }
+
     @Bean
-   	public RallyFeatureService rallyFeatureService() {
-   	    return Mockito.mock(RallyFeatureService.class);
-   	}
-    
-	@Bean
-	public ConfigurationService configurationService() {
-	    return Mockito.mock(ConfigurationService.class);
-	}
-	
-	@Bean
-	public ApiTokenService apiTokenService() {
-		return Mockito.mock(ApiTokenService.class);
-	}
+    public LibraryPolicyService libraryPolicyService() {
+        return Mockito.mock(LibraryPolicyService.class);
+    }
 
-	@Bean
-	public CmdbService cmdbService() {return Mockito.mock(CmdbService.class);}
+    @Bean
+    public MaturityModelService maturityModelService() {
+        return Mockito.mock(MaturityModelService.class);
+    }
 
-	@Bean
-	public BusCompOwnerService busCompOwnerService() {return Mockito.mock(BusCompOwnerService.class);}
+    @Bean
+    public PerformanceService performanceService() {
+        return Mockito.mock(PerformanceService.class);
+    }
 
-	@Bean
-	public DashboardRemoteService dashboardRemoteService() {return Mockito.mock(DashboardRemoteService.class);}
+    @Bean
+    public Monitor2Service monitor2Service() {
+        return Mockito.mock(Monitor2Service.class);
+    }
 
-  @Bean
+    @Bean
+    public AuthProperties authProperties() {
+        return Mockito.mock(AuthProperties.class);
+    }
+
+    @Bean
+    public UserInfoService userInfoService() {
+        return Mockito.mock(UserInfoService.class);
+    }
+
+    @Bean
+    public RallyFeatureService rallyFeatureService() {
+        return Mockito.mock(RallyFeatureService.class);
+    }
+
+    @Bean
+    public ConfigurationService configurationService() {
+        return Mockito.mock(ConfigurationService.class);
+    }
+
+    @Bean
+    public ApiTokenService apiTokenService() {
+        return Mockito.mock(ApiTokenService.class);
+    }
+
+    @Bean
+    public CmdbService cmdbService() {
+        return Mockito.mock(CmdbService.class);
+    }
+
+    @Bean
+    public BusCompOwnerService busCompOwnerService() {
+        return Mockito.mock(BusCompOwnerService.class);
+    }
+
+    @Bean
+    public DashboardRemoteService dashboardRemoteService() {
+        return Mockito.mock(DashboardRemoteService.class);
+    }
+
+    @Bean
     public TemplateService templateService() {
         return Mockito.mock(TemplateService.class);
     }
 
-  @Bean
-  public ScoreService scoreService() {
-    return Mockito.mock(ScoreService.class);
-  }
+    @Bean
+    public ScoreService scoreService() {
+        return Mockito.mock(ScoreService.class);
+    }
 
-  @Bean
-  public ScoreCriteriaSettingsService scoreCriteriaSettingsService() {
-    return Mockito.mock(ScoreCriteriaSettingsService.class);
-  }
+    @Bean
+    public ScoreCriteriaSettingsService scoreCriteriaSettingsService() {
+        return Mockito.mock(ScoreCriteriaSettingsService.class);
+    }
 
-  @Bean
-  public ScoreDashboardService scoreDashboardService() {
-    return Mockito.mock(ScoreDashboardService.class);
-  }
+    @Bean
+    public ScoreDashboardService scoreDashboardService() {
+        return Mockito.mock(ScoreDashboardService.class);
+    }
 
     @Bean
     public TeamInventoryService teamInventoryService() {
         return Mockito.mock(TeamInventoryService.class);
     }
+
+    @Bean
+    public GenericCollectorItemService genericCollectorItemService() {return Mockito.mock(GenericCollectorItemService.class);}
+
+    @Bean
+    public CmdbRemoteService cmdbRemoteService() {return Mockito.mock(CmdbRemoteService.class);}
+
+    @Bean
+    public ServiceAccountService serviceAccountService() {return Mockito.mock(ServiceAccountService.class);}
+
 }

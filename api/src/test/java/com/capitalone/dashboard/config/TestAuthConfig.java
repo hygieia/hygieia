@@ -87,6 +87,10 @@ public class TestAuthConfig {
     }
 
     @Bean
+    public ServiceAccountService serviceAccountService() {return Mockito.mock(ServiceAccountService.class);}
+
+
+    @Bean
     public DashboardService dashboardService() {
         return Mockito.mock(DashboardService.class);
     }
@@ -270,6 +274,12 @@ public class TestAuthConfig {
     public TeamInventoryService teamInventoryService() {
         return Mockito.mock(TeamInventoryService.class);
     }
+
+    @Bean
+    public GenericCollectorItemService genericCollectorItemService() {return Mockito.mock(GenericCollectorItemService.class);}
+
+    @Bean
+    public CmdbRemoteService cmdbRemoteService() {return Mockito.mock(CmdbRemoteService.class);}
 
 }
 

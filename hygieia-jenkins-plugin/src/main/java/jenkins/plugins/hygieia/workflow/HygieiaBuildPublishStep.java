@@ -1,22 +1,6 @@
 package jenkins.plugins.hygieia.workflow;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
-
-import org.apache.commons.httpclient.HttpStatus;
-import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
-import org.jenkinsci.plugins.workflow.steps.AbstractStepImpl;
-import org.jenkinsci.plugins.workflow.steps.AbstractSynchronousNonBlockingStepExecution;
-import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.DataBoundSetter;
-
 import com.capitalone.dashboard.model.BuildStatus;
-
 import hudson.Extension;
 import hudson.model.Run;
 import hudson.model.TaskListener;
@@ -26,6 +10,19 @@ import jenkins.plugins.hygieia.DefaultHygieiaService;
 import jenkins.plugins.hygieia.HygieiaPublisher;
 import jenkins.plugins.hygieia.HygieiaResponse;
 import jenkins.plugins.hygieia.HygieiaService;
+import org.apache.commons.httpclient.HttpStatus;
+import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
+import org.jenkinsci.plugins.workflow.steps.AbstractStepImpl;
+import org.jenkinsci.plugins.workflow.steps.AbstractSynchronousNonBlockingStepExecution;
+import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
+
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class HygieiaBuildPublishStep extends AbstractStepImpl {
 
@@ -80,7 +77,7 @@ public class HygieiaBuildPublishStep extends AbstractStepImpl {
 		// This run MUST return a non-Void object, otherwise it will be executed
 		// three times!!!! No idea why
 		@Override
-		protected List<Integer> run() throws Exception {
+		protected List<Integer> run() {
 
 			// default to global config values if not set in step, but allow
 			// step to override all global settings
@@ -92,7 +89,7 @@ public class HygieiaBuildPublishStep extends AbstractStepImpl {
 				listener.error(ne.toString());
 				return null;
 			}
-			HygieiaPublisher.DescriptorImpl hygieiaDesc = (HygieiaPublisher.DescriptorImpl) jenkins
+			HygieiaPublisher.DescriptorImpl hygieiaDesc = jenkins
 					.getDescriptorByType(HygieiaPublisher.DescriptorImpl.class);
 			List<String> hygieiaAPIUrls = Arrays.asList(hygieiaDesc.getHygieiaAPIUrl().split(";"));
 			List<Integer> responseCodes = new ArrayList<>();
@@ -100,9 +97,8 @@ public class HygieiaBuildPublishStep extends AbstractStepImpl {
 				this.listener.getLogger().println("Publishing data for API " + hygieiaAPIUrl.toString());
 				HygieiaService hygieiaService = getHygieiaService(hygieiaAPIUrl, hygieiaDesc.getHygieiaToken(),
 						hygieiaDesc.getHygieiaJenkinsName(), hygieiaDesc.isUseProxy());
-				BuildBuilder builder = new BuildBuilder(run, hygieiaDesc.getHygieiaJenkinsName(), listener,
-						BuildStatus.fromString(step.buildStatus), true);
-				HygieiaResponse buildResponse = hygieiaService.publishBuildData(builder.getBuildData());
+				HygieiaResponse buildResponse = hygieiaService.publishBuildData(new BuildBuilder().createBuildRequestFromRun(run, hygieiaDesc.getHygieiaJenkinsName(), listener,
+						BuildStatus.fromString(step.buildStatus), true));
 				if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
 					listener.getLogger().println("Hygieia: Published Build Complete Data. " + buildResponse.toString());
 				} else {

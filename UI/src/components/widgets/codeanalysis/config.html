@@ -11,7 +11,7 @@
 
 				<input type="text" name="caCollectorItem" class="form-control" placeholder="Search a Code Analysis Job"
 					ng-model="caWidget.caCollectorItem"
-					uib-typeahead="item as item.description for item in getCodeQualityCollectors($viewValue)" typeahead-focus
+					uib-typeahead="item as (item.niceName + ' : ' + item.description) for item in getCodeQualityCollectors($viewValue)" typeahead-focus
 					typeahead-template-url="sonarProjectUrlTemplate.html"
 					typeahead-wait-ms="250" autocomplete="off"
 					typeahead-min-length="0"
@@ -65,33 +65,18 @@
             <div class="text-center modal-label">Functional Tests:</div>
 
             <div class="form-group text-center" ng-repeat="configItem in caWidget.testConfigs">
-                <div class="col-sm-3">
-                    <input
-                            type="text"
-                            name="testJobName"
-                            class="form-control-inline text-center"
-                            ng-model="configItem.testJobName"
-                            minlength="1"
-                            maxlength="8"
-                            required>
+                <div class="col-sm-10">
+                <input type="text" name="testCollectorItem" class="form-control" placeholder="Select a Functional Test Job"
+                       ng-model="configItem.testCollectorItem"
+                       uib-typeahead="item as (item.collector.name + ' : ' + item.description) for item in getTestCollectors($viewValue)" typeahead-focus
+                       typeahead-template-url="sonarProjectUrlTemplate.html"
+                       typeahead-wait-ms="250" autocomplete="off"
+                       typeahead-min-length="0"
+                       typeahead-no-results="noResults"
+                       required>
+                <div class="form-control" ng-show="noResults">
+                    No Results Found
                 </div>
-                <div class="col-sm-8">
-
-                    <ui-select ng-model="configItem.testCollectorItem" theme="bootstrap"
-                               ng-disabled="caWidget.testJobs.length === 0">
-                        <ui-select-match placeholder="{{caWidget.testToolsDropdownPlaceholder}}">
-                            {{$select.selected.description}}
-                        </ui-select-match>
-                        <ui-select-choices allow-clear="true"
-                                           repeat="item in (configItem.testJob | orderBy:['collector.name','description'] | filter: $select.search ) track by item.id">
-                            <div ng-bind-html="(item.niceName + ' : ' + item.description) | highlight: $select.search"></div>
-                        </ui-select-choices>
-                        <ui-select-no-choice>
-                            No Jobs were found
-                        </ui-select-no-choice>
-                    </ui-select>
-
-
                 </div>
                 <dash-trash class="fa-lg" ng-click="caWidget.deleteTestConfig(configItem)"></dash-trash>
             </div>

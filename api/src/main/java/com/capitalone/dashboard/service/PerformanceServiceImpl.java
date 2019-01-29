@@ -98,9 +98,12 @@ public class PerformanceServiceImpl implements PerformanceService {
     }
 
     protected CollectorItem getCollectorItem(PerformanceSearchRequest request) {
-        CollectorItem item = null;
         Component component = componentRepository.findOne(request.getComponentId());
+        if (component == null) {
+            return null;
+        }
 
+        CollectorItem item = null;
         PerformanceType qualityType = Objects.firstNonNull(request.getType(),
                 PerformanceType.ApplicationPerformance);
         List<CollectorItem> items = component.getCollectorItems().get(qualityType.collectorType());
@@ -136,7 +139,7 @@ public class PerformanceServiceImpl implements PerformanceService {
             throw new HygieiaException("Failed inserting/updating Quality information.", HygieiaException.ERROR_INSERTING_DATA);
         }
 
-        return quality.getId().toString();
+        return quality.getId().toString() + "," + quality.getCollectorItemId().toString();
 
     }
 

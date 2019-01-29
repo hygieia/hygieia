@@ -1,4 +1,48 @@
 package com.capitalone.dashboard.rest;
+
+import com.capitalone.dashboard.config.TestConfig;
+import com.capitalone.dashboard.config.WebMVCConfig;
+import com.capitalone.dashboard.model.AuthType;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.Owner;
+import com.capitalone.dashboard.model.ScoreDisplayType;
+import com.capitalone.dashboard.model.Widget;
+import com.capitalone.dashboard.request.DashboardRequest;
+import com.capitalone.dashboard.request.DashboardRequestTitle;
+import com.capitalone.dashboard.request.WidgetRequest;
+import com.capitalone.dashboard.service.DashboardService;
+import com.capitalone.dashboard.util.TestUtil;
+import com.capitalone.dashboard.util.WidgetOptionsBuilder;
+import com.google.common.collect.Lists;
+import com.jayway.jsonpath.JsonPath;
+import net.minidev.json.JSONArray;
+import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Matchers;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import static com.capitalone.dashboard.fixture.DashboardFixture.makeComponent;
 import static com.capitalone.dashboard.fixture.DashboardFixture.makeDashboard;
 import static com.capitalone.dashboard.fixture.DashboardFixture.makeDashboardRequest;
@@ -18,44 +62,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import com.capitalone.dashboard.model.*;
-import org.apache.commons.lang3.StringUtils;
-import org.bson.types.ObjectId;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Matchers;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-
-import com.capitalone.dashboard.config.TestConfig;
-import com.capitalone.dashboard.config.WebMVCConfig;
-import com.capitalone.dashboard.request.DashboardRequest;
-import com.capitalone.dashboard.request.DashboardRequestTitle;
-import com.capitalone.dashboard.request.WidgetRequest;
-import com.capitalone.dashboard.service.DashboardService;
-import com.capitalone.dashboard.util.TestUtil;
-import com.capitalone.dashboard.util.WidgetOptionsBuilder;
-import com.google.common.collect.Lists;
-import com.jayway.jsonpath.JsonPath;
-
-import net.minidev.json.JSONArray;
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebMVCConfig.class})
 @WebAppConfiguration
@@ -73,7 +79,7 @@ public class DashboardControllerTest {
     @Test
     public void dashboards() throws Exception {
         Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team, configItemAppName, configItemComponentName);
-        when(dashboardService.all()).thenReturn(Arrays.asList(d1));
+        when(dashboardService.all()).thenReturn(Collections.singletonList(d1));
         mockMvc.perform(get("/dashboard"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
@@ -81,8 +87,8 @@ public class DashboardControllerTest {
                 .andExpect(jsonPath("$[0].title", is("title")))
                 .andExpect(jsonPath("$[0].application.name", is("app")))
                 .andExpect(jsonPath("$[0].application.components[0].name", is("comp")))
-                .andExpect(jsonPath("$[0].configurationItemBusServName", is(configItemAppName.toString())))
-                .andExpect(jsonPath("$[0].configurationItemBusAppName", is(configItemComponentName.toString())));
+                .andExpect(jsonPath("$[0].configurationItemBusServName", is(configItemAppName)))
+                .andExpect(jsonPath("$[0].configurationItemBusAppName", is(configItemComponentName)));
     }
     @Test
     public void createProductDashboard() throws Exception {
@@ -177,7 +183,7 @@ public class DashboardControllerTest {
         DashboardRequestTitle request = makeDashboardRequestTitle("different title");
 
         when(dashboardService.get(objectId)).thenReturn(orig);
-        when(dashboardService.all()).thenReturn(Arrays.asList(orig));
+        when(dashboardService.all()).thenReturn(Collections.singletonList(orig));
 
         mockMvc.perform(put("/dashboard/rename/" + objectId.toString())
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -194,7 +200,7 @@ public class DashboardControllerTest {
         DashboardRequestTitle request = makeDashboardRequestTitle("dashboard title");
 
         when(dashboardService.get(objectId)).thenReturn(orig);
-        when(dashboardService.all()).thenReturn(Arrays.asList(orig));
+        when(dashboardService.all()).thenReturn(Collections.singletonList(orig));
 
         mockMvc.perform(put("/dashboard/rename/" + objectId.toString())
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -213,7 +219,7 @@ public class DashboardControllerTest {
         Dashboard another = makeDashboard("t2", "new title", "app", "comp","amit", DashboardType.Team, configItemAppName, configItemComponentName);
         another.setId(objectIdAnother);
 
-        List<Dashboard> allDashboards = new ArrayList<Dashboard>();
+        List<Dashboard> allDashboards = new ArrayList<>();
         allDashboards.add(orig);
         allDashboards.add(another);
 
@@ -239,7 +245,7 @@ public class DashboardControllerTest {
         Dashboard another = makeDashboard("t2", "t2 title", "app", "comp","amit", DashboardType.Team, configItemAppName, configItemComponentName);
         another.setId(objectIdAnother);
 
-        List<Dashboard> allDashboards = new ArrayList<Dashboard>();
+        List<Dashboard> allDashboards = new ArrayList<>();
         allDashboards.add(orig);
         allDashboards.add(another);
 
@@ -262,7 +268,7 @@ public class DashboardControllerTest {
         DashboardRequestTitle request = makeDashboardRequestTitle("bad / title");
 
         when(dashboardService.get(objectId)).thenReturn(orig);
-        when(dashboardService.all()).thenReturn(Arrays.asList(orig));
+        when(dashboardService.all()).thenReturn(Collections.singletonList(orig));
 
         mockMvc.perform(put("/dashboard/rename/" + objectId.toString())
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -279,7 +285,7 @@ public class DashboardControllerTest {
         DashboardRequestTitle request = makeDashboardRequestTitle("");
 
         when(dashboardService.get(objectId)).thenReturn(orig);
-        when(dashboardService.all()).thenReturn(Arrays.asList(orig));
+        when(dashboardService.all()).thenReturn(Collections.singletonList(orig));
 
         mockMvc.perform(put("/dashboard/rename/" + objectId.toString())
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -296,7 +302,7 @@ public class DashboardControllerTest {
         DashboardRequestTitle request = new DashboardRequestTitle();
 
         when(dashboardService.get(objectId)).thenReturn(orig);
-        when(dashboardService.all()).thenReturn(Arrays.asList(orig));
+        when(dashboardService.all()).thenReturn(Collections.singletonList(orig));
 
         mockMvc.perform(put("/dashboard/rename/" + objectId.toString())
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -317,7 +323,7 @@ public class DashboardControllerTest {
         ObjectId dashId = ObjectId.get();
         ObjectId compId = ObjectId.get();
         ObjectId collId = ObjectId.get();
-        List<ObjectId> collIds = Arrays.asList(collId);
+        List<ObjectId> collIds = Collections.singletonList(collId);
         Map<String, Object> options = new WidgetOptionsBuilder().put("option1", 1).put("option2", "2").get();
         WidgetRequest request = makeWidgetRequest("build", compId, collIds, options);
         Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team, configItemAppName, configItemComponentName);
@@ -334,8 +340,6 @@ public class DashboardControllerTest {
                 .andExpect(jsonPath("$.widget.id", is(widgetWithId.getId().toString())))
                 .andExpect(jsonPath("$.widget.name", is("build")))
                 .andExpect(jsonPath("$.widget.componentId", is(compId.toString())))
-                .andExpect(jsonPath("$.widget.options.option1", is(1)))
-                .andExpect(jsonPath("$.widget.options.option2", is("2")))
                 .andExpect(jsonPath("$.component.id", is(component.getId().toString())))
                 .andExpect(jsonPath("$.component.name", is(component.getName())))
                 .andExpect(jsonPath("$.component.collectorItems.Build[0].id", is(collId.toString())))
@@ -347,7 +351,7 @@ public class DashboardControllerTest {
         ObjectId widgetId = ObjectId.get();
         ObjectId compId = ObjectId.get();
         ObjectId collId = ObjectId.get();
-        List<ObjectId> collIds = Arrays.asList(collId);
+        List<ObjectId> collIds = Collections.singletonList(collId);
         Map<String, Object> options = new WidgetOptionsBuilder().put("option1", 2).put("option2", "3").get();
         WidgetRequest request = makeWidgetRequest("build", compId, collIds, options);
         Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team, configItemAppName, configItemComponentName);
@@ -367,7 +371,7 @@ public class DashboardControllerTest {
         ObjectId widgetId = ObjectId.get();
         ObjectId compId = ObjectId.get();
         ObjectId collId = ObjectId.get();
-        List<ObjectId> collIds = Arrays.asList(collId);
+        List<ObjectId> collIds = Collections.singletonList(collId);
         Map<String, Object> options = new WidgetOptionsBuilder().put("option1", 2).put("option2", "3").get();
         WidgetRequest request = makeWidgetRequest("build", compId, collIds, options);
         Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team, configItemAppName, configItemComponentName);

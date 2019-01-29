@@ -9,6 +9,7 @@
         <li role="presentation" ng-class="{active:tab === 'apitokens'}"><a href ng-click="navigateToTab('apitokens')">Generate ApiTokens</a></li>
         <li role="presentation"  ng-class="{active:tab === 'templates'}"><a href ng-click="navigateToTab('templates')">Manage Templates</a></li>
         <li role="presentation" ng-class="{active:tab === 'configurations'}"><a href ng-click="navigateToTab('configurations')">General Configurations</a></li>
+        <li role="presentation" ng-class="{active:tab === 'auditconfig'}"><a href ng-click="navigateToTab('auditconfig')">Audit Configurations</a></li>
       </ul>
     </div>
 
@@ -21,14 +22,26 @@
                   </div>
                   <div class="widget-modal-body">
                       <div class="row">
+                          <div class="gap">
+                              <input type="search" name="collectorItemId" class="form-control" placeholder="Type to find dashboard"
+                                     ng-model="ctrl.search"
+                                     uib-typeahead="item.description for item in ctrl.filterByTitle($viewValue)" typeahead-focus
+                                     typeahead-template-url="jobUrlTemplate.html"
+                                     typeahead-min-length="0"
+                                     typeahead-wait-ms="250"
+                                     autocomplete="off"
+                                     typeahead-no-results="noResults"
+                                     required>
+                          </div>
+
                           <div class="col-xs-push-2 col-xs-8">
                               <div class="text-center" ng-hide="ctrl.dashboards">Loading Dashboards...</div>
 
                               <div class="list-animate">
                                   <div class="dash-modal-row delete-dashboard-row clearfix"
-                                       dir-paginate="item in filteredDashboards = (ctrl.dashboards | filter:q | itemsPerPage: ctrl.pageSize() | orderBy: 'name')"
+                                       dir-paginate="item in filteredDashboards = (ctrl.dashboards | filter:q | itemsPerPage: ctrl.getPageSize() | orderBy: 'name')"
                                        current-page="currentPage"
-                                       total-items= ctrl.totalItems()
+                                       total-items= ctrl.getTotalItems()
                                        pagination-id="adminDashboard">
                                       <div title="{{item.name}}" class="btn-block">{{item.name |  trunText:30}}
                                           <a href delete-confirm title="Are you sure you want to delete?" confirm-action="ctrl.deleteDashboard(item.id)">
@@ -46,7 +59,7 @@
                                       pagination-id="adminDashboard">
                               </dir-pagination-controls >
 
-                              <div class="text-center" ng-show="ctrl.dashboards && !ctrl.dashboards.length">
+                              <br/><div class="text-center" ng-show="ctrl.dashboards && !ctrl.dashboards.length">
                                   No results
                               </div>
                           </div>
@@ -292,6 +305,64 @@
 </div>
 
 
+            <div ng-show="tab === 'auditconfig'">
+                <div class="widget-modal">
+                    <div class="widget-modal-heading">
+                        Audit Configurations
+                    </div>
+                    <div class="widget-modal-body">
+                        <form class="auditConfigForm" name="auditConfigForm"
+                              novalidate="novalidate">
+
+
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="text-center" ng-hide="ctrl.serviceAccounts">Loading Service Accounts...</div>
+                                    <div ng-show="error">
+                                        {{error.data}}
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-xs-15">
+                                            <div class="btn-block col-xs-15">
+                                                <span class="col-xs-3"><h3>Service Account</h3></span>
+                                                <span class="col-xs-3"><h3>File Types</h3></span>
+                                                <span class="col-xs-6"><button type="button" class="btn btn-primary btn-wide pull-right" ng-click="ctrl.addServiceAccount()">New</button>
+                                            </span>
+                                            </div>
+
+                                            <input type="text" class="form-control" id="accountSearch" placeholder="Filter service accounts" ng-model="accountSearch">
+
+
+                                            <div class="dash-modal-row delete-dashboard-row clearfix"
+                                                 ng-repeat="account in ctrl.serviceAccounts | filter:{serviceAccountName:accountSearch}">
+                                                <div class="btn-block col-xs-15">
+                                                    <span class="col-xs-3">{{account.serviceAccountName}}</span>
+                                                    <span class="col-xs-3">{{account.fileNames}}</span>
+                                                    <a href delete-confirm title="Are you sure you want to delete?" confirm-action="ctrl.deleteAccount(account.id)">
+                                                        <dash-trash class="clickable pull-right"></dash-trash>
+                                                    </a>
+                                                    <dash-edit class="clickable pull-right" ng-click="ctrl.editAccount(account)"></dash-edit>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+
+                                    <div class="text-center" ng-show="ctrl.serviceAccounts && !ctrl.serviceAccounts.length">
+                                        No results
+                                    </div>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+
         </div>
     </div>
 
@@ -313,3 +384,9 @@
         </div>
     </div>
 </div>
+
+<script type="text/ng-template" id="jobUrlTemplate.html">
+    <a title={{match.model.options.instanceUrl}}>
+        <span ng-bind-html="match.label | uibTypeaheadHighlight:query"/>
+    </a>
+</script>
