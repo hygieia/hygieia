@@ -110,7 +110,7 @@ public class ActiveJobNotifierTest {
         assertThat(capturedRequest.getBuildStatus()).isEqualToIgnoringCase(BuildStatus.InProgress.toString());
         assertThat(capturedRequest.getInstanceUrl()).isEqualTo("http://jenkins.test.com");
         assertThat(capturedRequest.getNiceName()).isEqualTo("jenkins");
-        verify(mockStream, times(1)).println("Hygieia: Published Build Complete Data. " + hygieiaResponse.toString());
+        verify(mockStream, times(1)).println("Hygieia: Published Build Start Data. " + hygieiaResponse.toString());
     }
 
     @Test
