@@ -26,6 +26,7 @@ public class TestConfig {
         settings.setJiraSprintDataFieldName("customfield_10007");
         settings.setJiraEpicIdFieldName("customfield_10003");
         settings.setJiraStoryPointsFieldName("customfield_10004");
+        settings.setMaxNumberOfFeaturesPerBoard(10000);
 
 
         return settings;

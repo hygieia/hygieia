@@ -266,6 +266,13 @@ public class DefaultJiraClient implements JiraClient {
             url = String.format(url, board.getTeamId(), issueTypes.replaceAll(",", "','"), lookBackDate, issueFields, startAt);
             try {
                 IssueResult temp = getFeaturesFromQueryURL(url, epicMap);
+
+                if (temp.getTotal() >= featureSettings.getMaxNumberOfFeaturesPerBoard()){
+                    LOGGER.info("Board: \'" + board.getName() + "\' passes the feature max limit at " + temp.getTotal() + " features. Skipping..");
+                    isLast = true;
+                    continue;
+                }
+
                 //For issues collected in board mode, overwrite the team information
                 temp.getFeatures().forEach(f -> {
                     f.setsTeamID(board.getTeamId());

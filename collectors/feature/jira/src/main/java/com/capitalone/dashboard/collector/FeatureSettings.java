@@ -76,6 +76,18 @@ public class FeatureSettings {
 	 * If you want to select boards in the Hygieia UI
 	 */
 	private boolean jiraBoardAsTeam;
+	/**
+	 * Defines the maximum number of features allow per board. If limit is reach collection will not happen for given board
+	 */
+	private int maxNumberOfFeaturesPerBoard;
+
+	public int getMaxNumberOfFeaturesPerBoard() {
+		return maxNumberOfFeaturesPerBoard;
+	}
+
+	public void setMaxNumberOfFeaturesPerBoard(int maxNumberOfFeaturesPerBoard) {
+		this.maxNumberOfFeaturesPerBoard = maxNumberOfFeaturesPerBoard;
+	}
 
 	public String getCron() {
 		return cron;
