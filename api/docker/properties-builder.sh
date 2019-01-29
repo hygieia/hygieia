@@ -33,7 +33,7 @@ dbusername=${SPRING_DATA_MONGODB_USERNAME:-dashboarduser}
 #Database Password - default is blank
 dbpassword=${SPRING_DATA_MONGODB_PASSWORD:-dbpassword}
 
-#dbhostport 
+
 #This is ensure if you are keeping DB outside docker compose.
 dbhostport=${SPRING_DATA_MONGODB_HOST}:${SPRING_DATA_MONGODB_PORT}
 
