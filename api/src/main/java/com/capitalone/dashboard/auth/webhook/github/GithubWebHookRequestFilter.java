@@ -19,6 +19,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 public class GithubWebHookRequestFilter extends UsernamePasswordAuthenticationFilter {
@@ -111,16 +112,6 @@ public class GithubWebHookRequestFilter extends UsernamePasswordAuthenticationFi
     }
 
     private boolean checkForEmptyStringValues(String... values) {
-        String[] var1 = values;
-        int var2 = values.length;
-
-        for(int var3 = 0; var3 < var2; ++var3) {
-            String value = var1[var3];
-            if (StringUtils.isEmpty(value)) {
-                return true;
-            }
-        }
-
-        return false;
+        return Arrays.stream(values, 0, values.length).anyMatch(StringUtils::isEmpty);
     }
 }
