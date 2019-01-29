@@ -90,8 +90,8 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
                 convertedBuildResponseString = buildResponseTriple.getLeft();
                 dashboardLink = buildResponseTriple.getMiddle();
             }
-            publishSonarData(run, listener, hygieiaGlobalListenerDescriptor, hygieiaService, convertedBuildResponseString);
-            publishGenericCollectorItems(run, listener, hygieiaGlobalListenerDescriptor, hygieiaService, convertedBuildResponseString);
+            publishSonarData(run, listener, hygieiaGlobalListenerDescriptor, hygieiaService, StringUtils.trimToNull(convertedBuildResponseString));
+            publishGenericCollectorItems(run, listener, hygieiaGlobalListenerDescriptor, hygieiaService, StringUtils.trimToNull(convertedBuildResponseString));
 
             // publish the dashboard link
             if (showConsoleOutput && StringUtils.isNotEmpty(dashboardLink)) {
@@ -104,8 +104,8 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
     }
 
     private Triple<String, String, BuildDataCreateResponse> publishBuildData(Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, HygieiaService hygieiaService, String hygieiaAppUrl) {
-        String dashboardLink = "";
-        String buildString = "";
+        String dashboardLink = null;
+        String buildString = null;
         BuildDataCreateResponse buildDataResponse;
         boolean publishBuildData = hygieiaGlobalListenerDescriptor.isHygieiaPublishBuildDataGlobal()
                 || hygieiaGlobalListenerDescriptor.isHygieiaPublishSonarDataGlobal()
@@ -138,10 +138,10 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
             return null;
         }
 
-        return Triple.of(StringUtils.trimToEmpty(buildString), StringUtils.trimToEmpty(dashboardLink), buildDataResponse);
+        return Triple.of(buildString, dashboardLink, buildDataResponse);
     }
 
-    private void publishSonarData(Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, HygieiaService hygieiaService, String convertedBuildResponseString) {
+    private void publishSonarData(Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, HygieiaService hygieiaService, @Nonnull String convertedBuildResponseString) {
         if (!hygieiaGlobalListenerDescriptor.isHygieiaPublishSonarDataGlobal()) { return; }
         boolean showConsoleOutput = hygieiaGlobalListenerDescriptor.isShowConsoleOutput();
         try {
@@ -163,7 +163,7 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
         }
     }
 
-    private void publishGenericCollectorItems(Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, HygieiaService hygieiaService, String convertedBuildResponseString) {
+    private void publishGenericCollectorItems(Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, HygieiaService hygieiaService, @Nonnull String convertedBuildResponseString) {
         if (CollectionUtils.isEmpty(hygieiaGlobalListenerDescriptor.getHygieiaPublishGenericCollectorItems())) { return; }
         boolean showConsoleOutput = hygieiaGlobalListenerDescriptor.isShowConsoleOutput();
         List<HygieiaPublisher.GenericCollectorItem> items = hygieiaGlobalListenerDescriptor.getHygieiaPublishGenericCollectorItems();
