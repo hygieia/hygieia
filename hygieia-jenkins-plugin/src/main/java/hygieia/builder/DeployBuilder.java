@@ -68,8 +68,8 @@ public class DeployBuilder {
         // The artifact information is now local and moved out of the costructor.
         artifactVersion = StringUtils.trim(retrieveFromAbstractBuild ? hygieiaDeploy.getArtifactVersion(): hygieiaDeployPublishStep.getArtifactVersion());
         artifactName = StringUtils.trim(retrieveFromAbstractBuild ? hygieiaDeploy.getArtifactName() : hygieiaDeployPublishStep.getArtifactName());
-        environmentName = StringUtils.trim(retrieveFromAbstractBuild ? hygieiaDeploy.getApplicationName() : hygieiaDeployPublishStep.getApplicationName());
-        applicationName = StringUtils.trim(retrieveFromAbstractBuild ? hygieiaDeploy.getEnvironmentName() : hygieiaDeployPublishStep.getEnvironmentName());
+        applicationName = StringUtils.trim(retrieveFromAbstractBuild ? hygieiaDeploy.getApplicationName() : hygieiaDeployPublishStep.getApplicationName());
+        environmentName = StringUtils.trim(retrieveFromAbstractBuild ? hygieiaDeploy.getEnvironmentName() : hygieiaDeployPublishStep.getEnvironmentName());
 
 
         try {
@@ -103,17 +103,10 @@ public class DeployBuilder {
                 
                 bac.setArtifactVersion(artifactVersion);
                 bac.setArtifactName(artifactName);
-                
-                BuildBuilder buildBuilder;
 
-                if (run instanceof WorkflowRun) {
-                    buildBuilder = new BuildBuilder(run, jenkinsName, listener, result, false);
-
-                } else {
-                    buildBuilder = new BuildBuilder((AbstractBuild) run, jenkinsName, listener, true, false);
-                }
-
-                BuildDataCreateRequest buildDataCreateRequest = buildBuilder.getBuildData();
+                BuildDataCreateRequest buildDataCreateRequest = (run instanceof WorkflowRun)
+                        ? new BuildBuilder().createBuildRequestFromRun(run, jenkinsName, listener, result, false)
+                        : new BuildBuilder().createBuildRequest((AbstractBuild) run, jenkinsName, listener, true, false);
 
                 bac.setDeployStatus(buildDataCreateRequest.getBuildStatus());
                 bac.setDuration(buildDataCreateRequest.getDuration());

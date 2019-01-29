@@ -1,5 +1,8 @@
+
 package jenkins.plugins.hygieia;
 
+import com.capitalone.dashboard.model.BuildStatus;
+import com.capitalone.dashboard.model.TestSuiteType;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
@@ -13,6 +16,8 @@ import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
 import hudson.tasks.Publisher;
 import hudson.util.FormValidation;
+import hudson.util.ListBoxModel;
+import hygieia.transformer.HygieiaConstants;
 import hygieia.utils.HygieiaUtils;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +25,8 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
+import javax.servlet.ServletException;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
@@ -327,17 +334,22 @@ public class HygieiaPublisher extends Notifier {
     @Extension
     public static class DescriptorImpl extends BuildStepDescriptor<Publisher> {
 
-        public String hygieiaAPIUrl;
-        public String hygieiaAppUrl;
-        public String hygieiaToken;
-        public String hygieiaJenkinsName;
-        public String hygieiaExcludeJobNames;
-        public boolean useProxy;
-        public boolean hygieiaPublishBuildDataGlobal;
-        public boolean hygieiaPublishSonarDataGlobal;
-        public boolean showConsoleOutput;
-        public List<GenericCollectorItem> hygieiaPublishGenericCollectorItems;
+        private volatile String hygieiaAPIUrl;
+        private volatile String hygieiaAppUrl;
+        private volatile String hygieiaToken;
+        private volatile String hygieiaJenkinsName;
+        private volatile String hygieiaExcludeJobNames;
+        private volatile boolean useProxy;
+        private volatile boolean hygieiaPublishBuildDataGlobal;
+        private volatile boolean hygieiaPublishSonarDataGlobal;
+        private volatile boolean showConsoleOutput;
+        private volatile GenericCollectorItem[] hygieiaPublishGenericCollectorItems =  new GenericCollectorItem[0];
         public String pluginVersionInfo;
+
+        private String deployApplicationNameSelected;
+        private String deployEnvSelected;
+        private String testApplicationNameSelected;
+        private String testEnvSelected;
 
         public DescriptorImpl() {
             load();
@@ -375,11 +387,45 @@ public class HygieiaPublisher extends Notifier {
 
         public boolean isShowConsoleOutput() { return showConsoleOutput; }
 
+        public String getDeployApplicationNameSelected() { return deployApplicationNameSelected; }
+
+        public String getDeployEnvSelected() { return deployEnvSelected; }
+
+        public String getTestApplicationNameSelected() { return testApplicationNameSelected; }
+
+        public String getTestEnvSelected() { return testEnvSelected; }
+
         public String getPluginVersionInfo() {
             return StringUtils.isNotEmpty(pluginVersionInfo) ? pluginVersionInfo : this.getPlugin().getShortName()+" version "+this.getPlugin().getVersion(); }
 
         public List<GenericCollectorItem> getHygieiaPublishGenericCollectorItems() {
-            return hygieiaPublishGenericCollectorItems;
+            return Arrays.asList(hygieiaPublishGenericCollectorItems);
+        }
+
+        public void setHygieiaPublishGenericCollectorItems (GenericCollectorItem... genericCollectorItems) {
+            this.hygieiaPublishGenericCollectorItems = genericCollectorItems;
+            save();
+        }
+
+        public ListBoxModel doFillTestTypeItems(String testType) {
+            ListBoxModel model = new ListBoxModel();
+
+            model.add(HygieiaConstants.UNIT_TEST_DISPLAY, TestSuiteType.Unit.toString());
+            model.add(HygieiaConstants.INTEGRATION_TEST_DISPLAY, TestSuiteType.Integration.toString());
+            model.add(HygieiaConstants.FUNCTIONAL_TEST_DISPLAY, TestSuiteType.Functional.toString());
+            model.add(HygieiaConstants.REGRESSION_TEST_DISPLAY, TestSuiteType.Regression.toString());
+            model.add(HygieiaConstants.PERFORMANCE_TEST_DISPLAY, TestSuiteType.Performance.toString());
+            model.add(HygieiaConstants.SECURITY_TEST_DISPLAY, TestSuiteType.Security.toString());
+            return model;
+        }
+
+        public ListBoxModel doFillBuildStatusItems() {
+            ListBoxModel model = new ListBoxModel();
+            model.add("Success", BuildStatus.Success.toString());
+            model.add("Failure", BuildStatus.Failure.toString());
+            model.add("Unstable", BuildStatus.Unstable.toString());
+            model.add("Aborted", BuildStatus.Aborted.toString());
+            return model;
         }
 
         public boolean isApplicable(Class<? extends AbstractProject> aClass) {
@@ -398,7 +444,25 @@ public class HygieiaPublisher extends Notifier {
 
         @Override
         public boolean configure(StaplerRequest sr, JSONObject formData) throws FormException {
-            sr.bindJSON(this, formData.getJSONObject("hygieia-publisher"));
+
+            JSONObject jsonObject = formData.getJSONObject("hygieia-publisher");
+            hygieiaAPIUrl = jsonObject.getString("hygieiaAPIUrl");
+            hygieiaToken = jsonObject.getString("hygieiaToken");
+            hygieiaAPIUrl = jsonObject.getString("hygieiaAPIUrl");
+            hygieiaAppUrl = jsonObject.getString("hygieiaAppUrl");
+            hygieiaJenkinsName = jsonObject.getString("hygieiaJenkinsName");
+            hygieiaExcludeJobNames = jsonObject.getString("hygieiaExcludeJobNames");
+            hygieiaPublishBuildDataGlobal = jsonObject.getBoolean("hygieiaPublishBuildDataGlobal");
+            hygieiaPublishSonarDataGlobal = jsonObject.getBoolean("hygieiaPublishSonarDataGlobal");
+            showConsoleOutput = jsonObject.getBoolean("showConsoleOutput");
+            if(jsonObject.containsKey("hygieiaPublishGenericCollectorItems")) {
+                List<GenericCollectorItem> genericCollectorItems = sr.bindJSONToList(GenericCollectorItem.class, jsonObject.get("hygieiaPublishGenericCollectorItems"));
+                hygieiaPublishGenericCollectorItems =  genericCollectorItems.toArray(new GenericCollectorItem[genericCollectorItems.size()]);
+            } else {
+                //if jsonBody is missing Generic Collector Items we assume delete operation.
+                hygieiaPublishGenericCollectorItems = new GenericCollectorItem[0];
+            }
+            useProxy = jsonObject.getBoolean("useProxy");
             save();
             return super.configure(sr, formData);
         }
@@ -452,6 +516,45 @@ public class HygieiaPublisher extends Notifier {
                 }
             }
             return SUCCESS ? FormValidation.ok(SUCCESS_MSG) : FormValidation.error(WARNING_MSG + ERROR_ENDPOINTS);
+        }
+
+        public FormValidation doCheckValue(@QueryParameter String value) throws IOException, ServletException {
+            if (value.isEmpty()) {
+                return FormValidation.warning("You must fill this box!");
+            }
+            return FormValidation.ok();
+        }
+
+        public FormValidation doCheckDeployAppNameValue(@QueryParameter String value) throws IOException, ServletException {
+            deployApplicationNameSelected = value;
+            if (StringUtils.isEmpty(value)) {
+                return FormValidation.warning("You must fill this box!");
+            }
+            return FormValidation.ok();
+        }
+
+        public FormValidation doCheckDeployEnvValue(@QueryParameter String value) throws IOException, ServletException {
+            deployEnvSelected = value;
+            if (StringUtils.isEmpty(value)) {
+                return FormValidation.warning("You must fill this box!");
+            }
+            return FormValidation.ok();
+        }
+
+        public FormValidation doCheckTestingAppNameValue(@QueryParameter String value) throws IOException, ServletException {
+            testApplicationNameSelected = value;
+            if (StringUtils.isEmpty(value)) {
+                return FormValidation.warning("You must fill this box!");
+            }
+            return FormValidation.ok();
+        }
+
+        public FormValidation doCheckTestingEnvValue(@QueryParameter String value) throws IOException, ServletException {
+            testEnvSelected = value;
+            if (StringUtils.isEmpty(value)) {
+                return FormValidation.warning("You must fill this box!");
+            }
+            return FormValidation.ok();
         }
 
     }
