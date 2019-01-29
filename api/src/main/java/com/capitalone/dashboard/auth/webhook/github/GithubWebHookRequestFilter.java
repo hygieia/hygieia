@@ -2,10 +2,10 @@ package com.capitalone.dashboard.auth.webhook.github;
 
 import com.capitalone.dashboard.auth.AuthenticationResultHandler;
 import com.capitalone.dashboard.settings.ApiSettings;
-import com.capitalone.dashboard.util.HygieiaUtils;
 import com.capitalone.dashboard.webhook.settings.GitHubWebHookSettings;
 import com.capitalone.dashboard.webhook.settings.WebHookSettings;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -78,7 +78,7 @@ public class GithubWebHookRequestFilter extends UsernamePasswordAuthenticationFi
                                 List<String> githubEnterpriseHostExpectedValues) {
         boolean result = false;
 
-        if (HygieiaUtils.checkForEmptyStringValues(userAgent, githubEnterpriseHost, userAgentExpectedValue)
+        if (checkForEmptyStringValues(userAgent, githubEnterpriseHost, userAgentExpectedValue)
                 || CollectionUtils.isEmpty(githubEnterpriseHostExpectedValues)) {
             result = true;
         }
@@ -108,5 +108,19 @@ public class GithubWebHookRequestFilter extends UsernamePasswordAuthenticationFi
                                               AuthenticationException failed) throws IOException, ServletException {
 
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Github Webhook Authentication Failed");
+    }
+
+    private boolean checkForEmptyStringValues(String... values) {
+        String[] var1 = values;
+        int var2 = values.length;
+
+        for(int var3 = 0; var3 < var2; ++var3) {
+            String value = var1[var3];
+            if (StringUtils.isEmpty(value)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
