@@ -92,7 +92,7 @@ public final class WildCardURL implements java.io.Serializable {
      */
     public String getAuthority() {
         String userInfo = getUserInfo();
-        StringBuffer auth = new StringBuffer();
+        StringBuilder auth = new StringBuilder();
         if(!"*".equals(userInfo)) {
             auth.append(userInfo).append("@");
         }
