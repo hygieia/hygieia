@@ -169,11 +169,7 @@ public class CodeQualityServiceImpl implements CodeQualityService {
 
     private Collector createCollector(CodeQualityCreateRequest request) {
         CollectorRequest collectorReq = new CollectorRequest();
-        if (request.getToolName() != null && !request.getToolName().trim().isEmpty()) {
-            collectorReq.setName(request.getToolName());
-        } else {
-            collectorReq.setName("Sonar");  // keep the default name to Sonar when not specified.
-        }
+        collectorReq.setName(StringUtils.isEmpty(request.getToolName()) ? "Sonar" : request.getToolName());
         collectorReq.setCollectorType(CollectorType.CodeQuality);
         Collector col = collectorReq.toCollector();
         col.setEnabled(true);
