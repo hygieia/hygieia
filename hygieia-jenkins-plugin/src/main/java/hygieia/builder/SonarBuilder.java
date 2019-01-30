@@ -201,9 +201,9 @@ public class SonarBuilder {
         if (StringUtils.isEmpty(sonarServer) || StringUtils.isEmpty(sonarProjectID)) return null;
 
         if (sonarVersion >= 6.3) {
-            return getSonarMetricsPost6_3(sonarServer, sonarProjectID, sonarBuildLink,  useProxy, jenkinsName, buildId);
+            return getSonarMetricsPost6_3(sonarServer, sonarProjectID, sonarBuildLink,  useProxy, jenkinsName, HygieiaUtils.getBuildCollectionId(buildId));
         } else {
-            return getSonarMetricsPre6_3(run, listener, sonarServer, sonarProjectID, useProxy, jenkinsName, buildId, ceQueryIntervalInSeconds, ceQueryMaxAttempts);
+            return getSonarMetricsPre6_3(run, listener, sonarServer, sonarProjectID, useProxy, jenkinsName, HygieiaUtils.getBuildCollectionId(buildId), ceQueryIntervalInSeconds, ceQueryMaxAttempts);
         }
     }
 
