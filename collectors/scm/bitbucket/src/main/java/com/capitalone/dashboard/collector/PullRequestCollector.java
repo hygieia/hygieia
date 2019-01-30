@@ -1,12 +1,15 @@
 package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.bitbucketapi.BitbucketApiUrlBuilder;
-import com.capitalone.dashboard.dao.PullRequestDao;
+import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitRepo;
 import com.capitalone.dashboard.model.GitRequest;
+import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.util.Encryption;
 import com.capitalone.dashboard.util.EncryptionException;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,10 +48,11 @@ public class PullRequestCollector {
     private SCMHttpRestClient scmHttpRestClient;
 
     @Inject
-    private PullRequestDao pullRequestDao;
+    private GitRequestRepository gitRequestRepository;
 
     @Inject
-    private GitRequestRepository gitRequestRepository;
+    private CommitRepository commitRepository;
+
 
     /** This method fetches pull-request using Bitbucket REST APIs and stores them to Hygieia DB.
      * We can stop this processing as soon as we find a PR which has not changed(updateAt is same in Hygieia DB and REST response).
@@ -112,7 +116,7 @@ public class PullRequestCollector {
                     pulls.add(pull);
                 }
                 try {
-                    pullCount += pullRequestDao.processList(repo, pulls, "pull");
+                    pullCount += processList(repo, pulls, "pull");
                 } catch (Exception ex) {
                     LOG.error("failed to process Pull Requests", ex);
                     throw new RuntimeException("Unable to process pull requests",ex);
@@ -180,7 +184,45 @@ public class PullRequestCollector {
             }
         }
     }
+    public int processList(GitRepo repo, List<GitRequest> entries, String type) {
+        int count = 0;
+        if (CollectionUtils.isEmpty(entries)) return 0;
 
+        for (GitRequest entry : entries) {
+            LOG.debug(entry.getTimestamp() + ":::" + entry.getScmCommitLog());
+            GitRequest existing =
+                    gitRequestRepository.findByCollectorItemIdAndNumberAndRequestType(
+                            repo.getId(), entry.getNumber(), type);
+
+            if (existing == null) {
+                entry.setCollectorItemId(repo.getId());
+                count++;
+            } else {
+                entry.setId(existing.getId());
+                entry.setCollectorItemId(repo.getId());
+            }
+            gitRequestRepository.save(entry);
+
+            // fix merge commit type for squash merged and rebased merged PRs
+            // PRs that were squash merged or rebase merged have only one parent
+            if ("pull".equalsIgnoreCase(type) && "merged".equalsIgnoreCase(entry.getState())) {
+                List<Commit> commits =
+                        commitRepository.findByScmRevisionNumber(entry.getScmRevisionNumber());
+                for (Commit commit : commits) {
+                    if (commit.getType() != null) {
+                        if (commit.getType() != CommitType.Merge) {
+                            commit.setType(CommitType.Merge);
+                            commitRepository.save(commit);
+                        }
+                    } else {
+                        commit.setType(CommitType.Merge);
+                        commitRepository.save(commit);
+                    }
+                }
+            }
+        }
+        return count;
+    }
     private void populateScmRevisionNumber(GitRequest pull, JSONObject jsonObject) {
         JSONObject commit = (JSONObject) jsonObject.get("commit");
         if (commit != null && commit.get("id") != null) {

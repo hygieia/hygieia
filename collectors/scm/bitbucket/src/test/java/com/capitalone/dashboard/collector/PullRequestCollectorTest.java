@@ -1,7 +1,6 @@
 package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.bitbucketapi.BitbucketApiUrlBuilder;
-import com.capitalone.dashboard.dao.PullRequestDao;
 import com.capitalone.dashboard.model.GitRepo;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.repository.GitRequestRepository;
@@ -28,7 +27,6 @@ import java.net.URISyntaxException;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 
 
@@ -46,9 +44,6 @@ public class PullRequestCollectorTest {
 
     @Mock
     private RestOperations rest;
-
-    @Mock
-    private PullRequestDao pullRequestDao;
 
     @Mock
     private GitRequestRepository gitRequestRepository;
@@ -98,8 +93,6 @@ public class PullRequestCollectorTest {
                 .willReturn(new ResponseEntity<>(prResponseTestData, HttpStatus.OK));
         given(scmHttpRestClient.makeRestCall(uri2, null, ""))
                 .willReturn(new ResponseEntity<>(prResponseTestData, HttpStatus.OK));
-
-        given(pullRequestDao.processList(anyObject(), anyObject(), eq("pull"))).willReturn(3);
 
 
         // when
@@ -151,9 +144,6 @@ public class PullRequestCollectorTest {
                 .willReturn(new ResponseEntity<>(prResponseTestData, HttpStatus.OK));
         given(scmHttpRestClient.makeRestCall(uri2, null, ""))
                 .willReturn(new ResponseEntity<>(prResponseTestData, HttpStatus.OK));
-
-        given(pullRequestDao.processList(anyObject(), anyObject(), eq("pull"))).willReturn(2);
-
 
         GitRequest existingPR = new GitRequest();
         existingPR.setUpdatedAt(1538071463469L);
