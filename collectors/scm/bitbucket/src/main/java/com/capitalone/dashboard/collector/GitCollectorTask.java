@@ -74,7 +74,7 @@ public class GitCollectorTask extends CollectorTask<Collector> {
         allOptions.put(GitRepo.BRANCH, "");
         allOptions.put(GitRepo.USER_ID, "");
         allOptions.put(GitRepo.PASSWORD, "");
-        allOptions.put(GitRepo.LAST_UPDATE_TIME, new Date().getTime());
+        allOptions.put(GitRepo.LAST_UPDATE_TIME, System.currentTimeMillis());
         allOptions.put(GitRepo.LAST_UPDATE_COMMIT, "");
         protoType.setAllFields(allOptions);
 
@@ -176,7 +176,7 @@ public class GitCollectorTask extends CollectorTask<Collector> {
 
             pullCount += pullRequestCollector.getPullRequests(repo, "all");
 
-            repo.setLastUpdateTime(new Date().getTime());
+            repo.setLastUpdateTime(System.currentTimeMillis());
             gitRepoRepository.save(repo);
 
             repoCount++;
