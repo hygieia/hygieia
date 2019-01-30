@@ -92,7 +92,8 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
 
         for (TestResult testResult : testResults) {
             if (TestSuiteType.Regression.toString().equalsIgnoreCase(testResult.getType().name()) ||
-                    TestSuiteType.Functional.toString().equalsIgnoreCase(testResult.getType().name())) {
+                    TestSuiteType.Functional.toString().equalsIgnoreCase(testResult.getType().name()) ||
+                    TestSuiteType.Manual.toString().equalsIgnoreCase(testResult.getType().name())) {
                 testResultsAuditResponse.addAuditStatus((testResult.getFailureCount() == 0) ? TestResultAuditStatus.TEST_RESULT_AUDIT_OK : TestResultAuditStatus.TEST_RESULT_AUDIT_FAIL);
                 testResultsAuditResponse.setTestCapabilities(testResult.getTestCapabilities());
                 testResultsAuditResponse.setLastExecutionTime(testResult.getStartTime());
