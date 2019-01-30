@@ -4,6 +4,7 @@ import com.capitalone.dashboard.bitbucketapi.BitbucketApiUrlBuilder;
 import com.capitalone.dashboard.dao.PullRequestDao;
 import com.capitalone.dashboard.model.GitRepo;
 import com.capitalone.dashboard.model.GitRequest;
+import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.util.Encryption;
 import com.capitalone.dashboard.util.EncryptionException;
 import org.apache.commons.lang3.StringUtils;
@@ -46,16 +47,18 @@ public class PullRequestCollector {
     @Inject
     private PullRequestDao pullRequestDao;
 
-    /**
+    @Inject
+    private GitRequestRepository gitRequestRepository;
+
+    /** This method fetches pull-request using Bitbucket REST APIs and stores them to Hygieia DB.
+     * We can stop this processing as soon as we find a PR which has not changed(updateAt is same in Hygieia DB and REST response).
      * @param repo              Bitbucket Repo object
      * @param status            open/merged
-     * @param lastExecutionTime This is the time when this collector was successfully executed last.
-     *                          It is assumed that pull request before lastExecutionTime has
-     *                          already been fetched and we should stop processing/fetching pull requests.
+     *
      * @return
      * @throws EncryptionException
      */
-    public int getPullRequests(GitRepo repo, String status, long lastExecutionTime) {
+    public int getPullRequests(GitRepo repo, String status) {
         String decryptedPassword;
         try {
             decryptedPassword = Encryption.decryptString(repo.getPassword(), settings.getKey());
@@ -91,11 +94,20 @@ public class PullRequestCollector {
                 for (Object item : values) {
                     JSONObject jsonObject = (JSONObject) item;
                     Long updatedAt = (Long) jsonObject.get("updatedDate");
-                    stop = (Long.valueOf(lastExecutionTime).compareTo(updatedAt) >= 0);
-                    if (stop) {
-                        break;
-                    }
+
+
                     GitRequest pull = getPullRequest(repo, jsonObject);
+                    GitRequest existingPull =
+                            gitRequestRepository.findByCollectorItemIdAndNumberAndRequestType(
+                                    repo.getId(), pull.getNumber(), "pull");
+
+                    if (existingPull != null) {
+                        stop = (Long.valueOf(existingPull.getUpdatedAt()).compareTo(updatedAt) == 0);
+                        if (stop) {//Found a match for last updated PR so stop
+                            break;
+                        }
+                    }
+
                     populatePullRequestMergeCommit(repo, pull);
                     pulls.add(pull);
                 }

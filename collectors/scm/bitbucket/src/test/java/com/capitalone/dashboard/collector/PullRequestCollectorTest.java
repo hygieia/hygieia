@@ -3,6 +3,8 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.bitbucketapi.BitbucketApiUrlBuilder;
 import com.capitalone.dashboard.dao.PullRequestDao;
 import com.capitalone.dashboard.model.GitRepo;
+import com.capitalone.dashboard.model.GitRequest;
+import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.util.Encryption;
 import com.capitalone.dashboard.util.EncryptionException;
 import org.apache.commons.io.IOUtils;
@@ -26,6 +28,7 @@ import java.net.URISyntaxException;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 
 
@@ -47,6 +50,9 @@ public class PullRequestCollectorTest {
     @Mock
     private PullRequestDao pullRequestDao;
 
+    @Mock
+    private GitRequestRepository gitRequestRepository;
+
     @InjectMocks
     private PullRequestCollector pullRequestCollector;
 
@@ -56,8 +62,6 @@ public class PullRequestCollectorTest {
         given(settings.getKey()).willReturn("abcdefghijklmnopqrstuvwxyz1234567");
         String encPassword = Encryption.encryptString("password", settings.getKey());
         given(settings.getPassword()).willReturn(encPassword);
-
-
         // given
         String prResponseTestData = getJson("/bitbucket-server/pr-response-test-data-1.json");
         GitRepo repo = new GitRepo();
@@ -99,10 +103,67 @@ public class PullRequestCollectorTest {
 
 
         // when
-        int pullCount = pullRequestCollector.getPullRequests(repo, "OPEN", 0l);
+        int pullCount = pullRequestCollector.getPullRequests(repo, "OPEN");
 
         // then
         assertEquals(pullCount, 3);
+
+    }
+
+    @Test
+    public void testGetPullRequests_RecentlyUpdated() throws IOException, URISyntaxException, EncryptionException {
+        given(settings.getKey()).willReturn("abcdefghijklmnopqrstuvwxyz1234567");
+        String encPassword = Encryption.encryptString("password", settings.getKey());
+        given(settings.getPassword()).willReturn(encPassword);
+        // given
+        String prResponseTestData = getJson("/bitbucket-server/pr-response-test-data-1.json");
+        GitRepo repo = new GitRepo();
+        repo.setUserId("user");
+        repo.setPassword(encPassword);
+        String repoUrl = "https://username@company.com/scm/myproject/myrepository.git";
+        repo.setRepoUrl(repoUrl);
+        repo.getOptions().put("url", repoUrl);
+        repo.setBranch("master");
+        URI uri1 =
+                URI.create(
+                        "https://company.com/rest/api/1.0/projects/myproject/repos/myrepository/pull-requests?at=refs%2Fheads%2Fmaster&state=OPEN&limit=0");
+        URI uri2 =
+                URI.create(
+                        "https://company.com/rest/api/1.0/projects/myproject/repos/myrepository/pull-requests?at=refs%2Fheads%2Fmaster&state=OPEN&limit=0");
+
+        given(
+                rest.exchange(
+                        eq(uri1), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
+                .willReturn(new ResponseEntity<>(prResponseTestData, HttpStatus.OK));
+        given(
+                rest.exchange(
+                        eq(uri2), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
+                .willReturn(new ResponseEntity<>(prResponseTestData, HttpStatus.OK));
+
+        URI value = new URI("https://company.com/rest/api/1.0/projects/myproject/repos/myrepository");
+        given(bitbucketApiUrlBuilder.buildReposApiUrl(repoUrl)).willReturn(value);
+        value =
+                new URI(
+                        "https://company.com/rest/api/1.0/projects/myproject/repos/myrepository/pull-requests");
+        given(bitbucketApiUrlBuilder.buildPullRequestApiUrl(repoUrl)).willReturn(value);
+
+        given(scmHttpRestClient.makeRestCall(uri1, repo.getUserId(), "password"))
+                .willReturn(new ResponseEntity<>(prResponseTestData, HttpStatus.OK));
+        given(scmHttpRestClient.makeRestCall(uri2, null, ""))
+                .willReturn(new ResponseEntity<>(prResponseTestData, HttpStatus.OK));
+
+        given(pullRequestDao.processList(anyObject(), anyObject(), eq("pull"))).willReturn(2);
+
+
+        GitRequest existingPR = new GitRequest();
+        existingPR.setUpdatedAt(1538071463469L);
+        given(gitRequestRepository.findByCollectorItemIdAndNumberAndRequestType(
+                repo.getId(), "7439", "pull")).willReturn(existingPR);
+        // when
+        int pullCount = pullRequestCollector.getPullRequests(repo, "OPEN");
+
+        // then
+        assertEquals(pullCount, 2);
 
     }
 

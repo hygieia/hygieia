@@ -56,7 +56,7 @@ public class SCMHttpRestClientTest {
 
 
     @Test
-    public void makeRestCall() throws URISyntaxException {
+    public void makeRestCallAndtestBasicAuthentication() throws URISyntaxException {
         URI uri = new URIBuilder("https://mycompany.com/rest/api/1.0/xyz/project/rsa").build();
 
         given(restTemplate.exchange(uriArgumentCaptor.capture(),
@@ -71,6 +71,9 @@ public class SCMHttpRestClientTest {
         assertNotNull(stringResponseEntity);
         assertEquals(classArgumentCaptor.getValue(), String.class);
         assertEquals(uriArgumentCaptor.getValue(), uri);
+        HttpEntity<?> entity = httpEntityArgumentCaptor.getValue();
+
+        assertEquals("Basic dXNlcjpwYXNzd29yZA==", entity.getHeaders().get("Authorization").iterator().next());
 
     }
 

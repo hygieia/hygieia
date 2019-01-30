@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -147,8 +146,6 @@ public class GitCollectorTask extends CollectorTask<Collector> {
 
         clean(collector);
         for (GitRepo repo : enabledRepos(collector)) {
-            long lastExecutionTime = repo.getLastUpdated();
-
             boolean firstRun = false;
             if (repo.getLastUpdateTime() == null) firstRun = true;
             LOG.debug(repo.getOptions().toString() + "::" + repo.getBranch());
@@ -177,7 +174,7 @@ public class GitCollectorTask extends CollectorTask<Collector> {
             // Step 2: Get all the Pull Requests
             LOG.info(repo.getOptions().toString() + "::" + repo.getBranch() + "::get pulls");
 
-            pullCount += pullRequestCollector.getPullRequests(repo, "all", lastExecutionTime);
+            pullCount += pullRequestCollector.getPullRequests(repo, "all");
 
             repo.setLastUpdateTime(new Date().getTime());
             gitRepoRepository.save(repo);

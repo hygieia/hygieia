@@ -28,13 +28,19 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import static java.util.function.Predicate.isEqual;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultBitbucketServerClientTest {
+    private static final String MYREPOSITORY_GIT =
+            "https://username@company.com/scm/myproject/myrepository.git";
 
     @Mock
     private Supplier<RestOperations> restOperationsSupplier;
@@ -57,17 +63,20 @@ public class DefaultBitbucketServerClientTest {
     private SCMHttpRestClient scmHttpRestClient;
 
     @Before
-    public void init() {
+    public void init() throws URISyntaxException {
         when(restOperationsSupplier.get()).thenReturn(rest);
         settings = new GitSettings();
         settings.setApi("/rest/api/1.0/");
         settings.setPageSize(25);
 
-        client = new DefaultBitbucketServerClient(settings, restOperationsSupplier);
+        URI value = new URI("https://company.com/rest/api/1.0/projects/myproject/repos/pull-requests");
+        given(bitbucketApiUrlBuilder.buildPullRequestApiUrl(MYREPOSITORY_GIT)).willReturn(value);
+
+        client = new DefaultBitbucketServerClient(settings, bitbucketApiUrlBuilder, scmHttpRestClient);
     }
 
     @Test
-    public void testGetCommits() throws IOException {
+    public void testGetCommits() throws IOException, URISyntaxException {
         // Note that there always is paging even if results only take 1 page
         String jsonResponse1 = getJson("/bitbucket-server/response1a.json");
         String jsonResponse2 = getJson("/bitbucket-server/response1b.json");
@@ -79,14 +88,22 @@ public class DefaultBitbucketServerClientTest {
         repo.setRepoUrl(repoUrl);
         repo.getOptions().put("url", repoUrl);
         repo.setBranch("master");
-        URI uri1 = URI.create("https://company.com/rest/api/1.0/projects/myproject/repos/myrepository/commits?until=master&limit=1");
-        URI uri2 = URI.create("https://company.com/rest/api/1.0/projects/myproject/repos/myrepository/commits?until=master&limit=1&start=1");
+        URI uri1 = URI.create("https://company.com/rest/api/1.0/projects/myproject/repos/myrepository/commits?until=refs%2Fheads%2Fmaster&limit=1");
+        URI uri2 = URI.create("https://company.com/rest/api/1.0/projects/myproject/repos/myrepository/commits?until=refs%2Fheads%2Fmaster&limit=1&start=1");
+
+
+
 
         when(rest.exchange(eq(uri1), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
                 .thenReturn(new ResponseEntity<>(jsonResponse1, HttpStatus.OK));
         when(rest.exchange(eq(uri2), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
                 .thenReturn(new ResponseEntity<>(jsonResponse2, HttpStatus.OK));
 
+        when(scmHttpRestClient.makeRestCall(uri1, null, "")).thenReturn(new ResponseEntity<>(jsonResponse1, HttpStatus.OK));
+        when(scmHttpRestClient.makeRestCall(uri2, null, "")).thenReturn(new ResponseEntity<>(jsonResponse2, HttpStatus.OK));
+        URI value = new URI("https://company.com/rest/api/1.0/projects/myproject/repos/myrepository");
+
+        given(bitbucketApiUrlBuilder.buildReposApiUrl(repoUrl)).willReturn(value);
         List<Commit> commits = client.getCommits(repo, true);
 
         assertEquals(2, commits.size());
@@ -112,7 +129,7 @@ public class DefaultBitbucketServerClientTest {
     }
 
     @Test
-    public void testBasicAuthentication() throws IOException, EncryptionException {
+    public void testCommits() throws EncryptionException, URISyntaxException {
         // Note that there always is paging even if results only take 1 page
         String jsonResponse1 = "{ \"values\": [] }";
         settings.setKey("abcdefghijklmnopqrstuvwxyz1234567");
@@ -128,17 +145,22 @@ public class DefaultBitbucketServerClientTest {
         repo.setRepoUrl(repoUrl);
         repo.getOptions().put("url", repoUrl);
         repo.setBranch("master");
-        URI uri1 = URI.create("https://company.com/rest/api/1.0/projects/myproject/repos/myrepository/commits?until=master&limit=1");
+        URI uri1 =
+                URI.create(
+                        "https://company.com/rest/api/1.0/projects/myproject/repos/myrepository/commits?until=refs%2Fheads%2Fmaster&limit=1");
 
-        when(rest.exchange(eq(uri1), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
-                .thenReturn(new ResponseEntity<>(jsonResponse1, HttpStatus.OK));
 
-        client.getCommits(repo, true);
+        URI value = new URI("https://company.com/rest/api/1.0/projects/myproject/repos/myrepository");
 
-        Mockito.verify(rest).exchange(eq(uri1), eq(HttpMethod.GET), httpEntityCaptor.capture(), eq(String.class));
+        when(scmHttpRestClient.makeRestCall(uri1, "user", "password")).thenReturn(new ResponseEntity<>(jsonResponse1, HttpStatus.OK));
 
-        HttpEntity<?> entity = httpEntityCaptor.getValue();
-        assertEquals("Basic dXNlcjpwYXNzd29yZA==", entity.getHeaders().get("Authorization").iterator().next());
+        given(bitbucketApiUrlBuilder.buildReposApiUrl(repoUrl)).willReturn(value);
+
+
+        List<Commit> commits = client.getCommits(repo, true);
+
+        assertNotNull(commits);
+        assertEquals(commits.size(), 0);
     }
 
     @Test
@@ -154,6 +176,14 @@ public class DefaultBitbucketServerClientTest {
 
         URI res;
 
+        URI value = new URI("https://company.com/rest/api/1.0/projects/myproject/repos/myrepository");
+        given(bitbucketApiUrlBuilder.buildReposApiUrl(url1)).willReturn(value);
+        value = new URI("https://company.com/rest/api/1.0/projects/space%20space/repos/myrepository");
+        given(bitbucketApiUrlBuilder.buildReposApiUrl(url2)).willReturn(value);
+        value = new URI("http://company.com/rest/api/1.0/projects/~myusername/repos/myrepository");
+        given(bitbucketApiUrlBuilder.buildReposApiUrl(url3)).willReturn(value);
+
+
         // First try basic combinations
         res = client.buildUri(url1, null, null);
         assertEquals("https://company.com/rest/api/1.0/projects/myproject/repos/myrepository/commits?until=master&limit=25", res.toString());
@@ -166,7 +196,7 @@ public class DefaultBitbucketServerClientTest {
 
         // try branch
         res = client.buildUri(url2, branch1, null);
-        assertEquals("https://company.com/rest/api/1.0/projects/space%20space/repos/myrepository/commits?until=feature%2FNEW_STUFF_NOW&limit=25", res.toString());
+        assertEquals("https://company.com/rest/api/1.0/projects/space%20space/repos/myrepository/commits?until=refs%2Fheads%2Ffeature%2FNEW_STUFF_NOW&limit=25", res.toString());
 
         // try since
         res = client.buildUri(url2, null, lastKnownCommit1);
@@ -175,9 +205,8 @@ public class DefaultBitbucketServerClientTest {
         // try no page limit
         settings.setPageSize(-1);
         res = client.buildUri(url2, "master", null);
-        assertEquals("https://company.com/rest/api/1.0/projects/space%20space/repos/myrepository/commits?until=master", res.toString());
+        assertEquals("https://company.com/rest/api/1.0/projects/space%20space/repos/myrepository/commits?until=refs%2Fheads%2Fmaster", res.toString());
     }
-
 
 
     private String getJson(String fileName) throws IOException {
