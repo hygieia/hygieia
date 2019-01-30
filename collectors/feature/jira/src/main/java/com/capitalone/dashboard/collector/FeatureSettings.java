@@ -79,6 +79,7 @@ public class FeatureSettings {
 	/**
 	 * Defines the maximum number of features allow per board. If limit is reach collection will not happen for given board
 	 */
+	@Value("${feature.maxNumberOfFeaturesPerBoard:5000}")
 	private int maxNumberOfFeaturesPerBoard;
 
 	public int getMaxNumberOfFeaturesPerBoard() {
