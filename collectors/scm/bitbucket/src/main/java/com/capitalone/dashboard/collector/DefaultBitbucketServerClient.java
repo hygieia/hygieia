@@ -1,34 +1,28 @@
 package com.capitalone.dashboard.collector;
 
+import com.capitalone.dashboard.bitbucketapi.BitbucketApiUrlBuilder;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitRepo;
 import com.capitalone.dashboard.util.Encryption;
 import com.capitalone.dashboard.util.EncryptionException;
-import com.capitalone.dashboard.util.Supplier;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.utils.URIBuilder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestOperations;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.capitalone.dashboard.collector.JSONParserUtils.str;
 
 /**
  * Implementation of a git client to connect to an Atlassian Bitbucket <i>Server</i> product.
@@ -53,13 +47,15 @@ public class DefaultBitbucketServerClient implements GitClient {
 
     private final GitSettings settings;
 
-    private final RestOperations restOperations;
+    private final BitbucketApiUrlBuilder bitbucketApiUrlBuilder;
+
+    private final SCMHttpRestClient scmHttpRestClient;
 
     @Autowired
-    public DefaultBitbucketServerClient(GitSettings settings,
-                                        Supplier<RestOperations> restOperationsSupplier) {
+    public DefaultBitbucketServerClient(GitSettings settings, BitbucketApiUrlBuilder bitbucketApiUrlBuilder, SCMHttpRestClient scmHttpRestClient) {
         this.settings = settings;
-        this.restOperations = restOperationsSupplier.get();
+        this.bitbucketApiUrlBuilder = bitbucketApiUrlBuilder;
+        this.scmHttpRestClient=scmHttpRestClient;
     }
 
     @SuppressWarnings("PMD.NPathComplexity")
@@ -88,8 +84,8 @@ public class DefaultBitbucketServerClient implements GitClient {
             boolean lastPage = false;
             queryUriPage = queryUri;
             while (!lastPage) {
-                ResponseEntity<String> response = makeRestCall(queryUriPage, repo.getUserId(), decryptedPassword);
-                JSONObject jsonParentObject = paresAsObject(response);
+                ResponseEntity<String> response = scmHttpRestClient.makeRestCall(queryUriPage, repo.getUserId(), decryptedPassword);
+                JSONObject jsonParentObject = JSONParserUtils.parseAsObject(response);
                 JSONArray jsonArray = (JSONArray) jsonParentObject.get("values");
 
                 for (Object item : jsonArray) {
@@ -139,122 +135,29 @@ public class DefaultBitbucketServerClient implements GitClient {
     // package for junit
     @SuppressWarnings({"PMD.NPathComplexity"})
     /*package*/ URI buildUri(final String rawUrl, final String branch, final String lastKnownCommit) throws URISyntaxException {
-        URIBuilder builder = new URIBuilder();
+        URIBuilder builder = new URIBuilder(bitbucketApiUrlBuilder.buildReposApiUrl(rawUrl));
+        URIBuilder uriBuilder = builder.setPath(builder.getPath() + "/commits");
 
-        /*
-         * Examples:
-         *
-         * ssh://git@company.com/project/repository.git
-         * https://username@company.com/scm/project/repository.git
-         * ssh://git@company.com/~username/repository.git
-         * https://username@company.com/scm/~username/repository.git
-         *
-         */
-
-        String repoUrlRaw = rawUrl;
-        String repoUrlProcessed = repoUrlRaw;
-
-        if (repoUrlProcessed.endsWith(".git")) {
-            repoUrlProcessed = repoUrlProcessed.substring(0, repoUrlProcessed.lastIndexOf(".git"));
-        }
-
-        URI uri = URI.create(repoUrlProcessed.replaceAll(" ", "%20"));
-
-        String host = uri.getHost();
-        String scheme = "ssh".equalsIgnoreCase(uri.getScheme()) ? "https" : uri.getScheme();
-        int port = uri.getPort();
-        String path = uri.getPath();
-        if ((path.startsWith("scm/") || path.startsWith("/scm")) && path.length() > 4) {
-            path = path.substring(4);
-        }
-        if (path.length() > 0 && path.charAt(0) == '/') {
-            path = path.substring(1, path.length());
-        }
-
-        String[] splitPath = path.split("/");
-        String projectKey = "";
-        String repositorySlug = "";
-
-        if (splitPath.length > 1) {
-            projectKey = splitPath[0];
-            repositorySlug = path.substring(path.indexOf('/') + 1, path.length());
-        } else {
-            // Shouldn't get to this case
-            projectKey = "";
-            repositorySlug = path;
-        }
-
-        String apiPath = settings.getApi() != null ? settings.getApi() : "";
-
-        if (apiPath.endsWith("/")) {
-            apiPath = settings.getApi().substring(0, settings.getApi().length() - 1);
-        }
-
-        builder.setScheme(scheme);
-        builder.setHost(host);
-        if (port != -1) {
-            builder.setPort(port);
-        }
-
-        builder.setPath(apiPath + "/projects/" + projectKey + "/repos/" + repositorySlug + "/commits");
         if (branch == null || branch.length() == 0) {
-            builder.addParameter("until", "master");
+            uriBuilder.addParameter("until", "master");
         } else {
-            builder.addParameter("until", branch.replaceAll(" ", "%20"));
+            String branchRef = "refs/heads/" + branch;
+            uriBuilder.addParameter("until", branchRef.replaceAll(" ", "%20"));
         }
 
         if (lastKnownCommit != null && lastKnownCommit.length() > 0) {
-            builder.addParameter("since", lastKnownCommit);
+            uriBuilder.addParameter("since", lastKnownCommit);
         }
 
         if (settings.getPageSize() > 0) {
-            builder.addParameter("limit", String.valueOf(settings.getPageSize()));
+            uriBuilder.addParameter("limit", String.valueOf(settings.getPageSize()));
         }
 
-        return builder.build();
-    }
-
-    private ResponseEntity<String> makeRestCall(URI uri, String userId,
-                                                String password) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("GET " + uri);
-        }
-        // Basic Auth only.
-        if (!"".equals(userId) && !"".equals(password)) {
-            return restOperations.exchange(uri, HttpMethod.GET,
-                    new HttpEntity<>(createHeaders(userId, password)),
-                    String.class);
-
-        } else {
-            return restOperations.exchange(uri, HttpMethod.GET, null,
-                    String.class);
-        }
+        return uriBuilder.build();
 
     }
 
-    private HttpHeaders createHeaders(final String userId, final String password) {
-        String auth = userId + ":" + password;
-        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.US_ASCII));
-        String authHeader = "Basic " + new String(encodedAuth);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", authHeader);
-        return headers;
-    }
-
-    private JSONObject paresAsObject(ResponseEntity<String> response) {
-        try {
-            return (JSONObject) new JSONParser().parse(response.getBody());
-        } catch (ParseException pe) {
-            LOG.error(pe.getMessage());
-        }
-        return new JSONObject();
-    }
-
-    private String str(JSONObject json, String key) {
-        Object value = json.get(key);
-        return value == null ? null : value.toString();
-    }
 
 }
 /* Copyright 2019 Capital One

@@ -18,6 +18,11 @@ public class JSONParserUtils {
         }
         return new JSONObject();
     }
+
+    public static String str(JSONObject json, String key) {
+        Object value = json.get(key);
+        return value == null ? null : value.toString();
+    }
 }
 
 
