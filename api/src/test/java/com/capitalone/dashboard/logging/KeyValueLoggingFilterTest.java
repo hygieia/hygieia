@@ -75,7 +75,7 @@ public class KeyValueLoggingFilterTest {
         
         ReflectionTestUtils.setField(filter, "appName", appName);
         ReflectionTestUtils.setField(filter, "version", appVersion);
-        StringBuffer buffer = new StringBuffer();
+        StringBuffer buffer = new StringBuffer();// StringBuilder use caused problems with Mockito
         buffer.append(requestUrl);
         when(request.getRequestURL()).thenReturn(buffer);
         when(request.getRemoteAddr()).thenReturn(remoteAddress);
