@@ -369,7 +369,7 @@
         }
 
         /**
-         * Stops the current agile iteration cycler promise
+         * Stops the current agile iteration cycle promise
          */
         ctrl.stopTimeout = function () {
             $interval.cancel(timeoutPromise);

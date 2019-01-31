@@ -3,8 +3,11 @@
     <div>
         <div class="container-fluid">
             <div class="iteration-change-btn text-standard-sm">
-                <button id="next-btn" class="pull-right btn-default btn-xm active" ng-click="caWidget.animateQualityView(true)"><i class="fa fa-fast-forward"></i></button>
-                <button id="{{caWidget.pausePlaySymbol}}-btn" class="pull-right btn-default btn-xm active" ng-click="caWidget.pauseQualityView()" ng-model="caWidget.pausePlaySymbol"><i class="fa fa-{{caWidget.pausePlaySymbol}}"></i></button>
+                <button id="next-btn" class="pull-right btn-default btn-xm active"
+                        ng-click="caWidget.animateQualityView(true)"><i class="fa fa-fast-forward"></i></button>
+                <button id="{{caWidget.pausePlaySymbol}}-btn" class="pull-right btn-default btn-xm active"
+                        ng-click="caWidget.pauseQualityView()" ng-model="caWidget.pausePlaySymbol"><i
+                        class="fa fa-{{caWidget.pausePlaySymbol}}"></i></button>
             </div>
             <ul class="nav nav-tabs">
                 <li class="text-standard auth-modal-tab" ng-repeat="tab in caWidget.minitabs"
@@ -26,7 +29,7 @@
                                 <div class="widget ca-issues">
                                     <br>
                                     <a ng-href="{{caWidget.reportUrl ? caWidget.reportUrl : ''}}" target="_blank">
-                                <span class="report-link pull-left">View All <i class="fa fa-arrow-right"
+								<span class="report-link pull-left">View All <i class="fa fa-arrow-right"
                                                                                 aria-hidden="true"></i></span>
                                     </a> <br>
                                     <!-- Blocker, Critical, Major Issues section -->
@@ -41,7 +44,7 @@
                                                 popover-placement="left"
                                                 tabindex="0">
                                                 <td>
-                                                    <span dash-status="{{ issue.status }}"
+													<span dash-status="{{ issue.status }}"
                                                           ng-if="caWidget.showStatusIcon(issue)"></span>
                                                 </td>
                                                 <td class="ca-name">{{issue.name}}</td>
@@ -100,12 +103,12 @@
                                                 <div class="clearfix" fit-text=".ca-value span" fit-text-max="99px">
                                                     <div ng-if="caWidget.showQualityGate" class="col-sm-6">
                                                         <div class="ca-value ca-status-{{ caWidget.qualityGate.value || 'OK'}}">
-                                        <span ng-show="caWidget.qualityGate.value">
-                                        <span ng-if="caWidget.qualityGate.value ==='ERROR'"
+										<span ng-show="caWidget.qualityGate.value">
+										<span ng-if="caWidget.qualityGate.value ==='ERROR'"
                                               class="fa fa-exclamation-triangle fa-3x widget-font-fail"></span>
-                                        <span ng-if="caWidget.qualityGate.value !=='ERROR'"
+										<span ng-if="caWidget.qualityGate.value !=='ERROR'"
                                               class="fa fa-check-square fa-3x widget-font-pass"></span>
-                                        </span>
+										</span>
                                                         </div>
                                                         <div class="clearfix"></div>
                                                         <div class="ca-label">Quality<br/>Gate</div>
@@ -117,9 +120,9 @@
                                                              popover-trigger="focus"
                                                              popover-placement="right"
                                                              tabindex="0">
-                                        <span ng-show="caWidget.rulesCompliance.value">
-                                        {{ caWidget.rulesCompliance.value | number:1 }}<small class="percent">%</small>
-                                        </span>
+										<span ng-show="caWidget.rulesCompliance.value">
+										{{ caWidget.rulesCompliance.value | number:1 }}<small class="percent">%</small>
+										</span>
                                                             <span ng-hide="caWidget.rulesCompliance.value">-</span>
                                                         </div>
                                                         <div class="clearfix"></div>
@@ -168,9 +171,9 @@
                                                                     chartist-chart-options="caWidget.pieOptions"
                                                                     chartist-chart-type="Pie"></chartist>
                                                             <div class="guage-number">
-                                        <span fit-text>{{ caWidget.unitTestCoverageData.series[0] | number:0 }}<small
+										<span fit-text>{{ caWidget.unitTestCoverageData.series[0] | number:0 }}<small
                                                 class="percent">%
-                                        </small></span>
+										</small></span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -206,7 +209,7 @@
                                     popover-placement="left"
                                     tabindex="0">
                                     <td>
-                                        <span dash-status="{{ issue.status }}"
+										<span dash-status="{{ issue.status }}"
                                               ng-if="caWidget.showStatusIcon(issue)"></span>
                                     </td>
                                     <td class="ca-name">{{issue.name}}</td>
@@ -241,7 +244,7 @@
                                         <div>
                                             <span class="compHeader">{{caWidget.knownComponentCount}} COMPONENTS IDENTIFIED</span>
                                             <span class="comSubHeader">{{caWidget.knownComponentCountPercentage}}% OF ALL COMPONENTS ARE IDENTIFIED
-                        </span>
+						</span>
                                         </div>
                                     </td>
                                     <td width="40%" class="table-td">
@@ -265,7 +268,8 @@
                                     <td width="50%">
                                         <div class="dash-row clickable"
                                              ng-click="caWidget.showLibraryPolicyDetails('License', caWidget.libraryPolicyDetails)">
-                                            License ({{ caWidget.libraryLicenseThreatCount ? caWidget.libraryLicenseThreatCount.total : 0 }})
+                                            License ({{ caWidget.libraryLicenseThreatCount ?
+                                            caWidget.libraryLicenseThreatCount.total : 0 }})
                                             <small ng-if="caWidget.libraryLicenseThreatCount.total > 0"><i
                                                     class="fa fa-arrow-right" aria-hidden="true"></i></small>
                                         </div>
@@ -280,7 +284,8 @@
                                     <td width="50%">
                                         <div class="dash-row clickable"
                                              ng-click="caWidget.showLibraryPolicyDetails('Security', caWidget.libraryPolicyDetails)">
-                                            Security ({{ caWidget.librarySecurityThreatCount ? caWidget.librarySecurityThreatCount.total : 0 }})
+                                            Security ({{ caWidget.librarySecurityThreatCount ?
+                                            caWidget.librarySecurityThreatCount.total : 0 }})
                                             <small ng-if="caWidget.librarySecurityThreatCount.total > 0"><i
                                                     class="fa fa-arrow-right" aria-hidden="true"></i></small>
                                         </div>
