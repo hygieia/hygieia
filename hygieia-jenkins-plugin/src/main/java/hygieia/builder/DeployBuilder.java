@@ -68,8 +68,8 @@ public class DeployBuilder {
         // The artifact information is now local and moved out of the costructor.
         artifactVersion = StringUtils.trim(retrieveFromAbstractBuild ? hygieiaDeploy.getArtifactVersion(): hygieiaDeployPublishStep.getArtifactVersion());
         artifactName = StringUtils.trim(retrieveFromAbstractBuild ? hygieiaDeploy.getArtifactName() : hygieiaDeployPublishStep.getArtifactName());
-        environmentName = StringUtils.trim(retrieveFromAbstractBuild ? hygieiaDeploy.getApplicationName() : hygieiaDeployPublishStep.getApplicationName());
-        applicationName = StringUtils.trim(retrieveFromAbstractBuild ? hygieiaDeploy.getEnvironmentName() : hygieiaDeployPublishStep.getEnvironmentName());
+        applicationName = StringUtils.trim(retrieveFromAbstractBuild ? hygieiaDeploy.getApplicationName() : hygieiaDeployPublishStep.getApplicationName());
+        environmentName = StringUtils.trim(retrieveFromAbstractBuild ? hygieiaDeploy.getEnvironmentName() : hygieiaDeployPublishStep.getEnvironmentName());
 
 
         try {
