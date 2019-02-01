@@ -1,0 +1,50 @@
+{
+  "data": [
+    {
+      "bugURL": null,
+      "hidden": false,
+      "issueName": "Poor Style: Confusing Naming",
+      "engineType": "SCA",
+      "friority": "Low",
+      "analyzer": "Structural",
+      "primaryLocation": "Bag.java",
+      "reviewed": null,
+      "id": 48221689,
+      "suppressed": false,
+      "hasAttachments": false,
+      "engineCategory": "STATIC",
+      "projectVersionName": null,
+      "removedDate": null,
+      "severity": 0,
+      "_href": "http://somemockurl/ssc/api/v1/projectVersions/47243171/issues/48221689",
+      "displayEngineType": "SCA",
+      "foundDate": "2018-07-24T20:08:39.000+0000",
+      "confidence": 0,
+      "impact": 0,
+      "primaryRuleGuid": null,
+      "projectVersionId": null,
+      "scanStatus": null,
+      "kingdom": "Code Quality",
+      "folderId": 47243232,
+      "revision": null,
+      "likelihood": 0,
+      "removed": false,
+      "issueInstanceId": "812C7CFC43425CF39623B713938C84BC",
+      "hasCorrelatedIssues": false,
+      "primaryTag": null,
+      "lineNumber": 38,
+      "projectName": null,
+      "fullFileName": "src/main/java/com/example/test.java"
+    }
+  ],
+  "count": 45,
+  "responseCode": 200,
+  "links": {
+    "last": {
+      "href": "http://somemockurl/ssc/api/v1/projectVersions/47243171/issues/?start=44&limit=1"
+    },
+    "first": {
+      "href": "http://somemockurl/ssc/api/v1/projectVersions/47243171/issues/?start=0&limit=1"
+    }
+  }
+}

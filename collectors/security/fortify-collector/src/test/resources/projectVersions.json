@@ -1,0 +1,71 @@
+	{
+	      "data" : [
+	      {
+	      "latestScanId": null,
+	      "serverVersion": 16.1,
+	      "tracesOutOfDate": false,
+	      "attachmentsOutOfDate": false,
+	      "description": "Created with SSC Client",
+	      "project": {
+	        "id": 47243168,
+	        "name": "test",
+	        "description": "Created with SSC Client",
+	        "creationDate": "2018-07-09T03:41:01.859+0000",
+	        "createdBy": "z1060820",
+	        "issueTemplateId": "testTemplate"
+	      },
+	      "sourceBasePath": null,
+	      "mode": "BASIC",
+	      "masterAttrGuid": "87f2364f-dcd4-49e6-861d-f8d3f351686b",
+	      "obfuscatedId": null,
+	      "id": 47243171,
+	      "issueTemplateId": "testTemplate",
+	      "loadProperties": null,
+	      "bugTrackerPluginId": null,
+	      "owner": "z1060820",
+	      "_href": "http://mockUrl/ssc/api/v1/projectVersions/47243171",
+	      "committed": true,
+	      "active": true,
+	      "snapshotOutOfDate": false,
+	      "issueTemplateModifiedTime": 1531107661865,
+	      "securityGroup": null,
+	      "creationDate": "2018-07-09T03:41:01.865+0000",
+	      "refreshRequired": false,
+	      "issueTemplateName": "Prioritized High Risk Issue Template",
+	      "migrationVersion": null,
+	      "createdBy": "z1060820",
+	      "name": "1.0.0",
+	      "siteId": "5a1645e2-b804-4bc4-87bf-7ade14dc9755",
+	      "staleIssueTemplate": false,
+	      "currentState": {
+	        "id": 47243171,
+	        "committed": true,
+	        "attentionRequired": false,
+	        "analysisResultsExist": true,
+	        "auditEnabled": true,
+	        "lastFprUploadDate": "2018-08-29T20:56:46.998+0000",
+	        "extraMessage": null,
+	        "analysisUploadEnabled": true,
+	        "batchBugSubmissionExists": false,
+	        "hasCustomIssues": false,
+	        "metricEvaluationDate": "2018-08-29T20:56:51.399+0000",
+	        "deltaPeriod": 7,
+	        "issueCountDelta": 0,
+	        "percentAuditedDelta": 0,
+	        "criticalPriorityIssueCountDelta": 0,
+	        "percentCriticalPriorityIssuesAuditedDelta": 0
+	      },
+	      "status": null
+	      }
+	      ],
+	      "count": 1,
+	  "responseCode": 200,
+	  "links": {
+	    "last": {
+	      "href": "http://somemockurl/ssc/api/v1/projectVersions/?start=366&limit=10"
+	    },
+	    "first": {
+	      "href": "http://somemockurl/ssc/api/v1/projectVersions/?start=0&limit=10"
+	    }
+	  }
+	}
