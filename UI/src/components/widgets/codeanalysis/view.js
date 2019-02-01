@@ -356,9 +356,7 @@
         }
 
         /**
-         * Changes timeout boolean based on agile iterations available,
-         * turning off the agile view switching if only one or none are
-         * available
+         * Changes timeout boolean to know whether or not to count down
          */
         ctrl.startTimeout = function () {
             ctrl.stopTimeout();
@@ -369,7 +367,7 @@
         }
 
         /**
-         * Stops the current agile iteration cycle promise
+         * Stops the current cycle promise
          */
         ctrl.stopTimeout = function () {
             $interval.cancel(timeoutPromise);
