@@ -113,7 +113,11 @@ public class CodeQualityServiceImpl implements CodeQualityService {
 
     protected CollectorItem getCollectorItem(CodeQualityRequest request) {
         Component component = componentRepository.findOne(request.getComponentId());
+        if (component == null) {
+            return null;
+        }
 
+        CollectorItem item = null;
         CodeQualityType qualityType = Objects.firstNonNull(request.getType(),
                 CodeQualityType.StaticAnalysis);
         if (component != null) {

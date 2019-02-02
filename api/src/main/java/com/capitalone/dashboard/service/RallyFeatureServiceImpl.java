@@ -69,6 +69,12 @@ public class RallyFeatureServiceImpl implements RallyFeatureService {
 
 	
 	public CollectorItem getCollectorItem(RallyFeatureRequest request) {
+		Component component = componentRepository.findOne(request.getComponentId());
+		if (component == null) {
+			return null;
+		}
+
+		List<CollectorItem> collectorItems = component.getCollectorItems(CollectorType.AgileTool);
 		ObjectId collectorId = null;
 		Optional<Collector> collector = collectorRepository.findByCollectorTypeAndName(CollectorType.AgileTool, "Rally")
 															.stream()
@@ -78,11 +84,7 @@ public class RallyFeatureServiceImpl implements RallyFeatureService {
 		}
 
 		collectorId = collector.get().getId();
-		
-		Component component = componentRepository.findOne(request.getComponentId());
-		
-		List<CollectorItem> collectorItems = component.getCollectorItems(CollectorType.AgileTool);
-		
+
 		for(CollectorItem collectorItem : collectorItems){
 			if(collectorItem.getCollectorId().equals(collectorId) && collectorItem.getOptions().get("projectId").equals(request.getProjectId())){
 				return collectorItem;

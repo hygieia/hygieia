@@ -52,7 +52,6 @@ module.exports = function(config) {
       'src/components/templates/capone.js',
       'src/app/dashboard/core/data-factories/cloud-data.js',
       'src/components/widgets/cloud/view.js',
-      'src/**/*.html',
 
       'test/**/*.test.js'
     ],

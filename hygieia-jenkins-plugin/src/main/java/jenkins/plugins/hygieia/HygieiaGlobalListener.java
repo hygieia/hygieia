@@ -1,7 +1,9 @@
 package jenkins.plugins.hygieia;
 
+import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import com.capitalone.dashboard.request.GenericCollectorItemCreateRequest;
+import com.capitalone.dashboard.response.BuildDataCreateResponse;
 import hudson.Extension;
 import hudson.model.Run;
 import hudson.model.TaskListener;
@@ -13,112 +15,166 @@ import hygieia.utils.HygieiaUtils;
 import jenkins.model.Jenkins;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Triple;
 import org.json.simple.parser.ParseException;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 @Extension
 public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
 
+    public HygieiaGlobalListener() {
+        super();
+    }
+
+    @Override
+    public void onFinalized(hudson.model.Run<?, ?> run) {
+        super.onFinalized(run);
+    }
 
     @Override
     public void onCompleted(Run run, @Nonnull TaskListener listener) {
-
+        super.onCompleted(run, listener);
         HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor = getDescriptor();
-
-        HygieiaService hygieiaService = getHygieiaService(hygieiaGlobalListenerDescriptor);
-
-        HygieiaResponse buildResponse = null;
-
+        final long starttime = System.currentTimeMillis();
+        boolean showConsoleOutput = hygieiaGlobalListenerDescriptor.isShowConsoleOutput();
         boolean skipPublish = HygieiaUtils.isJobExcluded(run.getParent().getName(), hygieiaGlobalListenerDescriptor.getHygieiaExcludeJobNames());
-
-        if(skipPublish) {
-            listener.getLogger().println("Hygieia: Skipping publish to hygieia as the job was excluded in global configuration. ");
+        listener.getLogger().println("*** Jenkins Job - " + run.getParent().getName() + " completed. ***");
+        if (showConsoleOutput) {
+            listener.getLogger().println("Hygieia: Automatically publishing build data to Hygieia using " + hygieiaGlobalListenerDescriptor.getPluginVersionInfo() + ", Please refresh your browser to see the status.");
         }
-        else {
-            if (hygieiaGlobalListenerDescriptor.isHygieiaPublishBuildDataGlobal() || hygieiaGlobalListenerDescriptor.isHygieiaPublishSonarDataGlobal()) {
 
-                BuildBuilder builder = getBuildBuilder(run, listener, hygieiaGlobalListenerDescriptor);
+        if (skipPublish) {
+            if (showConsoleOutput) { listener.getLogger().println("Hygieia: Skipping publish to Hygieia as the job was excluded in global configuration. "); }
+            super.onCompleted(run, listener);
+            return;
+        }
+        String rawApiEndopints = StringUtils.isNotEmpty(hygieiaGlobalListenerDescriptor.getHygieiaAPIUrl()) ? hygieiaGlobalListenerDescriptor.getHygieiaAPIUrl() : "";
+        List<String> apiEndpints = Arrays.asList(rawApiEndopints.split(HygieiaUtils.SEPERATOR));
+        String rawAppUrls = StringUtils.isNotEmpty(hygieiaGlobalListenerDescriptor.getHygieiaAppUrl()) ? hygieiaGlobalListenerDescriptor.getHygieiaAppUrl() : "";
+        List<String> appUrls = Arrays.asList(rawAppUrls.split(HygieiaUtils.SEPERATOR));
+        int index = 0;
+        if (CollectionUtils.isEmpty(apiEndpints)) {
+            if (showConsoleOutput) { listener.getLogger().println("Hygieia: Skipping publish to Hygieia as no service endpoints were configured. "); }
+            super.onCompleted(run, listener);
+            return;
+        }
+        for (String apiEndPoint : apiEndpints) {
+            if (StringUtils.isNotEmpty(apiEndPoint)) {
+                if (showConsoleOutput) { listener.getLogger().println("Hygieia: *** Publish to API Endpoint - " + (index + 1) + " ***"); }
+                HygieiaService hygieiaService = getHygieiaService(hygieiaGlobalListenerDescriptor, apiEndPoint);
+                String hygieiaAppUrl = (CollectionUtils.size(appUrls) > index) ? appUrls.get(index) : null;
+                Triple<String, String, BuildDataCreateResponse> buildResponseObject = publishBuildData(run, listener, hygieiaGlobalListenerDescriptor, hygieiaService, hygieiaAppUrl);
+                String convertedBuildResponseString = null;
+                String dashboardLink = null;
 
-                buildResponse = hygieiaService.publishBuildData(builder.getBuildData());
-                if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
-                    listener.getLogger().println("Hygieia: Auto Published Build Complete Data. " + buildResponse.toString());
-                } else {
-                    listener.getLogger().println("Hygieia: Failed Publishing Build Complete Data. " + buildResponse.toString());
-                    //If publish build data fails, skip rest of publishing steps.
-                    return;
+                if (buildResponseObject != null) {
+                    convertedBuildResponseString = buildResponseObject.getLeft();
+                    dashboardLink = buildResponseObject.getMiddle();
                 }
-            }
+                publishSonarData(run, listener, hygieiaGlobalListenerDescriptor, hygieiaService, convertedBuildResponseString);
+                publishGenericCollectorItems(run, listener, hygieiaGlobalListenerDescriptor, hygieiaService, convertedBuildResponseString);
 
-            if (hygieiaGlobalListenerDescriptor.isHygieiaPublishSonarDataGlobal()) {
+                // publish the dashboard link
+                if (showConsoleOutput && StringUtils.isNotEmpty(dashboardLink)) {
+                    listener.getLogger().println("Hygieia: Link to the Hygieia Dashboard for API Endpoint " + (index + 1) + " - " + dashboardLink);
+                }
+                index++;
+            }
+        }
+        final long endtime = System.currentTimeMillis();
+        if (showConsoleOutput) { listener.getLogger().println("Hygieia: *** Hygieia publish completed in " + (endtime-starttime)/1000 + " seconds at " + org.joda.time.LocalDateTime.now().toString()+" ***"); }
+    }
+
+    protected Triple<String, String, BuildDataCreateResponse> publishBuildData(Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, HygieiaService hygieiaService, String hygieiaAppUrl) {
+        String dashboardLink = null;
+        String convertedBuildResponseString = null;
+        BuildDataCreateResponse buildDataResponse = null;
+        boolean publishBuildData = hygieiaGlobalListenerDescriptor.isHygieiaPublishBuildDataGlobal() || hygieiaGlobalListenerDescriptor.isHygieiaPublishSonarDataGlobal();
+        boolean showConsoleOutput = hygieiaGlobalListenerDescriptor.isShowConsoleOutput();
+        BuildStatus buildStatus = HygieiaUtils.getBuildStatus(run.getResult());
+        if (publishBuildData) {
+            HygieiaResponse buildResponse = hygieiaService.publishBuildDataV3(
+                    new BuildBuilder().createBuildRequestFromRun(run, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(),
+                            listener, buildStatus, true));
+            if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
                 try {
-
-                    SonarBuilder sonarBuilder = getSonarBuilder(buildResponse, run, listener, hygieiaGlobalListenerDescriptor);
-
-                    CodeQualityCreateRequest request = sonarBuilder.getSonarMetrics();
-                    if (request != null) {
-                        HygieiaResponse sonarResponse = hygieiaService.publishSonarResults(request);
-                        if (sonarResponse.getResponseCode() == HttpStatus.SC_CREATED) {
-                            listener.getLogger().println("Hygieia: Auto Published Sonar Data. " + sonarResponse.toString());
-                        } else {
-                            listener.getLogger().println("Hygieia: Failed Auto Publishing Sonar Data. " + sonarResponse.toString());
-                        }
-                    } else {
-                        listener.getLogger().println("Hygieia: Auto Published Sonar Result. Nothing to publish");
+                    buildDataResponse = HygieiaUtils.convertJsonToObject(buildResponse.getResponseValue(), BuildDataCreateResponse.class);
+                    convertedBuildResponseString = String.format("%s,%s", buildDataResponse.getId().toString(), buildDataResponse.getCollectorItemId().toString());
+                    if (StringUtils.isNotEmpty(hygieiaAppUrl) && buildDataResponse.getDashboardId() != null && StringUtils.isNotEmpty(buildDataResponse.getDashboardId().toString())) {
+                        dashboardLink = hygieiaAppUrl + HygieiaUtils.DASHBOARD_URI + buildDataResponse.getDashboardId().toString();
                     }
-                } catch (IOException | URISyntaxException | ParseException e) {
-                    listener.getLogger().println("Hygieia: Error Auto Publishing Sonar data." + '\n' + e.getMessage());
+                    if (showConsoleOutput) { listener.getLogger().println("Hygieia: Auto Published Build Complete Data. Response Code: " + buildResponse.getResponseCode() + ". " + convertedBuildResponseString); }
+                } catch (IOException e) {
+                    if (showConsoleOutput) { listener.getLogger().println("Hygieia: Publishing Build Complete Data, however error reading response. " + '\n' + e.getMessage()); }
+                    return null;
                 }
-            }
 
-            if (!CollectionUtils.isEmpty(hygieiaGlobalListenerDescriptor.getHygieiaPublishGenericCollectorItems())) {
-                List<HygieiaPublisher.GenericCollectorItem> items = hygieiaGlobalListenerDescriptor.getHygieiaPublishGenericCollectorItems();
-                for (HygieiaPublisher.GenericCollectorItem item : items) {
-                    GenericCollectorItemBuilder genericCollectorItemBuilder = getGenericCollectorItemBuilder(buildResponse, run, hygieiaGlobalListenerDescriptor, item.toolName, item.pattern);
-                    try {
-                        List<GenericCollectorItemCreateRequest> genericCollectorItemCreateRequests = genericCollectorItemBuilder.getRequests();
-                        if (CollectionUtils.isEmpty(genericCollectorItemCreateRequests)) continue;
-                        for (GenericCollectorItemCreateRequest gcir : genericCollectorItemCreateRequests) {
-                            HygieiaResponse genericItemResponse = hygieiaService.publishGenericCollectorItemData(gcir);
-                            if (genericItemResponse.getResponseCode() == HttpStatus.SC_CREATED) {
-                                listener.getLogger().println("Hygieia: Auto Published " + gcir.getToolName() + " Data. " + genericItemResponse.toString());
-                            } else {
-                                listener.getLogger().println("Hygieia: Auto Published " + gcir.getToolName() + " Data. " + genericItemResponse.toString());
-                            }
-                        }
-                    } catch (IOException e) {
-                        listener.getLogger().println("Hygieia: Error Auto Publishing Generic Collector Item data." + '\n' + e.getMessage());
-                    }
-
-                }
+            } else {
+                if (showConsoleOutput) { listener.getLogger().println("Hygieia: Failed Publishing Build Complete Data. " + buildResponse.toString()); }
+                return null;
             }
         }
+        convertedBuildResponseString = StringUtils.isEmpty(convertedBuildResponseString) ? "" : convertedBuildResponseString;
+        return Triple.of(convertedBuildResponseString, dashboardLink, buildDataResponse);
+    }
 
+    protected void publishSonarData(Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, HygieiaService hygieiaService, String convertedBuildResponseString) {
+        if (!hygieiaGlobalListenerDescriptor.isHygieiaPublishSonarDataGlobal()) { return; }
+        boolean showConsoleOutput = hygieiaGlobalListenerDescriptor.isShowConsoleOutput();
+        try {
+            // Quickfix by using convertedBuildResponseString to make it work with current SonarBuilder will revisit later.
+            CodeQualityCreateRequest request = buildCodeQualityCreateRequest(run, listener, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(),
+                    convertedBuildResponseString, hygieiaGlobalListenerDescriptor.isUseProxy());
+            if (request != null) {
+                HygieiaResponse sonarResponse = hygieiaService.publishSonarResults(request);
+                if (sonarResponse.getResponseCode() == HttpStatus.SC_CREATED) {
+                    if (showConsoleOutput) { listener.getLogger().println("Hygieia: Auto Published Sonar Data. " + sonarResponse.toString()); }
+                } else {
+                    if (showConsoleOutput) { listener.getLogger().println("Hygieia: Failed Auto Publishing Sonar Data. " + sonarResponse.toString()); }
+                }
+            } else {
+                if (showConsoleOutput) { listener.getLogger().println("Hygieia: Auto Published Sonar Result. Nothing to publish"); }
+            }
+        } catch (ParseException e) {
+            if (showConsoleOutput) { listener.getLogger().println("Hygieia: Error Auto Publishing Sonar data." + '\n' + e.getMessage()); }
+        }
+    }
+
+    protected void publishGenericCollectorItems(Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, HygieiaService hygieiaService, String convertedBuildResponseString) {
+        if (CollectionUtils.isEmpty(hygieiaGlobalListenerDescriptor.getHygieiaPublishGenericCollectorItems())) { return; }
+        boolean showConsoleOutput = hygieiaGlobalListenerDescriptor.isShowConsoleOutput();
+        List<HygieiaPublisher.GenericCollectorItem> items = hygieiaGlobalListenerDescriptor.getHygieiaPublishGenericCollectorItems();
+        for (HygieiaPublisher.GenericCollectorItem item : items) {
+            try {
+                List<GenericCollectorItemCreateRequest> genericCollectorItemCreateRequests = GenericCollectorItemBuilder.getInstance().getRequests(run, item.toolName, item.pattern, convertedBuildResponseString);
+                if (CollectionUtils.isEmpty(genericCollectorItemCreateRequests)) continue;
+                for (GenericCollectorItemCreateRequest gcir : genericCollectorItemCreateRequests) {
+                    HygieiaResponse genericItemResponse = hygieiaService.publishGenericCollectorItemData(gcir);
+                    if (showConsoleOutput) { listener.getLogger().println("Hygieia: Auto Published " + gcir.getToolName() + " Data. " + genericItemResponse.toString()); }
+                }
+            } catch (IOException e) {
+                if (showConsoleOutput) { listener.getLogger().println("Hygieia: Error Auto Publishing Generic Collector Item data." + '\n' + e.getMessage()); }
+            }
+        }
+    }
+
+    protected CodeQualityCreateRequest buildCodeQualityCreateRequest(Run run, TaskListener listener, String jenkinsName, String convertedBuildResponseString, boolean useProxy) throws ParseException {
+       return SonarBuilder.getInstance().getSonarMetrics(run, listener, jenkinsName, null,
+                null, convertedBuildResponseString, useProxy);
     }
 
     protected HygieiaPublisher.DescriptorImpl getDescriptor() {
         return Objects.requireNonNull(Jenkins.getInstance()).getDescriptorByType(HygieiaPublisher.DescriptorImpl.class);
     }
 
-    protected BuildBuilder getBuildBuilder(Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor) {
-        return new BuildBuilder(run, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), listener, HygieiaUtils.getBuildStatus(run.getResult()), true);
-    }
-
-    protected SonarBuilder getSonarBuilder(HygieiaResponse buildResponse, Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor) {
-        return new SonarBuilder(run, listener, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), null,
-                null, buildResponse != null ? buildResponse.getResponseValue() : "", hygieiaGlobalListenerDescriptor.isUseProxy());
-    }
-
-    protected GenericCollectorItemBuilder getGenericCollectorItemBuilder(HygieiaResponse buildResponse, Run run, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, String toolName, String pattern) {
-        return new GenericCollectorItemBuilder(run, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), toolName, pattern, buildResponse != null ? buildResponse.getResponseValue() : "");
-    }
-
-    protected HygieiaService getHygieiaService(HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor) {
-        return hygieiaGlobalListenerDescriptor.getHygieiaService(hygieiaGlobalListenerDescriptor.getHygieiaAPIUrl(), hygieiaGlobalListenerDescriptor.getHygieiaToken(),
+    protected HygieiaService getHygieiaService(HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, String apiEndpoint) {
+        return hygieiaGlobalListenerDescriptor.getHygieiaService(apiEndpoint, hygieiaGlobalListenerDescriptor.getHygieiaToken(),
                 hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(), hygieiaGlobalListenerDescriptor.isUseProxy());
     }
 

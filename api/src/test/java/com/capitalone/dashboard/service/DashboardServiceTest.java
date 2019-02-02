@@ -353,11 +353,13 @@ public class DashboardServiceTest {
         item1.setEnabled(true);
         Collector collector = new Collector();
         collector.setCollectorType(CollectorType.Build);
+        // component 1 has item 1 in it
         Component component1 = new Component();
         component1.addCollectorItem(CollectorType.Build, item1);
 
+        // component 2 has item1 in it as well
         Component component2 = new Component();
-        component1.addCollectorItem(CollectorType.Build, item1);
+        component2.addCollectorItem(CollectorType.Build, item1);
 
         HashSet<CollectorItem> set = new HashSet<>();
         set.add(item1);
@@ -373,15 +375,19 @@ public class DashboardServiceTest {
         when(collectorItemRepository.findOne(collItemId2)).thenReturn(item2);
         when(collectorRepository.findOne(collId)).thenReturn(collector);
         when(componentRepository.findOne(compId)).thenReturn(component1);
+        // both component 1 and component 2 have item1 collector
         when(customRepositoryQuery.findComponents(collector, item1)).thenReturn(Arrays.asList(component1, component2));
 
         dashboardService.associateCollectorToComponent(compId, collItemIds,Arrays.asList(collItemId1));
 
+        // should not contain item1, only item2
         assertThat(component1.getCollectorItems().get(CollectorType.Build), contains(item2));
         assertThat(item1.isEnabled(), is(true));
         assertThat(item2.isEnabled(), is(true));
 
+        // should have saved teh component
         verify(componentRepository).save(component1);
+        //should have saves the collector item changes
         verify(collectorItemRepository).save((set));
     }
 

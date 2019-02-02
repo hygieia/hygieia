@@ -10,7 +10,9 @@ import com.capitalone.dashboard.model.CommitStatus;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.Review;
 import com.capitalone.dashboard.model.SCM;
+import com.capitalone.dashboard.model.ServiceAccount;
 import com.capitalone.dashboard.repository.CommitRepository;
+import com.capitalone.dashboard.repository.ServiceAccountRepository;
 import com.capitalone.dashboard.response.AuditReviewResponse;
 import com.capitalone.dashboard.response.CodeReviewAuditResponse;
 import com.capitalone.dashboard.response.CodeReviewAuditResponseV2;
@@ -18,6 +20,7 @@ import com.capitalone.dashboard.status.CodeReviewAuditStatus;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
 import com.google.common.collect.Sets;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -53,12 +56,15 @@ public class CommonCodeReview {
     public static boolean computePeerReviewStatus(GitRequest pr, ApiSettings settings,
                                                   AuditReviewResponse<CodeReviewAuditStatus> auditReviewResponse,
                                                   List<Commit> commits,
-                                                  CommitRepository commitRepository) {
+                                                  CommitRepository commitRepository, ServiceAccountRepository serviceAccountRepository) {
         List<Review> reviews = pr.getReviews();
 
         List<CommitStatus> statuses = pr.getCommitStatuses();
 
         Map<String, String> actors = getActors(pr);
+
+        List<ServiceAccount> serviceAccounts = (List<ServiceAccount>) serviceAccountRepository.findAll();
+        Map<String,String> accounts =  serviceAccounts.stream().collect(Collectors.toMap(ServiceAccount :: getServiceAccountName, ServiceAccount::getFileNames));
 
         /**
          * Native Github Reviews take Higher priority so check for GHR, if not found check for LGTM.
@@ -67,7 +73,7 @@ public class CommonCodeReview {
         if (!CollectionUtils.isEmpty(reviews)) {
             for (Review review : reviews) {
                 if (StringUtils.equalsIgnoreCase("approved", review.getState())) {
-                    if (!StringUtils.isEmpty(review.getAuthorLDAPDN()) && checkForServiceAccount(review.getAuthorLDAPDN(), settings)) {
+                    if (!StringUtils.isEmpty(review.getAuthorLDAPDN()) && checkForServiceAccount(review.getAuthorLDAPDN(), settings,accounts,review.getAuthor(),null,false,auditReviewResponse)) {
                         auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_BY_SERVICEACCOUNT);
                     }
                     //review done using GitHub Review workflow
@@ -115,7 +121,7 @@ public class CommonCodeReview {
                             if (!CollectionUtils.isEmpty(settings.getServiceAccountOU()) && !StringUtils.isEmpty(settings.getPeerReviewApprovalText()) && !StringUtils.isEmpty(description) &&
                                     description.startsWith(settings.getPeerReviewApprovalText())) {
                                 String user = description.replace(settings.getPeerReviewApprovalText(), "").trim();
-                                if (!StringUtils.isEmpty(actors.get(user)) && checkForServiceAccount(actors.get(user), settings)) {
+                                if (!StringUtils.isEmpty(actors.get(user)) && checkForServiceAccount(actors.get(user), settings,accounts,user,null,false,auditReviewResponse)) {
                                     auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_BY_SERVICEACCOUNT);
                                 }
                             }
@@ -151,21 +157,59 @@ public class CommonCodeReview {
      * @param settings
      * @return
      */
-    public static boolean checkForServiceAccount(String userLdapDN, ApiSettings settings) {
+    public static boolean checkForServiceAccount(String userLdapDN, ApiSettings settings,Map<String,String> allowedUsers,String author,List<String> commitFiles,boolean isCommit,AuditReviewResponse auditReviewResponse) {
         List<String> serviceAccountOU = settings.getServiceAccountOU();
-        if (!CollectionUtils.isEmpty(serviceAccountOU) && StringUtils.isNotBlank(userLdapDN)) {
+        boolean isValid = false;
+        if(!MapUtils.isEmpty(allowedUsers) && isCommit){
+            isValid = isValidServiceAccount(author,allowedUsers,commitFiles);
+            auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.SCM_AUTHOR_WHITELISTED_USER);
+        }
+        if (!CollectionUtils.isEmpty(serviceAccountOU) && StringUtils.isNotBlank(userLdapDN) && !isValid) {
             try {
                 String userLdapDNParsed = LdapUtils.getStringValue(new LdapName(userLdapDN), "OU");
                 List<String> matches = serviceAccountOU.stream().filter(it -> it.contains(userLdapDNParsed)).collect(Collectors.toList());
-                return CollectionUtils.isNotEmpty(matches);
+                isValid =  CollectionUtils.isNotEmpty(matches);
             } catch (InvalidNameException e) {
                 LOGGER.error("Error parsing LDAP DN:" + userLdapDN);
             }
-        } else {
+        }
+        else {
             LOGGER.info("API Settings missing service account RDN");
         }
-        return Boolean.FALSE;
+        return isValid;
     }
+
+    private static boolean isValidServiceAccount(String author, Map<String,String> allowedServiceAccounts,List<String> commitFiles) {
+
+        boolean isValidServiceAccount = false;
+        if (MapUtils.isEmpty(allowedServiceAccounts)) return Boolean.FALSE;
+        for (String serviceAccount:allowedServiceAccounts.keySet()) {
+            String fileNames = allowedServiceAccounts.get(serviceAccount);
+            for (String s : fileNames.split(",")) {
+                if (serviceAccount.equalsIgnoreCase(author) && findFileMatch(s, commitFiles)){
+                    isValidServiceAccount = true;
+                }
+            }
+        }
+        return isValidServiceAccount;
+    }
+
+    private static boolean findFileMatch(String fileName, List<String> files){
+      if(fileName.contains("*")){
+          Optional<String> extension = getExtensionByStringHandling(fileName);
+            String EXT_PATTERN = "([^\\s]+(\\.(?i)("+extension.get()+"))$)";
+            java.util.function.Predicate<String> fileFilter = Pattern.compile(EXT_PATTERN).asPredicate();
+            List<String> filesFound = files.stream().filter(fileFilter).collect(Collectors.toList());
+            return filesFound.size()>0;
+        }else return files.parallelStream().anyMatch(file -> file.contains(fileName));
+    }
+
+    public static Optional<String> getExtensionByStringHandling(String filename) {
+        return Optional.ofNullable(filename)
+                .filter(f -> f.contains("."))
+                .map(f -> f.substring(filename.lastIndexOf(".") + 1));
+    }
+
 
     /**
      * Get all the actors associated with this user.s
@@ -297,5 +341,6 @@ public class CommonCodeReview {
         Pattern pattern = Pattern.compile(settings.getCommitLogIgnoreAuditRegEx());
         return pattern.matcher(commitMessage).matches();
     }
+
 
 }

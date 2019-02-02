@@ -9,8 +9,8 @@
         .controller('AdminController', AdminController);
 
 
-    AdminController.$inject = ['$scope', 'dashboardData', '$location', '$uibModal', 'userService', 'authService', 'userData', 'dashboardService', 'templateMangerData', 'paginationWrapperService','$sce'];
-    function AdminController($scope, dashboardData, $location, $uibModal, userService, authService, userData, dashboardService, templateMangerData, paginationWrapperService,$sce) {
+    AdminController.$inject = ['$scope', 'dashboardData', '$location', '$uibModal', 'userService', 'authService', 'userData', 'dashboardService', 'templateMangerData', 'paginationWrapperService','$sce','$q','serviceAccountData'];
+    function AdminController($scope, dashboardData, $location, $uibModal, userService, authService, userData, dashboardService, templateMangerData, paginationWrapperService,$sce,$q,serviceAccountData) {
         var ctrl = this;
         if (userService.isAuthenticated() && userService.isAdmin()) {
             $location.path('/admin');
@@ -37,9 +37,17 @@
         ctrl.editToken = editToken;
 
         ctrl.pageChangeHandler = pageChangeHandler;
-        ctrl.totalItems = totalItems;
         ctrl.currentPage = currentPage;
         ctrl.pageSize = pageSize;
+        ctrl.getPageSize = getPageSize;
+        ctrl.search ='';
+        ctrl.filterByTitle = filterByTitle;
+        ctrl.getTotalItems = getTotalItems;
+        ctrl.addServiceAccount = addServiceAccount;
+        ctrl.editAccount = editAccount;
+        ctrl.deleteAccount = deleteAccount;
+
+
 
         $scope.tab = "dashboards";
 
@@ -73,11 +81,49 @@
         ctrl.deleteDashboard = deleteDashboard;
         ctrl.applyTheme = applyTheme;
 
+
+        (function() {
+
+            dashboardData.getPageSize().then(function (data) {
+                pullDashboards();
+            });
+        })();
+
+
+        function pullDashboards(type) {
+            // request dashboards
+            dashboardData.searchByPage({"search": '', "type": type, "size": getPageSize(), "page": 0})
+                .then(processDashboardResponse, processDashboardError);
+
+
+            paginationWrapperService.calculateTotalItems(type)
+                .then (function () {
+                    ctrl.totalItems = paginationWrapperService.getTotalItems();
+                })
+
+        }
+
+        function processDashboardResponse(data) {
+            ctrl.dashboards = paginationWrapperService.processDashboardResponse(data, ctrl.dashboardType);
+        }
+
+        function processDashboardError(data) {
+            ctrl.dashboards = paginationWrapperService.processDashboardError(data);
+        }
+
+        function getPageSize() {
+            return paginationWrapperService.getPageSize();
+        }
+
+
+
+
         // request dashboards
-        dashboardData.search().then(processResponse);
         userData.getAllUsers().then(processUserResponse);
         userData.apitokens().then(processTokenResponse);
         templateMangerData.getAllTemplates().then(processTemplateResponse);
+        serviceAccountData.getAllServiceAccounts().then(processServAccResponse);
+
 
         function pageChangeHandler(pageNumber) {
             paginationWrapperService.pageChangeHandler(pageNumber)
@@ -86,9 +132,10 @@
                 });
         }
 
-        function totalItems() {
+        function getTotalItems() {
             return paginationWrapperService.getTotalItems();
         }
+
 
         function currentPage() {
             return paginationWrapperService.getCurrentPage();
@@ -185,6 +232,47 @@
             });
         }
 
+        function editAccount(item) {
+            console.log("Edit service account in Admin");
+
+            var mymodalInstance=$uibModal.open({
+                templateUrl: 'app/dashboard/views/edit-service-account.html',
+                controller: 'EditServiceAccountController',
+                controllerAs: 'ctrl',
+                resolve: {
+                    account: function() {
+                        return item;
+                    }
+                }
+            });
+
+            mymodalInstance.result.then(function() {
+                serviceAccountData.getAllServiceAccounts().then(processServAccResponse);
+            });
+        }
+
+        function addServiceAccount() {
+            console.log("Add service account");
+
+            var mymodalInstance = $uibModal.open({
+                templateUrl: 'app/dashboard/views/add-service-account.html',
+                controller: 'AddServiceAccountController',
+                controllerAs: 'ctrl',
+                resolve: {}
+            });
+
+            mymodalInstance.result.then(function (condition) {
+                window.location.reload(false);
+            });
+        }
+
+        function deleteAccount(id) {
+            serviceAccountData.deleteAccount(id).then(function() {
+                _.remove( ctrl.serviceAccounts , {id: id});
+            });
+        }
+
+
         function processResponse(data) {
             ctrl.dashboards = paginationWrapperService.processDashboardResponse({"data" : data});
         }
@@ -199,6 +287,10 @@
 
         function processTemplateResponse(data) {
             ctrl.templates = data;
+        }
+
+        function processServAccResponse(response){
+            ctrl.serviceAccounts = response.data;
         }
 
         // navigate to create template modal
@@ -379,6 +471,14 @@
                 document.getElementById(idKey).type="password";
                 document.getElementById(classKey).className="fa fa-eye";                
             }
+        }
+
+        function filterByTitle (title) {
+            var promises = paginationWrapperService.filterByTitle(title, ctrl.dashboardType);
+            $q.all(promises).then (function() {
+                ctrl.dashboards = paginationWrapperService.getDashboards();
+
+            });
         }
 
     }

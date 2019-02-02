@@ -54,14 +54,16 @@ public class GitRequestServiceImpl implements GitRequestService {
         BooleanBuilder builder = new BooleanBuilder();
 
         Component component = componentRepository.findOne(request.getComponentId());
-        CollectorItem item = component.getCollectorItemMatchingTypeAndCollectorItemId(CollectorType.SCM, request.getCollectorItemId());
+        CollectorItem item = null;
 
-        if (item == null) {
+        if (component == null ||
+                (item=component.getCollectorItemMatchingTypeAndCollectorItemId(CollectorType.SCM, request.getCollectorItemId())) == null) {
             Iterable<GitRequest> results = new ArrayList<>();
             return new DataResponse<>(results, new Date().getTime());
         }
 
         builder.and(gitRequest.collectorItemId.eq(item.getId()));
+
         if (request.getNumberOfDays() != null) {
             long endTimeTarget = new LocalDate().minusDays(request.getNumberOfDays()).toDate().getTime();
             builder.and(gitRequest.timestamp.goe(endTimeTarget));

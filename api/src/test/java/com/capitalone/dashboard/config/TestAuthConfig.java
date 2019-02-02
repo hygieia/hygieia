@@ -87,6 +87,10 @@ public class TestAuthConfig {
     }
 
     @Bean
+    public ServiceAccountService serviceAccountService() {return Mockito.mock(ServiceAccountService.class);}
+
+
+    @Bean
     public DashboardService dashboardService() {
         return Mockito.mock(DashboardService.class);
     }

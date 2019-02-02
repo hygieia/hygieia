@@ -6,6 +6,7 @@ import com.capitalone.dashboard.model.Application;
 import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
@@ -13,6 +14,7 @@ import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.model.ScoreDisplayType;
 import com.capitalone.dashboard.repository.CmdbRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.CustomRepositoryQuery;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.request.DashboardRemoteRequest;
@@ -27,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class DashboardRemoteServiceImpl implements DashboardRemoteService {
@@ -37,12 +40,13 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
     private final CollectorService collectorService;
     private final UserInfoService userInfoService;
     private final CmdbRepository cmdbRepository;
-
+    private final ComponentRepository componentRepository;
 
     @Autowired
     public DashboardRemoteServiceImpl(
             CollectorRepository collectorRepository,
-            CustomRepositoryQuery customRepositoryQuery, DashboardRepository dashboardRepository, DashboardService dashboardService, CollectorService collectorService, UserInfoService userInfoService, CmdbRepository cmdbRepository) {
+            CustomRepositoryQuery customRepositoryQuery,
+            DashboardRepository dashboardRepository, DashboardService dashboardService, CollectorService collectorService, UserInfoService userInfoService, CmdbRepository cmdbRepository, ComponentRepository componentRepository) {
         this.collectorRepository = collectorRepository;
         this.customRepositoryQuery = customRepositoryQuery;
         this.dashboardRepository = dashboardRepository;
@@ -50,6 +54,7 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
         this.collectorService = collectorService;
         this.userInfoService = userInfoService;
         this.cmdbRepository = cmdbRepository;
+        this.componentRepository = componentRepository;
     }
 
     @Override
@@ -124,6 +129,7 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
         }
         return (dashboard != null) ? dashboardService.get(dashboard.getId()) : null;
     }
+
 
     /**
      * Takes a DashboardRemoteRequest. If the request contains a Business Service and Business Application then returns dashboard. Otherwise,

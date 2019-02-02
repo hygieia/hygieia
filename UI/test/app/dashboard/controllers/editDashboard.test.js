@@ -4,6 +4,7 @@ describe('EditDashboardController', function () {
   var controller;
   var $templateCache;
   var $scope;
+  var $compile;
 
   // controlled data to test with
   var fixedDashboard = {
@@ -65,7 +66,7 @@ describe('EditDashboardController', function () {
   // inject mocks etc into the subject under test
   beforeEach(
     function () {
-      inject(function ($httpBackend,$rootScope, _$templateCache_, $q, $controller) {
+      inject(function ($httpBackend,$rootScope, _$templateCache_, $q, $controller, _$compile_) {
         $templateCache = _$templateCache_;
         $scope = $rootScope.$new();
         dashboardServiceSpy = jasmine.createSpyObj("dashboardService", ["getDashboardTitleOrig", "getBusAppToolTipText", "getBusSerToolTipText"]);
@@ -101,6 +102,7 @@ describe('EditDashboardController', function () {
         $httpBackend.whenGET('app/dashboard/views/site.html').respond("TEXT");
         // trigger angular digest to resolve all those promises
         $rootScope.$apply();
+        $compile = _$compile_;
       });
     });
 
@@ -133,8 +135,8 @@ describe('EditDashboardController', function () {
   describe("template", function() {
     it("should render", function() {
       var html = $templateCache.get('editDashboard.html');
-      $scope.digest();
-      var view = $compile(angular.element(html))(scope);
+      $scope.$digest();
+      var view = $compile(angular.element(html))($scope);
     })
   })
 });

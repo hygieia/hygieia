@@ -79,7 +79,7 @@
     <dependency>
       <groupId>com.capitalone.dashboard</groupId>
       <artifactId>core</artifactId>
-      <version>${project.version}</version>
+        <version>[3.1.0-SNAPSHOT,)</version>
     </dependency>
 
 <!-- Spring Libraries -->
@@ -201,7 +201,7 @@
     </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-all</artifactId>
+      <artifactId>hamcrest-core</artifactId>
       <version>1.3</version>
       <scope>test</scope>
     </dependency>
