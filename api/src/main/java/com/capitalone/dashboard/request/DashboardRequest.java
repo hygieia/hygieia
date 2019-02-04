@@ -140,7 +140,8 @@ public class DashboardRequest {
           configurationItemBusAppName,
           activeWidgets,
           scoreEnabled,
-          ScoreDisplayType.fromString(scoreDisplay)
+          ScoreDisplayType.fromString(scoreDisplay),
+          System.currentTimeMillis()
         );
 
 

@@ -71,6 +71,7 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
             if (!isUpdate) {
                 throw new HygieiaException("Dashboard " + dashboard.getTitle() + " (id =" + dashboard.getId() + ") already exists", HygieiaException.DUPLICATE_DATA);
             }
+            dashboardService.update(dashboard);
             //Save the widgets
             for (Widget w : dashboard.getWidgets()) {
                 existingWidgets.put(w.getName(), w);
@@ -221,6 +222,7 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
             serviceName = service.getConfigurationItem();
         }
         List<String> activeWidgets = new ArrayList<>();
-        return new Dashboard(true, metaData.getTemplate(), metaData.getTitle(), application, metaData.getOwner(), DashboardType.fromString(metaData.getType()), serviceName, appName,activeWidgets, false, ScoreDisplayType.HEADER);
+
+        return new Dashboard(true, metaData.getTemplate(), metaData.getTitle(), application, metaData.getOwner(), DashboardType.fromString(metaData.getType()), serviceName, appName,activeWidgets, false, ScoreDisplayType.HEADER, System.currentTimeMillis());
     }
 }

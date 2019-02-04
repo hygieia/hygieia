@@ -154,6 +154,8 @@ public class DashboardServiceImpl implements DashboardService {
 
         if(!isUpdate) {
             components = componentRepository.save(dashboard.getApplication().getComponents());
+        } else {
+           dashboard.setUpdatedAt(System.currentTimeMillis());
         }
 
         try {
