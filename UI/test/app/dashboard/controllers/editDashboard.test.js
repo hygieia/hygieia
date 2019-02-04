@@ -110,9 +110,10 @@ describe('EditDashboardController', function () {
     it("should have setup the controller", function () {
       expect(controller.selectWidgetsDisabled).toBe(false);
       expect(Object.keys(controller.activeWidgets).length).toBe(3);
-      expect(Object.values(controller.activeWidgets)).toEqual([{type: "build", title: "build01"},
-        {type: "build", title: "build02"},
-        {type: "code", title: "code03"}]);
+      expect(Object.values(controller.activeWidgets)).toEqual([
+        {type: "build", title: "build01", width:4, height:1, order:0},
+        {type: "build", title: "build02", width:4, height:1, order:1},
+        {type: "code", title: "code03", width:4, height:1, order:2}]);
       // I suspect we'll have to do something with the widgets as well..
       expect(Object.keys(controller.widgetSelections)).toEqual(["build01","build02","code03"]);
       expect(Object.values(controller.widgetSelections).length).toBe(3);
@@ -125,8 +126,8 @@ describe('EditDashboardController', function () {
 
       expect(Object.keys(controller.activeWidgets).length).toBe(2);
       expect(Object.values(controller.activeWidgets)).toEqual([
-        {type: "build", title: "build01"},
-        {type: "code", title: "code03"}
+        {type: "build", title: "build01", width:4, height:1, order:0},
+        {type: "code", title: "code03", width:4, height:1, order:2}
       ]);
       expect(Object.keys(controller.widgetSelections)).toEqual(["build01","code03"]);
     })

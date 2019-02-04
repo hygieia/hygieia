@@ -42,7 +42,8 @@
         // method implementations
         function loadSavedBuildJob(){
             ctrl.buildId ="";
-        	var buildCollector = modalData.dashboard.application.components[0].collectorItems.Build,
+            // get the job id from the widget config, not global
+        	var buildCollector = widgetConfig.collectorItems.Build,
             savedCollectorBuildJob = buildCollector ? buildCollector[0].description : null;
 
             if(savedCollectorBuildJob) {

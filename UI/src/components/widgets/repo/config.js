@@ -9,7 +9,7 @@
 
 	RepoConfigController.$inject = [ 'modalData', '$uibModalInstance',
 			'collectorData' ];
-	function RepoConfigController(modalData, $uibModalInstance, collectorData) {
+	function RepoConfigController(modalData, $scope, $uibModalInstance, collectorData) {
 		var ctrl = this;
 		var widgetConfig = modalData.widgetConfig;
 

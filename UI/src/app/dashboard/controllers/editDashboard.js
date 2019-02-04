@@ -32,6 +32,11 @@
     function EditDashboardController($uibModalInstance, dashboardData, userData, userService, dashboardItem, $scope, $q, cmdbData, dashboardService,widgetManager) {
 
         var ctrl = this;
+        // setup cell heights
+        $scope.options = {
+            cellHeight: 200,
+            verticalMargin: 10
+        };
 
         // public variables
         ctrl.dashboardType = dashboardItem.type;
@@ -46,7 +51,6 @@
 
         ];
         ctrl.tabView = ctrl.tabs[0].name;
-        ctrl.activeWidgets = [];
         ctrl.scoreSettings = {
             scoreEnabled : !!dashboardItem.scoreEnabled,
             scoreDisplay : dashboardItem.scoreDisplay
@@ -85,11 +89,14 @@
           // collection to hold selected widgets
           ctrl.widgetSelections={};
           // collection to hold active widgets
-          ctrl.activeWidgets=[];
+          ctrl.activeWidgets={};
           ctrl.widgets = widgetManager.getWidgets();
           if(response.template =='widgets'){
               ctrl.selectWidgetsDisabled = false;
-              response.activeWidgets.forEach(function(activeWidget){
+              response.activeWidgets.forEach(function(activeWidget, index){
+                  activeWidget.width=4;
+                  activeWidget.height=1;
+                  activeWidget.order=index;
                   ctrl.activeWidgets[activeWidget.title]=activeWidget;
                 });
               response.widgets.forEach(function(widgetConfig){
