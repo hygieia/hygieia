@@ -207,6 +207,7 @@
         <module>collectors/library-policy/nexus-iq-collector</module>
 		<module>collectors/security/fortify-collector</module>
         <module>collectors/misc/score</module>
+        <module>collectors/test-results/jira-xray</module>
         <module>hygieia-jenkins-plugin</module>
         <module>UI</module>
         <module>UI-tests</module>
@@ -256,6 +257,7 @@
         <module>collectors/library-policy/nexus-iq-collector</module>
 		<module>collectors/security/fortify-collector</module>
         <module>collectors/misc/score</module>
+        <module>collectors/test-results/jira-xray</module>
         <module>hygieia-jenkins-plugin</module>
      	<module>UI</module>
         <module>UI-tests</module>
