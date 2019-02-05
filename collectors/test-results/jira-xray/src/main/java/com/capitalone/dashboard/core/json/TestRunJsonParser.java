@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.core.json;
 
+import com.atlassian.jira.rest.client.internal.json.GenericJsonArrayParser;
 import com.atlassian.jira.rest.client.internal.json.JsonObjectParser;
 import com.atlassian.jira.rest.client.internal.json.JsonParseUtil;
 import com.capitalone.dashboard.api.domain.Comment;
@@ -20,6 +21,9 @@ import java.util.Date;
  */
 public class TestRunJsonParser implements JsonObjectParser<TestRun> {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestRunJsonParser.class);
+
+    private final static DefectJsonParser DEFECT_PARSER =new DefectJsonParser();
+    private final static TestStepJsonParser TEST_STEP_PARSER =new TestStepJsonParser();
 
     public final static String KEY_ID="id";
     public final static String KEY_STATUS="status";
@@ -44,13 +48,14 @@ public class TestRunJsonParser implements JsonObjectParser<TestRun> {
         String key =" THERE IS NO KEY FOR TEST RUN AT X-RAY DIRECT REST API"; // TODO: GET THE ISSUE KEY
         Long id = Long.valueOf(jsonObject.getLong(KEY_ID));
         TestRun.Status status=getStatus(jsonObject);
+        GenericJsonArrayParser arrayParser=new GenericJsonArrayParser(DEFECT_PARSER);
         Iterable<TestStep> testSteps=null;
 
         Date startedOn = null;
         Date finishedOn = null;
         String executedBy = null;
         String assignee = null;
-        
+
         try {
             if (!jsonObject.isNull(KEY_STARTEDON)) {
                 startedOn = new XrayJiraDateFormatter().parse(jsonObject.getString(KEY_STARTEDON));
@@ -63,6 +68,10 @@ public class TestRunJsonParser implements JsonObjectParser<TestRun> {
             }
             if (!jsonObject.isNull(KEY_ASSIGNEE)) {
                 assignee = jsonObject.getString(KEY_ASSIGNEE);
+            }
+            if (!jsonObject.isNull(KEY_TESTSTEPS)) {
+                arrayParser=new GenericJsonArrayParser(TEST_STEP_PARSER);
+                testSteps=arrayParser.parse(jsonObject.getJSONArray(KEY_TESTSTEPS));
             }
         } catch (ParseException e) {
             LOGGER.error("Unable to Parse JSON: " + e);
@@ -100,7 +109,5 @@ public class TestRunJsonParser implements JsonObjectParser<TestRun> {
             return new Comment("","");
         }
     }
-
-
 
 }
