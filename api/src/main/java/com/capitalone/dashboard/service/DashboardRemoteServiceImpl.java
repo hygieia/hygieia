@@ -222,7 +222,6 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
             serviceName = service.getConfigurationItem();
         }
         List<String> activeWidgets = new ArrayList<>();
-
-        return new Dashboard(true, metaData.getTemplate(), metaData.getTitle(), application, metaData.getOwner(), DashboardType.fromString(metaData.getType()), serviceName, appName,activeWidgets, false, ScoreDisplayType.HEADER, System.currentTimeMillis());
+        return new Dashboard(true, metaData.getTemplate(), metaData.getTitle(), application, metaData.getOwner(), DashboardType.fromString(metaData.getType()), serviceName, appName,activeWidgets, false, ScoreDisplayType.HEADER);
     }
 }

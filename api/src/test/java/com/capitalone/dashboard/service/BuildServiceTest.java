@@ -205,7 +205,7 @@ public class BuildServiceTest {
         request.getCodeRepos().add(new RepoBranch("https://github.com/someorg/somerepo","master", RepoBranch.RepoType.GIT));
         Build build = makeBuild();
         build.getCodeRepos().add(new RepoBranch("https://github.com/someorg/somerepo","master", RepoBranch.RepoType.GIT));
-        List<Dashboard> dashboards = Collections.singletonList(new Dashboard("team", "title", null, null, DashboardType.Team, "configItemAppName", "configItemComponentName", null, false, ScoreDisplayType.HEADER, System.currentTimeMillis()));
+        List<Dashboard> dashboards = Collections.singletonList(new Dashboard("team", "title", null, null, DashboardType.Team, "configItemAppName", "configItemComponentName", null, false, ScoreDisplayType.HEADER));
         when(collectorRepository.findOne(collectorId)).thenReturn(new Collector());
         when(collectorService.createCollector(any(Collector.class))).thenReturn(new Collector());
         when(collectorService.createCollectorItem(any(CollectorItem.class))).thenReturn(new CollectorItem());
@@ -229,7 +229,7 @@ public class BuildServiceTest {
         request.getCodeRepos().add(new RepoBranch("https://github.com/someorg/somerepo","master", RepoBranch.RepoType.GIT));
         Build build = makeBuild();
         build.getCodeRepos().add(new RepoBranch("https://github.com/someorg/somerepo","master", RepoBranch.RepoType.GIT));
-        List<Dashboard> dashboards = Collections.singletonList(new Dashboard("team", "title", null, null, DashboardType.Team, "configItemAppName", "configItemComponentName", null, false, ScoreDisplayType.HEADER, System.currentTimeMillis()));
+        List<Dashboard> dashboards = Collections.singletonList(new Dashboard("team", "title", null, null, DashboardType.Team, "configItemAppName", "configItemComponentName", null, false, ScoreDisplayType.HEADER));
         when(collectorRepository.findOne(collectorId)).thenReturn(new Collector());
         when(collectorService.createCollector(any(Collector.class))).thenReturn(new Collector());
         when(collectorService.createCollectorItem(any(CollectorItem.class))).thenReturn(new CollectorItem());
