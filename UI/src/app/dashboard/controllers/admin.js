@@ -9,8 +9,8 @@
         .controller('AdminController', AdminController);
 
 
-    AdminController.$inject = ['$scope', 'dashboardData', '$location', '$uibModal', 'userService', 'authService', 'userData', 'dashboardService', 'templateMangerData', 'paginationWrapperService','$sce','$q'];
-    function AdminController($scope, dashboardData, $location, $uibModal, userService, authService, userData, dashboardService, templateMangerData, paginationWrapperService,$sce,$q) {
+    AdminController.$inject = ['$scope', 'dashboardData', '$location', '$uibModal', 'userService', 'authService', 'userData', 'dashboardService', 'templateMangerData', 'paginationWrapperService','$sce','$q','serviceAccountData'];
+    function AdminController($scope, dashboardData, $location, $uibModal, userService, authService, userData, dashboardService, templateMangerData, paginationWrapperService,$sce,$q,serviceAccountData) {
         var ctrl = this;
         if (userService.isAuthenticated() && userService.isAdmin()) {
             $location.path('/admin');
@@ -43,6 +43,10 @@
         ctrl.search ='';
         ctrl.filterByTitle = filterByTitle;
         ctrl.getTotalItems = getTotalItems;
+        ctrl.addServiceAccount = addServiceAccount;
+        ctrl.editAccount = editAccount;
+        ctrl.deleteAccount = deleteAccount;
+
 
 
         $scope.tab = "dashboards";
@@ -118,6 +122,8 @@
         userData.getAllUsers().then(processUserResponse);
         userData.apitokens().then(processTokenResponse);
         templateMangerData.getAllTemplates().then(processTemplateResponse);
+        serviceAccountData.getAllServiceAccounts().then(processServAccResponse);
+
 
         function pageChangeHandler(pageNumber) {
             paginationWrapperService.pageChangeHandler(pageNumber)
@@ -226,6 +232,47 @@
             });
         }
 
+        function editAccount(item) {
+            console.log("Edit service account in Admin");
+
+            var mymodalInstance=$uibModal.open({
+                templateUrl: 'app/dashboard/views/edit-service-account.html',
+                controller: 'EditServiceAccountController',
+                controllerAs: 'ctrl',
+                resolve: {
+                    account: function() {
+                        return item;
+                    }
+                }
+            });
+
+            mymodalInstance.result.then(function() {
+                serviceAccountData.getAllServiceAccounts().then(processServAccResponse);
+            });
+        }
+
+        function addServiceAccount() {
+            console.log("Add service account");
+
+            var mymodalInstance = $uibModal.open({
+                templateUrl: 'app/dashboard/views/add-service-account.html',
+                controller: 'AddServiceAccountController',
+                controllerAs: 'ctrl',
+                resolve: {}
+            });
+
+            mymodalInstance.result.then(function (condition) {
+                window.location.reload(false);
+            });
+        }
+
+        function deleteAccount(id) {
+            serviceAccountData.deleteAccount(id).then(function() {
+                _.remove( ctrl.serviceAccounts , {id: id});
+            });
+        }
+
+
         function processResponse(data) {
             ctrl.dashboards = paginationWrapperService.processDashboardResponse({"data" : data});
         }
@@ -240,6 +287,10 @@
 
         function processTemplateResponse(data) {
             ctrl.templates = data;
+        }
+
+        function processServAccResponse(response){
+            ctrl.serviceAccounts = response.data;
         }
 
         // navigate to create template modal

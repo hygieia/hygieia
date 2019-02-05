@@ -53,6 +53,8 @@ public class WidgetRequest {
             if("build".equalsIgnoreCase(name)){
                 widget.getOptions().put("buildDurationThreshold",3);
                 widget.getOptions().put("consecutiveFailureThreshold",5);
+            } else if ("feature".equalsIgnoreCase(name)) {
+                widget.getOptions().putAll(options);
             }
         }
         return widget;

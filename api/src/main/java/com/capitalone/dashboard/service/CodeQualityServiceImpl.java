@@ -110,9 +110,12 @@ public class CodeQualityServiceImpl implements CodeQualityService {
 
 
     protected CollectorItem getCollectorItem(CodeQualityRequest request) {
-        CollectorItem item = null;
         Component component = componentRepository.findOne(request.getComponentId());
+        if (component == null) {
+            return null;
+        }
 
+        CollectorItem item = null;
         CodeQualityType qualityType = Objects.firstNonNull(request.getType(),
                 CodeQualityType.StaticAnalysis);
         List<CollectorItem> items = component.getCollectorItems().get(qualityType.collectorType());
@@ -129,7 +132,7 @@ public class CodeQualityServiceImpl implements CodeQualityService {
           Step 2: create Collector item if not there
           Step 3: Insert Quality data if new. If existing, update it.
          */
-        Collector collector = createCollector();
+        Collector collector = createCollector(request);
 
         if (collector == null) {
             throw new HygieiaException("Failed creating code quality collector.", HygieiaException.COLLECTOR_CREATE_ERROR);
@@ -164,9 +167,9 @@ public class CodeQualityServiceImpl implements CodeQualityService {
 
     }
 
-    private Collector createCollector() {
+    private Collector createCollector(CodeQualityCreateRequest request) {
         CollectorRequest collectorReq = new CollectorRequest();
-        collectorReq.setName("Sonar");  //for now hardcode it.
+        collectorReq.setName(StringUtils.isEmpty(request.getToolName()) ? "Sonar" : request.getToolName());
         collectorReq.setCollectorType(CollectorType.CodeQuality);
         Collector col = collectorReq.toCollector();
         col.setEnabled(true);

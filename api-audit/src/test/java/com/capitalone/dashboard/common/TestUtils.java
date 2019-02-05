@@ -82,9 +82,10 @@ public class TestUtils {
         codeQualityRepository.save(ssa);
     }
 
-    public static void loadLibraryPolicy(LibraryPolicyResultsRepository libraryPolicyResultsRepository) throws IOException {
+    public static void loadLibraryPolicy(LibraryPolicyResultsRepository libraryPolicyResultsRepository, String fileName) throws IOException {
         Gson gson = GsonUtil.getGson();
-        String json = IOUtils.toString(Resources.getResource("./librarypolicy/librarypolicy.json"));
+//        String json = IOUtils.toString(Resources.getResource("./librarypolicy/librarypolicy.json"));
+        String json = IOUtils.toString(Resources.getResource(fileName));
         List<LibraryPolicyResult> ssa = gson.fromJson(json, new TypeToken<List<LibraryPolicyResult>>() {}.getType());
         libraryPolicyResultsRepository.save(ssa);
     }

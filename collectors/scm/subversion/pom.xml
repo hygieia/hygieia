@@ -83,7 +83,7 @@
     <dependency>
       <groupId>com.capitalone.dashboard</groupId>
       <artifactId>core</artifactId>
-      <version>${project.version}</version>
+      <version>3.0.4</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
