@@ -275,7 +275,7 @@
             findSelectedWidgets();
             if(form.$valid ){
                 var active = [];
-                ctrl.activeWidgets.forEach(function(widget){
+                Object.values(ctrl.activeWidgets).forEach(function(widget){
                    active.push({title:widget.title,type:widget.type});
                 });
                 var submitData = {
