@@ -98,7 +98,7 @@
 
         function processCollectorItemResponse(response) {
             var postObj = {
-                name: $scope.title,
+                name: modalData.title,
                 type: "ChatOps",
                 options: {
                     id: widgetConfig.options.id,

@@ -7,7 +7,7 @@
 	angular.module(HygieiaConfig.module).controller('RepoConfigController',
 			RepoConfigController);
 
-	RepoConfigController.$inject = [ 'modalData', '$uibModalInstance',
+	RepoConfigController.$inject = [ 'modalData', '$scope', '$uibModalInstance',
 			'collectorData' ];
 	function RepoConfigController(modalData, $scope, $uibModalInstance, collectorData) {
 		var ctrl = this;
@@ -212,7 +212,7 @@
 
 		function processCollectorItemResponse(response) {
 			var postObj = {
-				name : $scope.title,
+				name : modalData.title,
 				type: 'repo',
 				options:{
 					id: widgetConfig.options.id

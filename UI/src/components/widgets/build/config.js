@@ -60,7 +60,7 @@
             if (valid) {
                 var form = document.buildConfigForm;
                 var postObj = {
-                    name: $scope.title,
+                    name: modalData.title,
                     type: 'build',
                     options: {
                     	id: widgetConfig.options.id,

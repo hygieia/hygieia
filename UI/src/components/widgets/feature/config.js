@@ -282,7 +282,7 @@
 
 		function processCollectorItemResponse(response) {
 			var postObj = {
-				name : $scope.title,
+				name : modalData.title,
 				type: 'feature',
 				options : {
 					id : widgetConfig.options.id,

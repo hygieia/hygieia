@@ -146,7 +146,7 @@
             if (valid) {
                 var form = document.configForm;
                 var postObj = {
-                    name: $scope.title,
+                    name: modalData.title,
                     type: 'deploy',
                     options: {
                         id: widgetConfig.options.id,

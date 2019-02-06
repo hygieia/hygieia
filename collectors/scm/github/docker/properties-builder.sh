@@ -3,8 +3,8 @@ cat > $PROP_FILE <<EOF
 #Database Name
 dbname=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_DATABASE:-dashboarddb}
 
-#Database HostName - default is localhost
-dbhost=${MONGODB_HOST:-10.0.1.1}
+#Database HostName - default is docker db
+dbhost=${MONGODB_HOST:-db}
 
 #Database Port - default is 27017
 dbport=${MONGODB_PORT:-27017}

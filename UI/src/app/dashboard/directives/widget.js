@@ -121,6 +121,7 @@
                         modalData: function () {
                             return {
                                 dashboard: $scope.dashboard,
+                                title: $scope.title,
                                 widgetConfig: $scope.widgetConfig
                             };
                         }
