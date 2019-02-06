@@ -9,6 +9,7 @@ import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.model.ScoreDisplayType;
 import com.capitalone.dashboard.repository.CmdbRepository;
@@ -56,10 +57,26 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
         this.componentRepository = componentRepository;
     }
 
+    private boolean doOwnersExist(DashboardRemoteRequest request) {
+        DashboardRemoteRequest.DashboardMetaData metaData = request.getMetaData();
+        Owner owner = metaData.getOwner();
+        List<Owner> owners = metaData.getOwners();
+
+        if (owner == null && owners == null) {
+            return false;
+        }
+
+        return true;
+    }
+
     @Override
     public Dashboard remoteCreate(DashboardRemoteRequest request, boolean isUpdate) throws HygieiaException {
         Dashboard dashboard;
         Map<String, Widget> existingWidgets = new HashMap<>();
+
+        if (!doOwnersExist(request)) {
+            throw new HygieiaException("There are no owner/owners field in the request", HygieiaException.INVALID_CONFIGURATION);
+        }
 
         if (!userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())) {
             throw new HygieiaException("Invalid owner information or authentication type. Owner first needs to sign up in Hygieia", HygieiaException.BAD_DATA);
