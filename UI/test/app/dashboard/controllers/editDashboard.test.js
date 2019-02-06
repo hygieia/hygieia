@@ -18,12 +18,12 @@ describe('EditDashboardController', function () {
     activeWidgets: [
       {type: "build", title: "build01"},
       {type: "build", title: "build02"},
-      {type: "code", title: "code03"}
+      {type: "code", title: "code05"}
     ],
     widgets: [
       {id: "01", name: "build01", type: "build", collectorItemIds: ["02", "03", "04"]},
       {id: "02", name: "build02", type: "build", collectorItemIds: ["04"]},
-      {id: "03", name: "code03", type: "code", collectorItemIds: ["05"]}
+      {id: "03", name: "code05", type: "code", collectorItemIds: ["05"]}
     ]
   };
   var fixedDashboardItem = {};
@@ -113,12 +113,13 @@ describe('EditDashboardController', function () {
       expect(Object.values(controller.activeWidgets)).toEqual([
         {type: "build", title: "build01", width:4, height:1, order:0},
         {type: "build", title: "build02", width:4, height:1, order:1},
-        {type: "code", title: "code03", width:4, height:1, order:2}]);
+        {type: "code", title: "code05", width:4, height:1, order:2}]);
       // I suspect we'll have to do something with the widgets as well..
-      expect(Object.keys(controller.widgetSelections)).toEqual(["build01","build02","code03"]);
+      expect(Object.keys(controller.widgetSelections)).toEqual(["build01","build02","code05"]);
       expect(Object.values(controller.widgetSelections).length).toBe(3);
+      expect(controller.maxActiveCounter).toBe(5);
     })
-  })
+  });
 
   describe("modify widgets", function() {
     it("should remove the active widget", function() {
@@ -127,11 +128,28 @@ describe('EditDashboardController', function () {
       expect(Object.keys(controller.activeWidgets).length).toBe(2);
       expect(Object.values(controller.activeWidgets)).toEqual([
         {type: "build", title: "build01", width:4, height:1, order:0},
-        {type: "code", title: "code03", width:4, height:1, order:2}
+        {type: "code", title: "code05", width:4, height:1, order:2}
       ]);
-      expect(Object.keys(controller.widgetSelections)).toEqual(["build01","code03"]);
+      expect(Object.keys(controller.widgetSelections)).toEqual(["build01","code05"]);
     })
-  })
+  });
+
+  describe("add widget", function(){
+    it("should add a new widget", function() {
+      controller.addWidget("build");
+
+      expect(Object.keys(controller.activeWidgets).length).toBe(4);
+      expect(Object.values(controller.activeWidgets)).toEqual([
+        {type: "build", title: "build01", width:4, height:1, order:0},
+        {type: "build", title: "build02", width:4, height:1, order:1},
+        {type: "code", title: "code05", width:4, height:1, order:2},
+        {type: "build", title: "build6", width:4, height:1, order:6}]);
+      // I suspect we'll have to do something with the widgets as well..
+      expect(Object.keys(controller.widgetSelections)).toEqual(["build01","build02","code05"]);
+      expect(Object.values(controller.widgetSelections).length).toBe(3);
+      expect(controller.maxActiveCounter).toBe(6);
+    })
+  });
 
   describe("template", function() {
     it("should render", function() {

@@ -71,6 +71,7 @@
         ctrl.onConfigurationItemBusAppSelect = onConfigurationItemBusAppSelect;
         ctrl.submitScoreSettings = submitScoreSettings;
         ctrl.removeWidget = removeWidget;
+        ctrl.addWidget = addWidget;
 
         ctrl.validBusServName = isValidBusServName();
         ctrl.validBusAppName = isValidBusAppName();
@@ -91,18 +92,24 @@
           // collection to hold active widgets
           ctrl.activeWidgets={};
           ctrl.widgets = widgetManager.getWidgets();
+          ctrl.maxActiveCounter=0;
           if(response.template =='widgets'){
               ctrl.selectWidgetsDisabled = false;
               response.activeWidgets.forEach(function(activeWidget, index){
                   activeWidget.width=4;
                   activeWidget.height=1;
                   activeWidget.order=index;
+                  ctrl.maxActiveCounter= Math.max(ctrl.maxActiveCounter,activeWidget.title.match(/\d+$/)[0]);
                   ctrl.activeWidgets[activeWidget.title]=activeWidget;
                 });
               response.widgets.forEach(function(widgetConfig){
-                  ctrl.widgetSelections[widgetConfig.name]=widgetConfig;
+                  // not sure we need to track this do we?
+                  if (widgetConfig.name) {
+                      ctrl.widgetSelections[widgetConfig.name] = widgetConfig;
+                  }
                 })
             }else{
+              // not sure what this is for
               ctrl.selectWidgetsDisabled = true;
               _.map(ctrl.widgets, function (value, key) {
                     ctrl.activeWidgets.push(key);
@@ -257,17 +264,22 @@
             delete ctrl.widgetSelections[title];
         }
 
+        function addWidget(type) {
+            ctrl.maxActiveCounter++;
+            var title = type+ctrl.maxActiveCounter;
+            ctrl.activeWidgets[title] = {type:type, title: title, width: 4, height: 1, order: ctrl.maxActiveCounter}
+        }
+
         // Save template - after edit
         function saveWidgets(form) {
             findSelectedWidgets();
             if(form.$valid ){
-                var activeWidgets;
-                ctrl.selectedWidgets.forEach(function(widget, index){
-                  //TODO we could just go around here and make up a title... but it would be better to preserve
-                    activeWidgets.push();
+                var active = [];
+                ctrl.activeWidgets.forEach(function(widget){
+                   active.push({title:widget.title,type:widget.type});
                 });
                 var submitData = {
-                    activeWidgets: ctrl.selectedWidgets
+                    activeWidgets: active
                 };
                 dashboardData
                     .updateDashboardWidgets(dashboardItem.id,submitData)
