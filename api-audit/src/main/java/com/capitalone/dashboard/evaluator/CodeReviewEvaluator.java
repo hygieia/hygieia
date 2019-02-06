@@ -390,6 +390,7 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
             reviewAuditResponseV2.addAuditStatus(directCommitIncrementVersionTagStatus);
         } else {
             reviewAuditResponseV2.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
+            reviewAuditResponseV2.addDirectCommitsFailedValidation(commit);
         }
     }
 

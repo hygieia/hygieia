@@ -37,6 +37,9 @@ public class CodeReviewAuditResponseV2 extends AuditReviewResponse<CodeReviewAud
     private List<Commit> directCommits = new ArrayList<>();
     private List<PullRequestAudit> pullRequests = new ArrayList<>();
 
+    private List<Commit> directCommitsFailedValidation = new ArrayList<>();
+
+
 
     public List<PullRequestAudit> getPullRequests() {
         return pullRequests;
@@ -93,4 +96,17 @@ public class CodeReviewAuditResponseV2 extends AuditReviewResponse<CodeReviewAud
     public void setLastPRMergeTime(long lastPRMergeTime) {
         this.lastPRMergeTime = lastPRMergeTime;
     }
+
+    public void addDirectCommitsFailedValidation(Commit commit) {
+        directCommitsFailedValidation.add(commit);
+    }
+
+    public List<Commit> getDirectCommitsFailedValidation() {
+        return directCommitsFailedValidation;
+    }
+
+    public void setDirectCommitsFailedValidation(List<Commit> directCommitsInvalid) {
+        this.directCommitsFailedValidation = directCommitsInvalid;
+    }
+
 }
