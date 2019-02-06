@@ -105,8 +105,8 @@ public class CodeReviewAuditResponseV2 extends AuditReviewResponse<CodeReviewAud
         return directCommitsToBase;
     }
 
-    public void setDirectCommitsToBase(List<Commit> directCommitsInvalid) {
-        this.directCommitsToBase = directCommitsInvalid;
+    public void setDirectCommitsToBase(List<Commit> directCommitsToBase) {
+        this.directCommitsToBase = directCommitsToBase;
     }
 
 }
