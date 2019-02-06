@@ -398,7 +398,7 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
             reviewAuditResponseV2.addAuditStatus(CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT );
         }else{
             reviewAuditResponseV2.addAuditStatus(CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
-            reviewAuditResponseV2.addDirectCommitsFailedValidation(commit);
+            reviewAuditResponseV2.addDirectCommitsToBase(commit);
         }
    }
 
