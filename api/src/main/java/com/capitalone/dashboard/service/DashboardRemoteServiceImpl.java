@@ -89,8 +89,10 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
 
         List<Owner> owners = getOwners(request);
 
-        if (!userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())) {
-            throw new HygieiaException("Invalid owner information or authentication type. Owner first needs to sign up in Hygieia", HygieiaException.BAD_DATA);
+        for (Owner owner : owners) {
+            if (!userInfoService.isUserValid(owner.getUsername(), owner.getAuthType())) {
+                throw new HygieiaException("Invalid owner information or authentication type. Owner first needs to sign up in Hygieia", HygieiaException.BAD_DATA);
+            }
         }
 
         List<Dashboard> dashboards = findExistingDashboardsFromRequest( request );
@@ -251,6 +253,7 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
             serviceName = service.getConfigurationItem();
         }
         List<String> activeWidgets = new ArrayList<>();
-        return new Dashboard(true, metaData.getTemplate(), metaData.getTitle(), application, metaData.getOwner(), DashboardType.fromString(metaData.getType()), serviceName, appName,activeWidgets, false, ScoreDisplayType.HEADER);
+        List<Owner> owners = getOwners(request);
+        return new Dashboard(true, metaData.getTemplate(), metaData.getTitle(), application, owners, DashboardType.fromString(metaData.getType()), serviceName, appName,activeWidgets, false, ScoreDisplayType.HEADER);
     }
 }
