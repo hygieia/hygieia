@@ -141,6 +141,7 @@ public class CodeReviewEvaluatorTest {
         when(serviceAccountRepository.findAll()).thenReturn(Stream.of(makeServiceAccount()).collect(Collectors.toList()));
         CodeReviewAuditResponseV2 responseV2 = codeReviewEvaluator.evaluate(makeCollectorItem(1,"master"), collectorItemList,125634536, 6235263, null);
         Assert.assertTrue(responseV2.getAuditStatuses().contains(CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE));
+        Assert.assertEquals(3,responseV2.getDirectCommitsToBase().size());
 
         pullRequestList.get(0).setUserId("NotAuthor1");
 
