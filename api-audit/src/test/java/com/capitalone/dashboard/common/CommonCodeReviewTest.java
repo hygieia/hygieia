@@ -65,17 +65,19 @@ public class CommonCodeReviewTest {
                 new AbstractMap.SimpleEntry<>("allowedUser2", "*.java"))
                 .collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())));
         Assert.assertEquals(true, CommonCodeReview.checkForServiceAccount("CN=hygieiaUser,OU=Developers,OU=All Users,DC=basic,DC=ds,DC=industry,DC=com", apiSettings,allowedUsers,"allowedUser2",Stream.of("test.java").collect(Collectors.toList()), true,auditStatusAuditReviewResponse));
-        Assert.assertEquals(true, auditStatusAuditReviewResponse.getAuditStatuses().toString().contains("SCM_AUTHOR_WHITELISTED_USER"));
+        Assert.assertEquals(true, auditStatusAuditReviewResponse.getAuditStatuses().toString().contains("DIRECT_COMMIT_CHANGE_WHITELISTED_ACCOUNT"));
     }
 
     @Test
     public void testCheckForServiceAccountForAllowedServiceAccountsNonMatch() {
+        AuditReviewResponse<CodeReviewAuditStatus> auditStatusAuditReviewResponse = new AuditReviewResponse();
         apiSettings.setServiceAccountOU(TestConstants.SERVICE_ACCOUNTS);
         Map<String,String> allowedUsers =  Collections.unmodifiableMap(Stream.of(
                 new AbstractMap.SimpleEntry<>("allowedUser1", "pom.xml,test.json"),
                 new AbstractMap.SimpleEntry<>("allowedUser2", "*.java"))
                 .collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())));
-        Assert.assertEquals(false, CommonCodeReview.checkForServiceAccount("CN=hygieiaUser,OU=Developers,OU=All Users,DC=basic,DC=ds,DC=industry,DC=com", apiSettings,allowedUsers,"allowedUser2",Stream.of("test.md").collect(Collectors.toList()), true,new AuditReviewResponse()));
+        Assert.assertEquals(false, auditStatusAuditReviewResponse.getAuditStatuses().toString().contains("DIRECT_COMMIT_CHANGE_WHITELISTED_ACCOUNT"));
+        Assert.assertEquals(false, CommonCodeReview.checkForServiceAccount("CN=hygieiaUser,OU=Developers,OU=All Users,DC=basic,DC=ds,DC=industry,DC=com", apiSettings,allowedUsers,"allowedUser2",Stream.of("test.md").collect(Collectors.toList()), true,auditStatusAuditReviewResponse));
     }
 
 
