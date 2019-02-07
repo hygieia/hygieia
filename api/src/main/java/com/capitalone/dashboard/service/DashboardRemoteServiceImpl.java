@@ -60,7 +60,7 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
     }
 
     /**
-     * Creates a list of owners from the owner and owners requests
+     * Creates a list of unique owners from the owner and owners requests
      * @param request
      * @return List<Owner> list of owners to be added to the dashboard
      * @throws HygieiaException
@@ -77,11 +77,12 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
         if (owners == null) {
             owners = new ArrayList<Owner>();
             owners.add(owner);
-        } else if (owner != null && !owners.contains(owner)) {
+        } else if (owner != null) {
             owners.add(owner);
         }
 
-        return owners;
+        Set<Owner> uniqueOwners = new HashSet<Owner>(owners);
+        return new ArrayList<Owner>(uniqueOwners);
     }
 
     @Override
