@@ -57,16 +57,29 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
         this.componentRepository = componentRepository;
     }
 
-    private boolean doOwnersExist(DashboardRemoteRequest request) {
+    /**
+     * Creates a list of owners from the owner and owners requests
+     * @param request
+     * @return List<Owner> list of owners to be added to the dashboard
+     * @throws HygieiaException
+     */
+    private List<Owner> getOwners(DashboardRemoteRequest request) throws HygieiaException {
         DashboardRemoteRequest.DashboardMetaData metaData = request.getMetaData();
         Owner owner = metaData.getOwner();
         List<Owner> owners = metaData.getOwners();
 
         if (owner == null && owners == null) {
-            return false;
+            throw new HygieiaException("There are no owner/owners field in the request", HygieiaException.INVALID_CONFIGURATION);
         }
 
-        return true;
+        if (owners == null) {
+            owners = new ArrayList<Owner>();
+            owners.add(owner);
+        } else if (owner != null && !owners.contains(owner)) {
+            owners.add(owner);
+        }
+
+        return owners;
     }
 
     @Override
@@ -74,9 +87,7 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
         Dashboard dashboard;
         Map<String, Widget> existingWidgets = new HashMap<>();
 
-        if (!doOwnersExist(request)) {
-            throw new HygieiaException("There are no owner/owners field in the request", HygieiaException.INVALID_CONFIGURATION);
-        }
+        List<Owner> owners = getOwners(request);
 
         if (!userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())) {
             throw new HygieiaException("Invalid owner information or authentication type. Owner first needs to sign up in Hygieia", HygieiaException.BAD_DATA);
