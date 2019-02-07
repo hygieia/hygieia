@@ -117,6 +117,7 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
             if (isUpdate) {
                 throw new HygieiaException("Dashboard " + request.getMetaData().getTitle() +  " does not exist.", HygieiaException.BAD_DATA);
             }
+            request.getMetaData().setOwners(owners);
             dashboard = dashboardService.create(requestToDashboard(request));
         }
 
@@ -258,7 +259,6 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
             serviceName = service.getConfigurationItem();
         }
         List<String> activeWidgets = new ArrayList<>();
-        List<Owner> owners = getOwners(request);
-        return new Dashboard(true, metaData.getTemplate(), metaData.getTitle(), application, owners, DashboardType.fromString(metaData.getType()), serviceName, appName,activeWidgets, false, ScoreDisplayType.HEADER);
+        return new Dashboard(true, metaData.getTemplate(), metaData.getTitle(), application, metaData.getOwners(), DashboardType.fromString(metaData.getType()), serviceName, appName,activeWidgets, false, ScoreDisplayType.HEADER);
     }
 }
