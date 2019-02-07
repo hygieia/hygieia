@@ -27,8 +27,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -98,7 +100,9 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
         List<Dashboard> dashboards = findExistingDashboardsFromRequest( request );
         if (!CollectionUtils.isEmpty(dashboards)) {
             dashboard = dashboards.get(0);
-            dashboard.setOwners(owners);
+            Set<Owner> uniqueOwners = new HashSet<Owner>(owners);
+            uniqueOwners.addAll(dashboard.getOwners());
+            dashboard.setOwners(new ArrayList<Owner>(uniqueOwners));
             if (!isUpdate) {
                 throw new HygieiaException("Dashboard " + dashboard.getTitle() + " (id =" + dashboard.getId() + ") already exists", HygieiaException.DUPLICATE_DATA);
             }
