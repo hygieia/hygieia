@@ -96,6 +96,7 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
         List<Dashboard> dashboards = findExistingDashboardsFromRequest( request );
         if (!CollectionUtils.isEmpty(dashboards)) {
             dashboard = dashboards.get(0);
+            dashboard.setOwners(owners);
             if (!isUpdate) {
                 throw new HygieiaException("Dashboard " + dashboard.getTitle() + " (id =" + dashboard.getId() + ") already exists", HygieiaException.DUPLICATE_DATA);
             }
