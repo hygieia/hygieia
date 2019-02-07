@@ -936,3 +936,27 @@ tr.dash-row > td {
     font-size:2rem;
   }
 }
+
+// AUTO LOOP
+// ========================================
+// CSS for widgets with multiple tabs/screens to loop through (using play/pause buttons)
+
+#next-btn {
+    background: none;
+    border: 0;
+    color: @dash-status-ignore;
+}
+#pause-btn {
+    background: none;
+    border: 0;
+    color: @dash-status-warn;
+}
+#play-btn {
+    background: none;
+    border: 0;
+    color: @dash-status-pass;
+}
+#next-btn:hover, #pause-btn:hover, #play-btn:hover {
+    background-color: @dash-widget-section-highlight;
+    opacity: 0.5;
+}
