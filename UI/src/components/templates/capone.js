@@ -9,8 +9,7 @@
         .module(HygieiaConfig.module)
         .controller('CapOneTemplateController', CapOneTemplateController);
 
-    CapOneTemplateController.$inject = ['$interval'];
-    function CapOneTemplateController($interval) {
+    function CapOneTemplateController() {
         var ctrl = this;
 
         ctrl.tabs = [
