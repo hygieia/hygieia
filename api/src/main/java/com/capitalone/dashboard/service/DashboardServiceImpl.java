@@ -45,25 +45,12 @@ import com.capitalone.dashboard.util.UnsafeDeleteException;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
@@ -547,44 +534,37 @@ public class DashboardServiceImpl implements DashboardService {
         List<ActiveWidget> widgetToDelete =  findDeletedWidgets(existingActiveWidgets,request.getActiveWidgets());
         List<Widget> widgets = dashboard.getWidgets();
         ObjectId componentId = components.get(0)!=null?components.get(0).getId():null;
-        List<Integer> indexList = new ArrayList<>();
-        List<CollectorType> collectorTypesToDelete = new ArrayList<>();
-        List<Widget> updatedWidgets = new ArrayList<>();
 
-        for (ActiveWidget activeWidget: widgetToDelete) {
-            for (Widget widget:widgets) {
-                if(activeWidget.getTitle().equalsIgnoreCase(widget.getName())){
-                    int widgetIndex = widgets.indexOf(widget);
-                    indexList.add(widgetIndex);
-                    collectorTypesToDelete.add(findCollectorType(activeWidget.getType()));
-                    if(activeWidget.getTitle().equalsIgnoreCase("codeanalysis")){
-                        collectorTypesToDelete.add(CollectorType.CodeQuality);
-                        collectorTypesToDelete.add(CollectorType.StaticSecurityScan);
-                        collectorTypesToDelete.add(CollectorType.LibraryPolicy);
-                        collectorTypesToDelete.add(CollectorType.Test);
-                    }
-                }
-            }
-        }
         //iterate through index and remove widgets
-        for (Integer i:indexList) {
-            widgets.set(i,null);
-        }
-        for (Widget w:widgets) {
-            if(w!=null)
-                updatedWidgets.add(w);
-        }
-        dashboard.setWidgets(updatedWidgets);
+        widgets.removeAll(widgetToDelete);
+
+        dashboard.setWidgets(widgets);
         dashboard.setActiveWidgets(request.getActiveWidgets());
+
         dashboard = update(dashboard);
+
+        // find orphaned CollectorItemIds
+
         if(componentId!=null){
-            com.capitalone.dashboard.model.Component component = componentRepository.findOne(componentId);
-            for (CollectorType cType :collectorTypesToDelete) {
-                component.getCollectorItems().remove(cType);
-            }
-            componentRepository.save(component);
+           removeOrphanedCollectorItems(dashboard,componentId);
         }
         return dashboard;
+    }
+
+    private void removeOrphanedCollectorItems(Dashboard dashboard, ObjectId componentId) {
+        List<ObjectId> allActiveCollectorItems = new ArrayList<>();
+        for(Widget widget : dashboard.getWidgets()) {
+            allActiveCollectorItems.addAll(widget.getCollectorItemIds());
+        }
+        com.capitalone.dashboard.model.Component component = componentRepository.findOne(componentId);
+        Map<CollectorType,List<CollectorItem>> activeEntries = component.getCollectorItems().entrySet().stream()
+                .filter(
+                        entry -> entry.getValue().stream()
+                                .filter(collectorItem -> allActiveCollectorItems.contains(collectorItem.getCollectorId()))
+                                .findFirst().isPresent()).collect(
+                                        Collectors.toMap(item->item.getKey(), item->item.getValue()));
+        component.setAllCollectorItems(activeEntries);
+        componentRepository.save(component);
     }
 
 
@@ -602,25 +582,9 @@ public class DashboardServiceImpl implements DashboardService {
         dashboard.setWidgets(updatedWidgets);
         dashboardRepository.save(dashboard);
 
-        // pretty sure we should run off the widget name here to find the collector items on that widget config
-        String widgetType = widget.getType();
 
-        List<CollectorType> collectorTypesToDelete = new ArrayList<>();
-        CollectorType cType = findCollectorType(widgetType);
-        collectorTypesToDelete.add(cType);
-        if(widgetType.equalsIgnoreCase("codeanalysis")){
-            collectorTypesToDelete.add(CollectorType.CodeQuality);
-            collectorTypesToDelete.add(CollectorType.StaticSecurityScan);
-            collectorTypesToDelete.add(CollectorType.LibraryPolicy);
-            collectorTypesToDelete.add(CollectorType.Test);
-        }
         if(componentId!=null){
-            Component component = componentRepository.findOne(componentId);
-            for (CollectorType c:collectorTypesToDelete) {
-                component.getCollectorItems().remove(c);
-            }
-
-            componentRepository.save(component);
+           removeOrphanedCollectorItems(dashboard,componentId);
         }
 
     }

@@ -23,38 +23,29 @@
 			_(data).forEach(function (collector) {
 				ctrl.repoOptions.push({name:collector.name,value:collector.name});
 			});
-			var collector = modalData.dashboard.application.components[0].collectorItems.SCM;
-			var collectorId = (collector!=null && collector[0].collector!=null)? collector[0].collector.id: null;
-			if(collectorId!=null){
-                collectorData.collectorsById(collectorId).then(function(response){
-                    var collectorResponse = response[0];
+			// get this collectors id..
+			var collectorItemId = modalData.widgetConfig.collectorItemIds[0];
+			if(collectorItemId!=null){
+                collectorData.getCollectorItemById(collectorItemId).then(function(response){
+                    var collectorResponse = response.collector;
                     var scmType = 	collectorResponse.name;
-                    var myIndex;
+					var myIndex;
                     if(scmType!=null){
-                        for (var v = 0; v < ctrl.repoOptions.length; v++) {
-                            if (ctrl.repoOptions[v].name.toUpperCase() === scmType.toUpperCase()) {
-                                myIndex = v;
-                            }
-                        }
-                        ctrl.repoOption=ctrl.repoOptions[myIndex];
+						for (var v = 0; v < ctrl.repoOptions.length; v++) {
+							if (ctrl.repoOptions[v].name.toUpperCase() === scmType.toUpperCase()) {
+								myIndex = v;
+							}
+						}
+						ctrl.repoOption=ctrl.repoOptions[myIndex];
+						ctrl.repoUrl = removeGit(response.options.url);
+						ctrl.gitBranch = response.options.branch;
+						ctrl.repouser = response.options.userID;
+						ctrl.repopass = response.options.password;
+						ctrl.repoPersonalAccessToken = response.options.personalAccessToken;
                     }
 
                 });
 			}
-			// sort collectorItems by lastUpdated
-            var sorted = _.sortBy(collector,function(collectorItem){
-                return - (new Date(collectorItem.lastUpdated).getTime());
-            });
-
-			if(!angular.isUndefined(sorted) && !angular.isUndefined(sorted[0])){
-                ctrl.repoUrl = removeGit(sorted[0].options.url);
-                ctrl.gitBranch = sorted[0].options.branch;
-                ctrl.repouser = sorted[0].options.userID;
-                ctrl.repopass = sorted[0].options.password;
-                ctrl.repoPersonalAccessToken = sorted[0].options.personalAccessToken;
-			}
-
-
 		}
 
 		// public variables
