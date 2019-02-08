@@ -193,6 +193,8 @@ public class JenkinsCucumberTestCollectorTask extends
         for (JenkinsJob job : enabledJobs) {
             Build buildSummary = jenkinsClient.getLastSuccessfulBuild(job.getJobUrl());
 			if (isNewCucumberResult(job, buildSummary)) {
+                job.setLastUpdated(System.currentTimeMillis());
+                jenkinsCucumberTestJobRepository.save(job);
                 // Obtain the Test Result
                 TestResult result = jenkinsClient
                         .getCucumberTestResult(job.getJobUrl());

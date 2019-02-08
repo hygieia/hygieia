@@ -5,7 +5,11 @@ import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.CodeQuality;
 import com.capitalone.dashboard.model.CodeQualityMetric;
 import com.capitalone.dashboard.model.CodeQualityType;
-import com.capitalone.dashboard.model.quality.*;
+import com.capitalone.dashboard.model.quality.CheckstyleReport;
+import com.capitalone.dashboard.model.quality.FindBugsXmlReport;
+import com.capitalone.dashboard.model.quality.JacocoXmlReport;
+import com.capitalone.dashboard.model.quality.JunitXmlReport;
+import com.capitalone.dashboard.model.quality.PmdReport;
 import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import hudson.Extension;
 import hudson.FilePath;
@@ -24,7 +28,9 @@ import org.jenkinsci.plugins.workflow.steps.AbstractSynchronousNonBlockingStepEx
 import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
-import org.xml.sax.*;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 
 import javax.inject.Inject;
 import javax.xml.bind.JAXBContext;
@@ -32,7 +38,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.transform.sax.SAXSource;
 import java.io.IOException;
 
@@ -159,10 +164,9 @@ public class HygieiaCodeQualityPublishStep extends AbstractStepImpl {
         @Override
         protected Void run() throws Exception {
             HygieiaService service = step.getService();
-
-
-            BuildBuilder buildBuilder = new BuildBuilder(run, step.getHygieiaDesc().getHygieiaJenkinsName(), listener, BuildStatus.Success, false);
-            HygieiaResponse buildResponse = service.publishBuildData(buildBuilder.getBuildData());
+            HygieiaResponse buildResponse = service.publishBuildData(new BuildBuilder()
+                    .createBuildRequestFromRun(run, step.getHygieiaDesc().getHygieiaJenkinsName(),
+                            listener, BuildStatus.Success, false));
             CodeQualityMetricsConverter converter = new CodeQualityMetricsConverter();
             Unmarshaller unmarshaller = step.getContext().createUnmarshaller();
 

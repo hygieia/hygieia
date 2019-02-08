@@ -36,7 +36,6 @@ import java.util.regex.Pattern;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-
 @Component
 public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditResponse> {
 
@@ -69,7 +68,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
     }
 
     @Override
-    public TestResultsAuditResponse evaluate(CollectorItem collectorItem, long beginDate, long endDate, Map<?, ?> dummy) {
+    public TestResultsAuditResponse evaluate(CollectorItem collectorItem, long beginDate, long endDate, Map<?, ?> data) {
         return null;
     }
 
@@ -93,7 +92,8 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
 
         for (TestResult testResult : testResults) {
             if (TestSuiteType.Regression.toString().equalsIgnoreCase(testResult.getType().name()) ||
-                    TestSuiteType.Functional.toString().equalsIgnoreCase(testResult.getType().name())) {
+                    TestSuiteType.Functional.toString().equalsIgnoreCase(testResult.getType().name()) ||
+                    TestSuiteType.Manual.toString().equalsIgnoreCase(testResult.getType().name())) {
                 testResultsAuditResponse.addAuditStatus((testResult.getFailureCount() == 0) ? TestResultAuditStatus.TEST_RESULT_AUDIT_OK : TestResultAuditStatus.TEST_RESULT_AUDIT_FAIL);
                 testResultsAuditResponse.setTestCapabilities(testResult.getTestCapabilities());
                 testResultsAuditResponse.setLastExecutionTime(testResult.getStartTime());

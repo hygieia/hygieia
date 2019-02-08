@@ -1,0 +1,13 @@
+<div>
+    <p>Specify the URL to Hygieia UI Application(s), e.g. http://hygieia.yourcompany.com.</p>
+    <p>This field if populated will print Hygieia dashboard url(if available) on the Jenkins build console if publish build data option is selected.</p>
+    <p>If more than one Hygieia Server URLs are configured, you may configure the same number of Hygieia UI URLs e.g. http://hygieia.yourcompany.com/env1, http://hygieia.yourcompany.com/env2 </p>
+    <p> The values of this should be in conjuction with the order in which Hygieia Server URLs are configured and should match the api in the order configured.</p>
+    <p>
+        For the below configuration :<br/>
+        Hygieia Server URL - http://hygieia.yourcompany.com/api,http://hygieia.yourcompany.com/api2<br/>
+        Hygieia UI URL - http://hygieia.yourcompany.com/env1, http://hygieia.yourcompany.com/env2<br/>
+        UI served by http://hygieia.yourcompany.com/env1 should be using http://hygieia.yourcompany.com/api1 and<br/>
+        UI served by http://hygieia.yourcompany.com/env2 should be using http://hygieia.yourcompany.com/api2<br/>
+    </p>
+</div>

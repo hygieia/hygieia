@@ -9,7 +9,6 @@
         .module(HygieiaConfig.module)
         .controller('CapOneTemplateController', CapOneTemplateController);
 
-    CapOneTemplateController.$inject = [];
     function CapOneTemplateController() {
         var ctrl = this;
 

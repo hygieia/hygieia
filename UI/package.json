@@ -18,6 +18,8 @@
     "gulp-autoprefixer": "~2.0.0",
     "gulp-change": "~1.0.0",
     "gulp-clean": "^0.3.1",
+    "gulp-clean-css": "~2.0.10",
+    "gulp-cli": "^2.0.1",
     "gulp-concat": "~2.6.0",
     "gulp-connect": "~2.3.1",
     "gulp-consolidate": "~0.1.2",
@@ -33,10 +35,9 @@
     "gulp-karma": "~0.0.4",
     "gulp-less": "~1.3.6",
     "gulp-load-plugins": "~0.7.1",
-    "gulp-clean-css": "~2.0.10",
     "gulp-ng-annotate": "~0.5.2",
+    "gulp-order": "^1.2.0",
     "gulp-protractor": "~0.0.11",
-    "gulp-order": "~1.1.1",
     "gulp-rename": "~1.2.0",
     "gulp-replace": "~0.5.0",
     "gulp-rev": "~2.0.1",
@@ -56,7 +57,7 @@
     "karma-jasmine": "~0.3.1",
     "karma-phantomjs-launcher": "~0.1.4",
     "less-plugin-glob": "~1.1.1",
-    "main-bower-files": "~2.4.0",
+    "main-bower-files": "^2.13.1",
     "minimist": "~1.2.0",
     "protractor": "~1.4.0",
     "require-dir": "~0.1.0",
@@ -70,5 +71,10 @@
   },
   "dependencies": {
     "phantomjs-prebuilt": "^2.1.16"
+  },
+  "scripts": {
+    "postinstall": "bower install",
+    "build": "gulp build",
+    "start": "gulp serve"
   }
 }

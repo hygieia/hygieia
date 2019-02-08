@@ -2,32 +2,25 @@ package jenkins.plugins.hygieia;
 
 import hudson.model.Build;
 import hudson.model.BuildListener;
-import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.Job;
 import hudson.model.Project;
 import hudson.model.Run;
-import hudson.scm.ChangeLogSet;
-import hudson.scm.SCM;
 import hudson.tasks.Publisher;
 import hudson.util.DescribableList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
