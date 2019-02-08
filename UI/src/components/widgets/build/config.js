@@ -43,7 +43,7 @@
         function loadSavedBuildJob(){
             ctrl.buildId ="";
             // get the job id from the widget config, not global
-            var collectorItemId = modalData.widgetConfig.collectorItemIds[0];
+            var collectorItemId = modalData.widgetConfig.collectorItemIds? modalData.widgetConfig.collectorItemIds[0]:null;;
 
             if(collectorItemId) {
                 ctrl.buildId = collectorItemId;
