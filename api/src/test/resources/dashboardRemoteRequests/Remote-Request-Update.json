@@ -1,0 +1,26 @@
+{
+    "metaData":
+    {
+      "applicationName":"test1",
+      "componentName":"test1",
+      "owner":
+      {
+        "authType":"STANDARD",
+        "username":"topopal"
+      },
+      "owners":
+      [
+          {
+            "authType":"STANDARD",
+            "username":"topopal"
+          },
+          {
+            "authType":"STANDARD",
+            "username":"topopal"
+          }
+      ],
+      "template":"CapOne",
+      "title":"TestSSA",
+      "type":"Team"
+    }
+  }

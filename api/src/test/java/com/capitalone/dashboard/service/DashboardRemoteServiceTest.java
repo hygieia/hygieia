@@ -83,6 +83,15 @@ public class DashboardRemoteServiceTest {
         Component component = componentRepository.findOne(dashboard.get(0).getApplication().getComponents().get(0).getId());
         assertEquals(2, component.getCollectorItems().get(CollectorType.SCM).size());
     }
+
+    @Test
+    public void remoteUpdateMultipleOwners() throws IOException, HygieiaException {
+        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/Remote-Request-Update.json");
+        Dashboard dashboard = dashboardRemoteService.remoteCreate(request, true);
+        int expectedNumOwners = 1;
+        assertEquals(dashboard.getOwners().size(), expectedNumOwners);
+    }
+
     @Test
     public void remoteCreateEmptyEntry() throws IOException, HygieiaException {
         DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/Remote-Request-Base.json");
