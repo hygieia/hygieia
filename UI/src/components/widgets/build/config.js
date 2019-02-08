@@ -43,11 +43,10 @@
         function loadSavedBuildJob(){
             ctrl.buildId ="";
             // get the job id from the widget config, not global
-            var collectorItemId = modalData.widgetConfig.collectorItemIds? modalData.widgetConfig.collectorItemIds[0]:null;;
-
+            var collectorItemId = widgetConfig.collectorItemIds? widgetConfig.collectorItemIds[0]:null;
             if(collectorItemId) {
                 ctrl.buildId = collectorItemId;
-            	$scope.getJobsById(ctrl.buildId).then(getBuildsCallback)
+                $scope.getJobsById(ctrl.buildId).then(getBuildsCallback)
             }
         }
         
