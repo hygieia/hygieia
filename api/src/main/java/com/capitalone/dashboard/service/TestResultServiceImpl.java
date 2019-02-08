@@ -52,7 +52,8 @@ public class TestResultServiceImpl implements TestResultService {
     @Override
     public DataResponse<Iterable<TestResult>> search(TestResultRequest request) {
         Component component = componentRepository.findOne(request.getComponentId());
-        if (!component.getCollectorItems().containsKey(CollectorType.Test)) {
+
+        if ((component == null) || !component.getCollectorItems().containsKey(CollectorType.Test)) {
             return new DataResponse<>(null, 0L);
         }
         List<TestResult> result = new ArrayList<>();

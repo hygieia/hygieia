@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.rest;
 
 import com.capitalone.dashboard.editors.CaseInsensitiveCollectorTypeEditor;
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
@@ -84,7 +85,13 @@ public class CollectorController {
 
     @RequestMapping(value = "/collector/item/{id}", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectorItem> getCollectorItem(@PathVariable ObjectId id) {
-        return ResponseEntity.ok(collectorService.getCollectorItem(id));
+        try {
+            return ResponseEntity.ok(collectorService.getCollectorItem(id));
+        } catch (HygieiaException he) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(null);
+        }
     }
 
     @RequestMapping(value = "/collector/item/component/{id}", method = GET, produces = APPLICATION_JSON_VALUE)
