@@ -72,6 +72,7 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
             if (!isUpdate) {
                 throw new HygieiaException("Dashboard " + dashboard.getTitle() + " (id =" + dashboard.getId() + ") already exists", HygieiaException.DUPLICATE_DATA);
             }
+            dashboardService.update(dashboard);
             //Save the widgets
             for (Widget w : dashboard.getWidgets()) {
                 existingWidgets.put(w.getName(), w);
