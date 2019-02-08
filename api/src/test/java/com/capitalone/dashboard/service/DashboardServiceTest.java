@@ -730,7 +730,9 @@ public class DashboardServiceTest {
     	existingInfo.setUsername("existing");
     	existingInfo.setAuthType(AuthType.LDAP);
         List<String> activeWidgets = new ArrayList<>();
-    	Dashboard dashboard = new Dashboard("template", "title", new Application("Application"), existingOwner, DashboardType.Team,configItemBusServName,configItemBusAppName, activeWidgets, false, ScoreDisplayType.HEADER);
+        List<Owner> existingOwners = new ArrayList<>();
+        existingOwners.add(existingOwner);
+    	Dashboard dashboard = new Dashboard("template", "title", new Application("Application"), existingOwners, DashboardType.Team,configItemBusServName,configItemBusAppName, activeWidgets, false, ScoreDisplayType.HEADER);
     	
     	when(userInfoRepository.findByUsernameAndAuthType("existing", AuthType.LDAP)).thenReturn(existingInfo);
     	when(dashboardRepository.findOne(dashboard.getId())).thenReturn(dashboard);
@@ -827,7 +829,9 @@ public class DashboardServiceTest {
             app.addComponent(new Component(compName));
         }
         List<String> activeWidgets = new ArrayList<>();
-        return new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemBusServName, configItemBusAppName, activeWidgets, false, ScoreDisplayType.HEADER);
+        List<Owner> owners = new ArrayList<>();
+        owners.add(new Owner(owner, AuthType.STANDARD));
+        return new Dashboard(template, title, app, owners, DashboardType.Team, configItemBusServName, configItemBusAppName, activeWidgets, false, ScoreDisplayType.HEADER);
     }
 
     private Widget makeWidget(ObjectId id, String name) {
