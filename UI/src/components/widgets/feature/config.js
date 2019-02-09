@@ -69,9 +69,8 @@
 
 		function processCollectorsResponse(data) {
 			ctrl.collectors = data;
-			var featureCollector = modalData.dashboard.application.components[0].collectorItems.AgileTool;
-			var featureCollectorId = featureCollector ? featureCollector[0].collectorId
-				: null;
+			var featureCollectors = modalData.dashboard.application.components[0].collectorItems.AgileTool;
+			var featureCollectorId = collectorData.findCollectorForWidget(featureCollectors, widgetConfig);
 
 			getCollectors(data, featureCollectorId);
 

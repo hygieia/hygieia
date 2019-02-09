@@ -23,7 +23,8 @@
             collectorsByType: collectorsByType,
             encrypt: encrypt,
             getCollectorItemById:getCollectorItemById,
-            collectorsById:collectorsById
+            collectorsById:collectorsById,
+            findCollectorForWidget:findCollectorForWidget
 
         };
 
@@ -69,6 +70,13 @@
             return $http.post(encryptRoute ,submitData).then(function (response) {
                 return response.data;
             });
+        }
+
+        function findCollectorForWidget(collectorItems, widgetConfig){
+           var collectorItemId = (widgetConfig && widgetConfig.collectorItemIds)? widgetConfig.collectorItemIds[0]:null;
+           return (collectorItems!=null && collectorItemId!=null )? collectorItems.filter(
+               function(collector){
+                   return collectorItemId === collector.id})[0].collectorId: null;
         }
     }
 })();

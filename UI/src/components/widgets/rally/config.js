@@ -33,8 +33,9 @@
         }
         function submitForm(valid, collector) {
             if (valid) {
-            var rallyCollector = modalData.dashboard.application.components[0].collectorItems.AgileTool;
-            var rallyCollectorId = rallyCollector ? rallyCollector[0].id : null;
+            var rallyCollectors = modalData.dashboard.application.components[0].collectorItems.AgileTool;
+            // not sure why this is found?
+            var rallyCollectorId = collectorData.findCollectorForWidget(rallyCollectors,widgetConfig);
             var projectId= ctrl.rallyProject.options.projectId;
             var projectName= ctrl.rallyProject.options.projectName;
                 var postObj = {

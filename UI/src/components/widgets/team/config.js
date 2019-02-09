@@ -24,8 +24,8 @@
 
         // method implementations
         function loadSavedTeam(){
-            var teamCollector = modalData.dashboard.application.components[0].collectorItems.TEAM,
-                savedCollectorItem = teamCollector ? teamCollector[0].id : null;
+            var teamCollectors = modalData.dashboard.application.components[0].collectorItems.TEAM;
+            var savedCollectorItem = collectorData.findCollectorForWidget(teamCollectors,widgetConfig);
 
             if(savedCollectorItem) {
 

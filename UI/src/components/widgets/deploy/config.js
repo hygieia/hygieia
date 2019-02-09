@@ -129,8 +129,8 @@
         
         // method implementations
         function loadSavedDeploymentJob(){
-        	var deployCollector = modalData.dashboard.application.components[0].collectorItems.Deployment,
-            savedCollectorDeploymentJob = deployCollector ? deployCollector[0].description : null;
+        	var deployCollectors = modalData.dashboard.application.components[0].collectorItems.Deployment;
+            var savedCollectorDeploymentJob = collectorData.findCollectorForWidget(deployCollectors,widgetConfig);
             if(savedCollectorDeploymentJob) { 
             	$scope.getDeploymentJobs(savedCollectorDeploymentJob).then(getDeploysCallback) 
             }
