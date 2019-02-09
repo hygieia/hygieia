@@ -19,17 +19,17 @@
         return {
             itemsByType: itemsByType,
             createCollectorItem: createCollectorItem,
-            getCollectorItem : getCollectorItem,
+            getCollectorItem: getCollectorItem,
             collectorsByType: collectorsByType,
             encrypt: encrypt,
-            getCollectorItemById:getCollectorItemById,
-            collectorsById:collectorsById,
-            findCollectorForWidget:findCollectorForWidget
+            getCollectorItemById: getCollectorItemById,
+            collectorsById: collectorsById,
+            findCollectorForWidget: findCollectorForWidget
 
         };
 
         function getCollectorItemById(id) {
-            return $http.get(itemRoute + '/'+id).then(function (response) {
+            return $http.get(itemRoute + '/' + id).then(function (response) {
                 return response.data;
             });
         }
@@ -65,18 +65,20 @@
 
         function encrypt(message) {
             var submitData = {
-                message : message
+                message: message
             }
-            return $http.post(encryptRoute ,submitData).then(function (response) {
+            return $http.post(encryptRoute, submitData).then(function (response) {
                 return response.data;
             });
         }
 
-        function findCollectorForWidget(collectorItems, widgetConfig){
-           var collectorItemId = (widgetConfig && widgetConfig.collectorItemIds)? widgetConfig.collectorItemIds[0]:null;
-           return (collectorItems!=null && collectorItemId!=null )? collectorItems.filter(
-               function(collector){
-                   return collectorItemId === collector.id})[0].collectorId: null;
+        function findCollectorForWidget(collectorItems, widgetConfig) {
+            var collectorItemId = (widgetConfig && widgetConfig.collectorItemIds) ? widgetConfig.collectorItemIds[0] : null;
+            return (collectorItems != null && collectorItemId != null) ? collectorItems.filter(
+                function (collector) {
+                    return collectorItemId === collector.id
+                }
+            )[0].collectorId : null;
         }
     }
 })();
