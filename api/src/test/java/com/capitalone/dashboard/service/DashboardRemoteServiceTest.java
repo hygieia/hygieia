@@ -34,8 +34,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -86,10 +88,20 @@ public class DashboardRemoteServiceTest {
 
     @Test
     public void remoteUpdateMultipleOwners() throws IOException, HygieiaException {
-        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/Remote-Request-Update.json");
+        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/0-Remote-Update-Repo.json");
         Dashboard dashboard = dashboardRemoteService.remoteCreate(request, true);
-        int expectedNumOwners = 1;
+        int expectedNumOwners = 3;
         assertEquals(dashboard.getOwners().size(), expectedNumOwners);
+
+        List<Owner> owners = new ArrayList<>();
+        owners.add(new Owner("topopal", AuthType.STANDARD));
+        owners.add(new Owner("testuser1", AuthType.STANDARD));
+        owners.add(new Owner("testuser2", AuthType.STANDARD));
+
+        Set<Owner> ownersFromRequest = new HashSet<>(dashboard.getOwners());
+        Set<Owner> expectedOwners = new HashSet<>(owners);
+
+        assertEquals(ownersFromRequest, expectedOwners);
     }
 
     @Test
@@ -252,6 +264,7 @@ public class DashboardRemoteServiceTest {
         List<Dashboard> dashboard = dashboardService.getByTitle("newDashboard4");
         Component component = componentRepository.findOne(dashboard.get(0).getApplication().getComponents().get(0).getId());
         assertEquals(1, component.getCollectorItems().get(CollectorType.Build).size());
+        assertEquals(2, dashboard.get(0).getOwners().size());
     }
     @Test
     public void remoteUpdateNonExisting() throws IOException {

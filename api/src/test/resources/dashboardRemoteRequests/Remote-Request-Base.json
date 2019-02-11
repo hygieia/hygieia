@@ -8,6 +8,13 @@
       "authType":"STANDARD",
       "username":"topopal"
     },
+    "owners":
+    [
+        {
+          "authType":"STANDARD",
+          "username":"testuser1"
+        }
+    ],
     "template":"CapOne",
     "title":"testTitle",
     "type":"Team"
