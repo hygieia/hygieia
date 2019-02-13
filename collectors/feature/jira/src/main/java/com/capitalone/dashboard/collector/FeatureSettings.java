@@ -76,11 +76,26 @@ public class FeatureSettings {
 	 * If you want to select boards in the Hygieia UI
 	 */
 	private boolean jiraBoardAsTeam;
+
 	/**
 	 * Defines the maximum number of features allow per board. If limit is reach collection will not happen for given board
 	 */
 	@Value("${feature.maxNumberOfFeaturesPerBoard:2000}")
 	private int maxNumberOfFeaturesPerBoard;
+
+	/**
+	 *  Defines how to update features per board. If true then only update based on enabled collectorItems otherwise full update
+	 */
+	@Value("${feature.collectorItemOnlyUpdate:true}")
+	private boolean collectorItemOnlyUpdate;
+
+	public boolean isCollectorItemOnlyUpdate() {
+		return collectorItemOnlyUpdate;
+	}
+
+	public void setCollectorItemOnlyUpdate(boolean collectorItemOnlyUpdate) {
+		this.collectorItemOnlyUpdate = collectorItemOnlyUpdate;
+	}
 
 	public int getMaxNumberOfFeaturesPerBoard() {
 		return maxNumberOfFeaturesPerBoard;

@@ -3,12 +3,14 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.Epic;
 import com.capitalone.dashboard.model.Feature;
+import com.capitalone.dashboard.model.FeatureBoard;
 import com.capitalone.dashboard.model.FeatureCollector;
 import com.capitalone.dashboard.model.FeatureEpicResult;
 import com.capitalone.dashboard.model.JiraMode;
 import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.model.Team;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
+import com.capitalone.dashboard.repository.FeatureBoardRepository;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.ScopeRepository;
@@ -16,6 +18,7 @@ import com.capitalone.dashboard.repository.TeamRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.capitalone.dashboard.utils.Utilities;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,8 @@ import org.springframework.util.CollectionUtils;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -42,6 +47,7 @@ import java.util.stream.Collectors;
 public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
     private static final Logger LOGGER = LoggerFactory.getLogger(FeatureCollectorTask.class);
     private final FeatureRepository featureRepository;
+    private final FeatureBoardRepository featureBoardRepository;
     private final TeamRepository teamRepository;
     private final ScopeRepository projectRepository;
     private final FeatureCollectorRepository featureCollectorRepository;
@@ -62,7 +68,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
     public FeatureCollectorTask(TaskScheduler taskScheduler, FeatureRepository featureRepository,
                                 TeamRepository teamRepository, ScopeRepository projectRepository,
                                 FeatureCollectorRepository featureCollectorRepository, FeatureSettings featureSettings,
-                                JiraClient jiraClient) {
+                                JiraClient jiraClient, FeatureBoardRepository featureBoardRepository) {
         super(taskScheduler, FeatureCollectorConstants.JIRA);
         this.featureCollectorRepository = featureCollectorRepository;
         this.teamRepository = teamRepository;
@@ -70,6 +76,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         this.featureRepository = featureRepository;
         this.featureSettings = featureSettings;
         this.jiraClient = jiraClient;
+        this.featureBoardRepository = featureBoardRepository;
     }
 
     /**
@@ -130,8 +137,13 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
                 List<Team> teams = updateTeamInformation(collector);
                 Set<Scope> scopes = updateProjectInformation(collector);
                 if (collector.getLastExecuted() > 0) {
-                    refreshValidIssues(collector, teams, scopes);
+                    if (featureSettings.isCollectorItemOnlyUpdate()) {
+                        refreshValidIssues(collector, getBoardList(collector.getId()), getScopeList(collector.getId()));
+                    } else {
+                        refreshValidIssues(collector, teams, scopes);
+                    }
                 }
+
                 collector.setLastRefreshTime(System.currentTimeMillis());
                 featureCollectorRepository.save(collector);
                 LOGGER.info("Collected " + teams.size() + " teams and " + scopes.size() + " projects");
@@ -236,7 +248,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         AtomicLong count = new AtomicLong();
 
         if (Objects.equals(collector.getMode(), JiraMode.Team)) {
-            List<Scope> projects = projectRepository.findByCollectorId(collector.getId());
+            List<Scope> projects = new ArrayList<>(getScopeList(collector.getId()));
             projects.forEach(project -> {
                 LOGGER.info("Collecting " + count.incrementAndGet() + " of " + projects.size() + " projects.");
 
@@ -251,7 +263,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
                 projectRepository.save(project);
             });
         } else {
-            List<Team> boards = teamRepository.findByCollectorId(collector.getId());
+            List<Team> boards = getBoardList(collector.getId());
             boards.forEach(board -> {
                 LOGGER.info("Collecting " + count.incrementAndGet() + " of " + boards.size() + " boards.");
                 long lastCollection = System.currentTimeMillis();
@@ -268,6 +280,47 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 
     }
 
+    /**
+     * Returns a full team list or partial based on whether or not isCollectorItemOnlyUpdate is true
+     * @param collectorId
+     * @return
+     */
+    private List<Team> getBoardList(ObjectId collectorId) {
+        List<Team> boards;
+        if(featureSettings.isCollectorItemOnlyUpdate()){
+            Set<Team> uniqueTeams = new HashSet<>();
+            for(FeatureBoard featureBoard: enabledFeatureBoards(collectorId)){
+                uniqueTeams.add(teamRepository.findByTeamId(featureBoard.getTeamId()));
+                featureBoard.setLastUpdated(System.currentTimeMillis());
+                featureBoardRepository.save(featureBoard);
+            }
+            boards = new ArrayList<>(uniqueTeams);
+        }else {
+            boards = teamRepository.findByCollectorId(collectorId);
+        }
+        return boards;
+    }
+    /**
+     * Returns a full project list or partial based on whether or not isCollectorItemOnlyUpdate is true
+     * @param collectorId
+     * @return
+     */
+    private Set<Scope> getScopeList(ObjectId collectorId) {
+        Set<Scope> projects = new HashSet<>();
+        if(featureSettings.isCollectorItemOnlyUpdate()){
+            for(FeatureBoard featureBoard: enabledFeatureBoards(collectorId)){
+                projects.add(projectRepository.findByCollectorIdAndPId(collectorId, featureBoard.getProjectId()));
+                featureBoard.setLastUpdated(System.currentTimeMillis());
+                featureBoardRepository.save(featureBoard);
+            }
+        }else {
+            projects = new HashSet<>(projectRepository.findByCollectorId(collectorId));
+        }
+        return projects;
+    }
+    private List<FeatureBoard> enabledFeatureBoards(ObjectId collectorId) {
+        return featureBoardRepository.findEnabledFeatureBoards(collectorId);
+    }
     /**
      * Save features to repository
      *

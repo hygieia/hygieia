@@ -96,7 +96,8 @@ public class FeatureCollectorTaskTest {
         when(restOperationsSupplier.get()).thenReturn(rest);
         defaultJiraClient = new DefaultJiraClient(featureSettings,restOperationsSupplier);
         featureSettings.setJiraBoardAsTeam(true);
-        featureCollectorTask = new FeatureCollectorTask(null,featureRepository,teamRepository,projectRepository,featureCollectorRepository,featureSettings,defaultJiraClient);
+        featureSettings.setCollectorItemOnlyUpdate(false);
+        featureCollectorTask = new FeatureCollectorTask(null,featureRepository,teamRepository,projectRepository,featureCollectorRepository,featureSettings,defaultJiraClient, null);
 
         featureCollector = featureCollectorTask.getCollector();
         featureCollector.setId(new ObjectId("5c38f2f087cd1f53ca81bd3d"));
