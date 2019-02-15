@@ -23,6 +23,7 @@ public class Utilities {
 
     //This is weird but way faster than Java date time formatter etc.
     public static String parseDateWithoutFraction(String date) {
+        if(date == null) return "";
         if (date.length() < 20) {
             return date;
         }
