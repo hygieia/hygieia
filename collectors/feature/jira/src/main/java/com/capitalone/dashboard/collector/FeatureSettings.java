@@ -7,8 +7,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * Bean to hold settings specific to the Feature collector.
- * 
- * @author tabladrum
  */
 @Component
 @ConfigurationProperties(prefix = "feature")
