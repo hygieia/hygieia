@@ -2,10 +2,10 @@ package com.capitalone.dashboard.auth.webhook.github;
 
 import com.capitalone.dashboard.auth.AuthenticationResultHandler;
 import com.capitalone.dashboard.settings.ApiSettings;
-import com.capitalone.dashboard.util.HygieiaUtils;
 import com.capitalone.dashboard.webhook.settings.GitHubWebHookSettings;
 import com.capitalone.dashboard.webhook.settings.WebHookSettings;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -19,6 +19,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 public class GithubWebHookRequestFilter extends UsernamePasswordAuthenticationFilter {
@@ -78,7 +79,7 @@ public class GithubWebHookRequestFilter extends UsernamePasswordAuthenticationFi
                                 List<String> githubEnterpriseHostExpectedValues) {
         boolean result = false;
 
-        if (HygieiaUtils.checkForEmptyStringValues(userAgent, githubEnterpriseHost, userAgentExpectedValue)
+        if (checkForEmptyStringValues(userAgent, githubEnterpriseHost, userAgentExpectedValue)
                 || CollectionUtils.isEmpty(githubEnterpriseHostExpectedValues)) {
             result = true;
         }
@@ -108,5 +109,9 @@ public class GithubWebHookRequestFilter extends UsernamePasswordAuthenticationFi
                                               AuthenticationException failed) throws IOException, ServletException {
 
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Github Webhook Authentication Failed");
+    }
+
+    private boolean checkForEmptyStringValues(String... values) {
+        return Arrays.stream(values, 0, values.length).anyMatch(StringUtils::isEmpty);
     }
 }

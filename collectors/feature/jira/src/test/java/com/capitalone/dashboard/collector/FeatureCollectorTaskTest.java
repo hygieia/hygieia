@@ -181,7 +181,7 @@ public class FeatureCollectorTaskTest {
         doReturn(new ResponseEntity<>(getExpectedJSON("response/issueresponse-empty.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
         doReturn(new ResponseEntity<>(getExpectedJSON("response/epicresponse.json"), HttpStatus.OK)).when(rest).exchange(contains("/rest/agile/1.0/issue/"+epicId), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
         doReturn(new ResponseEntity<>(getExpectedJSON("response/issueresponse-story.json"), HttpStatus.OK)).when(rest).exchange(contains("board/999"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
-        when(featureBoardRepository.findFeatureBoards(new ObjectId(),"123455")).thenReturn(null);
+        when(featureBoardRepository.findFeatureBoard(new ObjectId(),"123455")).thenReturn(null);
         featureCollectorTask.updateStoryInformation(featureCollector);
         List<Feature> actual = featureRepository.getStoryByTeamID(expected.get(0).getsTeamID());
 
@@ -197,7 +197,7 @@ public class FeatureCollectorTaskTest {
         doReturn(new ResponseEntity<>(getExpectedJSON("response/issueresponse-empty.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
         doReturn(new ResponseEntity<>(getExpectedJSON("response/epicresponse.json"), HttpStatus.OK)).when(rest).exchange(contains("/rest/agile/1.0/issue/"+epicId), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
         doReturn(new ResponseEntity<>(getExpectedJSON("response/issueresponse-combo.json"), HttpStatus.OK)).when(rest).exchange(contains("board/999"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
-        when(featureBoardRepository.findFeatureBoards(new ObjectId(),"123455")).thenReturn(null);
+        when(featureBoardRepository.findFeatureBoard(new ObjectId(),"123455")).thenReturn(null);
         featureCollectorTask.updateStoryInformation(featureCollector);
         List<Feature> actual = featureRepository.getStoryByTeamID(expected.get(0).getsTeamID());
 
@@ -213,7 +213,7 @@ public class FeatureCollectorTaskTest {
         doReturn(new ResponseEntity<>(getExpectedJSON("response/issueresponse-empty.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
         doReturn(new ResponseEntity<>(getExpectedJSON("response/epicresponse.json"), HttpStatus.OK)).when(rest).exchange(contains("/rest/agile/1.0/issue/"+epicId), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
         doReturn(new ResponseEntity<>(getExpectedJSON("response/issueresponse-combo-update.json"), HttpStatus.OK)).when(rest).exchange(contains("board/999"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
-        when(featureBoardRepository.findFeatureBoards(new ObjectId(),"123455")).thenReturn(null);
+        when(featureBoardRepository.findFeatureBoard(new ObjectId(),"123455")).thenReturn(null);
         featureCollectorTask.updateStoryInformation(featureCollector);
         List<Feature> actual = featureRepository.getStoryByTeamID(expected.get(0).getsTeamID());
 
@@ -228,7 +228,7 @@ public class FeatureCollectorTaskTest {
         doReturn(new ResponseEntity<>(getExpectedJSON("response/issueresponse-empty.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
         doReturn(new ResponseEntity<>(getExpectedJSON("response/epicresponse.json"), HttpStatus.OK)).when(rest).exchange(contains("/rest/agile/1.0/issue/"+epicId), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
         doReturn(new ResponseEntity<>(getExpectedJSON("response/issueresponse-combo-update-1.json"), HttpStatus.OK)).when(rest).exchange(contains("board/999"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
-        when(featureBoardRepository.findFeatureBoards(new ObjectId(),"123455")).thenReturn(null);
+        when(featureBoardRepository.findFeatureBoard(new ObjectId(),"123455")).thenReturn(null);
         featureCollectorTask.updateStoryInformation(featureCollector);
         List<Feature> actual = featureRepository.getStoryByTeamID(expected.get(0).getsTeamID());
 
