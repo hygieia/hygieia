@@ -155,10 +155,10 @@
     display: flex;
 }
 .sidebar {
-    width: 30%;
-    background: @background;
+    width: 100%;
+    background: transparent ;
     text-align: center;
-    color: #fff;
+    color: #80868e;
 
     > ul {
         list-style-type: none;
@@ -182,14 +182,14 @@
         a {
             display: block;
             padding: 1rem;
-            color: #fff;
+            color: #80868e;
             cursor: pointer;
             transition: background 0.25s ease-in-out;
 
             &.added {
                 font-style: italic;
-                color: darken(#fff, 30%);
-                background: lighten(@background, 30%);
+                color: darken(#000000, 30%);
+                background: darken(#80868e, 5%);
             }
         }
     }
@@ -219,4 +219,42 @@
 
     }
 
+}
+
+.flat {
+    width: 240px;
+    height: 120px;
+    max-width: 240px;
+    max-height: 120px;
+    min-width: 120px;
+    min-height: 120px;
+    font-size: 18px !important;
+    border-radius: 15px;
+    border: none;
+    background-color: lighten(#80868e,30%);
+    align-content: center;
+    text-align: center;
+    text-decoration: none;
+    margin: 2px 16px;
+    margin-bottom: 10px!important;
+    margin-top: 10px!important;
+    margin-right: 10px!important;
+    margin-left: 10px!important;
+    cursor: pointer;
+    -webkit-transition-duration: 0.5s;
+    transition-duration: 0.5s;
+    box-shadow: 0 2px 4px darkgrey;
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
+
+.flat:focus {
+    outline: none !important;
+}
+
+.flat:hover {
+    background: #80868e !important;
+    box-shadow: none !important;
+    font-size: 17px !important;
+    color: whitesmoke;
 }
