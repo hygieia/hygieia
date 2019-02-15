@@ -8,6 +8,7 @@ import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.FeatureCollector;
 import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.model.Team;
+import com.capitalone.dashboard.repository.FeatureBoardRepository;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.ScopeRepository;
@@ -50,6 +51,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.contains;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -84,6 +87,8 @@ public class FeatureCollectorTaskTest {
     private ScopeRepository projectRepository;
     @Autowired
     private FeatureRepository featureRepository;
+    @Mock
+    private FeatureBoardRepository featureBoardRepository =  mock(FeatureBoardRepository.class);;
 
     private FeatureCollector featureCollector;
 
@@ -97,7 +102,7 @@ public class FeatureCollectorTaskTest {
         defaultJiraClient = new DefaultJiraClient(featureSettings,restOperationsSupplier);
         featureSettings.setJiraBoardAsTeam(true);
         featureSettings.setCollectorItemOnlyUpdate(false);
-        featureCollectorTask = new FeatureCollectorTask(null,featureRepository,teamRepository,projectRepository,featureCollectorRepository,featureSettings,defaultJiraClient, null);
+        featureCollectorTask = new FeatureCollectorTask(null,featureRepository,teamRepository,projectRepository,featureCollectorRepository,featureSettings,defaultJiraClient, featureBoardRepository);
 
         featureCollector = featureCollectorTask.getCollector();
         featureCollector.setId(new ObjectId("5c38f2f087cd1f53ca81bd3d"));
@@ -176,6 +181,7 @@ public class FeatureCollectorTaskTest {
         doReturn(new ResponseEntity<>(getExpectedJSON("response/issueresponse-empty.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
         doReturn(new ResponseEntity<>(getExpectedJSON("response/epicresponse.json"), HttpStatus.OK)).when(rest).exchange(contains("/rest/agile/1.0/issue/"+epicId), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
         doReturn(new ResponseEntity<>(getExpectedJSON("response/issueresponse-story.json"), HttpStatus.OK)).when(rest).exchange(contains("board/999"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        when(featureBoardRepository.findFeatureBoards(new ObjectId(),"123455")).thenReturn(null);
         featureCollectorTask.updateStoryInformation(featureCollector);
         List<Feature> actual = featureRepository.getStoryByTeamID(expected.get(0).getsTeamID());
 
@@ -191,6 +197,7 @@ public class FeatureCollectorTaskTest {
         doReturn(new ResponseEntity<>(getExpectedJSON("response/issueresponse-empty.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
         doReturn(new ResponseEntity<>(getExpectedJSON("response/epicresponse.json"), HttpStatus.OK)).when(rest).exchange(contains("/rest/agile/1.0/issue/"+epicId), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
         doReturn(new ResponseEntity<>(getExpectedJSON("response/issueresponse-combo.json"), HttpStatus.OK)).when(rest).exchange(contains("board/999"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        when(featureBoardRepository.findFeatureBoards(new ObjectId(),"123455")).thenReturn(null);
         featureCollectorTask.updateStoryInformation(featureCollector);
         List<Feature> actual = featureRepository.getStoryByTeamID(expected.get(0).getsTeamID());
 
@@ -206,6 +213,7 @@ public class FeatureCollectorTaskTest {
         doReturn(new ResponseEntity<>(getExpectedJSON("response/issueresponse-empty.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
         doReturn(new ResponseEntity<>(getExpectedJSON("response/epicresponse.json"), HttpStatus.OK)).when(rest).exchange(contains("/rest/agile/1.0/issue/"+epicId), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
         doReturn(new ResponseEntity<>(getExpectedJSON("response/issueresponse-combo-update.json"), HttpStatus.OK)).when(rest).exchange(contains("board/999"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        when(featureBoardRepository.findFeatureBoards(new ObjectId(),"123455")).thenReturn(null);
         featureCollectorTask.updateStoryInformation(featureCollector);
         List<Feature> actual = featureRepository.getStoryByTeamID(expected.get(0).getsTeamID());
 
@@ -220,6 +228,7 @@ public class FeatureCollectorTaskTest {
         doReturn(new ResponseEntity<>(getExpectedJSON("response/issueresponse-empty.json"), HttpStatus.OK)).when(rest).exchange(contains("jira"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
         doReturn(new ResponseEntity<>(getExpectedJSON("response/epicresponse.json"), HttpStatus.OK)).when(rest).exchange(contains("/rest/agile/1.0/issue/"+epicId), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
         doReturn(new ResponseEntity<>(getExpectedJSON("response/issueresponse-combo-update-1.json"), HttpStatus.OK)).when(rest).exchange(contains("board/999"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        when(featureBoardRepository.findFeatureBoards(new ObjectId(),"123455")).thenReturn(null);
         featureCollectorTask.updateStoryInformation(featureCollector);
         List<Feature> actual = featureRepository.getStoryByTeamID(expected.get(0).getsTeamID());
 

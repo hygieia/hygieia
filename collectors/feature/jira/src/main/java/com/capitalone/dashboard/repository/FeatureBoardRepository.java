@@ -10,4 +10,7 @@ public interface FeatureBoardRepository  extends BaseCollectorItemRepository<Fea
 
     @Query(value="{ 'collectorId' : ?0, enabled: true}")
     List<FeatureBoard> findEnabledFeatureBoards(ObjectId collectorId);
+
+    @Query(value="{ 'collectorId' : ?0, 'options.teamId' : ?1, enabled: true}")
+    FeatureBoard findFeatureBoard(ObjectId collectorId, String teamId);
 }

@@ -265,7 +265,7 @@ public class DefaultJiraClient implements JiraClient {
                     + ISSUE_BY_BOARD_REST_SUFFIX_BY_DATE;
             url = String.format(url, board.getTeamId(), issueTypes.replaceAll(",", "','"), lookBackDate, issueFields, startAt);
             try {
-                IssueResult temp = getFeaturesFromQueryURL(url, epicMap);
+                IssueResult temp = getFeaturesFromQueryURL(url, epicMap, board);
 
                 if (temp.getTotal() >= featureSettings.getMaxNumberOfFeaturesPerBoard()){
                     LOGGER.info("Board: \'" + board.getName() + "\' passes the feature max limit at " + temp.getTotal() + " features. Skipping..");
@@ -320,7 +320,7 @@ public class DefaultJiraClient implements JiraClient {
                         + ISSUE_BY_PROJECT_REST_SUFFIX_BY_DATE;
                 url = String.format(url, project.getpId(), issueTypes.replaceAll(",", "','"), lookBackDate, issueFields, startAt);
 
-                IssueResult temp = getFeaturesFromQueryURL(url, epicMap);
+                IssueResult temp = getFeaturesFromQueryURL(url, epicMap, null);
 
                 features.addAll(temp.getFeatures());
                 isLast = temp.getTotal() == features.size() || CollectionUtils.isEmpty(temp.getFeatures());
@@ -337,7 +337,7 @@ public class DefaultJiraClient implements JiraClient {
     }
 
 
-    private IssueResult getFeaturesFromQueryURL(String url, Map<String, Epic> epicMap) throws HygieiaException, ParseException {
+    private IssueResult getFeaturesFromQueryURL(String url, Map<String, Epic> epicMap, Team board) throws HygieiaException, ParseException {
         IssueResult result = new IssueResult();
         try {
             ResponseEntity<String> responseEntity = makeRestCall(url);
@@ -364,7 +364,7 @@ public class DefaultJiraClient implements JiraClient {
                     }
 
                     if (JIRA_STORY.equalsIgnoreCase(type)) {
-                        Feature feature = getFeature((JSONObject) issue);
+                        Feature feature = getFeature((JSONObject) issue, board);
                         String epicId = feature.getsEpicID();
                         if (!StringUtils.isEmpty(epicId)) {
                             Epic epic = epicMap.containsKey(epicId) ? epicMap.get(epicId) : getEpic(epicId, epicMap);
@@ -394,7 +394,7 @@ public class DefaultJiraClient implements JiraClient {
      * @return Feature
      */
     @SuppressWarnings("PMD.NPathComplexity")
-    protected Feature getFeature(JSONObject issue) {
+    protected Feature getFeature(JSONObject issue, Team board) {
         Feature feature = new Feature();
         feature.setsId(getString(issue, "id"));
         feature.setsNumber(getString(issue, "key"));
@@ -424,9 +424,7 @@ public class DefaultJiraClient implements JiraClient {
         long aggEstimate = getLong(fields, "aggregatetimeoriginalestimate");
         Long estimate = getLong(fields, "timeoriginalestimate");
 
-
         int originalEstimate = 0;
-
         // Tasks use timetracking, stories use aggregatetimeoriginalestimate and aggregatetimeestimate
         if (estimate != 0) {
             originalEstimate = estimate.intValue();
@@ -460,10 +458,15 @@ public class DefaultJiraClient implements JiraClient {
         // sProjectPath - does not exist in Jira
         feature.setsProjectPath("");
 
-        JSONObject team = (JSONObject) fields.get(featureSettings.getJiraTeamFieldName());
-        if (team != null) {
-            feature.setsTeamID(getString(team, "id"));
-            feature.setsTeamName(getString(team, "value"));
+        if(board != null){
+            feature.setsTeamID(board.getTeamId());
+            feature.setsTeamName(board.getName());
+        } else {
+            JSONObject team = (JSONObject) fields.get(featureSettings.getJiraTeamFieldName());
+            if (team != null) {
+                feature.setsTeamID(getString(team, "id"));
+                feature.setsTeamName(getString(team, "value"));
+            }
         }
         // sTeamChangeDate - not able to retrieve at this asset level from Jira
         feature.setsTeamChangeDate("");
@@ -471,14 +474,12 @@ public class DefaultJiraClient implements JiraClient {
         feature.setsTeamAssetState("");
         // sTeamIsDeleted
         feature.setsTeamIsDeleted("False");
-
         // sOwnersState - does not exist in Jira at this level
         feature.setsOwnersState(Collections.singletonList("Active"));
         // sOwnersChangeDate - does not exist in Jira
         feature.setsOwnersChangeDate(Collections.EMPTY_LIST);
         // sOwnersIsDeleted - does not exist in Jira
         feature.setsOwnersIsDeleted(Collections.EMPTY_LIST);
-
         // issueLinks
         JSONArray issueLinkArray = (JSONArray) fields.get("issuelinks");
         feature.setIssueLinks(getIssueLinks(issueLinkArray));

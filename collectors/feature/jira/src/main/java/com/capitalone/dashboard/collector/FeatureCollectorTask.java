@@ -261,6 +261,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 
                 project.setLastCollected(lastCollection); //set it after everything is successfully done
                 projectRepository.save(project);
+
             });
         } else {
             List<Team> boards = getBoardList(collector.getId());
@@ -275,6 +276,11 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 
                 board.setLastCollected(lastCollection); //set it after everything is successfully done
                 teamRepository.save(board);
+                FeatureBoard featureBoard = featureBoardRepository.findFeatureBoard(collector.getId(), board.getTeamId());
+                if(featureBoard != null){
+                     featureBoard.setLastUpdated(System.currentTimeMillis());
+                     featureBoardRepository.save(featureBoard);
+                }
             });
         }
 
@@ -291,8 +297,6 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
             Set<Team> uniqueTeams = new HashSet<>();
             for(FeatureBoard featureBoard: enabledFeatureBoards(collectorId)){
                 uniqueTeams.add(teamRepository.findByTeamId(featureBoard.getTeamId()));
-                featureBoard.setLastUpdated(System.currentTimeMillis());
-                featureBoardRepository.save(featureBoard);
             }
             boards = new ArrayList<>(uniqueTeams);
         }else {
@@ -310,14 +314,13 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         if(featureSettings.isCollectorItemOnlyUpdate()){
             for(FeatureBoard featureBoard: enabledFeatureBoards(collectorId)){
                 projects.add(projectRepository.findByCollectorIdAndPId(collectorId, featureBoard.getProjectId()));
-                featureBoard.setLastUpdated(System.currentTimeMillis());
-                featureBoardRepository.save(featureBoard);
             }
         }else {
             projects = new HashSet<>(projectRepository.findByCollectorId(collectorId));
         }
         return projects;
     }
+
     private List<FeatureBoard> enabledFeatureBoards(ObjectId collectorId) {
         return featureBoardRepository.findEnabledFeatureBoards(collectorId);
     }
@@ -331,7 +334,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
     private void saveFeatures(List<Feature> features, FeatureCollector collector) {
         features.forEach(f -> {
             f.setCollectorId(collector.getId());
-            Feature existing = featureRepository.findByCollectorIdAndSId(collector.getId(), f.getsId());
+            Feature existing = featureRepository.findByCollectorIdAndSIdAndSTeamID(collector.getId(), f.getsId(), f.getsTeamID());
             if (existing != null) {
                 f.setId(existing.getId());
             }
