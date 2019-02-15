@@ -3,7 +3,7 @@
         <!-- Scrum Widget -->
         <div id="scrum-widget-view" class="col-lg-12 col-sm-6 animate-show" ng-show="ctrl.showStatus.scrum">
             <div class="widget">
-                <div>
+                <div hide-empty="['{{ ctrl.projectName }}']">
                     <div class="widget-body">
                         <div class="col-xs-9.5 text-standard-sm dash-overflow">
                             Project: <em>{{ctrl.projectName}}</em>
