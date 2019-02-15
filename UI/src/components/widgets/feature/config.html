@@ -41,12 +41,12 @@
 			</form-group>
 
 			<form-group input="teamName" ng-hide="ctrl.hideTeamDropDown"  class="col-sm-push-2 col-sm-8" errors="{required:'Please select a valid team',teamError:'Project and/or Team selection required'}">
-				<label class="modal-label">Team Name:</label>
+				<label class="modal-label">{{ctrl.teamDropdownLabel}} Name:</label>
 				<input
 						type="text"
 						name="teamName"
 						class="form-control"
-						placeholder="Search for a team name"
+						placeholder="Search for a {{ctrl.teamDropdownLabel.toLowerCase()}} name"
 						ng-model="ctrl.teamName"
 						uib-typeahead="suspect.name as suspect.name for suspect in ctrl.getTeamNames($viewValue)"
 						typeahead-focus
