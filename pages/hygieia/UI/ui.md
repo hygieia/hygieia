@@ -18,7 +18,6 @@ The Hygieia dashboard requires installation of:
 - NodeJS
 - npm
 - gulp
-- bower
 
 #### Mac OS X Installation
 
@@ -55,16 +54,14 @@ If you do not already have NodeJS installed, download and install the [NodeJS MS
 	Execute the following commands to install packages to the global `node_modules` directory:
 	
 	```bash
-	npm install -g bower
 	npm install -g gulp
 	```
-	Install dependencies configured with bower and npm:
+	Install dependencies configured with npm:
 	
 	```bash
 	# Install dependencies listed in package.json
 	npm install
-	# Install dependencies listed in bower.json
-	bower install
+	
 	```
 	
 *	**Step 4: Run the UI**
@@ -83,20 +80,18 @@ If you do not already have NodeJS installed, download and install the [NodeJS MS
 
 *	**Step 1: Install npm**
 
-	Execute the following commands using command line to install bower and gulp globally:
+	Execute the following commands using command line to install gulp globally:
 
 	```bash
-	npm install -g bower
 	npm install -g gulp
 	```
 	
-	From your project's root directory, use Git Shell to install bower using the following command:
+	From your project's root directory, use Git Shell to install npm using the following command:
 
 	```bash
-	# Install dependencies listed in bower.json
+	# Install dependencies listed in package.json
 	npm install
-	# Install dependencies listed in bower.json
-	bower install
+	
 	```
 
 *	**Step 2: Run the UI**
