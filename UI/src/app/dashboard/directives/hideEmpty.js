@@ -29,18 +29,18 @@
                         //if true (if widget is empty), hide the widget
                         if (hideWidget) {
                             // hide the widget data within the section (not the current element)
-                            element.children().first().hide();
-
-                            // if "no data found" message already added, make sure it is shown. Otherwise, append it to the HTML
-                            if (noDataFound.length > 0) {
-                                noDataFound.show();
-                            } else {
-                                element.append('<div id="noDataMsg" class="row"><div class="col-md-12">No data found.</div></div>');
-                            }
+                            // element.children().first().hide();
+                            //
+                            // // if "no data found" message already added, make sure it is shown. Otherwise, append it to the HTML
+                            // if (noDataFound.length > 0) {
+                            //     noDataFound.show();
+                            // } else {
+                            //     element.append('<div id="noDataMsg" class="row"><div class="col-md-12">No data found.</div></div>');
+                            // }
                         } else {
                             // display the widget and hide "No data found" message
-                            element.children().first().show();
-                            noDataFound.hide();
+                            // element.children[0].first().show();
+                            // noDataFound.hide();
                         }
                     }, true);
                 }

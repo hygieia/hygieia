@@ -389,9 +389,18 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
         if (CommonCodeReview.matchIncrementVersionTag(commit.getScmCommitLog(), settings)) {
             reviewAuditResponseV2.addAuditStatus(directCommitIncrementVersionTagStatus);
         } else {
-            reviewAuditResponseV2.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
+           addDirectCommitsToBase(reviewAuditResponseV2,commit);
         }
     }
+
+    private void addDirectCommitsToBase(CodeReviewAuditResponseV2 reviewAuditResponseV2,Commit commit){
+        if(commit.isFirstEverCommit()){
+            reviewAuditResponseV2.addAuditStatus(CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT );
+        }else{
+            reviewAuditResponseV2.addAuditStatus(CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
+            reviewAuditResponseV2.addDirectCommitsToBase(commit);
+        }
+   }
 
     public Map<String,String> getAllServiceAccounts(){
         List<ServiceAccount> serviceAccounts = (List<ServiceAccount>) serviceAccountRepository.findAll();
