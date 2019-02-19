@@ -162,7 +162,7 @@
       if (ctrl.listType === 'issues') {
           ctrl.showFeatureLimitButton = data.result.length <= 4 ? false : true;
       }
-      
+
       for (var i = 0; i < data.result.length; i++) {          
         // Add features only if there are no duplicates
         if (isInIssuesArray(data.result[i].sNumber, issueCollection) === false) {

@@ -4,7 +4,7 @@
 
   <name>${project.groupId}:${project.artifactId}</name>
   <description>Jira collector micorservice collects data from Jira</description>
-  <url>https://github.com/capitalone/Hygieia</url>
+  <url>https://github.com/Hygieia/Hygieia</url>
   <packaging>jar</packaging>
 
   <artifactId>jira-feature-collector</artifactId>
@@ -15,36 +15,6 @@
     <version>3.0.1</version>
     <relativePath>../../..</relativePath>
   </parent>
-
-  <repositories>
-    <repository>
-      <id>atlassian-public</id>
-      <url>https://maven.atlassian.com/repository/public</url>
-      <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>daily</updatePolicy>
-        <checksumPolicy>warn</checksumPolicy>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-        <checksumPolicy>warn</checksumPolicy>
-      </releases>
-    </repository>
-  </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>atlassian-public</id>
-      <url>https://maven.atlassian.com/repository/public</url>
-      <releases>
-        <enabled>true</enabled>
-        <checksumPolicy>warn</checksumPolicy>
-      </releases>
-      <snapshots>
-        <checksumPolicy>warn</checksumPolicy>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
 
   <distributionManagement>
     <snapshotRepository>
@@ -62,8 +32,6 @@
     <java.version>1.8</java.version>
     <junit.version>4.11</junit.version>
     <final.name>jira-feature-collector</final.name>
-    <httpasyncclient.version>4.0-beta3-atlassian-1</httpasyncclient.version>
-    <httpclient.version>4.2.1-atlassian-2</httpclient.version>
   </properties>
 
   <build>
@@ -117,19 +85,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.atlassian.jira</groupId>
-      <artifactId>jira-rest-java-client-core</artifactId>
-      <version>3.0.0</version>
-    </dependency>
-    <dependency>
       <groupId>com.capitalone.dashboard</groupId>
       <artifactId>core</artifactId>
       <version>[3.1.0-SNAPSHOT,)</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.code.findbugs</groupId>
-      <artifactId>findbugs</artifactId>
-      <version>3.0.1</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
@@ -152,23 +110,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-    </dependency>
-    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.antlr</groupId>
-      <artifactId>ST4</artifactId>
-      <version>4.0.8</version>
-    </dependency>
-    <dependency>
-      <groupId>org.antlr</groupId>
-      <artifactId>antlr4-runtime</artifactId>
-      <version>4.3</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -178,11 +122,6 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.scala-lang</groupId>
-      <artifactId>scala-library</artifactId>
-      <version>2.10.4</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -199,6 +138,13 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <!-- use 2.6.0 for Java 7 projects -->
+      <version>3.9.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
