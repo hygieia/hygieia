@@ -192,6 +192,7 @@ public class FeatureServiceImpl implements FeatureService {
 				feature.setsEpicNumber(tempRs.getsEpicNumber());
 				feature.setsEpicUrl(tempRs.getsEpicUrl());
 				feature.setsEpicName(tempRs.getsEpicName());
+				feature.setsEpicAssetState(tempRs.getsEpicAssetState());
 				feature.setsEstimate("0");
 				epicIDToEpicFeatureMap.put(epicID, feature);
 			}

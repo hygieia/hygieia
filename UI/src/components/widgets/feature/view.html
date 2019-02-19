@@ -72,14 +72,20 @@
                     <div hide-empty="['{{ ctrl.epicStoryPoints[0] }}']">
                         <div class="dash-row" ng-repeat="epic in ctrl.epicStoryPoints | limitTo:ctrl.featureLimit">
                             <div class="pull-right">{{epic.sEstimate}}</div>
-                            <div class="dash-overflow feature-link"
-                                 ng-if="epic.sEpicUrl !== undefined && epic.sEpicUrl !== null && epic.sEpicUrl !== ''">
+
+                            <div class="dash-overflow feature-link" ng-if="epic.sEpicUrl !== undefined && epic.sEpicUrl !== null && epic.sEpicUrl !== ''">
+                                <div class="dash-overflow" ng-if="epic.sEpicAssetState !== 'Done' && issue.sEpicAssetState !== 'accepted'">
                                 <a ng-href="{{::epic.sEpicUrl}}" target="_blank">{{epic.sEpicName}}</a>
                             </div>
-                            <div class="dash-overflow"
-                                 ng-if="epic.sEpicUrl === undefined || epic.sEpicUrl === null || epic.sEpicUrl === ''">
-                                {{epic.sEpicName}}
+                            <div class="dash-overflow issue-done" ng-if="epic.sEpicAssetState === 'Done' || epic.sEpicAssetState === 'accepted'">
+                                <a ng-href="{{::epic.sEpicUrl}}" target="_blank">{{epic.sEpicName}}</a>
                             </div>
+						</div>
+					</div>
+                    <div class="dash-overflow" ng-if="epic.sEpicUrl === undefined || epic.sEpicUrl === null || epic.sEpicUrl === ''">
+						<div class="dash-overflow" ng-if="epic.sEpicAssetState !== 'Done' && epic.sEpicAssetState !== 'accepted'">{{epic.sEpicName}}</div>
+						<div class="dash-overflow issue-done" ng-if="epic.sEpicAssetState === 'Done' || epic.sEpicAssetState === 'accepted'">{{epic.sEpicName}}</div>
+                    </div>
                         </div>
                     </div>
                 </div>
