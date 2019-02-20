@@ -70,7 +70,7 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
         Owner owner = metaData.getOwner();
         List<Owner> owners = metaData.getOwners();
 
-        if (owner == null && owners == null) {
+        if (owner == null && CollectionUtils.isEmpty(owners)) {
             throw new HygieiaException("There are no owner/owners field in the request", HygieiaException.INVALID_CONFIGURATION);
         }
 
