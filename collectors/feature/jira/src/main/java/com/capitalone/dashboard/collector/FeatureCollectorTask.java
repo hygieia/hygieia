@@ -296,8 +296,12 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         if(featureSettings.isCollectorItemOnlyUpdate()){
             Set<Team> uniqueTeams = new HashSet<>();
             for(FeatureBoard featureBoard: enabledFeatureBoards(collectorId)){
-                uniqueTeams.add(teamRepository.findByTeamId(featureBoard.getTeamId()));
+                Team team = teamRepository.findByTeamId(featureBoard.getTeamId());
+                if(team != null){
+                    uniqueTeams.add(team);
+                }
             }
+
             boards = new ArrayList<>(uniqueTeams);
         }else {
             boards = teamRepository.findByCollectorId(collectorId);
@@ -313,7 +317,10 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         Set<Scope> projects = new HashSet<>();
         if(featureSettings.isCollectorItemOnlyUpdate()){
             for(FeatureBoard featureBoard: enabledFeatureBoards(collectorId)){
-                projects.add(projectRepository.findByCollectorIdAndPId(collectorId, featureBoard.getProjectId()));
+                Scope scope = projectRepository.findByCollectorIdAndPId(collectorId, featureBoard.getProjectId());
+                if(scope != null){
+                    projects.add(scope);
+                }
             }
         }else {
             projects = new HashSet<>(projectRepository.findByCollectorId(collectorId));
