@@ -10,7 +10,12 @@ import com.capitalone.dashboard.model.Cmdb;
 
 import com.capitalone.dashboard.repository.AuditResultRepository;
 import com.capitalone.dashboard.repository.CmdbRepository;
-import com.capitalone.dashboard.status.*;
+import com.capitalone.dashboard.status.CodeReviewAuditStatus;
+import com.capitalone.dashboard.status.DashboardAuditStatus;
+import com.capitalone.dashboard.status.CodeQualityAuditStatus;
+import com.capitalone.dashboard.status.PerformanceTestAuditStatus;
+import com.capitalone.dashboard.status.LibraryPolicyAuditStatus;
+import com.capitalone.dashboard.status.TestResultAuditStatus;
 import org.apache.http.client.utils.URIBuilder;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
@@ -26,11 +31,13 @@ import org.springframework.jmx.MBeanServerNotFoundException;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 /**
@@ -49,6 +56,8 @@ public class AuditCollectorUtil {
 
 
     private static final String STR_URL = "url";
+    private static final String STR_REPORTURL = "reportUrl";
+    private static final String STR_LIBRARYPOLICYRESULT = "libraryPolicyResult";
     private static final String STR_PULLREQUESTS = "pullRequests";
     private static final String STR_DIRECTCOMMITS = "directCommits";
     private static final String STR_AUDITSTATUSES = "auditStatuses";
@@ -222,31 +231,27 @@ public class AuditCollectorUtil {
         if ((basicAudit = doBasicAuditCheck(jsonArray, global, AuditType.STATIC_SECURITY_ANALYSIS)) != null) {
             return basicAudit;
         }
-        audit.setAuditStatus(AuditStatus.OK);
-        audit.setDataStatus(DataStatus.OK);
+        Set<String> auditStatuses = new HashSet<>();
         for (Object o : jsonArray) {
             JSONArray auditJO = (JSONArray) ((JSONObject) o).get(STR_AUDITSTATUSES);
-            audit.getUrl().add((String) ((JSONObject) o).get(STR_URL));
-            auditJO.stream().map(aj -> audit.getAuditStatusCodes().add((String) aj));
-            boolean ok = false;
-            for (Object s : auditJO) {
-                String status = (String) s;
-
-                if (CodeQualityAuditStatus.STATIC_SECURITY_SCAN_OK.name().equalsIgnoreCase(status)) {
-                    ok = true;
-                    break;
-                }
-                if (CodeQualityAuditStatus.STATIC_SECURITY_SCAN_MISSING.name().equalsIgnoreCase(status)) {
-                    audit.setAuditStatus(AuditStatus.NA);
-                    audit.setDataStatus(DataStatus.NO_DATA);
-                    return audit;
-                }
+            for (Object a:auditJO) {
+                auditStatuses.add((String) a);
             }
-            if (!ok) {
-                audit.setAuditStatus(AuditStatus.FAIL);
-                return audit;
+            if(((JSONObject) o).get(STR_URL) != null){
+                audit.getUrl().add((String) ((JSONObject) o).get(STR_URL));
             }
         }
+
+            if(auditStatuses.contains(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_FAIL.name()) || auditStatuses.contains(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_FOUND_HIGH.name()) || auditStatuses.contains(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_FOUND_CRITICAL.name())){
+                audit.setAuditStatus(AuditStatus.FAIL);
+                audit.setDataStatus(DataStatus.OK);
+            }else if(auditStatuses.contains(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_OK.name()) ){
+                audit.setAuditStatus(AuditStatus.OK);
+                audit.setDataStatus(DataStatus.OK);
+            }else {
+                audit.setAuditStatus(AuditStatus.NA);
+                audit.setDataStatus(DataStatus.NO_DATA);
+            }
         return audit;
     }
 
@@ -268,7 +273,10 @@ public class AuditCollectorUtil {
         audit.setDataStatus(DataStatus.OK);
         for (Object o : jsonArray) {
             JSONArray auditJO = (JSONArray) ((JSONObject) o).get(STR_AUDITSTATUSES);
-            audit.getUrl().add((String) ((JSONObject) o).get(STR_URL));
+            Object libraryPolicy = ((JSONObject) o).get(STR_LIBRARYPOLICYRESULT);
+            if(libraryPolicy != null) {
+                audit.getUrl().add((String) ((JSONObject) libraryPolicy).get(STR_REPORTURL));
+            }
             auditJO.stream().map(aj -> audit.getAuditStatusCodes().add((String) aj));
             boolean ok = false;
             for (Object s : auditJO) {
