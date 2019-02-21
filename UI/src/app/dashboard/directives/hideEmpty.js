@@ -29,7 +29,10 @@
                         //if true (if widget is empty), hide the widget
                         if (hideWidget) {
                             // hide the widget data within the section (not the current element)
-                            element.children().first().hide();
+                            if(element.children().first()) {
+                                element.children().first().hide();
+                            }
+
 
                             // if "no data found" message already added, make sure it is shown. Otherwise, append it to the HTML
                             if (noDataFound.length > 0) {
@@ -39,7 +42,9 @@
                             }
                         } else {
                             // display the widget and hide "No data found" message
-                            element.children().first().show();
+                            if(element.children().first()) {
+                                element.children().first().show();
+                            }
                             noDataFound.hide();
                         }
                     }, true);
