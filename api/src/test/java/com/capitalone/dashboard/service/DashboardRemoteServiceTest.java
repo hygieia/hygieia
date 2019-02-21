@@ -113,11 +113,9 @@ public class DashboardRemoteServiceTest {
     }
     @Test
     public void remoteCreateInvalidUser() throws IOException {
-        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/0-Remote-Update-Repo.json");
-        Owner owner = new Owner("test123",AuthType.STANDARD);
-        request.getMetaData().setOwner(owner);
+        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/Remote-Request-Base-Invalid-Users.json");
                 Throwable t = new Throwable();
-        RuntimeException excep = new RuntimeException("Invalid owner information or authentication type. Owner first needs to sign up in Hygieia", t);
+        RuntimeException excep = new RuntimeException("There are no valid owner/owners in the request", t);
 
         try {
             dashboardRemoteService.remoteCreate(request, false);
