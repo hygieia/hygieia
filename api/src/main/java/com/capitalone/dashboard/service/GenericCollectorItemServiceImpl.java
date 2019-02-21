@@ -30,23 +30,26 @@ public class GenericCollectorItemServiceImpl implements GenericCollectorItemServ
             throw new HygieiaException("No collector for tool name " + request.getToolName(), HygieiaException.BAD_DATA);
         }
 
-        GenericCollectorItem newItem = new GenericCollectorItem();
-        newItem.setCollectorId(collector.getId());
-        newItem.setCreationTime(System.currentTimeMillis());
-        newItem.setRawData(request.getRawData());
-        newItem.setSource(request.getSource());
-        newItem.setToolName(request.getToolName());
+        GenericCollectorItem item = genericCollectorItemRepository.findByToolNameAndRawDataAndRelatedCollectorItem(request.getToolName(), request.getRawData(), new ObjectId(request.getRelatedCollectorItemId()));
+
+        if(item == null) {
+            item = new GenericCollectorItem();
+            item.setCreationTime(System.currentTimeMillis());
+            item.setRawData(request.getRawData());
+            item.setToolName(request.getToolName());
+        }
+
+        item.setCollectorId(collector.getId());
+        item.setSource(request.getSource());
+        item.setProcessTime(0);
         try {
-            newItem.setRelatedCollectorItem(new ObjectId(request.getRelatedCollectorItemId()));
-            newItem.setBuildId(new ObjectId(request.getBuildId()));
+            item.setRelatedCollectorItem(new ObjectId(request.getRelatedCollectorItemId()));
+            item.setBuildId(new ObjectId(request.getBuildId()));
         } catch (IllegalArgumentException ie) {
             throw new HygieiaException("Bad relatedItemId: " + ie.getMessage(), HygieiaException.BAD_DATA);
         }
 
-        GenericCollectorItem existing = genericCollectorItemRepository.findByToolNameAndRawDataAndRelatedCollectorItem(newItem.getToolName(), newItem.getRawData(), newItem.getRelatedCollectorItem());
-        if (existing == null) {
-            existing = genericCollectorItemRepository.save(newItem);
-        }
-        return existing.getId().toString();
+        item = genericCollectorItemRepository.save(item);
+        return item.getId().toString();
     }
 }
