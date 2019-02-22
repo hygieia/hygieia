@@ -44,8 +44,10 @@ public class TestUtil {
     public static void loadUserInfo(UserInfoRepository userInfoRepository) throws IOException {
         Gson gson = GsonUtil.getGson();
         String json = IOUtils.toString(Resources.getResource("./userInfo/user.json"));
-        UserInfo userInfo = gson.fromJson(json, UserInfo.class);
-        userInfoRepository.save(userInfo);
+        UserInfo[] usersInfo = gson.fromJson(json, UserInfo[].class);
+        for (UserInfo user : usersInfo) {
+            userInfoRepository.save(user);
+        }
     }
     public static void loadCollector(CollectorRepository collectorRepository) throws IOException {
         Gson gson = GsonUtil.getGson();

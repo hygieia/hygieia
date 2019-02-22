@@ -56,6 +56,7 @@ public class AuditCollectorUtil {
     private static final String STR_APIUSER = "apiUser";
     private static final String STR_APITOKENSPACE = "apiToken ";
     private static final String STR_AUTHORIZATION = "Authorization";
+    private static final String STR_TRACEABILITY = "traceability";
 
 
     /**
@@ -308,6 +309,10 @@ public class AuditCollectorUtil {
         audit.setAuditStatus(AuditStatus.OK);
         audit.setDataStatus(DataStatus.OK);
         for (Object o : jsonArray) {
+
+            Map tMap = (Map) ((JSONObject) o).get(STR_TRACEABILITY);
+            audit.setTraceability(tMap != null ? tMap : new HashMap());
+
             JSONArray auditJO = (JSONArray) ((JSONObject) o).get(STR_AUDITSTATUSES);
             audit.getUrl().add((String) ((JSONObject) o).get(STR_URL));
             auditJO.stream().map(aj -> audit.getAuditStatusCodes().add((String) aj));
@@ -485,7 +490,7 @@ public class AuditCollectorUtil {
                 Audit audit = auditMap.get(auditType);
                 AuditResult auditResult = new AuditResult(dashboardId, dashboardTitle, ownerDept, appService, appBusApp, appServiceOwner, appBusAppOwner,
                         auditType, audit.getDataStatus().name(), audit.getAuditStatus().name(), String.join(",", audit.getAuditStatusCodes()),
-                        String.join(",", audit.getUrl()), timestamp);
+                        String.join(",", audit.getUrl()), audit.getTraceability(), timestamp);
                 auditResults.add(auditResult);
             }
         });

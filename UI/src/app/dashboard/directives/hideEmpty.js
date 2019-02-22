@@ -28,10 +28,10 @@
 
                         //if true (if widget is empty), hide the widget
                         if (hideWidget) {
-                            // hide the widget data within the section (not the current element)
+                            // hide the widget data within the section (the current element)
                             element.hide();
 
-                            // if "no data found" message already added, make sure it is shown. Otherwise, append it to the HTML
+                            // if "no data found" message already added, make sure it is shown. Otherwise, append it to the HTML as a sibling
                             if (noDataFound.length > 0) {
                                 noDataFound.show();
                             } else {

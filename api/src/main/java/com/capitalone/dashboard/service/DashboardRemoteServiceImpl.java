@@ -9,6 +9,7 @@ import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.model.ScoreDisplayType;
 import com.capitalone.dashboard.repository.CmdbRepository;
@@ -18,20 +19,26 @@ import com.capitalone.dashboard.repository.CustomRepositoryQuery;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.request.DashboardRemoteRequest;
 import com.capitalone.dashboard.request.WidgetRequest;
+import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class DashboardRemoteServiceImpl implements DashboardRemoteService {
+    private static final Log LOG = LogFactory.getLog(DashboardRemoteServiceImpl.class);
     private final CollectorRepository collectorRepository;
     private final CustomRepositoryQuery customRepositoryQuery;
     private final DashboardRepository dashboardRepository;
@@ -56,18 +63,58 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
         this.componentRepository = componentRepository;
     }
 
+    /**
+     * Creates a list of unique owners from the owner and owners requests
+     * @param request
+     * @return List<Owner> list of owners to be added to the dashboard
+     * @throws HygieiaException
+     */
+    private List<Owner> getOwners(DashboardRemoteRequest request) throws HygieiaException {
+        DashboardRemoteRequest.DashboardMetaData metaData = request.getMetaData();
+        Owner owner = metaData.getOwner();
+        List<Owner> owners = metaData.getOwners();
+
+        if (owner == null && CollectionUtils.isEmpty(owners)) {
+            throw new HygieiaException("There are no owner/owners field in the request", HygieiaException.INVALID_CONFIGURATION);
+        }
+
+        if (owners == null) {
+            owners = new ArrayList<Owner>();
+            owners.add(owner);
+        } else if (owner != null) {
+            owners.add(owner);
+        }
+
+        Set<Owner> uniqueOwners = new HashSet<Owner>(owners);
+        return new ArrayList<Owner>(uniqueOwners);
+    }
+
     @Override
     public Dashboard remoteCreate(DashboardRemoteRequest request, boolean isUpdate) throws HygieiaException {
+        final String METHOD_NAME = "DashboardRemoteServiceImpl.remoteCreate";
         Dashboard dashboard;
         Map<String, Widget> existingWidgets = new HashMap<>();
 
-        if (!userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())) {
-            throw new HygieiaException("Invalid owner information or authentication type. Owner first needs to sign up in Hygieia", HygieiaException.BAD_DATA);
+        List<Owner> owners = getOwners(request);
+        List<Owner> validOwners = Lists.newArrayList();
+        for (Owner owner : owners) {
+            if (userInfoService.isUserValid(owner.getUsername(), owner.getAuthType())) {
+                validOwners.add(owner);
+            } else {
+                LOG.warn(METHOD_NAME + " Invalid owner passed in the request : " + owner.getUsername());
+            }
+        }
+
+        if (validOwners.isEmpty()) {
+            throw new HygieiaException("There are no valid owner/owners in the request", HygieiaException.INVALID_CONFIGURATION);
         }
 
         List<Dashboard> dashboards = findExistingDashboardsFromRequest( request );
         if (!CollectionUtils.isEmpty(dashboards)) {
             dashboard = dashboards.get(0);
+            Set<Owner> uniqueOwners = new HashSet<Owner>(validOwners);
+            uniqueOwners.addAll(dashboard.getOwners());
+            dashboard.setOwners(new ArrayList<Owner>(uniqueOwners));
             if (!isUpdate) {
                 throw new HygieiaException("Dashboard " + dashboard.getTitle() + " (id =" + dashboard.getId() + ") already exists", HygieiaException.DUPLICATE_DATA);
             }
@@ -81,6 +128,7 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
             if (isUpdate) {
                 throw new HygieiaException("Dashboard " + request.getMetaData().getTitle() +  " does not exist.", HygieiaException.BAD_DATA);
             }
+            request.getMetaData().setOwners(owners);
             dashboard = dashboardService.create(requestToDashboard(request));
         }
 
@@ -222,6 +270,6 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
             serviceName = service.getConfigurationItem();
         }
         List<String> activeWidgets = new ArrayList<>();
-        return new Dashboard(true, metaData.getTemplate(), metaData.getTitle(), application, metaData.getOwner(), DashboardType.fromString(metaData.getType()), serviceName, appName,activeWidgets, false, ScoreDisplayType.HEADER);
+        return new Dashboard(true, metaData.getTemplate(), metaData.getTitle(), application, metaData.getOwners(), DashboardType.fromString(metaData.getType()), serviceName, appName,activeWidgets, false, ScoreDisplayType.HEADER);
     }
 }
