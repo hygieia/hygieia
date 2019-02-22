@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Arrays;
 import java.util.stream.Stream;
+import java.util.Optional;
 
 /**
  * <h1>AuditCollectorUtil</h1>
@@ -194,7 +195,8 @@ public class AuditCollectorUtil {
         audit.setAuditStatus(AuditStatus.OK);
         audit.setDataStatus(DataStatus.OK);
         for (Object o : jsonArray) {
-            audit.getUrl().add((String) ((JSONObject) o).get(STR_URL));
+            Optional<Object> urlOptObj = Optional.ofNullable(((JSONObject) o).get(STR_URL));
+            urlOptObj.ifPresent(urlObj -> audit.getUrl().add(urlOptObj.get().toString()));
             JSONArray auditJO = (JSONArray) ((JSONObject) o).get(STR_AUDITSTATUSES);
             auditJO.stream().map(aj -> audit.getAuditStatusCodes().add((String) aj));
             boolean ok = false;
@@ -235,24 +237,22 @@ public class AuditCollectorUtil {
         Set<String> auditStatuses = new HashSet<>();
         for (Object o : jsonArray) {
             JSONArray auditJO = (JSONArray) ((JSONObject) o).get(STR_AUDITSTATUSES);
-            for (Object a:auditJO) {
-                auditStatuses.add((String) a);
-            }
-            if(((JSONObject) o).get(STR_URL) != null){
-                audit.getUrl().add((String) ((JSONObject) o).get(STR_URL));
-            }
+            Optional<Object> urlOptObj = Optional.ofNullable(((JSONObject) o).get(STR_URL));
+            urlOptObj.ifPresent(urlObj -> audit.getUrl().add(urlOptObj.get().toString()));
+            for (Object a:auditJO) { auditStatuses.add((String) a); }
         }
-
-            if(auditStatuses.contains(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_FAIL.name()) || auditStatuses.contains(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_FOUND_HIGH.name()) || auditStatuses.contains(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_FOUND_CRITICAL.name())){
-                audit.setAuditStatus(AuditStatus.FAIL);
-                audit.setDataStatus(DataStatus.OK);
-            }else if(auditStatuses.contains(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_OK.name()) ){
-                audit.setAuditStatus(AuditStatus.OK);
-                audit.setDataStatus(DataStatus.OK);
-            }else {
-                audit.setAuditStatus(AuditStatus.NA);
-                audit.setDataStatus(DataStatus.NO_DATA);
-            }
+        if(auditStatuses.contains(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_FAIL.name()) ||
+                auditStatuses.contains(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_FOUND_HIGH.name()) ||
+                auditStatuses.contains(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_FOUND_CRITICAL.name())){
+            audit.setAuditStatus(AuditStatus.FAIL);
+            audit.setDataStatus(DataStatus.OK);
+        }else if(auditStatuses.contains(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_OK.name()) ){
+            audit.setAuditStatus(AuditStatus.OK);
+            audit.setDataStatus(DataStatus.OK);
+        }else {
+            audit.setAuditStatus(AuditStatus.NA);
+            audit.setDataStatus(DataStatus.NO_DATA);
+        }
         return audit;
     }
 
@@ -274,10 +274,8 @@ public class AuditCollectorUtil {
         audit.setDataStatus(DataStatus.OK);
         for (Object o : jsonArray) {
             JSONArray auditJO = (JSONArray) ((JSONObject) o).get(STR_AUDITSTATUSES);
-            Object libraryPolicy = ((JSONObject) o).get(STR_LIBRARYPOLICYRESULT);
-            if(libraryPolicy != null) {
-                audit.getUrl().add((String) ((JSONObject) libraryPolicy).get(STR_REPORTURL));
-            }
+            Optional<Object> lpOptObj = Optional.ofNullable(((JSONObject) o).get(STR_LIBRARYPOLICYRESULT));
+            lpOptObj.ifPresent(lpObj -> audit.getUrl().add(((JSONObject) lpOptObj.get()).get(STR_REPORTURL).toString()));
             auditJO.stream().map(aj -> audit.getAuditStatusCodes().add((String) aj));
             boolean ok = false;
             for (Object s : auditJO) {
@@ -317,12 +315,11 @@ public class AuditCollectorUtil {
         audit.setAuditStatus(AuditStatus.OK);
         audit.setDataStatus(DataStatus.OK);
         for (Object o : jsonArray) {
-
             Map tMap = (Map) ((JSONObject) o).get(STR_TRACEABILITY);
             audit.setTraceability(tMap != null ? tMap : new HashMap());
-
             JSONArray auditJO = (JSONArray) ((JSONObject) o).get(STR_AUDITSTATUSES);
-            audit.getUrl().add((String) ((JSONObject) o).get(STR_URL));
+            Optional<Object> urlOptObj = Optional.ofNullable(((JSONObject) o).get(STR_URL));
+            urlOptObj.ifPresent(urlObj -> audit.getUrl().add(urlOptObj.get().toString()));
             auditJO.stream().map(aj -> audit.getAuditStatusCodes().add((String) aj));
             boolean ok = false;
             for (Object s : auditJO) {
@@ -363,7 +360,8 @@ public class AuditCollectorUtil {
         audit.setDataStatus(DataStatus.OK);
         for (Object o : jsonArray) {
             JSONArray auditJO = (JSONArray) ((JSONObject) o).get(STR_AUDITSTATUSES);
-            audit.getUrl().add((String) ((JSONObject) o).get(STR_URL));
+            Optional<Object> urlOptObj = Optional.ofNullable(((JSONObject) o).get(STR_URL));
+            urlOptObj.ifPresent(urlObj -> audit.getUrl().add(urlOptObj.get().toString()));
             auditJO.stream().map(aj -> audit.getAuditStatusCodes().add((String) aj));
             boolean ok = false;
             for (Object s : auditJO) {
