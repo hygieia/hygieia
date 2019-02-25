@@ -12,6 +12,11 @@ public class TestResultsAuditResponse extends AuditReviewResponse<TestResultAudi
     private String url;
     private long lastExecutionTime;
 
+    private String type;
+
+    private HashMap featureTestResult = new HashMap();
+    
+
     private Collection<TestCapability> testCapabilities;
 
     private int totalStoryCount;
@@ -47,6 +52,14 @@ public class TestResultsAuditResponse extends AuditReviewResponse<TestResultAudi
     public void setLastExecutionTime(long lastExecutionTime) {
         this.lastExecutionTime = lastExecutionTime;
     }
+
+    public String getType() { return type; }
+
+    public void setType(String type) { this.type = type; }
+
+    public HashMap getFeatureTesResult() { return featureTestResult; }
+
+    public void setFeatureTestResult(HashMap featureTestResult) { this.featureTestResult = featureTestResult; }
 
     public List<HashMap> getTotalStories() {
         return totalStories;

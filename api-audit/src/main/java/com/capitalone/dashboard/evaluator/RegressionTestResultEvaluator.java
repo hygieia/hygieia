@@ -97,7 +97,14 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                 testResultsAuditResponse.addAuditStatus((testResult.getFailureCount() == 0) ? TestResultAuditStatus.TEST_RESULT_AUDIT_OK : TestResultAuditStatus.TEST_RESULT_AUDIT_FAIL);
                 testResultsAuditResponse.setTestCapabilities(testResult.getTestCapabilities());
                 testResultsAuditResponse.setLastExecutionTime(testResult.getStartTime());
+                testResultsAuditResponse.setType(testResult.getType().toString());
 
+                HashMap<String,Integer> featureCount = new HashMap<>();
+                featureCount.put("successCount", testResult.getSuccessCount());
+                featureCount.put("failureCount", testResult.getFailureCount());
+                featureCount.put("skipCount", testResult.getSkippedCount());
+                featureCount.put("totalCount",testResult.getTotalCount());
+                testResultsAuditResponse.setFeatureTestResult(featureCount);
 
                 List<String> totalCompletedStories = this.getTotalCompletedStoriesInGivenDateRange(dashboard.getTitle(), beginDate-1, endDate+1);
                 testResultsAuditResponse.setTotalCompletedStories(totalCompletedStories);
