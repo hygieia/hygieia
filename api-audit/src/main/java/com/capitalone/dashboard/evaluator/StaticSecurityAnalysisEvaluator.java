@@ -2,6 +2,7 @@ package com.capitalone.dashboard.evaluator;
 
 import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.CodeQuality;
+import com.capitalone.dashboard.model.CodeQualityMetric;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Dashboard;
@@ -14,14 +15,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
+import java.util.List;
+import java.util.Set;
+
 import java.util.stream.Collectors;
 
 @Component
 public class StaticSecurityAnalysisEvaluator extends Evaluator<SecurityReviewAuditResponse> {
 
     private final CodeQualityRepository codeQualityRepository;
+    private static final String STR_CRITICAL = "Critical";
+    private static final String STR_HIGH = "High";
+    private static final String STR_SCORE = "Score";
+    private static final String STR_REPORT_URL = "reportUrl";
 
     @Autowired
     public StaticSecurityAnalysisEvaluator(CodeQualityRepository codeQualityRepository) {
@@ -64,27 +71,31 @@ public class StaticSecurityAnalysisEvaluator extends Evaluator<SecurityReviewAud
         }
 
         CodeQuality returnQuality = codeQualities.get(0);
-        securityReviewAuditResponse.setUrl(collectorItem.getOptions().get("reportUrl").toString());
+        securityReviewAuditResponse.setUrl(collectorItem.getOptions().get(STR_REPORT_URL).toString());
         securityReviewAuditResponse.setCodeQuality(returnQuality);
         securityReviewAuditResponse.setLastExecutionTime(returnQuality.getTimestamp());
 
-        returnQuality.getMetrics().forEach(metric -> {
-            if (metric.getName().equalsIgnoreCase("Score")) {
-                Integer value = Integer.parseInt(metric.getValue());
-                if (value == 100) {
-                    securityReviewAuditResponse.addAuditStatus(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_NO_CLOSED_FINDINGS);
-                } else if (value > 0) {
-                    securityReviewAuditResponse.addAuditStatus(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_OK);
-                } else {
-                    securityReviewAuditResponse.addAuditStatus(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_FAIL);
-                }
-            } else if (metric.getName().equalsIgnoreCase("Critical")) {
-                securityReviewAuditResponse.addAuditStatus(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_FOUND_CRITICAL);
-            } else if (metric.getName().equalsIgnoreCase("High")) {
-                securityReviewAuditResponse.addAuditStatus(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_FOUND_HIGH);
+        Set<CodeQualityMetric> metrics = returnQuality.getMetrics();
+        boolean isSecurityCritical = metrics.stream().anyMatch(metric -> metric.getName().equalsIgnoreCase(STR_CRITICAL));
+        boolean isSecurityHigh = metrics.stream().anyMatch(metric -> metric.getName().equalsIgnoreCase(STR_HIGH));
+
+        if (isSecurityCritical){
+            securityReviewAuditResponse.addAuditStatus(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_FOUND_CRITICAL);
+            securityReviewAuditResponse.addAuditStatus(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_FAIL);
+        }else if (isSecurityHigh){
+            securityReviewAuditResponse.addAuditStatus(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_FOUND_HIGH);
+            securityReviewAuditResponse.addAuditStatus(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_FAIL);
+        }else{
+            CodeQualityMetric scoreMetric = metrics.stream().filter(metric -> metric.getName().equalsIgnoreCase(STR_SCORE)).findFirst().get();
+            Integer value = Integer.parseInt(scoreMetric.getValue());
+            if (value == 100) {
+                securityReviewAuditResponse.addAuditStatus(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_NO_CLOSED_FINDINGS);
+            } else if (value > 0) {
+                securityReviewAuditResponse.addAuditStatus(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_OK);
+            } else {
+                securityReviewAuditResponse.addAuditStatus(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_FAIL);
             }
-        });
+        }
         return securityReviewAuditResponse;
     }
-
 }
