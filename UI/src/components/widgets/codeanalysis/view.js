@@ -208,6 +208,15 @@
                     status: data.metrics[index].status
                 });
             }
+
+            // sort issues by severity
+            // undefined sort behavior for severity name not in this list   
+            var sevs = ['Critical', 'High', 'Medium', 'Low'];
+
+            issues.sort(function(a,b) {
+            	return sevs.indexOf(a.name) - sevs.indexOf(b.name);
+            });
+            
             return issues;
         }
 
@@ -354,7 +363,7 @@
                 }
             });
         }
-
+        
         /**
          * Changes timeout boolean to know whether or not to count down
          */
@@ -366,6 +375,10 @@
             }, 7000);
         }
 
+        ctrl.showStatusIcon = function(level) {
+            return true;
+        }
+        
         /**
          * Stops the current cycle promise
          */
