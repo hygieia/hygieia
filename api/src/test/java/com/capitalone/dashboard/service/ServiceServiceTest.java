@@ -69,7 +69,9 @@ public class ServiceServiceTest {
         final String name = "service";
         final String url = "https://abc123456.com";
         List<String> activeWidgets = new ArrayList<>();
-        final Dashboard dashboard = new Dashboard("template", "title", new Application("app"), new Owner("amit", AuthType.STANDARD), DashboardType.Team, "ASVTEST","BAPTEST",activeWidgets, false, ScoreDisplayType.HEADER);
+        List<Owner> owners = new ArrayList<>();
+        owners.add(new Owner("amit", AuthType.STANDARD));
+        final Dashboard dashboard = new Dashboard("template", "title", new Application("app"), owners, DashboardType.Team, "ASVTEST","BAPTEST",activeWidgets, false, ScoreDisplayType.HEADER);
         when(dashboardRepository.findOne(id)).thenReturn(dashboard);
 
         Service service=serviceService.create(id, name,url);
