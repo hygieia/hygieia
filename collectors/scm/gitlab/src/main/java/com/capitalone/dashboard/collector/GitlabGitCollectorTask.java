@@ -1,15 +1,21 @@
 package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.gitlab.DefaultGitlabGitClient;
+import com.capitalone.dashboard.gitlab.GitlabGitClient;
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.CommitType;
+import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.GitlabGitRepo;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.repository.GitlabGitCollectorRepository;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
@@ -19,6 +25,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,6 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by benathmane on 23/06/16.
@@ -38,29 +46,33 @@ import java.util.Set;
 public class GitlabGitCollectorTask  extends CollectorTask<Collector> {
     private static final Log LOG = LogFactory.getLog(GitlabGitCollectorTask.class);
 
-    private final BaseCollectorRepository<Collector> collectorRepository;
-    private final GitlabGitCollectorRepository gitlabGitCollectorRepository;
-    private final GitlabSettings gitlabSettings;
-    private final DefaultGitlabGitClient defaultGitlabGitClient;
-    private final ComponentRepository dbComponentRepository;
-    private final CommitRepository commitRepository;
+	private static final long FOURTEEN_DAYS_MILLISECONDS = 14 * 24 * 60 * 60 * 1000;
 
+	private final BaseCollectorRepository<Collector> collectorRepository;
+	private final GitlabGitCollectorRepository gitlabGitCollectorRepository;
+	private final CommitRepository commitRepository;
+	private final GitRequestRepository gitRequestRepository;
+	private final GitlabGitClient gitlabClient;
+	private final GitlabSettings gitlabSettings;
+	private final ComponentRepository dbComponentRepository;
 
     @Autowired
     public GitlabGitCollectorTask(TaskScheduler taskScheduler,
                                   BaseCollectorRepository<Collector> collectorRepository,
                                   GitlabSettings gitlabSettings,
                                   CommitRepository commitRepository,
+                                  GitRequestRepository gitRequestRepository,
                                   GitlabGitCollectorRepository gitlabGitCollectorRepository,
-                                  DefaultGitlabGitClient defaultGitlabGitClient,
+                                  DefaultGitlabGitClient gitlabClient,
                                   ComponentRepository dbComponentRepository
     ) {
         super(taskScheduler, "Gitlab");
         this.collectorRepository = collectorRepository;
         this.gitlabSettings = gitlabSettings;
         this.commitRepository = commitRepository;
+		this.gitRequestRepository = gitRequestRepository;
         this.gitlabGitCollectorRepository = gitlabGitCollectorRepository;
-        this.defaultGitlabGitClient = defaultGitlabGitClient;
+        this.gitlabClient = gitlabClient;
         this.dbComponentRepository = dbComponentRepository;
     }
 
@@ -103,29 +115,78 @@ public class GitlabGitCollectorTask  extends CollectorTask<Collector> {
         long start = System.currentTimeMillis();
         int repoCount = 0;
         int commitCount = 0;
+		int pullCount = 0;
+		int issueCount = 0;
 
         clean(collector);
         for (GitlabGitRepo repo : enabledRepos(collector)) {
-			boolean firstRun = false;
-			if (repo.getLastUpdated() == 0)
-				firstRun = true;
-			repo.setLastUpdated(System.currentTimeMillis());
+			boolean firstRun = isFirstRun(start, repo.getLastUpdated());
+			// moved last update date to collector item. This is to clean old data.
 			repo.removeLastUpdateDate();
-			
+
 			try {
-				List<Commit> commits = defaultGitlabGitClient.getCommits(repo, firstRun);
+				// Step 1: Get all the commits
+				LOG.info(repo.getOptions().toString() + "::" + repo.getBranch() + ":: get commits");
+				List<Commit> commits = gitlabClient.getCommits(repo, firstRun);
 				commitCount = saveNewCommits(commitCount, repo, commits);
+
+				// Step 2: Get all the issues
+				LOG.info(repo.getOptions().toString() + "::" + repo.getBranch() + " get issues");
+				boolean isGetIssuesFirstRun = firstRun;
+				List<GitRequest> allIssues = gitRequestRepository.findRequestNumberAndLastUpdated(repo.getId(),
+						"issue");
+				if (!firstRun) {
+					if (allIssues.isEmpty()) {
+						isGetIssuesFirstRun = true;
+					} else {
+						isGetIssuesFirstRun = isFirstRun(start, allIssues.get(0).getUpdatedAt());
+					}
+				}
+				List<GitRequest> issues = gitlabClient.getIssues(repo, isGetIssuesFirstRun);
+				issueCount += processList(repo, issues, "issue");
+
+				// Step 3: Get all the Merge Requests
+				LOG.info(repo.getOptions().toString() + "::" + repo.getBranch() + "::get pulls");
+				boolean isGetMergeRequestsFirstRun = firstRun;
+				List<GitRequest> allMRs = gitRequestRepository.findRequestNumberAndLastUpdated(repo.getId(), "pull");
+				Map<Long, String> mrCloseMap = allMRs.stream().collect(Collectors.toMap(GitRequest::getUpdatedAt,
+						GitRequest::getNumber, (oldValue, newValue) -> oldValue));
+				if (!firstRun) {
+					if (allMRs.isEmpty()) {
+						isGetMergeRequestsFirstRun = true;
+					} else {
+						isGetMergeRequestsFirstRun = isFirstRun(start, allMRs.get(0).getUpdatedAt());
+					}
+				}
+				List<GitRequest> pulls = gitlabClient.getMergeRequests(repo, "all", isGetMergeRequestsFirstRun,
+						mrCloseMap);
+				pullCount += processList(repo, pulls, "pull");
+
+				// save the fetched data to repository
+				repo.setLastUpdated(System.currentTimeMillis());
 				gitlabGitCollectorRepository.save(repo);
 			} catch (HttpClientErrorException | ResourceAccessException e) {
-				LOG.info("Failed to retrieve data, the repo or collector is most likey misconfigured: " + repo.getRepoUrl() + ", " + e.getMessage());
+				LOG.error("Failed to retrieve data, the repo or collector is most likey misconfigured: "
+						+ repo.getRepoUrl(), e);
+
+			} catch (MalformedURLException | HygieiaException ex) {
+				LOG.error("Error fetching commits for:" + repo.getRepoUrl(), ex);
 			}
 			
 			repoCount++;
         }
         log("Repo Count", start, repoCount);
         log("New Commits", start, commitCount);
+		log("New Issues", start, issueCount);
+		log("New Pulls", start, pullCount);
+
         log("Finished", start);
     }
+
+	private boolean isFirstRun(long start, long lastUpdated) {
+		boolean firstRun = ((lastUpdated == 0) || ((start - lastUpdated) > FOURTEEN_DAYS_MILLISECONDS));
+		return firstRun;
+	}
 
 	private int saveNewCommits(int commitCount, GitlabGitRepo repo, List<Commit> commits) {
 		int totalCommitCount = commitCount;
@@ -140,26 +201,43 @@ public class GitlabGitCollectorTask  extends CollectorTask<Collector> {
 		return totalCommitCount;
 	}
 
-	@SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts") // agreed, fixme
-	private void clean(Collector collector) {
-		Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
-		/**
-		 * Logic: For each component, retrieve the collector item list of the
-		 * type SCM. Store their IDs in a unique set ONLY if their collector IDs
-		 * match with GitHub collectors ID.
-		 */
-		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository.findAll()) {
-			if (comp.getCollectorItems() != null && !comp.getCollectorItems().isEmpty()) {
-				List<CollectorItem> itemList = comp.getCollectorItems().get(CollectorType.SCM);
-				if (itemList != null) {
-					for (CollectorItem ci : itemList) {
-						if (ci != null && ci.getCollectorId().equals(collector.getId())) {
-							uniqueIDs.add(ci.getId());
-						}
+	private int processList(GitlabGitRepo repo, List<GitRequest> entries, String type) {
+		int count = 0;
+		if (CollectionUtils.isEmpty(entries))
+			return 0;
+
+		for (GitRequest entry : entries) {
+			LOG.debug(entry.getTimestamp() + ":::" + entry.getScmCommitLog());
+			GitRequest existing = gitRequestRepository.findByCollectorItemIdAndNumberAndRequestType(repo.getId(),
+					entry.getNumber(), type);
+
+			if (existing == null) {
+				entry.setCollectorItemId(repo.getId());
+				count++;
+			} else {
+				entry.setId(existing.getId());
+				entry.setCollectorItemId(repo.getId());
+			}
+			gitRequestRepository.save(entry);
+
+			// fix merge commit type for squash merged and rebased merged MRs
+			// MRs that were squash merged or rebase merged have only one parent
+			if ("pull".equalsIgnoreCase(type) && "merged".equalsIgnoreCase(entry.getState())) {
+				List<Commit> commits = commitRepository.findByScmRevisionNumber(entry.getScmRevisionNumber());
+				for (Commit commit : commits) {
+					if (null == commit.getType() || CommitType.Merge != commit.getType()) {
+						commit.setType(CommitType.Merge);
+						commitRepository.save(commit);
 					}
 				}
 			}
 		}
+
+		return count;
+	}
+
+	private void clean(Collector collector) {
+		Set<ObjectId> uniqueIDs = getUniqueIDs(collector);
 
 		/**
 		 * Logic: Get all the collector items from the collector_item collection
@@ -178,6 +256,29 @@ public class GitlabGitCollectorTask  extends CollectorTask<Collector> {
 		gitlabGitCollectorRepository.save(repoList);
 	}
 
+	private Set<ObjectId> getUniqueIDs(Collector collector) {
+		Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
+
+		/**
+		 * Logic: For each component, retrieve the collector item list of the
+		 * type SCM. Store their IDs in a unique set ONLY if their collector IDs
+		 * match with GitLib collectors ID.
+		 */
+		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository.findAll()) {
+			if (comp.getCollectorItems() != null && !comp.getCollectorItems().isEmpty()) {
+				List<CollectorItem> itemList = comp.getCollectorItems().get(CollectorType.SCM);
+				if (itemList != null) {
+					for (CollectorItem ci : itemList) {
+						if (ci != null && ci.getCollectorId().equals(collector.getId())) {
+							uniqueIDs.add(ci.getId());
+						}
+					}
+				}
+			}
+		}
+
+		return uniqueIDs;
+	}
 
 
     private List<GitlabGitRepo> enabledRepos(Collector collector) {
