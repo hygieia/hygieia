@@ -21,7 +21,13 @@
                     attrs.$observe('hideEmpty', function () {
                         // Check if the inputs are all null, meaning the widget is empty (0 is NOT empty, could be a value)
                         var dataList = scope.$eval(attrs.hideEmpty);
-                        var hideWidget = dataList.every(x => (!x && x != '0'));
+                        var hideWidget;
+
+                        if (dataList){
+                            hideWidget = dataList.every(x => (!x && x != '0'));
+                        } else {
+                            hideWidget = true;
+                        }
 
                         // Find "No data found" message if it exists (within the full widget)
                         var noDataFound = element.siblings('#noDataMsg');
