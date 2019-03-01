@@ -41,6 +41,10 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
 
     private final TestResultRepository testResultRepository;
     private final FeatureRepository featureRepository;
+    private static final String SUCCESS_COUNT = "successCount";
+    private static final String FAILURE_COUNT = "failureCount";
+    private static final String SKIP_COUNT = "skipCount";
+    private static final String TOTAL_COUNT = "totalCount";
     private static final Logger LOGGER = LoggerFactory.getLogger(RegressionTestResultEvaluator.class);
 
     @Autowired
@@ -97,7 +101,14 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                 testResultsAuditResponse.addAuditStatus((testResult.getFailureCount() == 0) ? TestResultAuditStatus.TEST_RESULT_AUDIT_OK : TestResultAuditStatus.TEST_RESULT_AUDIT_FAIL);
                 testResultsAuditResponse.setTestCapabilities(testResult.getTestCapabilities());
                 testResultsAuditResponse.setLastExecutionTime(testResult.getStartTime());
+                testResultsAuditResponse.setType(testResult.getType().toString());
 
+                HashMap<String,Integer> featureCount = new HashMap<>();
+                featureCount.put(SUCCESS_COUNT, testResult.getSuccessCount());
+                featureCount.put(FAILURE_COUNT, testResult.getFailureCount());
+                featureCount.put(SKIP_COUNT, testResult.getSkippedCount());
+                featureCount.put(TOTAL_COUNT,testResult.getTotalCount());
+                testResultsAuditResponse.setFeatureTestResult(featureCount);
 
                 List<String> totalCompletedStories = this.getTotalCompletedStoriesInGivenDateRange(dashboard.getTitle(), beginDate-1, endDate+1);
                 testResultsAuditResponse.setTotalCompletedStories(totalCompletedStories);
