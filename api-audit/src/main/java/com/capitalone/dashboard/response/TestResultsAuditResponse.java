@@ -15,7 +15,6 @@ public class TestResultsAuditResponse extends AuditReviewResponse<TestResultAudi
     private String type;
 
     private HashMap featureTestResult = new HashMap();
-    
 
     private Collection<TestCapability> testCapabilities;
 
@@ -36,7 +35,6 @@ public class TestResultsAuditResponse extends AuditReviewResponse<TestResultAudi
     public void setTestCapabilities(Collection<TestCapability> testCapabilities) {
         this.testCapabilities = testCapabilities;
     }
-
     public String getUrl() {
         return url;
     }
