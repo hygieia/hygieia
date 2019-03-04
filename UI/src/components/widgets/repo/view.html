@@ -3,7 +3,7 @@
         <div class="widget-heading">
             Issues, Pulls and Commits per day
         </div>
-        <div hide-empty="['{{ repoView.combinedChartData }}']">
+        <div hide-empty="['{{ repoView.combinedChartData.series[0].data }}', '{{ repoView.combinedChartData.series[1].data }}', '{{ repoView.combinedChartData.series[2].data }}']">
             <div class="widget-body">
                 <chartist class="commit-view ct-octave dash-chart-alt"
                           chartist-chart-type="Line"
