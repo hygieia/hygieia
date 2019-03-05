@@ -93,7 +93,8 @@
 						</goals>
 						<configuration>
 							<wsdlUrls>
-								<wsdlUrl>http://scappt0008.qcorpaa.aa.com:8080/ws/v9/configurationservice?wsdl</wsdlUrl>
+								<!-- insert cov connect addr before path -->
+								<wsdlUrl>/ws/v9/configurationservice?wsdl</wsdlUrl>
 							</wsdlUrls>
 							<packageName>coverity.ws.configuration</packageName>
 						</configuration>
@@ -105,7 +106,8 @@
 						</goals>
 						<configuration>
 							<wsdlUrls>
-								<wsdlUrl>http://scappt0008.qcorpaa.aa.com:8080/ws/v9/defectservice?wsdl</wsdlUrl>
+								<!-- insert cov connect addr before path -->
+								<wsdlUrl>/ws/v9/defectservice?wsdl</wsdlUrl>
 							</wsdlUrls>
 							<packageName>coverity.ws.defect</packageName>
 						</configuration>

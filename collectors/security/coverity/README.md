@@ -6,6 +6,8 @@ This project uses Spring Boot to package the collector as an executable JAR with
 
 ## Building and Deploying
 
+This collector makes SOAP calls; so wsdl files are required. Update the pom.xml at jaxws-maven-plugin configuration with the wsdl Urls, which is the Coverity Connect server address followed by the paths already given in the pom.xml.
+
 Run the following command to package the collector into an executable jar. Find the jar file at `target/`.
 ```
 mvn clean install package
