@@ -1,17 +1,7 @@
-FROM openjdk:8-jre
-
-VOLUME ["/hygieia/logs"]
-
-RUN mkdir /hygieia/config
-
+FROM openjdk:8
 EXPOSE 8080
-
-ENV PROP_FILE /hygieia/config/application.properties
-
-WORKDIR /hygieia
-
-COPY target/*.jar /hygieia
-COPY docker/properties-builder.sh /hygieia/
-
-CMD ./properties-builder.sh &&\
-  java -Djava.security.egd=file:/dev/./urandom -jar *.jar --spring.config.location=$PROP_FILE
+VOLUME /var/app/config
+ARG JAR_FILE
+COPY ${JAR_FILE} /var/app/apiaudit.jar
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/var/app/apiaudit.jar"]
+CMD [ "--spring.config.location=/var/app/config/application.properties" ]
