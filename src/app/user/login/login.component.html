@@ -9,7 +9,7 @@
       </li>
     </ul>
     <header>
-      <h3> {{ _authName |  titlecase }} Login</h3>
+      <h3> {{ authName |  titlecase }} Login</h3>
     </header>
     <br />
     <form [formGroup]="loginForm" (ngSubmit)="submit(loginForm)" class="login-form" novalidate>

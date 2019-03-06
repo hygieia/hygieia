@@ -13,8 +13,8 @@ import { IUserLogin } from '../../shared/interfaces';
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   errorMessage: string;
-  _authName: string;
-  _activeTab: string;
+  authName: string;
+  activeTab: string;
 
   constructor(private formBuilder: FormBuilder,
               private router: Router,
@@ -28,15 +28,15 @@ export class LoginComponent implements OnInit {
     });
   }
   isStandLogin(): boolean {
-    return this._activeTab === 'STANDARD';
+    return this.activeTab === 'STANDARD';
   }
   isLdapLogin(): boolean {
-    return this._activeTab === 'LDAP';
+    return this.activeTab === 'LDAP';
   }
   setActiveTab(tab: string) {
     if ( tab ) {
-      this._activeTab = tab;
-      this._authName = tab;
+      this.activeTab = tab;
+      this.authName = tab;
     }
   }
   buildForm() {
