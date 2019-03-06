@@ -73,8 +73,6 @@ public class DefaultJiraClient implements JiraClient {
     private static final String STATIC_ISSUE_FIELDS = "id,key,issuetype,status,summary,created,updated,project,issuelinks,assignee,sprint,epic,aggregatetimeoriginalestimate,timeoriginalestimate";
 
     private static final String DEFAULT_ISSUE_TYPES = "Story,Epic";
-    private static final String JIRA_STORY = "7";
-    private static final String JIRA_EPIC = "6";
     private static final int JIRA_BOARDS_PAGING = 50;
     private final FeatureSettings featureSettings;
     private final RestOperations restOperations;
@@ -358,12 +356,12 @@ public class DefaultJiraClient implements JiraClient {
                     JSONObject issueJson = (JSONObject) issue;
                     String type = getIssueType(issueJson);
 
-                    if (JIRA_EPIC.equals(type)) {
+                    if (!StringUtils.isEmpty(featureSettings.getJiraEpicId()) && featureSettings.getJiraEpicId().equals(type)) {
                         saveEpic(issueJson, epicMap, true);
                         return;
                     }
 
-                    if (JIRA_STORY.equalsIgnoreCase(type)) {
+                    if (!StringUtils.isEmpty(featureSettings.getJiraStoryId()) && featureSettings.getJiraStoryId().equals(type)) {
                         Feature feature = getFeature((JSONObject) issue, board);
                         String epicId = feature.getsEpicID();
                         if (!StringUtils.isEmpty(epicId)) {
