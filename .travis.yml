@@ -10,4 +10,5 @@ before_script:
 - npm install -g @angular/cli
 script:
 - ng lint
-- ng build --prod
+- npm run test-headless
+- if [ "$TRAVIS_PULL_REQUEST" != "false" ] || [ "$TRAVIS_BRANCH" = "master" ]; then mvn clean install -q -U; fi
