@@ -1,7 +1,7 @@
 <div class="view">
   <div class="container">
     <header>
-      <h3>  Please Sign up</h3>
+      <h3>  Please Sign Up</h3>
     </header>
     <br />
     <form [formGroup]="signupForm" (ngSubmit)="submit(signupForm)" class="login-form" novalidate>
@@ -11,7 +11,7 @@
             username:
           </div>
           <div class="col-md-10">
-            <input type="username" name="username" class="form-control" formControlName="username"
+            <input type="username" id="username" name="username" class="form-control" formControlName="username"
                    [ngClass]="{'is-invalid': (signupForm.get('username').touched ||
                                             signupForm.get('username').dirty) &&
                                             !signupForm.get('username').valid }" />
@@ -30,7 +30,7 @@
               Password:
             </div>
             <div class="col-md-10">
-              <input type="password" name="password" class="form-control" formControlName="password"
+              <input type="password" id="password" name="password" class="form-control" formControlName="password"
                      [ngClass]="{'is-invalid': signupForm.get('passwordGroup').errors ||
                                              ((signupForm.get('passwordGroup.password').touched ||
                                               signupForm.get('passwordGroup.password').dirty) &&
@@ -48,7 +48,7 @@
               Confirm Password:
             </div>
             <div class="col-md-10">
-              <input type="password" name="confirmPassword" class="form-control" formControlName="confirmPassword"
+              <input type="password" name="confirmPassword" id="confirmPassword" class="form-control" formControlName="confirmPassword"
                      [ngClass]="{'is-invalid': signupForm.get('passwordGroup').errors ||
                                              ((signupForm.get('passwordGroup.confirmPassword').touched ||
                                               signupForm.get('passwordGroup.confirmPassword').dirty) &&
