@@ -38,10 +38,6 @@ describe('SignupComponent', () => {
 
     fixture.detectChanges();
   });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
   it('username input should exist', () => {
     const field = fixture.debugElement.query(By.css('#username'));
     expect(field).toBeTruthy();
