@@ -1,5 +1,4 @@
 import {NgModule, Optional, SkipSelf} from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
@@ -7,11 +6,12 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { ModuleLoadedOnceGuard } from './module-loaded-once.guard';
 import { AuthService } from './services/auth.service';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   declarations: [NavbarComponent],
   imports: [
-    CommonModule,
+    SharedModule,
     RouterModule,
     HttpClientModule
   ],
