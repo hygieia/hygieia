@@ -86,6 +86,11 @@ The sample `application.properties` file lists parameter values to configure the
 
 		# Maximum number of previous days from current date, when fetching commits
 		github.commitThresholdDays=15
+		
+		#proxy server information 
+		github.proxy=<exapmple-proxy>
+		github.proxyPort=<port>
+		
 
     # Optional: Error threshold count after which collector stops collecting for a collector item. Default is 2.
     github.errorThreshold=1
