@@ -13,8 +13,3 @@ export interface IPaginationParams {
   page: number;
   pageSize: any;
 }
-
-export  interface IDashboard  {
-  widgets: string;
-
-}
