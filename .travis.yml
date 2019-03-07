@@ -1,0 +1,29 @@
+language: node_js
+node_js:
+- "9"
+dist: trusty
+sudo: required
+branches:
+  only:
+  - master
+cache:
+  directories:
+  - "$TRAVIS_BUILD_DIR/UI/node_modules"
+before_script:
+- sudo chown -R $USER:$GROUP $TRAVIS_BUILD_DIR
+- npm install -g @angular/cli
+script:
+- ng lint
+- npm run test-headless
+- if [ "$TRAVIS_PULL_REQUEST" != "false" ] || [ "$TRAVIS_BRANCH" = "master" ]; then mvn clean install -q -U; fi
+
+notifications:
+  email:
+    recipients:
+    - tapabrata.pal@capitalone.com
+    - brock.beatty@capitalone.com
+    - nireesh.thiruveedula@capitalone.com
+    - Stephen.Hughes@capitalone.com
+    - Ragha.Vema@capitalone.com
+    on_success: always
+    on_failure: always
