@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
+
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URLDecoder;
@@ -65,6 +66,9 @@ public class DefaultGitHubClient implements GitHubClient {
     public DefaultGitHubClient(GitHubSettings settings,
                                Supplier<RestOperations> restOperationsSupplier) {
         this.settings = settings;
+        
+        RestOperationsSupplier.set(settings.getProxy(),settings.getProxyPort());// call function to set proxy
+
         this.restOperations = restOperationsSupplier.get();
     }
 
@@ -80,6 +84,9 @@ public class DefaultGitHubClient implements GitHubClient {
     @Override
     public List<Commit> getCommits(GitHubRepo repo, boolean firstRun, List<Pattern> commitExclusionPatterns) throws RestClientException, MalformedURLException, HygieiaException {
 
+
+
+
         List<Commit> commits = new ArrayList<>();
 
         // format URL
@@ -89,16 +96,24 @@ public class DefaultGitHubClient implements GitHubClient {
 
         String queryUrl = apiUrl.concat("/commits?sha=" + repo.getBranch()
                 + "&since=" + getTimeForApi(getRunDate(repo, firstRun)));
+     
         String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
+    
         String personalAccessToken = (String) repo.getOptions().get("personalAccessToken");
+   
         String decryptedPersonalAccessToken = decryptString(personalAccessToken, settings.getKey());
+
+
         boolean lastPage = false;
         String queryUrlPage = queryUrl;
         while (!lastPage) {
+            
             LOG.info("Executing " + queryUrlPage);
             ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword,decryptedPersonalAccessToken);
             JSONArray jsonArray = parseAsArray(response);
+              
             for (Object item : jsonArray) {
+
                 JSONObject jsonObject = (JSONObject) item;
                 String sha = str(jsonObject, "sha");
                 JSONObject commitObject = (JSONObject) jsonObject.get("commit");
@@ -134,6 +149,7 @@ public class DefaultGitHubClient implements GitHubClient {
                 commit.setType(getCommitType(CollectionUtils.size(parents), message, commitExclusionPatterns));
                 commits.add(commit);
             }
+
             if (CollectionUtils.isEmpty(jsonArray)) {
                 lastPage = true;
             } else {
@@ -145,6 +161,7 @@ public class DefaultGitHubClient implements GitHubClient {
                 }
             }
         }
+
         return commits;
     }
 
@@ -588,14 +605,17 @@ public class DefaultGitHubClient implements GitHubClient {
                                                 String password,String personalAccessToken) {
         // Basic Auth only.
         if (!"".equals(userId) && !"".equals(password)) {
+           LOG.info("wrong if\n");
             return restOperations.exchange(url, HttpMethod.GET, new HttpEntity<>(createHeaders(userId, password)), String.class);
-        } else if ((personalAccessToken!=null && !"".equals(personalAccessToken)) ) {
+        } else if ((personalAccessToken!=null && !"".equals(personalAccessToken)) ) { LOG.info("wrong if\n");
             return restOperations.exchange(url, HttpMethod.GET,new HttpEntity<>(createHeaders(personalAccessToken)),String.class);
-        } else if (settings.getPersonalAccessToken() != null && !"".equals(settings.getPersonalAccessToken())){
+        } else if (settings.getPersonalAccessToken() != null && !"".equals(settings.getPersonalAccessToken())){ LOG.info("wrong if\n");
             String decryptPAC = decryptString(settings.getPersonalAccessToken(),settings.getKey());
             return restOperations.exchange(url, HttpMethod.GET, new HttpEntity<>(createHeaders(decryptPAC)), String.class);
         }else {
-            return restOperations.exchange(url, HttpMethod.GET, null, String.class);
+ LOG.info("correct if"+url+"\n");
+
+            return   restOperations.exchange(url, HttpMethod.GET, null, String.class);
         }
     }
 
