@@ -12,6 +12,7 @@ import hudson.util.ListBoxModel;
 import hygieia.builder.BuildBuilder;
 import hygieia.builder.CucumberTestBuilder;
 import hygieia.transformer.HygieiaConstants;
+import hygieia.utils.HygieiaUtils;
 import jenkins.model.Jenkins;
 import jenkins.plugins.hygieia.DefaultHygieiaService;
 import jenkins.plugins.hygieia.HygieiaPublisher;
@@ -191,7 +192,7 @@ public class HygieiaTestPublishStep extends AbstractStepImpl {
             }
             TestDataCreateRequest request = new CucumberTestBuilder().getTestDataCreateRequest(run, listener, BuildStatus.fromString(step.buildStatus), filepath, step.testApplicationName,
                     step.testEnvironmentName, step.testType, step.testFileNamePattern, step.testResultsDirectory,
-                    hygieiaDesc.getHygieiaJenkinsName(), buildResponse.getResponseValue());
+                    hygieiaDesc.getHygieiaJenkinsName(), HygieiaUtils.getBuildCollectionId(buildResponse.getResponseValue()));
             if (request != null) {
                 HygieiaResponse testResponse = hygieiaService.publishTestResults(request);
                 if (testResponse.getResponseCode() == HttpStatus.SC_CREATED) {
