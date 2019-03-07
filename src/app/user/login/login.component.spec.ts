@@ -20,8 +20,7 @@ describe('LoginComponent', () => {
         HttpClientModule
       ],
       declarations: [ LoginComponent ]
-    })
-    .compileComponents();
+    });
   }));
 
   beforeEach(() => {
@@ -46,6 +45,8 @@ describe('LoginComponent', () => {
     const navigateSpy = spyOn(router, 'navigate');
     component.signUp();
     expect(navigateSpy).toHaveBeenCalledWith(['/user/signup']);
+  });
+  xit('should login with existing user', () => {
   });
 });
 
