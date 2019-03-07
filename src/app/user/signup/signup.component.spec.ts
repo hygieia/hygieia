@@ -28,6 +28,7 @@ describe('SignupComponent', () => {
     });
     // Make the spy return a synchronous Observable with the test data
     registerSpy = authService.register.and.returnValue( of(true) );
+    authService.logout.and.returnValue( of(true) );
   }));
 
   beforeEach(() => {
