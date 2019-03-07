@@ -605,15 +605,15 @@ public class DefaultGitHubClient implements GitHubClient {
                                                 String password,String personalAccessToken) {
         // Basic Auth only.
         if (!"".equals(userId) && !"".equals(password)) {
-           LOG.info("wrong if\n");
+         //  LOG.info("wrong if\n");
             return restOperations.exchange(url, HttpMethod.GET, new HttpEntity<>(createHeaders(userId, password)), String.class);
-        } else if ((personalAccessToken!=null && !"".equals(personalAccessToken)) ) { LOG.info("wrong if\n");
+        } else if ((personalAccessToken!=null && !"".equals(personalAccessToken)) ) {// LOG.info("wrong if\n");
             return restOperations.exchange(url, HttpMethod.GET,new HttpEntity<>(createHeaders(personalAccessToken)),String.class);
-        } else if (settings.getPersonalAccessToken() != null && !"".equals(settings.getPersonalAccessToken())){ LOG.info("wrong if\n");
+        } else if (settings.getPersonalAccessToken() != null && !"".equals(settings.getPersonalAccessToken())){// LOG.info("wrong if\n");
             String decryptPAC = decryptString(settings.getPersonalAccessToken(),settings.getKey());
             return restOperations.exchange(url, HttpMethod.GET, new HttpEntity<>(createHeaders(decryptPAC)), String.class);
         }else {
- LOG.info("correct if"+url+"\n");
+ //LOG.info("correct if"+url+"\n");
 
             return   restOperations.exchange(url, HttpMethod.GET, null, String.class);
         }
