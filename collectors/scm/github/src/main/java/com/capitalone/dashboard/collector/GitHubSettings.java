@@ -12,50 +12,65 @@ import java.util.List;
 @Component
 @ConfigurationProperties(prefix = "github")
 public class GitHubSettings {
+    private int proxyPort;
+    private String proxy;
     private String cron;
     private String host;
     private String key;
-	@Value("${github.firstRunHistoryDays:14}")
+        @Value("${github.firstRunHistoryDays:14}")
     private int firstRunHistoryDays;
     private List<String> notBuiltCommits;
-	@Value("${github.errorThreshold:2}")
+        @Value("${github.errorThreshold:2}")
     private int errorThreshold;
-	@Value("${github.rateLimitThreshold:10}")
-	private int rateLimitThreshold;
-	private String personalAccessToken;
+        @Value("${github.rateLimitThreshold:10}")
+        private int rateLimitThreshold;
+        private String personalAccessToken;
 
+         public int getProxyPort() {          //getters and setters 
+                return proxyPort;
+         } 
 
-	public String getHost() {
-		return host;
-	}
+         public void setProxyPort(int proxyPort){
+                this.proxyPort=proxyPort;
+         }
 
-	public void setHost(String host) {
-		this.host = host;
-	}
+         public String getProxy() {
+                return proxy;
+        }
+        public void setProxy(String proxy) {
+                this.proxy = proxy;
+        }
+        public String getHost() {
+                return host;
+        }
 
-	public String getCron() {
+        public void setHost(String host) {
+                this.host = host;
+        }
+
+        public String getCron() {
         return cron;
-    }
+        }
 
     public void setCron(String cron) {
         this.cron = cron;
-    }
+        }
 
-	public String getKey() {
-		return key;
-	}
-	
-	public void setKey(String key) {
-		this.key = key;
-	}
-	
+        public String getKey() {
+                return key;
+        }
+
+        public void setKey(String key) {
+                this.key = key;
+        }
+
     public int getFirstRunHistoryDays() {
-		return firstRunHistoryDays;
-	}
+                return firstRunHistoryDays;
+        }
 
-	public void setFirstRunHistoryDays(int firstRunHistoryDays) {
-		this.firstRunHistoryDays = firstRunHistoryDays;
-	}
+        public void setFirstRunHistoryDays(int firstRunHistoryDays) {
+                this.firstRunHistoryDays = firstRunHistoryDays;
+        }
 
     public List<String> getNotBuiltCommits() {
         return notBuiltCommits;
@@ -65,27 +80,27 @@ public class GitHubSettings {
         this.notBuiltCommits = notBuiltCommits;
     }
 
-	public int getErrorThreshold() {
-		return errorThreshold;
-	}
+        public int getErrorThreshold() {
+                return errorThreshold;
+        }
 
-	public void setErrorThreshold(int errorThreshold) {
-		this.errorThreshold = errorThreshold;
-	}
+        public void setErrorThreshold(int errorThreshold) {
+                this.errorThreshold = errorThreshold;
+        }
 
-	public int getRateLimitThreshold() {
-		return rateLimitThreshold;
-	}
+        public int getRateLimitThreshold() {
+                return rateLimitThreshold;
+        }
 
-	public void setRateLimitThreshold(int rateLimitThreshold) {
-		this.rateLimitThreshold = rateLimitThreshold;
-	}
+        public void setRateLimitThreshold(int rateLimitThreshold) {
+                this.rateLimitThreshold = rateLimitThreshold;
+        }
 
-	public String getPersonalAccessToken() {
-		return personalAccessToken;
-	}
+        public String getPersonalAccessToken() {
+                return personalAccessToken;
+        }
 
-	public void setPersonalAccessToken(String personalAccessToken) {
-		this.personalAccessToken = personalAccessToken;
-	}
+        public void setPersonalAccessToken(String personalAccessToken) {
+                this.personalAccessToken = personalAccessToken;
+        }
 }
