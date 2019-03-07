@@ -243,7 +243,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
         String sourceRepo = pr.getSourceRepo();
         String targetRepo = pr.getTargetRepo();
         codeReviewAuditResponse.addAuditStatus(sourceRepo == null ? CodeReviewAuditStatus.GIT_FORK_STRATEGY : sourceRepo.equalsIgnoreCase(targetRepo) ? CodeReviewAuditStatus.GIT_BRANCH_STRATEGY : CodeReviewAuditStatus.GIT_FORK_STRATEGY);
-        if (!StringUtils.isEmpty(pr.getMergeAuthorLDAPDN()) && (CommonCodeReview.checkForServiceAccount(pr.getMergeAuthorLDAPDN(), settings, getAllServiceAccounts(),pr.getMergeAuthor(),null,false))) {
+        if (!StringUtils.isEmpty(pr.getMergeAuthorLDAPDN()) && (CommonCodeReview.checkForServiceAccount(pr.getMergeAuthorLDAPDN(), settings, getAllServiceAccounts(),pr.getMergeAuthor(),null,false,codeReviewAuditResponse))) {
             codeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.MERGECOMMITER_EQ_SERVICEACCOUNT);
         }
         allPeerReviews.add(codeReviewAuditResponse);
@@ -354,7 +354,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
 
         Stream<String> combinedStream = Stream.of(commit.getFilesAdded(), commit.getFilesModified(),commit.getFilesRemoved()).filter(Objects::nonNull).flatMap(Collection::stream);
         List<String> collectionCombined = combinedStream.collect(Collectors.toList());
-        if (CommonCodeReview.checkForServiceAccount(commit.getScmAuthorLDAPDN(), settings,getAllServiceAccounts(),commit.getScmAuthor(),collectionCombined,true)) {
+        if (CommonCodeReview.checkForServiceAccount(commit.getScmAuthorLDAPDN(), settings,getAllServiceAccounts(),commit.getScmAuthor(),collectionCombined,true,codeReviewAuditResponse)) {
             codeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.COMMITAUTHOR_EQ_SERVICEACCOUNT);
             // check for increment version tag and flag Direct commit by Service Account.
             auditIncrementVersionTag(codeReviewAuditResponse, commit, CodeReviewAuditStatus.DIRECT_COMMIT_NONCODE_CHANGE_SERVICE_ACCOUNT);

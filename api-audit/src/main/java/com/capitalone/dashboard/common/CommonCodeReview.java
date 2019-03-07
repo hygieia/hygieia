@@ -73,7 +73,7 @@ public class CommonCodeReview {
         if (!CollectionUtils.isEmpty(reviews)) {
             for (Review review : reviews) {
                 if (StringUtils.equalsIgnoreCase("approved", review.getState())) {
-                    if (!StringUtils.isEmpty(review.getAuthorLDAPDN()) && checkForServiceAccount(review.getAuthorLDAPDN(), settings,accounts,review.getAuthor(),null,false)) {
+                    if (!StringUtils.isEmpty(review.getAuthorLDAPDN()) && checkForServiceAccount(review.getAuthorLDAPDN(), settings,accounts,review.getAuthor(),null,false,auditReviewResponse)) {
                         auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_BY_SERVICEACCOUNT);
                     }
                     //review done using GitHub Review workflow
@@ -121,7 +121,7 @@ public class CommonCodeReview {
                             if (!CollectionUtils.isEmpty(settings.getServiceAccountOU()) && !StringUtils.isEmpty(settings.getPeerReviewApprovalText()) && !StringUtils.isEmpty(description) &&
                                     description.startsWith(settings.getPeerReviewApprovalText())) {
                                 String user = description.replace(settings.getPeerReviewApprovalText(), "").trim();
-                                if (!StringUtils.isEmpty(actors.get(user)) && checkForServiceAccount(actors.get(user), settings,accounts,user,null,false)) {
+                                if (!StringUtils.isEmpty(actors.get(user)) && checkForServiceAccount(actors.get(user), settings,accounts,user,null,false,auditReviewResponse)) {
                                     auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.PEER_REVIEW_BY_SERVICEACCOUNT);
                                 }
                             }
@@ -157,11 +157,14 @@ public class CommonCodeReview {
      * @param settings
      * @return
      */
-    public static boolean checkForServiceAccount(String userLdapDN, ApiSettings settings,Map<String,String> allowedUsers,String author,List<String> commitFiles,boolean isCommit) {
+    public static boolean checkForServiceAccount(String userLdapDN, ApiSettings settings,Map<String,String> allowedUsers,String author,List<String> commitFiles,boolean isCommit,AuditReviewResponse auditReviewResponse) {
         List<String> serviceAccountOU = settings.getServiceAccountOU();
         boolean isValid = false;
         if(!MapUtils.isEmpty(allowedUsers) && isCommit){
             isValid = isValidServiceAccount(author,allowedUsers,commitFiles);
+            if(isValid){
+                auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.DIRECT_COMMIT_CHANGE_WHITELISTED_ACCOUNT);
+            }
         }
         if (!CollectionUtils.isEmpty(serviceAccountOU) && StringUtils.isNotBlank(userLdapDN) && !isValid) {
             try {

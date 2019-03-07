@@ -1,10 +1,10 @@
-@import '../../../bower_components/components-font-awesome/less/font-awesome';
-@import '../../../bower_components/bootstrap/less/bootstrap';
+@import '../../../node_modules/components-font-awesome/less/font-awesome';
+@import '../../../node_modules/bootstrap/less/bootstrap';
 @import 'variables';
 @import 'mixins';
 @import '../chartist/chartist';
 @import '../gridstack/gridstack';
-@import '../../../bower_components/bootstrap-sweetalert/lib/sweet-alert';
+@import '../../../node_modules/bootstrap-sweetalert/lib/sweet-alert';
 @import 'commit-blocks';
 
 @import 'site';
@@ -935,4 +935,28 @@ tr.dash-row > td {
   .na-gate {
     font-size:2rem;
   }
+}
+
+// AUTO LOOP
+// ========================================
+// CSS for widgets with multiple tabs/screens to loop through (using play/pause buttons)
+
+#next-btn {
+    background: none;
+    border: 0;
+    color: @dash-status-ignore;
+}
+#pause-btn {
+    background: none;
+    border: 0;
+    color: @dash-status-warn;
+}
+#play-btn {
+    background: none;
+    border: 0;
+    color: @dash-status-pass;
+}
+#next-btn:hover, #pause-btn:hover, #play-btn:hover {
+    background-color: @dash-widget-section-highlight;
+    opacity: 0.5;
 }

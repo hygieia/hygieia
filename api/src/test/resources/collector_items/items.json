@@ -1,0 +1,501 @@
+[
+  {
+    "description": "Registered by Remote Call.",
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": {
+      "timestamp": 1456084265,
+      "machineIdentifier": 8366972,
+      "processIdentifier": 26815,
+      "counter": 14369292
+    },
+    "lastUpdated": 1516222021186,
+    "options": {
+      "branch": "master",
+      "url": "https://mygithub.com/compliance-scenario/0-new-repo"
+    },
+    "id": "5a4e524333ec296b81c3936f"
+  },
+  {
+    "description": "card-customer-service:card-cust-service",
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": "5ad5f605c23b391cfa1c01a4",
+    "lastUpdated": 1523562528850,
+    "options": {
+      "applicationType": null,
+      "reportUrl": "https://appsec.com/StaticSecurityAnalysis",
+      "applicationID": [
+        "TestBusServ"
+      ],
+      "projectName": "cust-service",
+      "applicationName": "customer-service",
+      "instanceUrl": "https://appsec.com"
+    },
+    "id": "5b4e524333ec296b81c3935f"
+  },
+  {
+    "description": "TestAudit",
+    "enabled": false,
+    "errors": [],
+    "pushed": false,
+    "collectorId": {
+      "timestamp": 1515645558,
+      "machineIdentifier": 4693261,
+      "processIdentifier": 6916,
+      "counter": 3010175
+    },
+    "lastUpdated": 0,
+    "options": {
+      "dashboardId": "5a56eae1479d0d1b042dee87"
+    },
+    "id": {
+      "timestamp": 1515646073,
+      "machineIdentifier": 4693261,
+      "processIdentifier": 6916,
+      "counter": 3010194
+    }
+  },
+  {
+    "description": "Registered by Remote Call.",
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": {
+      "timestamp": 1456084265,
+      "machineIdentifier": 8366972,
+      "processIdentifier": 26815,
+      "counter": 14369292
+    },
+    "lastUpdated": 1516222021186,
+    "options": {
+      "branch": "master",
+      "url": "https://mygithub.com/compliance-scenario/0-new-repo"
+    },
+    "id": "5a4e524333ec296b81c3936f"
+  },
+  {
+    "description": "Registered by Remote Call.",
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": {
+      "timestamp": 1456084265,
+      "machineIdentifier": 8366972,
+      "processIdentifier": 26815,
+      "counter": 14369292
+    },
+    "lastUpdated": 1516222021942,
+    "options": {
+      "branch": "master",
+      "url": "https://mygithub.com/compliance-scenario/1-direct-commit"
+    },
+    "id": {
+      "timestamp": 1515082351,
+      "machineIdentifier": 3402793,
+      "processIdentifier": 27521,
+      "counter": 12817252
+    }
+  },
+  {
+    "description": "Registered by Remote Call.",
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": {
+      "timestamp": 1456084265,
+      "machineIdentifier": 8366972,
+      "processIdentifier": 26815,
+      "counter": 14369292
+    },
+    "lastUpdated": 1516222022525,
+    "options": {
+      "branch": "master",
+      "url": "https://mygithub.com/compliance-scenario/2-unreviewed-merge"
+    },
+    "id": {
+      "timestamp": 1515082392,
+      "machineIdentifier": 3402793,
+      "processIdentifier": 27521,
+      "counter": 12817258
+    }
+  },
+  {
+    "description": "Registered by Remote Call.",
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": {
+      "timestamp": 1456084265,
+      "machineIdentifier": 8366972,
+      "processIdentifier": 26815,
+      "counter": 14369292
+    },
+    "lastUpdated": 1516222023061,
+    "options": {
+      "branch": "master",
+      "url": "https://mygithub.com/compliance-scenario/3-github-comment-merge"
+    },
+    "id": {
+      "timestamp": 1515082428,
+      "machineIdentifier": 3402793,
+      "processIdentifier": 27521,
+      "counter": 12817263
+    }
+  },
+  {
+    "description": "Registered by Remote Call.",
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": {
+      "timestamp": 1456084265,
+      "machineIdentifier": 8366972,
+      "processIdentifier": 26815,
+      "counter": 14369292
+    },
+    "lastUpdated": 1516222023498,
+    "options": {
+      "branch": "master",
+      "url": "https://mygithub.com/compliance-scenario/4-github-review-merge"
+    },
+    "id": {
+      "timestamp": 1515082480,
+      "machineIdentifier": 3402793,
+      "processIdentifier": 27521,
+      "counter": 12817268
+    }
+  },
+  {
+    "description": "Registered by Remote Call.",
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": {
+      "timestamp": 1456084265,
+      "machineIdentifier": 8366972,
+      "processIdentifier": 26815,
+      "counter": 14369292
+    },
+    "lastUpdated": 1516222024012,
+    "options": {
+      "branch": "master",
+      "url": "https://mygithub.com/compliance-scenario/5-lgtm-self-merge"
+    },
+    "id": {
+      "timestamp": 1515082524,
+      "machineIdentifier": 3402793,
+      "processIdentifier": 27521,
+      "counter": 12817274
+    }
+  },
+  {
+    "description": "Registered by Remote Call.",
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": {
+      "timestamp": 1456084265,
+      "machineIdentifier": 8366972,
+      "processIdentifier": 26815,
+      "counter": 14369292
+    },
+    "lastUpdated": 1516222024449,
+    "options": {
+      "branch": "master",
+      "url": "https://mygithub.com/compliance-scenario/6-lgtm-merge"
+    },
+    "id": {
+      "timestamp": 1515082558,
+      "machineIdentifier": 3402793,
+      "processIdentifier": 27521,
+      "counter": 12817279
+    }
+  },
+  {
+    "description": "Registered by Remote Call.",
+    "enabled": true,
+    "errors": [
+      {
+        "errorCode": "-1",
+        "errorMessage": "Error in GraphQL query:[{\"path\":[\"repository\"],\"locations\":[{\"line\":2,\"column\":3}],\"message\":\"Could not resolve to a Repository with the name \u00277-private-repo\u0027.\",\"type\":\"NOT_FOUND\"}]",
+        "timestamp": 1516222002518
+      },
+      {
+        "errorCode": "-1",
+        "errorMessage": "Error in GraphQL query:[{\"path\":[\"repository\"],\"locations\":[{\"line\":2,\"column\":3}],\"message\":\"Could not resolve to a Repository with the name \u00277-private-repo\u0027.\",\"type\":\"NOT_FOUND\"}]",
+        "timestamp": 1516222020507
+      }
+    ],
+    "pushed": false,
+    "collectorId": {
+      "timestamp": 1456084265,
+      "machineIdentifier": 8366972,
+      "processIdentifier": 26815,
+      "counter": 14369292
+    },
+    "lastUpdated": 0,
+    "options": {
+      "branch": "master",
+      "url": "https://mygithub.com/compliance-scenario/7-private-repo"
+    },
+    "id": {
+      "timestamp": 1515082653,
+      "machineIdentifier": 3402793,
+      "processIdentifier": 27521,
+      "counter": 12817284
+    }
+  },
+  {
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": {
+      "timestamp": 1456084265,
+      "machineIdentifier": 8366972,
+      "processIdentifier": 26815,
+      "counter": 14369292
+    },
+    "lastUpdated": 1516222024902,
+    "options": {
+      "password": "",
+      "scm": "Github",
+      "branch": "master",
+      "userID": "",
+      "url": "https://mygithub.com/Devopscode/NormalMerge"
+    },
+    "id": {
+      "timestamp": 1515082910,
+      "machineIdentifier": 3402793,
+      "processIdentifier": 27521,
+      "counter": 12817291
+    }
+  },
+  {
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": {
+      "timestamp": 1456084265,
+      "machineIdentifier": 8366972,
+      "processIdentifier": 26815,
+      "counter": 14369292
+    },
+    "lastUpdated": 1516222025333,
+    "options": {
+      "password": "",
+      "scm": "Github",
+      "branch": "master",
+      "userID": "",
+      "url": "https://mygithub.com/Devopscode/SquashMerge"
+    },
+    "id": {
+      "timestamp": 1515082938,
+      "machineIdentifier": 3402793,
+      "processIdentifier": 27521,
+      "counter": 12817296
+    }
+  },
+  {
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": {
+      "timestamp": 1456084265,
+      "machineIdentifier": 8366972,
+      "processIdentifier": 26815,
+      "counter": 14369292
+    },
+    "lastUpdated": 1516222025759,
+    "options": {
+      "password": "",
+      "scm": "Github",
+      "branch": "master",
+      "userID": "",
+      "url": "https://mygithub.com/Devopscode/RebaseMerge"
+    },
+    "id": {
+      "timestamp": 1515082968,
+      "machineIdentifier": 3402793,
+      "processIdentifier": 27521,
+      "counter": 12817301
+    }
+  },
+  {
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": {
+      "timestamp": 1456084265,
+      "machineIdentifier": 8366972,
+      "processIdentifier": 26815,
+      "counter": 14369292
+    },
+    "lastUpdated": 1516222026134,
+    "options": {
+      "password": "",
+      "scm": "Github",
+      "branch": "master",
+      "userID": "",
+      "url": "https://mygithub.com/Devopscode/OpenForkPr"
+    },
+    "id": {
+      "timestamp": 1515082998,
+      "machineIdentifier": 3402793,
+      "processIdentifier": 27521,
+      "counter": 12817306
+    }
+  },
+  {
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": {
+      "timestamp": 1456084265,
+      "machineIdentifier": 8366972,
+      "processIdentifier": 26815,
+      "counter": 14369292
+    },
+    "lastUpdated": 1516222026476,
+    "options": {
+      "password": "",
+      "scm": "Github",
+      "branch": "master",
+      "userID": "",
+      "url": "https://mygithub.com/Devopscode/OpenBranchPr"
+    },
+    "id": {
+      "timestamp": 1515083026,
+      "machineIdentifier": 3402793,
+      "processIdentifier": 27521,
+      "counter": 12817311
+    }
+  },
+  {
+    "id": "5a678a032b7af20c95e7b146",
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": "56ca15297fab7c68bfdb420c",
+    "lastUpdated": 1516735761179,
+    "options": {
+      "password": "",
+      "scm": "Github",
+      "branch": "master",
+      "userID": "",
+      "url": "https://mygithub.com/Devopscode/MultipleAuthorsLGTM"
+    }
+  },
+  {
+    "id": "5a4e524333ec296b81c3935f",
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": "56ca15297fab7c68bfdb420c",
+    "lastUpdated": 1517029042023,
+    "options": {
+      "password": "",
+      "scm": "Github",
+      "branch": "master",
+      "userID": "",
+      "url": "https://mygithub.com/Devopscode/MultipleAuthorsGHR"
+    }
+  },
+   {
+    "id": "5ad5f605c23b391cfa1c01a4",
+    "description": "myapplication:mycomponent",
+    "enabled": false,
+    "errors": [],
+    "pushed": false,
+    "collectorId": "5af9ed53cba7165e8cc1069e",
+    "lastUpdated": 1524190250247,
+    "options": {
+      "applicationType": null,
+      "componentName": "mycomponent",
+      "applicationID": [
+        "SOMEAPPLICATION"
+      ],
+      "applicationName": "account-my-information",
+      "instanceUrl": "https://scan.com"
+    }
+  },
+  {
+    "id": "56e301107fab7c3ec3c43397",
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": "56ca15297fab7c68bfdb420c",
+    "lastUpdated": 1528709104212,
+    "options": {
+      "scm": "Github",
+      "branch": "develop",
+      "url": "https://mygithub.com/TechOriginations/openupf"
+    }
+  },
+  {
+    "id": "56e5919d7fab7c0244e33341",
+    "description": "openupf service parent",
+    "niceName": "HomeLoan",
+    "enabled": true,
+    "errors": [],
+    "pushed": true,
+    "collectorId": "56cb5bde7fab7c548551410e",
+    "lastUpdated": 1460387608894,
+    "options": {
+      "projectName": "openupf service parent",
+      "projectId": "111955",
+      "instanceUrl": "http://mysonar.com:11300/sonar"
+    }
+  },
+  {
+    "id": "57f2a0193b55670a9e06d63a",
+    "description": "TEST-UI",
+    "niceName": "TEST",
+    "enabled": true,
+    "errors": [],
+    "pushed": true,
+    "collectorId": "56df29df7fab7c3ec3c432ea",
+    "lastUpdated": 1513106044147,
+    "options": {
+      "jobName": "TEST-UI",
+      "jobUrl": "https://myjenkins.com/myjenkins/job/TEST-UI/",
+      "instanceUrl": "https://myjenkins.com/myjenkins/",
+      "applicationID": [
+        "TestBusServ"
+      ]
+    }
+  },
+  {
+    "id": "5b7b33d6b2ea1a4c58a61a2d",
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": "56ca15297fab7c68bfdb420c",
+    "lastUpdated": 1534804146907,
+    "options": {
+      "password": "",
+      "personalAccessToken": "",
+      "branch": "master",
+      "userID": "",
+      "url": "https://mygithub.com/Devopscode/HandleMisleadingSingleParentCommit"
+    }
+  },
+  {
+    "id": "5b87001e60bd8d3c47853f3d",
+    "_class": "com.capitalone.dashboard.model.GitHubRepo",
+    "enabled": true,
+    "errors": [],
+    "pushed": false,
+    "collectorId": "56ca15297fab7c68bfdb420c",
+    "lastUpdated": 1535574536694,
+    "options": {
+      "password": "",
+      "personalAccessToken": "",
+      "branch": "master",
+      "userID": "",
+      "url": "https://mygithub.com/Devopscode/NewPrOldCommit"
+    }
+  }
+]

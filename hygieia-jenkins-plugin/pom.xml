@@ -20,7 +20,7 @@
 
     <artifactId>hygieia-publisher</artifactId>
     <packaging>hpi</packaging>
-    <version>2.1.7-SNAPSHOT</version>
+    <version>2.1.9-SNAPSHOT</version>
     <name>Hygieia Publisher Plugin</name>
     <description>A Build status publisher that notifies Hygieia</description>
     <url>https://github.com/Hygieia/Hygieia</url>

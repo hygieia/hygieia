@@ -33,7 +33,12 @@ dbusername=${SPRING_DATA_MONGODB_USERNAME:-dashboarduser}
 #Database Password - default is blank
 dbpassword=${SPRING_DATA_MONGODB_PASSWORD:-dbpassword}
 
-#API encryption key. Optional. See http://capitalone.github.io/Hygieia/setup.html#encryption-for-private-repos	
+
+#This is ensure if you are keeping DB outside docker compose.
+dbhostport=${SPRING_DATA_MONGODB_HOST}:${SPRING_DATA_MONGODB_PORT}
+
+
+#API encryption key. Optional. See https://hygieia.github.io/Hygieia/setup.html#encryption-for-private-repos	
 key=${KEY:-}
 
 logRequest=${LOG_REQUEST:-false}

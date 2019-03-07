@@ -1,43 +1,45 @@
 <div class="monitor-view">
-    <div class="widget" ng-if="ctrl.services && ctrl.services.length">
-        <div class="widget-heading">
-            <span>Our Services</span>
-            <span class="pull-right icon-legend-link" ng-click="ctrl.showIconLegend()">Icon Legend</span>
+    <div hide-empty="['{{ ctrl.services[0] }}', '{{ ctrl.dependencies[0] }}']">
+        <div class="widget" ng-if="ctrl.services && ctrl.services.length">
+            <div class="widget-heading">
+                <span>Our Services</span>
+                <span class="pull-right icon-legend-link" ng-click="ctrl.showIconLegend()">Icon Legend</span>
+            </div>
+            <div class="widget-body">
+                <div hide-empty="['{{ ctrl.services[0] }}']">
+                    <div class="monitor-row dash-row clickable"
+                         ng-repeat="service in ctrl.services | orderBy: ['-status', 'name']"
+                         ng-click="ctrl.openStatusWindow(service)">
+                        <span class="pull-left" dash-status="{{service.status}}"></span>
+                        <span class="fa fa-comment-o pull-right" ng-if="ctrl.hasMessage(service)"></span>
+                        <div class="dash-overflow">{{service.name}}</div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="widget-body">
-            <div class="monitor-row dash-row clickable"
-                 ng-repeat="service in ctrl.services | orderBy: ['-status', 'name']"
-                 ng-click="ctrl.openStatusWindow(service)">
-                <span class="pull-left" dash-status="{{service.status}}"></span>
-                <span class="fa fa-comment-o pull-right" ng-if="ctrl.hasMessage(service)"></span>
-                <div class="dash-overflow">{{service.name}}</div>
+
+        <div class="widget" ng-if="ctrl.dependencies && ctrl.dependencies.length">
+            <div class="widget-heading">
+                Dependent Services
+            </div>
+            <div class="widget-body">
+                <div hide-empty="['{{ ctrl.dependencies[0] }}']">
+                    <div class="monitor-row dash-row"
+                         ng-repeat="service in ctrl.dependencies | orderBy: ['-status', 'name']"
+                         ng-class="{'clickable': ctrl.hasMessage(service)}"
+                         popover="{{service.message}}"
+                         popover-trigger="focus"
+                         popover-placement="left"
+                         tabindex="0"
+                            >
+                        <span class="pull-left" dash-status="{{service.status}}"></span>
+                        <span class="fa fa-comment-o pull-right monitor-has-comment" ng-if="ctrl.hasMessage(service)"></span>
+                        <div class="dash-overflow">{{service.name}}</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
-    <div class="widget" ng-if="ctrl.dependencies && ctrl.dependencies.length">
-        <div class="widget-heading">
-            Dependent Services
-        </div>
-        <div class="widget-body">
-            <div class="monitor-row dash-row"
-                 ng-repeat="service in ctrl.dependencies | orderBy: ['-status', 'name']"
-                 ng-class="{'clickable': ctrl.hasMessage(service)}"
-                 popover="{{service.message}}"
-                 popover-trigger="focus"
-                 popover-placement="left"
-                 tabindex="0"
-                    >
-                <span class="pull-left" dash-status="{{service.status}}"></span>
-                <span class="fa fa-comment-o pull-right monitor-has-comment" ng-if="ctrl.hasMessage(service)"></span>
-                <div class="dash-overflow">{{service.name}}</div>
-            </div>
-        </div>
-    </div>
-
-    <p class="text-center" ng-if="!ctrl.services.length && !ctrl.dependencies.length">
-        No services configured
-    </p>
 </div>
 
 <!--A monitor modal used for the status popup-->

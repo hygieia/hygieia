@@ -1,25 +1,7 @@
 package jenkins.plugins.hygieia.workflow;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
-
-import org.apache.commons.httpclient.HttpStatus;
-import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
-import org.jenkinsci.plugins.workflow.steps.AbstractStepImpl;
-import org.jenkinsci.plugins.workflow.steps.AbstractSynchronousNonBlockingStepExecution;
-import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.DataBoundSetter;
-import org.kohsuke.stapler.QueryParameter;
-
 import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.request.BinaryArtifactCreateRequest;
-
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.model.Run;
@@ -32,6 +14,21 @@ import jenkins.plugins.hygieia.DefaultHygieiaService;
 import jenkins.plugins.hygieia.HygieiaPublisher;
 import jenkins.plugins.hygieia.HygieiaResponse;
 import jenkins.plugins.hygieia.HygieiaService;
+import org.apache.commons.httpclient.HttpStatus;
+import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
+import org.jenkinsci.plugins.workflow.steps.AbstractStepImpl;
+import org.jenkinsci.plugins.workflow.steps.AbstractSynchronousNonBlockingStepExecution;
+import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
+import org.kohsuke.stapler.QueryParameter;
+
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 public class HygieiaArtifactPublishStep extends AbstractStepImpl {
 
@@ -151,10 +148,8 @@ public class HygieiaArtifactPublishStep extends AbstractStepImpl {
 				HygieiaService hygieiaService = getHygieiaService(hygieiaAPIUrl, hygieiaDesc.getHygieiaToken(),
 						hygieiaDesc.getHygieiaJenkinsName(), hygieiaDesc.isUseProxy());
 
-				BuildBuilder buildBuilder = new BuildBuilder(this.run, hygieiaDesc.getHygieiaJenkinsName(),
-						this.listener, BuildStatus.Success, true);
-
-				HygieiaResponse buildResponse = hygieiaService.publishBuildData(buildBuilder.getBuildData());
+				HygieiaResponse buildResponse = hygieiaService.publishBuildData(new BuildBuilder().createBuildRequestFromRun(this.run, hygieiaDesc.getHygieiaJenkinsName(),
+						this.listener, BuildStatus.Success, true));
 
 				if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
 					listener.getLogger().println(

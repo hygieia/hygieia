@@ -12,6 +12,8 @@ import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.ScoreDisplayType;
 
+import com.google.common.collect.Lists;
+
 import java.util.List;
 
 public class DashboardRequest {
@@ -130,11 +132,13 @@ public class DashboardRequest {
         DashboardType type = DashboardType.fromString(this.type);
         Application application = new Application(applicationName, new Component(componentName));
         Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
+        List<Owner> owners = Lists.newArrayList();
+        owners.add(owner);
         return new Dashboard(
           template,
           dashboardRequestTitle.getTitle(),
           application,
-          owner,
+          owners,
           type ,
           configurationItemBusServName,
           configurationItemBusAppName,

@@ -13,48 +13,17 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Logger;
 
 import static hygieia.utils.HygieiaUtils.getRepoBranch;
 
 public class BuildBuilder {
 
-    private static final Logger logger = Logger.getLogger(ArtifactBuilder.class.getName());
-    private AbstractBuild<?, ?> build;
-    private Run<?, ?> run;
-    private String jenkinsName;
-    private TaskListener listener;
-    private boolean isComplete;
-    private BuildDataCreateRequest request;
-    private BuildStatus result;
-    boolean buildChangeSet;
-
-    public BuildBuilder(AbstractBuild<?, ?> build, String jenkinsName, TaskListener listener, boolean isComplete, boolean buildChangeSet) {
-        this.build = build;
-        this.jenkinsName = jenkinsName;
-        this.listener = listener;
-        this.isComplete = isComplete;
-        this.buildChangeSet = buildChangeSet;
-        createBuildRequest();
+    public BuildBuilder() {
     }
 
-    public BuildBuilder(Run<?, ?> run, String jenkinsName, TaskListener listener, BuildStatus result, boolean buildChangeSet) {
-        this.run = run;
-        this.jenkinsName = jenkinsName;
-        this.listener = listener;
-        this.result = result;
-        this.buildChangeSet = buildChangeSet;
-        if (run instanceof AbstractBuild) {
-            this.build = (AbstractBuild<?, ?>) run;
-            this.isComplete = !(Objects.equals(BuildStatus.InProgress, result));
-            createBuildRequest();
-        } else {
-            createBuildRequestFromRun();
-        }
-    }
+    public BuildDataCreateRequest createBuildRequestFromRun(Run<?, ?> run, String jenkinsName, TaskListener listener, BuildStatus result, boolean buildChangeSet) {
 
-    private void createBuildRequestFromRun() {
-        request = new BuildDataCreateRequest();
+        BuildDataCreateRequest request = new BuildDataCreateRequest();
         request.setNiceName(jenkinsName);
         request.setJobName(HygieiaUtils.getJobPath(run));
         request.setBuildUrl(HygieiaUtils.getBuildUrl(run));
@@ -69,14 +38,22 @@ public class BuildBuilder {
             request.setEndTime(System.currentTimeMillis());
             if (buildChangeSet) {
                 request.setCodeRepos(getRepoBranch(run));
-                WorkflowRun wr = (WorkflowRun) run;
-                request.setSourceChangeSet(getCommitList(wr.getChangeSets()));
+                if( run instanceof WorkflowRun) {
+                    WorkflowRun wr = (WorkflowRun) run;
+                    request.setSourceChangeSet(getCommitList(wr.getChangeSets()));
+                }
             }
         }
+        return request;
     }
 
-    private void createBuildRequest() {
-        request = new BuildDataCreateRequest();
+    public BuildDataCreateRequest createBuildRequest(AbstractBuild<?, ?> build, String jenkinsName, TaskListener listener, boolean isComplete, boolean buildChangeSet) {
+        BuildDataCreateRequest request = new BuildDataCreateRequest();
+        BuildStatus result = null;
+        if(!isComplete) {
+            result =BuildStatus.InProgress;
+        }
+        boolean isBuildComplete = isComplete || !(Objects.equals(BuildStatus.InProgress, result));
         request.setNiceName(jenkinsName);
         request.setJobName(HygieiaUtils.getJobPath(build));
         request.setBuildUrl(HygieiaUtils.getBuildUrl(build));
@@ -84,8 +61,8 @@ public class BuildBuilder {
         request.setInstanceUrl(HygieiaUtils.getInstanceUrl(build, listener));
         request.setNumber(HygieiaUtils.getBuildNumber(build));
         request.setStartTime(build.getStartTimeInMillis());
-        if (isComplete) {
-            request.setBuildStatus(Objects.requireNonNull(build.getResult()).toString());
+        if (isBuildComplete) {
+            request.setBuildStatus(Objects.requireNonNull(HygieiaUtils.getBuildStatus(build.getResult())).toString());
             request.setDuration(build.getDuration());
             request.setEndTime(build.getStartTimeInMillis() + build.getDuration());
             if (buildChangeSet) {
@@ -97,16 +74,12 @@ public class BuildBuilder {
         } else {
             request.setBuildStatus(BuildStatus.InProgress.toString());
         }
-    }
-
-    public BuildDataCreateRequest getBuildData() {
         return request;
     }
-
+    
     private List<SCM> getCommitList(List<ChangeLogSet<? extends ChangeLogSet.Entry>> changeLogSets) {
         CommitBuilder commitBuilder = new CommitBuilder(changeLogSets);
         return commitBuilder.getCommits();
     }
-
 
 }

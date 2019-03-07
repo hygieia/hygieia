@@ -3,6 +3,7 @@ package com.capitalone.dashboard.service;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.BuildStatus;
+import com.capitalone.dashboard.model.CodeReposBuilds;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
@@ -10,10 +11,11 @@ import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.model.RepoBranch;
 import com.capitalone.dashboard.model.SCM;
 import com.capitalone.dashboard.model.ScoreDisplayType;
-import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.repository.BuildRepository;
+import com.capitalone.dashboard.repository.CodeReposBuildsRepository;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
@@ -56,6 +58,7 @@ public class BuildServiceTest {
     @Mock private ComponentRepository componentRepository;
     @Mock private CollectorRepository collectorRepository;
     @Mock private CollectorItemRepository collectorItemRepository;
+    @Mock private CodeReposBuildsRepository codeReposBuildsRepository;
     @InjectMocks private BuildServiceImpl buildService;
     @Mock private DashboardServiceImpl dashboardService;
     @Mock
@@ -199,7 +202,9 @@ public class BuildServiceTest {
     public void createV3WithGoodRequestEnableDashboardLookup() throws HygieiaException {
         ObjectId collectorId = ObjectId.get();
         BuildDataCreateRequest request = makeBuildRequest();
+        request.getCodeRepos().add(new RepoBranch("https://github.com/someorg/somerepo","master", RepoBranch.RepoType.GIT));
         Build build = makeBuild();
+        build.getCodeRepos().add(new RepoBranch("https://github.com/someorg/somerepo","master", RepoBranch.RepoType.GIT));
         List<Dashboard> dashboards = Collections.singletonList(new Dashboard("team", "title", null, null, DashboardType.Team, "configItemAppName", "configItemComponentName", null, false, ScoreDisplayType.HEADER));
         when(collectorRepository.findOne(collectorId)).thenReturn(new Collector());
         when(collectorService.createCollector(any(Collector.class))).thenReturn(new Collector());
@@ -210,9 +215,44 @@ public class BuildServiceTest {
         when(dashboardService.getDashboardsByCollectorItems(any(Set.class), any(CollectorType.class))).thenReturn(dashboards);
         when(apiSettings.getWebHook()).thenReturn(webHookSettings);
         when(webHookSettings.getJenkinsBuild()).thenReturn(jenkinsSettings());
+        when(codeReposBuildsRepository.findByCodeRepo("https://github.com/someorg/somerepo")).thenReturn(null);
+        when(codeReposBuildsRepository.save(any(CodeReposBuilds.class))).thenReturn(new CodeReposBuilds());
         BuildDataCreateResponse response = buildService.createV3(request);
         assertEquals(build.getStartedBy(), response.getStartedBy());
         assertEquals(build.getNumber(), response.getNumber());
+    }
+
+    @Test
+    public void createV3WithGoodRequestLibraryThresholdExceed() throws HygieiaException {
+        ObjectId collectorId = ObjectId.get();
+        BuildDataCreateRequest request = makeBuildRequest();
+        request.getCodeRepos().add(new RepoBranch("https://github.com/someorg/somerepo","master", RepoBranch.RepoType.GIT));
+        Build build = makeBuild();
+        build.getCodeRepos().add(new RepoBranch("https://github.com/someorg/somerepo","master", RepoBranch.RepoType.GIT));
+        List<Dashboard> dashboards = Collections.singletonList(new Dashboard("team", "title", null, null, DashboardType.Team, "configItemAppName", "configItemComponentName", null, false, ScoreDisplayType.HEADER));
+        when(collectorRepository.findOne(collectorId)).thenReturn(new Collector());
+        when(collectorService.createCollector(any(Collector.class))).thenReturn(new Collector());
+        when(collectorService.createCollectorItem(any(CollectorItem.class))).thenReturn(new CollectorItem());
+        when(collectorItemRepository.findOne(any(ObjectId.class))).thenReturn(new CollectorItem());
+        when(buildRepository.save(any(Build.class))).thenReturn(build);
+        when(apiSettings.isLookupDashboardForBuildDataCreate()).thenReturn(Boolean.FALSE);
+        when(dashboardService.getDashboardsByCollectorItems(any(Set.class), any(CollectorType.class))).thenReturn(dashboards);
+        when(apiSettings.getWebHook()).thenReturn(webHookSettings);
+        when(webHookSettings.getJenkinsBuild()).thenReturn(jenkinsSettings());
+        when(codeReposBuildsRepository.findByCodeRepo("https://github.com/someorg/somerepo")).thenReturn(makeCodeReposBuilds());
+        when(codeReposBuildsRepository.save(any(CodeReposBuilds.class))).thenReturn(new CodeReposBuilds());
+        BuildDataCreateResponse response = buildService.createV3(request);
+        assertEquals(build.getStartedBy(), response.getStartedBy());
+        assertEquals(build.getNumber(), response.getNumber());
+    }
+
+    private CodeReposBuilds makeCodeReposBuilds() {
+        CodeReposBuilds entity = new CodeReposBuilds();
+        entity.getBuildCollectorItems().add(ObjectId.get());
+        entity.getBuildCollectorItems().add(ObjectId.get());
+        entity.getBuildCollectorItems().add(ObjectId.get());
+        entity.getBuildCollectorItems().add(ObjectId.get());
+        return entity;
     }
 
     private Component makeComponent(ObjectId collectorItemId, ObjectId collectorId, boolean populateCollectorItems) {
@@ -240,7 +280,6 @@ public class BuildServiceTest {
             }
         };
     }
-
 
     private SCM makeScm() {
         SCM scm = new SCM();
@@ -286,7 +325,9 @@ public class BuildServiceTest {
 
     private JenkinsBuildWebHookSettings jenkinsSettings() {
         JenkinsBuildWebHookSettings settings = new JenkinsBuildWebHookSettings();
-        settings.setExcludeCodeReposInBuild(Arrays.asList("https://github.kdc.capitalone.com/bogie/jenkins-pipeline-library"));
+        settings.setEnableFilterLibraryRepos(true);
+        settings.setExcludeLibraryRepoThreshold(3);
+        settings.setExcludeCodeReposInBuild(Arrays.asList("https://github.com/someorg/somerepo"));
         return settings;
     }
 
