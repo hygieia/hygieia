@@ -128,7 +128,7 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
             if (isUpdate) {
                 throw new HygieiaException("Dashboard " + request.getMetaData().getTitle() +  " does not exist.", HygieiaException.BAD_DATA);
             }
-            request.getMetaData().setOwners(owners);
+            request.getMetaData().setOwners(validOwners);
             dashboard = dashboardService.create(requestToDashboard(request));
         }
 
