@@ -25,7 +25,7 @@ describe('SignupComponent', () => {
       ],
       declarations: [ SignupComponent ],
       providers:    [ {provide: AuthService, useValue: authService } ]
-    });
+    }).compileComponents();
     // Make the spy return a synchronous Observable with the test data
     registerSpy = authService.register.and.returnValue( of(true) );
     authService.logout.and.returnValue( of(true) );

@@ -20,7 +20,7 @@ describe('LoginComponent', () => {
         HttpClientModule
       ],
       declarations: [ LoginComponent ]
-    });
+    }).compileComponents();
   }));
 
   beforeEach(() => {
