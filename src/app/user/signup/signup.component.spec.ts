@@ -6,35 +6,32 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
 import { SignupComponent } from './signup.component';
+import {AuthService} from '../../core/services/auth.service';
 
 
 describe('SignupComponent', () => {
   let component: SignupComponent;
   let fixture: ComponentFixture<SignupComponent>;
   let router: Router;
-  // let registerSpy;
+  let authService;
+
 
   beforeEach(async(() => {
-    // const authService = jasmine.createSpyObj('AuthService', ['register', 'logout']);
     TestBed.configureTestingModule({
       imports: [
         ReactiveFormsModule,
         RouterTestingModule.withRoutes([]),
         HttpClientModule
       ],
-      declarations: [ SignupComponent ],
-      // providers:    [ {provide: AuthService, useValue: authService } ]
+      declarations: [ SignupComponent ]
     }).compileComponents();
-    // Make the spy return a synchronous Observable with the test data
-    // registerSpy = authService.register.and.returnValue( of(true) );
-   // authService.logout.and.returnValue( of(true) );
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(SignupComponent);
     component = fixture.componentInstance;
     router = TestBed.get(Router);
-
+    authService = TestBed.get(AuthService);
     fixture.detectChanges();
   });
   it('should create', () => {
@@ -57,12 +54,13 @@ describe('SignupComponent', () => {
     component.login();
     expect(navigateSpy).toHaveBeenCalledWith(['/user/login']);
   });
-  // it('should register new user', () => {
-  //   const obj = { value : {
-  //     username : 'test',
-  //     passwordGroup: { password: 'test' }
-  //   }};
-  //   component.submit(obj);
-  //   expect(registerSpy).toHaveBeenCalledWith({username: 'test', password: 'test'});
-  // });
+  it('should register new user', () => {
+    const spy = spyOn(authService, 'register').and.returnValue({ subscribe: () => true });
+    const obj = { value : {
+      username : 'test',
+      passwordGroup: { password: 'test' }
+    }};
+    component.submit(obj);
+    expect(spy).toHaveBeenCalledWith({username: 'test', password: 'test'});
+  });
 });
