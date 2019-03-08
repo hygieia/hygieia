@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { SignupComponent } from './signup.component';
 import {AuthService} from '../../core/services/auth.service';
@@ -21,7 +21,7 @@ describe('SignupComponent', () => {
       imports: [
         ReactiveFormsModule,
         RouterTestingModule.withRoutes([]),
-        HttpClientModule
+        HttpClientTestingModule
       ],
       declarations: [ SignupComponent ]
     }).compileComponents();
