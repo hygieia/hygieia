@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { NavbarComponent } from './navbar.component';
 
@@ -13,7 +13,7 @@ describe('NavbarComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         RouterTestingModule.withRoutes([]),
-        HttpClientModule
+        HttpClientTestingModule
       ],
       declarations: [ NavbarComponent ]
     })
