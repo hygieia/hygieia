@@ -1,6 +1,10 @@
 package com.capitalone.dashboard.evaluator;
 
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CodeQualityMetricStatus;
+import com.capitalone.dashboard.model.CodeQuality;
+import com.capitalone.dashboard.model.CodeQualityMetric;
+import com.capitalone.dashboard.model.CodeQualityType;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
 import com.capitalone.dashboard.response.SecurityReviewAuditResponse;
 import com.capitalone.dashboard.status.CodeQualityAuditStatus;
