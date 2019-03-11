@@ -22,6 +22,7 @@
     "@angular/router": "~7.2.0",
     "@auth0/angular-jwt": "^2.1.0",
     "@ng-bootstrap/ng-bootstrap": "^4.0.1",
+    "@swimlane/ngx-charts": "^10.1.0",
     "bootstrap": "^4.2.1",
     "core-js": "^2.5.4",
     "font-awesome": "^4.7.0",
