@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, share } from 'rxjs/operators';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BuildResponse, Build } from './interfaces';
 

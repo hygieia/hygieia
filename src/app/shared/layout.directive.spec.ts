@@ -1,11 +1,26 @@
 import { LayoutDirective } from './layout.directive';
-import { TestBed } from '@angular/core/testing';
-import { ViewContainerRef } from '@angular/core';
+import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { ViewContainerRef, Component } from '@angular/core';
+
+@Component({
+    template: `<ng-template appChart></ng-template>`
+})
+class TestLayoutDirectiveComponent {
+}
 
 describe('LayoutDirective', () => {
+    let component: TestLayoutDirectiveComponent;
+    let fixture: ComponentFixture<TestLayoutDirectiveComponent>;
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            declarations: [TestLayoutDirectiveComponent, LayoutDirective]
+        });
+        fixture = TestBed.createComponent(TestLayoutDirectiveComponent);
+        component = fixture.componentInstance;
+    });
+
     it('should create an instance', () => {
-        const viewContainerRef = TestBed.get(ViewContainerRef) as ViewContainerRef;
-        const directive = new LayoutDirective(viewContainerRef);
-        expect(directive).toBeTruthy();
+        expect(component).toBeTruthy();
     });
 });

@@ -7,28 +7,27 @@ import { ChartComponent } from '../chart/chart.component';
     styleUrls: ['./line-chart.component.scss']
 })
 export class LineChartComponent extends ChartComponent {
-
-    xAxisLabel = 'Country';
-    yAxisLabel = 'Population';
-
     constructor() {
         super();
     }
 
-
-    // options
+    //options
+    view: any[] = [700, 250];
     showXAxis = true;
     showYAxis = true;
     gradient = false;
     showLegend = true;
     showXAxisLabel = true;
     showYAxisLabel = true;
-
-    colorScheme = 'vivid';
+    trimYAxisTicks = false;
+    timeline = false;
+    yAxisTickFormatting: (val: number) => string = this.formatInteger;
 
     onSelect(event) {
         console.log(event);
     }
 
-
+    formatInteger(val: number): string {
+        return val.toFixed(0);
+    }
 }

@@ -1,4 +1,5 @@
-<ngx-charts-line-chart [scheme]="colorScheme" [results]="data" [gradient]="gradient" [xAxis]="showXAxis"
+<ngx-charts-area-chart [view]="view" [scheme]="colorScheme" [results]="data" [gradient]="gradient" [xAxis]="showXAxis"
     [yAxis]="showYAxis" [legend]="showLegend" [showXAxisLabel]="showXAxisLabel" [showYAxisLabel]="showYAxisLabel"
-    [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel" (select)="onSelect($event)">
-</ngx-charts-line-chart>
+    [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel" (select)="onSelect($event)"
+    [yAxisTickFormatting]="yAxisTickFormatting" [trimYAxisTicks]="trimYAxisTicks" [timeline]="timeline">
+</ngx-charts-area-chart>

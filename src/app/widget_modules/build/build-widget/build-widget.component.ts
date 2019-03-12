@@ -4,6 +4,7 @@ import { TwoByTwoLayoutComponent } from 'src/app/shared/two-by-two-layout/two-by
 import { LineChartComponent } from 'src/app/shared/line-chart/line-chart.component';
 import { LayoutDirective } from 'src/app/shared/layout.directive';
 import { BuildService } from '../build.service';
+import { Build } from '../interfaces';
 
 @Component({
     selector: 'app-build-widget',
@@ -18,89 +19,83 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
         super(componentFactoryResolver, cdr);
     }
 
-    ngAfterViewInit() {
-        super.loadComponent(this.childLayoutTag);
-    }
-
     ngOnInit() {
-        this.buildService.fetchDetails().subscribe(response =>
-            console.log(response)
-        );
         this.layout = TwoByTwoLayoutComponent;
         this.charts = [
             {
                 component: LineChartComponent,
                 data: [
                     {
-                        name: 'Germany',
-                        series: [
-                            {
-                                name: '2010',
-                                value: 7300000
-                            },
-                            {
-                                name: '2011',
-                                value: 8940000
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                component: LineChartComponent,
-                data: [
+                        name: 'All Builds',
+                        series: []
+                    },
                     {
-                        name: 'Germany',
-                        series: [
-                            {
-                                name: '2010',
-                                value: 7300000
-                            },
-                            {
-                                name: '2011',
-                                value: 8940000
-                            }
-                        ]
+                        name: 'Failed Builds',
+                        series: []
                     }
-                ]
-            },
-            {
-                component: LineChartComponent,
-                data: [
-                    {
-                        name: 'Germany',
-                        series: [
-                            {
-                                name: '2010',
-                                value: 7300000
-                            },
-                            {
-                                name: '2011',
-                                value: 8940000
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                component: LineChartComponent,
-                data: [
-                    {
-                        name: 'Germany',
-                        series: [
-                            {
-                                name: '2010',
-                                value: 7300000
-                            },
-                            {
-                                name: '2011',
-                                value: 8940000
-                            }
-                        ]
-                    }
-                ]
+                ],
+                xAxisLabel: 'Days',
+                yAxisLabel: 'Builds',
+                colorScheme: {
+                    domain: ['green', 'red']
+                }
             }
         ];
+    }
+
+    ngAfterViewInit() {
+        const fifteenDays = this.toMidnight(new Date());
+        fifteenDays.setDate(fifteenDays.getDate() - 14);
+        this.buildService.fetchDetails().subscribe(result => {
+            console.log(result);
+            const allBuilds = result.filter(build => this.checkBuildAfterDate(build, fifteenDays)
+                && !this.checkBuildStatus(build, 'InProgress'));
+            const failedBuilds = result.filter(build => this.checkBuildAfterDate(build, fifteenDays)
+                && !this.checkBuildStatus(build, 'InProgress') && !this.checkBuildStatus(build, 'Success'));
+            this.charts[0].data[0].series = this.countBuilds(allBuilds, fifteenDays);
+            this.charts[0].data[1].series = this.countBuilds(failedBuilds, fifteenDays);
+            console.log(this.charts);
+            super.loadComponent(this.childLayoutTag);
+        });
+
+    }
+
+    private toMidnight(date: Date): Date {
+        date.setHours(0, 0, 0, 0);
+        return date;
+    }
+
+    private checkBuildAfterDate(build: Build, date: Date): boolean {
+        return build.endTime >= date.getTime();
+    }
+
+    private checkBuildStatus(build: Build, status: string): boolean {
+        return build.buildStatus === status;
+    }
+
+    private countBuilds(builds: Build[], startDate: Date): any[] {
+        const counts = {};
+        const date = new Date(startDate.getTime());
+        for (let i = 0; i < 15; i++) {
+            counts[this.toMidnight(date).getTime()] = 0;
+            date.setDate(date.getDate() + 1);
+        }
+        builds.forEach(build => {
+            const index = this.toMidnight(new Date(build.endTime)).getTime();
+            counts[index] = counts[index] + 1;
+        });
+        const dataArray = [];
+        for (const key of Object.keys(counts)) {
+            const data = counts[key];
+            dataArray.push(
+                {
+                    name: new Date(+key),
+                    value: data
+                }
+            );
+        }
+        return dataArray;
+
     }
 }
 
