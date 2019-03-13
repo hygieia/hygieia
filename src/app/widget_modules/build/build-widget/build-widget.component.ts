@@ -44,16 +44,16 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
     }
 
     ngAfterViewInit() {
-        const fifteenDays = this.toMidnight(new Date());
-        fifteenDays.setDate(fifteenDays.getDate() - 13);
+        const fourteenDays = this.toMidnight(new Date());
+        fourteenDays.setDate(fourteenDays.getDate() - 13);
         this.buildService.fetchDetails().subscribe(result => {
             console.log(result);
-            const allBuilds = result.filter(build => this.checkBuildAfterDate(build, fifteenDays)
+            const allBuilds = result.filter(build => this.checkBuildAfterDate(build, fourteenDays)
                 && !this.checkBuildStatus(build, 'InProgress'));
-            const failedBuilds = result.filter(build => this.checkBuildAfterDate(build, fifteenDays)
+            const failedBuilds = result.filter(build => this.checkBuildAfterDate(build, fourteenDays)
                 && !this.checkBuildStatus(build, 'InProgress') && !this.checkBuildStatus(build, 'Success'));
-            this.charts[0].data[0].series = this.countBuilds(allBuilds, fifteenDays);
-            this.charts[0].data[1].series = this.countBuilds(failedBuilds, fifteenDays);
+            this.charts[0].data[0].series = this.countBuilds(allBuilds, fourteenDays);
+            this.charts[0].data[1].series = this.countBuilds(failedBuilds, fourteenDays);
             console.log(this.charts);
             super.loadComponent(this.childLayoutTag);
         });
