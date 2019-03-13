@@ -15,7 +15,7 @@ export class BuildService {
 
     fetchDetails(): Observable<Build[]> {
         const params = {
-            params: new HttpParams().set('componentId', '59f88f5e6a3cf205f312c62e').set('numberOfDays', '15')
+            params: new HttpParams().set('componentId', '59f88f5e6a3cf205f312c62e').set('numberOfDays', '14')
         };
         return this.http.get<BuildResponse>(this.buildDetailRoute, params).pipe(map(response => response.result));
     }
