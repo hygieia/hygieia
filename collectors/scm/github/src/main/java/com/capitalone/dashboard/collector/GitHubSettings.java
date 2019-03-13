@@ -12,7 +12,7 @@ import java.util.List;
 @Component
 @ConfigurationProperties(prefix = "github")
 public class GitHubSettings {
-    private int proxyPort;
+    private String proxyPort;
     private String proxy;
     private String cron;
     private String host;
@@ -26,11 +26,11 @@ public class GitHubSettings {
         private int rateLimitThreshold;
         private String personalAccessToken;
 
-         public int getProxyPort() {          //getters and setters 
+         public String getProxyPort() {          //getters and setters 
                 return proxyPort;
          } 
 
-         public void setProxyPort(int proxyPort){
+         public void setProxyPort(String proxyPort){
                 this.proxyPort=proxyPort;
          }
 
