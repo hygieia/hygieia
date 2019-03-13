@@ -2,9 +2,9 @@ import {
     Component, OnInit, Input, Type, ViewChildren, QueryList,
     ComponentFactoryResolver, ChangeDetectorRef, AfterViewInit
 } from '@angular/core';
-import { ChartDirective } from '../chart.directive';
-import { ChartComponent } from '../chart/chart.component';
-import { Chart } from '../interfaces';
+import { ChartDirective } from '../../charts/chart.directive';
+import { ChartComponent } from '../../charts/chart/chart.component';
+import { Chart } from '../../interfaces';
 
 @Component({
     template: '',

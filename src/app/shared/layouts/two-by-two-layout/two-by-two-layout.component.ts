@@ -2,7 +2,7 @@ import {
     Component, ComponentFactoryResolver, ChangeDetectorRef, AfterViewInit, ViewChildren, QueryList
 } from '@angular/core';
 import { LayoutComponent } from '../layout/layout.component';
-import { ChartDirective } from '../chart.directive';
+import { ChartDirective } from '../../charts/chart.directive';
 
 @Component({
     selector: 'app-two-by-two-layout',

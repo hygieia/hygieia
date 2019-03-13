@@ -1,13 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TwoByTwoLayoutComponent } from './two-by-two-layout.component';
-import { LineChartComponent } from '../line-chart/line-chart.component';
-import { ChartDirective } from '../chart.directive';
+import { LineChartComponent } from '../../charts/line-chart/line-chart.component';
 import { By } from '@angular/platform-browser';
-import { CommonModule } from '@angular/common';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { SharedModule } from '../shared.module';
+import { SharedModule } from '../../shared.module';
 
 
 describe('TwoByTwoLayoutComponent', () => {

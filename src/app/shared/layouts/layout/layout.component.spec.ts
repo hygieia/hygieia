@@ -1,8 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LayoutComponent } from './layout.component';
-import { QueryList } from '@angular/core';
-import { ChartDirective } from '../chart.directive';
 
 describe('LayoutComponent', () => {
     let component: LayoutComponent;

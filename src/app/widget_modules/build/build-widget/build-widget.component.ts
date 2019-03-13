@@ -1,8 +1,8 @@
 import { Component, OnInit, ComponentFactoryResolver, ChangeDetectorRef, ViewChild, AfterViewInit } from '@angular/core';
 import { WidgetComponent } from 'src/app/shared/widget/widget.component';
-import { TwoByTwoLayoutComponent } from 'src/app/shared/two-by-two-layout/two-by-two-layout.component';
-import { LineChartComponent } from 'src/app/shared/line-chart/line-chart.component';
-import { LayoutDirective } from 'src/app/shared/layout.directive';
+import { TwoByTwoLayoutComponent } from 'src/app/shared/layouts/two-by-two-layout/two-by-two-layout.component';
+import { LineChartComponent } from 'src/app/shared/charts/line-chart/line-chart.component';
+import { LayoutDirective } from 'src/app/shared/layouts/layout.directive';
 import { BuildService } from '../build.service';
 import { Build } from '../interfaces';
 
@@ -45,7 +45,7 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
 
     ngAfterViewInit() {
         const fifteenDays = this.toMidnight(new Date());
-        fifteenDays.setDate(fifteenDays.getDate() - 14);
+        fifteenDays.setDate(fifteenDays.getDate() - 13);
         this.buildService.fetchDetails().subscribe(result => {
             console.log(result);
             const allBuilds = result.filter(build => this.checkBuildAfterDate(build, fifteenDays)
@@ -76,7 +76,7 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
     private countBuilds(builds: Build[], startDate: Date): any[] {
         const counts = {};
         const date = new Date(startDate.getTime());
-        for (let i = 0; i < 15; i++) {
+        for (let i = 0; i < 14; i++) {
             counts[this.toMidnight(date).getTime()] = 0;
             date.setDate(date.getDate() + 1);
         }

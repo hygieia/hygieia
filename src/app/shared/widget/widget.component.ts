@@ -1,8 +1,8 @@
 import {
     Component, Input, ComponentFactoryResolver, ChangeDetectorRef, Type
 } from '@angular/core';
-import { LayoutComponent } from '../layout/layout.component';
-import { LayoutDirective } from '../layout.directive';
+import { LayoutComponent } from '../layouts/layout/layout.component';
+import { LayoutDirective } from '../layouts/layout.directive';
 import { Chart } from '../interfaces';
 
 @Component({
