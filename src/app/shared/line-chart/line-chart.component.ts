@@ -11,7 +11,7 @@ export class LineChartComponent extends ChartComponent {
         super();
     }
 
-    //options
+    // options
     view: any[] = [700, 250];
     showXAxis = true;
     showYAxis = true;
