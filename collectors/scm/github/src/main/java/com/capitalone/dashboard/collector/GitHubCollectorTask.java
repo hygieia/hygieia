@@ -167,7 +167,18 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         int pullCount = 0;
         int issueCount = 0;
 
+        String proxyUrl = gitHubSettings.getProxy();
+        String proxyPort = gitHubSettings.getProxyPort();
+ 
+        if (!StringUtils.isEmpty(proxyUrl) && !StringUtils.isEmpty(proxyPort)) {
+            System.setProperty("http.proxyHost", proxyUrl);
+            System.setProperty("https.proxyHost", proxyUrl);
+            System.setProperty("http.proxyPort", proxyPort);
+            System.setProperty("https.proxyPort", proxyPort);
+        }
+
         clean(collector);
+        
         for (GitHubRepo repo : enabledRepos(collector)) {
             if (repo.getErrorCount() < gitHubSettings.getErrorThreshold()) {
                 boolean firstRun = ((repo.getLastUpdated() == 0) || ((start - repo.getLastUpdated()) > FOURTEEN_DAYS_MILLISECONDS));
