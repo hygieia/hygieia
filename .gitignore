@@ -38,6 +38,7 @@ speed-measure-plugin.json
 /libpeerconnection.log
 npm-debug.log
 yarn-error.log
+/target
 testem.log
 /typings
 
