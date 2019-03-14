@@ -102,14 +102,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                 testResultsAuditResponse.setTestCapabilities(testResult.getTestCapabilities());
                 testResultsAuditResponse.setLastExecutionTime(testResult.getStartTime());
                 testResultsAuditResponse.setType(testResult.getType().toString());
-
-                HashMap<String,Integer> featureCount = new HashMap<>();
-                featureCount.put(SUCCESS_COUNT, testResult.getSuccessCount());
-                featureCount.put(FAILURE_COUNT, testResult.getFailureCount());
-                featureCount.put(SKIP_COUNT, testResult.getSkippedCount());
-                featureCount.put(TOTAL_COUNT,testResult.getTotalCount());
-                testResultsAuditResponse.setFeatureTestResult(featureCount);
-
+                testResultsAuditResponse.setFeatureTestResult(getFeatureTestResult(testResult));
                 List<String> totalCompletedStories = this.getTotalCompletedStoriesInGivenDateRange(dashboard.getTitle(), beginDate-1, endDate+1);
                 testResultsAuditResponse.setTotalCompletedStories(totalCompletedStories);
 
@@ -146,6 +139,20 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         }
 
         return testResultsAuditResponse;
+    }
+
+    /**
+     * Builds feature test result data map
+     * @param testResult
+     * @return featureTestResultMap
+     */
+    protected HashMap getFeatureTestResult(TestResult testResult) {
+        HashMap<String,Integer> featureTestResultMap = new HashMap<>();
+        featureTestResultMap.put(SUCCESS_COUNT, testResult.getSuccessCount());
+        featureTestResultMap.put(FAILURE_COUNT, testResult.getFailureCount());
+        featureTestResultMap.put(SKIP_COUNT, testResult.getSkippedCount());
+        featureTestResultMap.put(TOTAL_COUNT,testResult.getTotalCount());
+        return featureTestResultMap;
     }
 
     private  List<StoryIndicator> getTotalStoryIndicators(Dashboard dashboard, long beginDate, long endDate, List<TestResult> testResults, TestResultsAuditResponse testResultsAuditResponse, List<StoryIndicator> totalStoryIndicatorList) {
