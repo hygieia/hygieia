@@ -1,6 +1,6 @@
 {
     "/api/": {
-        "target": "https://hygieia.cloud.capitalone.com",
+        "target": "http://localhost:8080",
         "secure": true,
         "changeOrigin": true,
         "logLevel": "debug"
