@@ -1,5 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { NgbModal, NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-configure-modal',
@@ -8,14 +7,10 @@ import { NgbModal, NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
 })
 export class ConfigureModalComponent implements OnInit {
 
-  @Input() title = 'Test';
-
-  constructor(
-    public activeModal: NgbActiveModal
-  ) { }
+  constructor() { }
 
   ngOnInit() {
-
   }
 
 }
+
