@@ -23,9 +23,6 @@ export class LineChartComponent extends ChartComponent {
     timeline = false;
     yAxisTickFormatting: (val: number) => string = this.formatInteger;
 
-    onSelect(event) {
-        console.log(event);
-    }
 
     formatInteger(val: number): string {
         return val.toFixed(0);

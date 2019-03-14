@@ -1,7 +1,5 @@
 import { TestBed, inject } from '@angular/core/testing';
-
 import { BuildService } from './build.service';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
 describe('BuildService', () => {
