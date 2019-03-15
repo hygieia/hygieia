@@ -5,7 +5,7 @@
         <a class="nav-link" data-toggle="tab" [class.active]="isStandLogin()" (click)="setActiveTab('STANDARD')">Standard</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" data-toggle="tab" [class.active]="isLdapLogin()" (click)="setActiveTab('LDAP')">LDAP</a>
+        <a class="nav-link" data-toggle="tab" *ngIf="authenticationProviders && authenticationProviders.includes('LDAP')" [class.active]="isLdapLogin()" (click)="setActiveTab('LDAP')">LDAP</a>
       </li>
     </ul>
     <header>
