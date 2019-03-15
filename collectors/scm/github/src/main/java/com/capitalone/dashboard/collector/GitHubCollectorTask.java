@@ -171,15 +171,23 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         
         String proxyUrl = gitHubSettings.getProxy();
         String proxyPort = gitHubSettings.getProxyPort();
- 
+        String proxyUser= gitHubSettings.getProxyUser();
+        String proxyPassword= gitHubSettings.getProxyPassword();
+        
         if (!StringUtils.isEmpty(proxyUrl) && !StringUtils.isEmpty(proxyPort)) {
             System.setProperty("http.proxyHost", proxyUrl);
             System.setProperty("https.proxyHost", proxyUrl);
             System.setProperty("http.proxyPort", proxyPort);
             System.setProperty("https.proxyPort", proxyPort);
         }
+         if (!StringUtils.isEmpty(proxyUser) && !StringUtils.isEmpty(proxyPassword)) {
+            System.setProperty("http.proxyUser", proxyUser);
+            System.setProperty("https.proxyUser", proxyUser);
+            System.setProperty("http.proxyPassword", proxyPassword);
+            System.setProperty("https.proxyPassword", proxyPassword);
+        }
 
-          for (GitHubRepo repo : enabledRepos(collector)) {
+         for (GitHubRepo repo : enabledRepos(collector)) {
             if (repo.getErrorCount() < gitHubSettings.getErrorThreshold()) {
                 boolean firstRun = ((repo.getLastUpdated() == 0) || ((start - repo.getLastUpdated()) > FOURTEEN_DAYS_MILLISECONDS));
                 repo.removeLastUpdateDate();  //moved last update date to collector item. This is to clean old data.
