@@ -179,14 +179,15 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
             System.setProperty("https.proxyHost", proxyUrl);
             System.setProperty("http.proxyPort", proxyPort);
             System.setProperty("https.proxyPort", proxyPort);
+        
+            if (!StringUtils.isEmpty(proxyUser) && !StringUtils.isEmpty(proxyPassword)) {
+                System.setProperty("http.proxyUser", proxyUser);
+                System.setProperty("https.proxyUser", proxyUser);
+                System.setProperty("http.proxyPassword", proxyPassword);
+                System.setProperty("https.proxyPassword", proxyPassword);
         }
-         if (!StringUtils.isEmpty(proxyUser) && !StringUtils.isEmpty(proxyPassword)) {
-            System.setProperty("http.proxyUser", proxyUser);
-            System.setProperty("https.proxyUser", proxyUser);
-            System.setProperty("http.proxyPassword", proxyPassword);
-            System.setProperty("https.proxyPassword", proxyPassword);
         }
-
+            
          for (GitHubRepo repo : enabledRepos(collector)) {
             if (repo.getErrorCount() < gitHubSettings.getErrorThreshold()) {
                 boolean firstRun = ((repo.getLastUpdated() == 0) || ((start - repo.getLastUpdated()) > FOURTEEN_DAYS_MILLISECONDS));
