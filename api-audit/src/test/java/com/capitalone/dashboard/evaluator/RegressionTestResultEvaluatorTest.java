@@ -22,7 +22,7 @@ public class RegressionTestResultEvaluatorTest {
         HashMap featureTestMap = regressionTestResultEvaluator.getFeatureTestResult(testResult);
         Assert.assertEquals(testResult.getSuccessCount(), Integer.parseInt(featureTestMap.get("successCount").toString()));
         Assert.assertEquals(testResult.getFailureCount(), Integer.parseInt(featureTestMap.get("failureCount").toString()));
-        Assert.assertEquals(testResult.getSkippedCount(), Integer.parseInt(featureTestMap.get("skipCount").toString()));
+        Assert.assertEquals(testResult.getSkippedCount(), Integer.parseInt(featureTestMap.get("skippedCount").toString()));
         Assert.assertEquals(testResult.getTotalCount(), Integer.parseInt(featureTestMap.get("totalCount").toString()));
     }
 

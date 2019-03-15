@@ -43,7 +43,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
     private final FeatureRepository featureRepository;
     private static final String SUCCESS_COUNT = "successCount";
     private static final String FAILURE_COUNT = "failureCount";
-    private static final String SKIP_COUNT = "skipCount";
+    private static final String SKIP_COUNT = "skippedCount";
     private static final String TOTAL_COUNT = "totalCount";
     private static final Logger LOGGER = LoggerFactory.getLogger(RegressionTestResultEvaluator.class);
 
