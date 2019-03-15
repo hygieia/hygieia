@@ -55,11 +55,8 @@ import java.util.regex.Pattern;
 @Component
 public class DefaultGitHubClient implements GitHubClient {
     private static final Log LOG = LogFactory.getLog(DefaultGitHubClient.class);
-
     private final GitHubSettings settings;
-
     private final RestOperations restOperations;
-
     private static final int FIRST_RUN_HISTORY_DEFAULT = 14;
 
     @Autowired
