@@ -76,12 +76,7 @@ public class DefaultGitHubClient implements GitHubClient {
      */
     @Override
     public List<Commit> getCommits(GitHubRepo repo, boolean firstRun, List<Pattern> commitExclusionPatterns) throws RestClientException, MalformedURLException, HygieiaException {
-
-
-
-
         List<Commit> commits = new ArrayList<>();
-
         // format URL
         String repoUrl = (String) repo.getOptions().get("url");
         GitHubParsed gitHubParsed = new GitHubParsed(repoUrl);
