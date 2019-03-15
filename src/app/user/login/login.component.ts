@@ -28,7 +28,6 @@ export class LoginComponent implements OnInit {
   }
   getAuthProviders(): void {
     this.authService.getAuthenticationProviders().subscribe( data => {
-      console.log(data);
       this.setActiveTab(data[0]);
       this.authenticationProviders = data;
     });
