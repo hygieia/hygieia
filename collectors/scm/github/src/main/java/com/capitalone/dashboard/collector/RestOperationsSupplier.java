@@ -8,11 +8,10 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 public class RestOperationsSupplier implements Supplier<RestOperations> {
-     
-  @Override
+    @Override
     public RestOperations get() {
- HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();   //no proxy condition
- requestFactory.setConnectTimeout(20000);
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(20000);
         requestFactory.setReadTimeout(20000);
         return new RestTemplate(requestFactory);
     }
