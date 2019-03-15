@@ -54,8 +54,11 @@ import java.util.regex.Pattern;
 @Component
 public class DefaultGitHubClient implements GitHubClient {
     private static final Log LOG = LogFactory.getLog(DefaultGitHubClient.class);
+
     private final GitHubSettings settings;
+
     private final RestOperations restOperations;
+
     private static final int FIRST_RUN_HISTORY_DEFAULT = 14;
 
     @Autowired
@@ -76,7 +79,9 @@ public class DefaultGitHubClient implements GitHubClient {
      */
     @Override
     public List<Commit> getCommits(GitHubRepo repo, boolean firstRun, List<Pattern> commitExclusionPatterns) throws RestClientException, MalformedURLException, HygieiaException {
+
         List<Commit> commits = new ArrayList<>();
+
         // format URL
         String repoUrl = (String) repo.getOptions().get("url");
         GitHubParsed gitHubParsed = new GitHubParsed(repoUrl);
@@ -84,24 +89,16 @@ public class DefaultGitHubClient implements GitHubClient {
 
         String queryUrl = apiUrl.concat("/commits?sha=" + repo.getBranch()
                 + "&since=" + getTimeForApi(getRunDate(repo, firstRun)));
-     
         String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
-    
         String personalAccessToken = (String) repo.getOptions().get("personalAccessToken");
-   
         String decryptedPersonalAccessToken = decryptString(personalAccessToken, settings.getKey());
-
-
         boolean lastPage = false;
         String queryUrlPage = queryUrl;
         while (!lastPage) {
-            
             LOG.info("Executing " + queryUrlPage);
             ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword,decryptedPersonalAccessToken);
             JSONArray jsonArray = parseAsArray(response);
-              
             for (Object item : jsonArray) {
-
                 JSONObject jsonObject = (JSONObject) item;
                 String sha = str(jsonObject, "sha");
                 JSONObject commitObject = (JSONObject) jsonObject.get("commit");
@@ -137,7 +134,6 @@ public class DefaultGitHubClient implements GitHubClient {
                 commit.setType(getCommitType(CollectionUtils.size(parents), message, commitExclusionPatterns));
                 commits.add(commit);
             }
-
             if (CollectionUtils.isEmpty(jsonArray)) {
                 lastPage = true;
             } else {
@@ -149,7 +145,6 @@ public class DefaultGitHubClient implements GitHubClient {
                 }
             }
         }
-
         return commits;
     }
 
@@ -593,14 +588,14 @@ public class DefaultGitHubClient implements GitHubClient {
                                                 String password,String personalAccessToken) {
         // Basic Auth only.
         if (!"".equals(userId) && !"".equals(password)) {
-             return restOperations.exchange(url, HttpMethod.GET, new HttpEntity<>(createHeaders(userId, password)), String.class);
+            return restOperations.exchange(url, HttpMethod.GET, new HttpEntity<>(createHeaders(userId, password)), String.class);
         } else if ((personalAccessToken!=null && !"".equals(personalAccessToken)) ) {
             return restOperations.exchange(url, HttpMethod.GET,new HttpEntity<>(createHeaders(personalAccessToken)),String.class);
-        } else if (settings.getPersonalAccessToken() != null && !"".equals(settings.getPersonalAccessToken())){// LOG.info("wrong if\n");
+        } else if (settings.getPersonalAccessToken() != null && !"".equals(settings.getPersonalAccessToken())){
             String decryptPAC = decryptString(settings.getPersonalAccessToken(),settings.getKey());
             return restOperations.exchange(url, HttpMethod.GET, new HttpEntity<>(createHeaders(decryptPAC)), String.class);
         }else {
-            return   restOperations.exchange(url, HttpMethod.GET, null, String.class);
+            return restOperations.exchange(url, HttpMethod.GET, null, String.class);
         }
     }
 
