@@ -15,6 +15,7 @@ export class LoginComponent implements OnInit {
   errorMessage: string;
   authName: string;
   activeTab: string;
+  authenticationProviders: Array<string>;
 
   constructor(private formBuilder: FormBuilder,
               private router: Router,
@@ -23,8 +24,13 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
     this.authService.logout();
     this.buildForm();
-    this.authService.getAuthenticationProviders().subscribe((data: any) => {
+    this.getAuthProviders();
+  }
+  getAuthProviders(): void {
+    this.authService.getAuthenticationProviders().subscribe( data => {
+      console.log(data);
       this.setActiveTab(data[0]);
+      this.authenticationProviders = data;
     });
   }
   isStandLogin(): boolean {
