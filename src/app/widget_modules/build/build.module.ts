@@ -1,10 +1,18 @@
 import { NgModule } from '@angular/core';
-import { SharedModule } from '../../shared/shared.module';
+import { CommonModule } from '@angular/common';
+import { BuildWidgetComponent } from './build-widget/build-widget.component';
+import { BuildRoutingModule } from './build-routing-module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @NgModule({
-  declarations: [],
-  imports: [
-    SharedModule
-  ]
+    declarations: [BuildWidgetComponent],
+    imports: [
+        CommonModule,
+        BuildRoutingModule,
+        SharedModule
+    ],
+    exports: [
+        BuildWidgetComponent
+    ]
 })
 export class BuildModule { }
