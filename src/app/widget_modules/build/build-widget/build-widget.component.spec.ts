@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
 
 import { BuildWidgetComponent } from './build-widget.component';
-import { HttpClientModule } from '@angular/common/http';
 
 describe('BuildWidgetComponent', () => {
     let component: BuildWidgetComponent;
@@ -10,7 +10,7 @@ describe('BuildWidgetComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             imports: [
-                HttpClientModule
+              HttpClientTestingModule
             ],
             declarations: [BuildWidgetComponent]
         })
