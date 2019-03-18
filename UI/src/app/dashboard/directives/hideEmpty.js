@@ -24,27 +24,22 @@
                         var hideWidget = dataList.every(x => (!x && x != '0'));
 
                         // Find "No data found" message if it exists (within the full widget)
-                        var noDataFound = element.parent().find('#noDataMsg');
+                        var noDataFound = element.siblings('#noDataMsg');
 
                         //if true (if widget is empty), hide the widget
                         if (hideWidget) {
-                            // hide the widget data within the section (not the current element)
-                            if(element.children().first()) {
-                                element.children().first().hide();
-                            }
+                            // hide the widget data within the section (the current element)
+                            element.hide();
 
-
-                            // if "no data found" message already added, make sure it is shown. Otherwise, append it to the HTML
+                            // if "no data found" message already added, make sure it is shown. Otherwise, append it to the HTML as a sibling
                             if (noDataFound.length > 0) {
                                 noDataFound.show();
                             } else {
-                                element.append('<div id="noDataMsg" class="row"><div class="col-md-12">No data found.</div></div>');
+                                element.parent().append('<div id="noDataMsg" class="row"><div class="col-md-12">No data found.</div></div>');
                             }
                         } else {
                             // display the widget and hide "No data found" message
-                            if(element.children().first()) {
-                                element.children().first().show();
-                            }
+                            element.show();
                             noDataFound.hide();
                         }
                     }, true);
