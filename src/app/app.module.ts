@@ -16,11 +16,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
         AppComponent
     ],
     imports: [
+        AppRoutingModule,
         BrowserModule,
         BrowserAnimationsModule,
-        NgbModule,
-        AppRoutingModule,
         CoreModule,
+        NgbModule,
         SharedModule
     ],
     providers: [],
