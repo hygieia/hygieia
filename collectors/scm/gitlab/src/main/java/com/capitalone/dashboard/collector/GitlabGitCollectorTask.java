@@ -120,44 +120,30 @@ public class GitlabGitCollectorTask  extends CollectorTask<Collector> {
 
         clean(collector);
         for (GitlabGitRepo repo : enabledRepos(collector)) {
-			boolean firstRun = isFirstRun(start, repo.getLastUpdated());
+			boolean isRepoFirstRun = isFirstRun(start, repo.getLastUpdated());
 			// moved last update date to collector item. This is to clean old data.
 			repo.removeLastUpdateDate();
 
 			try {
 				// Step 1: Get all the commits
 				LOG.info(repo.getOptions().toString() + "::" + repo.getBranch() + ":: get commits");
-				List<Commit> commits = gitlabClient.getCommits(repo, firstRun);
+				List<Commit> commits = gitlabClient.getCommits(repo, isRepoFirstRun);
 				commitCount = saveNewCommits(commitCount, repo, commits);
 
 				// Step 2: Get all the issues
 				LOG.info(repo.getOptions().toString() + "::" + repo.getBranch() + " get issues");
-				boolean isGetIssuesFirstRun = firstRun;
 				List<GitRequest> allIssues = gitRequestRepository.findRequestNumberAndLastUpdated(repo.getId(),
 						"issue");
-				if (!firstRun) {
-					if (allIssues.isEmpty()) {
-						isGetIssuesFirstRun = true;
-					} else {
-						isGetIssuesFirstRun = isFirstRun(start, allIssues.get(0).getUpdatedAt());
-					}
-				}
+				boolean isGetIssuesFirstRun = isGitRequestFirstRun(isRepoFirstRun, start, allIssues);
 				List<GitRequest> issues = gitlabClient.getIssues(repo, isGetIssuesFirstRun);
 				issueCount += processList(repo, issues, "issue");
 
 				// Step 3: Get all the Merge Requests
 				LOG.info(repo.getOptions().toString() + "::" + repo.getBranch() + "::get pulls");
-				boolean isGetMergeRequestsFirstRun = firstRun;
 				List<GitRequest> allMRs = gitRequestRepository.findRequestNumberAndLastUpdated(repo.getId(), "pull");
 				Map<Long, String> mrCloseMap = allMRs.stream().collect(Collectors.toMap(GitRequest::getUpdatedAt,
 						GitRequest::getNumber, (oldValue, newValue) -> oldValue));
-				if (!firstRun) {
-					if (allMRs.isEmpty()) {
-						isGetMergeRequestsFirstRun = true;
-					} else {
-						isGetMergeRequestsFirstRun = isFirstRun(start, allMRs.get(0).getUpdatedAt());
-					}
-				}
+				boolean isGetMergeRequestsFirstRun = isGitRequestFirstRun(isRepoFirstRun, start, allMRs);
 				List<GitRequest> pulls = gitlabClient.getMergeRequests(repo, "all", isGetMergeRequestsFirstRun,
 						mrCloseMap);
 				pullCount += processList(repo, pulls, "pull");
@@ -181,6 +167,20 @@ public class GitlabGitCollectorTask  extends CollectorTask<Collector> {
 		log("New Pulls", start, pullCount);
 
         log("Finished", start);
+    }
+
+    private boolean isGitRequestFirstRun(boolean isRepoFirstRun, long start, List<GitRequest> allGitRequests) {
+        boolean isGitRequestFirstRun = isRepoFirstRun;
+
+        if (!isGitRequestFirstRun) {
+            if (allGitRequests.isEmpty()) {
+                isGitRequestFirstRun = true;
+            } else {
+                isGitRequestFirstRun = isFirstRun(start, allGitRequests.get(0).getUpdatedAt());
+            }
+        }
+
+        return isGitRequestFirstRun;
     }
 
 	private boolean isFirstRun(long start, long lastUpdated) {
@@ -264,18 +264,16 @@ public class GitlabGitCollectorTask  extends CollectorTask<Collector> {
 		 * type SCM. Store their IDs in a unique set ONLY if their collector IDs
 		 * match with GitLib collectors ID.
 		 */
-		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository.findAll()) {
-			if (comp.getCollectorItems() != null && !comp.getCollectorItems().isEmpty()) {
-				List<CollectorItem> itemList = comp.getCollectorItems().get(CollectorType.SCM);
-				if (itemList != null) {
-					for (CollectorItem ci : itemList) {
-						if (ci != null && ci.getCollectorId().equals(collector.getId())) {
-							uniqueIDs.add(ci.getId());
-						}
-					}
-				}
-			}
-		}
+        for (com.capitalone.dashboard.model.Component comp : dbComponentRepository.findAll()) {
+            if (comp.getCollectorItems() == null || comp.getCollectorItems().isEmpty()) continue;
+            List<CollectorItem> itemList = comp.getCollectorItems().get(CollectorType.SCM);
+            if (itemList == null) continue;
+            for (CollectorItem ci : itemList) {
+                if (ci != null && ci.getCollectorId().equals(collector.getId())) {
+                    uniqueIDs.add(ci.getId());
+                }
+            }
+        }
 
 		return uniqueIDs;
 	}

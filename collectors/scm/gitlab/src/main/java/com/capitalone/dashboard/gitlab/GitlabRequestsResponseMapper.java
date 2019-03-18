@@ -56,21 +56,22 @@ public class GitlabRequestsResponseMapper {
 		for (GitlabRequest gitlabRequest : gitlabRequests) {
 			LOG.debug("targetBranch: " + targetBranch);
 			LOG.debug("gitlabRequest.getTargetBranch(): " + gitlabRequest.getTargetBranch());
-			if (StringUtils.equals(targetBranch, gitlabRequest.getTargetBranch())) {
-				GitRequest request = map(repoUrl, targetBranch, gitlabRequest);
-				if (null == orgAndRepoName) {
-					orgAndRepoName = this.gitlabUrlUtility.getOrgAndRepoName(gitlabRequest.getWebUrl());
-				}
-				request.setOrgName(orgAndRepoName[0]);
-				request.setRepoName(orgAndRepoName[1]);
-				requests.add(request);
 
-				boolean stop = (!MapUtils.isEmpty(mrCloseMap) && mrCloseMap.get(request.getUpdatedAt()) != null)
-						&& (mrCloseMap.get(request.getUpdatedAt()).equals(request.getNumber()));
-				if (stop) {
-					break;
-				}
+			if (!StringUtils.equals(targetBranch, gitlabRequest.getTargetBranch())) continue;
+
+			GitRequest request = map(repoUrl, targetBranch, gitlabRequest);
+			if (null == orgAndRepoName) {
+				orgAndRepoName = this.gitlabUrlUtility.getOrgAndRepoName(gitlabRequest.getWebUrl());
 			}
+			request.setOrgName(orgAndRepoName[0]);
+			request.setRepoName(orgAndRepoName[1]);
+			requests.add(request);
+
+			// new GitRequest, never fetched!
+			if (MapUtils.isEmpty(mrCloseMap) || mrCloseMap.get(request.getUpdatedAt()) == null) continue;
+
+			// the fetched GitRequest reached!
+			if (mrCloseMap.get(request.getUpdatedAt()).equals(request.getNumber())) break;
 		}
 
 		return requests;
