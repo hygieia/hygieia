@@ -249,7 +249,8 @@
                         var lastUpdated = angular.isArray(result) ? _.max(result) : result;
                         var collectorItems = result.collectorItem;
                         if(typeof lastUpdated === 'object'){
-                            lastUpdated = lastUpdated.collectorItem[0].lastUpdated;
+                            lastUpdated = angular.isDefined(lastUpdated.collectorItem[0])?lastUpdated.collectorItem[0].lastUpdated :lastUpdated.lastUpdated;
+
                         }
                         $scope.lastUpdatedActual = lastUpdated;
                         $scope.lastUpdatedDisplay = moment(lastUpdated).dash('ago');

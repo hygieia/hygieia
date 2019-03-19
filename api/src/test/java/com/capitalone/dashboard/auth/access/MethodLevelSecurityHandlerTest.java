@@ -63,7 +63,9 @@ public class MethodLevelSecurityHandlerTest {
 	public void testIsOwnerOfDashboard_newDashFound() {
 		initiateSecurityContext();
 		List<String> activeWidgets = new ArrayList<>();
-		Dashboard dashboard = new Dashboard("team", "title", null, new Owner(USERNAME, AuthType.STANDARD), DashboardType.Team, configItemAppName,configItemComponentName,activeWidgets, false, ScoreDisplayType.HEADER);
+		List<Owner> owners = new ArrayList<>();
+		owners.add(new Owner(USERNAME, AuthType.STANDARD));
+		Dashboard dashboard = new Dashboard("team", "title", null, owners, DashboardType.Team, configItemAppName,configItemComponentName,activeWidgets, false, ScoreDisplayType.HEADER);
 		when(dashboardRepository.findOne(any(ObjectId.class))).thenReturn(dashboard);
 		
 		assertTrue(handler.isOwnerOfDashboard(new ObjectId()));

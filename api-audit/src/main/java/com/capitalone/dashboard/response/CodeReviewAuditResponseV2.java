@@ -37,6 +37,9 @@ public class CodeReviewAuditResponseV2 extends AuditReviewResponse<CodeReviewAud
     private List<Commit> directCommits = new ArrayList<>();
     private List<PullRequestAudit> pullRequests = new ArrayList<>();
 
+    private List<Commit> directCommitsToBase = new ArrayList<>();
+
+
 
     public List<PullRequestAudit> getPullRequests() {
         return pullRequests;
@@ -93,4 +96,17 @@ public class CodeReviewAuditResponseV2 extends AuditReviewResponse<CodeReviewAud
     public void setLastPRMergeTime(long lastPRMergeTime) {
         this.lastPRMergeTime = lastPRMergeTime;
     }
+
+    public void addDirectCommitsToBase(Commit commit) {
+        directCommitsToBase.add(commit);
+    }
+
+    public List<Commit> getDirectCommitsToBase() {
+        return directCommitsToBase;
+    }
+
+    public void setDirectCommitsToBase(List<Commit> directCommitsToBase) {
+        this.directCommitsToBase = directCommitsToBase;
+    }
+
 }
