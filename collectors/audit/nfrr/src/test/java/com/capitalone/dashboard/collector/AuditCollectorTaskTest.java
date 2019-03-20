@@ -67,7 +67,7 @@ public class AuditCollectorTaskTest {
         Map traceability = new HashMap();
         AuditResult auditResult1 = new AuditResult(ObjectId.get(),"auditTestDashboard" , "CARD",
                 "ASVC","BAP" ,"Owner" ,null ,
-                AuditType.CODE_QUALITY ,"OK","OK" ,null,null , traceability, 7883L );
+                AuditType.CODE_QUALITY ,"OK","OK" ,null,null, 7883L );
         auditResults.add(auditResult1);
 
         Set<AuditType> allAuditTypes = new HashSet<>();

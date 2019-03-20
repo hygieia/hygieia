@@ -26,8 +26,8 @@ public class ApiSettings {
     private boolean logRequest;
 
     private String featureIDPattern;
-    @Value("${threshold:80}")
-    private int threshold;
+    @Value("${threshold:80.0}")
+    private double threshold;
     private List<String> validStoryStatus;
 
     public String getKey() {
@@ -102,11 +102,11 @@ public class ApiSettings {
         this.featureIDPattern = featureIDPattern;
     }
 
-    public int getThreshold() {
+    public double getThreshold() {
         return threshold;
     }
 
-    public void setThreshold(int threshold) {
+    public void setThreshold(double threshold) {
         this.threshold = threshold;
     }
 

@@ -1,36 +1,23 @@
 package com.capitalone.dashboard.response;
 
 import com.capitalone.dashboard.model.TestCapability;
+import com.capitalone.dashboard.model.Traceability;
 import com.capitalone.dashboard.status.TestResultAuditStatus;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
 public class TestResultsAuditResponse extends AuditReviewResponse<TestResultAuditStatus> {
     private String url;
     private long lastExecutionTime;
-
     private Collection<TestCapability> testCapabilities;
+    private String type;
+    private HashMap featureTestResult = new HashMap();
+    public Traceability traceability;
 
-    private int totalStoryCount;
+    public Collection<TestCapability> getTestCapabilities() { return testCapabilities; }
 
-    private double threshold;
-
-    private double percentTraceability;
-
-    private List<HashMap> totalStories = new ArrayList<HashMap>();
-
-    private List<String> totalCompletedStories = new ArrayList<>();
-
-    public Collection<TestCapability> getTestCapabilities() {
-        return testCapabilities;
-    }
-
-    public void setTestCapabilities(Collection<TestCapability> testCapabilities) {
-        this.testCapabilities = testCapabilities;
-    }
+    public void setTestCapabilities(Collection<TestCapability> testCapabilities) { this.testCapabilities = testCapabilities; }
 
     public String getUrl() {
         return url;
@@ -48,44 +35,15 @@ public class TestResultsAuditResponse extends AuditReviewResponse<TestResultAudi
         this.lastExecutionTime = lastExecutionTime;
     }
 
-    public List<HashMap> getTotalStories() {
-        return totalStories;
-    }
+    public String getType() { return type; }
 
-    public void setTotalStories(List<HashMap> totalStories) {
-        this.totalStories = totalStories;
-    }
+    public void setType(String type) { this.type = type; }
 
+    public HashMap getFeatureTestResult() { return featureTestResult; }
 
-    public int getTotalStoryCount() {
-        return totalStoryCount;
-    }
+    public void setFeatureTestResult(HashMap featureTestResult) { this.featureTestResult = featureTestResult; }
 
-    public void setTotalStoryCount(int totalStoryCount) {
-        this.totalStoryCount = totalStoryCount;
-    }
+    public Traceability getTraceability() { return traceability; }
 
-    public double getThreshold() {
-        return threshold;
-    }
-
-    public void setThreshold(double threshold) {
-        this.threshold = threshold;
-    }
-
-    public double getPercentTraceability() {
-        return percentTraceability;
-    }
-
-    public void setPercentTraceability(double percentTraceability) {
-        this.percentTraceability = percentTraceability;
-    }
-
-    public List<String> getTotalCompletedStories() {
-        return totalCompletedStories;
-    }
-
-    public void setTotalCompletedStories(List<String> totalCompletedStories) {
-        this.totalCompletedStories = totalCompletedStories;
-    }
+    public void setTraceability(Traceability traceability) { this.traceability = traceability; }
 }
