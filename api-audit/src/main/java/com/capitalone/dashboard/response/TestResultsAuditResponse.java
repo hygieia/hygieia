@@ -6,13 +6,14 @@ import com.capitalone.dashboard.status.TestResultAuditStatus;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 public class TestResultsAuditResponse extends AuditReviewResponse<TestResultAuditStatus> {
     private String url;
     private long lastExecutionTime;
     private Collection<TestCapability> testCapabilities;
     private String type;
-    private HashMap featureTestResult = new HashMap();
+    private Map featureTestResult = new HashMap();
     public Traceability traceability;
 
     public Collection<TestCapability> getTestCapabilities() { return testCapabilities; }
@@ -39,9 +40,9 @@ public class TestResultsAuditResponse extends AuditReviewResponse<TestResultAudi
 
     public void setType(String type) { this.type = type; }
 
-    public HashMap getFeatureTestResult() { return featureTestResult; }
+    public Map getFeatureTestResult() { return featureTestResult; }
 
-    public void setFeatureTestResult(HashMap featureTestResult) { this.featureTestResult = featureTestResult; }
+    public void setFeatureTestResult(Map featureTestResult) { this.featureTestResult = featureTestResult; }
 
     public Traceability getTraceability() { return traceability; }
 
