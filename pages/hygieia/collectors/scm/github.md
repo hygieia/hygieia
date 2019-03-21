@@ -57,49 +57,61 @@ java -jar github-collector.jar --spring.config.name=github --spring.config.locat
 The sample `application.properties` file lists parameter values to configure the GitHub Collector. Set the parameters based on your environment setup.
 
 ```properties
-		# Database Name
-		dbname=dashboarddb
+	# Database Name
+	dbname=dashboarddb
 
-		# Database HostName - default is localhost
-		dbhost=localhost
+	# Database HostName - default is localhost
+	dbhost=localhost
 
-		# Database Port - default is 27017
-		dbport=27017
+	# Database Port - default is 27017
+	dbport=27017
 
-		# MongoDB replicaset
-		dbreplicaset=[false if you are not using MongoDB replicaset]
-		dbhostport=[host1:port1,host2:port2,host3:port3]
+	# MongoDB replicaset
+	dbreplicaset=[false if you are not using MongoDB replicaset]
+	dbhostport=[host1:port1,host2:port2,host3:port3]
 
-		# Database Username - default is blank
-		dbusername=dashboarduser
+	# Database Username - default is blank
+	dbusername=dashboarduser
 
-		# Database Password - default is blank
-		dbpassword=dbpassword
+	# Database Password - default is blank
+	dbpassword=dbpassword
+	
+	# Proxy URL
+	github.proxy=
+	
+	# Proxy Port
+	github.proxyPort=
+	
+	# Proxy user if auth is required
+	github.proxyUser=
+	
+	# Proxy password if auth is required
+	github.proxyPassword=
+	
+	# Logging File location
+	logging.file=./logs/github.log
 
-		# Logging File location
-		logging.file=./logs/github.log
+	# Collector schedule (required)
+	github.cron=0 0/5 * * * *
 
-		# Collector schedule (required)
-		github.cron=0 0/5 * * * *
+	github.host=github.com
 
-		github.host=github.com
+	# Maximum number of previous days from current date, when fetching commits
+	github.commitThresholdDays=15
 
-		# Maximum number of previous days from current date, when fetching commits
-		github.commitThresholdDays=15
+	# Optional: Error threshold count after which collector stops collecting for a collector item. Default is 2.
+	github.errorThreshold=1
 
-    # Optional: Error threshold count after which collector stops collecting for a collector item. Default is 2.
-    github.errorThreshold=1
+	# This is the key generated using the Encryption class in core
+	github.key=<your-generated-key>
 
-    # This is the key generated using the Encryption class in core
-    github.key=<your-generated-key>
+	# Personal access token generated from github and used for making authentiated calls
+	github.personalAccessToken=
 
-    # Personal access token generated from github and used for making authentiated calls
-    github.personalAccessToken=
-    
-    # Github repository Connect Timeout value in milliseconds, default value is 20000 (20s)
-    github.connectTimeout=
-    
-    # Github repository Read Timeout value in milliseconds, default value is 20000 (20s) 
-    github.readTimeout=
+	# Github repository Connect Timeout value in milliseconds, default value is 20000 (20s)
+	github.connectTimeout=
+
+	# Github repository Read Timeout value in milliseconds, default value is 20000 (20s) 
+	github.readTimeout=
 ```
 **Note**: For information on generating your GitHub key for private repos, refer to [Encryption of Private Repos](../collectors.md#encryption-for-private-repos).
