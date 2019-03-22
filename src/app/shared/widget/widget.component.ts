@@ -6,8 +6,9 @@ import { LayoutDirective } from '../layouts/layout.directive';
 import { Chart } from '../interfaces';
 
 @Component({
-    template: '',
-    styleUrls: ['./widget.component.scss']
+  selector: 'app-widget',
+  templateUrl: './widget.component.html',
+  styleUrls: ['./widget.component.scss']
 })
 export class WidgetComponent {
     @Input() layout: Type<any>;
