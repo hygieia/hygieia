@@ -18,7 +18,7 @@ describe('BuildService', () => {
         inject([HttpTestingController, BuildService],
             (httpMock: HttpTestingController, service: BuildService) => {
                 // We call the service
-                service.fetchDetails().subscribe(data => {
+                service.fetchDetails('123', 14).subscribe(data => {
                     expect(data).toBeTruthy();
                 });
                 // We set the expectations for the HttpClient mock

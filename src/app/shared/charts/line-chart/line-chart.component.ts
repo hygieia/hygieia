@@ -12,11 +12,12 @@ export class LineChartComponent extends ChartComponent {
     }
 
     // options
-    view: any[] = [700, 250];
+    view: any[] = [500, 250];
     showXAxis = true;
     showYAxis = true;
     gradient = false;
-    showLegend = true;
+    showLegend = false;
+    tooltipDisabled = false;
     showXAxisLabel = true;
     showYAxisLabel = true;
     trimYAxisTicks = false;
