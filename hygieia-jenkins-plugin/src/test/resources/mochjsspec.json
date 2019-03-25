@@ -1,0 +1,141 @@
+{
+  "stats": {
+    "suites": 3,
+    "tests": 6,
+    "passes": 3,
+    "pending": 1,
+    "failures": 2,
+    "start": "2018-03-12T21:38:41.618Z",
+    "end": "2018-03-12T21:38:41.634Z",
+    "duration": 16
+  },
+  "suites": [
+    {
+      "title": "suite 1",
+      "tests": [
+        {
+          "title": "test pass",
+          "duration": 1,
+          "result": "passed",
+          "err": {}
+        },
+        {
+          "title": "test fail",
+          "duration": 1,
+          "result": "failed",
+          "err": {
+            "stack": "AssertionError [ERR_ASSERTION]: null == true\n    at Context.it (test\\sample-test.js:7:32)",
+            "message": "null == true",
+            "generatedMessage": true,
+            "name": "AssertionError [ERR_ASSERTION]",
+            "code": "ERR_ASSERTION",
+            "actual": null,
+            "expected": true,
+            "operator": "=="
+          }
+        },
+        {
+          "title": "skipped test",
+          "result": "pending",
+          "err": {}
+        }
+      ]
+    },
+    {
+      "title": "nested describe",
+      "tests": [
+        {
+          "title": "nested test pass",
+          "duration": 2,
+          "result": "passed",
+          "err": {}
+        },
+        {
+          "title": "nested test fail",
+          "duration": 3,
+          "result": "failed",
+          "err": {
+            "stack": "AssertionError [ERR_ASSERTION]: null == true\n    at Context.it (test\\sample-test.js:11:41)",
+            "message": "null == true",
+            "generatedMessage": true,
+            "name": "AssertionError [ERR_ASSERTION]",
+            "code": "ERR_ASSERTION",
+            "actual": null,
+            "expected": true,
+            "operator": "=="
+          }
+        }
+      ]
+    },
+    {
+      "title": "suite 2",
+      "tests": [
+        {
+          "title": "suite2 pass",
+          "duration": 5,
+          "result": "passed",
+          "err": {}
+        }
+      ]
+    }
+  ],
+  "pending": [
+    {
+      "title": "skipped test",
+      "result": "pending",
+      "err": {}
+    }
+  ],
+  "failures": [
+    {
+      "title": "test fail",
+      "duration": 0,
+      "result": "failed",
+      "err": {
+        "stack": "AssertionError [ERR_ASSERTION]: null == true\n    at Context.it (test\\sample-test.js:7:32)",
+        "message": "null == true",
+        "generatedMessage": true,
+        "name": "AssertionError [ERR_ASSERTION]",
+        "code": "ERR_ASSERTION",
+        "actual": null,
+        "expected": true,
+        "operator": "=="
+      }
+    },
+    {
+      "title": "nested test fail",
+      "duration": 0,
+      "result": "failed",
+      "err": {
+        "stack": "AssertionError [ERR_ASSERTION]: null == true\n    at Context.it (test\\sample-test.js:11:41)",
+        "message": "null == true",
+        "generatedMessage": true,
+        "name": "AssertionError [ERR_ASSERTION]",
+        "code": "ERR_ASSERTION",
+        "actual": null,
+        "expected": true,
+        "operator": "=="
+      }
+    }
+  ],
+  "passes": [
+    {
+      "title": "test pass",
+      "duration": 0,
+      "result": "passed",
+      "err": {}
+    },
+    {
+      "title": "nested test pass",
+      "duration": 0,
+      "result": "passed",
+      "err": {}
+    },
+    {
+      "title": "suite2 pass",
+      "duration": 0,
+      "result": "passed",
+      "err": {}
+    }
+  ]
+}
