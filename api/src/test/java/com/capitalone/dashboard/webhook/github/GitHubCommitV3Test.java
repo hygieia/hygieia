@@ -34,7 +34,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.web.client.RestOperations;
 
 import java.net.MalformedURLException;
-import java.util.ArrayList;;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
