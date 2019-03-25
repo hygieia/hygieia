@@ -50,7 +50,8 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
     private long beginDate;
     private long endDate;
     private Dashboard dashboard;
-    private Widget featureWidget;
+    private Widget featureWidget = new Widget();
+    private double threshold;
     private static final String WIDGET_CODE_ANALYSIS = "codeanalysis";
     private static final String WIDGET_FEATURE = "feature";
     private static final String STR_TEAM_ID = "teamId";
@@ -77,6 +78,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         this.dashboard = getDashboard(dashboard.getTitle(), DashboardType.Team);
         this.featureWidget = getFeatureWidget();
         this.FEATURE_ID_PATTERN = settings.getFeatureIDPattern();
+        this.threshold = settings.getThreshold();
         List<CollectorItem> testItems = getCollectorItems(this.dashboard, WIDGET_CODE_ANALYSIS, CollectorType.Test);
         Collection<TestResultsAuditResponse> testResultsAuditResponse = new ArrayList<>();
         if (CollectionUtils.isEmpty(testItems)) {
@@ -96,7 +98,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
      * @param testItem
      * @return
      */
-    private TestResultsAuditResponse getRegressionTestResultAudit(CollectorItem testItem) {
+    protected TestResultsAuditResponse getRegressionTestResultAudit(CollectorItem testItem) {
         List<TestResult> testResults = testResultRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(testItem.getId(), beginDate, endDate);
         return performTestResultAudit(testResults);
     }
@@ -116,13 +118,12 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         }
 
         TestResult testResult = testResults.stream().sorted(Comparator.comparing(TestResult::getTimestamp).reversed()).findFirst().get();
-        TestCapability testCapability = testResult.getTestCapabilities().stream().sorted(Comparator.comparing(TestCapability::getTimestamp).reversed()).findFirst().get();
-        testResultsAuditResponse.setTestCapabilities(Arrays.asList(testCapability));
+        Optional<TestCapability> testCapability = testResult.getTestCapabilities().stream().sorted(Comparator.comparing(TestCapability::getTimestamp).reversed()).findFirst();
+        testResultsAuditResponse.setTestCapabilities(Arrays.asList(testCapability.orElse(new TestCapability())));
         testResultsAuditResponse.setLastExecutionTime(testResult.getStartTime());
-        testResultsAuditResponse.addAuditStatus((testResult.getFailureCount() == NumberUtils.INTEGER_ZERO) ?
-                TestResultAuditStatus.TEST_RESULT_AUDIT_OK : TestResultAuditStatus.TEST_RESULT_AUDIT_FAIL);
         testResultsAuditResponse.setType(testResult.getType().toString());
         testResultsAuditResponse.setFeatureTestResult(getFeatureTestResult(testResult));
+        testResultsAuditResponse = updateTestResultAuditStatuses(testResult, testResultsAuditResponse);
         testResultsAuditResponse = updateTraceabilityDetails(testResult, testResultsAuditResponse);
         return testResultsAuditResponse;
 
@@ -165,7 +166,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
             double percentage = (totalStoryIndicatorCount * 100) / totalCompletedStories.size();
             traceability.setPercentage(percentage);
 
-            if (settings.getThreshold() == NumberUtils.DOUBLE_ZERO) {
+            if (this.threshold == NumberUtils.DOUBLE_ZERO) {
                 testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_THRESHOLD_DEFAULT);
             }
             if(percentage == NumberUtils.DOUBLE_ZERO){
@@ -177,7 +178,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         traceability.setTotalCompletedStories(totalCompletedStories);
         traceability.setTotalStories(totalStories);
         traceability.setTotalStoryCount(totalStories.size());
-        traceability.setThreshold(settings.getThreshold());
+        traceability.setThreshold(this.threshold);
         testResultsAuditResponse.setTraceability(traceability);
         return testResultsAuditResponse;
     }
@@ -316,5 +317,25 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         featureTestResultMap.put(SKIP_COUNT, testResult.getSkippedCount());
         featureTestResultMap.put(TOTAL_COUNT,testResult.getTotalCount());
         return featureTestResultMap;
+    }
+
+    /**
+     * update test result audit statuses
+     * @param testResult
+     * @param testResultsAuditResponse
+     * @return
+     */
+    private TestResultsAuditResponse updateTestResultAuditStatuses(TestResult testResult, TestResultsAuditResponse testResultsAuditResponse) {
+        if (testResult.getFailureCount() > NumberUtils.INTEGER_ZERO) {
+            testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_AUDIT_FAIL);
+        } else if (testResult.getFailureCount() == NumberUtils.INTEGER_ZERO && testResult.getSuccessCount() > NumberUtils.INTEGER_ZERO) {
+            testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_AUDIT_OK);
+        } else if (testResult.getFailureCount() == NumberUtils.INTEGER_ZERO && testResult.getSuccessCount() == NumberUtils.INTEGER_ZERO
+                && testResult.getSkippedCount() > NumberUtils.INTEGER_ZERO) {
+            testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_SKIPPED);
+        } else {
+            testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_MISSING);
+        }
+        return testResultsAuditResponse;
     }
 }

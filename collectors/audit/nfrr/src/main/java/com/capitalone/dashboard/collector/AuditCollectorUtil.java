@@ -17,6 +17,7 @@ import com.capitalone.dashboard.status.PerformanceTestAuditStatus;
 import com.capitalone.dashboard.status.LibraryPolicyAuditStatus;
 import com.capitalone.dashboard.status.TestResultAuditStatus;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
@@ -318,7 +319,7 @@ public class AuditCollectorUtil {
     /**
      * Get test result audit results
      */
-    private static Audit getTestAudit(JSONArray jsonArray, JSONArray global) {
+    protected static Audit getTestAudit(JSONArray jsonArray, JSONArray global) {
 
         LOGGER.info("NFRR Audit Collector auditing TEST_RESULT");
         Audit audit = new Audit();
@@ -585,6 +586,6 @@ public class AuditCollectorUtil {
         return stream
                 .map(jObj -> ((JSONObject)jObj).get(STR_TRACEABILITY))
                 .map(traceability -> ((JSONObject)traceability).get(STR_PERCENTAGE))
-                .mapToDouble(s-> Double.valueOf(s.toString())).average().getAsDouble();
+                .mapToDouble(s-> Double.valueOf(s.toString())).average().orElse(NumberUtils.DOUBLE_ZERO);
     }
 }
