@@ -4,7 +4,7 @@
   ],
   "lastUpdated": 0,
   "dashboardTitle": "tychehygieiatitle",
-  "businessService": "CI268142",
+  "businessService": "CIXXXXXX",
   "review": {
     "TEST_RESULT": [{
       "auditStatuses": [
@@ -14,7 +14,7 @@
       "lastExecutionTime": 0,
       "testCapabilities": [{
         "timestamp": 0,
-        "description": "5.21 Regression - Terran - Manual - Nougat",
+        "description": "Manual - Nougat",
         "startTime": 0,
         "endTime": 0,
         "duration": 0,
@@ -26,7 +26,7 @@
         "status": "Success",
         "type": "Functional",
         "testSuites": [{
-          "description": "5.21 Regression - Terran - Manual - Nougat",
+          "description": "Manual - Nougat",
           "type": "Functional",
           "startTime": 0,
           "endTime": 0,
@@ -49,7 +49,7 @@
             "status": "Success",
             "testSteps": [{
               "id": "1352028",
-              "description": "Launch the Capital One Mobile App and Enter valid credentials that has at least one card account",
+              "description": "Enter valid credentials that has at least one card account",
               "duration": 0,
               "status": "Success"
             },
@@ -115,13 +115,13 @@
             "storyIndicators": [{
               "storyId": "1448446",
               "storyNumber": "EA-21748",
-              "storyName": "5.21 Regression - Terran - Manual - Marshmallow",
+              "storyName": "Manual - Marshmallow",
               "storyStatus": "Accepted",
               "storyState": "Done",
               "storyType": "Test Execution",
               "epicNumber": "",
               "epicName": "",
-              "projectName": "EASE Android",
+              "projectName": "Android",
               "sprintName": ""
             }],
             "before": [],
