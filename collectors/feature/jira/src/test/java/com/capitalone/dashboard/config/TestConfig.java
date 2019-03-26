@@ -28,7 +28,7 @@ public class TestConfig {
         settings.setJiraStoryPointsFieldName("customfield_10004");
         settings.setMaxNumberOfFeaturesPerBoard(10000);
         settings.setJiraEpicId("6");
-        settings.setJiraStoryId("7");
+        settings.setJiraStoryIds(new String[]{"7","8"});
 
 
         return settings;

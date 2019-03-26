@@ -94,7 +94,7 @@ public class FeatureSettings {
 	 * via the following URI
 	 *  https://[your-jira-domain-name]/rest/api/2/issuetype
 	 */
-	private String jiraStoryId;
+	private String[] jiraStoryIds;
 	/**
 	 * In Jira, your instance will have its own Id for the Epic
 	 * <p>
@@ -273,12 +273,12 @@ public class FeatureSettings {
 		this.jiraBoardAsTeam = jiraBoardAsTeam;
 	}
 
-	public String getJiraStoryId() {
-		return jiraStoryId;
+	public String[] getJiraStoryIds() {
+		return jiraStoryIds;
 	}
 
-	public void setJiraStoryId(String jiraStoryId) {
-		this.jiraStoryId = jiraStoryId;
+	public void setJiraStoryIds(String[] jiraStoryIds) {
+		this.jiraStoryIds = jiraStoryIds;
 	}
 
 	public String getJiraEpicId() {
