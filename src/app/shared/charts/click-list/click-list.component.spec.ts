@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ClickListComponent } from './click-list.component';
+import { TimeAgoPipe } from 'time-ago-pipe';
 
 describe('ClickListComponent', () => {
   let component: ClickListComponent;
@@ -8,7 +9,7 @@ describe('ClickListComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ClickListComponent ]
+        declarations: [ClickListComponent, TimeAgoPipe ]
     })
     .compileComponents();
   }));

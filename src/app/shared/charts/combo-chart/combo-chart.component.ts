@@ -12,7 +12,6 @@ export class ComboChartComponent extends ChartComponent {
     }
 
     // options
-    view: any[] = [500, 250];
     showXAxis = true;
     showYAxis = true;
     gradient = false;

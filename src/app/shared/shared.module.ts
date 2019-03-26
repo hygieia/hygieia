@@ -9,7 +9,7 @@ import { ChartDirective } from './charts/chart.directive';
 import { ChartComponent } from './charts/chart/chart.component';
 import { LayoutDirective } from './layouts/layout.directive';
 import { LineChartComponent } from './charts/line-chart/line-chart.component';
-import { NgxChartsModule, LinearGaugeComponent } from '@swimlane/ngx-charts';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NumberCardChartComponent } from './charts/number-card-chart/number-card-chart.component';
 import { LineAndBarChartComponent } from './charts/line-and-bar-chart/line-and-bar-chart.component';
 import { ComboChartComponent } from './charts/combo-chart/combo-chart.component';
@@ -22,7 +22,7 @@ import { ClickListComponent } from './charts/click-list/click-list.component';
         ChartComponent, LayoutDirective, LineChartComponent, NumberCardChartComponent,
         LineAndBarChartComponent, ComboChartComponent, ComboSeriesVerticalComponent, ClickListComponent,
         TimeAgoPipe],
-    entryComponents: [TwoByTwoLayoutComponent, LineChartComponent, NumberCardChartComponent, 
+    entryComponents: [TwoByTwoLayoutComponent, LineChartComponent, NumberCardChartComponent,
         LineAndBarChartComponent, ComboChartComponent, ClickListComponent],
     imports: [
         CommonModule,

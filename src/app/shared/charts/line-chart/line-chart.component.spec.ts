@@ -5,6 +5,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { SharedModule } from '../../shared.module';
 import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgxUIModule } from '@swimlane/ngx-ui';
 
 
 describe('LineChartComponent', () => {
@@ -14,7 +15,7 @@ describe('LineChartComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [LineChartComponent],
-            imports: [CommonModule, NgxChartsModule, BrowserAnimationsModule]
+            imports: [CommonModule, NgxChartsModule, BrowserAnimationsModule, NgxUIModule]
         })
             .compileComponents();
     }));

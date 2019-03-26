@@ -13,7 +13,6 @@ export class NumberCardChartComponent extends ChartComponent {
     }
 
     // options
-    view: any[] = [500, 250];
     textColor = 'white';
     valueFormatting: (val: number) => string = this.formatInteger;
 

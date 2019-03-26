@@ -6,6 +6,7 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class ChartComponent implements OnInit {
 
+    @Input() view: any[];
     data: any;
     xAxisLabel: string;
     yAxisLabel: string;
