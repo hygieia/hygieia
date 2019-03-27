@@ -95,6 +95,16 @@ public class StaticSecurityAnalysisEvaluatorTest {
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_NO_CLOSED_FINDINGS.name()));
     }
 
+    @Test
+    public void testEvaluate_StaticSecurityUrl(){
+        CollectorItem collectorItem = new CollectorItem();
+        collectorItem.getOptions().put("instanceUrl", "https://sample.com//");
+        collectorItem.getOptions().put("applicationName", "sampleApp");
+        collectorItem.getOptions().put("projectName", "sampleProject");
+        String url = "https://sample.com/applications/list?app=sampleApp&comp=sampleProject";
+        Assert.assertEquals(staticSecurityAnalysisEvaluator.getSecurityScanUrl(collectorItem), url);
+    }
+
     private List<CodeQuality> getSecurityCodeQualityData(String securityLevel, CodeQualityMetricStatus status, String securityScore){
         CodeQuality codeQuality = new CodeQuality();
         codeQuality.setCollectorItemId(ObjectId.get());

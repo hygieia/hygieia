@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.List;
 import java.util.Set;
+import java.util.Optional;
 
 import java.util.stream.Collectors;
 
@@ -29,7 +30,10 @@ public class StaticSecurityAnalysisEvaluator extends Evaluator<SecurityReviewAud
     private static final String STR_CRITICAL = "Critical";
     private static final String STR_HIGH = "High";
     private static final String STR_SCORE = "Score";
-    private static final String STR_REPORT_URL = "reportUrl";
+    private static final String STR_INSTANCE_URL = "instanceUrl";
+    private static final String STR_APP_NAME = "applicationName";
+    private static final String STR_PROJECT_NAME = "projectName";
+    private static final String URL_PATTERN = "%s/applications/list?app=%s&comp=%s";
 
     @Autowired
     public StaticSecurityAnalysisEvaluator(CodeQualityRepository codeQualityRepository) {
@@ -72,7 +76,7 @@ public class StaticSecurityAnalysisEvaluator extends Evaluator<SecurityReviewAud
         }
 
         CodeQuality returnQuality = codeQualities.get(0);
-        securityReviewAuditResponse.setUrl(collectorItem.getOptions().get(STR_REPORT_URL).toString());
+        securityReviewAuditResponse.setUrl(getSecurityScanUrl(collectorItem));
         securityReviewAuditResponse.setCodeQuality(returnQuality);
         securityReviewAuditResponse.setLastExecutionTime(returnQuality.getTimestamp());
 
@@ -94,5 +98,19 @@ public class StaticSecurityAnalysisEvaluator extends Evaluator<SecurityReviewAud
             }
         }
         return securityReviewAuditResponse;
+    }
+
+    /**
+     * Get security scan url with application and component names
+     * @param collectorItem
+     * @return
+     */
+    protected String getSecurityScanUrl(CollectorItem collectorItem) {
+        Map<String, Object> options = collectorItem.getOptions();
+        String url = String.format(URL_PATTERN,
+                ((String) Optional.ofNullable(options.get(STR_INSTANCE_URL)).orElse("")).replaceAll("/+$", ""),
+                Optional.ofNullable(options.get(STR_APP_NAME)).orElse(""),
+                Optional.ofNullable(options.get(STR_PROJECT_NAME)).orElse(""));
+        return url;
     }
 }
