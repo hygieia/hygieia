@@ -29,7 +29,7 @@
           <div class="text-center" *ngIf="!myDashboards.length">
             No results
           </div>
-          <app-pagination [totalSize]="myDashboardCollectionSize" (pageChange)="myDashboardPageChange($event)"></app-pagination>
+          <app-pagination *ngIf="myDashboards.length" [totalSize]="myDashboardCollectionSize" (pageChange)="myDashboardPageChange($event)"></app-pagination>
         </div>
       </ng-container>
     </div>
@@ -48,8 +48,7 @@
           <div class="text-center" *ngIf="!allDashboards.length">
             No results
           </div>
-
-          <app-pagination [totalSize]="dashboardCollectionSize" (pageChange)="allDashboardPageChange($event)"></app-pagination>
+          <app-pagination *ngIf="allDashboards.length" [totalSize]="dashboardCollectionSize" (pageChange)="allDashboardPageChange($event)"></app-pagination>
         </div>
       </ng-container>
     </div>

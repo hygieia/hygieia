@@ -1,8 +1,8 @@
-import {TestBed} from '@angular/core/testing';
-import { DashboardListService } from './dashboard-list.service';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
 import { of } from 'rxjs';
-import {IDashboardsResponse} from './dashboard-list';
+import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+
+import { DashboardListService } from './dashboard-list.service';
 
 describe('DashboardListService', () => {
   let dashboardListService: DashboardListService;

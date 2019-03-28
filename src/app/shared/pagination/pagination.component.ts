@@ -1,7 +1,5 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {IPaginationParams} from '../interfaces';
-
-
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { IPaginationParams } from '../interfaces';
 
 @Component({
   selector: 'app-pagination',

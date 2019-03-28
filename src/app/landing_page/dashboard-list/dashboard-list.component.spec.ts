@@ -5,7 +5,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { SharedModule } from '../../shared/shared.module';
 import { DashboardListComponent } from './dashboard-list.component';
 import { DashboardListService } from './dashboard-list.service';
-import {IPaginationParams} from '../../shared/interfaces';
+import { IPaginationParams } from '../../shared/interfaces';
 
 describe('DashboardListComponent', () => {
   let component: DashboardListComponent;
