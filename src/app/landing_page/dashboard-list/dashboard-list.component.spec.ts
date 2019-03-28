@@ -5,6 +5,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { SharedModule } from '../../shared/shared.module';
 import { DashboardListComponent } from './dashboard-list.component';
 import { DashboardListService } from './dashboard-list.service';
+import {IPaginationParams} from '../../shared/interfaces';
 
 describe('DashboardListComponent', () => {
   let component: DashboardListComponent;
@@ -30,22 +31,40 @@ describe('DashboardListComponent', () => {
     expect(component).toBeTruthy();
   });
   it('should create HttpHeaders', () => {
-    const params = component.paramBuilder(1, '10');
-    expect(params.get('size')).toBe('10');
-    expect(params.get('page')).toBe('1');
-    expect(params.get('search')).toBe('');
-    expect(params.get('type')).toBe('');
+    const headerParams = component.paramBuilder(1, '10');
+    expect(headerParams.get('size')).toBe('10');
+    expect(headerParams.get('page')).toBe('1');
+    expect(headerParams.get('search')).toBe('');
+    expect(headerParams.get('type')).toBe('');
   });
   it('should call getMyDashboards with params', () => {
-    const params = component.paramBuilder(1, '10');
+    const headerParams = component.paramBuilder(1, '10');
     const spy = spyOn(dashboardListService, 'getMyDashboards').and.returnValue({ subscribe: () => {} });
-    component.findMyDashboards(params);
-    expect(spy).toHaveBeenCalledWith(params);
+    component.findMyDashboards(headerParams);
+    expect(spy).toHaveBeenCalledWith(headerParams);
   });
   it('should call getMyDashboards with params', () => {
-    const params = component.paramBuilder(1, '10');
+    const headerParams = component.paramBuilder(1, '10');
     const spy = spyOn(dashboardListService, 'getAllDashboards').and.returnValue({ subscribe: () => {} });
-    component.findAllDashboards(params);
-    expect(spy).toHaveBeenCalledWith(params);
+    component.findAllDashboards(headerParams);
+    expect(spy).toHaveBeenCalledWith(headerParams);
+  });
+  it('should call allDashboardPageChange with params', () => {
+    const params = { page : 1 , pageSize : '10' } as IPaginationParams;
+    const spy = spyOn(dashboardListService, 'getAllDashboards').and.returnValue({ subscribe: () => {} });
+    component.allDashboardPageChange(params);
+    const headerParams = component.paramBuilder(0, '10');
+    expect(spy).toHaveBeenCalledWith(headerParams);
+  });
+  it('should call myDashboardPageChange with params', () => {
+    const params = { page : 1 , pageSize : '10' } as IPaginationParams;
+    const spy = spyOn(dashboardListService, 'getMyDashboards').and.returnValue({ subscribe: () => {} });
+    component.myDashboardPageChange(params);
+    const headerParams = component.paramBuilder(0, '10');
+    expect(spy).toHaveBeenCalledWith(headerParams);
+  });
+  it('should call setDashboardType ', () => {
+    component.setDashboardType('Team');
+    expect(component.dashboardType).toBe('Team');
   });
 });
