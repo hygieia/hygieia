@@ -4,27 +4,19 @@ import {
     ViewEncapsulation,
     Output,
     EventEmitter,
-    ChangeDetectionStrategy,
     ViewChild,
     HostListener,
-    OnInit,
-    OnChanges,
     ContentChild,
     TemplateRef
 } from '@angular/core';
-import {
-    trigger,
-    state,
-    style,
-    animate,
-    transition
-} from '@angular/animations';
 
 
-import { area, line, curveLinear } from 'd3-shape';
+import { curveLinear } from 'd3-shape';
 import { scaleBand, scaleLinear, scalePoint, scaleTime } from 'd3-scale';
 import { LineSeriesComponent, BaseChartComponent, ViewDimensions, ColorHelper, calculateViewDimensions } from '@swimlane/ngx-charts';
 
+// This component is based on the combo chart example from ngx-charts.
+// https://github.com/swimlane/ngx-charts/blob/master/demo/combo-chart/combo-chart.component.ts
 @Component({
     selector: 'app-line-and-bar-chart',
     template: `
@@ -194,7 +186,7 @@ export class LineAndBarChartComponent extends BaseChartComponent {
     bandwidth;
     barPadding = 8;
 
-    trackBy(index, item): string {
+    trackBy(item): string {
         return item.name;
     }
 

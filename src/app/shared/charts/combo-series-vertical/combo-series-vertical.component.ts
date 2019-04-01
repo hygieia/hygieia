@@ -8,13 +8,14 @@ import {
 } from '@angular/core';
 import {
     trigger,
-    state,
     style,
     animate,
     transition
 } from '@angular/animations';
 import { formatLabel } from '@swimlane/ngx-charts';
 
+// This component is based on the combo chart example from ngx-charts.
+// https://github.com/swimlane/ngx-charts/blob/master/demo/combo-chart/combo-series-vertical.component.ts
 @Component({
     // Linting disabled on this line to match ngx-charts selectors
     // tslint:disable-next-line
@@ -176,7 +177,6 @@ export class ComboSeriesVerticalComponent implements OnChanges {
 
             this.getSeriesTooltips(this.seriesLine, index);
             const lineValue = this.seriesLine[0].series[index].value;
-            const lineName = this.seriesLine[0].series[index].name;
             bar.tooltipText = `
         <span class="tooltip-label">${tooltipLabel}</span>
         <span class="tooltip-val"> Y1 - ${value.toLocaleString()} • Y2 - ${lineValue.toLocaleString()}%</span>
@@ -202,7 +202,7 @@ export class ComboSeriesVerticalComponent implements OnChanges {
         this.select.emit(data);
     }
 
-    trackBy(index, bar): string {
+    trackBy(bar): string {
         return bar.label;
     }
 

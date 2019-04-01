@@ -24,6 +24,7 @@ export class TwoByTwoLayoutComponent extends LayoutComponent implements AfterVie
     resizeObservable$: Observable<Event>;
     resizeSubscription$: Subscription;
 
+    // Initialize charts and resize hook
     ngAfterViewInit() {
         super.loadComponent(this.childChartTags);
         this.resizeObservable$ = fromEvent(window, 'resize');
@@ -33,6 +34,7 @@ export class TwoByTwoLayoutComponent extends LayoutComponent implements AfterVie
         this.resize();
     }
 
+    // Support chart resizing based on parent containers.
     resize() {
         const chartContainerArray = this.chartContainers.toArray();
         for (let i = 0; i < chartContainerArray.length && i < this.chartComponents.length; i++) {
