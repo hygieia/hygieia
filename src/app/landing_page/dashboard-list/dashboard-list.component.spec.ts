@@ -52,14 +52,14 @@ describe('DashboardListComponent', () => {
   it('should call allDashboardPageChange with params', () => {
     const params = { page : 1 , pageSize : '10' } as IPaginationParams;
     const spy = spyOn(dashboardListService, 'getAllDashboards').and.returnValue({ subscribe: () => {} });
-    component.allDashboardPageChange(params);
+    component.getNextPage(params, false);
     const headerParams = component.paramBuilder(0, '10');
     expect(spy).toHaveBeenCalledWith(headerParams);
   });
   it('should call myDashboardPageChange with params', () => {
     const params = { page : 1 , pageSize : '10' } as IPaginationParams;
     const spy = spyOn(dashboardListService, 'getMyDashboards').and.returnValue({ subscribe: () => {} });
-    component.myDashboardPageChange(params);
+    component.getNextPage(params, true);
     const headerParams = component.paramBuilder(0, '10');
     expect(spy).toHaveBeenCalledWith(headerParams);
   });

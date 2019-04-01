@@ -72,13 +72,12 @@ export class DashboardListComponent implements OnInit {
   }
 
   // Pagination page change function call
-  myDashboardPageChange(params: IPaginationParams) {
-    this.findMyDashboards(this.paramBuilder(params.page - 1, params.pageSize));
-  }
-
-  // Pagination page change function call
-  allDashboardPageChange(params: IPaginationParams) {
-    this.findAllDashboards( this.paramBuilder(params.page - 1, params.pageSize));
+  getNextPage(params: IPaginationParams, isMyDashboard: boolean) {
+    if ( isMyDashboard ) {
+      this.findMyDashboards( this.paramBuilder(params.page - 1, params.pageSize) );
+    } else {
+      this.findAllDashboards( this.paramBuilder(params.page - 1, params.pageSize) );
+    }
   }
 
   setDashboardType(type: string) {
