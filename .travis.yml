@@ -9,6 +9,8 @@ branches:
 cache:
   directories:
   - "$TRAVIS_BUILD_DIR/UI/node_modules"
+before-install:
+- export TZ=America/New_York
 before_script:
 - sudo chown -R $USER:$GROUP $TRAVIS_BUILD_DIR
 - npm install -g @angular/cli

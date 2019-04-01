@@ -303,7 +303,6 @@ describe('BuildWidgetComponent', () => {
     it('should create all charts', () => {
         // Mock Date April 1st, 2019
         const baseTime = new Date(2019, 3, 1);
-        console.log(baseTime);
         jasmine.clock().mockDate(baseTime);
         component.ngOnInit();
         expect(component.charts[0].data[0].series.length).toEqual(0);
