@@ -17,6 +17,9 @@ import { Build } from '../interfaces';
 })
 export class BuildWidgetComponent extends WidgetComponent implements OnInit, AfterViewInit {
 
+    private readonly BUILDS_PER_DAY_TIME_RANGE = 14;
+    private readonly TOTAL_BUILD_COUNTS_TIME_RANGES = [7, 14];
+
     @ViewChild(LayoutDirective) childLayoutTag: LayoutDirective;
 
     constructor(componentFactoryResolver: ComponentFactoryResolver, cdr: ChangeDetectorRef, private buildService: BuildService) {
@@ -88,7 +91,7 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
     }
 
     ngAfterViewInit() {
-        this.buildService.fetchDetails('59f88f5e6a3cf205f312c62e', 14).subscribe(result => {
+        this.buildService.fetchDetails('59f88f5e6a3cf205f312c62e', this.BUILDS_PER_DAY_TIME_RANGE).subscribe(result => {
             this.generateBuildsPerDay(result);
             this.generateTotalBuildCounts(result);
             this.generateAverageBuildDuration(result);
@@ -99,20 +102,20 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
 
     // *********************** BUILDS PER DAY ****************************
     private generateBuildsPerDay(result: Build[]) {
-        const fourteenDays = this.toMidnight(new Date());
-        fourteenDays.setDate(fourteenDays.getDate() - 13);
-        const allBuilds = result.filter(build => this.checkBuildAfterDate(build, fourteenDays)
+        const startDate = this.toMidnight(new Date());
+        startDate.setDate(startDate.getDate() - this.BUILDS_PER_DAY_TIME_RANGE + 1);
+        const allBuilds = result.filter(build => this.checkBuildAfterDate(build, startDate)
             && !this.checkBuildStatus(build, 'InProgress'));
-        const failedBuilds = result.filter(build => this.checkBuildAfterDate(build, fourteenDays)
+        const failedBuilds = result.filter(build => this.checkBuildAfterDate(build, startDate)
             && !this.checkBuildStatus(build, 'InProgress') && !this.checkBuildStatus(build, 'Success'));
-        this.charts[0].data[0].series = this.countBuildsPerDay(allBuilds, fourteenDays);
-        this.charts[0].data[1].series = this.countBuildsPerDay(failedBuilds, fourteenDays);
+        this.charts[0].data[0].series = this.countBuildsPerDay(allBuilds, startDate);
+        this.charts[0].data[1].series = this.countBuildsPerDay(failedBuilds, startDate);
     }
 
     private countBuildsPerDay(builds: Build[], startDate: Date): any[] {
         const counts = {};
         const date = new Date(startDate.getTime());
-        for (let i = 0; i < 14; i++) {
+        for (let i = 0; i < this.BUILDS_PER_DAY_TIME_RANGE; i++) {
             counts[this.toMidnight(date).getTime()] = 0;
             date.setDate(date.getDate() + 1);
         }
@@ -154,18 +157,18 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
 
     private generateTotalBuildCounts(result: Build[]) {
         const today = this.toMidnight(new Date());
-        const sevenDays = this.toMidnight(new Date());
-        const fourteenDays = this.toMidnight(new Date());
-        sevenDays.setDate(sevenDays.getDate() - 6);
-        fourteenDays.setDate(fourteenDays.getDate() - 13);
+        const bucketOneStartDate = this.toMidnight(new Date());
+        const bucketTwoStartDate = this.toMidnight(new Date());
+        bucketOneStartDate.setDate(bucketOneStartDate.getDate() - this.TOTAL_BUILD_COUNTS_TIME_RANGES[0] + 1);
+        bucketTwoStartDate.setDate(bucketTwoStartDate.getDate() - this.TOTAL_BUILD_COUNTS_TIME_RANGES[1] + 1);
 
         const todayCount = result.filter(build => this.checkBuildAfterDate(build, today)).length;
-        const sevenDayCount = result.filter(build => this.checkBuildAfterDate(build, sevenDays)).length;
-        const fourteenDayCount = result.filter(build => this.checkBuildAfterDate(build, fourteenDays)).length;
+        const bucketOneCount = result.filter(build => this.checkBuildAfterDate(build, bucketOneStartDate)).length;
+        const bucketTwoCount = result.filter(build => this.checkBuildAfterDate(build, bucketTwoStartDate)).length;
 
         this.charts[3].data[0].value = todayCount;
-        this.charts[3].data[1].value = sevenDayCount;
-        this.charts[3].data[2].value = fourteenDayCount;
+        this.charts[3].data[1].value = bucketOneCount;
+        this.charts[3].data[2].value = bucketTwoCount;
     }
 
     // *********************** AVERAGE BUILD DURATION *********************
@@ -173,7 +176,7 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
     private generateAverageBuildDuration(result: Build[]) {
         const fourteenDays = this.toMidnight(new Date());
         const threshold = 900000;
-        fourteenDays.setDate(fourteenDays.getDate() - 13);
+        fourteenDays.setDate(fourteenDays.getDate() - this.BUILDS_PER_DAY_TIME_RANGE + 1);
         const successBuilds = result.filter(build => this.checkBuildAfterDate(build, fourteenDays)
             && this.checkBuildStatus(build, 'Success'));
         const averagedData = this.getAveragesByThreshold(successBuilds, fourteenDays, threshold);
@@ -186,7 +189,7 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
     private getAveragesByThreshold(builds: Build[], startDate: Date, threshold: number): any {
         const dataBucket = {};
         const date = new Date(startDate.getTime());
-        for (let i = 0; i < 14; i++) {
+        for (let i = 0; i < this.BUILDS_PER_DAY_TIME_RANGE; i++) {
             dataBucket[this.toMidnight(date).getTime()] = [];
             date.setDate(date.getDate() + 1);
         }
@@ -229,7 +232,7 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
     private getConstantLineSeries(startDate: Date, threshold: number): any {
         const date = new Date(startDate.getTime());
         const series = [];
-        for (let i = 0; i < 14; i++) {
+        for (let i = 0; i < this.BUILDS_PER_DAY_TIME_RANGE; i++) {
             series.push({
                 name: new Date(date.getTime()),
                 value: threshold
