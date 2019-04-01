@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 const routes: Routes = [
+    { path: '', loadChildren: './landing_page/landing-page.module#LandingPageModule' },
     { path: 'user', loadChildren: './user/user.module#UserModule' },
     { path: 'build', loadChildren: './widget_modules/build/build.module#BuildModule' }
 ];
