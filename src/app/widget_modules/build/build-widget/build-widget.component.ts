@@ -19,6 +19,7 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
 
     private readonly BUILDS_PER_DAY_TIME_RANGE = 14;
     private readonly TOTAL_BUILD_COUNTS_TIME_RANGES = [7, 14];
+    private readonly BUILD_TIME_THRESHOLD = 900000;
 
     @ViewChild(LayoutDirective) childLayoutTag: LayoutDirective;
 
@@ -174,13 +175,13 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
     // *********************** AVERAGE BUILD DURATION *********************
 
     private generateAverageBuildDuration(result: Build[]) {
-        const fourteenDays = this.toMidnight(new Date());
-        const threshold = 900000;
-        fourteenDays.setDate(fourteenDays.getDate() - this.BUILDS_PER_DAY_TIME_RANGE + 1);
-        const successBuilds = result.filter(build => this.checkBuildAfterDate(build, fourteenDays)
+        const startDate = this.toMidnight(new Date());
+        const threshold = this.BUILD_TIME_THRESHOLD;
+        startDate.setDate(startDate.getDate() - this.BUILDS_PER_DAY_TIME_RANGE + 1);
+        const successBuilds = result.filter(build => this.checkBuildAfterDate(build, startDate)
             && this.checkBuildStatus(build, 'Success'));
-        const averagedData = this.getAveragesByThreshold(successBuilds, fourteenDays, threshold);
-        const thresholdLine = this.getConstantLineSeries(fourteenDays, threshold);
+        const averagedData = this.getAveragesByThreshold(successBuilds, startDate, threshold);
+        const thresholdLine = this.getConstantLineSeries(startDate, threshold);
         this.charts[2].data[0] = averagedData.series;
         this.charts[2].colorScheme.domain = averagedData.colors;
         this.charts[2].data[1][0].series = thresholdLine;
