@@ -222,7 +222,7 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
                 colors.push('green');
             }
         }
-        return {series, colors};
+        return { series, colors };
     }
 
     private getConstantLineSeries(startDate: Date, threshold: number): any {

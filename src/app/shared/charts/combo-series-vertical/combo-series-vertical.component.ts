@@ -16,6 +16,8 @@ import {
 import { formatLabel } from '@swimlane/ngx-charts';
 
 @Component({
+    // Linting disabled on this line to match ngx-charts selectors
+    // tslint:disable-next-line
     selector: 'g[ngx-combo-charts-series-vertical]',
     template: `
     <svg:g ngx-charts-bar *ngFor="let bar of bars; trackBy: trackBy"
@@ -64,11 +66,11 @@ export class ComboSeriesVerticalComponent implements OnChanges {
     @Input() xScale;
     @Input() yScale;
     @Input() colors;
-    @Input() tooltipDisabled: boolean = false;
+    @Input() tooltipDisabled = false;
     @Input() gradient: boolean;
     @Input() activeEntries: any[];
     @Input() seriesName: string;
-    @Input() animations: boolean = true;
+    @Input() animations = true;
 
     @Output() select = new EventEmitter();
     @Output() activate = new EventEmitter();
@@ -189,7 +191,7 @@ export class ComboSeriesVerticalComponent implements OnChanges {
         });
     }
     isActive(entry): boolean {
-        if (!this.activeEntries) return false;
+        if (!this.activeEntries) { return false; }
         const item = this.activeEntries.find(d => {
             return entry.name === d.name && entry.series === d.series;
         });

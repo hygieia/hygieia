@@ -264,7 +264,7 @@ class MockBuildService {
         lastUpdated: 1553613455230
     };
 
-    fetchDetails(componentId: string, numberOfDays: number): Observable<Build[]> {
+    fetchDetails(): Observable<Build[]> {
         return of(this.mockBuildData.result);
     }
 }
@@ -291,13 +291,41 @@ describe('BuildWidgetComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(BuildWidgetComponent);
         component = fixture.componentInstance;
-        fixture.detectChanges();
         buildService = TestBed.get(BuildService);
     });
 
     it('should create', () => {
+        fixture.detectChanges();
         expect(component).toBeTruthy();
         expect(buildService).toBeTruthy();
+    });
+
+    it('should create all charts', () => {
+        // Mock Date April 1st, 2019
+        const baseTime = new Date(2019, 3, 1);
+        console.log(baseTime);
+        jasmine.clock().mockDate(baseTime);
+        component.ngOnInit();
+        expect(component.charts[0].data[0].series.length).toEqual(0);
+        expect(component.charts[0].data[1].series.length).toEqual(0);
+        expect(component.charts[1].data.length).toEqual(0);
+        expect(component.charts[2].data[0].length).toEqual(0);
+        expect(component.charts[2].data[1][0].series.length).toEqual(0);
+        expect(component.charts[3].data[0].value).toEqual(0);
+        expect(component.charts[3].data[1].value).toEqual(0);
+        expect(component.charts[3].data[2].value).toEqual(0);
+
+        component.ngAfterViewInit();
+        expect(component.charts[0].data[0].series.length).toEqual(14);
+        expect(component.charts[0].data[1].series.length).toEqual(14);
+        expect(component.charts[0].data[0].series[0].value).toEqual(7);
+        expect(component.charts[0].data[1].series[0].value).toEqual(6);
+
+        expect(component.charts[1].data[0].number).toEqual('708');
+
+        expect(component.charts[3].data[0].value).toEqual(0);
+        expect(component.charts[3].data[1].value).toEqual(0);
+        expect(component.charts[3].data[2].value).toEqual(7);
     });
 });
 
