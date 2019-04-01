@@ -1,17 +1,5 @@
-import {
-    Component,
-    Input,
-    Output,
-    EventEmitter,
-    OnChanges,
-    ChangeDetectionStrategy
-} from '@angular/core';
-import {
-    trigger,
-    style,
-    animate,
-    transition
-} from '@angular/animations';
+import { animate, style, transition, trigger } from '@angular/animations';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { formatLabel } from '@swimlane/ngx-charts';
 
 // This component is based on the combo chart example from ngx-charts.

@@ -1,10 +1,10 @@
+import { CommonModule } from '@angular/common';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { NgxUIModule } from '@swimlane/ngx-ui';
 
 import { NumberCardChartComponent } from './number-card-chart.component';
-import { CommonModule } from '@angular/common';
-import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgxUIModule } from '@swimlane/ngx-ui';
 
 describe('NumberCardChartComponent', () => {
   let component: NumberCardChartComponent;

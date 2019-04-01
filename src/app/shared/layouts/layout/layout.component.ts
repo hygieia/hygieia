@@ -1,7 +1,5 @@
-import {
-    Component, OnInit, Input, Type, ViewChildren, QueryList,
-    ComponentFactoryResolver, ChangeDetectorRef, AfterViewInit, HostListener
-} from '@angular/core';
+import { ChangeDetectorRef, Component, ComponentFactoryResolver, QueryList } from '@angular/core';
+
 import { ChartDirective } from '../../charts/chart.directive';
 import { ChartComponent } from '../../charts/chart/chart.component';
 import { Chart } from '../../interfaces';

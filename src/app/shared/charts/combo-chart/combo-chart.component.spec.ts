@@ -1,12 +1,12 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { ComboChartComponent } from './combo-chart.component';
 import { CommonModule } from '@angular/common';
-import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { LineAndBarChartComponent } from '../line-and-bar-chart/line-and-bar-chart.component';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxUIModule } from '@swimlane/ngx-ui';
+
 import { ComboSeriesVerticalComponent } from '../combo-series-vertical/combo-series-vertical.component';
+import { LineAndBarChartComponent } from '../line-and-bar-chart/line-and-bar-chart.component';
+import { ComboChartComponent } from './combo-chart.component';
 
 describe('ComboChartComponent', () => {
   let component: ComboChartComponent;

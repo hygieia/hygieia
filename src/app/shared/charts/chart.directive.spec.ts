@@ -1,6 +1,7 @@
-import { ChartDirective } from './chart.directive';
 import { Component } from '@angular/core';
-import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { ChartDirective } from './chart.directive';
 
 @Component({
     template: `<ng-template appChart></ng-template>`

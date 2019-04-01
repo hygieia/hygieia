@@ -1,13 +1,14 @@
-import { Component, OnInit, ComponentFactoryResolver, ChangeDetectorRef, ViewChild, AfterViewInit } from '@angular/core';
-import { WidgetComponent } from 'src/app/shared/widget/widget.component';
-import { TwoByTwoLayoutComponent } from 'src/app/shared/layouts/two-by-two-layout/two-by-two-layout.component';
+import { AfterViewInit, ChangeDetectorRef, Component, ComponentFactoryResolver, OnInit, ViewChild } from '@angular/core';
+import { ClickListComponent } from 'src/app/shared/charts/click-list/click-list.component';
+import { ComboChartComponent } from 'src/app/shared/charts/combo-chart/combo-chart.component';
 import { LineChartComponent } from 'src/app/shared/charts/line-chart/line-chart.component';
+import { NumberCardChartComponent } from 'src/app/shared/charts/number-card-chart/number-card-chart.component';
 import { LayoutDirective } from 'src/app/shared/layouts/layout.directive';
+import { TwoByTwoLayoutComponent } from 'src/app/shared/layouts/two-by-two-layout/two-by-two-layout.component';
+import { WidgetComponent } from 'src/app/shared/widget/widget.component';
+
 import { BuildService } from '../build.service';
 import { Build } from '../interfaces';
-import { NumberCardChartComponent } from 'src/app/shared/charts/number-card-chart/number-card-chart.component';
-import { ComboChartComponent } from 'src/app/shared/charts/combo-chart/combo-chart.component';
-import { ClickListComponent } from 'src/app/shared/charts/click-list/click-list.component';
 
 @Component({
     selector: 'app-build-widget',

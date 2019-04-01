@@ -1,8 +1,9 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BuildWidgetComponent } from './build-widget/build-widget.component';
-import { BuildRoutingModule } from './build-routing-module';
+import { NgModule } from '@angular/core';
 import { SharedModule } from 'src/app/shared/shared.module';
+
+import { BuildRoutingModule } from './build-routing-module';
+import { BuildWidgetComponent } from './build-widget/build-widget.component';
 
 @NgModule({
     declarations: [BuildWidgetComponent],

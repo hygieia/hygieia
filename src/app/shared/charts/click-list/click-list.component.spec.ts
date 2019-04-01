@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { TimeAgoPipe } from 'time-ago-pipe';
 
 import { ClickListComponent } from './click-list.component';
-import { TimeAgoPipe } from 'time-ago-pipe';
 
 describe('ClickListComponent', () => {
   let component: ClickListComponent;

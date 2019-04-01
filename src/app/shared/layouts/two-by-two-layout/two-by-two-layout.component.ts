@@ -1,10 +1,17 @@
 import {
-    Component, ComponentFactoryResolver, ChangeDetectorRef, AfterViewInit, ViewChildren, QueryList, HostListener, ElementRef, OnInit
+    AfterViewInit,
+    ChangeDetectorRef,
+    Component,
+    ComponentFactoryResolver,
+    ElementRef,
+    QueryList,
+    ViewChildren,
 } from '@angular/core';
-import { LayoutComponent } from '../layout/layout.component';
-import { ChartDirective } from '../../charts/chart.directive';
 import { fromEvent, Observable, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+
+import { ChartDirective } from '../../charts/chart.directive';
+import { LayoutComponent } from '../layout/layout.component';
 
 @Component({
     selector: 'app-two-by-two-layout',

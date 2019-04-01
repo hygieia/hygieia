@@ -1,13 +1,13 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-
-import { BuildWidgetComponent } from './build-widget.component';
-import { Observable, of } from 'rxjs';
-import { Build } from '../interfaces';
-import { BuildService } from '../build.service';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { CommonModule } from '@angular/common';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { Observable, of } from 'rxjs';
+import { SharedModule } from 'src/app/shared/shared.module';
+
+import { BuildService } from '../build.service';
+import { Build } from '../interfaces';
+import { BuildWidgetComponent } from './build-widget.component';
 
 class MockBuildService {
 

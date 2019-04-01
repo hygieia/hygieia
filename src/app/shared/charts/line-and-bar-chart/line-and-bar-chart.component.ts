@@ -1,19 +1,24 @@
 import {
     Component,
-    Input,
-    ViewEncapsulation,
-    Output,
-    EventEmitter,
-    ViewChild,
-    HostListener,
     ContentChild,
-    TemplateRef
+    EventEmitter,
+    HostListener,
+    Input,
+    Output,
+    TemplateRef,
+    ViewChild,
+    ViewEncapsulation,
 } from '@angular/core';
-
-
-import { curveLinear } from 'd3-shape';
+import {
+    BaseChartComponent,
+    calculateViewDimensions,
+    ColorHelper,
+    LineSeriesComponent,
+    ViewDimensions,
+} from '@swimlane/ngx-charts';
 import { scaleBand, scaleLinear, scalePoint, scaleTime } from 'd3-scale';
-import { LineSeriesComponent, BaseChartComponent, ViewDimensions, ColorHelper, calculateViewDimensions } from '@swimlane/ngx-charts';
+import { curveLinear } from 'd3-shape';
+
 
 // This component is based on the combo chart example from ngx-charts.
 // https://github.com/swimlane/ngx-charts/blob/master/demo/combo-chart/combo-chart.component.ts

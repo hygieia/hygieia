@@ -1,14 +1,14 @@
+import { NgModule } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { Component, ViewChild, ElementRef, NgModule } from '@angular/core';
-import { TwoByTwoLayoutComponent } from './two-by-two-layout.component';
-import { LineChartComponent } from '../../charts/line-chart/line-chart.component';
 import { By } from '@angular/platform-browser';
-import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { SharedModule } from '../../shared.module';
-import { LayoutComponent } from '../layout/layout.component';
-import { ChartComponent } from '../../charts/chart/chart.component';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
+
 import { ChartDirective } from '../../charts/chart.directive';
+import { ChartComponent } from '../../charts/chart/chart.component';
+import { LineChartComponent } from '../../charts/line-chart/line-chart.component';
+import { LayoutComponent } from '../layout/layout.component';
+import { TwoByTwoLayoutComponent } from './two-by-two-layout.component';
 
 // Work around for dynamic component loading testing
 @NgModule({
