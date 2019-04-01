@@ -9,7 +9,7 @@ branches:
 cache:
   directories:
   - "$TRAVIS_BUILD_DIR/UI/node_modules"
-before-install:
+before_install:
 - export TZ=America/New_York
 before_script:
 - sudo chown -R $USER:$GROUP $TRAVIS_BUILD_DIR
