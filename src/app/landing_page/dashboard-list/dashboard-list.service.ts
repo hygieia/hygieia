@@ -34,5 +34,5 @@ export class DashboardListService {
           total: data.headers.get('totalentities')
         } as IDashboardsResponse;
       }));
-  };
+  }
 }
