@@ -14,25 +14,25 @@ export class DashboardListService {
   getMyDashboards(params: HttpParams): Observable<IDashboardsResponse> {
     // Checking Auth so that we don't make unnecessary api calls
     if (this.authService.isAuthenticated()) {
-      return this.http.get<any>(' /api/dashboard/mydashboard/page/filter', { params, observe: 'response' }).pipe(
-        map(data => {
-          return {
-            data: data.body,
-            total: data.headers.get('totalentities')
-          } as IDashboardsResponse;
-        }));
+      const path = '/api/dashboard/mydashboard/page/filter';
+      return this.get(params, path);
     } else {
       return of( {} as IDashboardsResponse);
     }
   }
   getAllDashboards(params: HttpParams): Observable<IDashboardsResponse> {
-    return this.http.get<any>(' /api/dashboard/page/filter', { params, observe: 'response' }).pipe(
+    const path = ' /api/dashboard/page/filter';
+    return this.get(params, path);
+
+  }
+
+  get(params: HttpParams, path: string): Observable<IDashboardsResponse> {
+    return this.http.get<any>(path, { params, observe: 'response' }).pipe(
       map(data => {
         return {
           data: data.body,
           total: data.headers.get('totalentities')
         } as IDashboardsResponse;
       }));
-
-  }
+  };
 }
