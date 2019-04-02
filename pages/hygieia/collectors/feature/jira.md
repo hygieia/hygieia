@@ -110,8 +110,8 @@ feature.jiraCredentials=dXNlcm5hbWU6cGFzc3dvcmQ=
 
 feature.jiraOauthAuthtoken=
 feature.jiraOauthRefreshtoken=
-		feature.jiraOauthRedirecturi=
-		feature.jiraOauthExpiretime=
+feature.jiraOauthRedirecturi=
+feature.jiraOauthExpiretime=
 
 #############################################################################
 # In Jira, general IssueType IDs are associated to various 'issue'
@@ -164,6 +164,27 @@ feature.jiraStoryPointsFieldName=customfield_10003
 # https://[your-jira-domain-name]/rest/api/2/issue/[some-issue-name]
 #############################################################################
 feature.jiraTeamFieldName=
+
+#############################################################################
+# In Jira, your instance will have its own Id for the issueTypes. 
+# You can retrieve the issueType IDs from the following API request:
+# https://[your-jira-domain-name]/rest/api/2/issuetype
+#############################################################################
+feature.jiraStoryIds[0]=
+feature.jiraStoryIds[1]=
+
+#############################################################################
+# In Jira, your instance will have its own Id for the Epic
+# You can find the value from the following API request:
+# https://[your-jira-domain-name]/rest/api/2/issuetype
+#############################################################################
+feature.jiraEpicId=
+
+# Defines how to update features per board. If true then only update based on enabled collectorItems otherwise full update
+feature.collectorItemOnlyUpdate=
+
+#Defines the maximum number of features allow per board. If limit is reach collection will not happen for given board
+feature.maxNumberOfFeaturesPerBoard=
 
 # Set this to true if you use boards as team
 feature.jiraBoardAsTeam=false
