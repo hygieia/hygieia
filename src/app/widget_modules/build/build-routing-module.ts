@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
+
 import { BuildWidgetComponent } from './build-widget/build-widget.component';
 
 const routes: Routes = [

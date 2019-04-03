@@ -8,7 +8,7 @@
   margin-bottom: 20px;
 
   .dashboard-logo {
-    background: url("../../../assets/img/hygieia_b.png") no-repeat center center;
+    background: url("../../../assets/img/Hygieia_Logo.png") no-repeat center center;
     background-size: contain;
     display: inline-block;
     position: absolute;
@@ -17,7 +17,7 @@
     width: 135px;
     height: 35px;
     &.dashboard-logo-inverse {
-      background-image: url("../../../assets/img/hygieia_w.png");
+      background-image: url("../../../assets/img/Hygieia_Logo_white.png");
     }
   }
 }

@@ -1,6 +1,7 @@
+import { Component } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
 import { LayoutDirective } from './layout.directive';
-import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { ViewContainerRef, Component } from '@angular/core';
 
 @Component({
     template: `<ng-template appChart></ng-template>`
