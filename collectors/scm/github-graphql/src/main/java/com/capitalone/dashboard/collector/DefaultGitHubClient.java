@@ -71,6 +71,26 @@ public class DefaultGitHubClient implements GitHubClient {
 
     private static final int FIRST_RUN_HISTORY_DEFAULT = 14;
 
+    public class RedirectedStatus {
+        private boolean isRedirected = false;
+        private String redirectedUrl = null;
+
+        RedirectedStatus() {}
+
+        RedirectedStatus(boolean isRedirected, String redirectedUrl) {
+            this.isRedirected = isRedirected;
+            this.redirectedUrl = redirectedUrl;
+        }
+
+        String getRedirectedUrl() {
+            return this.redirectedUrl;
+        }
+
+        boolean isRedirected() {
+            return this.isRedirected;
+        }
+    }
+
     @Autowired
     public DefaultGitHubClient(GitHubSettings settings,
                                Supplier<RestOperations> restOperationsSupplier) {
@@ -141,13 +161,8 @@ public class DefaultGitHubClient implements GitHubClient {
         int loopCount = 1;
         while (!alldone) {
             LOG.debug("Executing loop " + loopCount + " for " + gitHubParsed.getOrgName() + "/" + gitHubParsed.getRepoName());
-            ResponseEntity<String> response = makeRestCallPost(graphQLurl, repo.getUserId(), decryptedPassword, decryptPersonalAccessToken, query);
-            JSONObject data = (JSONObject) parseAsObject(response).get("data");
-            JSONArray errors = getArray(parseAsObject(response), "errors");
+            JSONObject data = getDataFromRestCallPost(graphQLurl, repo, decryptedPassword, decryptPersonalAccessToken, query);
 
-            if (!CollectionUtils.isEmpty(errors)) {
-                throw new HygieiaException("Error in GraphQL query:" + errors.toJSONString(), HygieiaException.JSON_FORMAT_ERROR);
-            }
             if (data != null) {
                 JSONObject repository = (JSONObject) data.get("repository");
 
@@ -196,14 +211,7 @@ public class DefaultGitHubClient implements GitHubClient {
         loopCount = 1;
         int missingCommitCount = 0;
         while (!alldone) {
-            LOG.debug("Executing loop " + loopCount + " for " + gitHubParsed.getOrgName() + "/" + gitHubParsed.getRepoName());
-            ResponseEntity<String> response = makeRestCallPost(graphQLurl, repo.getUserId(), decryptedPassword, decryptPersonalAccessToken, query);
-            JSONObject data = (JSONObject) parseAsObject(response).get("data");
-            JSONArray errors = getArray(parseAsObject(response), "errors");
-
-            if (!CollectionUtils.isEmpty(errors)) {
-                throw new HygieiaException("Error in GraphQL query:" + errors.toJSONString(), HygieiaException.JSON_FORMAT_ERROR);
-            }
+            JSONObject data = getDataFromRestCallPost(graphQLurl, repo, decryptedPassword, decryptPersonalAccessToken, query);
             if (data != null) {
                 JSONObject repository = (JSONObject) data.get("repository");
 
@@ -223,8 +231,32 @@ public class DefaultGitHubClient implements GitHubClient {
         connectCommitToPulls();
     }
 
+    private RedirectedStatus checkForRedirectedRepo(GitHubRepo repo) throws MalformedURLException, HygieiaException {
+        GitHubParsed gitHubParsed = new GitHubParsed(repo.getRepoUrl());
+        String query = gitHubParsed.getBaseApiUrl() + "repos/" + gitHubParsed.getOrgName() + "/" + gitHubParsed.getRepoName();
+
+        ResponseEntity<String> response = makeRestCallGet(query);
+
+        String queryBody = response.getBody();
+        JSONParser parser = new JSONParser();
+        try {
+            JSONObject queryJSONBody = (JSONObject) parser.parse(queryBody);
+
+            String repoUrl = (String) queryJSONBody.get("html_url");
+            LOG.debug("original url: " + repo.getRepoUrl() + " is redirected to new url: " + repoUrl);
+            if (!repoUrl.equals(repo.getRepoUrl())) {
+                return new RedirectedStatus(true, repoUrl);
+            }
+
+        } catch (ParseException e) {
+            LOG.error("Could not parse response body", e);
+        }
+
+        return new RedirectedStatus();
+    }
+
     @SuppressWarnings("PMD.NPathComplexity")
-    private GitHubPaging isThereNewPRorIssue(GitHubParsed gitHubParsed, GitHubRepo repo, String decryptedPassword, String personalAccessToken, Map<Long, String> existingMap, String type, boolean firstRun) throws HygieiaException {
+    private GitHubPaging isThereNewPRorIssue(GitHubParsed gitHubParsed, GitHubRepo repo, String decryptedPassword, String personalAccessToken, Map<Long, String> existingMap, String type, boolean firstRun) throws MalformedURLException, HygieiaException {
 
         GitHubPaging paging = new GitHubPaging();
         paging.setLastPage(true);
@@ -245,14 +277,7 @@ public class DefaultGitHubClient implements GitHubClient {
         query.put("query", queryString);
         query.put("variables", variableJSON.toString());
 
-
-        ResponseEntity<String> response = makeRestCallPost(gitHubParsed.getGraphQLUrl(), repo.getUserId(), decryptedPassword, personalAccessToken, query);
-        JSONObject data = (JSONObject) parseAsObject(response).get("data");
-        JSONArray errors = getArray(parseAsObject(response), "errors");
-
-        if (!CollectionUtils.isEmpty(errors)) {
-            throw new HygieiaException("Error in GraphQL query:" + errors.toJSONString(), HygieiaException.JSON_FORMAT_ERROR);
-        }
+        JSONObject data = getDataFromRestCallPost(gitHubParsed.getGraphQLUrl(), repo, decryptedPassword, personalAccessToken, query);
 
         if (data == null) return paging;
         JSONObject repository = (JSONObject) data.get("repository");
@@ -305,7 +330,6 @@ public class DefaultGitHubClient implements GitHubClient {
         variableJSON.put("owner", gitHubParsed.getOrgName());
         variableJSON.put("name", gitHubParsed.getRepoName());
         variableJSON.put("fetchCount", getFetchCount(firstRun));
-
 
         LOG.debug("Collection Mode =" + mode.toString());
         switch (mode) {
@@ -1040,6 +1064,43 @@ public class DefaultGitHubClient implements GitHubClient {
      */
     private static DateTime getDate(DateTime dateInstance, int offsetDays, int offsetMinutes) {
         return dateInstance.minusDays(offsetDays).minusMinutes(offsetMinutes);
+    }
+
+
+    private JSONObject getDataFromRestCallPost(String url, GitHubRepo repo, String password, String personalAccessToken, JSONObject query) throws MalformedURLException, HygieiaException {
+        ResponseEntity<String> response = makeRestCallPost(url, repo.getUserId(), password, personalAccessToken, query);
+
+        JSONObject data = (JSONObject) parseAsObject(response).get("data");
+        JSONArray errors = getArray(parseAsObject(response), "errors");
+
+        if (!CollectionUtils.isEmpty(errors)) {
+            JSONObject error = (JSONObject) errors.get(0);
+            if (error.get("type").equals("NOT_FOUND")) {
+                RedirectedStatus redirectedStatus = checkForRedirectedRepo(repo);
+
+                if (redirectedStatus.isRedirected()) {
+                    String redirectedUrl = redirectedStatus.getRedirectedUrl();
+                    LOG.debug("Repo was redirected from: " + repo.getRepoUrl() + " to " + redirectedUrl);
+                    repo.setRepoUrl(redirectedUrl);
+                    GitHubParsed gitHubParsed = new GitHubParsed(redirectedUrl);
+
+                    JSONParser parser = new JSONParser();
+                    try {
+                        JSONObject variableJSON = (JSONObject) parser.parse((String) query.get("variables"));
+                        variableJSON.put("name", gitHubParsed.getRepoName());
+                        variableJSON.put("owner", gitHubParsed.getOrgName());
+                        query.put("variables", variableJSON.toString());
+                    } catch (ParseException e) {
+                        LOG.error("Could not parse JSON String", e);
+                    }
+                    return getDataFromRestCallPost(url, repo, password, personalAccessToken, query);
+                }
+            }
+
+            throw new HygieiaException("Error in GraphQL query:" + errors.toJSONString(), HygieiaException.JSON_FORMAT_ERROR);
+        }
+
+        return data;
     }
 
     private ResponseEntity<String> makeRestCallPost(String url, String userId, String password, String personalAccessToken, JSONObject query) {
