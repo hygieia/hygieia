@@ -9,16 +9,16 @@ import { ChartComponent } from '../chart/chart.component';
 })
 export class NumberCardChartComponent extends ChartComponent {
 
-    constructor() {
-        super();
-    }
+  constructor() {
+    super();
+  }
 
-    // options
-    textColor = 'white';
-    valueFormatting: (val: number) => string = this.formatInteger;
+  // options
+  textColor = 'white';
+  valueFormatting: (val: number) => string = this.formatInteger;
 
 
-    formatInteger(val: number): string {
-        return val.toFixed(0);
-    }
+  formatInteger(val: number): string {
+    return val.toFixed(0);
+  }
 }

@@ -14,10 +14,10 @@ describe('ComboChartComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ComboChartComponent, LineAndBarChartComponent , ComboSeriesVerticalComponent],
-        imports: [CommonModule, NgxChartsModule, BrowserAnimationsModule, NgxUIModule]
+      declarations: [ComboChartComponent, LineAndBarChartComponent, ComboSeriesVerticalComponent],
+      imports: [CommonModule, NgxChartsModule, BrowserAnimationsModule, NgxUIModule]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

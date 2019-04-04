@@ -12,10 +12,10 @@ describe('NumberCardChartComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NumberCardChartComponent ],
-        imports: [CommonModule, NgxChartsModule, BrowserAnimationsModule, NgxUIModule]
+      declarations: [NumberCardChartComponent],
+      imports: [CommonModule, NgxChartsModule, BrowserAnimationsModule, NgxUIModule]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

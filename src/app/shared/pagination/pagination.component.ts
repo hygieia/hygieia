@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+
 import { IPaginationParams } from '../interfaces';
 
 @Component({
@@ -17,7 +18,7 @@ export class PaginationComponent implements OnInit {
   }
   pageChanged(pageNumber) {
     const params = {
-      page : pageNumber,
+      page: pageNumber,
       pageSize: this.pageSize
     } as IPaginationParams;
 
