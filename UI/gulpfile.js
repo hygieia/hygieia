@@ -22,7 +22,8 @@ var browserSync = require('browser-sync'),
     httpProxy = require('http-proxy'),
     glob = require('glob'),
     runSequence = require('run-sequence'),
-    wiredep = require('wiredep'),
+    wiredep = require('npm-wiredep'),
+    uglify = require('gulp-uglify'),
     argv = require('yargs').argv,
 
 
@@ -34,7 +35,7 @@ var browserSync = require('browser-sync'),
 
     // list of where our js files come from
     jsFiles = [
-        'src/{app,components}/**/*.js'
+        'src/{app,components,etc}/**/*.js'
     ],
 
     // list of theme files for less processing
@@ -95,66 +96,66 @@ gulp.task('build', function(callback) {
 // watch the different file locations and execute
 // the relevant tasks
 function server(ghostMode) {
-  ghostMode = typeof ghostMode == 'undefined' ? false : true
-  return function () {
-      /*
-       * Location of your backend (API) server--default port 8080
-       */
-      var proxyTarget = config.api || 'http://localhost:8080';
+    ghostMode = typeof ghostMode == 'undefined' ? false : true
+    return function () {
+        /*
+         * Location of your backend (API) server--default port 8080
+         */
+        var proxyTarget = config.api || 'http://localhost:8080';
 
-      var proxy = httpProxy.createProxyServer({
-          target: proxyTarget
-      });
+        var proxy = httpProxy.createProxyServer({
+            target: proxyTarget
+        });
 
-      proxy.on('error', function(error, req, res) {
-          res.writeHead(500, {
-              'Content-Type': 'text/plain'
-          });
+        proxy.on('error', function(error, req, res) {
+            res.writeHead(500, {
+                'Content-Type': 'text/plain'
+            });
 
-          console.error(chalk.red('[Proxy]'), error);
-      });
+            console.error(chalk.red('[Proxy]'), error);
+        });
 
-      /*
-       * The proxy middleware is an Express middleware added to BrowserSync to
-       * handle backend request and proxy them to your backend.
-       */
-      function proxyMiddleware(req, res, next) {
-          /*
-           * Proxy the REST API.
-           */
-          if (/^\/api\/.*/.test(req.url)) {
-              proxy.web(req, res);
-          } else {
-              next();
-          }
-      }
+        /*
+         * The proxy middleware is an Express middleware added to BrowserSync to
+         * handle backend request and proxy them to your backend.
+         */
+        function proxyMiddleware(req, res, next) {
+            /*
+             * Proxy the REST API.
+             */
+            if (/^\/api\/.*/.test(req.url)) {
+                proxy.web(req, res);
+            } else {
+                next();
+            }
+        }
 
-      browserSync.init({
-          server: {
-              baseDir: hygieia.dist,
-              startPath: '/',
-              middleware: [proxyMiddleware]
-          },
-          ghostMode: ghostMode
-      });
+        browserSync.init({
+            server: {
+                baseDir: hygieia.dist,
+                startPath: '/',
+                middleware: [proxyMiddleware]
+            },
+            ghostMode: ghostMode
+        });
 
-      gulp.watch(jsFiles).on('change', function() {
-          runSequence(['js','html'], browserSync.reload);
-      });
+        gulp.watch(jsFiles).on('change', function() {
+            runSequence(['js','html'], browserSync.reload);
+        });
 
-      // watch the less files in addition to the themes
-      gulp.watch(themeFiles.concat(widgetStyleFiles)).on('change', function() {
-          runSequence('themes', browserSync.reload);
-      });
+        // watch the less files in addition to the themes
+        gulp.watch(themeFiles.concat(widgetStyleFiles)).on('change', function() {
+            runSequence('themes', browserSync.reload);
+        });
 
-      gulp.watch(viewFiles).on('change', function() {
-          runSequence('views', browserSync.reload);
-      });
+        gulp.watch(viewFiles).on('change', function() {
+            runSequence('views', browserSync.reload);
+        });
 
-      gulp.watch(testDataFiles).on('change', function() {
-          runSequence('test-data');
-      });
-  }
+        gulp.watch(testDataFiles).on('change', function() {
+            runSequence('test-data');
+        });
+    }
 }
 
 gulp.task('serve', ['build'], server());
@@ -236,7 +237,7 @@ gulp.task('views', function() {
 gulp.task('fonts', function() {
     return gulp
         .src([
-            'bower_components/**/*'
+            'node_modules/**/*'
         ])
         .pipe(filter('**/*.{eot,ttf,woff,woff2}'))
         .pipe(flatten())
@@ -246,7 +247,7 @@ gulp.task('fonts', function() {
 // move the source html files and inject the widget javascript
 gulp.task('html', function() {
     return gulp
-        // move the root html files to the distribution folder
+    // move the root html files to the distribution folder
         .src([
             hygieia.src + '*.html',
             hygieia.src + 'favicon.ico'
@@ -259,19 +260,19 @@ gulp.task('html', function() {
         // wiredep replaces bower:js with references to all bower dependencies
         .pipe(inject(gulp.src(
             wiredep({
-                exclude: [/bootstrap\.js/, /bootstrap\.css/, /bootstrap\.css/, /foundation\.css/]
+                directory: 'node_modules',
+                exclude: [/bootstrap\.js/, /bootstrap\.css/, /bootstrap\.css/, /foundation\.css/, /bin\.js/, /strip-json-comments\/cli\.js/]
             }).js)
-            .pipe(concat('bower.js'))
-            .pipe(gulp.dest(hygieia.dist + 'bower_components')),
+                .pipe(gulp.dest(hygieia.dist + 'node_modules')),
             { name: 'bower', ignorePath: hygieia.dist, addRootSlash: false })
         )
         .pipe(gulp.dest(hygieia.dist))
 
         // replace inject:js with script references to all the files in the following sources
         .pipe(inject(gulp.src(
-    		!!argv.prod ? ['src/app/app.js'] : jsFiles)
-    		.pipe(order(['app/app.js', 'app/dashboard/core/module.js', 'app/**/*.js', 'components/**/*.js'])),
-    		{ name: 'hygieia', ignorePath: 'src', addRootSlash: false }))
+            !!argv.prod ? ['src/app/app.js'] : jsFiles)
+                .pipe(order(['app/app.js', 'app/dashboard/core/module.js', 'app/**/*.js', 'components/**/*.js','etc/**/*.js','etc/gridstack.min.map'])),
+            { name: 'hygieia', ignorePath: 'src', addRootSlash: false }))
 
         // replace custom placeholders with our configured values
         .pipe(replace('[config]', JSON.stringify(config)))

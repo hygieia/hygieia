@@ -5,9 +5,9 @@
         .module(HygieiaConfig.module)
         .controller('CodeAnalysisViewController', CodeAnalysisViewController);
 
-    CodeAnalysisViewController.$inject = ['$scope', 'codeAnalysisData', 'testSuiteData', 'libraryPolicyData', '$q', '$filter', '$uibModal'];
+    CodeAnalysisViewController.$inject = ['$scope', 'codeAnalysisData', 'testSuiteData', 'libraryPolicyData', '$q', '$filter', '$uibModal', '$interval'];
 
-    function CodeAnalysisViewController($scope, codeAnalysisData, testSuiteData, libraryPolicyData, $q, $filter, $uibModal) {
+    function CodeAnalysisViewController($scope, codeAnalysisData, testSuiteData, libraryPolicyData, $q, $filter, $uibModal, $interval) {
         var ctrl = this;
 
         ctrl.pieOptions = {
@@ -33,6 +33,13 @@
 
         ctrl.showLibraryPolicyDetails = showLibraryPolicyDetails;
 
+        /** Auto Cycle variables */
+        var timeoutPromise = null;
+        ctrl.changeDetect = null;
+        ctrl.pauseQualityView = pauseQualityView;
+        ctrl.animateQualityView = animateQualityView;
+        ctrl.pausePlaySymbol = "pause";
+
         coveragePieChart({});
 
         ctrl.load = function () {
@@ -42,7 +49,7 @@
             };
             var testRequest = {
                 componentId: $scope.widgetConfig.componentId,
-                types: ['Functional','Manual'],
+                types: ['Functional', 'Manual'],
                 max: 1
             };
             var performanceRequest = {
@@ -58,6 +65,7 @@
                 componentId: $scope.widgetConfig.componentId,
                 max: 1
             };
+
             return $q.all([
                 libraryPolicyData.libraryPolicyDetails(libraryPolicyRequest).then(processLibraryPolicyResponse),
                 codeAnalysisData.staticDetails(caRequest).then(processCaResponse),
@@ -216,7 +224,7 @@
             var deferred = $q.defer();
 
             ctrl.functionalTests = processTestResponseByType(response, "Functional");
-            
+
             deferred.resolve(response.lastUpdated);
             return deferred.promise;
         }
@@ -346,6 +354,62 @@
                 }
             });
         }
+
+        /**
+         * Changes timeout boolean to know whether or not to count down
+         */
+        ctrl.startTimeout = function () {
+            ctrl.stopTimeout();
+
+            timeoutPromise = $interval(function () {
+                animateQualityView(false);
+            }, 7000);
+        }
+
+        /**
+         * Stops the current cycle promise
+         */
+        ctrl.stopTimeout = function () {
+            $interval.cancel(timeoutPromise);
+        };
+
+        /**
+         * Starts timeout cycle function by default
+         */
+        ctrl.startTimeout();
+
+        /**
+         * Animates quality view switching
+         */
+        function animateQualityView(resetTimer) {
+            // update the selected view
+            var currentIndex = ctrl.minitabs.findIndex(x => x.name==ctrl.miniWidgetView);
+            var newIndex = currentIndex + 1;
+
+            if (newIndex >= ctrl.minitabs.length){
+                ctrl.miniWidgetView = ctrl.minitabs[0].name;
+            } else {
+                ctrl.miniWidgetView = ctrl.minitabs[newIndex].name;
+            }
+
+            if (resetTimer && timeoutPromise.$$state.value != "canceled") {
+                ctrl.stopTimeout();
+                ctrl.startTimeout();
+            }
+        }
+
+        /**
+         * Pauses quality view switching via manual button from user interaction
+         */
+        function pauseQualityView() {
+            if (timeoutPromise.$$state.value === "canceled") {
+                ctrl.pausePlaySymbol = "pause";
+                ctrl.startTimeout();
+            } else {
+                ctrl.pausePlaySymbol = "play";
+                ctrl.stopTimeout();
+            }
+        };
     }
 })
 ();

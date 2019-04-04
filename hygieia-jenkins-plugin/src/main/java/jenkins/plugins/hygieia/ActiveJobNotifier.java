@@ -12,6 +12,7 @@ import hygieia.builder.BuildBuilder;
 import hygieia.builder.CucumberTestBuilder;
 import hygieia.builder.DeployBuilder;
 import hygieia.builder.SonarBuilder;
+import hygieia.utils.HygieiaUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.json.simple.parser.ParseException;
 
@@ -105,7 +106,7 @@ public class ActiveJobNotifier implements FineGrainedNotifier {
                 BuildStatus buildStatus = BuildStatus.fromString(r.getResult().toString());
                 TestDataCreateRequest request = new CucumberTestBuilder().getTestDataCreateRequest(r, listener, buildStatus, r.getWorkspace(), publisher.getHygieiaTest().getTestApplicationName(),
                         publisher.getHygieiaTest().getTestEnvironmentName(), publisher.getHygieiaTest().getTestType(), publisher.getHygieiaTest().getTestFileNamePattern(), publisher.getHygieiaTest().getTestResultsDirectory(),
-                        publisher.getDescriptor().getHygieiaJenkinsName(), buildResponse.getResponseValue());
+                        publisher.getDescriptor().getHygieiaJenkinsName(), HygieiaUtils.getBuildCollectionId(buildResponse.getResponseValue()));
                 if (request != null) {
                     HygieiaResponse testResponse = getHygieiaService(r).publishTestResults(request);
                     if (testResponse.getResponseCode() == HttpStatus.SC_CREATED) {

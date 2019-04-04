@@ -9,7 +9,7 @@
   <parent>
     <groupId>com.capitalone.dashboard</groupId>
     <artifactId>Hygieia</artifactId>
-    <version>3.0.1</version>
+    <version>3.0.2-SNAPSHOT</version>
   </parent>
   
   <properties>
@@ -87,16 +87,6 @@
 <!-- Optional configuration which provides for running any npm command -->
             <configuration>
               <arguments>install --ignore-scripts</arguments>
-            </configuration>
-          </execution>
-
-          <execution>
-            <id>bower install</id>
-            <goals>
-              <goal>bower</goal>
-            </goals>
-            <configuration>
-              <arguments>install</arguments>
             </configuration>
           </execution>
 

@@ -34,8 +34,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -83,6 +85,25 @@ public class DashboardRemoteServiceTest {
         Component component = componentRepository.findOne(dashboard.get(0).getApplication().getComponents().get(0).getId());
         assertEquals(2, component.getCollectorItems().get(CollectorType.SCM).size());
     }
+
+    @Test
+    public void remoteUpdateMultipleOwners() throws IOException, HygieiaException {
+        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/0-Remote-Update-Repo.json");
+        Dashboard dashboard = dashboardRemoteService.remoteCreate(request, true);
+        int expectedNumOwners = 3;
+        assertEquals(dashboard.getOwners().size(), expectedNumOwners);
+
+        List<Owner> owners = new ArrayList<>();
+        owners.add(new Owner("topopal", AuthType.STANDARD));
+        owners.add(new Owner("testuser1", AuthType.STANDARD));
+        owners.add(new Owner("testuser2", AuthType.STANDARD));
+
+        Set<Owner> ownersFromRequest = new HashSet<>(dashboard.getOwners());
+        Set<Owner> expectedOwners = new HashSet<>(owners);
+
+        assertEquals(ownersFromRequest, expectedOwners);
+    }
+
     @Test
     public void remoteCreateEmptyEntry() throws IOException, HygieiaException {
         DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/Remote-Request-Base.json");
@@ -92,11 +113,9 @@ public class DashboardRemoteServiceTest {
     }
     @Test
     public void remoteCreateInvalidUser() throws IOException {
-        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/0-Remote-Update-Repo.json");
-        Owner owner = new Owner("test123",AuthType.STANDARD);
-        request.getMetaData().setOwner(owner);
+        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/Remote-Request-Base-Invalid-Users.json");
                 Throwable t = new Throwable();
-        RuntimeException excep = new RuntimeException("Invalid owner information or authentication type. Owner first needs to sign up in Hygieia", t);
+        RuntimeException excep = new RuntimeException("There are no valid owner/owners in the request", t);
 
         try {
             dashboardRemoteService.remoteCreate(request, false);
@@ -105,6 +124,20 @@ public class DashboardRemoteServiceTest {
             assertEquals(excep.getMessage(), e.getMessage());
         }
     }
+    @Test
+    public void remoteCreateInvalidAndValidUsers() throws IOException, HygieiaException {
+        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/Remote-Request-Create-Invalid-Valid-Users.json");
+
+        Dashboard dashboard = dashboardRemoteService.remoteCreate(request, false);
+        List<Owner> owners = dashboard.getOwners();
+        assertEquals(2, owners.size());
+        Owner owner1 = new Owner("topopal", AuthType.STANDARD);
+        Owner owner2 = new Owner("testuser1", AuthType.STANDARD);
+
+        assert(owners.contains(owner1));
+        assert(owners.contains(owner2));
+    }
+
     @Test
     public void remoteCreateInvalidApp() throws IOException {
         DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/0-Remote-Update-Repo.json");
@@ -243,6 +276,7 @@ public class DashboardRemoteServiceTest {
         List<Dashboard> dashboard = dashboardService.getByTitle("newDashboard4");
         Component component = componentRepository.findOne(dashboard.get(0).getApplication().getComponents().get(0).getId());
         assertEquals(1, component.getCollectorItems().get(CollectorType.Build).size());
+        assertEquals(2, dashboard.get(0).getOwners().size());
     }
     @Test
     public void remoteUpdateNonExisting() throws IOException {

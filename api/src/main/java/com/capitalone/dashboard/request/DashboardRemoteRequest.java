@@ -68,8 +68,9 @@ public class DashboardRemoteRequest {
         @NotNull
         private String componentName;
 
-        @NotNull
         Owner owner;
+
+        List<Owner> owners;
 
         private String businessService;
 
@@ -127,8 +128,16 @@ public class DashboardRemoteRequest {
             return owner;
         }
 
+        public List<Owner> getOwners() {
+            return owners;
+        }
+
         public void setOwner(Owner owner) {
             this.owner = owner;
+        }
+
+        public void setOwners(List<Owner> owners) {
+            this.owners = owners;
         }
 
         public String getType() {
