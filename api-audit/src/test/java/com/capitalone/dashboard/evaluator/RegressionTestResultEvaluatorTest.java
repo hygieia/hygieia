@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.evaluator;
 
+import com.capitalone.dashboard.ApiSettings;
 import com.capitalone.dashboard.model.TestResult;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.TestSuiteType;
@@ -13,6 +14,7 @@ import com.capitalone.dashboard.response.TestResultsAuditResponse;
 import com.capitalone.dashboard.status.TestResultAuditStatus;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -40,6 +42,10 @@ public class RegressionTestResultEvaluatorTest {
     @Mock
     private FeatureRepository featureRepository;
 
+    @Before
+    public void setup(){
+        regressionTestResultEvaluator.setSettings(getSettings());
+    }
 
     @Test
     public void evaluate_testResultMissing(){
@@ -142,5 +148,13 @@ public class RegressionTestResultEvaluatorTest {
         Dashboard dashboard = new Dashboard("Template1", "Title1", null, null, DashboardType.Team,
                 "ASV1", "BAP1", null, false, null);
         return dashboard;
+    }
+
+    private ApiSettings getSettings(){
+        ApiSettings settings = new ApiSettings();
+        settings.setTestResultSuccessPriority("Low");
+        settings.setTestResultFailurePriority("High");
+        settings.setTestResultSkippedPriority("High");
+        return settings;
     }
 }

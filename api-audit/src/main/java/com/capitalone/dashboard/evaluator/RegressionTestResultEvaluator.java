@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.evaluator;
 
+import com.capitalone.dashboard.ApiSettings;
 import com.capitalone.dashboard.model.AuditException;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
@@ -64,6 +65,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
     private static final String FAILURE_COUNT = "failureCount";
     private static final String SKIP_COUNT = "skippedCount";
     private static final String TOTAL_COUNT = "totalCount";
+    private static final String PRIORITY_HIGH = "High";
 
     @Autowired
     public RegressionTestResultEvaluator(TestResultRepository testResultRepository, FeatureRepository featureRepository) {
@@ -111,12 +113,10 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
     private TestResultsAuditResponse performTestResultAudit(List<TestResult> testResults) {
 
         TestResultsAuditResponse testResultsAuditResponse = new TestResultsAuditResponse();
-
         if (CollectionUtils.isEmpty(testResults) || !isValidTestResultTestSuitType(testResults)){
             testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_MISSING);
             return testResultsAuditResponse;
         }
-
         TestResult testResult = testResults.stream().sorted(Comparator.comparing(TestResult::getTimestamp).reversed()).findFirst().get();
         Optional<TestCapability> testCapability = testResult.getTestCapabilities().stream().sorted(Comparator.comparing(TestCapability::getTimestamp).reversed()).findFirst();
         testResultsAuditResponse.setTestCapabilities(Arrays.asList(testCapability.orElse(new TestCapability())));
@@ -326,16 +326,40 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
      * @return
      */
     private TestResultsAuditResponse updateTestResultAuditStatuses(TestResult testResult, TestResultsAuditResponse testResultsAuditResponse) {
-        if (testResult.getFailureCount() > NumberUtils.INTEGER_ZERO) {
-            testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_AUDIT_FAIL);
-        } else if (testResult.getFailureCount() == NumberUtils.INTEGER_ZERO && testResult.getSuccessCount() > NumberUtils.INTEGER_ZERO) {
-            testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_AUDIT_OK);
-        } else if (testResult.getFailureCount() == NumberUtils.INTEGER_ZERO && testResult.getSuccessCount() == NumberUtils.INTEGER_ZERO
-                && testResult.getSkippedCount() > NumberUtils.INTEGER_ZERO) {
-            testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_SKIPPED);
-        } else {
+
+        boolean isSuccessHighPriority = settings.getTestResultSuccessPriority().equalsIgnoreCase(PRIORITY_HIGH);
+        boolean isFailureHighPriority = settings.getTestResultFailurePriority().equalsIgnoreCase(PRIORITY_HIGH);
+        boolean isSkippedHighPriority = settings.getTestResultSkippedPriority().equalsIgnoreCase(PRIORITY_HIGH);
+
+        if (isFailureHighPriority){
+            if (testResult.getFailureCount() > NumberUtils.INTEGER_ZERO) {
+                testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_AUDIT_FAIL);
+            } else if (testResult.getFailureCount() == NumberUtils.INTEGER_ZERO && testResult.getSuccessCount() > NumberUtils.INTEGER_ZERO) {
+                testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_AUDIT_OK);
+            } else if (testResult.getFailureCount() == NumberUtils.INTEGER_ZERO && testResult.getSuccessCount() == NumberUtils.INTEGER_ZERO
+                    && testResult.getSkippedCount() > NumberUtils.INTEGER_ZERO && isSkippedHighPriority) {
+                testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_SKIPPED);
+            }else {
+                testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_MISSING);
+            }
+        }else if (isSuccessHighPriority){
+            if (testResult.getSuccessCount() > NumberUtils.INTEGER_ZERO) {
+                testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_AUDIT_OK);
+            } else if (testResult.getSuccessCount() == NumberUtils.INTEGER_ZERO && testResult.getFailureCount() > NumberUtils.INTEGER_ZERO) {
+                testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_AUDIT_FAIL);
+            } else if (testResult.getFailureCount() == NumberUtils.INTEGER_ZERO && testResult.getSuccessCount() == NumberUtils.INTEGER_ZERO
+                    && testResult.getSkippedCount() > NumberUtils.INTEGER_ZERO && isSkippedHighPriority) {
+                testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_SKIPPED);
+            }else {
+                testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_MISSING);
+            }
+        }else {
             testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_MISSING);
         }
         return testResultsAuditResponse;
+    }
+
+    public void setSettings(ApiSettings settings) {
+        this.settings = settings;
     }
 }

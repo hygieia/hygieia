@@ -24,11 +24,16 @@ public class ApiSettings {
     @Value("${maxDaysRangeForQuery:60}") // 60 days max
     private long maxDaysRangeForQuery;
     private boolean logRequest;
-
     private String featureIDPattern;
     @Value("${threshold:80.0}")
     private double threshold;
     private List<String> validStoryStatus;
+    @Value("${testResultSuccessPriority:Low}")
+    public String testResultSuccessPriority;
+    @Value("${testResultFailurePriority:High}")
+    public String testResultFailurePriority;
+    @Value("${testResultSkippedPriority:High}")
+    public String testResultSkippedPriority;
 
     public String getKey() {
         return key;
@@ -124,6 +129,30 @@ public class ApiSettings {
 
     public void setCommitLogIgnoreAuditRegEx(String commitLogIgnoreAuditRegEx) {
         this.commitLogIgnoreAuditRegEx = commitLogIgnoreAuditRegEx;
+    }
+
+    public void setTestResultSuccessPriority(String testResultSuccessPriority) {
+        this.testResultSuccessPriority = testResultSuccessPriority;
+    }
+
+    public String getTestResultSuccessPriority() {
+        return testResultSuccessPriority;
+    }
+
+    public void setTestResultFailurePriority(String testResultFailurePriority) {
+        this.testResultFailurePriority = testResultFailurePriority;
+    }
+
+    public void setTestResultSkippedPriority(String testResultSkippedPriority) {
+        this.testResultSkippedPriority = testResultSkippedPriority;
+    }
+
+    public String getTestResultFailurePriority() {
+        return testResultFailurePriority;
+    }
+
+    public String getTestResultSkippedPriority() {
+        return testResultSkippedPriority;
     }
 
 }
