@@ -30,10 +30,6 @@ public class StaticSecurityAnalysisEvaluator extends Evaluator<SecurityReviewAud
     private static final String STR_CRITICAL = "Critical";
     private static final String STR_HIGH = "High";
     private static final String STR_SCORE = "Score";
-    private static final String STR_INSTANCE_URL = "instanceUrl";
-    private static final String STR_APP_NAME = "applicationName";
-    private static final String STR_PROJECT_NAME = "projectName";
-    private static final String URL_PATTERN = "%s/applications/list?app=%s&comp=%s";
 
     @Autowired
     public StaticSecurityAnalysisEvaluator(CodeQualityRepository codeQualityRepository) {
