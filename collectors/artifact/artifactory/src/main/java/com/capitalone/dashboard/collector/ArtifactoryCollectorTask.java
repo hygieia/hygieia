@@ -284,8 +284,8 @@ public class ArtifactoryCollectorTask extends CollectorTask<ArtifactoryCollector
 			}
         }
         if(!binaryArtifacts.isEmpty()){
-        	binaryArtifactRepository.save(binaryArtifacts);
-		}
+			binaryArtifacts.forEach(binaryArtifact->binaryArtifactRepository.save(binaryArtifact));
+   	}
         log("New artifacts", start, count);
     }
 
