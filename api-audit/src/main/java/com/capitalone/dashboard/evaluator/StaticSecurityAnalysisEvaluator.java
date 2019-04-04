@@ -67,16 +67,14 @@ public class StaticSecurityAnalysisEvaluator extends Evaluator<SecurityReviewAud
     private SecurityReviewAuditResponse getStaticSecurityScanResponse(CollectorItem collectorItem, long beginDate, long endDate) {
         List<CodeQuality> codeQualities = codeQualityRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(collectorItem.getId(), beginDate - 1, endDate + 1);
 
-        ObjectMapper mapper = new ObjectMapper();
         SecurityReviewAuditResponse securityReviewAuditResponse = new SecurityReviewAuditResponse();
-
         if (CollectionUtils.isEmpty(codeQualities)) {
             securityReviewAuditResponse.addAuditStatus(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_MISSING);
             return securityReviewAuditResponse;
         }
 
         CodeQuality returnQuality = codeQualities.get(0);
-        securityReviewAuditResponse.setUrl(getSecurityScanUrl(collectorItem));
+        securityReviewAuditResponse.setAuditEntity(collectorItem.getOptions());
         securityReviewAuditResponse.setCodeQuality(returnQuality);
         securityReviewAuditResponse.setLastExecutionTime(returnQuality.getTimestamp());
 
@@ -98,19 +96,5 @@ public class StaticSecurityAnalysisEvaluator extends Evaluator<SecurityReviewAud
             }
         }
         return securityReviewAuditResponse;
-    }
-
-    /**
-     * Get security scan url with application and component names
-     * @param collectorItem
-     * @return
-     */
-    protected String getSecurityScanUrl(CollectorItem collectorItem) {
-        Map<String, Object> options = collectorItem.getOptions();
-        String url = String.format(URL_PATTERN,
-                ((String) Optional.ofNullable(options.get(STR_INSTANCE_URL)).orElse("")).replaceAll("/+$", ""),
-                Optional.ofNullable(options.get(STR_APP_NAME)).orElse(""),
-                Optional.ofNullable(options.get(STR_PROJECT_NAME)).orElse(""));
-        return url;
     }
 }

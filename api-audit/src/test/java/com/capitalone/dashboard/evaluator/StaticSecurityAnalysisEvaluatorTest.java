@@ -96,13 +96,18 @@ public class StaticSecurityAnalysisEvaluatorTest {
     }
 
     @Test
-    public void testEvaluate_StaticSecurityUrl(){
+    public void testEvaluate_auditEntity(){
+
+        List<CodeQuality> codeQuality = getSecurityCodeQualityData("Score", CodeQualityMetricStatus.Warning, "90");
+        when(codeQualityRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class),any(Long.class),any(Long.class))).thenReturn(codeQuality);
         CollectorItem collectorItem = new CollectorItem();
-        collectorItem.getOptions().put("instanceUrl", "https://sample.com//");
+        collectorItem.getOptions().put("instanceUrl", "https://sample.com/");
         collectorItem.getOptions().put("applicationName", "sampleApp");
         collectorItem.getOptions().put("projectName", "sampleProject");
-        String url = "https://sample.com/applications/list?app=sampleApp&comp=sampleProject";
-        Assert.assertEquals(staticSecurityAnalysisEvaluator.getSecurityScanUrl(collectorItem), url);
+        SecurityReviewAuditResponse response = staticSecurityAnalysisEvaluator.evaluate(collectorItem, 125634436, 125634636, null);
+        Assert.assertEquals(response.getAuditEntity().get("instanceUrl"), collectorItem.getOptions().get("instanceUrl"));
+        Assert.assertEquals(response.getAuditEntity().get("applicationName"), collectorItem.getOptions().get("applicationName"));
+        Assert.assertEquals(response.getAuditEntity().get("projectName"), collectorItem.getOptions().get("projectName"));
     }
 
     private List<CodeQuality> getSecurityCodeQualityData(String securityLevel, CodeQualityMetricStatus status, String securityScore){
