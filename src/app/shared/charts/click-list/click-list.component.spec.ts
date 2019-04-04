@@ -9,9 +9,9 @@ describe('ClickListComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-        declarations: [ClickListComponent, TimeAgoPipe ]
+      declarations: [ClickListComponent, TimeAgoPipe]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

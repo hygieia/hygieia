@@ -21,34 +21,34 @@ import { PaginationComponent } from './pagination/pagination.component';
 import { WidgetComponent } from './widget/widget.component';
 
 @NgModule({
-    declarations: [WidgetComponent, TwoByTwoLayoutComponent, LayoutComponent, ChartDirective,
-        ChartComponent, LayoutDirective, LineChartComponent, NumberCardChartComponent,
-        LineAndBarChartComponent, ComboChartComponent, ComboSeriesVerticalComponent, ClickListComponent,
-        TimeAgoPipe, PaginationComponent],
-    entryComponents: [TwoByTwoLayoutComponent, LineChartComponent, NumberCardChartComponent,
-        LineAndBarChartComponent, ComboChartComponent, ClickListComponent],
-    imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        NgxChartsModule,
-        NgxUIModule,
-        NgbModule
-    ],
-    exports: [
-        ReactiveFormsModule,
-        CommonModule,
-        TwoByTwoLayoutComponent,
-        LayoutComponent,
-        WidgetComponent,
-        LineChartComponent,
-        NumberCardChartComponent,
-        ComboChartComponent,
-        LineAndBarChartComponent,
-        ComboSeriesVerticalComponent,
-        ChartComponent,
-        LayoutDirective,
-        ChartDirective,
-        PaginationComponent
-    ]
+  declarations: [WidgetComponent, TwoByTwoLayoutComponent, LayoutComponent, ChartDirective,
+    ChartComponent, LayoutDirective, LineChartComponent, NumberCardChartComponent,
+    LineAndBarChartComponent, ComboChartComponent, ComboSeriesVerticalComponent, ClickListComponent,
+    TimeAgoPipe, PaginationComponent],
+  entryComponents: [TwoByTwoLayoutComponent, LineChartComponent, NumberCardChartComponent,
+    LineAndBarChartComponent, ComboChartComponent, ClickListComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    NgxChartsModule,
+    NgxUIModule,
+    NgbModule
+  ],
+  exports: [
+    ReactiveFormsModule,
+    CommonModule,
+    TwoByTwoLayoutComponent,
+    LayoutComponent,
+    WidgetComponent,
+    LineChartComponent,
+    NumberCardChartComponent,
+    ComboChartComponent,
+    LineAndBarChartComponent,
+    ComboSeriesVerticalComponent,
+    ChartComponent,
+    LayoutDirective,
+    ChartDirective,
+    PaginationComponent
+  ]
 })
 export class SharedModule { }
