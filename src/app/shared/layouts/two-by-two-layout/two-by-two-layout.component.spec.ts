@@ -12,47 +12,47 @@ import { TwoByTwoLayoutComponent } from './two-by-two-layout.component';
 
 // Work around for dynamic component loading testing
 @NgModule({
-    declarations: [ChartComponent, LineChartComponent],
-    imports: [NgxChartsModule, BrowserAnimationsModule],
-    entryComponents: [
-        LineChartComponent
-    ]
+  declarations: [ChartComponent, LineChartComponent],
+  imports: [NgxChartsModule, BrowserAnimationsModule],
+  entryComponents: [
+    LineChartComponent
+  ]
 })
 class TestModule { }
 
 describe('TwoByTwoLayoutComponent', () => {
-    let component: TwoByTwoLayoutComponent;
-    let fixture: ComponentFixture<TwoByTwoLayoutComponent>;
+  let component: TwoByTwoLayoutComponent;
+  let fixture: ComponentFixture<TwoByTwoLayoutComponent>;
 
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-            declarations: [LayoutComponent, TwoByTwoLayoutComponent, ChartDirective],
-            imports: [TestModule, NgxChartsModule, BrowserAnimationsModule],
-        })
-            .compileComponents();
-    }));
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      declarations: [LayoutComponent, TwoByTwoLayoutComponent, ChartDirective],
+      imports: [TestModule, NgxChartsModule, BrowserAnimationsModule],
+    })
+      .compileComponents();
+  }));
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(TwoByTwoLayoutComponent);
-        component = fixture.componentInstance;
+  beforeEach(() => {
+    fixture = TestBed.createComponent(TwoByTwoLayoutComponent);
+    component = fixture.componentInstance;
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('should create chart components', () => {
+    component.charts = [];
+    component.charts.push({
+      component: LineChartComponent,
+      data: {},
+      xAxisLabel: 'Test',
+      yAxisLabel: 'Test',
+      colorScheme: 'vivid',
     });
-
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
-
-    it('should create chart components', () => {
-        component.charts = [];
-        component.charts.push({
-            component: LineChartComponent,
-            data: {},
-            xAxisLabel: 'Test',
-            yAxisLabel: 'Test',
-            colorScheme: 'vivid',
-        });
-        fixture.detectChanges();
-        expect(fixture.componentInstance.chartContainers).toBeDefined();
-        const childDebugElement = fixture.debugElement.query(By.directive(LineChartComponent));
-        expect(childDebugElement).toBeTruthy();
-    });
+    fixture.detectChanges();
+    expect(fixture.componentInstance.chartContainers).toBeDefined();
+    const childDebugElement = fixture.debugElement.query(By.directive(LineChartComponent));
+    expect(childDebugElement).toBeTruthy();
+  });
 });

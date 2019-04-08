@@ -1,10 +1,10 @@
 import { Directive, ElementRef, ViewContainerRef } from '@angular/core';
 
 @Directive({
-    selector: '[appLayout]'
+  selector: '[appLayout]'
 })
 export class LayoutDirective {
 
-    constructor(public viewContainerRef: ViewContainerRef, public el: ElementRef) { }
+  constructor(public viewContainerRef: ViewContainerRef, public el: ElementRef) { }
 
 }
