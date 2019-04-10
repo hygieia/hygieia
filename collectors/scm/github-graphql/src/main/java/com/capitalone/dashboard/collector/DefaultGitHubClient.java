@@ -231,7 +231,7 @@ public class DefaultGitHubClient implements GitHubClient {
         connectCommitToPulls();
     }
 
-    private RedirectedStatus checkForRedirectedRepo(GitHubRepo repo) throws MalformedURLException, HygieiaException {
+    public RedirectedStatus checkForRedirectedRepo(GitHubRepo repo) throws MalformedURLException, HygieiaException {
         GitHubParsed gitHubParsed = new GitHubParsed(repo.getRepoUrl());
         String query = gitHubParsed.getBaseApiUrl() + "repos/" + gitHubParsed.getOrgName() + "/" + gitHubParsed.getRepoName();
 
@@ -241,10 +241,9 @@ public class DefaultGitHubClient implements GitHubClient {
         JSONParser parser = new JSONParser();
         try {
             JSONObject queryJSONBody = (JSONObject) parser.parse(queryBody);
-
             String repoUrl = (String) queryJSONBody.get("html_url");
-            LOG.debug("original url: " + repo.getRepoUrl() + " is redirected to new url: " + repoUrl);
             if (!repoUrl.equals(repo.getRepoUrl())) {
+                LOG.debug("original url: " + repo.getRepoUrl() + " is redirected to new url: " + repoUrl);
                 return new RedirectedStatus(true, repoUrl);
             }
 
