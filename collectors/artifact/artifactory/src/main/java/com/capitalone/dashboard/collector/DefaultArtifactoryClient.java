@@ -274,6 +274,7 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
 				result.setActual_sha1(getString(jsonArtifact, "actual_sha1"));
 				result.setCanonicalName(artifactCanonicalName);
 				result.setTimestamp(timestamp);
+				result.setVirtualRepos(getJsonArray(jsonArtifact, "virtual_repos"));
 				addMetadataToArtifact(result, jsonArtifact);
 
 
