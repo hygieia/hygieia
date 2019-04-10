@@ -27,14 +27,20 @@ import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Comparator;
+import java.util.Optional;
+import java.util.Arrays;
+import java.util.Map;
 
 import java.util.regex.Pattern;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditResponse> {
@@ -45,11 +51,9 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
     private long beginDate;
     private long endDate;
     private Dashboard dashboard;
-    private double threshold;
     private static final String WIDGET_CODE_ANALYSIS = "codeanalysis";
     private static final String WIDGET_FEATURE = "feature";
     private static final String STR_TEAM_ID = "teamId";
-    private static String FEATURE_ID_PATTERN;
     private static final String STR_UNDERSCORE = "_";
     private static final String STR_HYPHEN = "-";
     private static final String STR_AT = "@";
@@ -71,8 +75,6 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         this.beginDate = beginDate-1;
         this.endDate = endDate+1;
         this.dashboard = getDashboard(dashboard.getTitle(), DashboardType.Team);
-        this.FEATURE_ID_PATTERN = settings.getFeatureIDPattern();
-        this.threshold = settings.getThreshold();
         List<CollectorItem> testItems = getCollectorItems(this.dashboard, WIDGET_CODE_ANALYSIS, CollectorType.Test);
         Collection<TestResultsAuditResponse> testResultsAuditResponse = new ArrayList<>();
         if (CollectionUtils.isEmpty(testItems)) {
@@ -118,7 +120,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         testResultsAuditResponse.setLastExecutionTime(testResult.getStartTime());
         testResultsAuditResponse.setType(testResult.getType().toString());
         testResultsAuditResponse.setFeatureTestResult(getFeatureTestResult(testResult));
-        testResultsAuditResponse = updateTestResultAuditStatuses(testResult, testResultsAuditResponse);
+        testResultsAuditResponse = updateTestResultAuditStatuses(testCapability.get(), testResultsAuditResponse);
         testResultsAuditResponse = updateTraceabilityDetails(dashboard, testResult, testResultsAuditResponse);
         return testResultsAuditResponse;
 
@@ -135,6 +137,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         List<String> totalStoriesList = new ArrayList<>();
         List<String> totalCompletedStories = new ArrayList<>();
         List<HashMap> totalStories = new ArrayList<>();
+        double traceabilityThreshold = settings.getTraceabilityThreshold();
 
         Widget featureWidget = getFeatureWidget(dashboard);
         Optional<Object> teamIdOpt = Optional.ofNullable(featureWidget.getOptions().get(STR_TEAM_ID));
@@ -162,7 +165,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
             double percentage = (totalStoryIndicatorCount * 100) / totalCompletedStories.size();
             traceability.setPercentage(percentage);
 
-            if (this.threshold == NumberUtils.DOUBLE_ZERO) {
+            if (traceabilityThreshold == NumberUtils.DOUBLE_ZERO) {
                 testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULTS_TRACEABILITY_THRESHOLD_DEFAULT);
             }
             if(percentage == NumberUtils.DOUBLE_ZERO){
@@ -174,7 +177,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         traceability.setTotalCompletedStories(totalCompletedStories);
         traceability.setTotalStories(totalStories);
         traceability.setTotalStoryCount(totalStories.size());
-        traceability.setThreshold(this.threshold);
+        traceability.setThreshold(traceabilityThreshold);
         testResultsAuditResponse.setTraceability(traceability);
         return testResultsAuditResponse;
     }
@@ -185,7 +188,8 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
      * @return
      */
     private  List<StoryIndicator> getTotalStoryIndicators(TestResult testResult) {
-        Pattern featureIdPattern = Pattern.compile(FEATURE_ID_PATTERN);
+
+        Pattern featureIdPattern = Pattern.compile(settings.getFeatureIDPattern());
         List<StoryIndicator> totalStoryIndicatorList = new ArrayList<>();
         testResult.getTestCapabilities().stream()
                 .map(TestCapability::getTestSuites).flatMap(Collection::stream)
@@ -317,37 +321,31 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
 
     /**
      * update test result audit statuses
-     * @param testResult
+     * @param testCapability
      * @param testResultsAuditResponse
      * @return
      */
-    private TestResultsAuditResponse updateTestResultAuditStatuses(TestResult testResult, TestResultsAuditResponse testResultsAuditResponse) {
+    private TestResultsAuditResponse updateTestResultAuditStatuses(TestCapability testCapability, TestResultsAuditResponse testResultsAuditResponse) {
 
         boolean isSuccessHighPriority = settings.getTestResultSuccessPriority().equalsIgnoreCase(PRIORITY_HIGH);
         boolean isFailureHighPriority = settings.getTestResultFailurePriority().equalsIgnoreCase(PRIORITY_HIGH);
-        boolean isSkippedHighPriority = settings.getTestResultSkippedPriority().equalsIgnoreCase(PRIORITY_HIGH);
 
+        if(isAllTestCasesSkipped(testCapability)){
+            testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_SKIPPED);
+            return testResultsAuditResponse;
+        }
+        double testCasePassPercent = this.getTestCasePassPercent(testCapability);
         if (isFailureHighPriority){
-            if (testResult.getFailureCount() > NumberUtils.INTEGER_ZERO) {
+            if (testCasePassPercent < settings.getTestResultThreshold()) {
                 testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_AUDIT_FAIL);
-            } else if (testResult.getFailureCount() == NumberUtils.INTEGER_ZERO && testResult.getSuccessCount() > NumberUtils.INTEGER_ZERO) {
+            } else {
                 testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_AUDIT_OK);
-            } else if (testResult.getFailureCount() == NumberUtils.INTEGER_ZERO && testResult.getSuccessCount() == NumberUtils.INTEGER_ZERO
-                    && testResult.getSkippedCount() > NumberUtils.INTEGER_ZERO && isSkippedHighPriority) {
-                testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_SKIPPED);
-            }else {
-                testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_MISSING);
             }
         }else if (isSuccessHighPriority){
-            if (testResult.getSuccessCount() > NumberUtils.INTEGER_ZERO) {
+            if (testCasePassPercent > NumberUtils.INTEGER_ZERO) {
                 testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_AUDIT_OK);
-            } else if (testResult.getSuccessCount() == NumberUtils.INTEGER_ZERO && testResult.getFailureCount() > NumberUtils.INTEGER_ZERO) {
+            } else {
                 testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_AUDIT_FAIL);
-            } else if (testResult.getFailureCount() == NumberUtils.INTEGER_ZERO && testResult.getSuccessCount() == NumberUtils.INTEGER_ZERO
-                    && testResult.getSkippedCount() > NumberUtils.INTEGER_ZERO && isSkippedHighPriority) {
-                testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_SKIPPED);
-            }else {
-                testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_MISSING);
             }
         }else {
             testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_MISSING);
@@ -355,7 +353,34 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         return testResultsAuditResponse;
     }
 
+    /**
+     * Get test result pass percent
+     * @param testCapability
+     * @return
+     */
+    private double getTestCasePassPercent(TestCapability testCapability) {
+        double testCaseSuccessCount = testCapability.getTestSuites().stream().mapToDouble(TestSuite::getSuccessTestCaseCount).sum();
+        double totalTestCaseCount = testCapability.getTestSuites().stream().mapToDouble(TestSuite::getTotalTestCaseCount).sum();
+        return (testCaseSuccessCount/totalTestCaseCount) * 100;
+    }
+
     public void setSettings(ApiSettings settings) {
         this.settings = settings;
+    }
+
+    /**
+     * Check if all the test cases are skipped
+     * @param testCapability
+     * @return
+     */
+    public boolean isAllTestCasesSkipped(TestCapability testCapability) {
+        int totalTestCaseCount = testCapability.getTestSuites().stream().mapToInt(TestSuite::getTotalTestCaseCount).sum();
+        int testCaseSkippedCount = testCapability.getTestSuites().stream().mapToInt(TestSuite::getSkippedTestCaseCount).sum();
+        boolean isSkippedHighPriority = settings.getTestResultSkippedPriority().equalsIgnoreCase(PRIORITY_HIGH);
+
+        if ((testCaseSkippedCount >= totalTestCaseCount) && isSkippedHighPriority){
+            return true;
+        }
+        return false;
     }
 }

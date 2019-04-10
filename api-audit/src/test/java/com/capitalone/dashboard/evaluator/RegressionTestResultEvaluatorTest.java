@@ -6,6 +6,8 @@ import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.TestResult;
 import com.capitalone.dashboard.model.TestSuiteType;
+import com.capitalone.dashboard.model.TestCapability;
+import com.capitalone.dashboard.model.TestSuite;
 import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.model.Feature;
 
@@ -133,30 +135,51 @@ public class RegressionTestResultEvaluatorTest {
     private TestResult getAuditOKTestResult() {
         TestResult testResult = new TestResult();
         testResult.setType(TestSuiteType.Regression);
-        testResult.setSuccessCount(10);
-        testResult.setFailureCount(0);
-        testResult.setSkippedCount(0);
-        testResult.setTotalCount(10);
+        TestCapability testCapability = new TestCapability();
+        
+        TestSuite testSuite1 = new TestSuite();
+        testSuite1.setSuccessTestCaseCount(18);
+        testSuite1.setFailedTestCaseCount(1);
+        testSuite1.setSkippedTestCaseCount(1);
+        testSuite1.setTotalTestCaseCount(20);
+
+        TestSuite testSuite2 = new TestSuite();
+        testSuite2.setSuccessTestCaseCount(20);
+        testSuite2.setFailedTestCaseCount(0);
+        testSuite2.setSkippedTestCaseCount(0);
+        testSuite2.setTotalTestCaseCount(20);
+
+        testCapability.getTestSuites().add(testSuite1);
+        testCapability.getTestSuites().add(testSuite2);
+        testResult.getTestCapabilities().add(testCapability);
         return testResult;
     }
 
     private TestResult getAuditFAILTestResult() {
         TestResult testResult = new TestResult();
         testResult.setType(TestSuiteType.Regression);
-        testResult.setSuccessCount(5);
-        testResult.setFailureCount(3);
-        testResult.setSkippedCount(2);
-        testResult.setTotalCount(10);
+        TestCapability testCapability = new TestCapability();
+        TestSuite testSuite = new TestSuite();
+        testSuite.setSuccessTestCaseCount(37);
+        testSuite.setFailedTestCaseCount(2);
+        testSuite.setSkippedTestCaseCount(1);
+        testSuite.setTotalTestCaseCount(40);
+        testCapability.getTestSuites().add(testSuite);
+        testResult.getTestCapabilities().add(testCapability);
         return testResult;
     }
 
     public TestResult getAuditSKIPTestResult() {
         TestResult testResult = new TestResult();
         testResult.setType(TestSuiteType.Functional);
-        testResult.setSuccessCount(0);
-        testResult.setFailureCount(0);
-        testResult.setSkippedCount(10);
-        testResult.setTotalCount(10);
+        TestCapability testCapability = new TestCapability();
+        TestSuite testSuite = new TestSuite();
+        testSuite.setSuccessTestCaseCount(0);
+        testSuite.setFailedTestCaseCount(0);
+        testSuite.setSkippedTestCaseCount(40);
+        testSuite.setTotalTestCaseCount(40);
+        testCapability.getTestSuites().add(testSuite);
+        testResult.getTestCapabilities().add(testCapability);
         return testResult;
     }
 
@@ -171,6 +194,7 @@ public class RegressionTestResultEvaluatorTest {
         settings.setTestResultSuccessPriority("Low");
         settings.setTestResultFailurePriority("High");
         settings.setTestResultSkippedPriority("High");
+        settings.setTestResultThreshold(95.0);
         return settings;
     }
 }

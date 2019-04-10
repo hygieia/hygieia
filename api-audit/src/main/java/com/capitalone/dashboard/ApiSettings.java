@@ -25,8 +25,10 @@ public class ApiSettings {
     private long maxDaysRangeForQuery;
     private boolean logRequest;
     private String featureIDPattern;
-    @Value("${threshold:80.0}")
-    private double threshold;
+    @Value("${traceabilityThreshold:80.0}")
+    private double traceabilityThreshold;
+    @Value("${testResultThreshold:95.0}")
+    private double testResultThreshold;
     private List<String> validStoryStatus;
     @Value("${testResultSuccessPriority:Low}")
     public String testResultSuccessPriority;
@@ -34,6 +36,7 @@ public class ApiSettings {
     public String testResultFailurePriority;
     @Value("${testResultSkippedPriority:High}")
     public String testResultSkippedPriority;
+    private String serviceAccountRegEx;
 
     public String getKey() {
         return key;
@@ -107,12 +110,12 @@ public class ApiSettings {
         this.featureIDPattern = featureIDPattern;
     }
 
-    public double getThreshold() {
-        return threshold;
+    public double getTraceabilityThreshold() {
+        return traceabilityThreshold;
     }
 
-    public void setThreshold(double threshold) {
-        this.threshold = threshold;
+    public void setTraceabilityThreshold(double traceabilityThreshold) {
+        this.traceabilityThreshold = traceabilityThreshold;
     }
 
     public List<String> getValidStoryStatus() {
@@ -155,4 +158,19 @@ public class ApiSettings {
         return testResultSkippedPriority;
     }
 
+    public double getTestResultThreshold() {
+        return testResultThreshold;
+    }
+
+    public void setTestResultThreshold(double testResultThreshold) {
+        this.testResultThreshold = testResultThreshold;
+    }
+
+    public String getServiceAccountRegEx() {
+        return serviceAccountRegEx;
+    }
+
+    public void setServiceAccountRegEx(String serviceAccountRegEx) {
+        this.serviceAccountRegEx = serviceAccountRegEx;
+    }
 }

@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.model;
 
+import com.capitalone.dashboard.evaluator.ArtifactEvaluator;
 import com.capitalone.dashboard.evaluator.BuildEvaluator;
 import com.capitalone.dashboard.evaluator.CodeQualityEvaluator;
 import com.capitalone.dashboard.evaluator.CodeReviewEvaluator;
@@ -29,6 +30,7 @@ public class DashboardAuditModel {
     private final PerformanceTestResultEvaluator performanceTestResultEvaluator;
     private final StaticSecurityAnalysisEvaluator staticSecurityAnalysisEvaluator;
     private final LibraryPolicyEvaluator libraryPolicyEvaluator;
+    private final ArtifactEvaluator artifactEvaluator;
 
 
 
@@ -39,7 +41,7 @@ public class DashboardAuditModel {
                                RegressionTestResultEvaluator regressionTestResultEvaluator,
                                PerformanceTestResultEvaluator performanceTestResultEvaluator,
                                StaticSecurityAnalysisEvaluator staticSecurityAnalysisEvaluator,
-                               LibraryPolicyEvaluator libraryPolicyEvaluator) {
+                               LibraryPolicyEvaluator libraryPolicyEvaluator,ArtifactEvaluator artifactEvaluator) {
         this.codeReviewEvaluator = codeReviewEvaluator;
         this.buildEvaluator = buildEvaluator;
         this.codeQualityEvaluator = codeQualityEvaluator;
@@ -47,6 +49,7 @@ public class DashboardAuditModel {
         this.regressionTestResultEvaluator = regressionTestResultEvaluator;
         this.performanceTestResultEvaluator = performanceTestResultEvaluator;
         this.libraryPolicyEvaluator = libraryPolicyEvaluator;
+        this.artifactEvaluator = artifactEvaluator;
     }
 
 
@@ -58,7 +61,8 @@ public class DashboardAuditModel {
                 new SimpleEntry<>(AuditType.LIBRARY_POLICY, (Evaluator)libraryPolicyEvaluator),
                 new SimpleEntry<>(AuditType.BUILD_REVIEW, (Evaluator)buildEvaluator),
                 new SimpleEntry<>(AuditType.TEST_RESULT, (Evaluator)regressionTestResultEvaluator),
-                new SimpleEntry<>(AuditType.PERF_TEST, (Evaluator)performanceTestResultEvaluator))
+                new SimpleEntry<>(AuditType.PERF_TEST, (Evaluator)performanceTestResultEvaluator),
+                new SimpleEntry<>(AuditType.ARTIFACT,(Evaluator)artifactEvaluator))
                 .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue)));
     }
 
