@@ -64,16 +64,15 @@ public class StaticSecurityAnalysisEvaluator extends Evaluator<SecurityReviewAud
         List<CodeQuality> codeQualities = codeQualityRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(collectorItem.getId(), beginDate - 1, endDate + 1);
 
         SecurityReviewAuditResponse securityReviewAuditResponse = new SecurityReviewAuditResponse();
+        securityReviewAuditResponse.setAuditEntity(collectorItem.getOptions());
+        securityReviewAuditResponse.setLastUpdated(collectorItem.getLastUpdated());
         if (CollectionUtils.isEmpty(codeQualities)) {
             securityReviewAuditResponse.addAuditStatus(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_MISSING);
             return securityReviewAuditResponse;
         }
-
         CodeQuality returnQuality = codeQualities.get(0);
-        securityReviewAuditResponse.setAuditEntity(collectorItem.getOptions());
         securityReviewAuditResponse.setCodeQuality(returnQuality);
         securityReviewAuditResponse.setLastExecutionTime(returnQuality.getTimestamp());
-
         Set<CodeQualityMetric> metrics = returnQuality.getMetrics();
 
         if (metrics.stream().anyMatch(metric -> metric.getName().equalsIgnoreCase(STR_CRITICAL))){
