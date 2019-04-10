@@ -134,6 +134,14 @@ public class ApiSettings {
         this.commitLogIgnoreAuditRegEx = commitLogIgnoreAuditRegEx;
     }
 
+    public String getServiceAccountRegEx() {
+        return serviceAccountRegEx;
+    }
+
+    public void setServiceAccountRegEx(String serviceAccountRegEx) {
+        this.serviceAccountRegEx = serviceAccountRegEx;
+    }
+
     public void setTestResultSuccessPriority(String testResultSuccessPriority) {
         this.testResultSuccessPriority = testResultSuccessPriority;
     }
@@ -164,13 +172,5 @@ public class ApiSettings {
 
     public void setTestResultThreshold(double testResultThreshold) {
         this.testResultThreshold = testResultThreshold;
-    }
-
-    public String getServiceAccountRegEx() {
-        return serviceAccountRegEx;
-    }
-
-    public void setServiceAccountRegEx(String serviceAccountRegEx) {
-        this.serviceAccountRegEx = serviceAccountRegEx;
     }
 }
