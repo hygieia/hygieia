@@ -157,7 +157,6 @@ public class DefaultGitHubClient implements GitHubClient {
         dummyCommitPaging.setLastPage(false);
 
         JSONObject query = buildQuery(true, firstRun, false, gitHubParsed, repo, dummyCommitPaging, dummyPRPaging, dummyIssuePaging);
-
         int loopCount = 1;
         while (!alldone) {
             LOG.debug("Executing loop " + loopCount + " for " + gitHubParsed.getOrgName() + "/" + gitHubParsed.getRepoName());
@@ -237,20 +236,12 @@ public class DefaultGitHubClient implements GitHubClient {
 
         ResponseEntity<String> response = makeRestCallGet(query);
 
-        String queryBody = response.getBody();
-        JSONParser parser = new JSONParser();
-        try {
-            JSONObject queryJSONBody = (JSONObject) parser.parse(queryBody);
-            String repoUrl = (String) queryJSONBody.get("html_url");
-            if (!repoUrl.equals(repo.getRepoUrl())) {
-                LOG.debug("original url: " + repo.getRepoUrl() + " is redirected to new url: " + repoUrl);
-                return new RedirectedStatus(true, repoUrl);
-            }
-
-        } catch (ParseException e) {
-            LOG.error("Could not parse response body", e);
+        JSONObject queryJSONBody = (JSONObject) parseAsObject(response);
+        String repoUrl = (String) queryJSONBody.get("html_url");
+        if (!repoUrl.equals(repo.getRepoUrl())) {
+            LOG.debug("original url: " + repo.getRepoUrl() + " is redirected to new url: " + repoUrl);
+            return new RedirectedStatus(true, repoUrl);
         }
-
         return new RedirectedStatus();
     }
 
@@ -1068,7 +1059,6 @@ public class DefaultGitHubClient implements GitHubClient {
 
     private JSONObject getDataFromRestCallPost(String url, GitHubRepo repo, String password, String personalAccessToken, JSONObject query) throws MalformedURLException, HygieiaException {
         ResponseEntity<String> response = makeRestCallPost(url, repo.getUserId(), password, personalAccessToken, query);
-
         JSONObject data = (JSONObject) parseAsObject(response).get("data");
         JSONArray errors = getArray(parseAsObject(response), "errors");
 
