@@ -27,20 +27,14 @@ import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Comparator;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.Date;
+import java.util.*;
 
 import java.util.regex.Pattern;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditResponse> {
@@ -51,7 +45,6 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
     private long beginDate;
     private long endDate;
     private Dashboard dashboard;
-    private Widget featureWidget = new Widget();
     private double threshold;
     private static final String WIDGET_CODE_ANALYSIS = "codeanalysis";
     private static final String WIDGET_FEATURE = "feature";
@@ -78,7 +71,6 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         this.beginDate = beginDate-1;
         this.endDate = endDate+1;
         this.dashboard = getDashboard(dashboard.getTitle(), DashboardType.Team);
-        this.featureWidget = getFeatureWidget();
         this.FEATURE_ID_PATTERN = settings.getFeatureIDPattern();
         this.threshold = settings.getThreshold();
         List<CollectorItem> testItems = getCollectorItems(this.dashboard, WIDGET_CODE_ANALYSIS, CollectorType.Test);
@@ -86,7 +78,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         if (CollectionUtils.isEmpty(testItems)) {
             throw new AuditException("No tests configured", AuditException.NO_COLLECTOR_ITEM_CONFIGURED);
         }
-        testItems.forEach(testItem -> testResultsAuditResponse.add(getRegressionTestResultAudit(testItem)));
+        testItems.forEach(testItem -> testResultsAuditResponse.add(getRegressionTestResultAudit(dashboard, testItem)));
         return testResultsAuditResponse;
     }
 
@@ -100,19 +92,22 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
      * @param testItem
      * @return
      */
-    protected TestResultsAuditResponse getRegressionTestResultAudit(CollectorItem testItem) {
+    protected TestResultsAuditResponse getRegressionTestResultAudit(Dashboard dashboard, CollectorItem testItem) {
         List<TestResult> testResults = testResultRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(testItem.getId(), beginDate, endDate);
-        return performTestResultAudit(testResults);
+        return performTestResultAudit(dashboard, testItem, testResults);
     }
 
     /**
      * Perform test result audit
+     *
+     * @param testItem
      * @param testResults
      * @return testResultsAuditResponse
      */
-    private TestResultsAuditResponse performTestResultAudit(List<TestResult> testResults) {
+    private TestResultsAuditResponse performTestResultAudit(Dashboard dashboard, CollectorItem testItem, List<TestResult> testResults) {
 
         TestResultsAuditResponse testResultsAuditResponse = new TestResultsAuditResponse();
+        testResultsAuditResponse.setLastUpdated(testItem.getLastUpdated());
         if (CollectionUtils.isEmpty(testResults) || !isValidTestResultTestSuitType(testResults)){
             testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_MISSING);
             return testResultsAuditResponse;
@@ -124,7 +119,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         testResultsAuditResponse.setType(testResult.getType().toString());
         testResultsAuditResponse.setFeatureTestResult(getFeatureTestResult(testResult));
         testResultsAuditResponse = updateTestResultAuditStatuses(testResult, testResultsAuditResponse);
-        testResultsAuditResponse = updateTraceabilityDetails(testResult, testResultsAuditResponse);
+        testResultsAuditResponse = updateTraceabilityDetails(dashboard, testResult, testResultsAuditResponse);
         return testResultsAuditResponse;
 
     }
@@ -134,13 +129,14 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
      * @param testResult,testResultsAuditResponse
      * @return testResultsAuditResponse
      */
-    private TestResultsAuditResponse updateTraceabilityDetails(TestResult testResult, TestResultsAuditResponse testResultsAuditResponse) {
+    private TestResultsAuditResponse updateTraceabilityDetails(Dashboard dashboard, TestResult testResult, TestResultsAuditResponse testResultsAuditResponse) {
 
         Traceability traceability = new Traceability();
         List<String> totalStoriesList = new ArrayList<>();
         List<String> totalCompletedStories = new ArrayList<>();
         List<HashMap> totalStories = new ArrayList<>();
 
+        Widget featureWidget = getFeatureWidget(dashboard);
         Optional<Object> teamIdOpt = Optional.ofNullable(featureWidget.getOptions().get(STR_TEAM_ID));
         String teamId = teamIdOpt.isPresent() ? teamIdOpt.get().toString() : "";
         List<Feature> featureList = featureRepository.getStoryByTeamID(teamId);
@@ -299,11 +295,11 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
      * Get feature widget
      * @return
      */
-    public Widget getFeatureWidget() {
+    public Widget getFeatureWidget(Dashboard dashboard) {
         return dashboard.getWidgets()
                 .stream()
                 .filter(widget -> widget.getName().equalsIgnoreCase(WIDGET_FEATURE))
-                .findFirst().get();
+                .findFirst().orElse(new Widget());
     }
     /**
      * Builds feature test result data map

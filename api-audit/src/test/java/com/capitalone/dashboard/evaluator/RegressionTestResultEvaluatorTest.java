@@ -1,11 +1,12 @@
 package com.capitalone.dashboard.evaluator;
 
 import com.capitalone.dashboard.ApiSettings;
-import com.capitalone.dashboard.model.TestResult;
 import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.TestSuiteType;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.TestResult;
+import com.capitalone.dashboard.model.TestSuiteType;
+import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.model.Feature;
 
 import com.capitalone.dashboard.repository.FeatureRepository;
@@ -55,7 +56,7 @@ public class RegressionTestResultEvaluatorTest {
         List<TestResult> emptyTestResults = new ArrayList<>();
         when(testResultRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(collectorItem.getId(),
                 123456789, 123456989)).thenReturn(emptyTestResults);
-        TestResultsAuditResponse testResultsAuditResponse = regressionTestResultEvaluator.getRegressionTestResultAudit(collectorItem);
+        TestResultsAuditResponse testResultsAuditResponse = regressionTestResultEvaluator.getRegressionTestResultAudit(getDashboard(), collectorItem);
         Assert.assertTrue(testResultsAuditResponse.getAuditStatuses().contains(TestResultAuditStatus.TEST_RESULT_MISSING));
     }
 
@@ -67,7 +68,7 @@ public class RegressionTestResultEvaluatorTest {
         when(testResultRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class),
                 any(Long.class), any(Long.class))).thenReturn(testResults);
         when(featureRepository.getStoryByTeamID("TEST-1234")).thenReturn(Arrays.asList(new Feature()));
-        TestResultsAuditResponse testResultsAuditResponse = regressionTestResultEvaluator.getRegressionTestResultAudit(collectorItem);
+        TestResultsAuditResponse testResultsAuditResponse = regressionTestResultEvaluator.getRegressionTestResultAudit(getDashboard(), collectorItem);
         Assert.assertTrue(testResultsAuditResponse.getAuditStatuses().contains(TestResultAuditStatus.TEST_RESULT_AUDIT_OK));
     }
 
@@ -79,7 +80,7 @@ public class RegressionTestResultEvaluatorTest {
         when(testResultRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class),
                 any(Long.class), any(Long.class))).thenReturn(testResults);
         when(featureRepository.getStoryByTeamID("TEST-1234")).thenReturn(Arrays.asList(new Feature()));
-        TestResultsAuditResponse testResultsAuditResponse = regressionTestResultEvaluator.getRegressionTestResultAudit(collectorItem);
+        TestResultsAuditResponse testResultsAuditResponse = regressionTestResultEvaluator.getRegressionTestResultAudit(getDashboard(), collectorItem);
         Assert.assertTrue(testResultsAuditResponse.getAuditStatuses().contains(TestResultAuditStatus.TEST_RESULT_AUDIT_FAIL));
     }
 
@@ -91,7 +92,7 @@ public class RegressionTestResultEvaluatorTest {
         when(testResultRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class),
                 any(Long.class), any(Long.class))).thenReturn(testResults);
         when(featureRepository.getStoryByTeamID("TEST-1234")).thenReturn(Arrays.asList(new Feature()));
-        TestResultsAuditResponse testResultsAuditResponse = regressionTestResultEvaluator.getRegressionTestResultAudit(collectorItem);
+        TestResultsAuditResponse testResultsAuditResponse = regressionTestResultEvaluator.getRegressionTestResultAudit(getDashboard(), collectorItem);
         Assert.assertTrue(testResultsAuditResponse.getAuditStatuses().contains(TestResultAuditStatus.TEST_RESULT_SKIPPED));
     }
 
@@ -103,6 +104,21 @@ public class RegressionTestResultEvaluatorTest {
         Assert.assertEquals(testResult.getFailureCount(), Integer.parseInt(featureTestMap.get("failureCount").toString()));
         Assert.assertEquals(testResult.getSkippedCount(), Integer.parseInt(featureTestMap.get("skippedCount").toString()));
         Assert.assertEquals(testResult.getTotalCount(), Integer.parseInt(featureTestMap.get("totalCount").toString()));
+    }
+
+    @Test
+    public void evaluate_traceability_featureWidgetConfig() {
+        Dashboard dashboard = getDashboard();
+        Widget widget1 = new Widget();
+        widget1.setName("TestWidget");
+        dashboard.getWidgets().add(widget1);
+        Widget emptyWidget = regressionTestResultEvaluator.getFeatureWidget(dashboard);
+        Assert.assertNotEquals(emptyWidget.getName(), "feature");
+        Widget widget2 = new Widget();
+        widget2.setName("feature");
+        dashboard.getWidgets().add(widget2);
+        Widget featureWidget = regressionTestResultEvaluator.getFeatureWidget(dashboard);
+        Assert.assertEquals(featureWidget.getName(), "feature");
     }
 
     private TestResult getTestResult() {
