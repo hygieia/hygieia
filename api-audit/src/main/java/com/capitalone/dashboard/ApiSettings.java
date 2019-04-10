@@ -29,6 +29,7 @@ public class ApiSettings {
     @Value("${threshold:80}")
     private int threshold;
     private List<String> validStoryStatus;
+    private String serviceAccountRegEx;
 
     public String getKey() {
         return key;
@@ -125,5 +126,16 @@ public class ApiSettings {
     public void setCommitLogIgnoreAuditRegEx(String commitLogIgnoreAuditRegEx) {
         this.commitLogIgnoreAuditRegEx = commitLogIgnoreAuditRegEx;
     }
+
+    public String getServiceAccountRegEx() {
+        return serviceAccountRegEx;
+    }
+
+    public void setServiceAccountRegEx(String serviceAccountRegEx) {
+        this.serviceAccountRegEx = serviceAccountRegEx;
+    }
+
+
+
 
 }
