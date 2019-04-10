@@ -133,7 +133,6 @@ public class ArtifactoryCollectorTask extends CollectorTask<ArtifactoryCollector
                 log("Fetched repos", start,getRepos().size());
 			} else {
 				LOGGER.error("Error with artifactory url: " + instanceUrl + ". Url does not end with '/'");
-
 			}
 			log("Finished", start);
 		});
