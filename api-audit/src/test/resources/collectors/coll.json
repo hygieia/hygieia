@@ -210,5 +210,35 @@
     "searchFields" : [
       "description"
     ]
-  }
+  },
+  {
+    "_id" : "5ca24d2b117cc32e2414d047",
+    "_class" : "com.capitalone.dashboard.model.ArtifactoryCollector",
+    "artifactoryServers" : [
+      "https://jfrog.com/"
+    ],
+    "name" : "Artifactory",
+    "collectorType" : "Artifact",
+    "enabled" : true,
+    "online" : false,
+    "errors" : [],
+    "uniqueFields" : {
+      "path" : "",
+      "repoName" : "",
+      "artifactName" : "",
+      "instanceUrl" : ""
+    },
+    "allFields" : {
+      "path" : "",
+      "repoName" : "",
+      "artifactName" : "",
+      "instanceUrl" : ""
+    },
+    "lastExecuted" : 1554403976655,
+    "searchFields" : [
+      "description"
+    ],
+    "properties" : {}
+
+    }
 ]
