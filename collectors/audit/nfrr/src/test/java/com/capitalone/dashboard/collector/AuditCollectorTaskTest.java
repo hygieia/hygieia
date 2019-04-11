@@ -8,27 +8,39 @@ import com.capitalone.dashboard.model.AuditType;
 import com.capitalone.dashboard.model.Audit;
 import com.capitalone.dashboard.model.AuditStatus;
 import com.capitalone.dashboard.model.DataStatus;
+import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.repository.AuditResultRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
+import com.google.common.io.Resources;
+import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
-import org.junit.Before;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.Optional;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.HashSet;
+
 
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
@@ -52,7 +64,6 @@ public class AuditCollectorTaskTest {
     private static final long BEGIN_DATE = 1537824736000L;
     private static final long END_DATE = 1540503701000L;
 
-    @Before
     public void setup() throws IOException {
         TestUtils.loadDashBoard(dashboardRepository);
         TestUtils.loadCollector(collectorRepository);
@@ -60,21 +71,38 @@ public class AuditCollectorTaskTest {
         TestUtils.loadCollectorItems(collectorItemRepository);
         settings = new TestConfig().settings();
     }
+
+
     @Test
-    public void getCollectAuditStatusData(){
+    public void test_testResultAuditCollect() throws IOException, ParseException {
+        ResponseEntity<String> response = new ResponseEntity<>(getJSONResponse("response/auditresponse.json"),
+                HttpStatus.OK);
+        JSONParser jsonParser = new JSONParser();
+        JSONObject responseObj = (JSONObject) jsonParser.parse(response.getBody());
+        JSONObject review = (JSONObject) responseObj.get("review");
+        Audit testAudit = AuditCollectorUtil.getTestAudit((JSONArray) review.get(AuditType.TEST_RESULT.name()),
+                (JSONArray) responseObj.get("auditStatuses"));
+        Assert.assertEquals(testAudit.getAuditStatus(), AuditStatus.OK);
+        Assert.assertEquals(testAudit.getDataStatus(), DataStatus.OK);
+        Assert.assertEquals(testAudit.getType(), AuditType.TEST_RESULT);
+        Assert.assertTrue(Optional.ofNullable(testAudit.getOptions().get("traceability")).isPresent());
+        Assert.assertTrue(Optional.ofNullable(testAudit.getOptions().get("featureTestResult")).isPresent());
+    }
+
+    @Test
+    public void getCollectAuditStatusData() throws IOException {
+        this.setup();
         Iterable<Dashboard> recentDashboards = dashboardRepository.findAll();
         List<AuditResult> auditResults = new ArrayList<>();
-        Map traceability = new HashMap();
         AuditResult auditResult1 = new AuditResult(ObjectId.get(),"auditTestDashboard" , "CARD",
                 "ASVC","BAP" ,"Owner" ,null ,
-                AuditType.CODE_QUALITY ,"OK","OK" ,null,null , traceability, 7883L );
+                AuditType.CODE_QUALITY ,"OK","OK" ,null,null, 7883L );
         auditResults.add(auditResult1);
 
         Set<AuditType> allAuditTypes = new HashSet<>();
         allAuditTypes.add(AuditType.CODE_QUALITY);
         recentDashboards.forEach(dashboard -> {
             try {
-                Map<AuditType, Audit> auditMap = AuditCollectorUtil.getAudit(dashboard, settings, BEGIN_DATE, END_DATE);
                 Map<AuditType,Audit> auditMap1 = new HashMap<>();
                 Audit auditCQ = new Audit();
                 auditCQ.setType(AuditType.CODE_QUALITY);
@@ -107,5 +135,17 @@ public class AuditCollectorTaskTest {
                 });
             }
         });
+    }
+
+    private String getJSONResponse(String fileName) throws IOException {
+        String path = "./" + fileName;
+        URL fileUrl = Resources.getResource(path);
+        return IOUtils.toString(fileUrl);
+    }
+
+    public Dashboard getDashboard() {
+        Dashboard dashboard = new Dashboard("", "tychehygieiatitle", null, null, DashboardType.Team,
+                "", "", null, false, null);
+        return dashboard;
     }
 }
