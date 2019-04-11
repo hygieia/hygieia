@@ -44,6 +44,7 @@ import com.google.gson.reflect.TypeToken;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -133,12 +134,16 @@ public class DashboardAuditServiceTest {
         assertDashboardAudit(actual, expected);
         assertThat(actual.getReview()).isNotEmpty();
         assertThat(actual.getReview().get(AuditType.STATIC_SECURITY_ANALYSIS)).isNotNull();
-        Map<AuditType, Collection<LibraryPolicyAuditResponse>> actualReviewMap = actual.getReview();
-        Collection<LibraryPolicyAuditResponse> actualReview = actualReviewMap.get(AuditType.STATIC_SECURITY_ANALYSIS);
-        Map<AuditType, Collection<LibraryPolicyAuditResponse>> expectedReviewMap = expected.getReview();
-        Collection<LibraryPolicyAuditResponse> expectedReview = expectedReviewMap.get(AuditType.STATIC_SECURITY_ANALYSIS);
+        Map<AuditType, Collection<SecurityReviewAuditResponse>> actualReviewMap = actual.getReview();
+        Collection<SecurityReviewAuditResponse> actualReview = actualReviewMap.get(AuditType.STATIC_SECURITY_ANALYSIS);
+        Map<AuditType, Collection<SecurityReviewAuditResponse>> expectedReviewMap = expected.getReview();
+        Collection<SecurityReviewAuditResponse> expectedReview = expectedReviewMap.get(AuditType.STATIC_SECURITY_ANALYSIS);
         assertThat(actualReview.size()).isEqualTo(1);
-        assertThat(actualReview.toArray()[0]).isEqualToComparingFieldByField(expectedReview.toArray()[0]);
+        Assert.assertEquals(actualReviewMap.get("codeQuality"), expectedReviewMap.get("codeQuality"));
+        Assert.assertEquals(actualReviewMap.get("lastExecutionTime"), expectedReviewMap.get("lastExecutionTime"));
+        Assert.assertEquals(actualReviewMap.get("auditEntity"), expectedReviewMap.get("auditEntity"));
+        Assert.assertEquals(actualReviewMap.get("lastUpdated"), expectedReviewMap.get("lastUpdated"));
+        Assert.assertEquals(actualReviewMap.get("auditStatuses"), expectedReviewMap.get("auditStatuses"));
     }
 
     @Test

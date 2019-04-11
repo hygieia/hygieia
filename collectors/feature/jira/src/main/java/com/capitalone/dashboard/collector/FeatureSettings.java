@@ -86,6 +86,24 @@ public class FeatureSettings {
 	 */
 	@Value("${feature.collectorItemOnlyUpdate:true}")
 	private boolean collectorItemOnlyUpdate;
+	/**
+	 * In Jira, your instance will have its own Id for the Story
+	 * <p>
+	 * </p>
+	 * <strong>Note:</strong> You can retrieve your instance's Story ID
+	 * via the following URI
+	 *  https://[your-jira-domain-name]/rest/api/2/issuetype
+	 */
+	private String[] jiraStoryIds;
+	/**
+	 * In Jira, your instance will have its own Id for the Epic
+	 * <p>
+	 * </p>
+	 * <strong>Note:</strong> You can retrieve your instance's Epic ID
+	 * via the following URI
+	 *  https://[your-jira-domain-name]/rest/api/2/issuetype
+	 */
+	private String jiraEpicId;
 
 	public boolean isCollectorItemOnlyUpdate() {
 		return collectorItemOnlyUpdate;
@@ -253,5 +271,21 @@ public class FeatureSettings {
 
 	public void setJiraBoardAsTeam(boolean jiraBoardAsTeam) {
 		this.jiraBoardAsTeam = jiraBoardAsTeam;
+	}
+
+	public String[] getJiraStoryIds() {
+		return jiraStoryIds;
+	}
+
+	public void setJiraStoryIds(String[] jiraStoryIds) {
+		this.jiraStoryIds = jiraStoryIds;
+	}
+
+	public String getJiraEpicId() {
+		return jiraEpicId;
+	}
+
+	public void setJiraEpicId(String jiraEpicId) {
+		this.jiraEpicId = jiraEpicId;
 	}
 }
