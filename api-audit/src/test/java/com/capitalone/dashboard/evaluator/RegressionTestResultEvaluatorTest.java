@@ -60,6 +60,9 @@ public class RegressionTestResultEvaluatorTest {
                 123456789, 123456989)).thenReturn(emptyTestResults);
         TestResultsAuditResponse testResultsAuditResponse = regressionTestResultEvaluator.getRegressionTestResultAudit(getDashboard(), collectorItem);
         Assert.assertTrue(testResultsAuditResponse.getAuditStatuses().contains(TestResultAuditStatus.TEST_RESULT_MISSING));
+        Assert.assertTrue(!testResultsAuditResponse.getAuditStatuses().contains(TestResultAuditStatus.TEST_RESULT_AUDIT_OK));
+        Assert.assertTrue(!testResultsAuditResponse.getAuditStatuses().contains(TestResultAuditStatus.TEST_RESULT_AUDIT_FAIL));
+        Assert.assertTrue(!testResultsAuditResponse.getAuditStatuses().contains(TestResultAuditStatus.TEST_RESULT_SKIPPED));
     }
 
     @Test
@@ -71,7 +74,10 @@ public class RegressionTestResultEvaluatorTest {
                 any(Long.class), any(Long.class))).thenReturn(testResults);
         when(featureRepository.getStoryByTeamID("TEST-1234")).thenReturn(Arrays.asList(new Feature()));
         TestResultsAuditResponse testResultsAuditResponse = regressionTestResultEvaluator.getRegressionTestResultAudit(getDashboard(), collectorItem);
+        Assert.assertTrue(!testResultsAuditResponse.getAuditStatuses().contains(TestResultAuditStatus.TEST_RESULT_MISSING));
         Assert.assertTrue(testResultsAuditResponse.getAuditStatuses().contains(TestResultAuditStatus.TEST_RESULT_AUDIT_OK));
+        Assert.assertTrue(!testResultsAuditResponse.getAuditStatuses().contains(TestResultAuditStatus.TEST_RESULT_AUDIT_FAIL));
+        Assert.assertTrue(!testResultsAuditResponse.getAuditStatuses().contains(TestResultAuditStatus.TEST_RESULT_SKIPPED));
     }
 
     @Test
@@ -83,7 +89,10 @@ public class RegressionTestResultEvaluatorTest {
                 any(Long.class), any(Long.class))).thenReturn(testResults);
         when(featureRepository.getStoryByTeamID("TEST-1234")).thenReturn(Arrays.asList(new Feature()));
         TestResultsAuditResponse testResultsAuditResponse = regressionTestResultEvaluator.getRegressionTestResultAudit(getDashboard(), collectorItem);
+        Assert.assertTrue(!testResultsAuditResponse.getAuditStatuses().contains(TestResultAuditStatus.TEST_RESULT_MISSING));
+        Assert.assertTrue(!testResultsAuditResponse.getAuditStatuses().contains(TestResultAuditStatus.TEST_RESULT_AUDIT_OK));
         Assert.assertTrue(testResultsAuditResponse.getAuditStatuses().contains(TestResultAuditStatus.TEST_RESULT_AUDIT_FAIL));
+        Assert.assertTrue(!testResultsAuditResponse.getAuditStatuses().contains(TestResultAuditStatus.TEST_RESULT_SKIPPED));
     }
 
     @Test
@@ -95,6 +104,9 @@ public class RegressionTestResultEvaluatorTest {
                 any(Long.class), any(Long.class))).thenReturn(testResults);
         when(featureRepository.getStoryByTeamID("TEST-1234")).thenReturn(Arrays.asList(new Feature()));
         TestResultsAuditResponse testResultsAuditResponse = regressionTestResultEvaluator.getRegressionTestResultAudit(getDashboard(), collectorItem);
+        Assert.assertTrue(!testResultsAuditResponse.getAuditStatuses().contains(TestResultAuditStatus.TEST_RESULT_MISSING));
+        Assert.assertTrue(!testResultsAuditResponse.getAuditStatuses().contains(TestResultAuditStatus.TEST_RESULT_AUDIT_OK));
+        Assert.assertTrue(!testResultsAuditResponse.getAuditStatuses().contains(TestResultAuditStatus.TEST_RESULT_AUDIT_FAIL));
         Assert.assertTrue(testResultsAuditResponse.getAuditStatuses().contains(TestResultAuditStatus.TEST_RESULT_SKIPPED));
     }
 

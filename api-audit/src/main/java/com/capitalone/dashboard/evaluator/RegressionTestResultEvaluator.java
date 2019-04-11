@@ -109,6 +109,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
     private TestResultsAuditResponse performTestResultAudit(Dashboard dashboard, CollectorItem testItem, List<TestResult> testResults) {
 
         TestResultsAuditResponse testResultsAuditResponse = new TestResultsAuditResponse();
+        testResultsAuditResponse.setAuditEntity(testItem.getOptions());
         testResultsAuditResponse.setLastUpdated(testItem.getLastUpdated());
         if (CollectionUtils.isEmpty(testResults) || !isValidTestResultTestSuitType(testResults)){
             testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_MISSING);
