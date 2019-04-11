@@ -5,7 +5,6 @@
   "review": {
     "STATIC_SECURITY_ANALYSIS": [
       {
-        "url": "https://appsec.com/StaticSecurityAnalysis",
         "lastExecutionTime": 1522855896054,
         "codeQuality": {
           "collectorItemId": {
@@ -55,11 +54,19 @@
           }
         },
         "auditStatuses": [
-          "STATIC_SECURITY_SCAN_FOUND_HIGH",
-          "STATIC_SECURITY_SCAN_FOUND_CRITICAL",
-          "STATIC_SECURITY_SCAN_OK"
+          "STATIC_SECURITY_SCAN_FOUND_CRITICAL"
         ],
-        "lastUpdated": 0
+        "lastUpdated": 0,
+        "auditEntity": {
+          "applicationType": null,
+          "reportUrl": "https://appsec.com/StaticSecurityAnalysis",
+          "applicationID": [
+            "TestBusServ"
+          ],
+          "projectName": "cust-service",
+          "applicationName": "customer-service",
+          "instanceUrl": "https://appsec.com"
+        }
       }
     ]
   },
