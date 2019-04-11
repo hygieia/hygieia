@@ -1,6 +1,8 @@
 package com.capitalone.dashboard.response;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class AuditReviewResponse<T> {
@@ -9,6 +11,8 @@ public class AuditReviewResponse<T> {
     private String errorMessage;
 
     private long lastUpdated;
+
+    private Map<String, Object> auditEntity = new HashMap<>();
 
     public void addAuditStatus(T status) {
         auditStatuses.add(status);
@@ -32,5 +36,13 @@ public class AuditReviewResponse<T> {
 
     public void setLastUpdated(long lastUpdated) {
         this.lastUpdated = lastUpdated;
+    }
+
+    public Map<String, Object> getAuditEntity() {
+        return auditEntity;
+    }
+
+    public void setAuditEntity(Map<String, Object> auditEntity) {
+        this.auditEntity = auditEntity;
     }
 }
