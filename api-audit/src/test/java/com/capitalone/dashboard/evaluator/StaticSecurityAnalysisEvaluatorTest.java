@@ -92,7 +92,7 @@ public class StaticSecurityAnalysisEvaluatorTest {
         CollectorItem collectorItem = new CollectorItem();
         collectorItem.getOptions().put("reportUrl", "");
         SecurityReviewAuditResponse response = staticSecurityAnalysisEvaluator.evaluate(collectorItem, 125634436, 125634636, null);
-        Assert.assertEquals(true, response.getAuditStatuses().toString().contains(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_NO_CLOSED_FINDINGS.name()));
+        Assert.assertEquals(true, response.getAuditStatuses().toString().contains(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_OK.name()));
     }
 
     private List<CodeQuality> getSecurityCodeQualityData(String securityLevel, CodeQualityMetricStatus status, String securityScore){
