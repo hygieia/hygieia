@@ -51,6 +51,16 @@
         "userID": "",
         "url": "https://mygithub.com/compliance-scenario/6-lgtm-merge"
       }
+    },
+    {
+      "_id" : "5cacd87504652d321104ea74",
+      "name" : "build",
+      "componentId" : "57f29d143b55670a9e06d624",
+      "options" : {
+        "id" : "build0",
+        "buildDurationThreshold" : 3,
+        "consecutiveFailureThreshold" : 5
+      }
     }
   ],
   "owners": [

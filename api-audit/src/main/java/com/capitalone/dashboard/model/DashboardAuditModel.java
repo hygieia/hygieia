@@ -76,7 +76,8 @@ public class DashboardAuditModel {
                 new SimpleEntry<>(AuditType.BUILD_REVIEW, DashboardAuditStatus.DASHBOARD_BUILD_CONFIGURED),
                 new SimpleEntry<>(AuditType.TEST_RESULT, DashboardAuditStatus.DASHBOARD_TEST_CONFIGURED),
                 new SimpleEntry<>(AuditType.PERF_TEST, DashboardAuditStatus.DASHBOARD_PERFORMANCE_TEST_CONFIGURED),
-                new SimpleEntry<>(AuditType.STATIC_SECURITY_ANALYSIS, DashboardAuditStatus.DASHBOARD_STATIC_SECURITY_ANALYSIS_CONFIGURED))
+                new SimpleEntry<>(AuditType.STATIC_SECURITY_ANALYSIS, DashboardAuditStatus.DASHBOARD_STATIC_SECURITY_ANALYSIS_CONFIGURED),
+                new SimpleEntry<>(AuditType.ARTIFACT, DashboardAuditStatus.DASHBOARD_ARTIFACT_CONFIGURED))
                 .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue)));
     }
 
@@ -89,7 +90,8 @@ public class DashboardAuditModel {
                 new SimpleEntry<>(AuditType.BUILD_REVIEW, DashboardAuditStatus.DASHBOARD_BUILD_NOT_CONFIGURED),
                 new SimpleEntry<>(AuditType.TEST_RESULT, DashboardAuditStatus.DASHBOARD_TEST_NOT_CONFIGURED),
                 new SimpleEntry<>(AuditType.PERF_TEST, DashboardAuditStatus.DASHBOARD_PERFORMANCE_TEST_NOT_CONFIGURED),
-                new SimpleEntry<>(AuditType.STATIC_SECURITY_ANALYSIS, DashboardAuditStatus.DASHBOARD_STATIC_SECURITY_ANALYSIS_NOT_CONFIGURED))
+                new SimpleEntry<>(AuditType.STATIC_SECURITY_ANALYSIS, DashboardAuditStatus.DASHBOARD_STATIC_SECURITY_ANALYSIS_NOT_CONFIGURED),
+                new SimpleEntry<>(AuditType.ARTIFACT, DashboardAuditStatus.DASHBOARD_ARTIFACT_NOT_CONFIGURED))
                 .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue)));
     }
 
