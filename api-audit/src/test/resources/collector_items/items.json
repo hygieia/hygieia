@@ -502,5 +502,20 @@
       "userID": "",
       "url": "https://mygithub.com/Devopscode/NewPrOldCommit"
     }
+  },
+  {
+    "id" : "5ca6525d54904f47cd3fe8f5",
+    "description" : "artifactName",
+    "enabled" : true,
+    "errors" : [],
+    "pushed" : false,
+    "collectorId" : "5ca24d2b117cc32e2414d047",
+    "lastUpdated" : 1554403933665,
+    "options" : {
+      "path" : "artifactName/path",
+      "repoName" : "repoName",
+      "artifactName" : "artifactName",
+      "instanceUrl" : "https://jfrog.com/"
+    }
   }
 ]
