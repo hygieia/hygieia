@@ -239,7 +239,7 @@ public class DefaultGitHubClient implements GitHubClient {
         JSONObject queryJSONBody = (JSONObject) parseAsObject(response);
         String repoUrl = (String) queryJSONBody.get("html_url");
         if (!repoUrl.equals(repo.getRepoUrl())) {
-            LOG.debug("original url: " + repo.getRepoUrl() + " is redirected to new url: " + repoUrl);
+            LOG.info("original url: " + repo.getRepoUrl() + " is redirected to new url: " + repoUrl);
             return new RedirectedStatus(true, repoUrl);
         }
         return new RedirectedStatus();
