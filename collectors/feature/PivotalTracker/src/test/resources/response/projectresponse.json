@@ -1,0 +1,30 @@
+[
+	{
+		"expand": "description,lead,url,projectKeys",
+		"self": "https://my.jira.com/rest/api/2/project/13700",
+		"id": "13700",
+		"key": "PROJ1",
+		"name": "Project 1",
+		"avatarUrls": {
+			"48x48": "https://my.jira.com/secure/projectavatar?pid=13700&avatarId=10609",
+			"24x24": "https://my.jira.com/secure/projectavatar?size=small&pid=13700&avatarId=10609",
+			"16x16": "https://my.jira.com/secure/projectavatar?size=xsmall&pid=13700&avatarId=10609",
+			"32x32": "https://my.jira.com/secure/projectavatar?size=medium&pid=13700&avatarId=10609"
+		},
+		"projectTypeKey": "software"
+	},
+	{
+		"expand": "description,lead,url,projectKeys",
+		"self": "https://my.jira.com/rest/api/2/project/11500",
+		"id": "11500",
+		"key": "PROJ2",
+		"name": "Project 2",
+		"avatarUrls": {
+			"48x48": "https://my.jira.com/secure/projectavatar?pid=11500&avatarId=10011",
+			"24x24": "https://my.jira.com/secure/projectavatar?size=small&pid=11500&avatarId=10011",
+			"16x16": "https://my.jira.com/secure/projectavatar?size=xsmall&pid=11500&avatarId=10011",
+			"32x32": "https://my.jira.com/secure/projectavatar?size=medium&pid=11500&avatarId=10011"
+		},
+		"projectTypeKey": "software"
+	}
+]

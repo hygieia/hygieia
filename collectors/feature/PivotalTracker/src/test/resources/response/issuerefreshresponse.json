@@ -1,0 +1,50 @@
+{
+   "expand": "schema,names",
+   "startAt": 0,
+   "maxResults": 50,
+   "total": 7,
+   "issues": [
+      {
+         "expand": "operations,versionedRepresentations,editmeta,changelog,renderedFields",
+         "id": "2312604",
+         "self": "https://jira.com/rest/agile/1.0/issue/2312604",
+         "key": "TEART-9557"
+      },
+      {
+         "expand": "operations,versionedRepresentations,editmeta,changelog,renderedFields",
+         "id": "2312608",
+         "self": "https://jira.com/rest/agile/1.0/issue/2312608",
+         "key": "TEART-9561"
+      },
+      {
+         "expand": "operations,versionedRepresentations,editmeta,changelog,renderedFields",
+         "id": "3772146",
+         "self": "https://jira.com/rest/agile/1.0/issue/3772146",
+         "key": "TEART-23231"
+      },
+      {
+         "expand": "operations,versionedRepresentations,editmeta,changelog,renderedFields",
+         "id": "3800320",
+         "self": "https://jira.com/rest/agile/1.0/issue/3800320",
+         "key": "TEART-23357"
+      },
+      {
+         "expand": "operations,versionedRepresentations,editmeta,changelog,renderedFields",
+         "id": "3990803",
+         "self": "https://jira.com/rest/agile/1.0/issue/3990803",
+         "key": "TEART-24366"
+      },
+      {
+         "expand": "operations,versionedRepresentations,editmeta,changelog,renderedFields",
+         "id": "3991533",
+         "self": "https://jira.com/rest/agile/1.0/issue/3991533",
+         "key": "TEART-24371"
+      },
+      {
+         "expand": "operations,versionedRepresentations,editmeta,changelog,renderedFields",
+         "id": "4101726",
+         "self": "https://jira.com/rest/agile/1.0/issue/4101726",
+         "key": "TEART-25190"
+      }
+   ]
+}
