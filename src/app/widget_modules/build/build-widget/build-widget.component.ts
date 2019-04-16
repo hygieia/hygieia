@@ -5,6 +5,8 @@ import { LineChartComponent } from 'src/app/shared/charts/line-chart/line-chart.
 import { LayoutDirective } from 'src/app/shared/layouts/layout.directive';
 import { BuildService } from '../build.service';
 import { Build } from '../interfaces';
+import {NgModel} from '@angular/forms';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
     selector: 'app-build-widget',
@@ -15,7 +17,7 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
 
     @ViewChild(LayoutDirective) childLayoutTag: LayoutDirective;
 
-    constructor(componentFactoryResolver: ComponentFactoryResolver, cdr: ChangeDetectorRef, private buildService: BuildService) {
+    constructor(componentFactoryResolver: ComponentFactoryResolver, cdr: ChangeDetectorRef, private buildService: BuildService, modalService: NgbModal) {
         super(componentFactoryResolver, cdr);
     }
 

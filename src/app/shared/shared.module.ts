@@ -9,16 +9,15 @@ import { ChartComponent } from './charts/chart/chart.component';
 import { LayoutDirective } from './layouts/layout.directive';
 import { LineChartComponent } from './charts/line-chart/line-chart.component';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { ModalComponent } from "./modals/modal/modal.component";
-import { FormModalComponent} from "./modals/form-modal/form-modal.component";
+import { FormModalComponent} from './modals/form-modal/form-modal.component';
 import { DetailModalComponent } from './modals/detail-modal/detail-modal.component';
 import { ConfirmationModalComponent } from './modals/confirmation-modal/confirmation-modal.component';
 import { ModalDirective } from './modals/modal.directive';
+import { TestFormComponent} from '../widget_modules/build/test-form/test-form.component';
 
 @NgModule({
     declarations: [
       FormModalComponent,
-      ModalComponent,
       WidgetComponent,
       TwoByTwoLayoutComponent,
       LayoutComponent,
@@ -28,15 +27,16 @@ import { ModalDirective } from './modals/modal.directive';
       LineChartComponent,
       DetailModalComponent,
       ConfirmationModalComponent,
-      ModalDirective
+      ModalDirective,
+      TestFormComponent
     ],
     entryComponents: [
       TwoByTwoLayoutComponent,
       LineChartComponent,
-      ModalComponent,
       DetailModalComponent,
       ConfirmationModalComponent,
-      FormModalComponent
+      FormModalComponent,
+      TestFormComponent
     ],
     imports: [
         CommonModule,
