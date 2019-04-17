@@ -11,9 +11,9 @@ import { SharedModule } from '../shared/shared.module';
 @NgModule({
   declarations: [NavbarComponent],
   imports: [
-    SharedModule,
+    HttpClientModule,
     RouterModule,
-    HttpClientModule
+    SharedModule
   ],
   exports: [RouterModule, HttpClientModule, NavbarComponent],
   providers: [AuthService,

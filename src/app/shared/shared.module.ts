@@ -1,12 +1,17 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { WidgetComponent } from './widget/widget.component';
-import { TwoByTwoLayoutComponent } from './layouts/two-by-two-layout/two-by-two-layout.component';
-import { LayoutComponent } from './layouts/layout/layout.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { NgxUIModule } from '@swimlane/ngx-ui';
+import { TimeAgoPipe } from 'time-ago-pipe';
+
 import { ChartDirective } from './charts/chart.directive';
 import { ChartComponent } from './charts/chart/chart.component';
-import { LayoutDirective } from './layouts/layout.directive';
+import { ClickListComponent } from './charts/click-list/click-list.component';
+import { ComboChartComponent } from './charts/combo-chart/combo-chart.component';
+import { ComboSeriesVerticalComponent } from './charts/combo-series-vertical/combo-series-vertical.component';
+import { LineAndBarChartComponent } from './charts/line-and-bar-chart/line-and-bar-chart.component';
 import { LineChartComponent } from './charts/line-chart/line-chart.component';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { FormModalComponent} from './modals/form-modal/form-modal.component';
@@ -14,45 +19,69 @@ import { DetailModalComponent } from './modals/detail-modal/detail-modal.compone
 import { ConfirmationModalComponent } from './modals/confirmation-modal/confirmation-modal.component';
 import { ModalDirective } from './modals/modal.directive';
 import { TestFormComponent} from '../widget_modules/build/test-form/test-form.component';
+import { NumberCardChartComponent } from './charts/number-card-chart/number-card-chart.component';
+import { LayoutDirective } from './layouts/layout.directive';
+import { LayoutComponent } from './layouts/layout/layout.component';
+import { TwoByTwoLayoutComponent } from './layouts/two-by-two-layout/two-by-two-layout.component';
+import { PaginationComponent } from './pagination/pagination.component';
+import { WidgetComponent } from './widget/widget.component';
 
 @NgModule({
-    declarations: [
-      FormModalComponent,
-      WidgetComponent,
-      TwoByTwoLayoutComponent,
-      LayoutComponent,
-      ChartDirective,
-      ChartComponent,
-      LayoutDirective,
-      LineChartComponent,
-      DetailModalComponent,
-      ConfirmationModalComponent,
-      ModalDirective,
-      TestFormComponent
-    ],
-    entryComponents: [
-      TwoByTwoLayoutComponent,
-      LineChartComponent,
-      DetailModalComponent,
-      ConfirmationModalComponent,
-      FormModalComponent,
-      TestFormComponent
-    ],
-    imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        NgxChartsModule
-    ],
-    exports: [
-        ReactiveFormsModule,
-        CommonModule,
-        TwoByTwoLayoutComponent,
-        LayoutComponent,
-        WidgetComponent,
-        LineChartComponent,
-        ChartComponent,
-        LayoutDirective,
-        ChartDirective
-    ]
+  declarations: [
+    ChartComponent,
+    ChartDirective,
+    ClickListComponent,
+    ComboChartComponent,
+    ComboSeriesVerticalComponent,
+    ConfirmationModalComponent,
+    DetailModalComponent,
+    FormModalComponent,
+    LayoutComponent,
+    LayoutDirective,
+    LineAndBarChartComponent,
+    LineChartComponent,
+    ModalDirective,
+    NumberCardChartComponent,
+    PaginationComponent,
+    TestFormComponent,
+    TimeAgoPipe,
+    TwoByTwoLayoutComponent,
+    WidgetComponent,
+  ],
+  entryComponents: [
+    ClickListComponent,
+    ComboChartComponent,
+    ConfirmationModalComponent,
+    DetailModalComponent,
+    FormModalComponent,
+    LineAndBarChartComponent,
+    LineChartComponent,
+    NumberCardChartComponent,
+    TestFormComponent,
+    TwoByTwoLayoutComponent
+  ],
+  imports: [
+    CommonModule,
+    NgbModule,
+    NgxChartsModule,
+    NgxUIModule,
+    ReactiveFormsModule
+  ],
+  exports: [
+    ChartComponent,
+    ChartDirective,
+    ComboChartComponent,
+    ComboSeriesVerticalComponent,
+    CommonModule,
+    LayoutComponent,
+    LayoutDirective,
+    LineAndBarChartComponent,
+    LineChartComponent,
+    NumberCardChartComponent,
+    PaginationComponent,
+    ReactiveFormsModule,
+    TwoByTwoLayoutComponent,
+    WidgetComponent
+  ]
 })
 export class SharedModule { }

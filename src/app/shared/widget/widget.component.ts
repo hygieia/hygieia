@@ -1,6 +1,4 @@
-import {
-  Component, Input, ComponentFactoryResolver, ChangeDetectorRef, Type
-} from '@angular/core';
+import { ChangeDetectorRef, Component, ComponentFactoryResolver, Input, Type } from '@angular/core';
 import {LayoutComponent} from '../layouts/layout/layout.component';
 import {LayoutDirective} from '../layouts/layout.directive';
 import {Chart} from '../interfaces';

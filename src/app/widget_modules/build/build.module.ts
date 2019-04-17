@@ -8,7 +8,6 @@ import {FormsModule} from '@angular/forms';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 
-
 @NgModule({
     declarations: [BuildWidgetComponent],
     imports: [
