@@ -4,7 +4,7 @@
   "collectorItems": {
     "SCM": [
       {
-        "id":"56e301107fab7c3ec3c43397",
+        "id": "56e301107fab7c3ec3c43397",
         "enabled": true,
         "errors": [],
         "pushed": false,
@@ -44,7 +44,7 @@
         "id": "5b4e524333ec296b81c3935f"
       }
     ],
-    "LibraryPolicy" : [
+    "LibraryPolicy": [
       {
         "id": "5ad5f605c23b391cfa1c01a4",
         "description": "myapplication:mycomponent",
@@ -64,42 +64,75 @@
         }
       }
     ],
-    "Test" : [
+    "Test": [
       {
-        "id" : "57f2a0193b55670a9e06d63a",
-        "description" : "Functional-SLATE",
-        "niceName" : "ABCD",
-        "enabled" : true,
-        "errors" : [
+        "id": "57f2a0193b55670a9e06d63a",
+        "description": "Functional-SLATE",
+        "niceName": "ABCD",
+        "enabled": true,
+        "errors": [
         ],
-        "pushed" : true,
-        "collectorId" : "56df29df7fab7c3ec3c432ea",
-        "lastUpdated" : 1513106044147,
-        "options" : {
-          "jobName" : "Functional-SLATE",
-          "jobUrl" : "https://myjenkins.com/jenkins/job/Functional-SLATE/",
-          "instanceUrl" : "https://myjenkins.com/jenkins/"
+        "pushed": true,
+        "collectorId": "56df29df7fab7c3ec3c432ea",
+        "lastUpdated": 1513106044147,
+        "options": {
+          "jobName": "Functional-SLATE",
+          "jobUrl": "https://myjenkins.com/jenkins/job/Functional-SLATE/",
+          "instanceUrl": "https://myjenkins.com/jenkins/"
         }
       }
     ],
-    "CodeQuality" : [
+    "CodeQuality": [
       {
-        "id" : "56e5919d7fab7c0244e33341",
-        "description" : "service parent",
-        "enabled" : true,
-        "errors" : [
-
+        "id": "56e5919d7fab7c0244e33341",
+        "description": "service parent",
+        "enabled": true,
+        "errors": [
         ],
-        "pushed" : false,
-        "collectorId" : "56cb5bde7fab7c548551410e",
-        "lastUpdated" : 0,
+        "pushed": false,
+        "collectorId": "56cb5bde7fab7c548551410e",
+        "lastUpdated": 0,
+        "options": {
+          "projectName": "service parent",
+          "projectId": "124466",
+          "instanceUrl": "https://sonar.com"
+        }
+      }
+    ],
+    "Artifact": [
+      {
+        "id": "5ca6525d54904f47cd3fe8f5",
+        "description": "artifactName",
+        "enabled": true,
+        "errors": [],
+        "pushed": false,
+        "collectorId": "5ca24d2b117cc32e2414d047",
+        "lastUpdated": 1554403933665,
+        "options": {
+          "path": "artifactName/path",
+          "repoName": "repoName",
+          "artifactName": "artifactName",
+          "instanceUrl": "https://jfrog.com/"
+        }
+      }
+    ],
+    "Build": [
+      {
+        "id" : "5caf4be154904f5a95cd8dfd",
+        "description" : "job/testGenericItem/",
+        "niceName" : "DemonJenkins",
+        "enabled" : true,
+        "errors" : [],
+        "pushed" : true,
+        "collectorId" : "56ca5b387fab7c05d45a20ce",
+        "lastUpdated" : 1554992096802,
         "options" : {
-          "projectName" : "service parent",
-          "projectId" : "124466",
-          "instanceUrl" : "https://sonar.com"
+          "jobName" : "job/testGenericItem/",
+          "jobUrl" : "http://localhost:8082/job/testGenericItem/",
+          "instanceUrl" : "http://localhost:8082/"
         }
       }
     ]
-  }
 
+  }
 }
