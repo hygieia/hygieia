@@ -61,6 +61,7 @@ public class DashboardServiceImpl implements DashboardService {
     private final PipelineRepository pipelineRepository; //NOPMD
     private final ServiceRepository serviceRepository;
     private final UserInfoRepository userInfoRepository;
+    private final UserInfoService userInfoService;
     private final ScoreDashboardService scoreDashboardService;
     private final CmdbService cmdbService;
     private final String UNDEFINED = "undefined";
@@ -78,6 +79,7 @@ public class DashboardServiceImpl implements DashboardService {
                                 ServiceRepository serviceRepository,
                                 PipelineRepository pipelineRepository,
                                 UserInfoRepository userInfoRepository,
+                                UserInfoService userInfoService,
                                 CmdbService cmdbService,
                                 ScoreDashboardService scoreDashboardService,
                                 ApiSettings settings) {
@@ -89,6 +91,7 @@ public class DashboardServiceImpl implements DashboardService {
         this.serviceRepository = serviceRepository;
         this.pipelineRepository = pipelineRepository;   //TODO - Review if we need this param, seems it is never used according to PMD
         this.userInfoRepository = userInfoRepository;
+        this.userInfoService = userInfoService;
         this.cmdbService = cmdbService;
         this.scoreDashboardService = scoreDashboardService;
         this.settings = settings;
@@ -154,6 +157,8 @@ public class DashboardServiceImpl implements DashboardService {
 
         if(!isUpdate) {
             components = componentRepository.save(dashboard.getApplication().getComponents());
+        } else {
+           dashboard.setUpdatedAt(System.currentTimeMillis());
         }
 
         try {
@@ -439,10 +444,10 @@ public class DashboardServiceImpl implements DashboardService {
     public Iterable<Owner> updateOwners(ObjectId dashboardId, Iterable<Owner> owners) {
         for(Owner owner : owners) {
         	String username = owner.getUsername();
-        	AuthType authType = owner.getAuthType();
-        	if(userInfoRepository.findByUsernameAndAuthType(username, authType) == null) {
-        		throw new UserNotFoundException(username, authType);
-        	}
+            AuthType authType = owner.getAuthType();
+            if (!userInfoService.isUserValid(username, authType)) {
+                throw new UserNotFoundException(username, authType);
+            }
         }
 
     	Dashboard dashboard = dashboardRepository.findOne(dashboardId);

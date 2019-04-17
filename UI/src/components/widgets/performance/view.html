@@ -71,45 +71,48 @@
                         <div class="widget-heading">
                             Overall Health
                         </div>
-                        <div hide-empty="['{{ performanceView.responsetime }}', '{{ performanceView.errorspm }}', '{{ performanceView.callspm }}']">
-                            <table class="table">
-                                <tr>
-                                    <td>
-                                        <span dash-status="ok" ng-if="performanceView.responsevalue == 0"></span>
-                                        <span dash-status="warning" ng-if="performanceView.responsevalue == 1"></span>
-                                        <span dash-status="alert" ng-if="performanceView.responsevalue == 2"></span>
-                                    </td>
-                                    <td>
-                                        Response Time
-                                    </td>
-                                    <td>
-                                        {{performanceView.responsetime}} ms
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <span dash-status="ok" ng-if="performanceView.errorvalue == 0"></span>
-                                        <span dash-status="warning" ng-if="performanceView.errorvalue == 1"></span>
-                                        <span dash-status="alert" ng-if="performanceView.errorvalue == 2"></span>
-                                    </td>
-                                    <td>
-                                        Errors Per Minute
-                                    </td>
-                                    <td>
-                                        {{performanceView.errorspm}}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                    </td>
-                                    <td>
-                                        Calls Per Minute
-                                    </td>
-                                    <td>
-                                        {{performanceView.callspm}}
-                                    </td>
-                                </tr>
-                            </table>
+                        <div class="widget-body">
+                            <div hide-empty="['{{ performanceView.responsetime }}', '{{ performanceView.errorspm }}', '{{ performanceView.callspm }}']">
+                                <table class="table">
+                                    <tr>
+                                        <td>
+                                            <span dash-status="ok" ng-if="performanceView.responsevalue == 0"></span>
+                                            <span dash-status="warning"
+                                                  ng-if="performanceView.responsevalue == 1"></span>
+                                            <span dash-status="alert" ng-if="performanceView.responsevalue == 2"></span>
+                                        </td>
+                                        <td>
+                                            Response Time
+                                        </td>
+                                        <td>
+                                            {{performanceView.responsetime}} ms
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <span dash-status="ok" ng-if="performanceView.errorvalue == 0"></span>
+                                            <span dash-status="warning" ng-if="performanceView.errorvalue == 1"></span>
+                                            <span dash-status="alert" ng-if="performanceView.errorvalue == 2"></span>
+                                        </td>
+                                        <td>
+                                            Errors Per Minute
+                                        </td>
+                                        <td>
+                                            {{performanceView.errorspm}}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                        </td>
+                                        <td>
+                                            Calls Per Minute
+                                        </td>
+                                        <td>
+                                            {{performanceView.callspm}}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
                         </div>
                         <!-- End Overall Health -->
                     </div>
@@ -160,13 +163,11 @@
                         </div>
                         <div class="widget-body">
                             <div hide-empty="['{{ performanceView.callsChartData }}']">
-
                                 <chartist class="ct-chart ct-octave dash-chart-alt"
                                           chartist-chart-type="Line"
                                           chartist-data="performanceView.callsChartData"
                                           chartist-chart-options="performanceView.callsChartOptions"
-                                          chartist-events=""
-                                >
+                                          chartist-events="">
                                 </chartist>
                             </div>
                         </div>

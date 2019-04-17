@@ -3,21 +3,23 @@
   "version": "0.0.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/capitalone/Hygieia"
+    "url": "git+https://github.com/capitalone/Hygieia.git"
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "bower": "^1.4.1",
     "browser-sync": "~1.7.1",
     "chalk": "~0.5.1",
     "del": "~0.1.3",
     "glob": "~6.0.4",
-    "gulp": "^3.9.1",
+    "gradients": "^1.0.1",
+    "gulp": "~3.9.1",
     "gulp-angular-filesort": "~1.0.4",
     "gulp-angular-templatecache": "~1.9.0",
     "gulp-autoprefixer": "~2.0.0",
+    "gulp-babel": "^7.0.1",
     "gulp-change": "~1.0.0",
-    "gulp-clean": "^0.3.1",
+    "gulp-clean": "~0.3.1",
+    "gulp-clean-css": "~2.0.10",
     "gulp-concat": "~2.6.0",
     "gulp-connect": "~2.3.1",
     "gulp-consolidate": "~0.1.2",
@@ -33,42 +35,257 @@
     "gulp-karma": "~0.0.4",
     "gulp-less": "~1.3.6",
     "gulp-load-plugins": "~0.7.1",
-    "gulp-clean-css": "~2.0.10",
     "gulp-ng-annotate": "~0.5.2",
-    "gulp-protractor": "~0.0.11",
     "gulp-order": "~1.1.1",
+    "gulp-protractor": "~0.0.11",
     "gulp-rename": "~1.2.0",
     "gulp-replace": "~0.5.0",
     "gulp-rev": "~2.0.1",
     "gulp-rev-replace": "~0.3.1",
     "gulp-size": "~1.1.0",
-    "gulp-uglify": "~1.0.1",
+    "gulp-uglify": "^1.0.2",
     "gulp-useref": "~1.0.2",
     "gulp-watch": "~4.3.5",
     "gulp-yaml": "~1.0.1",
     "http-proxy": "~1.7.0",
     "jade": "~1.8.1",
-    "jasmine-core": "^2.4.1",
+    "jasmine-core": "~2.4.1",
     "jasmine-sinon": "~0.4.0",
+    "js-regression": "~1.0.10",
     "jshint-stylish": "~1.0.0",
-    "karma": "^0.13.22",
-    "karma-chrome-launcher": "^0.2.3",
+    "karma": "~0.13.22",
+    "karma-chrome-launcher": "~0.2.3",
     "karma-jasmine": "~0.3.1",
     "karma-phantomjs-launcher": "~0.1.4",
+    "less": "^3.0.4",
     "less-plugin-glob": "~1.1.1",
-    "main-bower-files": "~2.4.0",
     "minimist": "~1.2.0",
+    "npm-wiredep": "~0.0.4",
     "protractor": "~1.4.0",
     "require-dir": "~0.1.0",
     "run-sequence": "~1.1.4",
+    "sinon": "~1.17.1",
     "uglify-save-license": "~0.4.1",
-    "wiredep": "~2.2.0",
-    "yargs": "^1.3.3"
+    "yargs": "~1.3.3"
   },
   "engines": {
     "node": ">=0.10.0"
   },
   "dependencies": {
-    "phantomjs-prebuilt": "^2.1.16"
+    "jquery": "~3.3.1",
+    "jquery-ui": "~1.12.1",
+    "jquery-ui-dist": "^1.12.1",
+    "jquery-ui-bundle": "^1.11.4",
+    "angular": "~1.5.9",
+    "angular-animate": "~1.5.9",
+    "angular-chart.js": "^1.1.1",
+    "chartist": "~0.9.5",
+    "angular-chartist.js": "5.0.0-beta.0",
+    "angular-cookies": "~1.5.9",
+    "angular-jwt": "~0.1.10",
+    "angular-rateit": "^4.0.3",
+    "angular-sanitize": "~1.5.9",
+    "angular-tablesort": "~1.4.1",
+    "angular-ui-bootstrap": "~2.3.2",
+    "angular-ui-router": "~0.4.2",
+    "angular-utils-pagination": "~0.11.1",
+    "angular-validation-match": "~1.5.2",
+    "bootstrap": "~3.4.1",
+    "bootstrap-sweetalert": "~0.4.2",
+    "chart.js": "~2.3.0",
+    "underscore": "1.9.1",
+    "lodash": "~4.17.11",
+    "components-font-awesome": "~4.2.0",
+    "dexie": "~1.2.0",
+    "json-logic-js": "^1.2.2",
+    "jstz": "~2.0.0",
+    "modernizr": "~3.6.0",
+    "moment": "~2.24.0",
+    "ng-sortable": "~1.3.2",
+    "operative": "~0.4.6",
+    "regression": "~1.2.0",
+    "ui-select": "^0.19.8"
+  },
+  "resolutions": {
+    "angular": "~1.5.9",
+    "chartist": "~0.9.5",
+    "lodash": ">= 4.14.2"
+  },
+  "overrides": {
+    "modernizr": {
+      "dependencies": {}
+    },
+    "jquery": {
+      "files": [
+        "dist/jquery.min.js"
+      ],
+      "dependencies": {}
+    },
+    "jquery-ui": {
+      "files": [
+        "jquery-ui.min.js"
+      ],
+      "dependencies": {}
+    },
+    "operative": {
+      "dependencies": {}
+    },
+    "moment": {
+      "dependencies": {}
+    },
+    "lodash": {
+      "dependencies": {}
+    },
+    "angular-ui-router": {
+      "dependencies": {}
+    },
+    "angular-chartist.js": {
+      "files": [
+        "dist/angular-chartist.js"
+      ],
+      "dependencies": {}
+    },
+    "chart.js": {
+      "files": [
+        "dist/Chart.min.js"
+      ],
+      "dependencies": {}
+    },
+    "dexie": {
+      "dependencies": {}
+    },
+    "json-logic-js": {
+      "dependencies": {}
+    },
+    "angular-animate": {
+      "files": [
+        "./angular-animate.min.js"
+      ],
+      "dependencies": {}
+    },
+    "angular-sanitize": {
+      "files": [
+        "./angular-sanitize.min.js"
+      ],
+      "dependencies": {}
+    },
+    "angular-cookies": {
+      "files": [
+        "./angular-cookies.min.js"
+      ],
+      "dependencies": {}
+    },
+    "angular": {
+      "files": [
+        "./angular.js"
+      ],
+      "dependencies": {}
+    },
+    "angular-validation-match": {
+      "files": [
+        "dist/angular-validation-match.min.js"
+      ],
+      "dependencies": {}
+    },
+    "bootstrap-sweetalert": {
+      "files": [
+        "lib/sweet-alert.js",
+        "lib/sweet-alert.css",
+        "lib/sweet-alert.less",
+        "lib/sweet-alert-animations.less"
+      ],
+      "dependencies": {}
+    },
+    "angular-ui-select": {
+      "files": [
+        "dist/select.min.js",
+        "dist/select.min.css"
+      ],
+      "dependencies": {}
+    },
+    "components-font-awesome": {
+      "files": [
+        "css/font-awesome.css",
+        "fonts/*"
+      ],
+      "dependencies": {}
+    },
+    "regression-js": {
+      "files": [
+        "src/regression.js"
+      ],
+      "dependencies": {}
+    },
+    "angular-ui-bootstrap": {
+      "files": [
+        "dist/ui-bootstrap-tpls.js"
+      ],
+      "dependencies": {}
+    },
+    "bootstrap": {
+      "files": [
+        "./dist/js/bootstrap.js"
+      ],
+      "dependencies": {}
+    },
+    "chartist": {
+      "files": [
+        "./dist/chartist.js"
+      ],
+      "dependencies": {}
+    },
+    "ng-sortable": {
+      "files": [
+        "dist/ng-sortable.min.js",
+        "dist/ng-sortable.min.css"
+      ],
+      "dependencies": {}
+    },
+    "regression": {
+      "files": [
+        "./src/regression.js"
+      ],
+      "dependencies": {}
+    },
+    "ui-select": {
+      "files": [
+        "dist/select.min.js",
+        "dist/select.min.css"
+      ],
+      "dependencies": {}
+    },
+    "angular-rateit": {
+      "files": [
+        "dist/ng-rateit.min.js",
+        "dist/ng-rateit.css"
+      ],
+      "dependencies": {}
+    },
+    "angular-tablesort": {
+      "files": [
+        "./js/angular-tablesort.js",
+        "./tablesort.css"
+      ],
+      "dependencies": {}
+    },
+    "angular-jwt": {
+      "files": [
+        "dist/angular-jwt.min.js"
+      ],
+      "dependencies": {}
+    },
+    "angular-utils-pagination": {
+      "files": [
+        "dirPagination.js",
+        "dirPagination.tpl.html"
+      ],
+      "dependencies": {}
+    },
+    "jstz": {
+      "files": [
+        "dist/jstz.min.js"
+      ],
+      "dependencies": {}
+    }
   }
 }

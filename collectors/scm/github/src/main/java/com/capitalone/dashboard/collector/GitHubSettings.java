@@ -12,6 +12,10 @@ import java.util.List;
 @Component
 @ConfigurationProperties(prefix = "github")
 public class GitHubSettings {
+    private String proxy;
+    private String proxyPort;
+    private String proxyUser;
+    private String proxyPassword;
     private String cron;
     private String host;
     private String key;
@@ -88,4 +92,37 @@ public class GitHubSettings {
 	public void setPersonalAccessToken(String personalAccessToken) {
 		this.personalAccessToken = personalAccessToken;
 	}
+    
+    public String getProxyUser(){               //getters and setters
+               return proxyUser;
+        }
+        
+    public void setProxyUser(String proxyUser){
+               this.proxyUser=proxyUser;
+        }
+
+    public String getProxyPassword(){
+                return proxyPassword;
+        }
+      
+    public void setProxyPassword(String proxyPassword){
+                this.proxyPassword=proxyPassword;
+        }
+
+    public String getProxyPort() {          
+                return proxyPort;
+        } 
+
+    public void setProxyPort(String proxyPort){
+                this.proxyPort=proxyPort;
+        }
+
+    public String getProxy() {
+                return proxy;
+        }
+    
+    public void setProxy(String proxy) {
+                this.proxy = proxy;
+        }
+
 }

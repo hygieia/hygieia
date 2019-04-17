@@ -162,7 +162,9 @@ public class CommonCodeReview {
         boolean isValid = false;
         if(!MapUtils.isEmpty(allowedUsers) && isCommit){
             isValid = isValidServiceAccount(author,allowedUsers,commitFiles);
-            auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.SCM_AUTHOR_WHITELISTED_USER);
+            if(isValid){
+                auditReviewResponse.addAuditStatus(CodeReviewAuditStatus.DIRECT_COMMIT_CHANGE_WHITELISTED_ACCOUNT);
+            }
         }
         if (!CollectionUtils.isEmpty(serviceAccountOU) && StringUtils.isNotBlank(userLdapDN) && !isValid) {
             try {

@@ -48,6 +48,7 @@
 		ctrl.listTypes = [{type: "epics", value: "Epics"}, {type: "issues", value: "Issues"}];
 		ctrl.selectedProject = null;
 		ctrl.selectedTeam = null;
+		ctrl.teamDropdownLabel = "Team";
 
 		ctrl.submit = submitForm;
 		ctrl.getProjectNames = getProjectNames;
@@ -87,6 +88,11 @@
 
 					if (currentCollectorId !== null && item.id === currentCollectorId) {
 						ctrl.selectedTypeIndex = x;
+					}
+					if (obj.properties.mode == "Board") {
+                        ctrl.teamDropdownLabel = "Board";
+                    } else {
+                        ctrl.teamDropdownLabel = "Team";
 					}
 				}
 

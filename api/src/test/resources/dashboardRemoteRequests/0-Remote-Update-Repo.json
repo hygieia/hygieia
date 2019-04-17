@@ -8,6 +8,29 @@
       "authType":"STANDARD",
       "username":"topopal"
     },
+    "owners":
+    [
+        {
+          "authType":"STANDARD",
+          "username":"topopal"
+        },
+        {
+          "authType":"STANDARD",
+          "username":"topopal"
+        },
+        {
+          "authType":"STANDARD",
+          "username":"testuser1"
+        },
+        {
+          "authType":"STANDARD",
+          "username":"testuser1"
+        },
+        {
+          "authType":"STANDARD",
+          "username":"testuser2"
+        }
+    ],
     "template":"CapOne",
     "title":"TestSSA",
     "type":"Team"

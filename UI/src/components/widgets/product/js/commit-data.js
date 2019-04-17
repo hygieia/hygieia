@@ -107,6 +107,7 @@
 
                 // go backward through the stages and define commit data.
                 // reverse should make it easier to calculate time in the previous stage
+                var nextStageName = ''
                 _(stages).reverse().forEach(function (currentStageName) {
                     var commits = [], // store our new commit object
                         localStages = [].concat(ctrlStages), // create a copy of the stages
@@ -135,7 +136,9 @@
 
                         // use this time in our metric calculations
                         var timeInCurrentStage = nowTimestamp - currentStageTimestampCompare;
-                        stageDurations[currentStageName].push(timeInCurrentStage);
+                        if (nextStageName != '' && team.stages[nextStageName].length == 0) {
+                             stageDurations[currentStageName].push(timeInCurrentStage);
+                        }
 
                         // make sure current stage is set
                         commit.in[currentStageName] = timeInCurrentStage;
@@ -181,6 +184,7 @@
                     teamStageData[currentStageName] = {
                         commits: commits
                     }
+                    nextStageName = currentStageName;
                 });
 
                 // now that we've added all the duration data for all commits in each stage
