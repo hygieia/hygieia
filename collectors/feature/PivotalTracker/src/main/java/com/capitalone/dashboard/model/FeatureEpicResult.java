@@ -5,7 +5,7 @@ import java.util.List;
 
 public class FeatureEpicResult {
     List<Feature> featureList = new ArrayList<>();
-    List<Epic> epicList = new ArrayList<>();
+   
 
 
     public List<Feature> getFeatureList() {
@@ -16,11 +16,7 @@ public class FeatureEpicResult {
         this.featureList = featureList;
     }
 
-    public List<Epic> getEpicList() {
-        return epicList;
-    }
+  
 
-    public void setEpicList(List<Epic> epicList) {
-        this.epicList = epicList;
-    }
+    
 }

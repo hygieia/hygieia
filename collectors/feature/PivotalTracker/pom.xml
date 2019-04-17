@@ -30,7 +30,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.8</java.version>
     <junit.version>4.11</junit.version>
-    <final.name>jira-feature-collector</final.name>
+    <final.name>pivotal-tracker-collector</final.name>
   </properties>
 
   <build>
@@ -45,7 +45,7 @@
         <artifactId>docker-maven-plugin</artifactId>
         <configuration>
           <skipDockerBuild>false</skipDockerBuild>
-          <imageName>hygieia-jira-feature-collector</imageName>
+          <imageName>hygieia-pivotal-tracker-collector</imageName>
           <dockerDirectory>${project.basedir}/docker</dockerDirectory>
           <resources>
             <resource>
