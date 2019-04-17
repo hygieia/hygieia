@@ -25,6 +25,7 @@ export class LayoutComponent {
       const componentRef = viewContainerRef.createComponent(componentFactory);
       const chartComponent = (componentRef.instance as ChartComponent);
       this.chartComponents.push(chartComponent);
+      chartComponent.title = this.charts[i].title;
       chartComponent.data = this.charts[i].data;
       chartComponent.xAxisLabel = this.charts[i].xAxisLabel;
       chartComponent.yAxisLabel = this.charts[i].yAxisLabel;
