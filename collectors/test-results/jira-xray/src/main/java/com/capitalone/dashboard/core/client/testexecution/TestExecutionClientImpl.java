@@ -260,7 +260,7 @@ public class TestExecutionClientImpl implements TestExecutionClient {
      */
     private Map<String,Integer> getTestCountStatusMap(Feature testExec, Iterable<TestExecution.Test> tests) {
 
-        Map<String,Integer> map = new HashMap<String, Integer>(TEST_STATUS_COUNT_ATTRIBUTES.values().length);
+        Map<String,Integer> map = new HashMap<>(TEST_STATUS_COUNT_ATTRIBUTES.values().length);
         int failTestCount = 0, passTestCount = 0, skipTestCount = 0, unknownTestCount = 0;
 
         List<TestCase> testCases = new ArrayList<>();
@@ -269,7 +269,7 @@ public class TestExecutionClientImpl implements TestExecutionClient {
             Optional<TestRun> testRunOpt = Optional.ofNullable(restClient.getTestRunClient().getTestRun(testExec.getsNumber(), test.getKey()).claim());
             if(testRunOpt.isPresent()){
                 TestRun testRun = testRunOpt.get();
-                if(testRun.getStatus().equals(TestRun.Status.FAIL)){
+                if(TestRun.Status.FAIL.equals(testRun.getStatus())){
                     failTestCount++;
                 }else if(testRun.getStatus().equals(TestRun.Status.PASS)){
                     passTestCount++;
@@ -280,9 +280,9 @@ public class TestExecutionClientImpl implements TestExecutionClient {
                 }
                 TestCase testCase = createTestCase(test, testRun, testExec);
                 testCases.add(testCase);
-                }
             }
-            this.setTestCases(testCases);
+        }
+        this.setTestCases(testCases);
 
         map.put(TEST_STATUS_COUNT_ATTRIBUTES.PASS_COUNT.name(), passTestCount);
         map.put(TEST_STATUS_COUNT_ATTRIBUTES.FAIL_COUNT.name(), failTestCount);
@@ -322,17 +322,26 @@ public class TestExecutionClientImpl implements TestExecutionClient {
                 testCase.setStatus(TestCaseStatus.Unknown);
             }
 
-             Set<String> tags = getStoryIds(feature.getIssueLinks());
-            // Temporarily commented for core project update
-            // testCase.setTags(tags);
             testCase.setTestSteps(this.getTestSteps(testRun));
+            List<Feature> tc = featureRepository.getStoryByNumber(test.getKey());
+            if (tc.size() > 0) {
+                for (Feature t : tc) {
+                    Set<String> tags = getStoryIds(t.getIssueLinks());
+                    testCase.setTags(tags);
+                }
+            }
+
         }
         return testCase;
     }
 
     private Set<String> getStoryIds(Collection<FeatureIssueLink> issueLinks) {
         Set<String> tags = new HashSet<>();
-        issueLinks.forEach(issueLink -> tags.add(issueLink.getTargetIssueKey()));
+        issueLinks.forEach(issueLink -> {if(issueLink.getIssueLinkType().equalsIgnoreCase("tests")){
+            tags.add(issueLink.getTargetIssueKey());
+        }
+
+        });
         return tags;
     }
 

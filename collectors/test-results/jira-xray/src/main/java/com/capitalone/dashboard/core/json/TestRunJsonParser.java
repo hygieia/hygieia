@@ -99,6 +99,9 @@ public class TestRunJsonParser implements JsonObjectParser<TestRun> {
         if(jsonObject.get(KEY_STATUS).equals("PASS")){
             return TestRun.Status.PASS;
         }
+        if(jsonObject.get(KEY_STATUS).equals("BLOCKED")){
+            return TestRun.Status.BLOCKED;
+        }
         return null;
     }
 
