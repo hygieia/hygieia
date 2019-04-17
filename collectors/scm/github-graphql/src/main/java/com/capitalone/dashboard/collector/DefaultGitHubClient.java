@@ -237,7 +237,7 @@ public class DefaultGitHubClient implements GitHubClient {
         ResponseEntity<String> response = makeRestCallGet(query);
 
         JSONObject queryJSONBody = (JSONObject) parseAsObject(response);
-        String repoUrl = (String) queryJSONBody.get("html_url");
+        String repoUrl = str(queryJSONBody, "html_url");
         if (!repoUrl.equals(repo.getRepoUrl())) {
             LOG.info("original url: " + repo.getRepoUrl() + " is redirected to new url: " + repoUrl);
             return new RedirectedStatus(true, repoUrl);
@@ -1075,7 +1075,7 @@ public class DefaultGitHubClient implements GitHubClient {
 
                     JSONParser parser = new JSONParser();
                     try {
-                        JSONObject variableJSON = (JSONObject) parser.parse((String) query.get("variables"));
+                        JSONObject variableJSON = (JSONObject) parser.parse(str(query, "variables"));
                         variableJSON.put("name", gitHubParsed.getRepoName());
                         variableJSON.put("owner", gitHubParsed.getOrgName());
                         query.put("variables", variableJSON.toString());
