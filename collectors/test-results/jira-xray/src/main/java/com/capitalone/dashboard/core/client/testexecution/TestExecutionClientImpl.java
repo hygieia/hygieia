@@ -269,7 +269,7 @@ public class TestExecutionClientImpl implements TestExecutionClient {
             Optional<TestRun> testRunOpt = Optional.ofNullable(restClient.getTestRunClient().getTestRun(testExec.getsNumber(), test.getKey()).claim());
             if(testRunOpt.isPresent()){
                 TestRun testRun = testRunOpt.get();
-                if(TestRun.Status.FAIL.equals(testRun.getStatus())){
+                if(testRun.getStatus().equals(TestRun.Status.FAIL)){
                     failTestCount++;
                 }else if(testRun.getStatus().equals(TestRun.Status.PASS)){
                     passTestCount++;
@@ -339,9 +339,7 @@ public class TestExecutionClientImpl implements TestExecutionClient {
         Set<String> tags = new HashSet<>();
         issueLinks.forEach(issueLink -> {if(issueLink.getIssueLinkType().equalsIgnoreCase("tests")){
             tags.add(issueLink.getTargetIssueKey());
-        }
-
-        });
+        }});
         return tags;
     }
 
