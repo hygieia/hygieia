@@ -9,8 +9,11 @@ import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.request.CodeQualityCreateRequest;
+import com.capitalone.dashboard.request.CodeQualityRequest;
 import org.bson.types.ObjectId;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -27,6 +30,7 @@ public class CodeQualityServiceTest {
     @Mock private CodeQualityRepository codeQualityRepository;
     @Mock private CollectorRepository collectorRepository;
     @Mock private CollectorService collectorService;
+    @Mock private ComponentRepository componentRepository;
     @InjectMocks private CodeQualityServiceImpl codeQualityService;
 
 
@@ -66,6 +70,15 @@ public class CodeQualityServiceTest {
         assertEquals(response, expected);
     }
 
+    @Test
+    public void getCollectorItemTest() {
+        CodeQualityRequest request = new CodeQualityRequest();
+        when(componentRepository.findOne(request.getComponentId())).thenReturn(null);
+
+        CollectorItem item = codeQualityService.getCollectorItem(request);
+
+        Assert.assertNull(item);
+    }
 
     private CodeQualityCreateRequest makeCodeQualityRequest() {
         CodeQualityCreateRequest quality = new CodeQualityCreateRequest();

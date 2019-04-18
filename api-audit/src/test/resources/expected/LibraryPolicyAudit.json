@@ -5,16 +5,12 @@
   "review": {
     "LIBRARY_POLICY": [
       {
-        "lastExecutionTime": 1522879797193,
+        "auditEntity": "",
+        "lastExecutionTime": 1.522879797193E12,
         "libraryPolicyResult": {
-          "collectorItemId": {
-            "timestamp": 1523971589,
-            "machineIdentifier": 12729145,
-            "processIdentifier": 7418,
-            "counter": 1835428
-          },
-          "timestamp": 1523984079768,
-          "evaluationTimestamp": 1522879797193,
+          "collectorItemId": "5ad5f605c23b391cfa1c01a4",
+          "timestamp": 1.523984079768E12,
+          "evaluationTimestamp": 1.522879797193E12,
           "threats": {
             "License": [
               {
@@ -28,7 +24,8 @@
                   "highcharts:highcharts-4.2.1.js",
                   "net.masterthought:cucumber-reporting-2.0.0.jar"
                 ],
-                "count": 7
+                "count": 7.0,
+                "dispositionCounts": {}
               },
               {
                 "level": "None",
@@ -115,7 +112,8 @@
                   ":1522879711159_ais-extensions-to-s3.zip",
                   ":ais-extensions-to-s3.jar"
                 ],
-                "count": 81
+                "count": 81.0,
+                "dispositionCounts": {}
               },
               {
                 "level": "High",
@@ -123,7 +121,8 @@
                   "xpp3:xpp3_min-1.1.4c.jar",
                   "xmlpull:xmlpull-1.1.3.1.jar"
                 ],
-                "count": 2
+                "count": 2.0,
+                "dispositionCounts": {}
               }
             ],
             "Security": [
@@ -135,7 +134,8 @@
                   "com.fasterxml.jackson.core:jackson-databind-2.8.9.jar",
                   "org.apache.logging.log4j:log4j-core-2.7.jar"
                 ],
-                "count": 4
+                "count": 4.0,
+                "dispositionCounts": {}
               },
               {
                 "level": "None",
@@ -225,7 +225,8 @@
                   ":1522879711159_ais-extensions-to-s3.zip",
                   ":ais-extensions-to-s3.jar"
                 ],
-                "count": 84
+                "count": 84.0,
+                "dispositionCounts": {}
               },
               {
                 "level": "Medium",
@@ -233,22 +234,19 @@
                   "jquery:jquery-1.12.1.min.js",
                   "com.thoughtworks.xstream:xstream-1.4.7.jar"
                 ],
-                "count": 2
+                "count": 2.0,
+                "dispositionCounts": {}
               }
             ]
           },
-          "id": {
-            "timestamp": 1523984079,
-            "machineIdentifier": 12729145,
-            "processIdentifier": 11407,
-            "counter": 6416923
-          }
+          "policyAlert": [],
+          "id": "5ad626cfc23b392c8f61ea1b"
         },
         "auditStatuses": [
-          "OSS_SCAN_FOUND_HIGH_LICENSE",
-          "OSS_SCAN_FOUND_HIGH_SECURITY"
+          "LIBRARY_POLICY_FOUND_HIGH_LICENSE",
+          "LIBRARY_POLICY_FOUND_HIGH_SECURITY"
         ],
-        "lastUpdated": 0
+        "lastUpdated": 0.0
       }
     ]
   },

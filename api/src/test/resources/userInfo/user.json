@@ -1,0 +1,38 @@
+[
+  {
+      "username" : "topopal",
+      "authorities" : [
+      "ROLE_USER"
+      ],
+      "authType" : "STANDARD",
+      "firstName" : "",
+      "middleName" : "",
+      "lastName" : "",
+      "displayName" : "",
+      "emailAddress" : ""
+  },
+  {
+      "username" : "testuser1",
+      "authorities" : [
+      "ROLE_USER"
+      ],
+      "authType" : "STANDARD",
+      "firstName" : "",
+      "middleName" : "",
+      "lastName" : "",
+      "displayName" : "",
+      "emailAddress" : ""
+  },
+  {
+      "username" : "testuser2",
+      "authorities" : [
+        "ROLE_USER"
+      ],
+      "authType" : "STANDARD",
+      "firstName" : "",
+      "middleName" : "",
+      "lastName" : "",
+      "displayName" : "",
+      "emailAddress" : ""
+    }
+]

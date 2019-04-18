@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.service;
 
+import com.capitalone.dashboard.ApiSettings;
 import com.capitalone.dashboard.common.TestUtils;
 import com.capitalone.dashboard.config.FongoConfig;
 import com.capitalone.dashboard.config.TestConfig;
@@ -14,6 +15,7 @@ import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.Review;
+import com.capitalone.dashboard.repository.BinaryArtifactRepository;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
@@ -24,6 +26,7 @@ import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.repository.LibraryPolicyResultsRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
+import com.capitalone.dashboard.response.ArtifactAuditResponse;
 import com.capitalone.dashboard.response.AuditReviewResponse;
 import com.capitalone.dashboard.response.CodeReviewAuditResponse;
 import com.capitalone.dashboard.response.DashboardReviewResponse;
@@ -44,6 +47,7 @@ import com.google.gson.reflect.TypeToken;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -106,6 +110,12 @@ public class DashboardAuditServiceTest {
     @Autowired
     private FeatureRepository featureRepository;
 
+    @Autowired
+    private BinaryArtifactRepository binaryArtifactRepository;
+
+    @Autowired
+    private ApiSettings apiSettings;
+
 
     @Before
     public void loadStuff() throws IOException {
@@ -116,10 +126,11 @@ public class DashboardAuditServiceTest {
         TestUtils.loadCollector(collectorRepository);
         TestUtils.loadPullRequests(gitRequestRepository);
         TestUtils.loadSSCRequests(codeQualityRepository);
-        TestUtils.loadLibraryPolicy(libraryPolicyResultsRepository);
         TestUtils.loadTestResults(testResultsRepository);
         TestUtils.loadCodeQuality(codeQualityRepository);
         TestUtils.loadFeature(featureRepository);
+        TestUtils.loadArtifacts(binaryArtifactRepository);
+        apiSettings.setServiceAccountRegEx("/./g");
     }
 
     @Test
@@ -134,16 +145,22 @@ public class DashboardAuditServiceTest {
         assertDashboardAudit(actual, expected);
         assertThat(actual.getReview()).isNotEmpty();
         assertThat(actual.getReview().get(AuditType.STATIC_SECURITY_ANALYSIS)).isNotNull();
-        Map<AuditType, Collection<LibraryPolicyAuditResponse>> actualReviewMap = actual.getReview();
-        Collection<LibraryPolicyAuditResponse> actualReview = actualReviewMap.get(AuditType.STATIC_SECURITY_ANALYSIS);
-        Map<AuditType, Collection<LibraryPolicyAuditResponse>> expectedReviewMap = expected.getReview();
-        Collection<LibraryPolicyAuditResponse> expectedReview = expectedReviewMap.get(AuditType.STATIC_SECURITY_ANALYSIS);
+        Map<AuditType, Collection<SecurityReviewAuditResponse>> actualReviewMap = actual.getReview();
+        Collection<SecurityReviewAuditResponse> actualReview = actualReviewMap.get(AuditType.STATIC_SECURITY_ANALYSIS);
+        Map<AuditType, Collection<SecurityReviewAuditResponse>> expectedReviewMap = expected.getReview();
+        Collection<SecurityReviewAuditResponse> expectedReview = expectedReviewMap.get(AuditType.STATIC_SECURITY_ANALYSIS);
         assertThat(actualReview.size()).isEqualTo(1);
-        assertThat(actualReview.toArray()[0]).isEqualToComparingFieldByField(expectedReview.toArray()[0]);
+        Assert.assertEquals(actualReviewMap.get("codeQuality"), expectedReviewMap.get("codeQuality"));
+        Assert.assertEquals(actualReviewMap.get("lastExecutionTime"), expectedReviewMap.get("lastExecutionTime"));
+        Assert.assertEquals(actualReviewMap.get("auditEntity"), expectedReviewMap.get("auditEntity"));
+        Assert.assertEquals(actualReviewMap.get("lastUpdated"), expectedReviewMap.get("lastUpdated"));
+        Assert.assertEquals(actualReviewMap.get("auditStatuses"), expectedReviewMap.get("auditStatuses"));
     }
 
     @Test
     public void runLibraryPolicyAuditTests() throws AuditException, IOException {
+        libraryPolicyResultsRepository.deleteAll();
+        TestUtils.loadLibraryPolicy(libraryPolicyResultsRepository, "./librarypolicy/librarypolicy.json");
         DashboardReviewResponse actual = getActualReviewResponse(dashboardAuditService.getDashboardReviewResponse("TestSSA",
                 DashboardType.Team,
                 "TestBusServ",
@@ -162,6 +179,54 @@ public class DashboardAuditServiceTest {
         assertThat(actualReview.size()).isEqualTo(1);
         assertThat(actualReview.toArray()[0]).isEqualToComparingFieldByField(expectedReview.toArray()[0]);
     }
+
+
+    @Test
+    public void runLibraryPolicyAuditTestsWithDispositionOk() throws AuditException, IOException {
+        libraryPolicyResultsRepository.deleteAll();
+        TestUtils.loadLibraryPolicy(libraryPolicyResultsRepository, "./librarypolicy/librarypolicy-disp-ok.json");
+        DashboardReviewResponse actual = getActualReviewResponse(dashboardAuditService.getDashboardReviewResponse("TestSSA",
+                DashboardType.Team,
+                "TestBusServ",
+                "confItem",
+                1522623841000L, 1526505798000L,
+                Sets.newHashSet(AuditType.LIBRARY_POLICY)), LibraryPolicyAuditResponse.class);
+        DashboardReviewResponse expected = getExpectedReviewResponse("LibraryPolicyAuditWithDisposition-ok.json", LibraryPolicyAuditResponse.class);
+
+        assertDashboardAudit(actual, expected);
+        assertThat(actual.getReview()).isNotEmpty();
+        assertThat(actual.getReview().get(AuditType.LIBRARY_POLICY)).isNotNull();
+        Map<AuditType, Collection<LibraryPolicyAuditResponse>> actualReviewMap = actual.getReview();
+        Collection<LibraryPolicyAuditResponse> actualReview = actualReviewMap.get(AuditType.LIBRARY_POLICY);
+        Map<AuditType, Collection<LibraryPolicyAuditResponse>> expectedReviewMap = expected.getReview();
+        Collection<LibraryPolicyAuditResponse> expectedReview = expectedReviewMap.get(AuditType.LIBRARY_POLICY);
+        assertThat(actualReview.size()).isEqualTo(1);
+        assertThat(actualReview.toArray()[0]).isEqualToComparingFieldByField(expectedReview.toArray()[0]);
+    }
+
+    @Test
+    public void runLibraryPolicyAuditTestsWithDispositionFail() throws AuditException, IOException {
+        libraryPolicyResultsRepository.deleteAll();
+        TestUtils.loadLibraryPolicy(libraryPolicyResultsRepository, "./librarypolicy/librarypolicy-disp-fail.json");
+        DashboardReviewResponse actual = getActualReviewResponse(dashboardAuditService.getDashboardReviewResponse("TestSSA",
+                DashboardType.Team,
+                "TestBusServ",
+                "confItem",
+                1522623841000L, 1526505798000L,
+                Sets.newHashSet(AuditType.LIBRARY_POLICY)), LibraryPolicyAuditResponse.class);
+        DashboardReviewResponse expected = getExpectedReviewResponse("LibraryPolicyAuditWithDisposition-fail.json", LibraryPolicyAuditResponse.class);
+
+        assertDashboardAudit(actual, expected);
+        assertThat(actual.getReview()).isNotEmpty();
+        assertThat(actual.getReview().get(AuditType.LIBRARY_POLICY)).isNotNull();
+        Map<AuditType, Collection<LibraryPolicyAuditResponse>> actualReviewMap = actual.getReview();
+        Collection<LibraryPolicyAuditResponse> actualReview = actualReviewMap.get(AuditType.LIBRARY_POLICY);
+        Map<AuditType, Collection<LibraryPolicyAuditResponse>> expectedReviewMap = expected.getReview();
+        Collection<LibraryPolicyAuditResponse> expectedReview = expectedReviewMap.get(AuditType.LIBRARY_POLICY);
+        assertThat(actualReview.size()).isEqualTo(1);
+        assertThat(actualReview.toArray()[0]).isEqualToComparingFieldByField(expectedReview.toArray()[0]);
+    }
+
     @Test
     public void runPerformanceAuditTests() throws AuditException, IOException {
         DashboardReviewResponse actual = getActualReviewResponse(dashboardAuditService.getDashboardReviewResponse("TestSSA",
@@ -182,7 +247,7 @@ public class DashboardAuditServiceTest {
         assertThat(actualReview.toArray()[0]).isEqualToComparingFieldByField(expectedReview.toArray()[0]);
     }
 
-    @Test
+       @Test
     public void runCodeQualityAuditTests() throws AuditException, IOException {
         DashboardReviewResponse actual = getActualReviewResponse(dashboardAuditService.getDashboardReviewResponse("TestSSA",
                 DashboardType.Team,
@@ -202,6 +267,26 @@ public class DashboardAuditServiceTest {
         assertThat(actualReview.size()).isEqualTo(1);
         assertThat(actualReview.toArray()[0]).isEqualToComparingFieldByField(expectedReview.toArray()[0]);
     }
+
+    @Test
+    public void runArtifactAuditTests() throws AuditException, IOException {
+        DashboardReviewResponse actual = getActualReviewResponse(dashboardAuditService.getDashboardReviewResponse("TestSSA",
+                DashboardType.Team,
+                "TestBusServ",
+                "confItem",
+                1554140676000L, 1554831876000L,
+                Sets.newHashSet(AuditType.ARTIFACT)), ArtifactAuditResponse.class);
+        DashboardReviewResponse expected = getExpectedReviewResponse("Artifact.json", ArtifactAuditResponse.class);
+
+        assertThat(actual.getReview()).isNotEmpty();
+        assertThat(actual.getReview().get(AuditType.ARTIFACT)).isNotNull();
+        Map<AuditType, Collection<CodeQualityAuditResponse>> actualReviewMap = actual.getReview();
+        Collection<CodeQualityAuditResponse> actualReview = actualReviewMap.get(AuditType.ARTIFACT);
+        Map<AuditType, Collection<CodeQualityAuditResponse>> expectedReviewMap = expected.getReview();
+        Collection<CodeQualityAuditResponse> expectedReview = expectedReviewMap.get(AuditType.ARTIFACT);
+        assertThat(actualReview.size()).isEqualTo(1);
+        }
+
 
     @Test
     public void runTestResultsAuditTests() throws AuditException, IOException {

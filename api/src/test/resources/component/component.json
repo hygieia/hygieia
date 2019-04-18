@@ -1,0 +1,100 @@
+{
+  "name": "TestAudit",
+  "id": "57f29d143b55670a9e06d624",
+  "collectorItems": {
+    "SCM": [
+      {
+        "id":"56e301107fab7c3ec3c43397",
+        "enabled": true,
+        "errors": [],
+        "pushed": false,
+        "collectorId": "56ca15297fab7c68bfdb420c",
+        "lastUpdated": 0,
+        "options": {
+          "password": "",
+          "scm": "Github",
+          "branch": "master",
+          "userID": "",
+          "url": "https://mygithub.com/one/two"
+        }
+      }
+    ],
+    "StaticSecurityScan": [
+      {
+        "enabled": true,
+        "errors": [],
+        "pushed": false,
+        "collectorId": "5ad5f605c23b391cfa1c01a4",
+        "lastUpdated": 1522773350945,
+        "options": {
+          "applicationType": "Desktop",
+          "reportUrl": "https://appsec.com",
+          "applicationID": [
+            "TestBusServ"
+          ],
+          "projectName": "cust-service",
+          "applicationName": "customer-service",
+          "instanceUrl": "https://appsec.com"
+        },
+        "id": "5b4e524333ec296b81c3935f"
+      }
+    ],
+    "LibraryPolicy" : [
+      {
+        "id": "5af9ed53cba7165e8cc1069e",
+        "description": "myapplication:mycomponent",
+        "enabled": false,
+        "errors": [],
+        "pushed": false,
+        "collectorId": "5ad4c71841a34c9696cdfa2e",
+        "lastUpdated": 1524190250247,
+        "options": {
+          "applicationType": null,
+          "componentName": "mycomponent",
+          "applicationID": [
+            "SOMEAPPLICATION"
+          ],
+          "applicationName": "account-my-information",
+          "instanceUrl": "https://scan.com"
+        }
+      }
+    ],
+    "Test" : [
+      {
+        "id" : "57f2a0193b55670a9e06d63a",
+        "description" : "Functional-SLATE",
+        "niceName" : "ABCD",
+        "enabled" : true,
+        "errors" : [
+        ],
+        "pushed" : true,
+        "collectorId" : "56df29df7fab7c3ec3c432ea",
+        "lastUpdated" : 1513106044147,
+        "options" : {
+          "jobName" : "Functional-SLATE",
+          "jobUrl" : "https://myjenkins.com/jenkins/job/Functional-SLATE/",
+          "instanceUrl" : "https://myjenkins.com/jenkins/"
+        }
+      }
+    ],
+    "CodeQuality" : [
+      {
+        "id" : "56e5919d7fab7c0244e33341",
+        "description" : "service parent",
+        "enabled" : true,
+        "errors" : [
+
+        ],
+        "pushed" : false,
+        "collectorId" : "56cb5bde7fab7c548551410e",
+        "lastUpdated" : 0,
+        "options" : {
+          "projectName" : "service parent",
+          "projectId" : "124466",
+          "instanceUrl" : "https://sonar.com"
+        }
+      }
+    ]
+  }
+
+}

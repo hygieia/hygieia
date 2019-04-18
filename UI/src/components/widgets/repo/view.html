@@ -3,14 +3,16 @@
         <div class="widget-heading">
             Issues, Pulls and Commits per day
         </div>
-        <div class="widget-body">
-            <chartist class="commit-view ct-octave dash-chart-alt"
-                      chartist-chart-type="Line"
-                      chartist-data="repoView.combinedChartData"
-                      chartist-chart-options="repoView.combinedChartOptions"
-                      chartist-events="repoView.commitChartEvents"
-                    >
-            </chartist>
+        <div hide-empty="['{{ repoView.combinedChartData.series[0].data }}', '{{ repoView.combinedChartData.series[1].data }}', '{{ repoView.combinedChartData.series[2].data }}']">
+            <div class="widget-body">
+                <chartist class="commit-view ct-octave dash-chart-alt"
+                          chartist-chart-type="Line"
+                          chartist-data="repoView.combinedChartData"
+                          chartist-chart-options="repoView.combinedChartOptions"
+                          chartist-events="repoView.commitChartEvents"
+                        >
+                </chartist>
+            </div>
         </div>
     </div>
 
@@ -18,51 +20,53 @@
         <div class="widget-heading">
             Summary
         </div>
-        <div class="widget-body">
-            <table class="table repo-summary-table">
-                <tr>
-                    <td style="color: #04eeff">Commits</td>
-                    <td>{{repoView.lastDayCommitCount}}</td>
-                    <td>{{repoView.lastSevenDaysCommitCount}}</td>
-                    <td>{{repoView.lastFourteenDaysCommitCount}}</td>
-                </tr>
-                <tr>
-                    <td style="color: #04eb0f">Pulls</td>
-                    <td>{{repoView.lastDayPullCount}}</td>
-                    <td>{{repoView.lastsevenDaysPullCount}}</td>
-                    <td>{{repoView.lastfourteenDaysPullCount}}</td>
-                </tr>
-                <tr>
-                    <td style="color: red">Issues</td>
-                    <td>{{repoView.lastDayIssueCount}}</td>
-                    <td>{{repoView.lastsevenDaysIssueCount}}</td>
-                    <td>{{repoView.lastfourteenDaysIssueCount}}</td>
-                </tr>
-                <tr>
-                    <td>Committors</td>
-                    <td>{{repoView.lastDayCommitContributorCount}}</td>
-                    <td>{{repoView.lastSevenDaysCommitContributorCount}}</td>
-                    <td>{{repoView.lastFourteenDaysCommitContributorCount}}</td>
-                </tr>
-                <tr>
-                    <td>Contributors</td>
-                    <td>{{repoView.lastDayPullContributorCount}}</td>
-                    <td>{{repoView.lastsevenDaysPullContributorCount}}</td>
-                    <td>{{repoView.lastfourteenDaysPullContributorCount}}</td>
-                </tr>
-                <tr>
-                    <td>Ideators</td>
-                    <td>{{repoView.lastDayIssueContributorCount}}</td>
-                    <td>{{repoView.lastsevenDaysIssueContributorCount}}</td>
-                    <td>{{repoView.lastfourteenDaysIssueContributorCount}}</td>
-                </tr>
-                <tr class="totals">
-                    <td></td>
-                    <td>Today</td>
-                    <td>Last<br/>7 Days</td>
-                    <td>Last<br/>14 Days</td>
-                </tr>
-            </table>
+        <div hide-empty="['{{ repoView.lastFourteenDaysCommitCount }}', '{{ repoView.lastfourteenDaysPullCount }}', '{{ repoView.lastfourteenDaysIssueCount }}', '{{ repoView.lastFourteenDaysCommitContributorCount }}', '{{ repoView.lastfourteenDaysPullContributorCount }}', '{{ repoView.lastfourteenDaysIssueContributorCount }}']">
+            <div class="widget-body">
+                <table class="table repo-summary-table">
+                    <tr>
+                        <td style="color: #04eeff">Commits</td>
+                        <td>{{repoView.lastDayCommitCount}}</td>
+                        <td>{{repoView.lastSevenDaysCommitCount}}</td>
+                        <td>{{repoView.lastFourteenDaysCommitCount}}</td>
+                    </tr>
+                    <tr>
+                        <td style="color: #04eb0f">Pulls</td>
+                        <td>{{repoView.lastDayPullCount}}</td>
+                        <td>{{repoView.lastsevenDaysPullCount}}</td>
+                        <td>{{repoView.lastfourteenDaysPullCount}}</td>
+                    </tr>
+                    <tr>
+                        <td style="color: red">Issues</td>
+                        <td>{{repoView.lastDayIssueCount}}</td>
+                        <td>{{repoView.lastsevenDaysIssueCount}}</td>
+                        <td>{{repoView.lastfourteenDaysIssueCount}}</td>
+                    </tr>
+                    <tr>
+                        <td>Committors</td>
+                        <td>{{repoView.lastDayCommitContributorCount}}</td>
+                        <td>{{repoView.lastSevenDaysCommitContributorCount}}</td>
+                        <td>{{repoView.lastFourteenDaysCommitContributorCount}}</td>
+                    </tr>
+                    <tr>
+                        <td>Contributors</td>
+                        <td>{{repoView.lastDayPullContributorCount}}</td>
+                        <td>{{repoView.lastsevenDaysPullContributorCount}}</td>
+                        <td>{{repoView.lastfourteenDaysPullContributorCount}}</td>
+                    </tr>
+                    <tr>
+                        <td>Ideators</td>
+                        <td>{{repoView.lastDayIssueContributorCount}}</td>
+                        <td>{{repoView.lastsevenDaysIssueContributorCount}}</td>
+                        <td>{{repoView.lastfourteenDaysIssueContributorCount}}</td>
+                    </tr>
+                    <tr class="totals">
+                        <td></td>
+                        <td>Today</td>
+                        <td>Last<br/>7 Days</td>
+                        <td>Last<br/>14 Days</td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
 </div>

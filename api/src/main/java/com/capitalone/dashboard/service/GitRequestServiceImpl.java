@@ -52,15 +52,16 @@ public class GitRequestServiceImpl implements GitRequestService {
         QGitRequest gitRequest = new QGitRequest("search");
         BooleanBuilder builder = new BooleanBuilder();
 
+        CollectorItem item = null;
         Component component = componentRepository.findOne(request.getComponentId());
-        CollectorItem item = component.getCollectorItems().get(CollectorType.SCM).get(0);
-
-        if (item == null) {
+        if ( (component == null)
+                || ((item = component.getFirstCollectorItemForType(CollectorType.SCM)) == null) ) {
             Iterable<GitRequest> results = new ArrayList<>();
             return new DataResponse<>(results, new Date().getTime());
         }
 
         builder.and(gitRequest.collectorItemId.eq(item.getId()));
+
         if (request.getNumberOfDays() != null) {
             long endTimeTarget = new LocalDate().minusDays(request.getNumberOfDays()).toDate().getTime();
             builder.and(gitRequest.timestamp.goe(endTimeTarget));

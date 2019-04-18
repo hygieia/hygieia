@@ -55,7 +55,9 @@ package com.capitalone.dashboard.fixture;
  			application = new Application(appName, component);
  		}
 		List<String> activeWidgets = new ArrayList<>();
-		return new Dashboard(template, title, application, new Owner(owner, AuthType.STANDARD), type,configItemAppName, configItemComponentName,activeWidgets, false, ScoreDisplayType.HEADER);
+		List<Owner> owners = new ArrayList<>();
+		owners.add(new Owner(owner, AuthType.STANDARD));
+		return new Dashboard(template, title, application, owners, type,configItemAppName, configItemComponentName,activeWidgets, false, ScoreDisplayType.HEADER);
 	}
 
  	public static Component makeComponent(ObjectId id, String name, CollectorType type, ObjectId collItemId) {

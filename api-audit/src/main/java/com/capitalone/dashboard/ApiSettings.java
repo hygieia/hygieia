@@ -24,11 +24,19 @@ public class ApiSettings {
     @Value("${maxDaysRangeForQuery:60}") // 60 days max
     private long maxDaysRangeForQuery;
     private boolean logRequest;
-
     private String featureIDPattern;
-    @Value("${threshold:80}")
-    private int threshold;
+    @Value("${traceabilityThreshold:80.0}")
+    private double traceabilityThreshold;
+    @Value("${testResultThreshold:95.0}")
+    private double testResultThreshold;
     private List<String> validStoryStatus;
+    @Value("${testResultSuccessPriority:Low}")
+    public String testResultSuccessPriority;
+    @Value("${testResultFailurePriority:High}")
+    public String testResultFailurePriority;
+    @Value("${testResultSkippedPriority:High}")
+    public String testResultSkippedPriority;
+    private String serviceAccountRegEx;
 
     public String getKey() {
         return key;
@@ -102,12 +110,12 @@ public class ApiSettings {
         this.featureIDPattern = featureIDPattern;
     }
 
-    public int getThreshold() {
-        return threshold;
+    public double getTraceabilityThreshold() {
+        return traceabilityThreshold;
     }
 
-    public void setThreshold(int threshold) {
-        this.threshold = threshold;
+    public void setTraceabilityThreshold(double traceabilityThreshold) {
+        this.traceabilityThreshold = traceabilityThreshold;
     }
 
     public List<String> getValidStoryStatus() {
@@ -126,4 +134,43 @@ public class ApiSettings {
         this.commitLogIgnoreAuditRegEx = commitLogIgnoreAuditRegEx;
     }
 
+    public String getServiceAccountRegEx() {
+        return serviceAccountRegEx;
+    }
+
+    public void setServiceAccountRegEx(String serviceAccountRegEx) {
+        this.serviceAccountRegEx = serviceAccountRegEx;
+    }
+
+    public void setTestResultSuccessPriority(String testResultSuccessPriority) {
+        this.testResultSuccessPriority = testResultSuccessPriority;
+    }
+
+    public String getTestResultSuccessPriority() {
+        return testResultSuccessPriority;
+    }
+
+    public void setTestResultFailurePriority(String testResultFailurePriority) {
+        this.testResultFailurePriority = testResultFailurePriority;
+    }
+
+    public void setTestResultSkippedPriority(String testResultSkippedPriority) {
+        this.testResultSkippedPriority = testResultSkippedPriority;
+    }
+
+    public String getTestResultFailurePriority() {
+        return testResultFailurePriority;
+    }
+
+    public String getTestResultSkippedPriority() {
+        return testResultSkippedPriority;
+    }
+
+    public double getTestResultThreshold() {
+        return testResultThreshold;
+    }
+
+    public void setTestResultThreshold(double testResultThreshold) {
+        this.testResultThreshold = testResultThreshold;
+    }
 }

@@ -1,0 +1,23 @@
+[
+  {
+    "_id" : "5ca6525e54904f47cd3fe9db",
+    "_class" : "com.capitalone.dashboard.model.BinaryArtifact",
+    "collectorItemId" : "5ca6525d54904f47cd3fe8f5",
+    "timestamp" : 1554402935734,
+    "canonicalName" : "cannonical.json",
+    "artifactGroupId" : "artgroupid",
+    "artifactVersion" : "1.0.0",
+    "artifactName" : "artifactName",
+    "type" : "file",
+    "createdTimeStamp" : 1554402935873,
+    "createdBy" : "user",
+    "modifiedTimeStamp" : 1554402935734,
+    "modifiedBy" : "user",
+    "actual_sha1" : "691dc92f7841d0c03074rf5gt6hyd7jkk",
+    "actual_md5" : "691dc92f7841d0c03074rf5gt6hyd7jkk",
+    "virtualRepos" : [
+      "container"
+    ],
+    "metadata" : {}
+  }
+]

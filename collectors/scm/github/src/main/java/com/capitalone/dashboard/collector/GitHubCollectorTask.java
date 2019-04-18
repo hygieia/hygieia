@@ -30,10 +30,12 @@ import org.springframework.web.client.RestClientException;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -147,14 +149,13 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         Set<ObjectId> gitID = new HashSet<>();
         gitID.add(collector.getId());
         for (GitHubRepo repo : gitHubRepoRepository.findByCollectorIdIn(gitID)) {
-            if (repo != null) {
-                repo.setEnabled(uniqueIDs.contains(repo.getId()));
-                repoList.add(repo);
-            }
+            if (repo.isPushed()) {continue;}
+
+            repo.setEnabled(uniqueIDs.contains(repo.getId()));
+            repoList.add(repo);
         }
         gitHubRepoRepository.save(repoList);
     }
-
 
     @Override
     public void collect(Collector collector) {
@@ -165,9 +166,29 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         int commitCount = 0;
         int pullCount = 0;
         int issueCount = 0;
-
+       
         clean(collector);
-        for (GitHubRepo repo : enabledRepos(collector)) {
+        
+        String proxyUrl = gitHubSettings.getProxy();
+        String proxyPort = gitHubSettings.getProxyPort();
+        String proxyUser= gitHubSettings.getProxyUser();
+        String proxyPassword= gitHubSettings.getProxyPassword();
+        
+        if (!StringUtils.isEmpty(proxyUrl) && !StringUtils.isEmpty(proxyPort)) {
+            System.setProperty("http.proxyHost", proxyUrl);
+            System.setProperty("https.proxyHost", proxyUrl);
+            System.setProperty("http.proxyPort", proxyPort);
+            System.setProperty("https.proxyPort", proxyPort);
+        
+         if (!StringUtils.isEmpty(proxyUser) && !StringUtils.isEmpty(proxyPassword)) {
+            System.setProperty("http.proxyUser", proxyUser);
+            System.setProperty("https.proxyUser", proxyUser);
+            System.setProperty("http.proxyPassword", proxyPassword);
+            System.setProperty("https.proxyPassword", proxyPassword);
+         }
+         }
+            
+         for (GitHubRepo repo : enabledRepos(collector)) {
             if (repo.getErrorCount() < gitHubSettings.getErrorThreshold()) {
                 boolean firstRun = ((repo.getLastUpdated() == 0) || ((start - repo.getLastUpdated()) > FOURTEEN_DAYS_MILLISECONDS));
                 repo.removeLastUpdateDate();  //moved last update date to collector item. This is to clean old data.
@@ -281,7 +302,17 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
     }
 
     private List<GitHubRepo> enabledRepos(Collector collector) {
-        return gitHubRepoRepository.findEnabledGitHubRepos(collector.getId());
+        List<GitHubRepo> repos = gitHubRepoRepository.findEnabledGitHubRepos(collector.getId());
+
+        List<GitHubRepo> pulledRepos
+                = Optional.ofNullable(repos)
+                .orElseGet(Collections::emptyList).stream()
+                .filter(pulledRepo -> !pulledRepo.isPushed())
+                .collect(Collectors.toList());
+
+        if (CollectionUtils.isEmpty(pulledRepos)) { return new ArrayList<>(); }
+
+        return pulledRepos;
     }
 
 

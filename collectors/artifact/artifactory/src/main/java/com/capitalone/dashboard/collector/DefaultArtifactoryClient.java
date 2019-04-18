@@ -234,6 +234,7 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
 		return result;
 	}
 
+
 	/**
 	 * Creates an artifact given its canonical name and path.
 	 * Artifacts are created by supplied pattern configurations. By default three are supplied:
@@ -265,14 +266,15 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
 				}
 
 				result.setType(getString(jsonArtifact, "type"));
-				result.setCreatedTimeStamp(getString(jsonArtifact, "created"));
+				result.setCreatedTimeStamp(convertTimestamp(getString(jsonArtifact, "created")));
 				result.setCreatedBy(getString(jsonArtifact, "created_by"));
-				result.setModifiedTimeStamp(getString(jsonArtifact, "modified"));
+				result.setModifiedTimeStamp(convertTimestamp(getString(jsonArtifact, "modified")));
 				result.setModifiedBy(getString(jsonArtifact, "modified_by"));
-				result.setActual_md5(getString(jsonArtifact, "actual_md5"));
+				result.setActual_md5(getString(jsonArtifact,  "actual_md5"));
 				result.setActual_sha1(getString(jsonArtifact, "actual_sha1"));
 				result.setCanonicalName(artifactCanonicalName);
 				result.setTimestamp(timestamp);
+				result.setVirtualRepos(getJsonArray(jsonArtifact, "virtual_repos"));
 				addMetadataToArtifact(result, jsonArtifact);
 
 
@@ -288,6 +290,19 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
 		return null;
 	}
 
+
+	private long convertTimestamp(String sTimestamp){
+		long timestamp = 0;
+		if (sTimestamp != null) {
+			try {
+				Date date = FULL_DATE.parse(sTimestamp);
+				timestamp = date.getTime();
+			} catch (java.text.ParseException e) {
+				LOGGER.error("Parsing artifact timestamp: " + sTimestamp, e);
+			}
+		}
+		return timestamp;
+	}
 	@SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts")
 	private void addMetadataToArtifact(BinaryArtifact ba, JSONObject jsonArtifact) {
 		if (ba != null && jsonArtifact != null) {
