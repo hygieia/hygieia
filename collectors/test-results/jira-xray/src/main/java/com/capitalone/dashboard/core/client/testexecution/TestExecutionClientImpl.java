@@ -281,8 +281,8 @@ public class TestExecutionClientImpl implements TestExecutionClient {
                 TestCase testCase = createTestCase(test, testRun, testExec);
                 testCases.add(testCase);
             }
+            this.setTestCases(testCases);
         }
-        this.setTestCases(testCases);
 
         map.put(TEST_STATUS_COUNT_ATTRIBUTES.PASS_COUNT.name(), passTestCount);
         map.put(TEST_STATUS_COUNT_ATTRIBUTES.FAIL_COUNT.name(), failTestCount);
