@@ -13,7 +13,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
-public class CodeQualityMetricsConverter implements CodeQualityVisitor {
+public class CodeQualityMetricsConverter implements QualityVisitor<CodeQuality> {
 
     private static final String TOTAL_NO_OF_TESTS = "tests";
     private static final String TEST_FAILURES = "test_failures";
@@ -179,6 +179,16 @@ public class CodeQualityMetricsConverter implements CodeQualityVisitor {
                         codeQualityMetricMap.get(TOTAL_INSTRUCTIONS_MISSED)));
 
 
+    }
+
+    @Override
+    public void visit(MochaJsSpecReport mochaJsSpecReport) {
+        // not implemented yet
+    }
+
+    @Override
+    public void visit(CucumberJsonReport cucumberJsonReport) {
+        // not implemented yet
     }
 
     private CodeQualityMetric computeCoveragePercent(String metricName, CodeQualityMetric covered,CodeQualityMetric missed) {
