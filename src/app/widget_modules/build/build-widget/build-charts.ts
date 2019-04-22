@@ -2,9 +2,9 @@ import { ClickListComponent } from 'src/app/shared/charts/click-list/click-list.
 import { ComboChartComponent } from 'src/app/shared/charts/combo-chart/combo-chart.component';
 import { LineChartComponent } from 'src/app/shared/charts/line-chart/line-chart.component';
 import { NumberCardChartComponent } from 'src/app/shared/charts/number-card-chart/number-card-chart.component';
-import { Chart } from 'src/app/shared/interfaces';
+import { IChart } from 'src/app/shared/interfaces';
 
-export let BUILD_CHARTS: Chart[] = [
+export let BUILD_CHARTS: IChart[] = [
   {
     title: 'Builds Per Day',
     component: LineChartComponent,

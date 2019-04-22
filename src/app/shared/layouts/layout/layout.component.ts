@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, ComponentFactoryResolver, QueryList } fro
 
 import { ChartDirective } from '../../charts/chart.directive';
 import { ChartComponent } from '../../charts/chart/chart.component';
-import { Chart } from '../../interfaces';
+import { IChart } from '../../interfaces';
 
 @Component({
   template: '',
@@ -10,7 +10,7 @@ import { Chart } from '../../interfaces';
 })
 export class LayoutComponent {
 
-  charts: Chart[];
+  charts: IChart[];
 
   chartComponents: ChartComponent[] = [];
 

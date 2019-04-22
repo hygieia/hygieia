@@ -15,7 +15,7 @@ export interface IPaginationParams {
   pageSize: any;
 }
 
-export interface Chart {
+export interface IChart {
   title: string;
   component: Type<any>;
   data: any;

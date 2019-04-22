@@ -5,7 +5,7 @@ import { Observable, ReplaySubject, zip } from 'rxjs';
 import { map, switchMap, take } from 'rxjs/operators';
 
 import { DashboardService } from '../dashboard.service';
-import { Chart } from '../interfaces';
+import { IChart } from '../interfaces';
 import { LayoutDirective } from '../layouts/layout.directive';
 import { LayoutComponent } from '../layouts/layout/layout.component';
 
@@ -22,7 +22,7 @@ export class WidgetComponent {
 
   @Input() layout: Type<any>;
 
-  public charts: Chart[];
+  public charts: IChart[];
 
   // Subjects can subscribe and emit. This allows us
   // to subsribe to updates from the upstream dashboard
