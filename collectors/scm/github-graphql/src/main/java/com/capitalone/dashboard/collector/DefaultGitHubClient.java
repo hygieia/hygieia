@@ -1068,7 +1068,7 @@ public class DefaultGitHubClient implements GitHubClient {
 
         JSONObject error = (JSONObject) errors.get(0);
 
-        if (!error.get("type").equals("NOT_FOUND")) {
+        if (!error.containsKey("type") || !error.get("type").equals("NOT_FOUND")) {
             throw new HygieiaException("Error in GraphQL query:" + errors.toJSONString(), HygieiaException.JSON_FORMAT_ERROR);
         }
 
