@@ -134,7 +134,7 @@ public class ArtifactEvaluatorTest {
         if (isBuild) {
             Build buildInfo = new Build();
             buildInfo.setBuildStatus(BuildStatus.Success);
-            ba.setBuildInfo(buildInfo);
+            ba.setBuildInfos(Arrays.asList(buildInfo));
         }
         return ba;
     }

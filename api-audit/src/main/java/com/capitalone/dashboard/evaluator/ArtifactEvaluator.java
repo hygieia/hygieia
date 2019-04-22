@@ -73,7 +73,7 @@ public class ArtifactEvaluator extends Evaluator<ArtifactAuditResponse> {
         BinaryArtifact binaryArtifact = binaryArtifacts.get(0);
         artifactAuditResponse.setBinaryArtifact(binaryArtifact);
         artifactAuditResponse.setLastUpdated(binaryArtifact.getTimestamp());
-        boolean isBuild = binaryArtifact.getBuildInfo() != null;
+        boolean isBuild = !CollectionUtils.isEmpty(binaryArtifact.getBuildInfos());
         if (isServiceAccount(binaryArtifact.getCreatedBy())) {
             evaluateArtifactForServiceAccountAndBuild(artifactAuditResponse, isBuild);
         }
