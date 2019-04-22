@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import * as _ from 'lodash';
+import { cloneDeep, extend } from 'lodash';
 import { Observable, ReplaySubject } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
@@ -24,7 +24,7 @@ export class DashboardService {
 
   // Clone the passed widget config, and post the updated widget to the API
   upsertWidget(dashboardId: string, widgetConfig: any): Observable<any> {
-    widgetConfig = _.cloneDeep(widgetConfig);
+    widgetConfig = cloneDeep(widgetConfig);
 
     const widgetId = widgetConfig.id;
     if (widgetId) {
@@ -65,7 +65,7 @@ export class DashboardService {
       const filteredWidgets = dashboard.widgets.filter((config: any) => config.options.id === newConfig.options.id);
       filteredWidgets.forEach((config: any, index: number) => {
         foundMatch = true;
-        dashboard.widgets[index] = _.extend(config, newConfig);
+        dashboard.widgets[index] = extend(config, newConfig);
       });
       if (!foundMatch) {
         dashboard.widgets.push(newConfig);

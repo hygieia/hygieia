@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, ComponentFactoryResolver, Input, Type } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import * as _ from 'lodash';
+import { extend } from 'lodash';
 import { Observable, ReplaySubject, zip } from 'rxjs';
 import { map, switchMap, take } from 'rxjs/operators';
 
@@ -67,7 +67,7 @@ export class WidgetComponent {
     // Take the current config and prepare it for saving
     const newWidgetConfig$ = this.getCurrentWidgetConfig().pipe(
       map(widgetConfig => {
-        _.extend(widgetConfig, newWidgetConfig);
+        extend(widgetConfig, newWidgetConfig);
         return widgetConfig;
       }),
       map(widgetConfig => {
@@ -92,7 +92,7 @@ export class WidgetComponent {
       map(([widgetConfig, upsertWidgetResponse]) => ({ widgetConfig, upsertWidgetResponse }))
     ).subscribe(result => {
       if (result.widgetConfig !== null && typeof result.widgetConfig === 'object') {
-        _.extend(result.widgetConfig, result.upsertWidgetResponse.widget);
+        extend(result.widgetConfig, result.upsertWidgetResponse.widget);
       }
 
       this.dashboardService.upsertLocally(result.upsertWidgetResponse.component, result.widgetConfig);
