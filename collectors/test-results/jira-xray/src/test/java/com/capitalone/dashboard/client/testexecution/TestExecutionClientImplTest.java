@@ -53,8 +53,6 @@ import java.util.HashSet;
 import java.util.Collection;
 import java.util.ArrayList;
 
-
-
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(TestExecutionRestClientImpl.class)
 public class TestExecutionClientImplTest {
@@ -71,16 +69,16 @@ public class TestExecutionClientImplTest {
     @Mock
     private DisposableHttpClient httpClient;
     @Mock
-    private Promise pr;
+    private Promise promise;
     @Mock
-    private Promise pr1;
+    private Promise promise1;
     @Captor ArgumentCaptor<List<TestResult>> captor;
 
     @InjectMocks
     TestExecutionClientImpl testExecutionClientimpl;
 
     @Before
-    public final void init() throws Exception {
+    public final void init() {
         MockitoAnnotations.initMocks(this);
         testResultSettings = new TestResultSettings();
         JiraXRayRestClientSupplier restClientSupplierMock = Mockito.mock(JiraXRayRestClientSupplier.class);
@@ -91,48 +89,49 @@ public class TestExecutionClientImplTest {
         Mockito.when(restClientMock.getTestExecutionClient()).thenReturn(new TestExecutionRestClient() {
             @Override
             public Promise<Iterable<TestExecution.Test>> getTests(TestExecution key) {
-                return pr;
+                return promise;
             }
 
             @Override
             public Promise<Void> setTests(TestExecution testExec) {
-                return null;
+                return promise;
             }
 
             @Override
             public Promise<Void> removeTest(TestExecution testExecKey, TestExecution.Test testKey) {
-                return null;
+                return promise;
             }
         });
-        Mockito.when(pr.claim()).thenReturn(createTests());
+        Mockito.when(promise.claim()).thenReturn(createTests());
         Mockito.when(restClientMock.getTestRunClient()).thenReturn(new TestRunRestClient() {
             @Override
             public Promise<TestRun> getTestRun(String testExecKey, String testKey) {
-                return pr1;
+                return promise1;
             }
 
             @Override
             public Promise<TestRun> getTestRun(Long testRunId) {
-                return null;
+                return promise1;
             }
 
             @Override
             public Promise<Void> updateTestRun(TestRun testRunInput) {
-                return null;
+                return promise1;
             }
 
             @Override
             public Promise<Iterable<TestRun>> getTestRuns(String testKey) {
-                return null;
+                return promise1;
             }
 
             @Override
             public Promise<TestRun.Status> getStatus(Long testRunId) {
-                return null;
+                return promise1;
             }
         });
-        Mockito.when(pr1.claim()).thenReturn(createTestRuns());
-        testExecutionClientimpl = new TestExecutionClientImpl(testResultRepository, testResultCollectorRepository, featureRepository, collectorItemRepository, testResultSettings, restClientSupplierMock);
+        Mockito.when(promise1.claim()).thenReturn(createTestRuns());
+        testExecutionClientimpl = new TestExecutionClientImpl(testResultRepository, testResultCollectorRepository,
+                featureRepository, collectorItemRepository, testResultSettings, restClientSupplierMock);
         testResultSettings.setPageSize(20);
     }
 
@@ -183,12 +182,7 @@ public class TestExecutionClientImplTest {
                         Assert.assertEquals("hello", step.getDescription());
                         Assert.assertEquals(TestCaseStatus.Success, step.getStatus());
                     }
-
-
                 }
-
-
-
             }
         }
     }
@@ -245,8 +239,6 @@ public class TestExecutionClientImplTest {
         TestExecution.Test test2 = new TestExecution.Test(URI.create("http://myurl.com"), "FOX123", 78901L);
         ((ArrayList<TestExecution.Test>) tests).add(test1);
         ((ArrayList<TestExecution.Test>) tests).add(test2);
-
-
         return tests;
     }
 
@@ -259,10 +251,5 @@ public class TestExecutionClientImplTest {
         collector.setName("Jira Xray");
         collectors.add(collector);
         return collectors;
-
     }
-
-
-
-
 }
