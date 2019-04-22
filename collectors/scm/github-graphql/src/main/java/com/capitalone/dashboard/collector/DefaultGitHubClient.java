@@ -162,6 +162,11 @@ public class DefaultGitHubClient implements GitHubClient {
             LOG.debug("Executing loop " + loopCount + " for " + gitHubParsed.getOrgName() + "/" + gitHubParsed.getRepoName());
             JSONObject data = getDataFromRestCallPost(graphQLurl, repo, decryptedPassword, decryptPersonalAccessToken, query);
 
+            // Update the githubParsed URLs after a redirect has happened
+            if (!gitHubParsed.getUrl().equals(repo.getRepoUrl())) {
+                gitHubParsed = new GitHubParsed(repo.getRepoUrl());
+            }
+
             if (data != null) {
                 JSONObject repository = (JSONObject) data.get("repository");
 
