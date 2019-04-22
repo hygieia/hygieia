@@ -4,8 +4,8 @@ import com.capitalone.dashboard.jenkins.JenkinsBuild;
 import com.capitalone.dashboard.jenkins.JenkinsJob;
 import com.capitalone.dashboard.jenkins.model.JenkinsCodeQualityJob;
 import com.capitalone.dashboard.model.*;
-import com.capitalone.dashboard.model.quality.CodeQualityVisitee;
-import com.capitalone.dashboard.model.quality.CodeQualityVisitor;
+import com.capitalone.dashboard.model.quality.QualityVisitee;
+import com.capitalone.dashboard.model.quality.QualityVisitor;
 import com.capitalone.dashboard.model.quality.FindBugsXmlReport;
 import com.capitalone.dashboard.model.quality.JunitXmlReport;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
@@ -52,7 +52,7 @@ public class CodeQualityDataServiceTest {
                 storedCodeQuality
         );
 
-        CodeQualityVisitor mockVisitor = mock(CodeQualityVisitor.class);
+        QualityVisitor mockVisitor = mock(QualityVisitor.class);
         when(mockCodeQualityConverter.produceVisitor()).thenReturn(mockVisitor);
         CodeQuality fakeQuality = new CodeQuality();
         when(mockVisitor.produceResult()).thenReturn(fakeQuality);
@@ -106,7 +106,7 @@ public class CodeQualityDataServiceTest {
         ObjectId dbJobId = new ObjectId();
         dbJob.setId(dbJobId);
 
-        List<CodeQualityVisitee> reportList = new ArrayList<>();
+        List<QualityVisitee> reportList = new ArrayList<>();
         // give it a junit report
         JunitXmlReport testXmlReport = new JunitXmlReport();
         testXmlReport.setErrors(10);
@@ -117,7 +117,7 @@ public class CodeQualityDataServiceTest {
         FindBugsXmlReport bugsXmlReport = new FindBugsXmlReport();
         reportList.add(bugsXmlReport);
 
-        CodeQualityVisitor mockVistor = mock(CodeQualityVisitor.class);
+        QualityVisitor mockVistor = mock(QualityVisitor.class);
         when(mockCodeQualityConverter.produceVisitor()).thenReturn(mockVistor);
 
         CodeQuality fakeReturn = new CodeQuality();
