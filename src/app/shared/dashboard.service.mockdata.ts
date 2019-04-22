@@ -375,13 +375,13 @@ export let GET_DASHBOARD_MOCK = {
               collectorId: '5991223442ff4e0d3c1485c1',
               lastUpdated: 1554825657461,
               options: {
-                reportUrl: 'https://eratocode.mycompany.com/',
+                reportUrl: 'https://mycompany.com/',
                 applicationID: [
                   'ASVMYPROJECT'
                 ],
                 projectName: 'my-project',
                 applicationName: 'my-project',
-                instanceUrl: 'https://eratocode.mycompany.com/'
+                instanceUrl: 'https://mycompany.com/'
               },
               collector: {
                 id: '5991223442ff4e0d3c1485c1',
@@ -434,7 +434,7 @@ export let GET_DASHBOARD_MOCK = {
                   'ASVMYPROJECT'
                 ],
                 applicationName: 'my-project',
-                instanceUrl: 'https://eratocode.mycompany.com'
+                instanceUrl: 'https://mycompany.com'
               },
               collector: {
                 id: '5b10938818a7fe201bf737d1',
@@ -582,13 +582,13 @@ export const POST_DASHBOARD_MOCK = {
           collectorId: '5991223442ff4e0d3c1485c1',
           lastUpdated: 1554825657461,
           options: {
-            reportUrl: 'https://eratocode.mycompany.com/',
+            reportUrl: 'https://mycompany.com/',
             applicationID: [
               'ASVMYPROJECT'
             ],
             projectName: 'my-project',
             applicationName: 'my-project',
-            instanceUrl: 'https://eratocode.mycompany.com/'
+            instanceUrl: 'https://mycompany.com/'
           },
           errorCount: 0
         }
@@ -614,7 +614,7 @@ export const POST_DASHBOARD_MOCK = {
               'ASVMYPROJECT'
             ],
             applicationName: 'my-project',
-            instanceUrl: 'https://eratocode.mycompany.com'
+            instanceUrl: 'https://mycompany.com'
           },
           errorCount: 1
         }
