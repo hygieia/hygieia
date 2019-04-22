@@ -10,7 +10,9 @@ import com.capitalone.dashboard.repository.JobRepository;
 import com.capitalone.dashboard.request.BinaryArtifactCreateRequest;
 import com.capitalone.dashboard.request.BinaryArtifactSearchRequest;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.ObjectUtils;
 import org.bson.types.ObjectId;
@@ -113,7 +115,7 @@ public class BinaryArtifactServiceImpl implements BinaryArtifactService {
     
     private void setBuildInformation(BinaryArtifact ba, ObjectId buildId) {
 		Build build = getBuildById(buildId);
-		ba.setBuildInfo(build);
+		ba.setBuildInfos(Arrays.asList(build));
 		
 		// Attempt to deduce metadata information
 		if (build != null) { 
@@ -152,11 +154,15 @@ public class BinaryArtifactServiceImpl implements BinaryArtifactService {
         			&& ObjectUtils.equals(artifact.getBuildUrl(), ba.getBuildUrl())) {
                 return ba;
             } else if (buildId != null 
-            		&& ba.getBuildInfo() != null 
-            		&& ba.getBuildInfo().getId().equals(buildId)) {
+            		&& ba.getBuildInfos() != null
+            		&& findBuildId(ba.getBuildInfos(),buildId)) {
             	return ba;
             }
         }
         return null;
     }
+
+    private boolean findBuildId(List<Build> builds,ObjectId buildId){
+    	return builds.stream().filter(build -> buildId.equals(build.getId())).findAny().isPresent();
+	}
 }
