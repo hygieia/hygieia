@@ -56,6 +56,9 @@ export class WidgetComponent {
     return this.widgetConfig$.pipe(take(1));
   }
 
+  // Implementation specific to widget subclass.
+  // Specific refresh logic for each widget should be
+  // implemented in each subclass.
   startRefreshInterval() {
   }
 

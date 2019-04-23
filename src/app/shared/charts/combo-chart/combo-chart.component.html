@@ -2,8 +2,14 @@
   <div class="widget-heading">
     {{title}}
   </div>
-  <app-line-and-bar-chart [view]="view" [scheme]="colorScheme" [colorSchemeLine]="lineChartScheme" [results]="data[0]"
-    [lineChart]="data[1]" [yAxisTickFormatting]="yAxisTickFormatting" [xAxisLabel]="xAxisLabel"
+  <app-line-and-bar-chart
+    [view]="view"
+    [scheme]="colorScheme"
+    [colorSchemeLine]="lineChartScheme"
+    [results]="data[0]"
+    [lineChart]="data[1]"
+    [yAxisTickFormatting]="yAxisTickFormatting"
+    [xAxisLabel]="xAxisLabel"
     [yAxisLabel]="yAxisLabel">
   </app-line-and-bar-chart>
 </div>
