@@ -154,6 +154,7 @@ public class ArtifactoryCollectorTask extends CollectorTaskWithGenericItem<Artif
             if (instanceUrl.lastIndexOf('/') == instanceUrl.length() - 1) {
                 getRepos().forEach(repo -> {
                     long lastUpdated = getLastUpdated(collector);
+                    //Multiple patterns for the repo will be supported in future
                     String pattern = (getPatterns().get(repo)).get(0);
                     List<BaseArtifact> baseArtifacts = artifactoryClient.getArtifactItems(instanceUrl, repo, pattern, lastUpdated);
                     log("Collecting repository ====>>> " + repo);
@@ -314,20 +315,19 @@ public class ArtifactoryCollectorTask extends CollectorTaskWithGenericItem<Artif
         int count = 0;
         Set<ArtifactItem> existingSet = new HashSet<>(existingArtifactItems);
         for (BaseArtifact baseArtifact : baseArtifacts) {
-            ArtifactItem newArtifactItem = baseArtifact.getArtifactItem();
-            if (newArtifactItem != null && !existingSet.contains(newArtifactItem)) {
-                newArtifactItem.setLastUpdated(System.currentTimeMillis());
-                newArtifactItem.setCollectorId(collector.getId());
-                newArtifactItem.setEnabled(true);
-                newArtifactItem = artifactItemRepository.save(newArtifactItem);
-                existingSet.add(newArtifactItem);
-                BinaryArtifact binaryArtifact = baseArtifact.getBinaryArtifact();
-                if (binaryArtifact != null) {
-                    binaryArtifact.setCollectorItemId(newArtifactItem.getId());
-                    binaryArtifacts.add(binaryArtifact);
-                }
-                count++;
-            }
+        	ArtifactItem newArtifactItem = baseArtifact.getArtifactItem();
+        	if(newArtifactItem!=null && !existingSet.contains(newArtifactItem)){
+					newArtifactItem.setLastUpdated(System.currentTimeMillis());
+					newArtifactItem.setCollectorId(collector.getId());
+					newArtifactItem = artifactItemRepository.save(newArtifactItem);
+					existingSet.add(newArtifactItem);
+					BinaryArtifact binaryArtifact = baseArtifact.getBinaryArtifact();
+					if(binaryArtifact!=null){
+						binaryArtifact.setCollectorItemId(newArtifactItem.getId());
+						binaryArtifacts.add(binaryArtifact);
+					}
+					count++;
+			}
         }
         if (!binaryArtifacts.isEmpty()) {
             binaryArtifacts.forEach(binaryArtifact -> binaryArtifactRepository.save(binaryArtifact));
@@ -401,6 +401,9 @@ public class ArtifactoryCollectorTask extends CollectorTaskWithGenericItem<Artif
                         relatedCollectorItem.setSource(this.getClass().toString());
                         relatedCollectorItem.setReason(Reason.ARTIFACT_REASON.getAction());
                         relatedCollectorItemRepository.save(relatedCollectorItem);
+                        //set collectorItem as pushed true
+                        item.setPushed(true);
+                        collectorItemRepository.save(item);
                     }
             );
 
