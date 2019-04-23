@@ -283,7 +283,7 @@ describe('BuildWidgetComponent', () => {
       imports: [
         HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule
       ],
-      declarations: [BuildWidgetComponent]
+      declarations: []
     })
       .compileComponents();
   }));

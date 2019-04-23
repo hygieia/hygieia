@@ -6,14 +6,14 @@ import { BuildRoutingModule } from './build-routing-module';
 import { BuildWidgetComponent } from './build-widget/build-widget.component';
 
 @NgModule({
-  declarations: [BuildWidgetComponent],
+  declarations: [],
   imports: [
     CommonModule,
     BuildRoutingModule,
     SharedModule
   ],
   exports: [
-    BuildWidgetComponent
+
   ]
 })
 export class BuildModule { }
