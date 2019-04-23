@@ -26,6 +26,7 @@ import com.capitalone.dashboard.repository.TestResultRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.google.common.collect.Lists;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -324,22 +325,23 @@ public class TestExecutionClientImpl implements TestExecutionClient {
 
             testCase.setTestSteps(this.getTestSteps(testRun));
             List<Feature> tc = featureRepository.getStoryByNumber(test.getKey());
-            if (tc.size() > 0) {
+            if (!CollectionUtils.isEmpty(tc)) {
                 for (Feature t : tc) {
                     Set<String> tags = getStoryIds(t.getIssueLinks());
                     testCase.setTags(tags);
                 }
             }
-
         }
         return testCase;
     }
 
     private Set<String> getStoryIds(Collection<FeatureIssueLink> issueLinks) {
         Set<String> tags = new HashSet<>();
-        issueLinks.forEach(issueLink -> {if(issueLink.getIssueLinkType().equalsIgnoreCase("tests")){
-            tags.add(issueLink.getTargetIssueKey());
-        }});
+        issueLinks.forEach(issueLink -> {
+            if(issueLink.getIssueLinkType().equalsIgnoreCase("tests")) {
+                tags.add(issueLink.getTargetIssueKey());
+            }
+        });
         return tags;
     }
 

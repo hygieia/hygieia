@@ -190,7 +190,6 @@ public class TestExecutionClientImplTest {
     private List<Feature> createFeature() {
         List<Feature> features = new ArrayList<>();
         Feature feature1 = new Feature();
-        //feature1.setsTeamID("503");
         feature1.setsName("summary1001");
         feature1.setsProjectName("Hygieia");
         feature1.setsTypeName("Test Execution");
@@ -205,7 +204,6 @@ public class TestExecutionClientImplTest {
     private List<Feature> createTest() {
         List<Feature> features = new ArrayList<>();
         Feature feature = new Feature();
-        //feature1.setsTeamID("503");
         feature.setsName("summary1001");
         feature.setsProjectName("Hygieia");
         feature.setsTypeName("Test Execution");
