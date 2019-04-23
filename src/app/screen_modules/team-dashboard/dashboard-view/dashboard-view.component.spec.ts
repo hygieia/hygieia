@@ -1,6 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DashboardViewComponent } from './dashboard-view.component';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {CommonModule} from '@angular/common';
+import {SharedModule} from '../../../shared/shared.module';
 
 describe('DashboardViewComponent', () => {
   let component: DashboardViewComponent;
@@ -8,7 +11,8 @@ describe('DashboardViewComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DashboardViewComponent ]
+      declarations: [ DashboardViewComponent ],
+      imports: [HttpClientTestingModule, SharedModule, CommonModule]
     })
     .compileComponents();
   }));
@@ -23,3 +27,6 @@ describe('DashboardViewComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+
+
+

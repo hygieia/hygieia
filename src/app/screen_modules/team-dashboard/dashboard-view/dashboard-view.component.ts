@@ -3,12 +3,7 @@ import { DashboardComponent } from 'src/app/shared/dashboard/dashboard.component
 import { TemplatesDirective } from 'src/app/shared/templates/templates.directive';
 import { CaponeTemplateComponent } from '../capone-template/capone-template.component';
 import { BuildWidgetComponent } from 'src/app/widget_modules/build/build-widget/build-widget.component';
-import {TeamDashboardService} from '../team-dashboard.service';
-import {HttpParams} from '@angular/common/http';
-import {HttpClientModule} from '@angular/common/http';
-import {IDashboardResponse, ITemplate} from './dashboard-view';
-import {DashboardViewService} from './dashboard-view.service';
-
+import {ITemplate} from './dashboard-view';
 
 @Component({
   selector: 'app-dashboard-view',
@@ -20,7 +15,7 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
   teamDashboard: ITemplate;
   @ViewChild(TemplatesDirective) childTemplateTag: TemplatesDirective;
 
-  constructor(componentFactoryResolver: ComponentFactoryResolver, cdr: ChangeDetectorRef, dashboardViewService: DashboardViewService) {
+  constructor(componentFactoryResolver: ComponentFactoryResolver, cdr: ChangeDetectorRef) {
     super(componentFactoryResolver, cdr);
   }
 
