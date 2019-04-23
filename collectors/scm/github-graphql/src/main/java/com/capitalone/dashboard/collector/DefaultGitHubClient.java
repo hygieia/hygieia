@@ -137,7 +137,6 @@ public class DefaultGitHubClient implements GitHubClient {
         // format URL
         String repoUrl = (String) repo.getOptions().get("url");
         GitHubParsed gitHubParsed = new GitHubParsed(repoUrl);
-        String graphQLurl = gitHubParsed.getGraphQLUrl();
 
 
         commits = new LinkedList<>();
@@ -160,7 +159,7 @@ public class DefaultGitHubClient implements GitHubClient {
         int loopCount = 1;
         while (!alldone) {
             LOG.debug("Executing loop " + loopCount + " for " + gitHubParsed.getOrgName() + "/" + gitHubParsed.getRepoName());
-            JSONObject data = getDataFromRestCallPost(graphQLurl, repo, decryptedPassword, decryptPersonalAccessToken, query);
+            JSONObject data = getDataFromRestCallPost(gitHubParsed, repo, decryptedPassword, decryptPersonalAccessToken, query);
 
             if (data != null) {
                 JSONObject repository = (JSONObject) data.get("repository");
@@ -210,7 +209,7 @@ public class DefaultGitHubClient implements GitHubClient {
         loopCount = 1;
         int missingCommitCount = 0;
         while (!alldone) {
-            JSONObject data = getDataFromRestCallPost(graphQLurl, repo, decryptedPassword, decryptPersonalAccessToken, query);
+            JSONObject data = getDataFromRestCallPost(gitHubParsed, repo, decryptedPassword, decryptPersonalAccessToken, query);
             if (data != null) {
                 JSONObject repository = (JSONObject) data.get("repository");
 
@@ -267,7 +266,7 @@ public class DefaultGitHubClient implements GitHubClient {
         query.put("query", queryString);
         query.put("variables", variableJSON.toString());
 
-        JSONObject data = getDataFromRestCallPost(gitHubParsed.getGraphQLUrl(), repo, decryptedPassword, personalAccessToken, query);
+        JSONObject data = getDataFromRestCallPost(gitHubParsed, repo, decryptedPassword, personalAccessToken, query);
 
         if (data == null) return paging;
         JSONObject repository = (JSONObject) data.get("repository");
@@ -1056,9 +1055,9 @@ public class DefaultGitHubClient implements GitHubClient {
         return dateInstance.minusDays(offsetDays).minusMinutes(offsetMinutes);
     }
 
-
-    private JSONObject getDataFromRestCallPost(String url, GitHubRepo repo, String password, String personalAccessToken, JSONObject query) throws MalformedURLException, HygieiaException {
-        ResponseEntity<String> response = makeRestCallPost(url, repo.getUserId(), password, personalAccessToken, query);
+    // Makes use of the graphQL endpoint, will not work for REST api
+    private JSONObject getDataFromRestCallPost(GitHubParsed gitHubParsed, GitHubRepo repo, String password, String personalAccessToken, JSONObject query) throws MalformedURLException, HygieiaException {
+        ResponseEntity<String> response = makeRestCallPost(gitHubParsed.getGraphQLUrl(), repo.getUserId(), password, personalAccessToken, query);
         JSONObject data = (JSONObject) parseAsObject(response).get("data");
         JSONArray errors = getArray(parseAsObject(response), "errors");
 
@@ -1068,7 +1067,7 @@ public class DefaultGitHubClient implements GitHubClient {
 
         JSONObject error = (JSONObject) errors.get(0);
 
-        if (!error.get("type").equals("NOT_FOUND")) {
+        if (!error.containsKey("type") || !error.get("type").equals("NOT_FOUND")) {
             throw new HygieiaException("Error in GraphQL query:" + errors.toJSONString(), HygieiaException.JSON_FORMAT_ERROR);
         }
 
@@ -1081,7 +1080,7 @@ public class DefaultGitHubClient implements GitHubClient {
         String redirectedUrl = redirectedStatus.getRedirectedUrl();
         LOG.debug("Repo was redirected from: " + repo.getRepoUrl() + " to " + redirectedUrl);
         repo.setRepoUrl(redirectedUrl);
-        GitHubParsed gitHubParsed = new GitHubParsed(redirectedUrl);
+        gitHubParsed.updateForRedirect(redirectedUrl);
 
         JSONParser parser = new JSONParser();
         try {
@@ -1092,7 +1091,7 @@ public class DefaultGitHubClient implements GitHubClient {
         } catch (ParseException e) {
             LOG.error("Could not parse JSON String", e);
         }
-        return getDataFromRestCallPost(url, repo, password, personalAccessToken, query);
+        return getDataFromRestCallPost(gitHubParsed, repo, password, personalAccessToken, query);
     }
 
     private ResponseEntity<String> makeRestCallPost(String url, String userId, String password, String personalAccessToken, JSONObject query) {
