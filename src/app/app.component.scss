@@ -1,0 +1,17 @@
+
+.app-container {
+  overflow-y: auto;
+}
+
+.image-backdrop {
+  background: url("../assets/img/bg-forest.jpg") no-repeat center center fixed;
+  height: 100%;
+
+  position: fixed;
+  width: 100%;
+}
+
+.page-content {
+  max-width: 1440px;
+  margin: 0 auto;
+}

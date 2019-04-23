@@ -1,0 +1,131 @@
+.directory-view {
+  padding: 60px 20px 0 20px;
+  position: relative;
+
+  h1 {
+    padding-top: 40px;
+    padding-bottom: 21px;
+  }
+
+  .view-opts-bar {
+    margin-bottom: 10px;
+    min-width: 350px;
+    min-height: 500px;
+
+    * /deep/ .heading {
+
+      h1 {
+        margin-left: 35px;
+      }
+    }
+  }
+
+  hr.divider {
+    margin-bottom: 23px;
+    margin-left: 0;
+    margin-right: 10px;
+  }
+}
+
+.widget {
+  background-color: #c8cbce4b;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  height: 250px;
+  letter-spacing: .03em;
+  margin-bottom: 15px;
+  margin-right: 15px;
+  margin-left: 15px;
+  padding: 1em;
+  width: 430px;
+
+
+  &:hover, &:active {
+    background-color: #ccd1d4;
+  }
+  .portfolio-card-info {
+    height: 60px;
+    min-width: 0;
+
+    .fullname {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width:500px;
+
+      span {
+
+        &.opensans-rg {
+          height: 22px;
+          line-height: 22px;
+        }
+
+        &.opensans-lt {
+          height: 17px;
+          line-height: 17px;
+        }
+
+        &.opensans-ltit {
+          height: 17px;
+          line-height: 17px;
+        }
+
+        &.portfolio-card-firstname {
+          text-overflow: ellipsis;
+        }
+
+        &.portfolio-card-lastname {
+          max-width: 50%;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+
+    p {
+
+      &.opensans-rg {
+        height: 22px;
+        line-height: 22px;
+      }
+
+      &.opensans-lt {
+        height: 17px;
+        line-height: 17px;
+      }
+
+      &.opensans-ltit {
+        height: 17px;
+        line-height: 17px;
+      }
+
+      &.portfolio-card-name,
+      &.portfolio-card-role,
+      &.portfolio-card-lob {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+
+
+
+
+}
+
+.pop{
+  height: 50px;
+  width: 40%;
+  margin-left: 20px;
+  border: 1px solid saddlebrown;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: aqua;
+}
+
+.widget-card{
+  border:1px solid rgb(148, 146, 146);
+}

@@ -10,6 +10,8 @@ import { LayoutComponent } from '../layouts/layout/layout.component';
 })
 export class WidgetComponent {
   @Input() layout: Type<any>;
+  @Input() status : string;
+
 
   public charts: Chart[];
 

@@ -19,20 +19,30 @@ import { LayoutComponent } from './layouts/layout/layout.component';
 import { TwoByTwoLayoutComponent } from './layouts/two-by-two-layout/two-by-two-layout.component';
 import { PaginationComponent } from './pagination/pagination.component';
 import { WidgetComponent } from './widget/widget.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { TemplatesDirective } from './templates/templates.directive';
+import { WidgetDirective } from './widget/widget.directive';
+import { BaseTemplateComponent } from './templates/base-template/base-template.component';
+import {BuildWidgetComponent} from "../widget_modules/build/build-widget/build-widget.component";
+import {FlexLayoutModule} from "@angular/flex-layout";
+import {DragDropModule} from "@angular/cdk/drag-drop";
+import {CaponeTemplateComponent} from "../screen_modules/team-dashboard/capone-template/capone-template.component";
 
 @NgModule({
   declarations: [WidgetComponent, TwoByTwoLayoutComponent, LayoutComponent, ChartDirective,
     ChartComponent, LayoutDirective, LineChartComponent, NumberCardChartComponent,
     LineAndBarChartComponent, ComboChartComponent, ComboSeriesVerticalComponent, ClickListComponent,
-    TimeAgoPipe, PaginationComponent],
+    TimeAgoPipe, PaginationComponent, DashboardComponent, TemplatesDirective, WidgetDirective, BaseTemplateComponent,CaponeTemplateComponent,BuildWidgetComponent],
   entryComponents: [TwoByTwoLayoutComponent, LineChartComponent, NumberCardChartComponent,
-    LineAndBarChartComponent, ComboChartComponent, ClickListComponent],
+    LineAndBarChartComponent, ComboChartComponent, ClickListComponent,CaponeTemplateComponent,BuildWidgetComponent],
   imports: [
     CommonModule,
     ReactiveFormsModule,
     NgxChartsModule,
     NgxUIModule,
-    NgbModule
+    NgbModule,
+    FlexLayoutModule,
+    DragDropModule
   ],
   exports: [
     ReactiveFormsModule,
@@ -48,7 +58,11 @@ import { WidgetComponent } from './widget/widget.component';
     ChartComponent,
     LayoutDirective,
     ChartDirective,
-    PaginationComponent
+    PaginationComponent,
+    TemplatesDirective,
+    CaponeTemplateComponent,
+    BuildWidgetComponent
+
   ]
 })
 export class SharedModule { }

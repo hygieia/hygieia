@@ -22,3 +22,8 @@ export interface Chart {
     yAxisLabel: string;
     colorScheme: any;
 }
+
+export interface Widget{
+  component: Type<any>;
+  status : string;
+}
