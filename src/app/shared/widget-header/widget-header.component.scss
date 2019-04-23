@@ -1,0 +1,154 @@
+////@import '/src/variables.scss';
+//@import "~node_modules/bootstrap/scss/mixins";
+//
+//// VARIABLES
+//// when widget is in alert state
+//$dash-widget-alert-bg: $brand-danger;
+//$dash-widget-alert-text: $panel-danger-text;
+//$dash-widget-alert-heading-border: $panel-danger-text;
+//
+//// widget settings
+//$dash-widget-border-radius: .5rem;
+//$dash-widget-heading-border: $dash-divider;
+//$dash-widget-sub-heading-border: $dash-divider;
+//$dash-widget-heading-text: $dash-dashboard-text;
+//$dash-widget-section-highlight: $well-bg;
+//
+//
+//// WIDGET
+//// ========================================
+//.widget {
+//  padding: 2.5rem 3rem;
+//  @include border-radius($dash-widget-border-radius);
+//
+//  .widget {
+//    margin-bottom: 2rem;
+//  }
+//
+//  // heading in a widget
+//  .widget-heading {
+//    border-bottom: 1px solid $dash-widget-heading-border;
+//    color: $dash-widget-heading-text;
+//    letter-spacing: .1rem;
+//    padding-bottom: .5rem;
+//    margin-bottom: 1.75rem;
+//
+//    @include text-lg;
+//    @include border-top-radius($dash-widget-border-radius);
+//
+//    // the cog icon to open the config modal
+//    .widget-settings-icon {
+//      @include transition(color 300 ms ease);
+//
+//      &:hover {
+//        color: $dash-dashboard-text-hover;
+//      }
+//    }
+//
+//    .last-updated {
+//      font-size: 1.1rem;
+//    }
+//  }
+//
+//  .widget-heading-performance {
+//    border-bottom: 0px solid $dash-widget-heading-border;
+//    color: $dash-widget-heading-text;
+//    letter-spacing: .1rem;
+//    padding-bottom: .5rem;
+//    margin-bottom: 1.75rem;
+//
+//    @include text-lg;
+//    @include border-top-radius($dash-widget-border-radius);
+//
+//    .widget-settings-icon {
+//      @include transition(color 300 ms ease);
+//
+//      &:hover {
+//        color: $dash-dashboard-text-hover;
+//      }
+//    }
+//
+//    .last-updated {
+//      font-size: 1.1rem;
+//    }
+//  }
+//
+//  // sections of widgets should have the same widget markup
+//  // but may be styled slightly differently
+//  .widget-body .widget {
+//    padding: 0;
+//
+//    .widget-heading {
+//      border-bottom-color: $dash-widget-sub-heading-border;
+//      @include text-standard;
+//      text-transform: uppercase;
+//    }
+//  }
+//
+//  // when widget hasn't yet been configured
+//  .widget-body-config {
+//    background: $dash-widget-section-highlight;
+//    border: .5rem dashed $dash-state-config-text;
+//    border-radius: 1rem;
+//    color: $dash-state-config-text;
+//    display: none;
+//    font-size: 2rem;
+//    line-height: 2.4rem;
+//    margin: 1rem 0;
+//    padding: 2rem;
+//    text-align: center;
+//
+//    .fa {
+//      border: 2px solid $dash-state-config-text;
+//      margin-bottom: .75rem;
+//      padding: .6rem .5rem;
+//      _border-radius(50%);
+//      _transition(border-color 300 ms linear);
+//    }
+//
+//
+//    _transition(~ "all 300ms linear");
+//  }
+//
+//  // changes when not yet configured
+//  &.configure {
+//    .widget-settings-icon {
+//      display: none;
+//    }
+//
+//    .widget-body-main {
+//      display: none;
+//    }
+//
+//    .widget-body-config {
+//      display: block;
+//
+//      &:hover {
+//        background-color: $dash-state-config-bg-hover;
+//        border-color: $dash-state-config-text-hover;
+//        color: $dash-state-config-text-hover;
+//
+//        .fa {
+//          border-color: $dash-state-config-text-hover;
+//        }
+//      }
+//    }
+//  }
+//
+//  // styles when in an alert state
+//  &.alert {
+//    #gradient > .vertical
+//
+//  (lighten($dash-widget-alert-bg, 10 %), darken($dash-widget-alert-bg, 10 %));
+//    color: $dash-widget-alert-text;
+//
+//    .widget-heading {
+//      border-bottom-color: $dash-widget-alert-heading-border;
+//      color: $dash-widget-alert-text;
+//    }
+//  }
+//}
+//
+//.cicd-modal-content {
+//  margin-left: 10%;
+//}

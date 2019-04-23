@@ -9,8 +9,6 @@ import { WidgetComponent } from 'src/app/shared/widget/widget.component';
 
 import { BuildService } from '../build.service';
 import { Build } from '../interfaces';
-import {NgModel} from '@angular/forms';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-build-widget',
@@ -25,7 +23,7 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
 
   @ViewChild(LayoutDirective) childLayoutTag: LayoutDirective;
 
-    constructor(componentFactoryResolver: ComponentFactoryResolver, cdr: ChangeDetectorRef, private buildService: BuildService, modalService: NgbModal) {
+    constructor(componentFactoryResolver: ComponentFactoryResolver, cdr: ChangeDetectorRef, private buildService: BuildService) {
         super(componentFactoryResolver, cdr);
     }
 

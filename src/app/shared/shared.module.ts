@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxUIModule } from '@swimlane/ngx-ui';
 import { TimeAgoPipe } from 'time-ago-pipe';
 
@@ -25,6 +24,9 @@ import { LayoutComponent } from './layouts/layout/layout.component';
 import { TwoByTwoLayoutComponent } from './layouts/two-by-two-layout/two-by-two-layout.component';
 import { PaginationComponent } from './pagination/pagination.component';
 import { WidgetComponent } from './widget/widget.component';
+import { WidgetHeaderComponent } from './widget-header/widget-header.component';
+import {WidgetDirective} from './widget/widget.directive';
+import {BuildWidgetComponent} from '../widget_modules/build/build-widget/build-widget.component';
 
 @NgModule({
   declarations: [
@@ -47,6 +49,8 @@ import { WidgetComponent } from './widget/widget.component';
     TimeAgoPipe,
     TwoByTwoLayoutComponent,
     WidgetComponent,
+    WidgetHeaderComponent,
+    WidgetDirective
   ],
   entryComponents: [
     ClickListComponent,
@@ -81,7 +85,9 @@ import { WidgetComponent } from './widget/widget.component';
     PaginationComponent,
     ReactiveFormsModule,
     TwoByTwoLayoutComponent,
-    WidgetComponent
+    WidgetComponent,
+    WidgetHeaderComponent,
+    WidgetDirective
   ]
 })
 export class SharedModule { }
