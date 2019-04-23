@@ -23,7 +23,7 @@ export interface Chart {
     colorScheme: any;
 }
 
-export interface Widget{
+export interface Widget {
   component: Type<any>;
-  status : string;
+  status: string;
 }

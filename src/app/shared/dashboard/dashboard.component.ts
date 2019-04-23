@@ -7,15 +7,15 @@ import { TemplatesDirective } from '../templates/templates.directive';
   template: '',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent{
+export class DashboardComponent {
 
   @Input() baseTemplate: Type<any>;
 
   public widgets: Widget[];
 
-  constructor(private componentFactoryResolver: ComponentFactoryResolver, private cdr:ChangeDetectorRef) { }
+  constructor(private componentFactoryResolver: ComponentFactoryResolver, private cdr: ChangeDetectorRef) { }
 
-  loadComponent(templateTag: TemplatesDirective){
+  loadComponent(templateTag: TemplatesDirective) {
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.baseTemplate);
     const viewContainerRef = templateTag.viewContainerRef;
     viewContainerRef.clear();

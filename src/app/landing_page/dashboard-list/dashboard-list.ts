@@ -1,4 +1,4 @@
-import {Type} from "@angular/compiler/src/core";
+import {Type} from '@angular/compiler/src/core';
 
 export interface IDashboards {
   title: string;

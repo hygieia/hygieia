@@ -1,8 +1,8 @@
 
-export interface IDashboardResponse{
+export interface IDashboardResponse {
   data: any;
 }
 
-export interface ITemplate{
+export interface ITemplate {
   template: string;
 }
