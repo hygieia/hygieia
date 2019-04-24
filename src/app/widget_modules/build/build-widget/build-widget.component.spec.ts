@@ -1,10 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { Observable, of } from 'rxjs';
+import { RouterModule } from '@angular/router';
+import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { Observable, of, ReplaySubject } from 'rxjs';
+import { DashboardService } from 'src/app/shared/dashboard.service';
 import { SharedModule } from 'src/app/shared/shared.module';
 
+import { GET_DASHBOARD_MOCK, POST_DASHBOARD_MOCK } from '../../../shared/dashboard.service.mockdata';
+import { BuildConfigFormComponent } from '../build-config-form/build-config-form.component';
 import { BuildService } from '../build.service';
 import { Build } from '../interfaces';
 import { BuildWidgetComponent } from './build-widget.component';
@@ -269,30 +275,60 @@ class MockBuildService {
   }
 }
 
+class MockDashboardService {
+  private dashboardSubject = new ReplaySubject<any>(1);
+
+  public dashboardConfig$ = this.dashboardSubject.asObservable();
+
+  loadDashboard(dashboardId: string) {
+    of(GET_DASHBOARD_MOCK).subscribe(res => this.dashboardSubject.next(res));
+  }
+
+  upsertWidget(dashboardId: string, widgetConfig: any) {
+    return of(POST_DASHBOARD_MOCK);
+  }
+
+  upsertLocally(newComponent: any, newConfig: any) {
+    of(GET_DASHBOARD_MOCK).subscribe(dashboard => this.dashboardSubject.next(dashboard));
+  }
+}
+
+@NgModule({
+  declarations: [BuildConfigFormComponent],
+  imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([]), NgbModule],
+  entryComponents: [
+    BuildConfigFormComponent
+  ]
+})
+class TestModule { }
 
 describe('BuildWidgetComponent', () => {
   let component: BuildWidgetComponent;
   let buildService: BuildService;
+  let dashboardService: DashboardService;
+  let modalService: NgbModal;
   let fixture: ComponentFixture<BuildWidgetComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       providers: [
-        { provide: BuildService, useClass: MockBuildService }
+        { provide: BuildService, useClass: MockBuildService },
+        { provide: DashboardService, useClass: MockDashboardService}
       ],
       imports: [
-        HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule
+        TestModule, HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([])
       ],
-      declarations: [BuildWidgetComponent]
+      declarations: [BuildWidgetComponent],
+      schemas: [NO_ERRORS_SCHEMA]
     })
       .compileComponents();
-  }));
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(BuildWidgetComponent);
     component = fixture.componentInstance;
     buildService = TestBed.get(BuildService);
-  });
+    dashboardService = TestBed.get(DashboardService);
+    modalService = TestBed.get(NgbModal);
+  }));
 
   it('should create', () => {
     fixture.detectChanges();
@@ -304,6 +340,8 @@ describe('BuildWidgetComponent', () => {
     // Mock Date April 1st, 2019
     const baseTime = new Date(2019, 3, 1);
     jasmine.clock().mockDate(baseTime);
+
+    fixture.detectChanges();
     component.ngOnInit();
     expect(component.charts[0].data[0].series.length).toEqual(0);
     expect(component.charts[0].data[1].series.length).toEqual(0);
@@ -315,16 +353,22 @@ describe('BuildWidgetComponent', () => {
     expect(component.charts[3].data[2].value).toEqual(0);
 
     component.ngAfterViewInit();
-    expect(component.charts[0].data[0].series.length).toEqual(14);
-    expect(component.charts[0].data[1].series.length).toEqual(14);
-    expect(component.charts[0].data[0].series[0].value).toEqual(7);
-    expect(component.charts[0].data[1].series[0].value).toEqual(6);
+    component.stopRefreshInterval();
+    buildService.fetchDetails('123', 14).subscribe(result => {
+      component.loadCharts(result);
 
-    expect(component.charts[1].data[0].number).toEqual('708');
+      expect(component.charts[0].data[0].series.length).toEqual(14);
+      expect(component.charts[0].data[1].series.length).toEqual(14);
+      expect(component.charts[0].data[0].series[0].value).toEqual(7);
+      expect(component.charts[0].data[1].series[0].value).toEqual(6);
 
-    expect(component.charts[3].data[0].value).toEqual(0);
-    expect(component.charts[3].data[1].value).toEqual(0);
-    expect(component.charts[3].data[2].value).toEqual(7);
+      expect(component.charts[1].data[0].number).toEqual('708');
+
+      expect(component.charts[3].data[0].value).toEqual(0);
+      expect(component.charts[3].data[1].value).toEqual(0);
+      expect(component.charts[3].data[2].value).toEqual(7);
+    });
+    component.ngOnDestroy();
   });
 });
 

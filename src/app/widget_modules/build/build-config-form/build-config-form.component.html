@@ -1,0 +1,44 @@
+<div class="modal-header">
+  <h4 class="modal-title">Configure Build Widget</h4>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form [formGroup]="buildConfigForm" (ngSubmit)="submitForm()">
+  <div class="modal-body">
+    <div class="container">
+      <div class="form-group">
+        <label for="buildJob">Build Job</label>
+        <input id="buildJob" type="search" class="form-control" [class.is-invalid]="searchFailed" formControlName="buildJob"
+       [ngbTypeahead]="typeAheadResults" [inputFormatter]="getBuildTitle" [resultFormatter]="getBuildTitle" placeholder="Build Job" required/>
+        <span *ngIf="searching">searching...</span>
+        <div class="invalid-feedback" *ngIf="searchFailed">Sorry, suggestions could not be loaded.</div>
+      </div>
+      <div class="form-group">
+        <label for="buildDurationThreshold">Build Duration Threshold</label>
+        <div class="input-group mb-3">
+          <input id="buildDurationThreshold" type="text" class="form-control" placeholder="Build Duration Threshold" aria-label="Build Duration Threshold"
+            aria-describedby="minutes-label" formControlName="buildDurationThreshold" required>
+          <div class="input-group-append">
+            <span class="input-group-text" id="minutes-label">minutes</span>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="consecutive-failure-threshold">Alert Takeover Criteria</label>
+        <div class="input-group mb-3">
+          <input id="consecutive-failure-threshold" type="text" class="form-control" placeholder="Alert Takeover Criteria" aria-label="Alert Takeover Criteria"
+            aria-describedby="consecutive-build-fails" formControlName="consecutiveFailureThreshold" required>
+          <div class="input-group-append">
+            <span class="input-group-text" id="consecutive-build-fails">consecutive build fails</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-success" [disabled]="!buildConfigForm.valid">
+      Save
+    </button>
+  </div>
+</form>

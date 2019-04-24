@@ -49,6 +49,7 @@ describe('TwoByTwoLayoutComponent', () => {
       xAxisLabel: 'Test',
       yAxisLabel: 'Test',
       colorScheme: 'vivid',
+      title: 'Test'
     });
     fixture.detectChanges();
     expect(fixture.componentInstance.chartContainers).toBeDefined();

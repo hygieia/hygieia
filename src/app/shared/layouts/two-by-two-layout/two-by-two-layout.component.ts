@@ -42,12 +42,12 @@ export class TwoByTwoLayoutComponent extends LayoutComponent implements AfterVie
   }
 
   // Support chart resizing based on parent containers.
+  // Size height based on ratio with width of chart.
   resize() {
     const chartContainerArray = this.chartContainers.toArray();
     for (let i = 0; i < chartContainerArray.length && i < this.chartComponents.length; i++) {
-      const width = chartContainerArray[i].nativeElement.offsetWidth;
-      const height = chartContainerArray[i].nativeElement.offsetHeight;
-      this.chartComponents[i].view = [width, height];
+      const width = chartContainerArray[i].nativeElement.getBoundingClientRect().width;
+      this.chartComponents[i].view = [width, width * .5];
     }
     this.cdr.detectChanges();
   }

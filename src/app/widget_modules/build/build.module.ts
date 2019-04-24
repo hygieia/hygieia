@@ -1,18 +1,21 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BuildWidgetComponent } from './build-widget/build-widget.component';
-import { BuildRoutingModule } from './build-routing-module';
+import { NgModule } from '@angular/core';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SharedModule } from 'src/app/shared/shared.module';
-import { TestFormComponent } from './test-form/test-form.component';
+
+import { BuildConfigFormComponent } from './build-config-form/build-config-form.component';
+import { BuildRoutingModule } from './build-routing-module';
+import { BuildWidgetComponent } from './build-widget/build-widget.component';
 import {FormsModule} from '@angular/forms';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 
 @NgModule({
-    declarations: [BuildWidgetComponent],
+    declarations: [BuildWidgetComponent, BuildConfigFormComponent],
+    entryComponents: [BuildConfigFormComponent],
     imports: [
         CommonModule,
         BuildRoutingModule,
+        NgbModule,
         SharedModule,
         FormsModule
     ],

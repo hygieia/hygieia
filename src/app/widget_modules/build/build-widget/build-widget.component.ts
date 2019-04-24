@@ -1,104 +1,122 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ComponentFactoryResolver, OnInit, ViewChild } from '@angular/core';
-import { ClickListComponent } from 'src/app/shared/charts/click-list/click-list.component';
-import { ComboChartComponent } from 'src/app/shared/charts/combo-chart/combo-chart.component';
-import { LineChartComponent } from 'src/app/shared/charts/line-chart/line-chart.component';
-import { NumberCardChartComponent } from 'src/app/shared/charts/number-card-chart/number-card-chart.component';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  ComponentFactoryResolver,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { interval, Subscription } from 'rxjs';
+import { startWith, switchMap } from 'rxjs/operators';
+import { DashboardService } from 'src/app/shared/dashboard.service';
 import { LayoutDirective } from 'src/app/shared/layouts/layout.directive';
 import { TwoByTwoLayoutComponent } from 'src/app/shared/layouts/two-by-two-layout/two-by-two-layout.component';
 import { WidgetComponent } from 'src/app/shared/widget/widget.component';
 
+import { BuildConfigFormComponent } from '../build-config-form/build-config-form.component';
 import { BuildService } from '../build.service';
 import { Build } from '../interfaces';
+import { BUILD_CHARTS } from './build-charts';
 
 @Component({
   selector: 'app-build-widget',
   templateUrl: './build-widget.component.html',
   styleUrls: ['./build-widget.component.scss']
 })
-export class BuildWidgetComponent extends WidgetComponent implements OnInit, AfterViewInit {
+export class BuildWidgetComponent extends WidgetComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  // Refresh interval in seconds
+  private readonly REFRESH_INTERVAL_SECONDS = 15;
 
   private readonly BUILDS_PER_DAY_TIME_RANGE = 14;
   private readonly TOTAL_BUILD_COUNTS_TIME_RANGES = [7, 14];
+
+  private buildTimeThreshold: number;
+
+  // Default build time threshold
   private readonly BUILD_TIME_THRESHOLD = 900000;
+
+  // Reference to the subscription used to refresh the widget
+  private intervalRefreshSubscription: Subscription;
 
   @ViewChild(LayoutDirective) childLayoutTag: LayoutDirective;
 
-    constructor(componentFactoryResolver: ComponentFactoryResolver, cdr: ChangeDetectorRef, private buildService: BuildService) {
-        super(componentFactoryResolver, cdr);
-    }
-
-  ngOnInit() {
-    this.layout = TwoByTwoLayoutComponent;
-    this.charts = [
-      {
-        component: LineChartComponent,
-        data: [
-          {
-            name: 'All Builds',
-            series: []
-          },
-          {
-            name: 'Failed Builds',
-            series: []
-          }
-        ],
-        xAxisLabel: 'Days',
-        yAxisLabel: 'Builds',
-        colorScheme: {
-          domain: ['green', 'red']
-        }
-      },
-      {
-        component: ClickListComponent,
-        data: [],
-        xAxisLabel: '',
-        yAxisLabel: '',
-        colorScheme: {}
-      },
-      {
-        component: ComboChartComponent,
-        data: [
-          [],
-          [{
-            name: 'Threshold Line',
-            series: []
-          }]
-        ],
-        xAxisLabel: 'Days',
-        yAxisLabel: 'Build Duration',
-        colorScheme: {}
-      },
-      {
-        component: NumberCardChartComponent,
-        data: [
-          {
-            name: 'Today',
-            value: 0
-          },
-          {
-            name: 'Last 7 Days',
-            value: 0
-          },
-          {
-            name: 'Last 14 Days',
-            value: 0
-          }
-        ],
-        xAxisLabel: '',
-        yAxisLabel: '',
-        colorScheme: 'nightLights'
-      },
-    ];
+  constructor(componentFactoryResolver: ComponentFactoryResolver,
+              cdr: ChangeDetectorRef,
+              dashboardService: DashboardService,
+              route: ActivatedRoute,
+              private buildService: BuildService,
+              private modalService: NgbModal) {
+    super(componentFactoryResolver, cdr, dashboardService, route);
   }
 
+  // Initialize the widget and set layout and charts.
+  ngOnInit() {
+    this.init();
+    this.widgetId = 'build0';
+    this.layout = TwoByTwoLayoutComponent;
+
+    // Chart configuration moved to external file
+    this.charts = BUILD_CHARTS;
+  }
+
+  // After the view is ready start the refresh interval.
   ngAfterViewInit() {
-    this.buildService.fetchDetails('59f88f5e6a3cf205f312c62e', this.BUILDS_PER_DAY_TIME_RANGE).subscribe(result => {
-      this.generateBuildsPerDay(result);
-      this.generateTotalBuildCounts(result);
-      this.generateAverageBuildDuration(result);
-      this.generateLatestBuilds(result);
-      super.loadComponent(this.childLayoutTag);
+    this.startRefreshInterval();
+  }
+
+  ngOnDestroy() {
+    this.stopRefreshInterval();
+  }
+
+  // Open the config modal and pass it necessary data. When it is closed pass the results to update them.
+  openConfigForm() {
+    const configRef = this.modalService.open(BuildConfigFormComponent);
+    this.getCurrentWidgetConfig().subscribe(result => {
+      configRef.componentInstance.widgetConfig = result;
     });
+    // Take form data, combine with widget config, and pass to update function
+    configRef.result.then((newConfig) => {
+      if (!newConfig) {
+        return;
+      }
+      this.stopRefreshInterval();
+      this.updateWidgetConfig(newConfig);
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
+
+  // Start a subscription to the widget configuration for this widget and refresh the graphs each
+  // cycle.
+  startRefreshInterval() {
+    this.intervalRefreshSubscription = interval(1000 * this.REFRESH_INTERVAL_SECONDS).pipe(
+      startWith(0),
+      switchMap(_ => this.getCurrentWidgetConfig()),
+      switchMap(widgetConfig => {
+        this.buildTimeThreshold = 1000 * 60 * widgetConfig.options.buildDurationThreshold;
+        return this.buildService.fetchDetails(widgetConfig.componentId, this.BUILDS_PER_DAY_TIME_RANGE);
+      })).subscribe(result => {
+        this.loadCharts(result);
+      });
+  }
+
+  // Unsubscribe from the widget refresh observable, which stops widget updating.
+  stopRefreshInterval() {
+    if (this.intervalRefreshSubscription) {
+      this.intervalRefreshSubscription.unsubscribe();
+    }
+  }
+
+  loadCharts(result: Build[]) {
+    this.generateBuildsPerDay(result);
+    this.generateTotalBuildCounts(result);
+    this.generateAverageBuildDuration(result);
+    this.generateLatestBuilds(result);
+    super.loadComponent(this.childLayoutTag);
   }
 
   // *********************** BUILDS PER DAY ****************************
@@ -176,7 +194,8 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
 
   private generateAverageBuildDuration(result: Build[]) {
     const startDate = this.toMidnight(new Date());
-    const threshold = this.BUILD_TIME_THRESHOLD;
+    // Get threshold from the configuration, or use default
+    const threshold = this.buildTimeThreshold ? this.buildTimeThreshold : this.BUILD_TIME_THRESHOLD;
     startDate.setDate(startDate.getDate() - this.BUILDS_PER_DAY_TIME_RANGE + 1);
     const successBuilds = result.filter(build => this.checkBuildAfterDate(build, startDate)
       && this.checkBuildStatus(build, 'Success'));
