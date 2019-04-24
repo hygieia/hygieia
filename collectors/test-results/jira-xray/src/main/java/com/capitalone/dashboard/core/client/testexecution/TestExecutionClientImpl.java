@@ -25,8 +25,8 @@ import com.capitalone.dashboard.repository.TestResultCollectorRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.google.common.collect.Lists;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.CollectionUtils;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -261,7 +261,7 @@ public class TestExecutionClientImpl implements TestExecutionClient {
      */
     private Map<String,Integer> getTestCountStatusMap(Feature testExec, Iterable<TestExecution.Test> tests) {
 
-        Map<String,Integer> map = new HashMap<>(TEST_STATUS_COUNT_ATTRIBUTES.values().length);
+        Map<String,Integer> map = new HashMap<String, Integer>(TEST_STATUS_COUNT_ATTRIBUTES.values().length);
         int failTestCount = 0, passTestCount = 0, skipTestCount = 0, unknownTestCount = 0;
 
         List<TestCase> testCases = new ArrayList<>();
@@ -338,7 +338,7 @@ public class TestExecutionClientImpl implements TestExecutionClient {
     private Set<String> getStoryIds(Collection<FeatureIssueLink> issueLinks) {
         Set<String> tags = new HashSet<>();
         issueLinks.forEach(issueLink -> {
-            if(issueLink.getIssueLinkType().equalsIgnoreCase("tests")) {
+            if("tests".equalsIgnoreCase(issueLink.getIssueLinkType())) {
                 tags.add(issueLink.getTargetIssueKey());
             }
         });
