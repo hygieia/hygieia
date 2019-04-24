@@ -324,6 +324,7 @@ public class TestResultServiceImpl implements TestResultService {
         testResult.setSkippedCount(request.getSkippedCount());
         testResult.setStartTime(request.getStartTime());
         testResult.setSuccessCount(request.getSuccessCount());
+        if(request.getTimestamp() == 0) request.setTimestamp(System.currentTimeMillis());
         testResult.setTimestamp(request.getTimestamp());
         testResult.setTotalCount(request.getTotalCount());
         testResult.setUnknownStatusCount(request.getUnknownStatusCount());
@@ -352,6 +353,7 @@ public class TestResultServiceImpl implements TestResultService {
         testResult.setSkippedCount(request.getSkippedCount());
         testResult.setStartTime(request.getStartTime());
         testResult.setSuccessCount(request.getSuccessCount());
+        if(request.getTimestamp() == 0) request.setTimestamp(System.currentTimeMillis());
         testResult.setTimestamp(request.getTimestamp());
         testResult.setTotalCount(request.getTotalCount());
         testResult.setUnknownStatusCount(request.getUnknownStatusCount());
