@@ -79,7 +79,7 @@ export class WidgetComponent {
           delete widgetConfig.collectorItemId;
         }
         return widgetConfig;
-      }),
+      })
     );
 
     // Take the modified widgetConfig and upsert it.
@@ -114,10 +114,17 @@ export class WidgetComponent {
   // is filtered for this widget and pushed to the local
   // config subject.
   init(): void {
+    this.dashboardService.clearDashboard();
     this.dashboardService.dashboardConfig$.pipe(
-      map(result => this.findWidget(result.widgets)),
-      take(1)
-    ).subscribe(result => this.widgetConfigSubject.next(result));
+      map(result => {
+          const widget = this.findWidget(result.widgets);
+          return widget;
+      })
+    ).subscribe(result => {
+      if (result) {
+        this.widgetConfigSubject.next(result);
+      }
+    });
 
     // TODO: Temporary test routing until dashboard template is integrated
     // Pass the dashboard id to view the build charts for that dashboard

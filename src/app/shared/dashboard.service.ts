@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { cloneDeep, extend } from 'lodash';
 import { Observable, ReplaySubject } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { filter, map, take } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -13,13 +13,17 @@ export class DashboardService {
 
   private dashboardSubject = new ReplaySubject<any>(1);
 
-  public dashboardConfig$ = this.dashboardSubject.asObservable();
+  public dashboardConfig$ = this.dashboardSubject.asObservable().pipe(filter(result => result));
 
   constructor(private http: HttpClient) { }
 
   // Retrieve a new dashboard from the API, and push it to subscribers
   loadDashboard(dashboardId: string) {
     this.http.get(this.dashboardRoute + dashboardId).subscribe(res => this.dashboardSubject.next(res));
+  }
+
+  clearDashboard() {
+    this.dashboardSubject.next(null);
   }
 
   // Clone the passed widget config, and post the updated widget to the API

@@ -6,6 +6,7 @@ import {
   ElementRef,
   QueryList,
   ViewChildren,
+  ViewRef,
 } from '@angular/core';
 import { fromEvent, Observable, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -49,7 +50,9 @@ export class TwoByTwoLayoutComponent extends LayoutComponent implements AfterVie
       const width = chartContainerArray[i].nativeElement.getBoundingClientRect().width;
       this.chartComponents[i].view = [width, width * .5];
     }
-    this.cdr.detectChanges();
+    if (!(this.cdr as ViewRef).destroyed) {
+      this.cdr.detectChanges();
+    }
   }
 
 

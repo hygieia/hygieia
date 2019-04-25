@@ -341,7 +341,6 @@ describe('BuildWidgetComponent', () => {
     const baseTime = new Date(2019, 3, 1);
     jasmine.clock().mockDate(baseTime);
 
-    fixture.detectChanges();
     component.ngOnInit();
     expect(component.charts[0].data[0].series.length).toEqual(0);
     expect(component.charts[0].data[1].series.length).toEqual(0);

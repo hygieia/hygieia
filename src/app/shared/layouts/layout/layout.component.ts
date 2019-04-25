@@ -17,6 +17,9 @@ export class LayoutComponent {
   constructor(private componentFactoryResolver: ComponentFactoryResolver, protected cdr: ChangeDetectorRef) { }
 
   loadComponent(chartTags: QueryList<ChartDirective>) {
+    if (!chartTags) {
+      return;
+    }
     const chartTagArray = chartTags.toArray();
     for (let i = 0; i < chartTagArray.length && i < this.charts.length; i++) {
       const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.charts[i].component);

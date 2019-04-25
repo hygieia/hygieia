@@ -55,12 +55,11 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
 
   // Initialize the widget and set layout and charts.
   ngOnInit() {
-    this.init();
     this.widgetId = 'build0';
     this.layout = TwoByTwoLayoutComponent;
-
     // Chart configuration moved to external file
     this.charts = BUILD_CHARTS;
+    this.init();
   }
 
   // After the view is ready start the refresh interval.
