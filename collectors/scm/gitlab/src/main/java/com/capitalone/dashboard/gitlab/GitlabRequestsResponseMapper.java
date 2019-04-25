@@ -106,7 +106,7 @@ public class GitlabRequestsResponseMapper {
 			request.setClosedAt(new DateTime(closed).getMillis());
 		}
 
-		request.setUserId(gitlabRequest.getAuthorId());
+		request.setUserId(gitlabRequest.getAuthorName());
 		request.setScmUrl(repoUrl);
 		request.setScmBranch(branch);
 		request.setTimestamp(createdTimestamp);
@@ -114,7 +114,7 @@ public class GitlabRequestsResponseMapper {
 		request.setScmCommitLog(gitlabRequest.getTitle());
 		request.setCreatedAt(createdTimestamp);
 		request.setUpdatedAt(new DateTime(gitlabRequest.getUpdatedAt()).getMillis());
-		request.setNumber(gitlabRequest.getId());
+		request.setNumber(gitlabRequest.getIid());
 		request.setRequestType("pull");
 		request.setSourceBranch(gitlabRequest.getSourceBranch());
 		request.setTargetBranch(gitlabRequest.getTargetBranch());
