@@ -148,16 +148,12 @@ public class RegressionTestResultEvaluatorTest {
         TestResult testResult = new TestResult();
         testResult.setType(TestSuiteType.Regression);
         TestCapability testCapability = new TestCapability();
-        testCapability.setFailedTestSuiteCount(0);
-        testCapability.setSkippedTestSuiteCount(0);
-        testCapability.setTotalTestSuiteCount(2);
-        testCapability.setSuccessTestSuiteCount(2);
-
+        
         TestSuite testSuite1 = new TestSuite();
         testSuite1.setSuccessTestCaseCount(18);
-        testSuite1.setFailedTestCaseCount(0);
-        testSuite1.setSkippedTestCaseCount(0);
-        testSuite1.setTotalTestCaseCount(18);
+        testSuite1.setFailedTestCaseCount(1);
+        testSuite1.setSkippedTestCaseCount(1);
+        testSuite1.setTotalTestCaseCount(20);
 
         TestSuite testSuite2 = new TestSuite();
         testSuite2.setSuccessTestCaseCount(20);
@@ -175,15 +171,10 @@ public class RegressionTestResultEvaluatorTest {
         TestResult testResult = new TestResult();
         testResult.setType(TestSuiteType.Regression);
         TestCapability testCapability = new TestCapability();
-        testCapability.setFailedTestSuiteCount(1);
-        testCapability.setSkippedTestSuiteCount(0);
-        testCapability.setTotalTestSuiteCount(1);
-        testCapability.setSuccessTestSuiteCount(0);
-
         TestSuite testSuite = new TestSuite();
         testSuite.setSuccessTestCaseCount(37);
-        testSuite.setFailedTestCaseCount(3);
-        testSuite.setSkippedTestCaseCount(0);
+        testSuite.setFailedTestCaseCount(2);
+        testSuite.setSkippedTestCaseCount(1);
         testSuite.setTotalTestCaseCount(40);
         testCapability.getTestSuites().add(testSuite);
         testResult.getTestCapabilities().add(testCapability);
