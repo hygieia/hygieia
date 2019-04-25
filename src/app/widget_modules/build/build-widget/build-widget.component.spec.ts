@@ -291,6 +291,8 @@ class MockDashboardService {
   upsertLocally(newComponent: any, newConfig: any) {
     of(GET_DASHBOARD_MOCK).subscribe(dashboard => this.dashboardSubject.next(dashboard));
   }
+
+  clearDashboard() {}
 }
 
 @NgModule({
@@ -340,18 +342,7 @@ describe('BuildWidgetComponent', () => {
     // Mock Date April 1st, 2019
     const baseTime = new Date(2019, 3, 1);
     jasmine.clock().mockDate(baseTime);
-
-    component.ngOnInit();
-    expect(component.charts[0].data[0].series.length).toEqual(0);
-    expect(component.charts[0].data[1].series.length).toEqual(0);
-    expect(component.charts[1].data.length).toEqual(0);
-    expect(component.charts[2].data[0].length).toEqual(0);
-    expect(component.charts[2].data[1][0].series.length).toEqual(0);
-    expect(component.charts[3].data[0].value).toEqual(0);
-    expect(component.charts[3].data[1].value).toEqual(0);
-    expect(component.charts[3].data[2].value).toEqual(0);
-
-    component.ngAfterViewInit();
+    fixture.detectChanges();
     component.stopRefreshInterval();
     buildService.fetchDetails('123', 14).subscribe(result => {
       component.loadCharts(result);
