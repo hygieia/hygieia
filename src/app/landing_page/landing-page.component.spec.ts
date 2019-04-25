@@ -1,7 +1,8 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing/';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 
 import { SharedModule } from '../shared/shared.module';
 import { DashboardListComponent } from './dashboard-list/dashboard-list.component';
@@ -11,10 +12,11 @@ import { LandingPageComponent } from './landing-page.component';
 describe('LandingPageComponent', () => {
   let component: LandingPageComponent;
   let fixture: ComponentFixture<LandingPageComponent>;
+  let router: Router;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, SharedModule, HttpClientTestingModule, RouterModule],
+      imports: [ReactiveFormsModule, SharedModule, HttpClientTestingModule, RouterTestingModule.withRoutes([])],
       declarations: [ LandingPageComponent, DashboardListComponent ],
       providers: [DashboardListService]
     })
@@ -24,6 +26,7 @@ describe('LandingPageComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(LandingPageComponent);
     component = fixture.componentInstance;
+    router = TestBed.get(Router);
     fixture.detectChanges();
   });
 

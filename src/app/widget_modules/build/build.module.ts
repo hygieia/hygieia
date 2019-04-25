@@ -17,7 +17,7 @@ import { BuildWidgetComponent } from './build-widget/build-widget.component';
     NgbModule
   ],
   exports: [
-    BuildWidgetComponent
+
   ]
 })
 export class BuildModule { }

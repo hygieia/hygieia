@@ -1,7 +1,8 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 
 import { IPaginationParams } from '../../shared/interfaces';
 import { SharedModule } from '../../shared/shared.module';
@@ -11,10 +12,11 @@ import { DashboardListService } from './dashboard-list.service';
 describe('DashboardListComponent', () => {
   let component: DashboardListComponent;
   let fixture: ComponentFixture<DashboardListComponent>;
+  let router: Router;
   let dashboardListService;
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, SharedModule, HttpClientTestingModule, RouterModule],
+      imports: [ReactiveFormsModule, SharedModule, HttpClientTestingModule, RouterTestingModule.withRoutes([])],
       declarations: [ DashboardListComponent ],
       providers: [ DashboardListService ]
     })
@@ -24,6 +26,7 @@ describe('DashboardListComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DashboardListComponent);
     component = fixture.componentInstance;
+    router = TestBed.get(Router);
     dashboardListService = TestBed.get(DashboardListService);
     fixture.detectChanges();
   });
