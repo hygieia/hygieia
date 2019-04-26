@@ -4,6 +4,9 @@ public class ReportPortalProject extends CollectorItem {
     protected static final String INSTANCE_URL = "instanceUrl";
     protected static final String PROJECT_NAME = "projectName";
     protected static final String PROJECT_ID = "projectId";
+	//private String launchNumber;
+	private String launchId;
+	 
 
     public String getInstanceUrl() {
         return (String) getOptions().get(INSTANCE_URL);
@@ -44,4 +47,26 @@ public class ReportPortalProject extends CollectorItem {
         result = 31 * result + getProjectId().hashCode();
         return result;
     }
+
+	public void setLaunchNumber(String number) {
+		// TODO Auto-generated method stub
+		this.getOptions().put("launchNumber", number);
+		//this.launchNumber=number;
+		
+	}
+	public String getLaunchNumber() {
+		 return (String) getOptions().get("launchNumber");
+	}
+
+	public String getLaunchId() {
+		// TODO Auto-generated method stub
+		return this.launchId;
+	}
+	public void setLaunchId(String launchId) {
+		this.launchId=launchId;
+	}
+	
+	
+
+	
 }

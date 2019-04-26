@@ -9,16 +9,30 @@ import java.util.List;
  * Bean to hold settings specific to the Sonar collector.
  */
 @Component
-@ConfigurationProperties(prefix = "sonar")
+@ConfigurationProperties(prefix = "reportportal")
 public class ReportPortalSettings {
     private String cron;
     private String username;
     private String password;
     private List<String> servers;
-    private List<Double> versions;
-    private List<String> metrics;
+    private String bearerToken;
     private List<String> niceNames;
-
+    private String projectName;
+	//private String instanceUrl;
+    
+    public String getProjectName() {
+    	return projectName;
+    }
+    public void setProjectName(String projectName) {
+    	this.projectName=projectName;
+    }
+    
+    public String getBearerToken() {
+    	return bearerToken;
+    }
+    public void setBearerToken(String bearerToken) {
+    	this.bearerToken=bearerToken;
+    }
     public String getCron() {
         return cron;
     }
@@ -43,13 +57,6 @@ public class ReportPortalSettings {
         this.password = password;
     }
 
-    public List<String> getMetrics() {
-        return metrics;
-    }
-
-    public void setMetrics(List<String> metrics) {
-        this.metrics = metrics;
-    }
 
     public List<String> getServers() {
         return servers;
@@ -58,15 +65,7 @@ public class ReportPortalSettings {
     public void setServers(List<String> servers) {
         this.servers = servers;
     }
-
-    public List<Double> getVersions() {
-        return versions;
-    }
-
-    public void setVersions(List<Double> versions) {
-        this.versions = versions;
-    }
-
+  
     public List<String> getNiceNames() {
         return niceNames;
     }
@@ -74,5 +73,5 @@ public class ReportPortalSettings {
     public void setNiceNames(List<String> niceNames) {
         this.niceNames = niceNames;
     }
-
+	
 }

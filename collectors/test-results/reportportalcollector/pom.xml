@@ -123,10 +123,15 @@
       <artifactId>spring-boot-starter-data-mongodb</artifactId>
     </dependency>
     <dependency>
+    <groupId>org.json</groupId>
+    <artifactId>json</artifactId>
+</dependency>
+    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
+    
   </dependencies>
 
   <groupId>com.capitalone.dashboard</groupId>

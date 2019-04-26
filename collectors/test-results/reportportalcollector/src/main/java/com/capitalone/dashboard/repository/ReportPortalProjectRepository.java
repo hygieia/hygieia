@@ -9,7 +9,7 @@ import java.util.List;
 public interface ReportPortalProjectRepository extends BaseCollectorItemRepository<ReportPortalProject> {
 
     @Query(value="{ 'collectorId' : ?0, options.instanceUrl : ?1, options.projectId : ?2}")
-    ReportPortalProject findSonarProject(ObjectId collectorId, String instanceUrl, String projectId);
+    ReportPortalProject findReportProject(ObjectId collectorId, String instanceUrl, String projectId);
 
     @Query(value="{ 'collectorId' : ?0, options.instanceUrl : ?1, enabled: true}")
     List<ReportPortalProject> findEnabledProjects(ObjectId collectorId, String instanceUrl);
