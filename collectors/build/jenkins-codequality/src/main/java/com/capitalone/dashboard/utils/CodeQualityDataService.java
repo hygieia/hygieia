@@ -4,8 +4,8 @@ import com.capitalone.dashboard.jenkins.JenkinsJob;
 import com.capitalone.dashboard.jenkins.model.JenkinsCodeQualityJob;
 import com.capitalone.dashboard.model.CodeQuality;
 import com.capitalone.dashboard.model.CodeQualityType;
-import com.capitalone.dashboard.model.quality.CodeQualityVisitee;
-import com.capitalone.dashboard.model.quality.CodeQualityVisitor;
+import com.capitalone.dashboard.model.quality.QualityVisitee;
+import com.capitalone.dashboard.model.quality.QualityVisitor;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,7 @@ public class CodeQualityDataService implements CodeQualityService {
 
 
     @Override
-    public boolean storeJob(JenkinsJob jobName, JenkinsCodeQualityJob job, List<? extends CodeQualityVisitee> xmlReportList) {
+    public boolean storeJob(JenkinsJob jobName, JenkinsCodeQualityJob job, List<? extends QualityVisitee> xmlReportList) {
 
         boolean stored=false;
         // not quite how it works. This should collect all the jobs together to form static analysis and unit test
@@ -57,10 +57,10 @@ public class CodeQualityDataService implements CodeQualityService {
         return stored;
     }
 
-    private CodeQuality computeMetricsForJob(List<? extends CodeQualityVisitee> reportArtifacts) {
+    private CodeQuality computeMetricsForJob(List<? extends QualityVisitee> reportArtifacts) {
 
-        CodeQualityVisitor visitor = this.codeQualityConverter.produceVisitor();
-        for (CodeQualityVisitee reportArtifact : reportArtifacts) {
+        QualityVisitor<CodeQuality> visitor = this.codeQualityConverter.produceVisitor();
+        for (QualityVisitee reportArtifact : reportArtifacts) {
             reportArtifact.accept(visitor);
         }
         return visitor.produceResult();

@@ -39,6 +39,14 @@ public class GitHubSettings {
 	@Value("${github.readTimeout:20000}")
 	private int readTimeout;
 
+	private String proxyUrl;
+
+	private String proxyPort;
+
+	private String proxyUser;
+
+	private String proxyPassword;
+
 	public String getHost() {
 		return host;
 	}
@@ -143,4 +151,19 @@ public class GitHubSettings {
 
 	public void setConnectTimeout(int connectTimeout) { this.connectTimeout = connectTimeout; }
 
+	public String getProxyUrl() { return proxyUrl; }
+
+	public void setProxyUrl(String proxyUrl) { this.proxyUrl = proxyUrl; }
+
+	public String getProxyPort() { return proxyPort; }
+
+	public void setProxyPort(String proxyPort) { this.proxyPort = proxyPort; }
+
+	public String getProxyUser() { return proxyUser; }
+
+	public void setProxyUser(String proxyUser) { this.proxyUser = proxyUser; }
+
+	public String getProxyPassword() { return proxyPassword; }
+
+	public void setProxyPassword(String proxyPassword) { this.proxyPassword = proxyPassword; }
 }
