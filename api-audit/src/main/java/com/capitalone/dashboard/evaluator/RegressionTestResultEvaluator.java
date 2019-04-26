@@ -127,7 +127,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
 
         // Clearing for readability in response
         for(TestCapability test: testCapabilities){
-            //test.setTestSuites(null);
+            test.setTestSuites(null);
         }
         testResultsAuditResponse.setTestCapabilities(testCapabilities);
         return testResultsAuditResponse;
