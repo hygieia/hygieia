@@ -1,7 +1,8 @@
-import { Component, ComponentFactoryResolver, ChangeDetectorRef, QueryList } from '@angular/core';
+import { ChangeDetectorRef, Component, ComponentFactoryResolver, QueryList } from '@angular/core';
+
 import { Widget } from '../../interfaces';
-import { WidgetDirective } from '../../widget/widget.directive';
 import { WidgetComponent } from '../../widget/widget.component';
+import { WidgetDirective } from '../../widget/widget.directive';
 
 @Component({
   template: '',

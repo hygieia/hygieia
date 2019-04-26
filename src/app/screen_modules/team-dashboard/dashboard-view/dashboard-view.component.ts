@@ -1,9 +1,12 @@
-import { Component, OnInit, AfterViewInit, ComponentFactoryResolver, ChangeDetectorRef, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ComponentFactoryResolver, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { DashboardService } from 'src/app/shared/dashboard.service';
 import { DashboardComponent } from 'src/app/shared/dashboard/dashboard.component';
 import { TemplatesDirective } from 'src/app/shared/templates/templates.directive';
-import { CaponeTemplateComponent } from '../capone-template/capone-template.component';
 import { BuildWidgetComponent } from 'src/app/widget_modules/build/build-widget/build-widget.component';
-import {ITemplate} from './dashboard-view';
+
+import { CaponeTemplateComponent } from '../capone-template/capone-template.component';
+import { ITemplate } from './dashboard-view';
 
 @Component({
   selector: 'app-dashboard-view',
@@ -13,13 +16,24 @@ import {ITemplate} from './dashboard-view';
 export class DashboardViewComponent extends DashboardComponent implements OnInit, AfterViewInit {
 
   teamDashboard: ITemplate;
+  dashboardId: string;
   @ViewChild(TemplatesDirective) childTemplateTag: TemplatesDirective;
 
-  constructor(componentFactoryResolver: ComponentFactoryResolver, cdr: ChangeDetectorRef) {
+  constructor(componentFactoryResolver: ComponentFactoryResolver,
+              cdr: ChangeDetectorRef,
+              private route: ActivatedRoute,
+              private dashboardService: DashboardService) {
     super(componentFactoryResolver, cdr);
   }
 
   ngOnInit() {
+    this.dashboardService.clearDashboard();
+    console.log(this.route.snapshot);
+    this.dashboardId = this.route.snapshot.paramMap.get('id');
+    console.log(this.dashboardId);
+    // this.dashboardService.loadDashboard('596acb685797b408c8f51e8d');
+    this.dashboardService.loadDashboard(this.dashboardId);
+
     // get template type for dashboard and create template component
     // noinspection TypeScriptValidateTypes
     // noinspection TypeScriptValidateTypes
