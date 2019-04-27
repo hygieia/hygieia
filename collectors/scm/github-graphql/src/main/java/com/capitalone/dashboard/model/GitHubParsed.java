@@ -29,6 +29,11 @@ public class GitHubParsed {
         parse();
     }
 
+    public void updateForRedirect(String redirectedUrl) throws MalformedURLException, HygieiaException {
+        this.url = redirectedUrl;
+        parse();
+    }
+
     private void parse() throws MalformedURLException, HygieiaException {
         if (url.endsWith(".git")) {
             url = url.substring(0, url.lastIndexOf(".git"));

@@ -125,6 +125,20 @@ public class DashboardRemoteServiceTest {
         }
     }
     @Test
+    public void remoteCreateInvalidAndValidUsers() throws IOException, HygieiaException {
+        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/Remote-Request-Create-Invalid-Valid-Users.json");
+
+        Dashboard dashboard = dashboardRemoteService.remoteCreate(request, false);
+        List<Owner> owners = dashboard.getOwners();
+        assertEquals(2, owners.size());
+        Owner owner1 = new Owner("topopal", AuthType.STANDARD);
+        Owner owner2 = new Owner("testuser1", AuthType.STANDARD);
+
+        assert(owners.contains(owner1));
+        assert(owners.contains(owner2));
+    }
+
+    @Test
     public void remoteCreateInvalidApp() throws IOException {
         DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/0-Remote-Update-Repo.json");
         request.getMetaData().setTitle("test1234");

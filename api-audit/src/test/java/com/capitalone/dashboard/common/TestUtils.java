@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.common;
 
+import com.capitalone.dashboard.model.BinaryArtifact;
 import com.capitalone.dashboard.model.CodeQuality;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
@@ -10,6 +11,7 @@ import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.LibraryPolicyResult;
 import com.capitalone.dashboard.model.TestResult;
 import com.capitalone.dashboard.model.Feature;
+import com.capitalone.dashboard.repository.BinaryArtifactRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
@@ -110,5 +112,13 @@ public class TestUtils {
         List<Feature> feature = gson.fromJson(json, new TypeToken<List<Feature>>(){}.getType());
         featureRepository.save(feature);
     }
+
+    public static void loadArtifacts(BinaryArtifactRepository binaryArtifactRepository) throws IOException {
+        Gson gson = GsonUtil.getGson();
+        String json = IOUtils.toString(Resources.getResource("./binaryartifact/binaryartifact.json"));
+        List<BinaryArtifact> binaryArtifact = gson.fromJson(json, new TypeToken<List<BinaryArtifact>>(){}.getType());
+        binaryArtifactRepository.save(binaryArtifact.get(0));
+    }
+
 
 }

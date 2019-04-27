@@ -16,6 +16,8 @@ import com.capitalone.dashboard.status.CodeQualityAuditStatus;
 import com.capitalone.dashboard.status.PerformanceTestAuditStatus;
 import com.capitalone.dashboard.status.LibraryPolicyAuditStatus;
 import com.capitalone.dashboard.status.TestResultAuditStatus;
+
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
@@ -34,12 +36,12 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
-import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Arrays;
-import java.util.stream.Stream;
 import java.util.Optional;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 /**
  * <h1>AuditCollectorUtil</h1>
@@ -53,6 +55,7 @@ public class AuditCollectorUtil {
     private static final String HYGIEIA_AUDIT_URL = "/dashboardReview";
     private static List<AuditResult> auditResults = new ArrayList<>();
     private static final String AUDITTYPES_PARAM  = "CODE_REVIEW,CODE_QUALITY,STATIC_SECURITY_ANALYSIS,LIBRARY_POLICY,TEST_RESULT,PERF_TEST";
+
     private enum AUDIT_PARAMS {title,businessService,businessApplication,beginDate,endDate,auditType};
 
 
@@ -67,6 +70,17 @@ public class AuditCollectorUtil {
     private static final String STR_APITOKENSPACE = "apiToken ";
     private static final String STR_AUTHORIZATION = "Authorization";
     private static final String STR_TRACEABILITY = "traceability";
+    private static final String STR_FEATURE_TEST_RESULT = "featureTestResult";
+    private static final String STR_PERCENTAGE = "percentage";
+    private static final String STR_MANUAL = "Manual";
+    private static final String STR_AUTOMATED = "Automated";
+    private static final String STR_FUNCTIONAL = "Functional";
+    private static final String STR_TYPE = "type";
+    private static final String SUCCESS_COUNT = "successCount";
+    private static final String FAILURE_COUNT = "failureCount";
+    private static final String SKIP_COUNT = "skippedCount";
+    private static final String TOTAL_COUNT = "totalCount";
+
 
 
     /**
@@ -101,6 +115,7 @@ public class AuditCollectorUtil {
 
                 for (Object s : auditJO) {
                     String status = (String) s;
+                    audit.getAuditStatusCodes().add(status);
                     if (CodeReviewAuditStatus.PEER_REVIEW_GHR.name().equalsIgnoreCase(status) ||
                             (CodeReviewAuditStatus.PEER_REVIEW_LGTM_SUCCESS.name().equalsIgnoreCase(status))) {
                         reviewed = true;
@@ -234,13 +249,14 @@ public class AuditCollectorUtil {
         if ((basicAudit = doBasicAuditCheck(jsonArray, global, AuditType.STATIC_SECURITY_ANALYSIS)) != null) {
             return basicAudit;
         }
-        Set<String> auditStatuses = new HashSet<>();
+        Set<String> auditStatuses;
         for (Object o : jsonArray) {
             JSONArray auditJO = (JSONArray) ((JSONObject) o).get(STR_AUDITSTATUSES);
             Optional<Object> urlOptObj = Optional.ofNullable(((JSONObject) o).get(STR_URL));
             urlOptObj.ifPresent(urlObj -> audit.getUrl().add(urlOptObj.get().toString()));
-            for (Object a:auditJO) { auditStatuses.add((String) a); }
+            auditJO.stream().forEach(status -> audit.getAuditStatusCodes().add((String) status));
         }
+        auditStatuses = audit.getAuditStatusCodes();
         if(auditStatuses.contains(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_FAIL.name()) ||
                 auditStatuses.contains(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_FOUND_HIGH.name()) ||
                 auditStatuses.contains(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_FOUND_CRITICAL.name())){
@@ -280,6 +296,7 @@ public class AuditCollectorUtil {
             boolean ok = false;
             for (Object s : auditJO) {
                 String status = (String) s;
+                audit.getAuditStatusCodes().add(status);
                 if (LibraryPolicyAuditStatus.LIBRARY_POLICY_AUDIT_OK.name().equalsIgnoreCase(status)) {
                     ok = true;
                     break;
@@ -302,7 +319,7 @@ public class AuditCollectorUtil {
     /**
      * Get test result audit results
      */
-    private static Audit getTestAudit(JSONArray jsonArray, JSONArray global) {
+    protected static Audit getTestAudit(JSONArray jsonArray, JSONArray global) {
 
         LOGGER.info("NFRR Audit Collector auditing TEST_RESULT");
         Audit audit = new Audit();
@@ -314,30 +331,24 @@ public class AuditCollectorUtil {
         }
         audit.setAuditStatus(AuditStatus.OK);
         audit.setDataStatus(DataStatus.OK);
+        Set<String> auditStatuses;
         for (Object o : jsonArray) {
-            Map tMap = (Map) ((JSONObject) o).get(STR_TRACEABILITY);
-            audit.setTraceability(tMap != null ? tMap : new HashMap());
             JSONArray auditJO = (JSONArray) ((JSONObject) o).get(STR_AUDITSTATUSES);
             Optional<Object> urlOptObj = Optional.ofNullable(((JSONObject) o).get(STR_URL));
             urlOptObj.ifPresent(urlObj -> audit.getUrl().add(urlOptObj.get().toString()));
-            auditJO.stream().map(aj -> audit.getAuditStatusCodes().add((String) aj));
-            boolean ok = false;
-            for (Object s : auditJO) {
-                String status = (String) s;
-                if (TestResultAuditStatus.TEST_RESULT_AUDIT_OK.name().equalsIgnoreCase(status)) {
-                    ok = true;
-                    break;
-                }
-                if (TestResultAuditStatus.TEST_RESULT_MISSING.name().equalsIgnoreCase(status)) {
-                    audit.setAuditStatus(AuditStatus.NA);
-                    audit.setDataStatus(DataStatus.NO_DATA);
-                    return audit;
-                }
-            }
-            if (!ok) {
-                audit.setAuditStatus(AuditStatus.FAIL);
-                return audit;
-            }
+            auditJO.stream().forEach(status -> audit.getAuditStatusCodes().add((String) status));
+        }
+        audit.setOptions(getTestAuditOptions(jsonArray));
+        auditStatuses = audit.getAuditStatusCodes();
+        if (auditStatuses.contains(TestResultAuditStatus.TEST_RESULT_AUDIT_FAIL.name())){
+            audit.setAuditStatus(AuditStatus.FAIL);
+            audit.setDataStatus(DataStatus.OK);
+        } else if (auditStatuses.contains(TestResultAuditStatus.TEST_RESULT_AUDIT_OK.name())) {
+            audit.setAuditStatus(AuditStatus.OK);
+            audit.setDataStatus(DataStatus.OK);
+        }else{
+            audit.setAuditStatus(AuditStatus.NA);
+            audit.setDataStatus(DataStatus.NO_DATA);
         }
         return audit;
     }
@@ -366,6 +377,7 @@ public class AuditCollectorUtil {
             boolean ok = false;
             for (Object s : auditJO) {
                 String status = (String) s;
+                audit.getAuditStatusCodes().add(status);
                 if (PerformanceTestAuditStatus.PERF_RESULT_AUDIT_OK.name().equalsIgnoreCase(status)) {
                     ok = true;
                     break;
@@ -496,7 +508,8 @@ public class AuditCollectorUtil {
                 Audit audit = auditMap.get(auditType);
                 AuditResult auditResult = new AuditResult(dashboardId, dashboardTitle, ownerDept, appService, appBusApp, appServiceOwner, appBusAppOwner,
                         auditType, audit.getDataStatus().name(), audit.getAuditStatus().name(), String.join(",", audit.getAuditStatusCodes()),
-                        String.join(",", audit.getUrl()), audit.getTraceability(), timestamp);
+                        String.join(",", audit.getUrl()), timestamp);
+                auditResult.setOptions(audit.getOptions() != null ? audit.getOptions() : null);
                 auditResults.add(auditResult);
             }
         });
@@ -522,5 +535,57 @@ public class AuditCollectorUtil {
      */
     public static void clearAuditResults() {
         auditResults.clear();
+    }
+
+    /**
+     * Get test audit only optional data
+     * @return
+     * @param jsonArray
+     */
+    public static Map<String,Object> getTestAuditOptions(JSONArray jsonArray) {
+        Map<String, Object> options = new HashMap<>();
+
+        Supplier<Stream> manualTestStream = () -> jsonArray.stream()
+                .filter(jObj-> ((JSONObject)jObj).get(STR_TYPE).toString().equalsIgnoreCase(STR_MANUAL));
+        Supplier<Stream>  automatedTestStream = () -> jsonArray.stream()
+                .filter(jObj-> ((JSONObject)jObj).get(STR_TYPE).toString().equalsIgnoreCase(STR_FUNCTIONAL));
+
+        Map<String, Double> traceability = new HashMap<>();
+        traceability.put(STR_AUTOMATED, getAvgTracePercent(automatedTestStream.get()));
+        traceability.put(STR_MANUAL, getAvgTracePercent(manualTestStream.get()));
+        options.put(STR_TRACEABILITY, traceability);
+
+        Map<String, Map> featureTestResult = new HashMap<>();
+        Map featureAutoTestResultMap = new HashMap();
+        Map featureManualTestResultMap = new HashMap();
+
+        featureAutoTestResultMap.put(SUCCESS_COUNT, getFeatureTestCount(SUCCESS_COUNT, automatedTestStream.get()));
+        featureAutoTestResultMap.put(FAILURE_COUNT, getFeatureTestCount(FAILURE_COUNT, automatedTestStream.get()));
+        featureAutoTestResultMap.put(SKIP_COUNT, getFeatureTestCount(SKIP_COUNT, automatedTestStream.get()));
+        featureAutoTestResultMap.put(TOTAL_COUNT, getFeatureTestCount(TOTAL_COUNT, automatedTestStream.get()));
+
+        featureManualTestResultMap.put(SUCCESS_COUNT, getFeatureTestCount(SUCCESS_COUNT, manualTestStream.get()));
+        featureManualTestResultMap.put(FAILURE_COUNT, getFeatureTestCount(FAILURE_COUNT, manualTestStream.get()));
+        featureManualTestResultMap.put(SKIP_COUNT, getFeatureTestCount(SKIP_COUNT, manualTestStream.get()));
+        featureManualTestResultMap.put(TOTAL_COUNT, getFeatureTestCount(TOTAL_COUNT, manualTestStream.get()));
+
+        featureTestResult.put(STR_AUTOMATED, featureAutoTestResultMap);
+        featureTestResult.put(STR_MANUAL, featureManualTestResultMap);
+        options.put(STR_FEATURE_TEST_RESULT, featureTestResult);
+        return options;
+    }
+
+    private static Integer getFeatureTestCount(String countType, Stream stream) {
+        return stream
+                .map(jObj -> ((JSONObject)jObj).get(STR_FEATURE_TEST_RESULT))
+                .map(featureTestResult -> ((JSONObject)featureTestResult).get(countType))
+                .mapToInt(n -> Integer.valueOf(n.toString())).sum();
+    }
+
+    private static Double getAvgTracePercent(Stream stream) {
+        return stream
+                .map(jObj -> ((JSONObject)jObj).get(STR_TRACEABILITY))
+                .map(traceability -> ((JSONObject)traceability).get(STR_PERCENTAGE))
+                .mapToDouble(s-> Double.valueOf(s.toString())).average().orElse(NumberUtils.DOUBLE_ZERO);
     }
 }

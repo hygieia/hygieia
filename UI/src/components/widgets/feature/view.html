@@ -3,7 +3,7 @@
         <!-- Scrum Widget -->
         <div id="scrum-widget-view" class="col-lg-12 col-sm-6 animate-show" ng-show="ctrl.showStatus.scrum">
             <div class="widget">
-                <div hide-empty="['{{ ctrl.projectName }}']">
+                <div hide-empty="['{{ ctrl.projectName }}', '{{ ctrl.teamName }}']">
                     <div class="widget-body">
                         <div class="col-xs-9.5 text-standard-sm dash-overflow">
                             Project: <em>{{ctrl.projectName}}</em>
@@ -16,8 +16,12 @@
                 <br>
                 <div>
                     <div class="widget-heading">Iteration:
-                        <button id="next-btn" class="pull-right btn-default btn-xm active" ng-show="ctrl.numberOfSprintTypes === 2" ng-click="ctrl.animateAgileView(true)"><i class="fa fa-fast-forward"></i></button>
-                        <button id="{{ctrl.pausePlaySymbol}}-btn" class="pull-right btn-default btn-xm active" ng-show="ctrl.numberOfSprintTypes === 2" ng-click="ctrl.pauseAgileView()" ng-model="ctrl.pausePlaySymbol"><i class="fa fa-{{ctrl.pausePlaySymbol}}"></i></button>
+                        <button id="next-btn" class="pull-right btn-default btn-xm active"
+                                ng-show="ctrl.numberOfSprintTypes === 2" ng-click="ctrl.animateAgileView(true)"><i
+                                class="fa fa-fast-forward"></i></button>
+                        <button id="{{ctrl.pausePlaySymbol}}-btn" class="pull-right btn-default btn-xm active"
+                                ng-show="ctrl.numberOfSprintTypes === 2" ng-click="ctrl.pauseAgileView()"
+                                ng-model="ctrl.pausePlaySymbol"><i class="fa fa-{{ctrl.pausePlaySymbol}}"></i></button>
                     </div>
                     <div class="widget-body" fit-text=".build-summary-count > span" fit-text-max="40">
                         <div hide-empty="['{{ ctrl.iterations[0].name }}']">
@@ -27,7 +31,7 @@
                                 </div>
                                 <div class="col-xs-9.5 text-lg dash-overflow feature-link"
                                      ng-if="iteration.url !== undefined && iteration.url !== null && iteration.url !== ''">
-                                    <a ng-href="{{::iteration.url}}" target="_blank">{{iteration.name}}</a>
+                                    <a ng-href="{{::iteration.url}}" target="_blank" rel="noopener noreferrer">{{iteration.name}}</a>
                                 </div>
                                 <div class="col-xs-9.5 text-lg dash-overflow"
                                      ng-if="iteration.url === undefined || iteration.url === null || iteration.url === ''">
@@ -73,56 +77,65 @@
                         <div class="dash-row" ng-repeat="epic in ctrl.epicStoryPoints | limitTo:ctrl.featureLimit">
                             <div class="pull-right">{{epic.sEstimate}}</div>
 
-                            <div class="dash-overflow feature-link" ng-if="epic.sEpicUrl !== undefined && epic.sEpicUrl !== null && epic.sEpicUrl !== ''">
-                                <div class="dash-overflow" ng-if="epic.sEpicAssetState !== 'Done' && issue.sEpicAssetState !== 'accepted'">
-                                <a ng-href="{{::epic.sEpicUrl}}" target="_blank">{{epic.sEpicName}}</a>
+                            <div class="dash-overflow feature-link"
+                                 ng-if="epic.sEpicUrl !== undefined && epic.sEpicUrl !== null && epic.sEpicUrl !== ''">
+                                <div class="dash-overflow"
+                                     ng-if="epic.sEpicAssetState !== 'Done' && issue.sEpicAssetState !== 'accepted'">
+                                    <a ng-href="{{::epic.sEpicUrl}}" target="_blank" rel="noopener noreferrer">{{epic.sEpicName}}</a>
+                                </div>
+                                <div class="dash-overflow issue-done"
+                                     ng-if="epic.sEpicAssetState === 'Done' || epic.sEpicAssetState === 'accepted'">
+                                    <a ng-href="{{::epic.sEpicUrl}}" target="_blank" rel="noopener noreferrer">{{epic.sEpicName}}</a>
+                                </div>
                             </div>
-                            <div class="dash-overflow issue-done" ng-if="epic.sEpicAssetState === 'Done' || epic.sEpicAssetState === 'accepted'">
-                                <a ng-href="{{::epic.sEpicUrl}}" target="_blank">{{epic.sEpicName}}</a>
+                        </div>
+                        <div class="dash-overflow"
+                             ng-if="epic.sEpicUrl === undefined || epic.sEpicUrl === null || epic.sEpicUrl === ''">
+                            <div class="dash-overflow"
+                                 ng-if="epic.sEpicAssetState !== 'Done' && epic.sEpicAssetState !== 'accepted'">
+                                {{epic.sEpicName}}
                             </div>
-						</div>
-					</div>
-                    <div class="dash-overflow" ng-if="epic.sEpicUrl === undefined || epic.sEpicUrl === null || epic.sEpicUrl === ''">
-						<div class="dash-overflow" ng-if="epic.sEpicAssetState !== 'Done' && epic.sEpicAssetState !== 'accepted'">{{epic.sEpicName}}</div>
-						<div class="dash-overflow issue-done" ng-if="epic.sEpicAssetState === 'Done' || epic.sEpicAssetState === 'accepted'">{{epic.sEpicName}}</div>
-                    </div>
+                            <div class="dash-overflow issue-done"
+                                 ng-if="epic.sEpicAssetState === 'Done' || epic.sEpicAssetState === 'accepted'">
+                                {{epic.sEpicName}}
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="widget-body" ng-if="ctrl.listType === 'issues'">
+            <div class="widget-body" ng-if="ctrl.listType === 'issues'">
 
-                    <div class="widget-heading">Issues in Progress
-                        <button class="pull-right btn-default btn-xm active" ng-show="ctrl.showFeatureLimitButton"
-                                ng-click="ctrl.setFeatureLimit()" ng-init="ctrl.featureLimit=4">+/-
-                        </button>
-                    </div>
-                    <div hide-empty="['{{ ctrl.issueStoryPoints[0] }}']">
-                        <div class="dash-row" ng-repeat="issue in ctrl.issueStoryPoints | limitTo:ctrl.featureLimit">
-                            <div class="pull-right" ng-if="ctrl.estimateMetricType === 'storypoints'">
-                                {{issue.sEstimate}}
+                <div class="widget-heading">Issues in Progress
+                    <button class="pull-right btn-default btn-xm active" ng-show="ctrl.showFeatureLimitButton"
+                            ng-click="ctrl.setFeatureLimit()" ng-init="ctrl.featureLimit=4">+/-
+                    </button>
+                </div>
+                <div hide-empty="['{{ ctrl.issueStoryPoints[0] }}']">
+                    <div class="dash-row" ng-repeat="issue in ctrl.issueStoryPoints | limitTo:ctrl.featureLimit">
+                        <div class="pull-right" ng-if="ctrl.estimateMetricType === 'storypoints'">
+                            {{issue.sEstimate}}
+                        </div>
+                        <div class="pull-right" ng-if="ctrl.estimateMetricType === 'hours'">
+                            {{issue.sEstimateTime}}
+                        </div>
+                        <div class="feature-link"
+                             ng-if="issue.sUrl !== undefined && issue.sUrl !== null && issue.sUrl !== ''">
+                            <div class="dash-overflow"
+                                 ng-if="issue.sStatus !== 'done' && issue.sStatus !== 'accepted'">
+                                <a ng-href="{{::issue.sUrl}}" target="_blank" rel="noopener noreferrer">{{issue.sName}}</a>
                             </div>
-                            <div class="pull-right" ng-if="ctrl.estimateMetricType === 'hours'">
-                                {{issue.sEstimateTime}}
+                            <div class="dash-overflow issue-done"
+                                 ng-if="issue.sStatus === 'done' || issue.sStatus === 'accepted'">
+                                <a ng-href="{{::issue.sUrl}}" target="_blank" rel="noopener noreferrer">{{issue.sName}}</a>
                             </div>
-                            <div class="feature-link"
-                                 ng-if="issue.sUrl !== undefined && issue.sUrl !== null && issue.sUrl !== ''">
-                                <div class="dash-overflow"
-                                     ng-if="issue.sStatus !== 'done' && issue.sStatus !== 'accepted'">
-                                    <a ng-href="{{::issue.sUrl}}" target="_blank">{{issue.sName}}</a>
-                                </div>
-                                <div class="dash-overflow issue-done"
-                                     ng-if="issue.sStatus === 'done' || issue.sStatus === 'accepted'">
-                                    <a ng-href="{{::issue.sUrl}}" target="_blank">{{issue.sName}}</a>
-                                </div>
+                        </div>
+                        <div ng-if="issue.sUrl === undefined || issue.sUrl === null || issue.sUrl === ''">
+                            <div class="dash-overflow"
+                                 ng-if="issue.sStatus !== 'done' && issue.sStatus !== 'accepted'">{{issue.sName}}
                             </div>
-                            <div ng-if="issue.sUrl === undefined || issue.sUrl === null || issue.sUrl === ''">
-                                <div class="dash-overflow"
-                                     ng-if="issue.sStatus !== 'done' && issue.sStatus !== 'accepted'">{{issue.sName}}
-                                </div>
-                                <div class="dash-overflow issue-done"
-                                     ng-if="issue.sStatus === 'done' || issue.sStatus === 'accepted'">{{issue.sName}}
-                                </div>
+                            <div class="dash-overflow issue-done"
+                                 ng-if="issue.sStatus === 'done' || issue.sStatus === 'accepted'">{{issue.sName}}
                             </div>
                         </div>
                     </div>
@@ -133,7 +146,7 @@
         <!-- Kanban Widget -->
         <div id="kanban-widget-view" class="col-lg-12 col-sm-6 animate-show" ng-show="ctrl.showStatus.kanban">
             <div class="widget">
-                <div hide-empty="['{{ ctrl.projectName }}']">
+                <div hide-empty="['{{ ctrl.projectName }}', '{{ ctrl.teamName }}']">
                     <div class="widget-body">
                         <div class="col-xs-9.5 text-standard-sm dash-overflow">
                             Project: <em>{{ctrl.projectName}}</em>
@@ -146,8 +159,12 @@
                 <br>
                 <div>
                     <div class="widget-heading">Iteration:
-                        <button id="next-btn" class="pull-right btn-default btn-xm active" ng-show="ctrl.numberOfSprintTypes === 2" ng-click="ctrl.animateAgileView(true)"><i class="fa fa-fast-forward"></i></button>
-                        <button id="{{ctrl.pausePlaySymbol}}-btn" class="pull-right btn-default btn-xm active" ng-show="ctrl.numberOfSprintTypes === 2" ng-click="ctrl.pauseAgileView()" ng-model="ctrl.pausePlaySymbol"><i class="fa fa-{{ctrl.pausePlaySymbol}}"></i></button>
+                        <button id="next-btn" class="pull-right btn-default btn-xm active"
+                                ng-show="ctrl.numberOfSprintTypes === 2" ng-click="ctrl.animateAgileView(true)"><i
+                                class="fa fa-fast-forward"></i></button>
+                        <button id="{{ctrl.pausePlaySymbol}}-btn" class="pull-right btn-default btn-xm active"
+                                ng-show="ctrl.numberOfSprintTypes === 2" ng-click="ctrl.pauseAgileView()"
+                                ng-model="ctrl.pausePlaySymbol"><i class="fa fa-{{ctrl.pausePlaySymbol}}"></i></button>
                     </div>
                     <div class="widget-body" fit-text=".build-summary-count > span" fit-text-max="40">
                         <div hide-empty="['{{ ctrl.iterationsKanban[0] }}']">
@@ -194,7 +211,7 @@
                             <div class="pull-right">{{epic.sEstimate}}</div>
                             <div class="dash-overflow feature-link"
                                  ng-if="epic.sEpicUrl !== undefined && epic.sEpicUrl !== null && epic.sEpicUrl !== ''">
-                                <a ng-href="{{::epic.sEpicUrl}}" target="_blank">{{epic.sEpicName}}</a>
+                                <a ng-href="{{::epic.sEpicUrl}}" target="_blank" rel="noopener noreferrer">{{epic.sEpicName}}</a>
                             </div>
                             <div class="dash-overflow"
                                  ng-if="epic.sEpicUrl === undefined || epic.sEpicUrl === null || epic.sEpicUrl === ''">
@@ -225,11 +242,11 @@
                                  ng-if="issue.sUrl !== undefined && issue.sUrl !== null && issue.sUrl !== ''">
                                 <div class="dash-overflow"
                                      ng-if="issue.sStatus !== 'done' && issue.sStatus !== 'accepted'">
-                                    <a ng-href="{{::issue.sUrl}}" target="_blank">{{issue.sName}}</a>
+                                    <a ng-href="{{::issue.sUrl}}" target="_blank" rel="noopener noreferrer">{{issue.sName}}</a>
                                 </div>
                                 <div class="dash-overflow issue-done"
                                      ng-if="issue.sStatus === 'done' || issue.sStatus === 'accepted'">
-                                    <a ng-href="{{::issue.sUrl}}" target="_blank">{{issue.sName}}</a>
+                                    <a ng-href="{{::issue.sUrl}}" target="_blank" rel="noopener noreferrer">{{issue.sName}}</a>
                                 </div>
                             </div>
                             <div ng-if="issue.sUrl === undefined || issue.sUrl === null || issue.sUrl === ''">

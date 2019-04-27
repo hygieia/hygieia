@@ -23,6 +23,7 @@
         ],
         "lastUpdated": 0,
         "lastExecutionTime": 1522623841000,
+        "auditEntity": {},
         "result": [
           {
             "testName": "paribus-retail:Default-Jmeter-3.3",

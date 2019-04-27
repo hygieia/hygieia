@@ -1,6 +1,9 @@
 package com.capitalone.dashboard.collector;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.GitHubRepo;
+import com.capitalone.dashboard.model.GitHubParsed;
+import com.capitalone.dashboard.collector.DefaultGitHubClient.RedirectedStatus;
 import com.capitalone.dashboard.util.Supplier;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestOperations;
 
+import java.net.MalformedURLException;
 import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
@@ -27,7 +31,6 @@ public class DefaultGitHubClientTest {
     private GitHubSettings settings;
     private DefaultGitHubClient defaultGitHubClient;
     private static final String URL_USER = "http://mygithub.com/api/v3/users/";
-
 
     @Before
     public void init() {
@@ -91,6 +94,33 @@ public class DefaultGitHubClientTest {
         String ldapUser = defaultGitHubClient.getLDAPDN(getGitRepo(),user);
         assertEquals(ldapUser, "");
         assertEquals(defaultGitHubClient.getLdapMap().containsKey(user), false);
+    }
+
+    @Test
+    public void testCheckForRedirectedRepo() throws MalformedURLException, HygieiaException {
+        GitHubRepo repo = getGitRepo();
+        GitHubParsed gitHubParsed = new GitHubParsed(repo.getRepoUrl());
+
+        String notRedirectedBody = "{\"html_url\": \"" + repo.getRepoUrl() + "\"}";
+
+        String url = gitHubParsed.getBaseApiUrl() + "repos/" + gitHubParsed.getOrgName() + "/" + gitHubParsed.getRepoName();
+        when(rest.exchange(eq(url), eq(HttpMethod.GET),
+                eq(null), eq(String.class)))
+                .thenReturn(new ResponseEntity<>(notRedirectedBody, HttpStatus.OK));
+
+        RedirectedStatus status = defaultGitHubClient.checkForRedirectedRepo(repo);
+        assertEquals(status.isRedirected(), false);
+
+        String redirectedRepoUrl = "http://mygithub.com/user/redirectedrepo";
+        String redirectedBody = "{\"html_url\": \"" + redirectedRepoUrl + "\"}";
+
+        when(rest.exchange(eq(url), eq(HttpMethod.GET),
+            eq(null), eq(String.class)))
+            .thenReturn(new ResponseEntity<>(redirectedBody, HttpStatus.OK));
+
+        status = defaultGitHubClient.checkForRedirectedRepo(repo);
+        assertEquals(status.isRedirected(), true);
+        assertEquals(status.getRedirectedUrl(), redirectedRepoUrl);
     }
 
     @Test
