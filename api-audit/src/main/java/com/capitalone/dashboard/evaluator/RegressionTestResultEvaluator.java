@@ -367,8 +367,13 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
      * @return
      */
     private double getTestCasePassPercent(List<TestCapability> testCapabilities) {
-        double testCaseSuccessCount = testCapabilities.stream().mapToInt(TestCapability::getSuccessTestSuiteCount).sum();
-        double totalTestCaseCount = testCapabilities.stream().mapToInt(TestCapability::getTotalTestSuiteCount).sum();
+        double testCaseSuccessCount = testCapabilities.stream().mapToDouble(testCapability ->
+             testCapability.getTestSuites().parallelStream().mapToDouble(TestSuite::getSuccessTestCaseCount).sum()
+        ).sum();
+        double totalTestCaseCount = testCapabilities.stream().mapToDouble(testCapability ->
+                testCapability.getTestSuites().parallelStream().mapToDouble(TestSuite::getTotalTestCaseCount).sum()
+        ).sum();
+
         return (testCaseSuccessCount/totalTestCaseCount) * 100;
     }
 
@@ -382,8 +387,13 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
      * @return
      */
     public boolean isAllTestCasesSkipped(List<TestCapability> testCapabilities) {
-        int totalTestCaseCount = testCapabilities.stream().mapToInt(TestCapability::getTotalTestSuiteCount).sum();
-        int testCaseSkippedCount = testCapabilities.stream().mapToInt(TestCapability::getSkippedTestSuiteCount).sum();
+        int totalTestCaseCount = testCapabilities.stream().mapToInt(testCapability ->
+                testCapability.getTestSuites().parallelStream().mapToInt(TestSuite::getTotalTestCaseCount).sum()
+        ).sum();
+        int testCaseSkippedCount = testCapabilities.stream().mapToInt(testCapability ->
+                testCapability.getTestSuites().parallelStream().mapToInt(TestSuite::getSkippedTestCaseCount).sum()
+        ).sum();
+
         boolean isSkippedHighPriority = settings.getTestResultSkippedPriority().equalsIgnoreCase(PRIORITY_HIGH);
 
         if ((testCaseSkippedCount >= totalTestCaseCount) && isSkippedHighPriority){
