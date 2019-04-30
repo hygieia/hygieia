@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { DashboardService } from 'src/app/shared/dashboard.service';
 import { DashboardComponent } from 'src/app/shared/dashboard/dashboard.component';
 import { TemplatesDirective } from 'src/app/shared/templates/templates.directive';
+import { PlaceholderWidgetComponent } from 'src/app/shared/widget/placeholder-widget/placeholder-widget.component';
 import { BuildWidgetComponent } from 'src/app/widget_modules/build/build-widget/build-widget.component';
 
 import { CaponeTemplateComponent } from '../capone-template/capone-template.component';
@@ -43,7 +44,7 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
     // noinspection TypeScriptValidateTypes
     this.widgets = [
       {
-        component: BuildWidgetComponent,
+        component: PlaceholderWidgetComponent,
         status: 'Success'
       },
       {
@@ -52,19 +53,19 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
       }
       ,
       {
-        component: BuildWidgetComponent,
+        component: PlaceholderWidgetComponent,
         status: 'Success'
       },
       {
-        component: BuildWidgetComponent,
+        component: PlaceholderWidgetComponent,
         status: 'Success'
       },
       {
-        component: BuildWidgetComponent,
+        component: PlaceholderWidgetComponent,
         status: 'Success'
       },
       {
-        component: BuildWidgetComponent,
+        component: PlaceholderWidgetComponent,
         status: 'Success'
       }
     ];

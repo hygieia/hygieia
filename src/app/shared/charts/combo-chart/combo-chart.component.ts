@@ -17,10 +17,11 @@ export class ComboChartComponent extends ChartComponent {
   showYAxis = true;
   gradient = false;
   showLegend = false;
-  showXAxisLabel = true;
-  showYAxisLabel = true;
+  showXAxisLabel = false;
+  showYAxisLabel = false;
   trimYAxisTicks = false;
   yAxisTickFormatting: (val: number) => string = this.formatToMinute;
+  xAxisTickFormatting: (val: Date) => string = this.formatToDayAndMonth;
 
   lineChartScheme = {
     domain: ['gray']
@@ -34,5 +35,9 @@ export class ComboChartComponent extends ChartComponent {
     const minutes = Math.floor(val / 60000);
     const seconds = ((val % 60000) / 1000);
     return (seconds === 60 ? (minutes + 1) + ':00' : minutes + ':' + (seconds < 10 ? '0' : '') + seconds.toFixed(0));
+  }
+
+  formatToDayAndMonth(val: Date): string {
+    return (val.getMonth() + 1) + '/' + val.getDate();
   }
 }

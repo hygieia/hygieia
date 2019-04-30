@@ -26,6 +26,7 @@ import { TwoByTwoLayoutComponent } from './layouts/two-by-two-layout/two-by-two-
 import { PaginationComponent } from './pagination/pagination.component';
 import { BaseTemplateComponent } from './templates/base-template/base-template.component';
 import { TemplatesDirective } from './templates/templates.directive';
+import { PlaceholderWidgetComponent } from './widget/placeholder-widget/placeholder-widget.component';
 import { WidgetComponent } from './widget/widget.component';
 import { WidgetDirective } from './widget/widget.directive';
 
@@ -34,10 +35,10 @@ import { WidgetDirective } from './widget/widget.directive';
     ChartComponent, LayoutDirective, LineChartComponent, NumberCardChartComponent,
     LineAndBarChartComponent, ComboChartComponent, ComboSeriesVerticalComponent, ClickListComponent,
     TimeAgoPipe, PaginationComponent, DashboardComponent, TemplatesDirective, WidgetDirective, BaseTemplateComponent,
-     CaponeTemplateComponent, BuildWidgetComponent, BuildConfigFormComponent],
+     CaponeTemplateComponent, BuildWidgetComponent, BuildConfigFormComponent, PlaceholderWidgetComponent],
   entryComponents: [TwoByTwoLayoutComponent, LineChartComponent, NumberCardChartComponent,
     LineAndBarChartComponent, ComboChartComponent, ClickListComponent, CaponeTemplateComponent, BuildWidgetComponent,
-    BuildConfigFormComponent],
+    BuildConfigFormComponent, PlaceholderWidgetComponent],
   imports: [
     CommonModule,
     ReactiveFormsModule,
