@@ -65,7 +65,7 @@ public class DefaultReportPortalClient implements ReportPortalClient {
     @Override
     public List<ReportPortalProject> getProjectData(String instanceUrl,String projectName) {
         List<ReportPortalProject> projects = new ArrayList<>();
-        String url = instanceUrl + URL_RESOURCES + projectName +"/launch";
+        String url = instanceUrl + URL_RESOURCES + projectName +"/launch/latest?page.sort=name&page.size=100";
         
         try {
 
