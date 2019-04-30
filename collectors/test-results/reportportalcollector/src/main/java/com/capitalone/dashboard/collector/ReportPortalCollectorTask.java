@@ -111,23 +111,41 @@ public class ReportPortalCollectorTask extends CollectorTask<ReportPortalCollect
 
     private void updateReportInfo(List<ReportPortalProject> projects, ReportPortalCollector collector,String instanceUrl) {
 		// TODO Auto-generated method stub
-    	List<ReportResult> allTests=new ArrayList<>();
-    	
+    	int count=0;
+    	long start = System.currentTimeMillis();
+    	List<ReportResult> newTests=new ArrayList<>();
+    	List<ReportResult> updateTests=new ArrayList<>();
     	for(ReportPortalProject project: projects) {
+    		
+        	
     		String launchId=(String) project.getOptions().get("id");
     		List<ReportResult> tests= reportClient.getTestData(collector,launchId,instanceUrl);
     		for(ReportResult test:tests) {
-    			if(reportRepository.findBytestId(test.getTestId())==null)
-    				allTests.add(test);
+    			Map<String, Object> results=test.getResults();
+    			ReportResult foundTest=reportRepository.findBytestId(test.getTestId());
+    			if(foundTest==null) {
+    				newTests.add(test);
+    				count++;
+    			}		
     			else {
     				//updating test info
+    				foundTest.setResults(results);
+    				updateTests.add(foundTest);
     			}
-    					
+    			
     		}
     		
     	}
-    	log("Fetched Tests",allTests.size());
-    	reportRepository.save(allTests);
+    	//save all in one shot
+        if (!CollectionUtils.isEmpty(newTests)) {
+            reportRepository.save(newTests);
+        }
+        if (!CollectionUtils.isEmpty(updateTests)) {
+            reportRepository.save(updateTests);
+        }		
+        
+        log("New Tests", start, count);
+    	
 	}
 
 	
@@ -139,6 +157,7 @@ public class ReportPortalCollectorTask extends CollectorTask<ReportPortalCollect
         List<ReportPortalProject> updateProjects = new ArrayList<>();
         for (ReportPortalProject project : projects) {
             String niceName = getNiceName(project,collector);
+            Map<String, Object> Options=project.getOptions();
             if (!existingProjects.contains(project)) {
                 project.setCollectorId(collector.getId());
                 project.setEnabled(false);
@@ -150,10 +169,12 @@ public class ReportPortalCollectorTask extends CollectorTask<ReportPortalCollect
             }else{
                 int index = existingProjects.indexOf(project);
                 ReportPortalProject s = existingProjects.get(index);
-                if(StringUtils.isEmpty(s.getNiceName())){
+                //if(StringUtils.isEmpty(s.getNiceName())){
                     s.setNiceName(niceName);
+                    s.setLastUpdated(start);
+                    s.setOptions(Options);
                     updateProjects.add(s);
-                }
+              //  }
             }
         }
         //save all in one shot

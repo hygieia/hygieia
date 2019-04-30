@@ -79,13 +79,14 @@ public class DefaultReportPortalClient implements ReportPortalClient {
                // project.setLastUpdated();
                 
 				
+            
+                Map<String, Object> Options = new HashMap<String, Object>(prjData);
+                project.setOptions(Options);
                 project.setProjectId(str(prjData, ID));
                 project.setProjectName(str(prjData, NAME));
                 project.setLaunchNumber(str(prjData,"number"));
                 project.setInstanceUrl(url);
                 project.setDescription(str(prjData,"description"));
-                Map<String, Object> Options = new HashMap<String, Object>(prjData);
-                project.setOptions(Options);
                 projects.add(project);
                 
 				//Map<String, Object> Options = new HashMap<String, Object>(prjData);
@@ -168,15 +169,16 @@ public class DefaultReportPortalClient implements ReportPortalClient {
 		List<ReportResult> tests = new ArrayList<>();
 		String projectName=collector.getProjectName();
 		
-        String url = instanceUrl + URL_RESOURCES + projectName +"/item?filter.eq.launch="+launchId+"&filter.eq.type=TEST";
+        String url = instanceUrl + URL_RESOURCES + projectName +"/item?filter.eq.launch="+launchId;
         
         try {
 
             for (Object obj : parseAsArray(url,"content")) {
                 JSONObject testData = (JSONObject) obj;
-
-                ReportResult test = new ReportResult();
                 
+                ReportResult test = new ReportResult();
+                Map<String, Object> Results = new HashMap<String, Object>(testData);
+                test.setResults(Results);
                 //project.setInstanceUrl(instanceUrl);
                 
                // project.setLastUpdated();
@@ -185,6 +187,7 @@ public class DefaultReportPortalClient implements ReportPortalClient {
 				test.setTestId(str(testData,"id"));
 				test.setLaunchId(launchId);
 				test.setName(str(testData,"name"));
+				
 				tests.add(test);
                 
 				//Map<String, Object> Options = new HashMap<String, Object>(prjData);

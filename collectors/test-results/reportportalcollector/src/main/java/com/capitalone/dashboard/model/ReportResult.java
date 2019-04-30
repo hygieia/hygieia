@@ -1,5 +1,8 @@
 package com.capitalone.dashboard.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -12,12 +15,24 @@ public class ReportResult extends TestResult {
     private ObjectId collectorId;
     //private long lastUpdated;
     private String launchId;
+    //private String lastExecuted;
+    private Map<String, Object> results=new HashMap<>();;
+    
     @Indexed
     private String testId;
     
+  
+    public Map<String, Object> getResults() {
+        return results;
+    }
+    public void setResults(Map<String,Object> results) {
+        this.results = results;
+    }
     public void setName(String name) {
     	this.name=name;
     }
+    
+    
     
    public void setTestId(String testId) {
 	   this.testId=testId;
