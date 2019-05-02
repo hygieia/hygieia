@@ -160,6 +160,8 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         int pullCount = 0;
         int issueCount = 0;
 
+        setupProxy();
+
         clean(collector);
         List<GitHubRepo> enabledRepos = enabledRepos(collector);
         for (GitHubRepo repo : enabledRepos) {
@@ -234,6 +236,27 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         log("New Issues", start, issueCount);
         log("Finished", start);
 
+    }
+
+    private void setupProxy() {
+        String proxyUrl = gitHubSettings.getProxyUrl();
+        String proxyPort = gitHubSettings.getProxyPort();
+        String proxyUser = gitHubSettings.getProxyUser();
+        String proxyPassword = gitHubSettings.getProxyPassword();
+
+        if (!StringUtils.isEmpty(proxyUrl) && !StringUtils.isEmpty(proxyPort)) {
+            System.setProperty("http.proxyHost", proxyUrl);
+            System.setProperty("https.proxyHost", proxyUrl);
+            System.setProperty("http.proxyPort", proxyPort);
+            System.setProperty("https.proxyPort", proxyPort);
+
+            if (!StringUtils.isEmpty(proxyUser) && !StringUtils.isEmpty(proxyPassword)) {
+                System.setProperty("http.proxyUser", proxyUser);
+                System.setProperty("https.proxyUser", proxyUser);
+                System.setProperty("http.proxyPassword", proxyPassword);
+                System.setProperty("https.proxyPassword", proxyPassword);
+            }
+        }
     }
 
     // Retrieves a st of previous commits and Pulls and tries to reconnect them

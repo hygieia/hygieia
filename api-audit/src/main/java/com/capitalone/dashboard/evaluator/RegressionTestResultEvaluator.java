@@ -34,13 +34,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Comparator;
 import java.util.Optional;
-import java.util.Arrays;
 import java.util.Map;
 
 import java.util.regex.Pattern;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.stream.Collectors;
 
 @Component
 public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditResponse> {
@@ -116,13 +116,20 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
             return testResultsAuditResponse;
         }
         TestResult testResult = testResults.stream().sorted(Comparator.comparing(TestResult::getTimestamp).reversed()).findFirst().get();
-        Optional<TestCapability> testCapability = testResult.getTestCapabilities().stream().sorted(Comparator.comparing(TestCapability::getTimestamp).reversed()).findFirst();
-        testResultsAuditResponse.setTestCapabilities(Arrays.asList(testCapability.orElse(new TestCapability())));
+
         testResultsAuditResponse.setLastExecutionTime(testResult.getStartTime());
         testResultsAuditResponse.setType(testResult.getType().toString());
         testResultsAuditResponse.setFeatureTestResult(getFeatureTestResult(testResult));
-        testResultsAuditResponse = updateTestResultAuditStatuses(testCapability.get(), testResultsAuditResponse);
         testResultsAuditResponse = updateTraceabilityDetails(dashboard, testResult, testResultsAuditResponse);
+
+        List<TestCapability> testCapabilities = testResult.getTestCapabilities().stream().collect(Collectors.toList());
+        testResultsAuditResponse = updateTestResultAuditStatuses(testCapabilities, testResultsAuditResponse);
+
+        // Clearing for readability in response
+        for(TestCapability test: testCapabilities){
+            test.setTestSuites(null);
+        }
+        testResultsAuditResponse.setTestCapabilities(testCapabilities);
         return testResultsAuditResponse;
 
     }
@@ -322,20 +329,20 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
 
     /**
      * update test result audit statuses
-     * @param testCapability
+     * @param testCapabilities
      * @param testResultsAuditResponse
      * @return
      */
-    private TestResultsAuditResponse updateTestResultAuditStatuses(TestCapability testCapability, TestResultsAuditResponse testResultsAuditResponse) {
+    private TestResultsAuditResponse updateTestResultAuditStatuses(List<TestCapability> testCapabilities, TestResultsAuditResponse testResultsAuditResponse) {
 
         boolean isSuccessHighPriority = settings.getTestResultSuccessPriority().equalsIgnoreCase(PRIORITY_HIGH);
         boolean isFailureHighPriority = settings.getTestResultFailurePriority().equalsIgnoreCase(PRIORITY_HIGH);
 
-        if(isAllTestCasesSkipped(testCapability)){
+        if(isAllTestCasesSkipped(testCapabilities)){
             testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_SKIPPED);
             return testResultsAuditResponse;
         }
-        double testCasePassPercent = this.getTestCasePassPercent(testCapability);
+        double testCasePassPercent = this.getTestCasePassPercent(testCapabilities);
         if (isFailureHighPriority){
             if (testCasePassPercent < settings.getTestResultThreshold()) {
                 testResultsAuditResponse.addAuditStatus(TestResultAuditStatus.TEST_RESULT_AUDIT_FAIL);
@@ -356,12 +363,17 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
 
     /**
      * Get test result pass percent
-     * @param testCapability
+     * @param testCapabilities
      * @return
      */
-    private double getTestCasePassPercent(TestCapability testCapability) {
-        double testCaseSuccessCount = testCapability.getTestSuites().stream().mapToDouble(TestSuite::getSuccessTestCaseCount).sum();
-        double totalTestCaseCount = testCapability.getTestSuites().stream().mapToDouble(TestSuite::getTotalTestCaseCount).sum();
+    private double getTestCasePassPercent(List<TestCapability> testCapabilities) {
+        double testCaseSuccessCount = testCapabilities.stream().mapToDouble(testCapability ->
+             testCapability.getTestSuites().parallelStream().mapToDouble(TestSuite::getSuccessTestCaseCount).sum()
+        ).sum();
+        double totalTestCaseCount = testCapabilities.stream().mapToDouble(testCapability ->
+                testCapability.getTestSuites().parallelStream().mapToDouble(TestSuite::getTotalTestCaseCount).sum()
+        ).sum();
+
         return (testCaseSuccessCount/totalTestCaseCount) * 100;
     }
 
@@ -371,12 +383,17 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
 
     /**
      * Check if all the test cases are skipped
-     * @param testCapability
+     * @param testCapabilities
      * @return
      */
-    public boolean isAllTestCasesSkipped(TestCapability testCapability) {
-        int totalTestCaseCount = testCapability.getTestSuites().stream().mapToInt(TestSuite::getTotalTestCaseCount).sum();
-        int testCaseSkippedCount = testCapability.getTestSuites().stream().mapToInt(TestSuite::getSkippedTestCaseCount).sum();
+    public boolean isAllTestCasesSkipped(List<TestCapability> testCapabilities) {
+        int totalTestCaseCount = testCapabilities.stream().mapToInt(testCapability ->
+                testCapability.getTestSuites().parallelStream().mapToInt(TestSuite::getTotalTestCaseCount).sum()
+        ).sum();
+        int testCaseSkippedCount = testCapabilities.stream().mapToInt(testCapability ->
+                testCapability.getTestSuites().parallelStream().mapToInt(TestSuite::getSkippedTestCaseCount).sum()
+        ).sum();
+
         boolean isSkippedHighPriority = settings.getTestResultSkippedPriority().equalsIgnoreCase(PRIORITY_HIGH);
 
         if ((testCaseSkippedCount >= totalTestCaseCount) && isSkippedHighPriority){
