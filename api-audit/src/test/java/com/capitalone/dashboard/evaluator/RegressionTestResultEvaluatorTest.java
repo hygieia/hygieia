@@ -148,7 +148,7 @@ public class RegressionTestResultEvaluatorTest {
         TestResult testResult = new TestResult();
         testResult.setType(TestSuiteType.Regression);
         TestCapability testCapability = new TestCapability();
-        
+
         TestSuite testSuite1 = new TestSuite();
         testSuite1.setSuccessTestCaseCount(18);
         testSuite1.setFailedTestCaseCount(1);
@@ -171,6 +171,8 @@ public class RegressionTestResultEvaluatorTest {
         TestResult testResult = new TestResult();
         testResult.setType(TestSuiteType.Regression);
         TestCapability testCapability = new TestCapability();
+
+
         TestSuite testSuite = new TestSuite();
         testSuite.setSuccessTestCaseCount(37);
         testSuite.setFailedTestCaseCount(2);
