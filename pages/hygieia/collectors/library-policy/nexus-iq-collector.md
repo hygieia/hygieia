@@ -80,8 +80,8 @@ The sample `application.properties` file lists parameters with sample values to 
 		nexusiq.servers[0]=http://nexusiq.company.com
 
 		# Nexus IQ username/password - with read-access to all reports, and so on.
-		nexusiq.username=mynexusiquserid
-		nexusiq.password=mynexusiqpassword
+		nexusiq.username[0]=mynexusiquserid
+		nexusiq.password[0]=mynexusiqpassword
 
 
 		#In case of multiple license violations for a given library, consider the strictest violation
