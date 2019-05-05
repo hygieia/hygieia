@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, ComponentFactoryResolver, QueryList } fro
 
 import { ChartDirective } from '../../charts/chart.directive';
 import { ChartComponent } from '../../charts/chart/chart.component';
-import { Chart } from '../../interfaces';
+import { IChart } from '../../interfaces';
 
 @Component({
   template: '',
@@ -10,7 +10,7 @@ import { Chart } from '../../interfaces';
 })
 export class LayoutComponent {
 
-  charts: Chart[];
+  charts: IChart[];
 
   chartComponents: ChartComponent[] = [];
 
@@ -25,6 +25,7 @@ export class LayoutComponent {
       const componentRef = viewContainerRef.createComponent(componentFactory);
       const chartComponent = (componentRef.instance as ChartComponent);
       this.chartComponents.push(chartComponent);
+      chartComponent.title = this.charts[i].title;
       chartComponent.data = this.charts[i].data;
       chartComponent.xAxisLabel = this.charts[i].xAxisLabel;
       chartComponent.yAxisLabel = this.charts[i].yAxisLabel;

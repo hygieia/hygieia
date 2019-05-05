@@ -5,7 +5,7 @@ import { BuildWidgetComponent } from './build-widget/build-widget.component';
 
 const routes: Routes = [
   {
-    path: '',
+    path: ':id',
     component: BuildWidgetComponent,
   }
 ];
