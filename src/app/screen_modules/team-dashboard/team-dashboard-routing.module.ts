@@ -4,7 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { DashboardViewComponent } from './dashboard-view/dashboard-view.component';
 
 const routes: Routes = [
-  { path: 'capone/:id', component: DashboardViewComponent }
+  { path: 'dashboardview/:id', component: DashboardViewComponent }
 ];
 
 @NgModule({

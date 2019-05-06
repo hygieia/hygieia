@@ -1,5 +1,5 @@
 import { Component, Input, Type, ComponentFactoryResolver, ChangeDetectorRef } from '@angular/core';
-import { Widget } from '../interfaces';
+import { IWidget } from '../interfaces';
 import { BaseTemplateComponent } from '../templates/base-template/base-template.component';
 import { TemplatesDirective } from '../templates/templates.directive';
 
@@ -11,7 +11,7 @@ export class DashboardComponent {
 
   @Input() baseTemplate: Type<any>;
 
-  public widgets: Widget[];
+  public widgets: IWidget[];
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver, private cdr: ChangeDetectorRef) { }
 

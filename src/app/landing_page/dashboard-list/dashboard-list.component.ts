@@ -82,7 +82,7 @@ export class DashboardListComponent implements OnInit {
   }
 
   navigateToTeamDashboard(id: string) {
-    this.router.navigate(['/dashboard/capone', id]);
+    this.router.navigate(['/dashboard/dashboardView']);
   }
 
   setDashboardType(type: string) {
