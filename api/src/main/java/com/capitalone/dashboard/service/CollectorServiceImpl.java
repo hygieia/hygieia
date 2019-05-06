@@ -171,7 +171,6 @@ public class CollectorServiceImpl implements CollectorService {
         //Flow is here because there is only one collector item with the same collector id and niceName. So, update with
         // the new info - keep the same collector item id. Save = Update or Insert.
         item.setId(existing.getId());
-
         return collectorItemRepository.save(item);
     }
 
@@ -186,7 +185,6 @@ public class CollectorServiceImpl implements CollectorService {
         //Flow is here because there is only one collector item with the same collector id and niceName. So, update with
         // the new info - keep the same collector item id. Save = Update or Insert.
         item.setId(existing.getId());
-
         return collectorItemRepository.save(item);
     }
 
