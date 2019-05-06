@@ -4,6 +4,7 @@ import { DashboardViewComponent } from './dashboard-view.component';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {CommonModule} from '@angular/common';
 import {SharedModule} from '../../../shared/shared.module';
+import {RouterModule} from '@angular/router';
 
 describe('DashboardViewComponent', () => {
   let component: DashboardViewComponent;
@@ -12,7 +13,7 @@ describe('DashboardViewComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ DashboardViewComponent ],
-      imports: [HttpClientTestingModule, SharedModule, CommonModule]
+      imports: [HttpClientTestingModule, SharedModule, CommonModule, RouterModule.forRoot([])]
     })
     .compileComponents();
   }));

@@ -12,7 +12,6 @@ import {ITemplate} from './dashboard-view';
 })
 export class DashboardViewComponent extends DashboardComponent implements OnInit, AfterViewInit {
 
-  teamDashboard: ITemplate;
   @ViewChild(TemplatesDirective) childTemplateTag: TemplatesDirective;
 
   constructor(componentFactoryResolver: ComponentFactoryResolver, cdr: ChangeDetectorRef) {
