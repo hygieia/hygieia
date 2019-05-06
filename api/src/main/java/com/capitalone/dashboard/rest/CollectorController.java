@@ -56,11 +56,6 @@ public class CollectorController {
         return collectorService.createCollector(request.toCollector());
     }
 
-    @RequestMapping(value = "/collector/{id}/")
-    public void deleteCollector(@PathVariable ObjectId id, @PathVariable boolean removeComponentAssociation) {
-
-    }
-
 
     @RequestMapping(value = "/collector/type/{collectorType}",
             method = GET, produces = APPLICATION_JSON_VALUE)
