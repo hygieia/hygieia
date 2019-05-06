@@ -37,6 +37,10 @@ public class ApiSettings {
     @Value("${testResultSkippedPriority:High}")
     public String testResultSkippedPriority;
     private String serviceAccountRegEx;
+    @Value("${highVulnerabilitiesAge:0}")
+    private int highVulnerabilitiesAge;
+    @Value("${criticalVulnerabilitiesAge:0}")
+    private int criticalVulnerabilitiesAge;
 
     public String getKey() {
         return key;
@@ -173,4 +177,21 @@ public class ApiSettings {
     public void setTestResultThreshold(double testResultThreshold) {
         this.testResultThreshold = testResultThreshold;
     }
+
+    public int getHighVulnerabilitiesAge() {
+        return highVulnerabilitiesAge;
+    }
+
+    public void setHighVulnerabilitiesAge(int highVulnerabilitiesAge) {
+        this.highVulnerabilitiesAge = highVulnerabilitiesAge;
+    }
+
+    public int getCriticalVulnerabilitiesAge() {
+        return criticalVulnerabilitiesAge;
+    }
+
+    public void setCriticalVulnerabilitiesAge(int criticalVulnerabilitiesAge) {
+        this.criticalVulnerabilitiesAge = criticalVulnerabilitiesAge;
+    }
+
 }

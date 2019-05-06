@@ -4,7 +4,7 @@
 <col width="100%" />
 </colgroup>
 <tbody><tr><td>
-<h1><b>We are excited to announce the transfer of Hygieia Project to it's own <a href="https://github.com/Hygieia">Github Organization.</a> This move is being made to allow for us to manage the individual collectors in their own repositories which renders for better product management.</p></b></h1>
+<h1><b>We are excited to announce the transfer of Hygieia Project to its own <a href="https://github.com/Hygieia">Github Organization.</a> This move is being made to allow for us to manage the individual collectors in their own repositories which renders for better product management.</p></b></h1>
 </td> </tr> </tbody> </table>
 </div>
 <div align="center">
