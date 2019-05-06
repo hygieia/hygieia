@@ -49,14 +49,7 @@ describe('DashboardViewComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-  it('should create template', () => {
-    component.widgets = [{component: TestWidgetComponent,
-                           status: 'Success'}];
-    component.ngOnInit();
-    component.ngAfterViewInit();
-    const childDebugElement = fixture.debugElement.query(By.directive(CaponeTemplateComponent));
-    expect(childDebugElement).toBeTruthy();
-  });
+
 });
 
 
