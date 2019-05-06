@@ -9,5 +9,8 @@ public class HygieiaConstants {
     public static final String SECURITY_TEST_DISPLAY = "Security Test";
     public static final String REGRESSION_TEST_DISPLAY = "Regression Test";
 
+    public static final String CUCUMBER_JSON = "Cucumber (Json)";
+    public static final String MOCHA_JS_SPEC = "Mocha (JS Spec)";
+
     public static final String COLLECTOR_ITEM_DEPLOYMENT = "deployment";
 }

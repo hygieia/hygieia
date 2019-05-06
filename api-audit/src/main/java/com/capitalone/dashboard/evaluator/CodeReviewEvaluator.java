@@ -396,9 +396,9 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
     private void addDirectCommitsToBase(CodeReviewAuditResponseV2 reviewAuditResponseV2,Commit commit){
         if(commit.isFirstEverCommit()){
             reviewAuditResponseV2.addAuditStatus(CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT );
-        }else{
-            reviewAuditResponseV2.addAuditStatus(CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
-            reviewAuditResponseV2.addDirectCommitsToBase(commit);
+        }else if(StringUtils.isEmpty(commit.getPullNumber())){
+                reviewAuditResponseV2.addAuditStatus(CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
+                reviewAuditResponseV2.addDirectCommitsToBase(commit);
         }
    }
 

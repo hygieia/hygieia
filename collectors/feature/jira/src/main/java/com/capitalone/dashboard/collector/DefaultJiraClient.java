@@ -37,6 +37,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -361,7 +362,7 @@ public class DefaultJiraClient implements JiraClient {
                         return;
                     }
 
-                    if (!StringUtils.isEmpty(featureSettings.getJiraStoryId()) && featureSettings.getJiraStoryId().equals(type)) {
+                    if (featureSettings.getJiraStoryIds().length > 0 && Arrays.asList(featureSettings.getJiraStoryIds()).contains(type)) {
                         Feature feature = getFeature((JSONObject) issue, board);
                         String epicId = feature.getsEpicID();
                         if (!StringUtils.isEmpty(epicId)) {

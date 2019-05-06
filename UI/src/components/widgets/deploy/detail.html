@@ -24,7 +24,7 @@
                     </span>
                 </div>
                 <div class="col-md-3 view-in-tool">
-                    <a ng-href="{{::detail.environment.url}}" target="_blank">
+                    <a ng-href="{{::detail.environment.url}}" target="_blank" rel="noopener noreferrer">
                         View in {{::detail.collectorName }} <span class="fa fa-angle-right"></span>
                     </a>
                 </div>
@@ -47,7 +47,7 @@
                     <tr ng-repeat="server in unit.servers | orderBy:['online', 'name'] track by $index">
                         <td dash-status="{{unit.deployed? detail.statuses.PASS : (detail.environment.ignoreFailure? detail.statuses.IGNORE : detail.statuses.FAIL)}}"></td>
                         <td ng-if="unit.jobUrl">
-                            <a ng-href="{{::unit.jobUrl}}" target="_blank">
+                            <a ng-href="{{::unit.jobUrl}}" target="_blank" rel="noopener noreferrer">
                                 {{::unit.name}} <span class="fa fa-angle-right"></span>
                             </a>
                         </td>
@@ -61,7 +61,7 @@
                     <tr ng-if="!unit.servers || unit.servers.length === 0">
                         <td dash-status="{{unit.deployed? detail.statuses.PASS : (detail.environment.ignoreFailure? detail.statuses.IGNORE : detail.statuses.FAIL)}}"></td>
                         <td ng-if="unit.jobUrl">
-                            <a ng-href="{{::unit.jobUrl}}" target="_blank">
+                            <a ng-href="{{::unit.jobUrl}}" target="_blank" rel="noopener noreferrer">
                                 {{::unit.name}} <span class="fa fa-angle-right"></span>
                             </a>
                         </td>

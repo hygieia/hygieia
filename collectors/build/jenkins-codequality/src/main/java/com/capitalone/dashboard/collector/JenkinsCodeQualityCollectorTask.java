@@ -91,7 +91,7 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
             final Map<String, JenkinsCodeQualityJob> jenkinsCodeQualityJobMap = allJobs.stream().collect(Collectors.toMap(JenkinsCodeQualityJob::getJenkinsServer, Function.identity()));
 
             for (JenkinsJob job : interestingJobs) {
-                List<CodeQualityVisitee> allTypes = new ArrayList<>();
+                List<QualityVisitee> allTypes = new ArrayList<>();
                 artifactTypePatternMap.forEach((type, pattern) -> {
                             switch (type) {
                                 case junit:
