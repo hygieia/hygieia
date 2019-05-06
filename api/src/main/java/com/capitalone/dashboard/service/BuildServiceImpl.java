@@ -81,7 +81,7 @@ public class BuildServiceImpl implements BuildService {
         CollectorItem item = null;
         Component component = componentRepository.findOne(request.getComponentId());
         if ( (component == null)
-                || ((item = component.getFirstCollectorItemForType(CollectorType.Build)) == null) ) {
+                || ((item = component.getLastUpdatedCollectorItemForType(CollectorType.Build)) == null) ) {
             Iterable<Build> results = new ArrayList<>();
             return new DataResponse<>(results, new Date().getTime());
         }
