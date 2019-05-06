@@ -29,6 +29,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -80,6 +81,20 @@ public class CollectorController {
             return ResponseEntity
                     .status(HttpStatus.CREATED)
                     .body(collectorService.createCollectorItemSelectOptions(request.toCollectorItem(), request.getOptions(), request.getUniqueOptions()));
+        }
+    }
+
+    @RequestMapping(value = "/collector/item", method = DELETE,
+            consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<CollectorItem> deleteCollectorItem(@RequestBody CollectorItemRequest request) {
+        try {
+            collectorService.deleteCollectorItem(request.getId().toString(), request.isDeleteFromComponent());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+        }
+        catch (HygieiaException e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
         }
     }
 
