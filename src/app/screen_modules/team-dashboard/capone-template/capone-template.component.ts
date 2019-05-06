@@ -1,6 +1,5 @@
 import { Component, AfterViewInit, ComponentFactoryResolver, ChangeDetectorRef, ViewChildren, QueryList } from '@angular/core';
 import { WidgetDirective } from 'src/app/shared/widget/widget.directive';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import {BaseTemplateComponent} from '../../../shared/templates/base-template/base-template.component';
 
 @Component({

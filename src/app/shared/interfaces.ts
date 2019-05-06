@@ -24,7 +24,7 @@ export interface IChart {
   colorScheme: any;
 }
 
-export interface Widget {
+export interface IWidget {
   component: Type<any>;
   status: string;
 }

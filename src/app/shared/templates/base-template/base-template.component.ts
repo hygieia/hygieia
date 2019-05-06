@@ -1,5 +1,5 @@
 import { Component, ComponentFactoryResolver, ChangeDetectorRef, QueryList } from '@angular/core';
-import { Widget } from '../../interfaces';
+import { IWidget } from '../../interfaces';
 import { WidgetDirective } from '../../widget/widget.directive';
 import { WidgetComponent } from '../../widget/widget.component';
 
@@ -9,7 +9,7 @@ import { WidgetComponent } from '../../widget/widget.component';
 })
 export class BaseTemplateComponent  {
 
-  widgets: Widget[];
+  widgets: IWidget[];
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver, private cdr: ChangeDetectorRef) { }
 

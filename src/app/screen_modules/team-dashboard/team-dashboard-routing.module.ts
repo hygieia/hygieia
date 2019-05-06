@@ -7,7 +7,7 @@ const routes: Routes = [
     path: '',
     component: DashboardViewComponent,
     children: [
-      { path: 'capone', component: DashboardViewComponent }
+      { path: 'dashboardView', component: DashboardViewComponent }
     ]
   }
 ];
