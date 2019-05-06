@@ -41,7 +41,7 @@ describe('DashboardService', () => {
           },
           collectorItemIds: ['5b84328d92678d061457d5f1']
         };
-        service.upsertWidget('123', widgetConfig).subscribe(result => {
+        service.upsertWidget(widgetConfig).subscribe(result => {
           expect(result).toBeTruthy();
         });
 

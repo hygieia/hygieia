@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { interval, Subscription } from 'rxjs';
+import { interval, of, Subscription } from 'rxjs';
 import { startWith, switchMap } from 'rxjs/operators';
 import { DashboardService } from 'src/app/shared/dashboard.service';
 import { LayoutDirective } from 'src/app/shared/layouts/layout.directive';
@@ -96,10 +96,15 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
       startWith(0),
       switchMap(_ => this.getCurrentWidgetConfig()),
       switchMap(widgetConfig => {
+        if (!widgetConfig) {
+          return of([]);
+        }
         this.buildTimeThreshold = 1000 * 60 * widgetConfig.options.buildDurationThreshold;
         return this.buildService.fetchDetails(widgetConfig.componentId, this.BUILDS_PER_DAY_TIME_RANGE);
       })).subscribe(result => {
-        this.loadCharts(result);
+        if (result) {
+          this.loadCharts(result);
+        }
       });
   }
 

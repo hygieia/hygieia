@@ -26,6 +26,9 @@ export class LineChartComponent extends ChartComponent {
 
 
   formatInteger(val: number): string {
-    return val.toFixed(0);
+    if (Number.isInteger(val)) {
+      return val.toFixed(0);
+    }
+    return '';
   }
 }

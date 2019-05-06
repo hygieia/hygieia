@@ -10,7 +10,6 @@ import { DashboardService } from 'src/app/shared/dashboard.service';
 import { SharedModule } from 'src/app/shared/shared.module';
 
 import { GET_DASHBOARD_MOCK, POST_DASHBOARD_MOCK } from '../../../shared/dashboard.service.mockdata';
-import { BuildConfigFormComponent } from '../build-config-form/build-config-form.component';
 import { BuildService } from '../build.service';
 import { Build } from '../interfaces';
 import { BuildWidgetComponent } from './build-widget.component';
@@ -296,11 +295,9 @@ class MockDashboardService {
 }
 
 @NgModule({
-  declarations: [BuildConfigFormComponent],
+  declarations: [],
   imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([]), NgbModule],
-  entryComponents: [
-    BuildConfigFormComponent
-  ]
+  entryComponents: []
 })
 class TestModule { }
 
@@ -320,7 +317,7 @@ describe('BuildWidgetComponent', () => {
       imports: [
         TestModule, HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([])
       ],
-      declarations: [BuildWidgetComponent],
+      declarations: [],
       schemas: [NO_ERRORS_SCHEMA]
     })
       .compileComponents();
