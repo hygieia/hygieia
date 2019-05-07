@@ -9,15 +9,24 @@ import com.capitalone.dashboard.model.TestCaseStatus;
 import com.capitalone.dashboard.model.TestResult;
 import com.capitalone.dashboard.model.TestSuite;
 import com.capitalone.dashboard.model.TestSuiteType;
+import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.repository.CollectorRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
 import com.capitalone.dashboard.request.TestDataCreateRequest;
+import com.capitalone.dashboard.request.TestResultRequest;
 import org.bson.types.ObjectId;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -29,6 +38,7 @@ public class TestResultServiceTest {
     @Mock private TestResultRepository testResultRepository;
     @Mock private CollectorRepository collectorRepository;
     @Mock private CollectorService collectorService;
+    @Mock private ComponentRepository componentRepository;
     @InjectMocks private TestResultServiceImpl testResultService;
 
 
@@ -66,6 +76,47 @@ public class TestResultServiceTest {
         String response = testResultService.createV2(request);
         String expected = testResult.getId().toString() + "," + testResult.getCollectorItemId();
         assertEquals(response, expected);
+    }
+
+    @Test
+    public void search_Empty_Response_No_CollectorItems() {
+        ObjectId collectorItemId = ObjectId.get();
+        ObjectId collectorId = ObjectId.get();
+
+        TestResultRequest request = new TestResultRequest();
+
+        when(componentRepository.findOne(request.getComponentId())).thenReturn(makeComponent(collectorItemId, collectorId, false));
+        when(collectorRepository.findOne(collectorId)).thenReturn(new Collector());
+
+        DataResponse<Iterable<TestResult>> response = testResultService.search(request);
+
+        List<TestResult> result = (List<TestResult>) response.getResult();
+        Assert.assertNull(result);
+    }
+
+    @Test
+    public void search_Empty_Response_No_Component() {
+        ObjectId collectorId = ObjectId.get();
+        TestResultRequest request = new TestResultRequest();
+
+        when(componentRepository.findOne(request.getComponentId())).thenReturn(null);
+        when(collectorRepository.findOne(collectorId)).thenReturn(new Collector());
+
+        DataResponse<Iterable<TestResult>> response = testResultService.search(request);
+
+        List<TestResult> result = (List<TestResult>) response.getResult();
+        Assert.assertNull(result);
+    }
+
+    private Component makeComponent(ObjectId collectorItemId, ObjectId collectorId, boolean populateCollectorItems) {
+        CollectorItem item = new CollectorItem();
+        item.setId(collectorItemId);
+        item.setCollectorId(collectorId);
+        Component c = new Component();
+        if (populateCollectorItems) {
+            c.getCollectorItems().put(CollectorType.Test, Collections.singletonList(item));
+        }
+        return c;
     }
 
     private TestDataCreateRequest makeTestDateCreateRequest() {

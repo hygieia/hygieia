@@ -3,8 +3,7 @@ package com.capitalone.dashboard.gitlab;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -74,6 +73,7 @@ public class GitlabUrlUtility {
 				.queryParam(PER_PAGE_QUERY_PARAM_KEY, resultsPerPage)
 				.build(true).toUri();
 
+		LOG.info("---> Gitlab URI: " + uri.toString());
 		return uri;
     }
 
@@ -86,7 +86,9 @@ public class GitlabUrlUtility {
     }
 
 	public URI updatePage(URI uri, int nextPage) {
-		return UriComponentsBuilder.fromUri(uri).replaceQueryParam("page", nextPage).build(true).toUri();
+		URI ret = UriComponentsBuilder.fromUri(uri).replaceQueryParam("page", nextPage).build(true).toUri();
+		LOG.info("Paging - Gitlab URI updated to: " + ret.toString());
+		return ret;
 	}
 
 	private String getRepoHost() {
@@ -125,9 +127,7 @@ public class GitlabUrlUtility {
 		} else {
 			dt = getDate(new Date(repo.getLastUpdated()), 0, -10);
 		}
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-		String thisMoment = df.format(dt);
-		return thisMoment;
+		return DateTimeFormatter.ISO_INSTANT.format(dt.toInstant());
 	}
 
 	private Date getDate(Date dateInstance, int offsetDays, int offsetMinutes) {

@@ -42,7 +42,7 @@
     var timeoutPromise = null;
     ctrl.changeDetect = null;
     ctrl.pauseAgileView = pauseAgileView;
-    ctrl.pausePlaySymbol = "||";
+    ctrl.pausePlaySymbol = "pause";
 
     /**
      * Every controller must have a load method. It will be called every 60
@@ -162,7 +162,7 @@
       if (ctrl.listType === 'issues') {
           ctrl.showFeatureLimitButton = data.result.length <= 4 ? false : true;
       }
-      
+
       for (var i = 0; i < data.result.length; i++) {          
         // Add features only if there are no duplicates
         if (isInIssuesArray(data.result[i].sNumber, issueCollection) === false) {
@@ -377,10 +377,10 @@
 	 */
     function pauseAgileView() {
       if (timeoutPromise.$$state.value === "canceled") {
-        ctrl.pausePlaySymbol = "||";
+        ctrl.pausePlaySymbol = "pause";
         ctrl.startTimeout();
       } else {
-        ctrl.pausePlaySymbol = ">";
+        ctrl.pausePlaySymbol = "play";
         ctrl.stopTimeout();
       }
     };

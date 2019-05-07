@@ -1,9 +1,9 @@
 @import (reference) '../../../app/css/variables.less';
 @import (reference) '../../../app/css/mixins.less';
-@import (less)  '../../../../bower_components/angular-ui-select/dist/select.css';
+@import (less)  '../../../../node_modules/ui-select/dist/select.css';
 
 #dashboard .ca-view {
-    td {
+    td, .ca-test-row{
         padding: 0 .5rem 0 0;
         border: none !important;
         white-space: nowrap;
@@ -140,5 +140,15 @@
         border: 1px solid #ddd;
         border-bottom-color: transparent;
         cursor: default;
+    }
+    .divWithScroll {
+        overflow-y: auto;
+        height: 100px;
+        overflow-x:hidden;
+    }
+    .ellipsis {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
     }
 }

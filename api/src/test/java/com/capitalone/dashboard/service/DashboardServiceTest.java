@@ -69,6 +69,8 @@ public class DashboardServiceTest {
     @Mock
     private UserInfoRepository userInfoRepository;
     @Mock
+    private UserInfoServiceImpl userInfoServiceImpl;
+    @Mock
     private CmdbService cmdbService;
     @Mock
     private Dashboard myDashboard;
@@ -730,20 +732,21 @@ public class DashboardServiceTest {
     	existingInfo.setUsername("existing");
     	existingInfo.setAuthType(AuthType.LDAP);
         List<String> activeWidgets = new ArrayList<>();
-    	Dashboard dashboard = new Dashboard("template", "title", new Application("Application"), existingOwner, DashboardType.Team,configItemBusServName,configItemBusAppName, activeWidgets, false, ScoreDisplayType.HEADER);
+        List<Owner> existingOwners = new ArrayList<>();
+        existingOwners.add(existingOwner);
+    	Dashboard dashboard = new Dashboard("template", "title", new Application("Application"), existingOwners, DashboardType.Team,configItemBusServName,configItemBusAppName, activeWidgets, false, ScoreDisplayType.HEADER);
     	
-    	when(userInfoRepository.findByUsernameAndAuthType("existing", AuthType.LDAP)).thenReturn(existingInfo);
+        when(userInfoServiceImpl.isUserValid("existing", AuthType.LDAP)).thenReturn(true);
     	when(dashboardRepository.findOne(dashboard.getId())).thenReturn(dashboard);
     	when(dashboardRepository.save(dashboard)).thenReturn(dashboard);
     	
-    	Iterable<Owner> owners = Lists.newArrayList(existingOwner);
+        Iterable<Owner> owners = Lists.newArrayList(existingOwner);
     	List<Owner> result = Lists.newArrayList(dashboardService.updateOwners(dashboard.getId(), owners));
     	
     	assertNotNull(result);
     	assertEquals(1, result.size());
     	assertEquals(existingOwner, result.get(0));
     	
-    	verify(userInfoRepository).findByUsernameAndAuthType(eq("existing"), eq(AuthType.LDAP));
     	verify(dashboardRepository).findOne(eq(dashboard.getId()));
     	verify(dashboardRepository).save(eq(dashboard));
     }
@@ -827,7 +830,9 @@ public class DashboardServiceTest {
             app.addComponent(new Component(compName));
         }
         List<String> activeWidgets = new ArrayList<>();
-        return new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemBusServName, configItemBusAppName, activeWidgets, false, ScoreDisplayType.HEADER);
+        List<Owner> owners = new ArrayList<>();
+        owners.add(new Owner(owner, AuthType.STANDARD));
+        return new Dashboard(template, title, app, owners, DashboardType.Team, configItemBusServName, configItemBusAppName, activeWidgets, false, ScoreDisplayType.HEADER);
     }
 
     private Widget makeWidget(ObjectId id, String name) {

@@ -25,7 +25,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
-import com.capitalone.dashboard.ApiSettings;
+import com.capitalone.dashboard.settings.ApiSettings;
 import com.capitalone.dashboard.model.Application;
 import com.capitalone.dashboard.model.ArtifactIdentifier;
 import com.capitalone.dashboard.model.AuthType;
@@ -620,7 +620,9 @@ public class DynamicPipelineServiceImplTest {
 
 	private Dashboard setupDashboard(Component component) {
 		List<String> activeWidgets = new ArrayList<>();
-		Dashboard rt = new Dashboard("foo", "bar", new Application("helloworld", component), new Owner("MarkRx", AuthType.STANDARD), DashboardType.Product,"ASVTEST","BAPTEST", activeWidgets, false, null);
+		List<Owner> owners = new ArrayList<>();
+		owners.add(new Owner("MarkRx", AuthType.STANDARD));
+		Dashboard rt = new Dashboard("foo", "bar", new Application("helloworld", component), owners, DashboardType.Product,"ASVTEST","BAPTEST", activeWidgets, false, null);
 
 		Widget pipelineWidget = new Widget();
 		pipelineWidget.setName("pipeline");

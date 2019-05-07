@@ -6,7 +6,6 @@ import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import com.capitalone.dashboard.request.DeployDataCreateRequest;
 import com.capitalone.dashboard.request.TestDataCreateRequest;
-import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.model.Build;
 import hudson.model.BuildListener;
@@ -50,7 +49,6 @@ public class ActiveJobNotifierTest {
     @Mock
     private Build mockBuild;
 
-
     @Mock
     private HygieiaService mockHygieiaService;
 
@@ -74,9 +72,6 @@ public class ActiveJobNotifierTest {
 
     @Mock
     private HygieiaPublisher.DescriptorImpl mockDescriptor;
-
-    @Mock
-    private EnvVars mockEnvVars;
 
     private ActiveJobNotifier activeJobNotifier;
     private HygieiaResponse hygieiaResponse;
@@ -104,7 +99,7 @@ public class ActiveJobNotifierTest {
     }
 
     @Test
-    public void startedYesPublish() throws IOException, InterruptedException {
+    public void startedYesPublish() {
         setup();
         when(mockPublisher.getHygieiaBuild()).thenReturn(new HygieiaPublisher.HygieiaBuild(true));
         ArgumentCaptor<BuildDataCreateRequest> captor = ArgumentCaptor.forClass(BuildDataCreateRequest.class);
@@ -115,11 +110,11 @@ public class ActiveJobNotifierTest {
         assertThat(capturedRequest.getBuildStatus()).isEqualToIgnoringCase(BuildStatus.InProgress.toString());
         assertThat(capturedRequest.getInstanceUrl()).isEqualTo("http://jenkins.test.com");
         assertThat(capturedRequest.getNiceName()).isEqualTo("jenkins");
-        verify(mockStream, times(1)).println("Hygieia: Published Build Complete Data. " + hygieiaResponse.toString());
+        verify(mockStream, times(1)).println("Hygieia: Published Build Start Data. " + hygieiaResponse.toString());
     }
 
     @Test
-    public void startedNoPublish() throws IOException, InterruptedException {
+    public void startedNoPublish() {
         setup();
         when(mockPublisher.getHygieiaBuild()).thenReturn(new HygieiaPublisher.HygieiaBuild(false));
         ArgumentCaptor<BuildDataCreateRequest> captor = ArgumentCaptor.forClass(BuildDataCreateRequest.class);
@@ -130,7 +125,7 @@ public class ActiveJobNotifierTest {
 
 
     @Test
-    public void completedBuildOnlyYesPublish() throws IOException, InterruptedException {
+    public void completedBuildOnlyYesPublish() {
         setup();
         when(mockPublisher.getHygieiaBuild()).thenReturn(new HygieiaPublisher.HygieiaBuild(true));
         when(mockBuild.getResult()).thenReturn(Result.SUCCESS);
@@ -149,7 +144,7 @@ public class ActiveJobNotifierTest {
     }
 
     @Test
-    public void completedBuildOnlyNoPublish() throws IOException, InterruptedException {
+    public void completedBuildOnlyNoPublish() {
         setup();
         when(mockBuild.getResult()).thenReturn(Result.SUCCESS);
         when(mockBuild.getChangeSet()).thenReturn(mockChangeSet);
@@ -163,7 +158,7 @@ public class ActiveJobNotifierTest {
     }
 
     @Test
-    public void completedBuildGlobalBuildPublishYes() throws IOException, InterruptedException {
+    public void completedBuildGlobalBuildPublishYes() {
         setup();
         when(mockPublisher.getHygieiaBuild()).thenReturn(new HygieiaPublisher.HygieiaBuild(true));
         when(mockDescriptor.isHygieiaPublishBuildDataGlobal()).thenReturn(true);
@@ -179,7 +174,7 @@ public class ActiveJobNotifierTest {
     }
 
     @Test
-    public void completedBuildGlobalSonarPublishYes() throws IOException, InterruptedException {
+    public void completedBuildGlobalSonarPublishYes() {
         setup();
         when(mockPublisher.getHygieiaBuild()).thenReturn(new HygieiaPublisher.HygieiaBuild(true));
         when(mockDescriptor.isHygieiaPublishSonarDataGlobal()).thenReturn(true);
@@ -195,7 +190,7 @@ public class ActiveJobNotifierTest {
     }
 
     @Test
-    public void completedBuildPublishSonar() throws IOException, InterruptedException {
+    public void completedBuildPublishSonar() throws IOException {
         setup();
         when(mockPublisher.getHygieiaSonar()).thenReturn(new HygieiaPublisher.HygieiaSonar(true, "10", "30"));
         when(mockBuild.getResult()).thenReturn(Result.SUCCESS);
@@ -218,7 +213,7 @@ public class ActiveJobNotifierTest {
     }
 
     @Test
-    public void completedBuildPublishArtifact() throws IOException, URISyntaxException, InterruptedException {
+    public void completedBuildPublishArtifact() throws URISyntaxException {
         setup();
         when(mockPublisher.getHygieiaArtifact()).thenReturn(new HygieiaPublisher.HygieiaArtifact(".", "*", "com.hygieia", "1.0.0"));
         when(mockBuild.getResult()).thenReturn(Result.SUCCESS);
@@ -240,7 +235,7 @@ public class ActiveJobNotifierTest {
 
 
     @Test
-    public void completedBuildPublishDeploy() throws IOException, URISyntaxException, InterruptedException {
+    public void completedBuildPublishDeploy() throws URISyntaxException {
         setup();
         when(mockPublisher.getHygieiaDeploy()).thenReturn(new HygieiaPublisher.HygieiaDeploy(".", "*", "com.hygieia", "1.0.0", "testApp", "testEnv", false));
         when(mockBuild.getResult()).thenReturn(Result.SUCCESS);
@@ -263,7 +258,7 @@ public class ActiveJobNotifierTest {
 
 
     @Test
-    public void completedBuildPublishTest() throws IOException, URISyntaxException, InterruptedException {
+    public void completedBuildPublishTest() throws URISyntaxException {
         setup();
         when(mockPublisher.getHygieiaTest()).thenReturn(new HygieiaPublisher.HygieiaTest(false, false, "*", ".", "Functional", "testApp", "testEnv"));
         when(mockBuild.getResult()).thenReturn(Result.SUCCESS);

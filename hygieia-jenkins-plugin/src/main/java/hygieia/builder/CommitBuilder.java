@@ -1,7 +1,6 @@
 package hygieia.builder;
 
 import com.capitalone.dashboard.model.SCM;
-import hudson.model.AbstractBuild;
 import hudson.scm.ChangeLogSet;
 
 import java.util.LinkedList;

@@ -253,4 +253,8 @@ public class TestConfig {
 
     @Bean
     public CmdbRemoteService cmdbRemoteService() {return Mockito.mock(CmdbRemoteService.class);}
+
+    @Bean
+    public ServiceAccountService serviceAccountService() {return Mockito.mock(ServiceAccountService.class);}
+
 }

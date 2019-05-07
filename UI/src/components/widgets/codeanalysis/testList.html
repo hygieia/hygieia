@@ -1,0 +1,24 @@
+<div class="col-xs-12"><br>
+    <div class="widget ">
+        <div class="widget-heading">
+            {{ $ctrl.testTitle }}
+        </div>
+        <div hide-empty="['{{ $ctrl.testData[0] }}']">
+            <div ng-class="($ctrl.testData[0].totalCount>3) ? 'widget-body divWithScroll' : 'widget-body'">
+                <div class="dash-row clickable ca-test-row"
+                ng-repeat="test in $ctrl.testData | orderBy:'-details.endTime'" ng-click="$ctrl.details(test.details)"
+                     uib-tooltip-html="'<p>{{test.name}}</p>'">
+                    <div class="col-xs-6 ca-name ellipsis">
+                    {{ test.name | limitTo: 30 }}{{test.name.length > 30 ? '...' : ''}}
+                    </div>
+                    <div class="col-xs-3 ca-value" ng-class="{'widget-font-fail': (test.failureCount > 0) || (test.successCount == 0)}">
+                    {{test.successPercent}}
+                    </div>
+                    <div class="col-sx-3 text-small-date">
+                    {{test.details.endTime | fromNow |limitTo:10}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

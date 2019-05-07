@@ -1,105 +1,121 @@
 package com.capitalone.dashboard.service;
 
+import com.capitalone.dashboard.config.FongoConfig;
+import com.capitalone.dashboard.config.ApiTestConfig;
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.*;
-import com.capitalone.dashboard.repository.CmdbRepository;
-import com.capitalone.dashboard.repository.CollectorRepository;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Owner;
+import com.capitalone.dashboard.model.AuthType;
+import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
+import com.capitalone.dashboard.repository.UserInfoRepository;
+import com.capitalone.dashboard.repository.CollectorRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.request.DashboardRemoteRequest;
-import org.bson.types.ObjectId;
+import com.capitalone.dashboard.testutil.GsonUtil;
+import com.capitalone.dashboard.util.TestUtil;
+import com.github.fakemongo.junit.FongoRule;
+import com.google.common.io.Resources;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import org.apache.commons.io.IOUtils;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Matchers;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import static com.capitalone.dashboard.fixture.DashboardFixture.makeDashboardRemoteRequest;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertNotNull;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {ApiTestConfig.class, FongoConfig.class})
+@DirtiesContext
 public class DashboardRemoteServiceTest {
 
-    @Mock
+    @Autowired
     private DashboardRepository dashboardRepository;
-    @Mock
-    private CmdbRepository cmdbRepository;
-    @Mock
+    @Autowired
+    private UserInfoRepository userInfoRepository;
+    @Autowired
     private CollectorRepository collectorRepository;
-    @Mock
-    private UserInfoService userInfoService;
-    @Mock
+    @Autowired
+    private ComponentRepository componentRepository;
+    @Autowired
+    private CollectorItemRepository collectorItemRepository;
+    @Autowired
     private DashboardService dashboardService;
-    @Mock
-    private CollectorService collectorService;
+    @Autowired
+    private DashboardRemoteService dashboardRemoteService;
 
-    @InjectMocks
-    private DashboardRemoteServiceImpl dashboardRemoteService;
+    @Rule
+    public FongoRule fongoRule = new FongoRule();
 
-    private static final String configItemBusServName = "ASVTEST";
-    private static final String configItemBusAppName = "BAPTEST";
+    @Before
+    public void loadStuff() throws IOException {
+        TestUtil.loadDashBoard(dashboardRepository);
+        TestUtil.loadUserInfo(userInfoRepository);
+        TestUtil.loadCollector(collectorRepository);
+        TestUtil.loadComponent(componentRepository);
+        TestUtil.loadCollectorItems(collectorItemRepository);
+    }
 
     @Test
-    public void remoteCreate() throws HygieiaException {
-        Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "someuser",configItemBusServName,configItemBusAppName, "comp1","comp2");
-        ObjectId objectId = ObjectId.get();
-        expected.setId(objectId);
-        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "someuser", null, "team", configItemBusServName, configItemBusAppName);
+    public void remoteUpdateCodeRepo() throws IOException, HygieiaException {
 
-        when(userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())).thenReturn(true);
+        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/0-Remote-Update-Repo.json");
 
-        when(dashboardRepository.findAllByConfigurationItemBusServNameContainingIgnoreCaseAndConfigurationItemBusAppNameContainingIgnoreCase( configItemBusServName, configItemBusAppName )).thenReturn(new ArrayList<Dashboard>());
+        dashboardRemoteService.remoteCreate(request, true);
+        List<Dashboard> dashboard = dashboardService.getByTitle("TestSSA");
+        Component component = componentRepository.findOne(dashboard.get(0).getApplication().getComponents().get(0).getId());
+        assertEquals(2, component.getCollectorItems().get(CollectorType.SCM).size());
+    }
 
-        Cmdb busApp = new Cmdb();
-        busApp.setConfigurationItem(configItemBusServName);
-        when(cmdbRepository.findByConfigurationItemAndItemType(configItemBusServName, "app")).thenReturn(busApp);
+    @Test
+    public void remoteUpdateMultipleOwners() throws IOException, HygieiaException {
+        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/0-Remote-Update-Repo.json");
+        Dashboard dashboard = dashboardRemoteService.remoteCreate(request, true);
+        int expectedNumOwners = 3;
+        assertEquals(dashboard.getOwners().size(), expectedNumOwners);
 
-        Cmdb busComp = new Cmdb();
-        busComp.setConfigurationItem(configItemBusAppName);
-        when(cmdbRepository.findByConfigurationItemAndItemType(configItemBusAppName, "component")).thenReturn(busComp);
+        List<Owner> owners = new ArrayList<>();
+        owners.add(new Owner("topopal", AuthType.STANDARD));
+        owners.add(new Owner("testuser1", AuthType.STANDARD));
+        owners.add(new Owner("testuser2", AuthType.STANDARD));
 
-        when(dashboardService.create(Matchers.any(Dashboard.class))).thenReturn(expected);
-        when(dashboardService.get(objectId)).thenReturn(expected);
+        Set<Owner> ownersFromRequest = new HashSet<>(dashboard.getOwners());
+        Set<Owner> expectedOwners = new HashSet<>(owners);
 
-        assertThat(dashboardRemoteService.remoteCreate(request, false), is(expected));
+        assertEquals(ownersFromRequest, expectedOwners);
+    }
+
+    @Test
+    public void remoteCreateEmptyEntry() throws IOException, HygieiaException {
+        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/Remote-Request-Base.json");
+        Dashboard dashboard = dashboardRemoteService.remoteCreate(request, false);
+        assertNotNull(dashboard);
+        assertEquals(request.getMetaData().getTitle(),dashboard.getTitle());
     }
     @Test
-    public void remoteCreateWithoutAppAndComp() throws HygieiaException {
-        Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "someuser","","", "comp1","comp2");
-        ObjectId objectId = ObjectId.get();
-        expected.setId(objectId);
-        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "someuser", null, "team", "", "");
-
-        when(userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())).thenReturn(true);
-        when(dashboardRepository.findByTitle(request.getMetaData().getTitle())).thenReturn(new ArrayList<Dashboard>());
-        when(dashboardService.create(Matchers.any(Dashboard.class))).thenReturn(expected);
-        when(dashboardService.get(objectId)).thenReturn(expected);
-
-        assertThat(dashboardRemoteService.remoteCreate(request, false), is(expected));
-    }
-    @Test
-    public void remoteCreateInvalidUser() throws HygieiaException {
-        Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "invaliduser",configItemBusServName,configItemBusAppName, "comp1","comp2");
-        ObjectId objectId = ObjectId.get();
-        expected.setId(objectId);
-        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "invaliduser", null, "team", configItemBusServName, configItemBusAppName);
-
-        when(userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())).thenReturn(false);
-        when(dashboardRepository.findByTitle(request.getMetaData().getTitle())).thenReturn(new ArrayList<Dashboard>());
-        when(dashboardService.create(Matchers.any(Dashboard.class))).thenReturn(expected);
-        when(dashboardService.get(objectId)).thenReturn(expected);
-
-        Throwable t = new Throwable();
-        RuntimeException excep = new RuntimeException("Invalid owner information or authentication type. Owner first needs to sign up in Hygieia", t);
+    public void remoteCreateInvalidUser() throws IOException {
+        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/Remote-Request-Base-Invalid-Users.json");
+                Throwable t = new Throwable();
+        RuntimeException excep = new RuntimeException("There are no valid owner/owners in the request", t);
 
         try {
             dashboardRemoteService.remoteCreate(request, false);
@@ -109,11 +125,39 @@ public class DashboardRemoteServiceTest {
         }
     }
     @Test
-    public void remoteCreateInvalidApp() throws HygieiaException {
-        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "invaliduser", null, "team", configItemBusServName, configItemBusAppName);
+    public void remoteCreateInvalidAndValidUsers() throws IOException, HygieiaException {
+        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/Remote-Request-Create-Invalid-Valid-Users.json");
 
-        when(userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())).thenReturn(true);
+        Dashboard dashboard = dashboardRemoteService.remoteCreate(request, false);
+        List<Owner> owners = dashboard.getOwners();
+        assertEquals(2, owners.size());
+        Owner owner1 = new Owner("topopal", AuthType.STANDARD);
+        Owner owner2 = new Owner("testuser1", AuthType.STANDARD);
 
+        assert(owners.contains(owner1));
+        assert(owners.contains(owner2));
+    }
+
+    @Test
+    public void remoteCreateInvalidApp() throws IOException {
+        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/0-Remote-Update-Repo.json");
+        request.getMetaData().setTitle("test1234");
+        request.getMetaData().setBusinessService("test");
+        Throwable t = new Throwable();
+        RuntimeException excep = new RuntimeException("Invalid Business Service Name.", t);
+
+        try {
+            dashboardRemoteService.remoteCreate(request, false);
+            fail("Should throw RuntimeException");
+        } catch(Exception e) {
+            assertEquals(excep.getMessage(), e.getMessage());
+        }
+    }
+    @Test
+    public void remoteCreateInvalidComp() throws IOException {
+        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/0-Remote-Update-Repo.json");
+        request.getMetaData().setTitle("test1234");
+        request.getMetaData().setBusinessApplication("test");
         Throwable t = new Throwable();
         RuntimeException excep = new RuntimeException("Invalid Business Application Name.", t);
 
@@ -125,13 +169,11 @@ public class DashboardRemoteServiceTest {
         }
     }
     @Test
-    public void remoteCreateInvalidComp() throws HygieiaException {
-        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "invaliduser", null, "team", configItemBusServName, configItemBusAppName);
-
-        when(userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())).thenReturn(true);
-        Cmdb busApp = new Cmdb();
-        busApp.setConfigurationItem(configItemBusServName);
-        when(cmdbRepository.findByConfigurationItemAndItemType(configItemBusServName, "app")).thenReturn(busApp);
+    public void remoteCreateInvalidCompAndApp() throws IOException {
+        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/0-Remote-Update-Repo.json");
+        request.getMetaData().setTitle("test1234");
+        request.getMetaData().setBusinessApplication("test");
+        request.getMetaData().setBusinessService("test1");
         Throwable t = new Throwable();
         RuntimeException excep = new RuntimeException("Invalid Business Application Name.", t);
 
@@ -143,24 +185,11 @@ public class DashboardRemoteServiceTest {
         }
     }
     @Test
-    public void remoteCreateDuplicateDashoard() throws HygieiaException {
-        Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "validuser","","", "comp1","comp2");
-        ObjectId objectId = ObjectId.get();
-        expected.setId(objectId);
-        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "validuser", null, "team", "", "");
-
-        when(userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())).thenReturn(false);
-
-        List<Dashboard> existingDashboards = new ArrayList<Dashboard>();
-        existingDashboards.add(expected);
-
-        when(userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())).thenReturn(true);
-        when(dashboardRepository.findByTitle(request.getMetaData().getTitle())).thenReturn(existingDashboards);
-        when(dashboardService.create(Matchers.any(Dashboard.class))).thenReturn(expected);
-        when(dashboardService.get(objectId)).thenReturn(expected);
-
+    public void remoteCreateDuplicateDashboard() throws IOException {
+        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/0-Remote-Update-Repo.json");
+        Dashboard dashboard = dashboardRepository.findByTitle(request.getMetaData().getTitle()).get(0);
         Throwable t = new Throwable();
-        RuntimeException excep = new RuntimeException("Dashboard dashboardtitle (id =" + expected.getId() + ") already exists", t);
+        RuntimeException excep = new RuntimeException("Dashboard "+dashboard.getTitle()+" (id =" + dashboard.getId() + ") already exists", t);
 
         try {
             dashboardRemoteService.remoteCreate(request, false);
@@ -169,23 +198,31 @@ public class DashboardRemoteServiceTest {
             assertEquals(excep.getMessage(), e.getMessage());
         }
     }
+    @Test
+    public void remoteCreate() throws HygieiaException, IOException  {
+        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/0-Remote-Update-Repo.json");
+        request.getMetaData().setTitle("newDashboard0");
+        assertNotNull(dashboardRemoteService.remoteCreate(request, false));
+    }
+    @Test
+    public void remoteCreateWithoutAppAndComp() throws HygieiaException, IOException  {
+        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/0-Remote-Update-Repo.json");
+        request.getMetaData().setTitle("newDashboard1");
+        request.getMetaData().setBusinessApplication("");
+        request.getMetaData().setBusinessService("");
+        assertNotNull(dashboardRemoteService.remoteCreate(request, false));
+    }
 
     @Test
-    public void remoteCreateWithInvalidCollector() throws HygieiaException {
-        Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "someuser","","", "comp1","comp2");
-        ObjectId objectId = ObjectId.get();
-        expected.setId(objectId);
-        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "someuser", null, "team", "", "");
-        List<DashboardRemoteRequest.CodeRepoEntry> entries = new ArrayList<DashboardRemoteRequest.CodeRepoEntry>();
+    public void remoteCreateWithInvalidCollector() throws IOException {
+        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/0-Remote-Update-Repo.json");
+        request.getMetaData().setTitle("newDashboard2");
+        List<DashboardRemoteRequest.CodeRepoEntry> entries = new ArrayList<>();
+
         DashboardRemoteRequest.CodeRepoEntry invalidSCM = new DashboardRemoteRequest.CodeRepoEntry();
         invalidSCM.setToolName("Clearcase");
         entries.add(invalidSCM);
         request.setCodeRepoEntries(entries);
-
-        when(userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())).thenReturn(true);
-        when(dashboardRepository.findByTitle(request.getMetaData().getTitle())).thenReturn(new ArrayList<Dashboard>());
-        when(dashboardService.create(Matchers.any(Dashboard.class))).thenReturn(expected);
-        when(dashboardService.get(objectId)).thenReturn(expected);
 
         Throwable t = new Throwable();
         RuntimeException excep = new RuntimeException(invalidSCM.getToolName() + " collector is not available.", t);
@@ -199,12 +236,11 @@ public class DashboardRemoteServiceTest {
     }
 
     @Test
-    public void remoteCreateSCM() throws HygieiaException {
-        Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "someuser","","", "comp1","comp2");
-        ObjectId objectId = ObjectId.get();
-        expected.setId(objectId);
-        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "someuser", null, "team", "", "");
-        List<DashboardRemoteRequest.CodeRepoEntry> entries = new ArrayList<DashboardRemoteRequest.CodeRepoEntry>();
+    public void remoteCreateSCM() throws HygieiaException, IOException  {
+        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/Remote-Request-Base.json");
+        request.getMetaData().setTitle("newDashboard3");
+
+        List<DashboardRemoteRequest.CodeRepoEntry> entries = new ArrayList<>();
         DashboardRemoteRequest.CodeRepoEntry validSCM = new DashboardRemoteRequest.CodeRepoEntry();
         validSCM.setToolName("GitHub");
         Map options = new HashMap();
@@ -214,47 +250,18 @@ public class DashboardRemoteServiceTest {
         entries.add(validSCM);
         request.setCodeRepoEntries(entries);
 
-        when(userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())).thenReturn(true);
-        when(dashboardRepository.findByTitle(request.getMetaData().getTitle())).thenReturn(new ArrayList<Dashboard>());
-        when(dashboardService.create(Matchers.any(Dashboard.class))).thenReturn(expected);
-        when(dashboardService.get(objectId)).thenReturn(expected);
+        dashboardRemoteService.remoteCreate(request, false);
+        List<Dashboard> dashboard = dashboardService.getByTitle("newDashboard3");
+        Component component = componentRepository.findOne(dashboard.get(0).getApplication().getComponents().get(0).getId());
+        assertEquals(1, component.getCollectorItems().get(CollectorType.SCM).size());
 
-        List<Collector> collectors = new ArrayList<Collector>();
-        Collector githubCollector = makeCollector("GitHub", CollectorType.SCM);
-        Map uniqueFields = new HashMap();
-        uniqueFields.put("branch", "");
-        uniqueFields.put("url", "");
-        githubCollector.setUniqueFields(uniqueFields);
-
-        Map allFields = new HashMap();
-        allFields.put("branch", "");
-        allFields.put("url", "");
-        allFields.put("userID", "");
-        allFields.put("password", "");
-        allFields.put("lastUpdate", "");
-        githubCollector.setAllFields(allFields);
-
-        collectors.add(githubCollector);
-
-        when( collectorRepository.findByCollectorTypeAndName(validSCM.getType(), validSCM.getToolName()) ).thenReturn(collectors);
-
-        CollectorItem item = makeCollectorItem();
-
-        when(  collectorService.createCollectorItemSelectOptions(Matchers.any(CollectorItem.class), Matchers.any(Map.class), Matchers.any(Map.class) ) ).thenReturn(item);
-
-        Component component = new Component();
-        component.addCollectorItem(CollectorType.SCM, item);
-
-        assertThat(dashboardRemoteService.remoteCreate(request, false), is(expected));
     }
 
     @Test
-    public void remoteCreateBuild() throws HygieiaException {
-        Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "someuser","","", "comp1","comp2");
-        ObjectId objectId = ObjectId.get();
-        expected.setId(objectId);
-        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "someuser", null, "team", "", "");
-        List<DashboardRemoteRequest.BuildEntry> entries = new ArrayList<DashboardRemoteRequest.BuildEntry>();
+    public void remoteCreateBuild() throws HygieiaException, IOException {
+        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/Remote-Request-Base.json");
+        request.getMetaData().setTitle("newDashboard4");
+        List<DashboardRemoteRequest.BuildEntry> entries = new ArrayList<>();
         DashboardRemoteRequest.BuildEntry validBuild = new DashboardRemoteRequest.BuildEntry();
         validBuild.setToolName("Hudson");
         Map options = new HashMap();
@@ -265,63 +272,68 @@ public class DashboardRemoteServiceTest {
         entries.add(validBuild);
         request.setBuildEntries(entries);
 
-        when(userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())).thenReturn(true);
-        when(dashboardRepository.findByTitle(request.getMetaData().getTitle())).thenReturn(new ArrayList<Dashboard>());
-        when(dashboardService.create(Matchers.any(Dashboard.class))).thenReturn(expected);
-        when(dashboardService.get(objectId)).thenReturn(expected);
-
-        List<Collector> collectors = new ArrayList<Collector>();
-        Collector hudsonCollector = makeCollector("Hudson", CollectorType.Build);
-        Map uniqueFields = new HashMap();
-        uniqueFields.put("jobName", "");
-        uniqueFields.put("jobUrl", "");
-        uniqueFields.put("instanceUrl", "");
-        hudsonCollector.setUniqueFields(uniqueFields);
-
-        Map allFields = new HashMap();
-        allFields.put("jobName", "");
-        allFields.put("jobUrl", "");
-        allFields.put("instanceUrl", "");
-        hudsonCollector.setAllFields(allFields);
-
-        collectors.add(hudsonCollector);
-
-        when( collectorRepository.findByCollectorTypeAndName(validBuild.getType(), validBuild.getToolName()) ).thenReturn(collectors);
-
-        CollectorItem item = makeCollectorItem();
-
-        when(  collectorService.createCollectorItemSelectOptions(Matchers.any(CollectorItem.class), Matchers.any(Map.class), Matchers.any(Map.class) ) ).thenReturn(item);
-
-        Component component = new Component();
-        component.addCollectorItem(CollectorType.Build, item);
-
-        assertThat(dashboardRemoteService.remoteCreate(request, false), is(expected));
+        dashboardRemoteService.remoteCreate(request, false);
+        List<Dashboard> dashboard = dashboardService.getByTitle("newDashboard4");
+        Component component = componentRepository.findOne(dashboard.get(0).getApplication().getComponents().get(0).getId());
+        assertEquals(1, component.getCollectorItems().get(CollectorType.Build).size());
+        assertEquals(2, dashboard.get(0).getOwners().size());
     }
-    private Dashboard makeTeamDashboard(String template, String title, String appName, String owner,String configItemBusServName,String configItemBusAppName, String... compNames) {
-        Application app = new Application(appName);
-        for (String compName : compNames) {
-            app.addComponent(new Component(compName));
+    @Test
+    public void remoteUpdateNonExisting() throws IOException {
+        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/Remote-Request-Base.json");
+        request.getMetaData().setTitle("missingDashboard");
+
+        Throwable t = new Throwable();
+        RuntimeException excep = new RuntimeException("Dashboard " + request.getMetaData().getTitle() +  " does not exist.", t);
+
+        try {
+            dashboardRemoteService.remoteCreate(request, true);
+            fail("Should throw RuntimeException");
+        } catch(Exception e) {
+            assertEquals(excep.getMessage(), e.getMessage());
         }
-        List<String> activeWidgets = new ArrayList<>();
-        return new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemBusServName, configItemBusAppName,activeWidgets, false, ScoreDisplayType.HEADER);
+    }
+    @Test
+    public void remoteUpdateLibraryScan() throws HygieiaException, IOException {
+        DashboardRemoteRequest request = getRemoteRequest("./dashboardRemoteRequests/Remote-Request-Base.json");
+        request.getMetaData().setTitle("TestSSA");
+        List<DashboardRemoteRequest.LibraryScanEntry> entries = new ArrayList<>();
+        DashboardRemoteRequest.LibraryScanEntry validLibraryScan = new DashboardRemoteRequest.LibraryScanEntry();
+
+        validLibraryScan.setToolName("NexusIQ");
+        Map options = new HashMap();
+        options.put("applicationId", "applicationIdTest");
+        options.put("applicationName", "testApplicationName");
+        options.put("publicId", "123456");
+        options.put("instanceUrl", "http://test.com");
+        validLibraryScan.setOptions(options);
+        entries.add(validLibraryScan);
+        options = new HashMap();
+        options.put("applicationId", "applicationIdTest1");
+        options.put("applicationName", "testApplicationName1");
+        options.put("publicId", "1234561");
+        options.put("instanceUrl", "http://test1.com");
+        validLibraryScan.setOptions(options);
+        entries.add(validLibraryScan);
+
+        request.setLibraryScanEntries(entries);
+
+        dashboardRemoteService.remoteCreate(request, true);
+        List<Dashboard> dashboard = dashboardService.getByTitle("TestSSA");
+        Component component = componentRepository.findOne(dashboard.get(0).getApplication().getComponents().get(0).getId());
+        assertEquals(2, component.getCollectorItems().get(CollectorType.LibraryPolicy).size());
+        assertNotNull(component.getCollectorItems().get(CollectorType.CodeQuality));
+        assertNotNull(component.getCollectorItems().get(CollectorType.Test));
+        assertNotNull(component.getCollectorItems().get(CollectorType.StaticSecurityScan));
+
     }
 
-    private Collector makeCollector(String name, CollectorType type) {
-        Collector collector = new Collector();
-        collector.setId(ObjectId.get());
-        collector.setName(name);
-        collector.setCollectorType(type);
-        collector.setEnabled(true);
-        collector.setOnline(true);
-        collector.setLastExecuted(System.currentTimeMillis());
-        return collector;
+    private String getExpectedJSON(String path) throws IOException {
+        URL fileUrl = Resources.getResource(path);
+        return IOUtils.toString(fileUrl);
     }
-
-    private CollectorItem makeCollectorItem() {
-        CollectorItem item = new CollectorItem();
-        item.setCollectorId(new ObjectId());
-        item.setId(new ObjectId());
-        item.setEnabled(true);
-        return item;
+    private DashboardRemoteRequest getRemoteRequest (String fileName) throws IOException {
+        Gson gson = GsonUtil.getGson();
+        return gson.fromJson(getExpectedJSON(fileName), new TypeToken<DashboardRemoteRequest>(){}.getType());
     }
 }

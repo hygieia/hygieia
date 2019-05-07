@@ -1,0 +1,29 @@
+{
+    "metaData":
+    {
+      "applicationName":"test1",
+      "componentName":"test1",
+      "owner":
+      {
+        "authType":"STANDARD",
+        "username":"topopal"
+      },
+      "owners": [
+          {
+              "authType":"STANDARD",
+              "username":"doesnotexist123"
+          },
+          {
+              "authType":"STANDARD",
+              "username":"doesnotexist"
+          },
+          {
+              "authType":"STANDARD",
+              "username":"testuser1"
+          }
+      ],
+      "template":"CapOne",
+      "title":"testTitleInvalidValid",
+      "type":"Team"
+    }
+  }
