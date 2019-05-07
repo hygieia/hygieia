@@ -318,9 +318,8 @@ describe('BuildWidgetComponent', () => {
       imports: [
         TestModule, HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([])
       ],
-      declarations: [BuildWidgetComponent],
-      schemas: [NO_ERRORS_SCHEMA]
-    })
+     declarations: []
+   })
       .compileComponents();
 
     fixture = TestBed.createComponent(BuildWidgetComponent);

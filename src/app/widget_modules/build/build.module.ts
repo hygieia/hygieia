@@ -8,7 +8,7 @@ import { BuildRoutingModule } from './build-routing-module';
 import { BuildWidgetComponent } from './build-widget/build-widget.component';
 
 @NgModule({
-  declarations: [BuildWidgetComponent, BuildConfigFormComponent],
+  declarations: [BuildConfigFormComponent],
   entryComponents: [BuildConfigFormComponent],
   imports: [
     CommonModule,
@@ -17,7 +17,7 @@ import { BuildWidgetComponent } from './build-widget/build-widget.component';
     NgbModule
   ],
   exports: [
-    BuildWidgetComponent
+
   ]
 })
 export class BuildModule { }
