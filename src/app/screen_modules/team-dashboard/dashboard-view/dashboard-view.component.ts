@@ -29,16 +29,13 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
 
   ngOnInit() {
     this.dashboardService.clearDashboard();
-    console.log(this.route.snapshot);
     this.dashboardId = this.route.snapshot.paramMap.get('id');
-    console.log(this.dashboardId);
-    // this.dashboardService.loadDashboard('596acb685797b408c8f51e8d');
     this.dashboardService.loadDashboard(this.dashboardId);
 
     // get template type for dashboard and create template component
     // noinspection TypeScriptValidateTypes
     // noinspection TypeScriptValidateTypes
-   // let templateName = this.temaDashboard.template;
+    // let templateName = this.temaDashboard.template;
     this.baseTemplate = CaponeTemplateComponent;
 
     // noinspection TypeScriptValidateTypes

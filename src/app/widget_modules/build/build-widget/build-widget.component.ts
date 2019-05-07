@@ -18,7 +18,7 @@ import { WidgetComponent } from 'src/app/shared/widget/widget.component';
 
 import { BuildConfigFormComponent } from '../build-config-form/build-config-form.component';
 import { BuildService } from '../build.service';
-import { Build } from '../interfaces';
+import { IBuild } from '../interfaces';
 import { BUILD_CHARTS } from './build-charts';
 
 @Component({
@@ -115,7 +115,7 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
     }
   }
 
-  loadCharts(result: Build[]) {
+  loadCharts(result: IBuild[]) {
     this.generateBuildsPerDay(result);
     this.generateTotalBuildCounts(result);
     this.generateAverageBuildDuration(result);
@@ -124,7 +124,7 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
   }
 
   // *********************** BUILDS PER DAY ****************************
-  private generateBuildsPerDay(result: Build[]) {
+  private generateBuildsPerDay(result: IBuild[]) {
     const startDate = this.toMidnight(new Date());
     startDate.setDate(startDate.getDate() - this.BUILDS_PER_DAY_TIME_RANGE + 1);
     const allBuilds = result.filter(build => this.checkBuildAfterDate(build, startDate)
@@ -135,7 +135,7 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
     this.charts[0].data[1].series = this.countBuildsPerDay(failedBuilds, startDate);
   }
 
-  private countBuildsPerDay(builds: Build[], startDate: Date): any[] {
+  private countBuildsPerDay(builds: IBuild[], startDate: Date): any[] {
     const counts = {};
     const date = new Date(startDate.getTime());
     for (let i = 0; i < this.BUILDS_PER_DAY_TIME_RANGE; i++) {
@@ -161,8 +161,8 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
 
   // *********************** LATEST BUILDS *****************************
 
-  private generateLatestBuilds(result: Build[]) {
-    const sorted = result.sort((a: Build, b: Build): number => {
+  private generateLatestBuilds(result: IBuild[]) {
+    const sorted = result.sort((a: IBuild, b: IBuild): number => {
       return a.endTime - b.endTime;
     }).reverse().slice(0, 5);
     const latestBuildData = sorted.map(build => {
@@ -178,7 +178,7 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
 
   // *********************** TOTAL BUILD COUNTS ************************
 
-  private generateTotalBuildCounts(result: Build[]) {
+  private generateTotalBuildCounts(result: IBuild[]) {
     const today = this.toMidnight(new Date());
     const bucketOneStartDate = this.toMidnight(new Date());
     const bucketTwoStartDate = this.toMidnight(new Date());
@@ -196,7 +196,7 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
 
   // *********************** AVERAGE BUILD DURATION *********************
 
-  private generateAverageBuildDuration(result: Build[]) {
+  private generateAverageBuildDuration(result: IBuild[]) {
     const startDate = this.toMidnight(new Date());
     // Get threshold from the configuration, or use default
     const threshold = this.buildTimeThreshold ? this.buildTimeThreshold : this.BUILD_TIME_THRESHOLD;
@@ -210,7 +210,7 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
     this.charts[2].data[1][0].series = thresholdLine;
   }
 
-  private getAveragesByThreshold(builds: Build[], startDate: Date, threshold: number): any {
+  private getAveragesByThreshold(builds: IBuild[], startDate: Date, threshold: number): any {
     const dataBucket = {};
     const date = new Date(startDate.getTime());
     for (let i = 0; i < this.BUILDS_PER_DAY_TIME_RANGE; i++) {
@@ -274,11 +274,11 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
     return date;
   }
 
-  private checkBuildAfterDate(build: Build, date: Date): boolean {
+  private checkBuildAfterDate(build: IBuild, date: Date): boolean {
     return build.endTime >= date.getTime();
   }
 
-  private checkBuildStatus(build: Build, status: string): boolean {
+  private checkBuildStatus(build: IBuild, status: string): boolean {
     return build.buildStatus === status;
   }
 }

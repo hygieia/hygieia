@@ -11,7 +11,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 
 import { GET_DASHBOARD_MOCK, POST_DASHBOARD_MOCK } from '../../../shared/dashboard.service.mockdata';
 import { BuildService } from '../build.service';
-import { Build } from '../interfaces';
+import { IBuild } from '../interfaces';
 import { BuildWidgetComponent } from './build-widget.component';
 
 class MockBuildService {
@@ -269,7 +269,7 @@ class MockBuildService {
     lastUpdated: 1553613455230
   };
 
-  fetchDetails(): Observable<Build[]> {
+  fetchDetails(): Observable<IBuild[]> {
     return of(this.mockBuildData.result);
   }
 }

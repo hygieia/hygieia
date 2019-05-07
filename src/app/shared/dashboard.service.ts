@@ -22,7 +22,6 @@ export class DashboardService {
   // Retrieve a new dashboard from the API, and push it to subscribers
   loadDashboard(dashboardId: string) {
     this.dashboardId = dashboardId;
-    console.log(this.dashboardId);
     this.http.get(this.dashboardRoute + dashboardId).subscribe(res => this.dashboardSubject.next(res));
   }
 
