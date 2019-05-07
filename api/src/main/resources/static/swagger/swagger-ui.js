@@ -435,7 +435,7 @@
                 + escapeExpression(lambda(((stack1 = (depth0 != null ? depth0.externalDocs : depth0)) != null ? stack1.description : stack1), depth0))
                 + "</p>\n  <a href=\""
                 + escapeExpression(lambda(((stack1 = (depth0 != null ? depth0.externalDocs : depth0)) != null ? stack1.url : stack1), depth0))
-                + "\" target=\"_blank\">"
+                + "\" target=\"_blank\" rel=\"noopener noreferrer\">"
                 + escapeExpression(lambda(((stack1 = (depth0 != null ? depth0.externalDocs : depth0)) != null ? stack1.url : stack1), depth0))
                 + "</a>\n";
         }, "4": function (depth0, helpers, partials, data) {

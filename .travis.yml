@@ -26,12 +26,15 @@ notifications:
     recipients:
     - tapabrata.pal@capitalone.com
     - brock.beatty@capitalone.com
+    - ragha.vema@capitalone.com
     - nireesh.thiruveedula@capitalone.com
     - Stephen.Hughes@capitalone.com
-    - Prashant.Parekh@capitalone.com
-    - Matthew.Beasley@capitalone.com
-    - Subodh.Battina@capitalone.com
-    - Ragha.Vema@capitalone.com
+    - jiyang.xu@capitalone.com
+    - brian.shriver@capitalone.com
+    - kaitlyn.heinzmann@capitalone.com
+    - Justin.Hoelscher@capitalone.com
+    - Andrew.Tran@capitalone.com
+    - Christopher.Tompkins@capitalone.com
     on_success: always
     on_failure: always
 after_failure:

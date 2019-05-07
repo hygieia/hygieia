@@ -84,20 +84,24 @@ public class TestRunJsonParser implements JsonObjectParser<TestRun> {
 
     //TODO: ADD SUPPORT FOR CUSTOM STATUSES.
     private TestRun.Status getStatus(JSONObject jsonObject) throws JSONException {
-        if(jsonObject.get(KEY_STATUS).equals("TODO")){
+
+        if("TODO".equals(jsonObject.get(KEY_STATUS))){
             return TestRun.Status.TODO;
         }
-        if(jsonObject.get(KEY_STATUS).equals("EXECUTING")){
+        if("EXECUTING".equals(jsonObject.get(KEY_STATUS))){
             return TestRun.Status.EXECUTING;
         }
-        if(jsonObject.get(KEY_STATUS).equals("ABORTED")){
+        if("ABORTED".equals(jsonObject.get(KEY_STATUS))){
             return TestRun.Status.ABORTED;
         }
-        if(jsonObject.get(KEY_STATUS).equals("FAIL")){
+        if("FAIL".equals(jsonObject.get(KEY_STATUS))){
             return TestRun.Status.FAIL;
         }
-        if(jsonObject.get(KEY_STATUS).equals("PASS")){
+        if("PASS".equals(jsonObject.get(KEY_STATUS))){
             return TestRun.Status.PASS;
+        }
+        if("BLOCKED".equals(jsonObject.get(KEY_STATUS))){
+            return TestRun.Status.BLOCKED;
         }
         return null;
     }

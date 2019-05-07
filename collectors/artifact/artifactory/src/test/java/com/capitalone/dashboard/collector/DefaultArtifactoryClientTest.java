@@ -112,9 +112,9 @@ public class DefaultArtifactoryClientTest {
 		assertThat(baseArtifacts.get(0).getBinaryArtifact().getArtifactName(),is("test-dev"));
 		assertThat(baseArtifacts.get(0).getBinaryArtifact().getType(),is("file"));
 		assertThat(baseArtifacts.get(0).getBinaryArtifact().getModifiedBy(),is("robot"));
-		assertThat(baseArtifacts.get(0).getBinaryArtifact().getModifiedTimeStamp(),is("2018-10-11T14:38:56.471Z"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifact().getModifiedTimeStamp(),is(new Long("1539268736471")));
 		assertThat(baseArtifacts.get(0).getBinaryArtifact().getCreatedBy(),is("robot"));
-		assertThat(baseArtifacts.get(0).getBinaryArtifact().getCreatedTimeStamp(),is("2018-10-11T14:27:16.031Z"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifact().getCreatedTimeStamp(),is(new Long("1539268036031")));
 		assertThat(baseArtifacts.get(0).getBinaryArtifact().getArtifactVersion(),is("1"));
 
 	}
