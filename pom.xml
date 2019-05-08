@@ -201,7 +201,6 @@
         <module>collectors/scm/bitbucket</module>
         <module>collectors/scm/github</module>
         <module>collectors/scm/github-graphql</module>
-        <module>collectors/scm/subversion</module>
         <module>collectors/scm/gitlab</module>
         <module>collectors/cmdb/hpsm</module>
         <module>collectors/library-policy/nexus-iq-collector</module>
@@ -250,7 +249,6 @@
         <module>collectors/scm/bitbucket</module>
         <module>collectors/scm/github</module>
         <module>collectors/scm/github-graphql</module>
-        <module>collectors/scm/subversion</module>
         <module>collectors/scm/gitlab</module>
         <module>collectors/cmdb/hpsm</module>
         <module>collectors/library-policy/nexus-iq-collector</module>

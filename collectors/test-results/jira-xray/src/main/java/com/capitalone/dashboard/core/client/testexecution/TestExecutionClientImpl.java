@@ -25,6 +25,7 @@ import com.capitalone.dashboard.repository.TestResultCollectorRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.google.common.collect.Lists;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
@@ -280,9 +281,9 @@ public class TestExecutionClientImpl implements TestExecutionClient {
                 }
                 TestCase testCase = createTestCase(test, testRun, testExec);
                 testCases.add(testCase);
-                }
             }
             this.setTestCases(testCases);
+        }
 
         map.put(TEST_STATUS_COUNT_ATTRIBUTES.PASS_COUNT.name(), passTestCount);
         map.put(TEST_STATUS_COUNT_ATTRIBUTES.FAIL_COUNT.name(), failTestCount);
@@ -322,17 +323,25 @@ public class TestExecutionClientImpl implements TestExecutionClient {
                 testCase.setStatus(TestCaseStatus.Unknown);
             }
 
-             Set<String> tags = getStoryIds(feature.getIssueLinks());
-            // Temporarily commented for core project update
-            // testCase.setTags(tags);
             testCase.setTestSteps(this.getTestSteps(testRun));
+            List<Feature> tc = featureRepository.getStoryByNumber(test.getKey());
+            if (!CollectionUtils.isEmpty(tc)) {
+                for (Feature t : tc) {
+                    Set<String> tags = getStoryIds(t.getIssueLinks());
+                    testCase.setTags(tags);
+                }
+            }
         }
         return testCase;
     }
 
     private Set<String> getStoryIds(Collection<FeatureIssueLink> issueLinks) {
         Set<String> tags = new HashSet<>();
-        issueLinks.forEach(issueLink -> tags.add(issueLink.getTargetIssueKey()));
+        issueLinks.forEach(issueLink -> {
+            if("tests".equalsIgnoreCase(issueLink.getIssueLinkType())) {
+                tags.add(issueLink.getTargetIssueKey());
+            }
+        });
         return tags;
     }
 

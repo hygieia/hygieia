@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.List;
 import java.util.Set;
+import java.util.Optional;
 
 import java.util.stream.Collectors;
 
@@ -29,7 +30,6 @@ public class StaticSecurityAnalysisEvaluator extends Evaluator<SecurityReviewAud
     private static final String STR_CRITICAL = "Critical";
     private static final String STR_HIGH = "High";
     private static final String STR_SCORE = "Score";
-    private static final String STR_REPORT_URL = "reportUrl";
 
     @Autowired
     public StaticSecurityAnalysisEvaluator(CodeQualityRepository codeQualityRepository) {
@@ -63,19 +63,16 @@ public class StaticSecurityAnalysisEvaluator extends Evaluator<SecurityReviewAud
     private SecurityReviewAuditResponse getStaticSecurityScanResponse(CollectorItem collectorItem, long beginDate, long endDate) {
         List<CodeQuality> codeQualities = codeQualityRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(collectorItem.getId(), beginDate - 1, endDate + 1);
 
-        ObjectMapper mapper = new ObjectMapper();
         SecurityReviewAuditResponse securityReviewAuditResponse = new SecurityReviewAuditResponse();
-
+        securityReviewAuditResponse.setAuditEntity(collectorItem.getOptions());
+        securityReviewAuditResponse.setLastUpdated(collectorItem.getLastUpdated());
         if (CollectionUtils.isEmpty(codeQualities)) {
             securityReviewAuditResponse.addAuditStatus(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_MISSING);
             return securityReviewAuditResponse;
         }
-
         CodeQuality returnQuality = codeQualities.get(0);
-        securityReviewAuditResponse.setUrl(collectorItem.getOptions().get(STR_REPORT_URL).toString());
         securityReviewAuditResponse.setCodeQuality(returnQuality);
         securityReviewAuditResponse.setLastExecutionTime(returnQuality.getTimestamp());
-
         Set<CodeQualityMetric> metrics = returnQuality.getMetrics();
 
         if (metrics.stream().anyMatch(metric -> metric.getName().equalsIgnoreCase(STR_CRITICAL))){
@@ -85,9 +82,7 @@ public class StaticSecurityAnalysisEvaluator extends Evaluator<SecurityReviewAud
         }else{
             CodeQualityMetric scoreMetric = metrics.stream().filter(metric -> metric.getName().equalsIgnoreCase(STR_SCORE)).findFirst().get();
             Integer nScore = StringUtils.isNumeric(scoreMetric.getValue()) ? Integer.parseInt(scoreMetric.getValue()) : 0;
-            if (nScore == 100) {
-                securityReviewAuditResponse.addAuditStatus(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_NO_CLOSED_FINDINGS);
-            } else if (nScore > 0) {
+            if (nScore > 0) {
                 securityReviewAuditResponse.addAuditStatus(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_OK);
             } else {
                 securityReviewAuditResponse.addAuditStatus(CodeQualityAuditStatus.STATIC_SECURITY_SCAN_FAIL);
