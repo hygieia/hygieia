@@ -1,14 +1,13 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing/';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClientTestingModule } from '@angular/common/http/testing/';
-import {RouterTestingModule} from '@angular/router/testing';
-import {Router} from '@angular/router';
+import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 
 import { SharedModule } from '../shared/shared.module';
-import { LandingPageComponent } from './landing-page.component';
 import { DashboardListComponent } from './dashboard-list/dashboard-list.component';
 import { DashboardListService } from './dashboard-list/dashboard-list.service';
-
+import { LandingPageComponent } from './landing-page.component';
 
 describe('LandingPageComponent', () => {
   let component: LandingPageComponent;

@@ -1,13 +1,13 @@
+import { CommonModule } from '@angular/common';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { Component, NgModule } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
-import {CommonModule} from '@angular/common';
-import {RouterModule} from '@angular/router';
-import {Component, NgModule} from '@angular/core';
-import {By} from '@angular/platform-browser';
+import { By } from '@angular/platform-browser';
+import { RouterModule } from '@angular/router';
 
+import { SharedModule } from '../../../shared/shared.module';
+import { CaponeTemplateComponent } from '../capone-template/capone-template.component';
 import { DashboardViewComponent } from './dashboard-view.component';
-import {SharedModule} from '../../../shared/shared.module';
-import {CaponeTemplateComponent} from '../capone-template/capone-template.component';
 
 @Component({
   selector: 'app-test-widget',
@@ -48,6 +48,17 @@ describe('DashboardViewComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should create template', () => {
+    component.widgets = [{
+      component: TestWidgetComponent,
+      status: 'Success'
+    }];
+    component.ngOnInit();
+    component.ngAfterViewInit();
+    const childDebugElement = fixture.debugElement.query(By.directive(CaponeTemplateComponent));
+    expect(childDebugElement).toBeTruthy();
   });
 
 });

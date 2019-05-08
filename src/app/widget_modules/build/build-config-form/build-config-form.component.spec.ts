@@ -13,7 +13,7 @@ describe('BuildConfigFormComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, NgbModule, SharedModule, HttpClientTestingModule],
-      declarations: [ BuildConfigFormComponent ],
+      declarations: [ ],
       providers: [NgbActiveModal]
     })
     .compileComponents();

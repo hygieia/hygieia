@@ -18,14 +18,17 @@ export class LineChartComponent extends ChartComponent {
   gradient = false;
   showLegend = false;
   tooltipDisabled = false;
-  showXAxisLabel = true;
-  showYAxisLabel = true;
+  showXAxisLabel = false;
+  showYAxisLabel = false;
   trimYAxisTicks = false;
   timeline = false;
   yAxisTickFormatting: (val: number) => string = this.formatInteger;
 
 
   formatInteger(val: number): string {
-    return val.toFixed(0);
+    if (Number.isInteger(val)) {
+      return val.toFixed(0);
+    }
+    return '';
   }
 }

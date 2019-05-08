@@ -1,12 +1,12 @@
+import { HttpParams } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { HttpParams } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import {Router} from '@angular/router';
 
+import { IPaginationParams } from '../../shared/interfaces';
 import { IDashboards } from './dashboard-list';
 import { DashboardListService } from './dashboard-list.service';
-import { IPaginationParams } from '../../shared/interfaces';
 
 @Component({
   selector: 'app-dashboard-list',

@@ -1,9 +1,9 @@
-export interface BuildResponse {
-  result: Build[];
+export interface IBuildResponse {
+  result: IBuild[];
   lastUpdated: number;
 }
 
-export interface Build {
+export interface IBuild {
   id: string;
   collectorItemId: string;
   timestamp: number;
@@ -13,11 +13,11 @@ export interface Build {
   endTime: number;
   duration: number;
   buildStatus: string;
-  codeRepos: CodeRepo[];
+  codeRepos: ICodeRepo[];
   sourceChangeSet: any[];
 }
 
-export interface CodeRepo {
+export interface ICodeRepo {
   url: string;
   branch: string;
   type: string;

@@ -81,13 +81,13 @@ export class WidgetComponent {
           delete widgetConfig.collectorItemId;
         }
         return widgetConfig;
-      }),
+      })
     );
 
     // Take the modified widgetConfig and upsert it.
     const upsertDashboardResult$ = newWidgetConfig$.pipe(
       switchMap(widgetConfig => {
-        return this.dashboardService.upsertWidget(this.dashboardId, widgetConfig);
+        return this.dashboardService.upsertWidget(widgetConfig);
       }));
 
     // Take the new widget and the results from the API call
@@ -117,15 +117,15 @@ export class WidgetComponent {
   // config subject.
   init(): void {
     this.dashboardService.dashboardConfig$.pipe(
-      map(result => this.findWidget(result.widgets)),
-      take(1)
-    ).subscribe(result => this.widgetConfigSubject.next(result));
-
-    // TODO: Temporary test routing until dashboard template is integrated
-    // Pass the dashboard id to view the build charts for that dashboard
-    this.dashboardId = this.route.snapshot.paramMap.get('id');
-    // this.dashboardService.loadDashboard('596acb685797b408c8f51e8d');
-    this.dashboardService.loadDashboard(this.dashboardId);
+      map(result => {
+          const widget = this.findWidget(result.widgets);
+          return widget;
+      })
+    ).subscribe(result => {
+      if (result) {
+        this.widgetConfigSubject.next(result);
+      }
+    });
   }
 
   // Find the widget config from the list of widgets
