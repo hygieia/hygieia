@@ -27,10 +27,10 @@ public class HudsonSettings {
     @Value("${folderDepth:10}")
     private int folderDepth;
 
-    @Value("${github.connectTimeout:20000}")
+    @Value("${jenkins.connectTimeout:20000}")
     private int connectTimeout;
 
-    @Value("${github.readTimeout:20000}")
+    @Value("${jenkins.readTimeout:20000}")
     private int readTimeout;
 
     public String getCron() {
