@@ -6,6 +6,7 @@ import java.util.Map;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection="test_results")
 public class ReportResult extends TestResult {
@@ -13,6 +14,9 @@ public class ReportResult extends TestResult {
 	private String name;
 	//private String Id;
     private ObjectId collectorId;
+    
+    
+	//private ObjectId collectorItemId;
     //private long lastUpdated;
     private String launchId;
     //private String lastExecuted;
@@ -20,6 +24,7 @@ public class ReportResult extends TestResult {
     
     @Indexed
     private String testId;
+    
     
   
     public Map<String, Object> getResults() {
@@ -32,8 +37,13 @@ public class ReportResult extends TestResult {
     	this.name=name;
     }
     
+    public ObjectId getCollectorItemId() {
+    	return this.collectorId;
+    }
     
-    
+    public  void setCollectorItemId(ObjectId collectorItemId ) {
+    	 super.setCollectorItemId(collectorItemId);
+    }
    public void setTestId(String testId) {
 	   this.testId=testId;
    }

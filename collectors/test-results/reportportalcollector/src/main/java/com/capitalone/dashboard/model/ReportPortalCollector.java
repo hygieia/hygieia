@@ -41,7 +41,7 @@ public class ReportPortalCollector extends Collector {
     public static ReportPortalCollector prototype(ReportPortalSettings reportSettings) {
         ReportPortalCollector protoType = new ReportPortalCollector();
         protoType.setName("reportportal");
-        protoType.setCollectorType(CollectorType.TestResult);
+        protoType.setCollectorType(CollectorType.Test);
         protoType.setOnline(true);
         protoType.setEnabled(true);
         List<String> servers=reportSettings.getServers();

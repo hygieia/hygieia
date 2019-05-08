@@ -119,11 +119,14 @@ public class ReportPortalCollectorTask extends CollectorTask<ReportPortalCollect
     		
         	
     		String launchId=(String) project.getOptions().get("id");
-    		List<ReportResult> tests= reportClient.getTestData(collector,launchId,instanceUrl);
+    		ObjectId collectorItemId=project.getId();
+    		List<ReportResult> tests= reportClient.getTestData(collector,launchId,instanceUrl,collectorItemId);
     		for(ReportResult test:tests) {
     			Map<String, Object> results=test.getResults();
+    			//test.setCollectorItemId(collectorItemId);
     			ReportResult foundTest=reportRepository.findBytestId(test.getTestId());
     			if(foundTest==null) {
+    				//test.setCollectorItemId(project.getId());
     				newTests.add(test);
     				count++;
     			}		
