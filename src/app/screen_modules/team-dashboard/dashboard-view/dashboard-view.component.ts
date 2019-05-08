@@ -32,13 +32,8 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
     this.dashboardId = this.route.snapshot.paramMap.get('id');
     this.dashboardService.loadDashboard(this.dashboardId);
 
-    // get template type for dashboard and create template component
-    // noinspection TypeScriptValidateTypes
-    // noinspection TypeScriptValidateTypes
-    // let templateName = this.temaDashboard.template;
     this.baseTemplate = CaponeTemplateComponent;
 
-    // noinspection TypeScriptValidateTypes
     this.widgets = [
       {
         component: PlaceholderWidgetComponent,

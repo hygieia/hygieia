@@ -31,42 +31,69 @@ import { WidgetComponent } from './widget/widget.component';
 import { WidgetDirective } from './widget/widget.directive';
 
 @NgModule({
-  declarations: [WidgetComponent, TwoByTwoLayoutComponent, LayoutComponent, ChartDirective,
-    ChartComponent, LayoutDirective, LineChartComponent, NumberCardChartComponent,
-    LineAndBarChartComponent, ComboChartComponent, ComboSeriesVerticalComponent, ClickListComponent,
-    TimeAgoPipe, PaginationComponent, DashboardComponent, TemplatesDirective, WidgetDirective, BaseTemplateComponent,
-     CaponeTemplateComponent, BuildWidgetComponent, BuildConfigFormComponent, PlaceholderWidgetComponent],
-  entryComponents: [TwoByTwoLayoutComponent, LineChartComponent, NumberCardChartComponent,
-    LineAndBarChartComponent, ComboChartComponent, ClickListComponent, CaponeTemplateComponent, BuildWidgetComponent,
-    BuildConfigFormComponent, PlaceholderWidgetComponent],
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    NgxChartsModule,
-    NgxUIModule,
-    NgbModule,
-    FlexLayoutModule,
-    DragDropModule
-  ],
-  exports: [
-    ReactiveFormsModule,
-    CommonModule,
-    TwoByTwoLayoutComponent,
+  declarations: [
+    BaseTemplateComponent,
+    BuildConfigFormComponent,
+    BuildWidgetComponent,
+    CaponeTemplateComponent,
+    ChartComponent,
+    ChartDirective,
+    ClickListComponent,
+    ComboChartComponent,
+    ComboSeriesVerticalComponent,
+    DashboardComponent,
     LayoutComponent,
-    WidgetComponent,
+    LayoutDirective,
+    LineAndBarChartComponent,
     LineChartComponent,
     NumberCardChartComponent,
+    PaginationComponent,
+    PlaceholderWidgetComponent,
+    TemplatesDirective,
+    TimeAgoPipe,
+    TwoByTwoLayoutComponent,
+    WidgetDirective,
+    WidgetComponent
+  ],
+  entryComponents: [
+    BuildConfigFormComponent,
+    BuildWidgetComponent,
+    CaponeTemplateComponent,
+    ClickListComponent,
     ComboChartComponent,
     LineAndBarChartComponent,
-    ComboSeriesVerticalComponent,
-    ChartComponent,
-    LayoutDirective,
-    ChartDirective,
-    PaginationComponent,
-    TemplatesDirective,
+    LineChartComponent,
+    NumberCardChartComponent,
+    PlaceholderWidgetComponent,
+    TwoByTwoLayoutComponent
+  ],
+  imports: [
+    CommonModule,
+    DragDropModule,
+    FlexLayoutModule,
+    NgbModule,
+    NgxChartsModule,
+    NgxUIModule,
+    ReactiveFormsModule
+  ],
+  exports: [
+    BuildWidgetComponent,
     CaponeTemplateComponent,
-    BuildWidgetComponent
-
+    ChartComponent,
+    ChartDirective,
+    ComboChartComponent,
+    ComboSeriesVerticalComponent,
+    CommonModule,
+    LayoutComponent,
+    LayoutDirective,
+    LineAndBarChartComponent,
+    LineChartComponent,
+    NumberCardChartComponent,
+    PaginationComponent,
+    ReactiveFormsModule,
+    TemplatesDirective,
+    TwoByTwoLayoutComponent,
+    WidgetComponent
   ]
 })
 export class SharedModule { }
