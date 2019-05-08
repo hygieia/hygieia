@@ -489,6 +489,10 @@ public class AuditCollectorUtil {
         return audits;
     }
 
+    /**
+     * Update component with audit collector items
+     * @param dashboard
+     */
     private void updateComponent(Dashboard dashboard)  {
         List<Component> components = dashboard.getApplication().getComponents();
         if(components.iterator().hasNext()){
@@ -656,6 +660,11 @@ public class AuditCollectorUtil {
                 .mapToDouble(s-> Double.valueOf(s.toString())).average().orElse(NumberUtils.DOUBLE_ZERO);
     }
 
+    /**
+     * Create collector item for audit type if not exists already
+     * @param auditType
+     * @return
+     */
     protected CollectorItem createCollectorItem(AuditType auditType){
         String description = getDescription(auditType);
         Iterable<CollectorItem> collectorItems = collectorItemRepository.findByDescription(description);
@@ -684,6 +693,11 @@ public class AuditCollectorUtil {
         return dashboard;
     }
 
+    /**
+     * Get description for collector item
+     * @param auditType
+     * @return
+     */
     public String getDescription(AuditType auditType) {
         StringJoiner description = new StringJoiner(" ");
         Optional<Dashboard> dashboardOpt = Optional.ofNullable(this.getDashboard());
