@@ -213,8 +213,7 @@ public class DefaultReportPortalClient implements ReportPortalClient {
                 
                suites.add(suite);
                
-              count++;
-                
+              count++;     
             }
             
             //LOG.info(count);
