@@ -1,0 +1,154 @@
+{
+  "auditStatuses": [
+    "DASHBOARD_TEST_CONFIGURED"
+  ],
+  "lastUpdated": 0,
+  "dashboardTitle": "tychehygieiatitle",
+  "businessService": "CIXXXXXX",
+  "review": {
+    "TEST_RESULT": [{
+      "auditStatuses": [
+        "TEST_RESULT_AUDIT_OK"
+      ],
+      "lastUpdated": 0,
+      "lastExecutionTime": 0,
+      "testCapabilities": [{
+        "timestamp": 0,
+        "description": "Manual - Nougat",
+        "startTime": 0,
+        "endTime": 0,
+        "duration": 0,
+        "failedTestSuiteCount": 0,
+        "successTestSuiteCount": 1,
+        "skippedTestSuiteCount": 0,
+        "totalTestSuiteCount": 1,
+        "unknownStatusTestSuiteCount": 0,
+        "status": "Success",
+        "type": "Functional",
+        "testSuites": [{
+          "description": "Manual - Nougat",
+          "type": "Functional",
+          "startTime": 0,
+          "endTime": 0,
+          "duration": 0,
+          "totalTestCaseCount": 1,
+          "failedTestCaseCount": 0,
+          "successTestCaseCount": 1,
+          "skippedTestCaseCount": 0,
+          "unknownStatusCount": 0,
+          "status": "Success",
+          "testCases": [{
+            "id": "421367",
+            "description": "Test{self=, key=EA-3682, id=421367}",
+            "duration": 0,
+            "totalTestStepCount": 10,
+            "failedTestStepCount": 0,
+            "successTestStepCount": 10,
+            "skippedTestStepCount": 0,
+            "unknownStatusTestStepCount": 10,
+            "status": "Success",
+            "testSteps": [{
+              "id": "1352028",
+              "description": "Enter valid credentials that has at least one card account",
+              "duration": 0,
+              "status": "Success"
+            },
+              {
+                "id": "1352029",
+                "description": " Tap on \"Profile pic\"",
+                "duration": 0,
+                "status": "Success"
+              },
+              {
+                "id": "1352030",
+                "description": "Tap on \"Settings\"",
+                "duration": 0,
+                "status": "Success"
+              },
+              {
+                "id": "1352031",
+                "description": "Tap on Paperless Settings",
+                "duration": 0,
+                "status": "Success"
+              },
+              {
+                "id": "1352032",
+                "description": "Validate Text after credit card accounts",
+                "duration": 0,
+                "status": "Success"
+              },
+              {
+                "id": "1352033",
+                "description": "Tap on \"Paperless Terms and Conditions\" Hyberlink",
+                "duration": 0,
+                "status": "Success"
+              },
+              {
+                "id": "1352034",
+                "description": "Validate \"Paperless Terms and Conditions\" screen contents",
+                "duration": 0,
+                "status": "Success"
+              },
+              {
+                "id": "1352035",
+                "description": "Validate \"Paperless Terms and Conditions\" screen text by tapping on below link",
+                "duration": 0,
+                "status": "Success"
+              },
+              {
+                "id": "1352036",
+                "description": "Tap on DBB",
+                "duration": 0,
+                "status": "Success"
+              },
+              {
+                "id": "1352037",
+                "description": "Repeat above steps in Landscape mode",
+                "duration": 0,
+                "status": "Success"
+              }
+            ],
+            "tags": [
+              "EA-21749",
+              "EA-21748"
+            ],
+            "storyIndicators": [{
+              "storyId": "1448446",
+              "storyNumber": "EA-21748",
+              "storyName": "Manual - Marshmallow",
+              "storyStatus": "Accepted",
+              "storyState": "Done",
+              "storyType": "Test Execution",
+              "epicNumber": "",
+              "epicName": "",
+              "projectName": "Android",
+              "sprintName": ""
+            }],
+            "before": [],
+            "after": [],
+            "unknownStatusCount": 10
+          }]
+        }],
+        "tags": []
+      }],
+      "type": "Functional",
+      "featureTestResult": {
+        "successCount": 0,
+        "skippedCount": 0,
+        "totalCount": 1,
+        "failureCount": 1
+      },
+      "traceability": {
+        "totalStoryCount": 1,
+        "threshold": 80,
+        "percentage": 100,
+        "totalStories": [{
+          "EA-3682": "TEST_RESULTS_TRACEABILITY_STORY_MATCH"
+        }],
+        "totalCompletedStories": [
+          "EA-3682"
+        ]
+      }
+    }]
+  }
+}

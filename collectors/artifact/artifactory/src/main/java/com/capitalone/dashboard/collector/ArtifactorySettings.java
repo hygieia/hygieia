@@ -18,6 +18,7 @@ public class ArtifactorySettings {
     ArtifactoryCollectionMode mode;
     String endpoint;
     long offSet;
+    String capturePattern;
 
 
     public String getCron() {
@@ -62,4 +63,11 @@ public class ArtifactorySettings {
     }
 
 
+    public String getCapturePattern() {
+        return capturePattern;
+    }
+
+    public void setCapturePattern(String capturePattern) {
+        this.capturePattern = capturePattern;
+    }
 }
