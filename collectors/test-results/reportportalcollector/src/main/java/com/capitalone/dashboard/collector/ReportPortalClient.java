@@ -18,7 +18,7 @@ public interface ReportPortalClient {
 
 	
 
-	List<ReportResult> getTestData(ReportPortalCollector collector, String launchId, String instanceUrl, ObjectId collectorItemId);
+	List<ReportResult> getTestData(ReportPortalCollector collector, ReportPortalProject project);
 
 
 

@@ -96,7 +96,9 @@ public class ReportPortalCollectorTask extends CollectorTask<ReportPortalCollect
                 log("Fetched launches   " + projSize, start);
 
                 addNewProjects(projects, existingProjects, collector);
-                updateReportInfo(projects,collector,instanceUrl);
+              
+                List<ReportPortalProject> projectstoupdate =reportProjectRepository.findByCollectorIdIn(udId);
+                updateReportInfo(projectstoupdate,collector,instanceUrl);
 
                // refreshData(enabledProjects(collector, instanceUrl), sonarClient,metrics);
                 
@@ -118,11 +120,13 @@ public class ReportPortalCollectorTask extends CollectorTask<ReportPortalCollect
     	for(ReportPortalProject project: projects) {
     		
         	
-    		String launchId=(String) project.getOptions().get("id");
-    		ObjectId collectorItemId=project.getId();
-    		List<ReportResult> tests= reportClient.getTestData(collector,launchId,instanceUrl,collectorItemId);
+    		//String launchId=(String) project.getOptions().get("id");
+    		//ObjectId collectorItemId=project.getId();
+    		List<ReportResult> tests= reportClient.getTestData(collector,project);
     		for(ReportResult test:tests) {
     			Map<String, Object> results=test.getResults();
+    			test.setExecutionId(project.getLaunchNumber());
+    			
     			//test.setCollectorItemId(collectorItemId);
     			ReportResult foundTest=reportRepository.findBytestId(test.getTestId());
     			if(foundTest==null) {
@@ -133,6 +137,8 @@ public class ReportPortalCollectorTask extends CollectorTask<ReportPortalCollect
     			else {
     				//updating test info
     				foundTest.setResults(results);
+    				foundTest.setExecutionId(project.getLaunchNumber());
+    				foundTest.setTestCapabilities(test.getTestCapabilities());
     				updateTests.add(foundTest);
     			}
     			
@@ -175,7 +181,11 @@ public class ReportPortalCollectorTask extends CollectorTask<ReportPortalCollect
                 //if(StringUtils.isEmpty(s.getNiceName())){
                     s.setNiceName(niceName);
                     s.setLastUpdated(start);
+                    Options.put("launchId",project.getLaunchId());
                     s.setOptions(Options);
+                    s.setLaunchNumber(project.getLaunchNumber());
+                   
+         
                     updateProjects.add(s);
               //  }
             }

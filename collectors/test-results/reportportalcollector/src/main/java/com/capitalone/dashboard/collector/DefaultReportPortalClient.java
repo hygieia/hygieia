@@ -89,13 +89,17 @@ public class DefaultReportPortalClient implements ReportPortalClient {
 				
             
                 Map<String, Object> Options = new HashMap<String, Object>(prjData);
+                Options.put("id", str(prjData, ID));
+                Options.put("launchId",str(prjData, ID));
                 project.setOptions(Options);
-                project.setProjectId(str(prjData, ID));
+                project.setProjectId(str(prjData, NAME));
                 project.setProjectName(str(prjData, NAME));
                 project.setLaunchNumber(str(prjData,"number"));
-                project.setInstanceUrl(url);
+               // project.setLaunchId((str(prjData, ID)));
+                project.setInstanceUrl(instanceUrl);
                 project.setDescription(str(prjData,"description"));
                 projects.add(project);
+                
                 
 				//Map<String, Object> Options = new HashMap<String, Object>(prjData);
                // project.setOptions(Options);
@@ -179,8 +183,12 @@ public class DefaultReportPortalClient implements ReportPortalClient {
     }
 
 	@Override
-	public List<ReportResult> getTestData(ReportPortalCollector collector, String launchId,String instanceUrl,ObjectId collectorItemId) {
+	public List<ReportResult> getTestData(ReportPortalCollector collector, ReportPortalProject project) {
 		// TODO Auto-generated method stub
+		String instanceUrl=project.getInstanceUrl();
+		String launchId=(String) project.getOptions().get("id");
+		LOG.info(launchId);
+		ObjectId collectorItemId=project.getId();
 		List<ReportResult> reports = new ArrayList<>();
 		ReportResult report = new ReportResult();
 		List<TestCapability> caps=new ArrayList<>();
@@ -192,19 +200,20 @@ public class DefaultReportPortalClient implements ReportPortalClient {
 		String projectName=collector.getProjectName();
 		
         String url = instanceUrl + "/api/v1/" + projectName +"/item?filter.eq.launch="+ launchId+"&filter.eq.type="+"SUITE";
-        //int count=0;
+        LOG.info(url);
+        int count=0;
         //JSONObject testData =new JSONObject();
         try {
 
             for (Object obj : parseAsArray(url,"content")) {
             	JSONObject testData = (JSONObject) obj;
                  
-               // LOG.info(testData.get(str(testData,"name")));
+                LOG.info(str(testData,"name"));
                TestSuite suite=getTestSuite(testData,instanceUrl,collector);
                 
                suites.add(suite);
                
-              // count++;
+              count++;
                 
             }
             
@@ -220,13 +229,17 @@ public class DefaultReportPortalClient implements ReportPortalClient {
             // Map<String, Object> Results = new HashMap<String, Object>(testData);
            //  report.setResults(Results);
              report.setDescription(projectName);
-             report.setExecutionId(launchId);
-             report.setUrl(instanceUrl);
+             //report.setExecutionId(launchId);
+             report.setUrl(instanceUrl+"/ui/#"+projectName+"/launches/all");
              report.setCollectorId(collector.getId());
-             report.setTestId(launchId);
+             report.setTestId(collectorItemId);
              report.setExecutionId(launchId);
-             report.setCollectorItemId(collectorItemId);
+             report.setCollectorItemId(project.getId());
              report.setTestCapabilities(caps);
+             report.setTotalCount(count);
+             report.setDuration((((Double) project.getOptions().get("approximateDuration")).longValue()));
+             report.setStartTime((long)(project.getOptions().get("start_time")));
+             report.setEndTime((long)(project.getOptions().get("end_time")));
              reports.add(report);
                 //project.setInstanceUrl(instanceUrl);
                 
@@ -248,6 +261,7 @@ public class DefaultReportPortalClient implements ReportPortalClient {
         } catch (ParseException e) {
             LOG.error("Could not parse response from: " + url, e);
         } catch (RestClientException rce) {
+        	LOG.info("SUITEERROR");
             LOG.error(rce);
         }
 
@@ -276,7 +290,7 @@ public class DefaultReportPortalClient implements ReportPortalClient {
      		//step.setSuccessTestStepCount(integer(executions,"failed"));
      		//step.setTotalTestStepCount(integer(executions,"total"));
      		//step.setSkippedTestStepCount(integer(executions,"skipped"));
-     		List<TestCaseStep> teststeps=getStepData(str(testData,"id"),str(testData,"launchId"),instanceUrl,projectName);
+     		//List<TestCaseStep> teststeps=getStepData(str(testData,"id"),str(testData,"launchId"),instanceUrl,projectName);
      		//step.setTestSteps(teststeps);
              steps.add(step1);
              
@@ -285,6 +299,7 @@ public class DefaultReportPortalClient implements ReportPortalClient {
      }catch (ParseException e) {
          LOG.error("Could not parse response from: " + step_url, e);
      } catch (RestClientException rce) {
+    	 LOG.info("STEP ERROR");
          LOG.error(rce);
      }
          
@@ -306,7 +321,7 @@ public class DefaultReportPortalClient implements ReportPortalClient {
 	        		JSONObject stats=(JSONObject) testData.get("statistics");
 	        		JSONObject executions=(JSONObject) stats.get("executions");
 	        		test.setFailedTestStepCount(Integer.parseInt(str(executions,"failed")));
-	        		test.setSuccessTestStepCount(Integer.parseInt(str(executions,"failed")));
+	        		test.setSuccessTestStepCount(Integer.parseInt(str(executions,"passed")));
 	        		test.setTotalTestStepCount(Integer.parseInt(str(executions,"total")));
 	        		test.setSkippedTestStepCount(Integer.parseInt(str(executions,"skipped")));
 	        		List<TestCaseStep> teststeps=getStepData(str(testData,"id"),str(testData,"launchId"),instanceUrl,projectName);
@@ -318,6 +333,7 @@ public class DefaultReportPortalClient implements ReportPortalClient {
 	        }catch (ParseException e) {
 	            LOG.error("Could not parse response from: " + test_url, e);
 	        } catch (RestClientException rce) {
+	        	LOG.info("TESTERROR");
 	            LOG.error(rce);
 	        }
 	            
@@ -339,7 +355,7 @@ public class DefaultReportPortalClient implements ReportPortalClient {
 		JSONObject stats=(JSONObject) testData.get("statistics");
 		JSONObject executions=(JSONObject) stats.get("executions");
 		suite.setFailedTestCaseCount(Integer.parseInt(str(executions,"failed")));
-		suite.setSuccessTestCaseCount(Integer.parseInt(str(executions,"failed")));
+		suite.setSuccessTestCaseCount(Integer.parseInt(str(executions,"passed")));
 		suite.setTotalTestCaseCount(Integer.parseInt(str(executions,"total")));
 		suite.setSkippedTestCaseCount(Integer.parseInt(str(executions,"skipped")));
 		List<TestCase> testcases=getTestCases(str(testData,"id"),str(testData,"launchId"),instanceUrl,collector.getProjectName());
@@ -352,7 +368,7 @@ public class DefaultReportPortalClient implements ReportPortalClient {
 		// TODO Auto-generated method stub
 		
 		switch (str) {
-        case "PASSES":
+        case "PASSED":
             return TestCaseStatus.Success;
             
         case "FAILED":

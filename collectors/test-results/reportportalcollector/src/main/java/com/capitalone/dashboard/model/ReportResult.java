@@ -23,7 +23,7 @@ public class ReportResult extends TestResult {
     private Map<String, Object> results=new HashMap<>();;
     
     @Indexed
-    private String testId;
+    private ObjectId testId;
     
     
   
@@ -44,11 +44,11 @@ public class ReportResult extends TestResult {
     public  void setCollectorItemId(ObjectId collectorItemId ) {
     	 super.setCollectorItemId(collectorItemId);
     }
-   public void setTestId(String testId) {
+   public void setTestId( ObjectId testId) {
 	   this.testId=testId;
    }
    
-   public String getTestId() {
+   public ObjectId getTestId() {
 	   return this.testId;
    }
    

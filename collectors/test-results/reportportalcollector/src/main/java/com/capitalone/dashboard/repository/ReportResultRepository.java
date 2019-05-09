@@ -32,7 +32,10 @@ public interface ReportResultRepository extends TestResultRepository {
     //ReportResult findByIdAndlaunchId(ObjectId Id, String launchId);
  
     @Query(value = "{ 'testId' : ?0 }")
-    ReportResult findBytestId(String testId);
+    ReportResult findBytestId(ObjectId objectId);
+    
+    @Query(value = "{ 'collectorItemId' : ?0 }")
+    ReportResult findBycollectorItemId(ObjectId objectId);
 
     ReportResult findByCollectorId(ObjectId collectorItemId);
     
