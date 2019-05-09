@@ -16,15 +16,35 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.Application;
+import com.capitalone.dashboard.model.Widget;
+import com.capitalone.dashboard.model.Cmdb;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Service;
+import com.capitalone.dashboard.model.Owner;
+import com.capitalone.dashboard.model.UserInfo;
+import com.capitalone.dashboard.model.AuthType;
+import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.ScoreDisplayType;
+
 import org.bson.types.ObjectId;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -47,9 +67,6 @@ import com.capitalone.dashboard.repository.ServiceRepository;
 import com.capitalone.dashboard.repository.UserInfoRepository;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-
-import javax.validation.constraints.AssertTrue;
-
 
 @RunWith(MockitoJUnitRunner.class)
 public class DashboardServiceTest {
@@ -386,8 +403,6 @@ public class DashboardServiceTest {
         verify(collectorItemRepository).save((set));
     }
 
-
-
     @Test
     public void associateCollectorToComponent_replace_Item1_with_Item2_and_3() {
         ObjectId compId = ObjectId.get();
@@ -492,7 +507,6 @@ public class DashboardServiceTest {
         verify(componentRepository).save(component);
         verify(collectorItemRepository).save((set));
     }
-
 
     @Test
     public void delete() {
@@ -822,6 +836,51 @@ public class DashboardServiceTest {
         when(dashboardRepository.save(any(Dashboard.class))).thenReturn(myDashboardResponse);
         when(scoreDashboardService.editScoreForDashboard(myDashboardResponse)).thenReturn(new CollectorItem());
         assertNotNull(dashboardService.updateScoreSettings(myDashboard.getId(), true, ScoreDisplayType.HEADER));
+    }
+
+    @Test
+    public void compareMapsTest() {
+        Map<String, Object> map1 = new HashMap<>();
+        map1.put("featureTool", "Jira");
+        map1.put("teamId", "16909");
+
+        JSONObject jsonObject1 = new JSONObject();
+        jsonObject1.put("kanban", false);
+        jsonObject1.put("scrum", true);
+        map1.put("showStatus", jsonObject1);
+
+        JSONArray jsonArray1 = new JSONArray();
+        map1.put("valueArray", jsonArray1);
+        jsonArray1.add("value1");
+        jsonArray1.add("1");
+        jsonArray1.add("value2");
+
+        Map<String, Object> map2 = new HashMap<>();
+        map2.put("featureTool", "Jira");
+        map2.put("teamId", "16909");
+
+        JSONObject jsonObject2 = new JSONObject();
+        jsonObject2.put("kanban", false);
+        jsonObject2.put("scrum", true);
+        map2.put("showStatus", jsonObject2);
+
+        JSONArray jsonArray2 = new JSONArray();
+        map2.put("valueArray", jsonArray2);
+        jsonArray2.add("value1");
+        jsonArray2.add("1");
+        jsonArray2.add("value2");
+
+        boolean result = dashboardService.compareMaps(map1, map2);
+        Assert.assertFalse(result);
+
+        jsonArray1 = new JSONArray();
+        map1.put("valueArray", jsonArray1);
+        jsonArray1.add("value3");
+        jsonArray1.add("1");
+        jsonArray1.add("value2");
+
+        result = dashboardService.compareMaps(map1, map2);
+        Assert.assertTrue(result);
     }
 
     private Dashboard makeTeamDashboard(String template, String title, String appName, String owner,String configItemBusServName,String configItemBusAppName, String... compNames) {
