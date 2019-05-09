@@ -11,6 +11,7 @@ export class NumberCardChartComponent extends ChartComponent {
 
   constructor() {
     super();
+    this.scaleFactor = .85;
   }
 
   // options

@@ -24,6 +24,7 @@ import { LayoutDirective } from './layouts/layout.directive';
 import { LayoutComponent } from './layouts/layout/layout.component';
 import { TwoByTwoLayoutComponent } from './layouts/two-by-two-layout/two-by-two-layout.component';
 import { PaginationComponent } from './pagination/pagination.component';
+import { MinutesPipe } from './pipes/minutes.pipe';
 import { BaseTemplateComponent } from './templates/base-template/base-template.component';
 import { TemplatesDirective } from './templates/templates.directive';
 import { PlaceholderWidgetComponent } from './widget/placeholder-widget/placeholder-widget.component';
@@ -46,6 +47,7 @@ import { WidgetDirective } from './widget/widget.directive';
     LayoutDirective,
     LineAndBarChartComponent,
     LineChartComponent,
+    MinutesPipe,
     NumberCardChartComponent,
     PaginationComponent,
     PlaceholderWidgetComponent,
