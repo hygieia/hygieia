@@ -113,6 +113,6 @@ public class LibraryPolicyEvaluator extends Evaluator<LibraryPolicyAuditResponse
             return threat.getCount() > 0;
         }
         return threat.getDispositionCounts().containsKey(LibraryPolicyThreatDisposition.Open) &&
-                (threat.getDispositionCounts().get(LibraryPolicyThreatDisposition.Open) > 0) && (threat.getAge() > age);
+                (threat.getDispositionCounts().get(LibraryPolicyThreatDisposition.Open) > 0) && (threat.getMaxAge() > age);
     }
 }
