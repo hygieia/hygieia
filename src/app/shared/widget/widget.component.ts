@@ -122,8 +122,8 @@ export class WidgetComponent {
     // TODO: Temporary test routing until dashboard template is integrated
     // Pass the dashboard id to view the build charts for that dashboard
     this.dashboardId = this.route.snapshot.paramMap.get('id');
-    // this.dashboardService.loadDashboard('596acb685797b408c8f51e8d');
-    this.dashboardService.loadDashboard(this.dashboardId);
+    this.dashboardService.loadDashboard('596acb685797b408c8f51e8d');
+    // this.dashboardService.loadDashboard(this.dashboardId);
   }
 
   // Find the widget config from the list of widgets
