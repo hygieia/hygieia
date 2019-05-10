@@ -98,6 +98,7 @@ import { curveLinear } from 'd3-shape';
             [results]="combinedSeries"
             [colors]="colorsLine"
             [tooltipDisabled]="tooltipDisabled"
+            [tooltipTemplate]="seriesTooltipTemplate"
             (hover)="updateHoveredVertical($event)"
           />
 

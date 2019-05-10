@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { cloneDeep, extend } from 'lodash';
-import { Observable, ReplaySubject } from 'rxjs';
-import { filter, map, take } from 'rxjs/operators';
+import { interval, Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
+import { filter, map, startWith, take } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -13,9 +13,17 @@ export class DashboardService {
 
   private dashboardSubject = new ReplaySubject<any>(1);
 
+  private dashboardRefreshSubject = new Subject<any>();
+
+  private dashboardRefreshSubscription: Subscription;
+
+  private REFRESH_INTERVAL_SECONDS = 15;
+
   private dashboardId: string;
 
   public dashboardConfig$ = this.dashboardSubject.asObservable().pipe(filter(result => result));
+
+  public dashboardRefresh$ = this.dashboardRefreshSubject.asObservable();
 
   constructor(private http: HttpClient) { }
 
@@ -23,11 +31,16 @@ export class DashboardService {
   loadDashboard(dashboardId: string) {
     this.dashboardId = dashboardId;
     this.http.get(this.dashboardRoute + dashboardId).subscribe(res => this.dashboardSubject.next(res));
+    this.dashboardRefreshSubscription = interval(1000 * this.REFRESH_INTERVAL_SECONDS).pipe(
+      startWith(-1)).subscribe(res => this.dashboardRefreshSubject.next(res));
   }
 
   clearDashboard() {
     this.dashboardId = null;
     this.dashboardSubject.next(null);
+    if (this.dashboardRefreshSubscription) {
+      this.dashboardRefreshSubscription.unsubscribe();
+    }
   }
 
   // Clone the passed widget config, and post the updated widget to the API

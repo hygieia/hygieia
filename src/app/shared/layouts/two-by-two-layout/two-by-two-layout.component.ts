@@ -48,7 +48,11 @@ export class TwoByTwoLayoutComponent extends LayoutComponent implements AfterVie
     const chartContainerArray = this.chartContainers.toArray();
     for (let i = 0; i < chartContainerArray.length && i < this.chartComponents.length; i++) {
       const width = chartContainerArray[i].nativeElement.getBoundingClientRect().width;
-      this.chartComponents[i].view = [width, width * .4];
+      if (this.chartComponents[i].scaleFactor) {
+        this.chartComponents[i].view = [width, width * this.chartComponents[i].scaleFactor];
+      } else {
+        this.chartComponents[i].view = [width, width * .4];
+      }
     }
     if (!(this.cdr as ViewRef).destroyed) {
       this.cdr.detectChanges();
