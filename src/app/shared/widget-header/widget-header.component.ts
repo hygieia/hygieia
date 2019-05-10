@@ -8,6 +8,7 @@ import {LayoutDirective} from '../layouts/layout.directive';
 import {LayoutComponent} from '../layouts/layout/layout.component';
 import {WidgetDirective} from '../widget/widget.directive';
 import {BuildWidgetComponent} from '../../widget_modules/build/build-widget/build-widget.component';
+import {BuildConfigFormComponent} from '../../widget_modules/build/build-config-form/build-config-form.component';
 
 @Component({
   selector: 'app-widget-header',
@@ -40,7 +41,7 @@ export class WidgetHeaderComponent implements OnInit {
   openConfig() {
     const modalRef = this.modalService.open(FormModalComponent);
     modalRef.componentInstance.title = 'Configure';
-    modalRef.componentInstance.modalType = TestFormComponent;
+    modalRef.componentInstance.form = BuildConfigFormComponent;
     modalRef.componentInstance.id = 1;
     modalRef.result.then((result) => {
       console.log(result);
