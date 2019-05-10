@@ -16,7 +16,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { FormModalComponent} from './modals/form-modal/form-modal.component';
 import { DetailModalComponent } from './modals/detail-modal/detail-modal.component';
 import { ConfirmationModalComponent } from './modals/confirmation-modal/confirmation-modal.component';
-import { ModalDirective } from './modals/modal.directive';
+import { FormModalDirective } from './modals/form-modal/form-modal.directive';
 import { TestFormComponent} from '../widget_modules/build/test-form/test-form.component';
 import { NumberCardChartComponent } from './charts/number-card-chart/number-card-chart.component';
 import { LayoutDirective } from './layouts/layout.directive';
@@ -27,9 +27,11 @@ import { WidgetComponent } from './widget/widget.component';
 import { WidgetHeaderComponent } from './widget-header/widget-header.component';
 import {WidgetDirective} from './widget/widget.directive';
 import {BuildWidgetComponent} from '../widget_modules/build/build-widget/build-widget.component';
+import {BuildConfigFormComponent} from '../widget_modules/build/build-config-form/build-config-form.component';
 
 @NgModule({
   declarations: [
+    BuildConfigFormComponent,
     ChartComponent,
     ChartDirective,
     ClickListComponent,
@@ -38,11 +40,11 @@ import {BuildWidgetComponent} from '../widget_modules/build/build-widget/build-w
     ConfirmationModalComponent,
     DetailModalComponent,
     FormModalComponent,
+    FormModalDirective,
     LayoutComponent,
     LayoutDirective,
     LineAndBarChartComponent,
     LineChartComponent,
-    ModalDirective,
     NumberCardChartComponent,
     PaginationComponent,
     TestFormComponent,
@@ -53,6 +55,7 @@ import {BuildWidgetComponent} from '../widget_modules/build/build-widget/build-w
     WidgetDirective
   ],
   entryComponents: [
+    BuildConfigFormComponent,
     ClickListComponent,
     ComboChartComponent,
     ConfirmationModalComponent,
