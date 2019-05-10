@@ -14,6 +14,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 // Component Imports
 import {FormModalComponent} from './shared/modals/form-modal/form-modal.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {BuildConfigFormComponent} from './widget_modules/build/build-config-form/build-config-form.component';
 
 @NgModule({
   declarations: [
