@@ -1,6 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TestDashComponent } from './test-dash.component';
+import {WidgetHeaderComponent} from '../../../shared/widget-header/widget-header.component';
+import {BuildWidgetComponent} from '../../../widget_modules/build/build-widget/build-widget.component';
+import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 
 describe('TestDashComponent', () => {
   let component: TestDashComponent;
@@ -8,17 +11,11 @@ describe('TestDashComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TestDashComponent ]
-    })
-    .compileComponents();
-  }));
-
-  beforeEach(() => {
+      declarations: [ TestDashComponent, WidgetHeaderComponent, BuildWidgetComponent ]
+    });
     fixture = TestBed.createComponent(TestDashComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
+  }));
   it('should create', () => {
     expect(component).toBeTruthy();
   });
