@@ -1,8 +1,9 @@
 import { ChangeDetectorRef, Component, ComponentFactoryResolver, Input, OnInit, ViewChild } from '@angular/core';
 import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 // import {DetailModalComponent} from '../detail-modal/detail-modal.component';
-import {ModalDirective} from '../modal.directive';
+import {FormModalDirective} from './form-modal.directive';
 import {TestFormComponent} from '../../../widget_modules/build/test-form/test-form.component';
+import {BuildConfigFormComponent} from '../../../widget_modules/build/build-config-form/build-config-form.component';
 
 @Component({
   selector: 'app-form-modal',
@@ -12,9 +13,9 @@ import {TestFormComponent} from '../../../widget_modules/build/test-form/test-fo
 export class FormModalComponent implements OnInit {
 
   @Input() title = 'Test';
-  @Input() form = TestFormComponent;
-  @Input() id: number;
-  @ViewChild(ModalDirective) modalTypeTag: ModalDirective;
+  @Input() form;
+  @Input() id = 1;
+  @ViewChild(FormModalDirective) modalTypeTag: FormModalDirective;
 
   constructor(
     public activeModal: NgbActiveModal, private componentFactoryResolver: ComponentFactoryResolver

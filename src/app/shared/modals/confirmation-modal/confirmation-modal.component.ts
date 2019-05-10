@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, ComponentFactoryResolver, Input, OnInit, ViewChild } from '@angular/core';
 import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import {DetailModalComponent} from '../detail-modal/detail-modal.component';
-import {ModalDirective} from '../modal.directive';
+import {FormModalDirective} from '../form-modal/form-modal.directive';
 
 @Component({
   selector: 'app-confirmation-modal',
@@ -12,7 +12,7 @@ export class ConfirmationModalComponent implements OnInit {
 
   @Input() message = 'Would you like to confirm?';
   @Input() form = DetailModalComponent;
-  // @ViewChild(ModalDirective) modalTypeTag: ModalDirective;
+  // @ViewChild(FormModalDirective) modalTypeTag: FormModalDirective;
 
   constructor(
     public activeModal: NgbActiveModal, private componentFactoryResolver: ComponentFactoryResolver
