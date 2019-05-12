@@ -1,0 +1,21 @@
+.widget {
+  background-color: #c8cbce4b;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  height: 250px;
+  letter-spacing: .03em;
+  margin-bottom: 15px;
+  margin-right: 15px;
+  margin-left: 15px;
+  padding: 1em;
+  width: 430px;
+
+  &:hover, &:active {
+    background-color: #ccd1d4;
+  }
+}
+
+.widget-card{
+  border:1px solid rgb(148, 146, 146);
+}

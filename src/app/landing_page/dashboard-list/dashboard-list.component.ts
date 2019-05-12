@@ -1,11 +1,12 @@
+import { HttpParams } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { HttpParams } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
+import { IPaginationParams } from '../../shared/interfaces';
 import { IDashboards } from './dashboard-list';
 import { DashboardListService } from './dashboard-list.service';
-import { IPaginationParams } from '../../shared/interfaces';
 
 @Component({
   selector: 'app-dashboard-list',
@@ -21,7 +22,7 @@ export class DashboardListComponent implements OnInit {
   myDashboardCollectionSize: string;
   defaultPageSize = '10';
 
-  constructor(private landingPageService: DashboardListService) { }
+  constructor(private landingPageService: DashboardListService, private router: Router) { }
 
   ngOnInit() {
     this.findMyDashboards(this.paramBuilder(0, this.defaultPageSize));
@@ -78,6 +79,10 @@ export class DashboardListComponent implements OnInit {
     } else {
       this.findAllDashboards( this.paramBuilder(params.page - 1, params.pageSize) );
     }
+  }
+
+  navigateToTeamDashboard(id: string) {
+    this.router.navigate(['/dashboard/dashboardView']);
   }
 
   setDashboardType(type: string) {

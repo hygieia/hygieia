@@ -8,20 +8,18 @@ import { BuildConfigFormComponent } from './build-config-form/build-config-form.
 import { BuildRoutingModule } from './build-routing-module';
 import { BuildWidgetComponent } from './build-widget/build-widget.component';
 
-
-
 @NgModule({
-    declarations: [BuildWidgetComponent, BuildConfigFormComponent],
-    entryComponents: [BuildConfigFormComponent],
-    imports: [
-        CommonModule,
-        BuildRoutingModule,
-        NgbModule,
-        SharedModule,
-        FormsModule
-    ],
-    exports: [
-        BuildWidgetComponent
-    ]
+  declarations: [BuildWidgetComponent, BuildConfigFormComponent],
+  entryComponents: [BuildConfigFormComponent],
+  imports: [
+    BuildRoutingModule,
+    CommonModule,
+    // FormsModule,
+    NgbModule,
+    SharedModule
+  ],
+  exports: [
+    // BuildWidgetComponent
+  ]
 })
 export class BuildModule { }

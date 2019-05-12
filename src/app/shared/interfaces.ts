@@ -23,3 +23,8 @@ export interface IChart {
   yAxisLabel: string;
   colorScheme: any;
 }
+
+export interface IWidget {
+  component: Type<any>;
+  status: string;
+}

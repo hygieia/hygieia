@@ -10,9 +10,8 @@ import { DashboardService } from 'src/app/shared/dashboard.service';
 import { SharedModule } from 'src/app/shared/shared.module';
 
 import { GET_DASHBOARD_MOCK, POST_DASHBOARD_MOCK } from '../../../shared/dashboard.service.mockdata';
-import { BuildConfigFormComponent } from '../build-config-form/build-config-form.component';
 import { BuildService } from '../build.service';
-import { Build } from '../interfaces';
+import { IBuild } from '../interfaces';
 import { BuildWidgetComponent } from './build-widget.component';
 
 class MockBuildService {
@@ -270,7 +269,7 @@ class MockBuildService {
     lastUpdated: 1553613455230
   };
 
-  fetchDetails(): Observable<Build[]> {
+  fetchDetails(): Observable<IBuild[]> {
     return of(this.mockBuildData.result);
   }
 }
@@ -291,14 +290,14 @@ class MockDashboardService {
   upsertLocally(newComponent: any, newConfig: any) {
     of(GET_DASHBOARD_MOCK).subscribe(dashboard => this.dashboardSubject.next(dashboard));
   }
+
+  clearDashboard() {}
 }
 
 @NgModule({
-  declarations: [BuildConfigFormComponent],
+  declarations: [],
   imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([]), NgbModule],
-  entryComponents: [
-    BuildConfigFormComponent
-  ]
+  entryComponents: []
 })
 class TestModule { }
 
@@ -318,7 +317,7 @@ describe('BuildWidgetComponent', () => {
       imports: [
         TestModule, HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([])
       ],
-      declarations: [BuildWidgetComponent],
+      declarations: [],
       schemas: [NO_ERRORS_SCHEMA]
     })
       .compileComponents();
@@ -340,19 +339,7 @@ describe('BuildWidgetComponent', () => {
     // Mock Date April 1st, 2019
     const baseTime = new Date(2019, 3, 1);
     jasmine.clock().mockDate(baseTime);
-
     fixture.detectChanges();
-    component.ngOnInit();
-    expect(component.charts[0].data[0].series.length).toEqual(0);
-    expect(component.charts[0].data[1].series.length).toEqual(0);
-    expect(component.charts[1].data.length).toEqual(0);
-    expect(component.charts[2].data[0].length).toEqual(0);
-    expect(component.charts[2].data[1][0].series.length).toEqual(0);
-    expect(component.charts[3].data[0].value).toEqual(0);
-    expect(component.charts[3].data[1].value).toEqual(0);
-    expect(component.charts[3].data[2].value).toEqual(0);
-
-    component.ngAfterViewInit();
     component.stopRefreshInterval();
     buildService.fetchDetails('123', 14).subscribe(result => {
       component.loadCharts(result);

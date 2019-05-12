@@ -19,7 +19,7 @@
         <div class="gap" >
           <h3> My {{ dashboardType }} Dashboards</h3>
           <table class="table table-hover orders-table">
-            <tr *ngFor="let dashboard of myDashboards"  class="table-row table">
+            <tr *ngFor="let dashboard of myDashboards"  class="table-row table" routerLink="/dashboard/dashboardview/{{dashboard.id}}" >
               <td>
                 <span class="fa fa-lg left-icon" [ngClass]="{'fa-cubes' : dashboard.type === 'Product'}"></span>
                 {{ dashboard.title }} {{ dashboard.type }}
@@ -38,10 +38,10 @@
         <div class="gap" >
           <h3> All {{ dashboardType }} Dashboards</h3>
           <table class="table table-hover orders-table">
-            <tr *ngFor="let dashboard of allDashboards" class="table-row">
+            <tr *ngFor="let dashboard of allDashboards" class="table-row" routerLink="/dashboard/dashboardview/{{dashboard.id}}" >
               <td>
                 <span class="fa fa-lg left-icon" [ngClass]="{'fa-cubes' : dashboard.type === 'Product'}"></span>
-                {{ dashboard.title }}
+                {{ dashboard.title }}{{dashboard.id}}
               </td>
             </tr>
           </table>

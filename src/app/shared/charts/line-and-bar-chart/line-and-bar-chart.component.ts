@@ -227,13 +227,11 @@ export class LineAndBarChartComponent extends BaseChartComponent {
     if (this.filteredDomain) {
       this.xDomainLine = this.filteredDomain;
     }
-
     this.yDomainLine = this.getYDomainLine();
     this.seriesDomain = this.getSeriesDomain();
 
     this.xScaleLine = this.getXScaleLine(this.xDomainLine, this.dims.width);
     this.yScaleLine = this.getYScaleLine(this.yDomainLine, this.dims.height);
-
     this.setColors();
     this.legendOptions = this.getLegendOptions();
 
@@ -410,6 +408,10 @@ export class LineAndBarChartComponent extends BaseChartComponent {
 
   getYScale(): any {
     this.yDomain = this.getYDomain();
+    this.yDomainLine = this.getYDomainLine();
+    if (Math.max(...this.yDomainLine) > Math.max(...this.yDomain)) {
+      this.yDomain[1] = this.yDomainLine[1];
+    }
     const scale = scaleLinear()
       .range([this.dims.height, 0])
       .domain(this.yDomain);

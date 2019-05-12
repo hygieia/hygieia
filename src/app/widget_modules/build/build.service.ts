@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Build, BuildResponse } from './interfaces';
+import { IBuild, IBuildResponse } from './interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -14,11 +14,11 @@ export class BuildService {
 
   constructor(private http: HttpClient) { }
 
-  fetchDetails(componentId: string, numberOfDays: number): Observable<Build[]> {
+  fetchDetails(componentId: string, numberOfDays: number): Observable<IBuild[]> {
     const params = {
       params: new HttpParams().set('componentId', componentId).set('numberOfDays', numberOfDays.toFixed(0))
     };
-    return this.http.get<BuildResponse>(this.buildDetailRoute, params).pipe(
+    return this.http.get<IBuildResponse>(this.buildDetailRoute, params).pipe(
       map(response => response.result));
   }
 }
