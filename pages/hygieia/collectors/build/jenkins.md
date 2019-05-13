@@ -97,4 +97,8 @@ jenkins.saveLog=true
 # Search criteria enabled via properties (max search criteria = 2) 
 jenkins.searchFields[0]= options.jobName
 jenkins.searchFields[1]= niceName 
+
+# Timeout values
+jenkins.connectTimeout=20000
+jenkins.readTimeout=20000
 ```
