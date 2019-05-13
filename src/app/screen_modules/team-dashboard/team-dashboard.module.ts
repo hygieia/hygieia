@@ -4,7 +4,7 @@ import { BuildWidgetComponent} from '../../widget_modules/build/build-widget/bui
 import { DashboardViewComponent } from './dashboard-view/dashboard-view.component';
 import { SharedModule } from '../../shared/shared.module';
 import { TeamDashboardRoutingModule } from './team-dashboard-routing.module';
-import { TeamDashRoutingModule } from './team-dashboard-routing-module';
+import { TestDashboardRoutingModule } from './test-dashboard-routing-module';
 import { TestDashComponent } from './test-dash/test-dash.component';
 
 @NgModule({
@@ -16,7 +16,7 @@ import { TestDashComponent } from './test-dash/test-dash.component';
   imports: [
     SharedModule,
     TeamDashboardRoutingModule,
-    TeamDashRoutingModule
+    TestDashboardRoutingModule
   ],
   entryComponents: [
     BuildWidgetComponent

@@ -6,7 +6,7 @@ const routes: Routes = [
   { path: 'user', loadChildren: './user/user.module#UserModule' },
   { path: 'build', loadChildren: './widget_modules/build/build.module#BuildModule' },
   { path: 'dashboard', loadChildren: './screen_modules/team-dashboard/team-dashboard.module#TeamDashboardModule' },
-  { path: 'test-dash',  loadChildren: './screen_modules/team-dashboard/team-dashboard.module#TeamDashboardModule'}
+  // { path: 'test-dash',  loadChildren: './screen_modules/team-dashboard/team-dashboard.module#TeamDashboardModule'}
 ];
 
 @NgModule({

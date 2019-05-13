@@ -40,7 +40,7 @@ import { WidgetHeaderComponent } from './widget-header/widget-header.component';
   declarations: [
     BaseTemplateComponent,
     BuildConfigFormComponent,
-    BuildWidgetComponent,
+    // BuildWidgetComponent,
     CaponeTemplateComponent,
     ChartComponent,
     ChartDirective,
@@ -69,7 +69,7 @@ import { WidgetHeaderComponent } from './widget-header/widget-header.component';
   ],
   entryComponents: [
     BuildConfigFormComponent,
-    BuildWidgetComponent,
+    // BuildWidgetComponent,
     CaponeTemplateComponent,
     ClickListComponent,
     ComboChartComponent,
@@ -93,7 +93,7 @@ import { WidgetHeaderComponent } from './widget-header/widget-header.component';
     ReactiveFormsModule
   ],
   exports: [
-    BuildWidgetComponent,
+    // BuildWidgetComponent,
     CaponeTemplateComponent,
     ChartComponent,
     ChartDirective,
