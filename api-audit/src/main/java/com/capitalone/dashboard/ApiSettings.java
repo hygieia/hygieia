@@ -37,10 +37,14 @@ public class ApiSettings {
     @Value("${testResultSkippedPriority:High}")
     public String testResultSkippedPriority;
     private String serviceAccountRegEx;
-    @Value("${highVulnerabilitiesAge:0}")
-    private int highVulnerabilitiesAge;
-    @Value("${criticalVulnerabilitiesAge:0}")
-    private int criticalVulnerabilitiesAge;
+    @Value("${highSecurityVulnerabilitiesAge:0}")
+    private int highSecurityVulnerabilitiesAge;
+    @Value("${criticalSecurityVulnerabilitiesAge:0}")
+    private int criticalSecurityVulnerabilitiesAge;
+    @Value("${highLicenseVulnerabilitiesAge:0}")
+    private int highLicenseVulnerabilitiesAge;
+    @Value("${criticalLicenseVulnerabilitiesAge:0}")
+    private int criticalLicenseVulnerabilitiesAge;
 
     public String getKey() {
         return key;
@@ -178,20 +182,37 @@ public class ApiSettings {
         this.testResultThreshold = testResultThreshold;
     }
 
-    public int getHighVulnerabilitiesAge() {
-        return highVulnerabilitiesAge;
+    public int getHighSecurityVulnerabilitiesAge() {
+        return highSecurityVulnerabilitiesAge;
     }
 
-    public void setHighVulnerabilitiesAge(int highVulnerabilitiesAge) {
-        this.highVulnerabilitiesAge = highVulnerabilitiesAge;
+    public void setHighSecurityVulnerabilitiesAge(int highSecurityVulnerabilitiesAge) {
+        this.highSecurityVulnerabilitiesAge = highSecurityVulnerabilitiesAge;
     }
 
-    public int getCriticalVulnerabilitiesAge() {
-        return criticalVulnerabilitiesAge;
+    public int getCriticalSecurityVulnerabilitiesAge() {
+        return criticalSecurityVulnerabilitiesAge;
     }
 
-    public void setCriticalVulnerabilitiesAge(int criticalVulnerabilitiesAge) {
-        this.criticalVulnerabilitiesAge = criticalVulnerabilitiesAge;
+    public void setCriticalSecurityVulnerabilitiesAge(int criticalSecurityVulnerabilitiesAge) {
+        this.criticalSecurityVulnerabilitiesAge = criticalSecurityVulnerabilitiesAge;
     }
+
+    public int getHighLicenseVulnerabilitiesAge() {
+        return highLicenseVulnerabilitiesAge;
+    }
+
+    public void setHighLicenseVulnerabilitiesAge(int highLicenseVulnerabilitiesAge) {
+        this.highLicenseVulnerabilitiesAge = highLicenseVulnerabilitiesAge;
+    }
+
+    public int getCriticalLicenseVulnerabilitiesAge() {
+        return criticalLicenseVulnerabilitiesAge;
+    }
+
+    public void setCriticalLicenseVulnerabilitiesAge(int criticalLicenseVulnerabilitiesAge) {
+        this.criticalLicenseVulnerabilitiesAge = criticalLicenseVulnerabilitiesAge;
+    }
+
 
 }
