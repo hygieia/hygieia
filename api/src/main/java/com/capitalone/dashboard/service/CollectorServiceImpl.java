@@ -15,7 +15,8 @@ import com.capitalone.dashboard.repository.DashboardRepository;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -86,8 +88,8 @@ public class CollectorServiceImpl implements CollectorService {
     // method to remove jobUrl and instanceUrl from build collector items.
     private Page<CollectorItem> removeJobUrlAndInstanceUrl(Page<CollectorItem> collectorItems) {
         for (CollectorItem cItem : collectorItems) {
-            if(cItem.getOptions().containsKey("jobUrl")) cItem.getOptions().remove("jobUrl");
-            if(cItem.getOptions().containsKey("instanceUrl")) cItem.getOptions().remove("instanceUrl");
+            cItem.getOptions().remove("jobUrl");
+            cItem.getOptions().remove("instanceUrl");
         }
         return collectorItems;
     }
@@ -169,7 +171,6 @@ public class CollectorServiceImpl implements CollectorService {
         //Flow is here because there is only one collector item with the same collector id and niceName. So, update with
         // the new info - keep the same collector item id. Save = Update or Insert.
         item.setId(existing.getId());
-
         return collectorItemRepository.save(item);
     }
 
@@ -184,7 +185,6 @@ public class CollectorServiceImpl implements CollectorService {
         //Flow is here because there is only one collector item with the same collector id and niceName. So, update with
         // the new info - keep the same collector item id. Save = Update or Insert.
         item.setId(existing.getId());
-
         return collectorItemRepository.save(item);
     }
 
@@ -224,6 +224,37 @@ public class CollectorServiceImpl implements CollectorService {
             ids.add(item.getId());
         }
         return (List<CollectorItem>) collectorItemRepository.findAll(ids);
+    }
+
+    @Override
+    public void deleteCollectorItem(String id, boolean deleteFromComponent) throws HygieiaException {
+        ObjectId objectId = new ObjectId(id);
+        CollectorItem ci = getCollectorItem(objectId);
+        if(ci == null) {return;}
+        CollectorType type = ci.getCollector().getCollectorType();
+        // First remove the association from component
+        if(deleteFromComponent) {
+            List<Component> components = componentRepository.findByCollectorTypeAndItemIdIn(type, Arrays.asList(objectId));
+            if (CollectionUtils.isEmpty(components)) return;
+            for (Component component : components) {
+                if (component == null) continue;
+                Map<CollectorType, List<CollectorItem>> itemMap = component.getCollectorItems();
+                if(MapUtils.isEmpty(itemMap)) continue;
+                List<CollectorItem> items = component.getCollectorItems(type);
+                if(CollectionUtils.isEmpty(items)) continue;
+                List<CollectorItem> itemsCopy = Lists.newArrayList(items);
+                items.stream().filter(item -> objectId.equals(item.getId())).forEach(itemsCopy::remove);
+                if(CollectionUtils.isEmpty(itemsCopy)) {
+                    itemMap.remove(type);
+                } else {
+                    itemMap.put(type,itemsCopy);
+                }
+                componentRepository.save(component);
+            }
+        }
+
+        //delete the collector item.
+        collectorItemRepository.delete(objectId);
     }
 
     private Collector collectorById(ObjectId collectorId, List<Collector> collectors) {

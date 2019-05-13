@@ -27,6 +27,12 @@ public class HudsonSettings {
     @Value("${folderDepth:10}")
     private int folderDepth;
 
+    @Value("${jenkins.connectTimeout:20000}")
+    private int connectTimeout;
+
+    @Value("${jenkins.readTimeout:20000}")
+    private int readTimeout;
+
     public String getCron() {
         return cron;
     }
@@ -115,4 +121,12 @@ public class HudsonSettings {
     public int getFolderDepth() {
         return folderDepth;
     }
+
+    public int getConnectTimeout() { return connectTimeout; }
+
+    public void setConnectTimeout(int connectTimeout) { this.connectTimeout = connectTimeout; }
+
+    public int getReadTimeout() { return readTimeout; }
+
+    public void setReadTimeout(int readTimeout) { this.readTimeout = readTimeout; }
 }
