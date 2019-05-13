@@ -78,7 +78,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
             System.getProperties().put("http.proxyPort", proxyPort);
             System.getProperties().put("https.proxyHost", proxyUrl);
             System.getProperties().put("https.proxyPort", proxyPort);
-            Z
+
             if(!StringUtils.isEmpty(settings.getNonProxy())) {
                 System.getProperties().put("http.nonProxyHosts", settings.getNonProxy());
             }
