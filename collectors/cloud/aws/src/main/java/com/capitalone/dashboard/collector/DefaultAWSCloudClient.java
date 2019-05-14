@@ -70,11 +70,19 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 
 
     public final void setClients() {
-        System.getProperties().put("http.proxyHost", settings.getProxyHost());
-        System.getProperties().put("http.proxyPort", settings.getProxyPort());
-        System.getProperties().put("https.proxyHost", settings.getProxyHost());
-        System.getProperties().put("https.proxyPort", settings.getProxyPort());
-        System.getProperties().put("http.nonProxyHosts", settings.getNonProxy());
+        String proxyUrl = settings.getProxyHost();
+        String proxyPort = settings.getProxyPort();
+
+        if (!StringUtils.isEmpty(proxyUrl) && !StringUtils.isEmpty(proxyPort)) {
+            System.getProperties().put("http.proxyHost", proxyUrl);
+            System.getProperties().put("http.proxyPort", proxyPort);
+            System.getProperties().put("https.proxyHost", proxyUrl);
+            System.getProperties().put("https.proxyPort", proxyPort);
+
+            if(!StringUtils.isEmpty(settings.getNonProxy())) {
+                System.getProperties().put("http.nonProxyHosts", settings.getNonProxy());
+            }
+        }
 
         ec2Client = new AmazonEC2Client(new AWSCredentialsProviderChain(new ProfileCredentialsProvider(settings.getProfile()),
                 new InstanceProfileCredentialsProvider()));
