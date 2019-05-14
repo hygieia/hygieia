@@ -314,9 +314,7 @@ public class DefaultJiraClient implements JiraClient {
                 if(list.contains(name)){
                     issueTypes.put(name, id);
                 }
-
             }
-
 
         } catch (ParseException pe) {
             LOGGER.error("Parser exception when parsing teams", pe);
