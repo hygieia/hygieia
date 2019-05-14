@@ -41,13 +41,14 @@ public class AuditCollectorTask extends CollectorTask<AuditCollector> {
     private CmdbRepository cmdbRepository;
     private ComponentRepository componentRepository;
     private CollectorItemRepository collectorItemRepository;
+    private static final String COLLECTOR_NAME = "AuditCollector";
 
     @Autowired
     public AuditCollectorTask(TaskScheduler taskScheduler, DashboardRepository dashboardRepository,
                               AuditResultRepository auditResultRepository, AuditCollectorRepository auditCollectorRepository,
                               CmdbRepository cmdbRepository, ComponentRepository componentRepository,
                               CollectorItemRepository collectorItemRepository, AuditSettings settings) {
-        super(taskScheduler, "AuditCollector");
+        super(taskScheduler, COLLECTOR_NAME);
         this.dashboardRepository = dashboardRepository;
         this.auditResultRepository = auditResultRepository;
         this.auditCollectorRepository = auditCollectorRepository;
@@ -83,7 +84,8 @@ public class AuditCollectorTask extends CollectorTask<AuditCollector> {
         long auditEndDateTimeStamp = Instant.now().toEpochMilli();
         LOGGER.info("NFRR Audit Collector audits with begin,end timestamps as " + auditBeginDateTimeStamp + "," + auditEndDateTimeStamp);
 
-        AuditCollectorUtil auditCollectorUtil = new AuditCollectorUtil(getCollector(), componentRepository, collectorItemRepository);
+        AuditCollector collector = getCollectorRepository().findByName(COLLECTOR_NAME);
+        AuditCollectorUtil auditCollectorUtil = new AuditCollectorUtil(collector, componentRepository, collectorItemRepository);
         dashboards.forEach((Dashboard dashboard) -> {
                 Map<AuditType, Audit> auditMap = auditCollectorUtil.getAudit(dashboard, settings,
                         auditBeginDateTimeStamp, auditEndDateTimeStamp);

@@ -90,6 +90,7 @@ public class AuditCollectorUtil {
     private static final String FAILURE_COUNT = "failureCount";
     private static final String SKIP_COUNT = "skippedCount";
     private static final String TOTAL_COUNT = "totalCount";
+    private static final String OPT_DBRD_ID = "dashboardId";
 
     private Dashboard dashboard;
     static List<CollectorItem> auditCollectorItems = new ArrayList<>();
@@ -680,6 +681,7 @@ public class AuditCollectorUtil {
             collectorItem.setLastUpdated(System.currentTimeMillis());
             collectorItem.setNiceName(auditType.name().toLowerCase());
             collectorItem.setDescription(description);
+            collectorItem.getOptions().put(OPT_DBRD_ID, getDashboard().getId());
             return collectorItem;
         }));
         return collectorItemRepository.save(optCollectorItem.get());
