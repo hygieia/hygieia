@@ -8,9 +8,6 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by stevegal on 16/06/2018.
- */
 @Component
 @ConfigurationProperties(prefix = "cloudwatch")
 public class AwsCloudwatchLogAnalyzerSettings {

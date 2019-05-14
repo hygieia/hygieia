@@ -11,9 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
-/**
- * Created by stevegal on 22/06/2018.
- */
 @RestController
 public class LogAnalysisController {
 

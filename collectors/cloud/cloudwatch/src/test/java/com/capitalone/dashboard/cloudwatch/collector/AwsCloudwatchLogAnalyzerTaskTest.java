@@ -31,9 +31,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-/**
- * Created by stevegal on 16/06/2018.
- */
 public class AwsCloudwatchLogAnalyzerTaskTest {
 
     private AwsCloudwatchLogAnalyzerTask subject;

@@ -17,9 +17,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-/**
- * Created by stevegal on 22/06/2018.
- */
 @Service
 public class LogAnalysisServiceImpl implements LogAnalysisService {
 

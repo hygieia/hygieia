@@ -5,10 +5,6 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-
-/**
- * Created by stevegal on 16/06/2018.
- */
 public class AwsCloudwatchLogAnalyzerTest {
 
     @Test
