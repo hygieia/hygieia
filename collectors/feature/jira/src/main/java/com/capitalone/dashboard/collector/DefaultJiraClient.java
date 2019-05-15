@@ -68,12 +68,13 @@ public class DefaultJiraClient implements JiraClient {
     private static final String ISSUE_BY_PROJECT_REST_SUFFIX_BY_DATE = "rest/api/2/search?jql=project=%s and issueType in ('%s') and updatedDate>='%s'&fields=%s&startAt=%s";
     private static final String ISSUE_BY_BOARD_REST_SUFFIX_BY_DATE = "rest/agile/1.0/board/%s/issue?jql=issueType in ('%s') and updatedDate>='%s'&fields=%s&startAt=%s";
     private static final String EPIC_REST_SUFFIX = "rest/agile/1.0/issue/%s";
-
+    private static final String ISSUE_TYPES_REST_SUFFIX = "rest/api/2/issuetype";
     private static final String ISSUE_BY_BOARD_FULL_REFRESH_REST_SUFFIX = "rest/agile/1.0/%s/%s/issue?jql=issueType in ('%s') and updatedDate>='%s'&fields=id&startAt=%s";
 
     private static final String STATIC_ISSUE_FIELDS = "id,key,issuetype,status,summary,created,updated,project,issuelinks,assignee,sprint,epic,aggregatetimeoriginalestimate,timeoriginalestimate";
 
     private static final String DEFAULT_ISSUE_TYPES = "Story,Epic";
+    private static final String EPIC_ISSUE_TYPE = "Epic";
     private static final int JIRA_BOARDS_PAGING = 50;
     private final FeatureSettings featureSettings;
     private final RestOperations restOperations;
@@ -247,13 +248,13 @@ public class DefaultJiraClient implements JiraClient {
      * @return List of Feature
      */
     @Override
-    public FeatureEpicResult getIssues(Team board) {
+    public FeatureEpicResult getIssues(Team board, Map<String, String> issueTypeIds) {
         Map<String, Epic> epicMap = new HashMap<>();
         FeatureEpicResult featureEpicResult = new FeatureEpicResult();
 
         String lookBackDate = getUpdatedSince(board.getLastCollected());
 
-        String issueTypes = featureSettings.getJiraIssueTypeNames() == null ? DEFAULT_ISSUE_TYPES : String.join(",", featureSettings.getJiraIssueTypeNames());
+        String issueTypes = getIssueTypes();
 
         List<Feature> features = new ArrayList<>();
         boolean isLast = false;
@@ -264,7 +265,7 @@ public class DefaultJiraClient implements JiraClient {
                     + ISSUE_BY_BOARD_REST_SUFFIX_BY_DATE;
             url = String.format(url, board.getTeamId(), issueTypes.replaceAll(",", "','"), lookBackDate, issueFields, startAt);
             try {
-                IssueResult temp = getFeaturesFromQueryURL(url, epicMap, board);
+                IssueResult temp = getFeaturesFromQueryURL(url, epicMap, board, issueTypeIds);
 
                 if (temp.getTotal() >= featureSettings.getMaxNumberOfFeaturesPerBoard()){
                     LOGGER.info("Board: \'" + board.getName() + "\' passes the feature max limit at " + temp.getTotal() + " features. Skipping..");
@@ -292,6 +293,36 @@ public class DefaultJiraClient implements JiraClient {
         featureEpicResult.getEpicList().addAll(epicMap.values());
         return featureEpicResult;
     }
+    @Override
+    public Map<String, String> getJiraIssueTypeIds() {
+        Map<String, String> issueTypes = new HashMap<>();
+        try {
+            String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/")
+                    + ISSUE_TYPES_REST_SUFFIX;
+            ResponseEntity<String> responseEntity = makeRestCall(url);
+            String responseBody = responseEntity.getBody();
+
+            JSONArray issueTypesArray = (JSONArray) parser.parse(responseBody);
+            if (issueTypesArray == null) {
+                throw new HygieiaException("Unable to get Issue Type IDs from: " + url, HygieiaException.INVALID_CONFIGURATION);
+            }
+            List<String> list = new ArrayList<>(Arrays.asList( getIssueTypes().split(",")));
+            for (Object obj : issueTypesArray) {
+                JSONObject jo = (JSONObject) obj;
+                String name = getString(jo,"name");
+                String id = getString(jo,"id");
+                if(list.contains(name)){
+                    issueTypes.put(name, id);
+                }
+            }
+
+        } catch (ParseException pe) {
+            LOGGER.error("Parser exception when parsing teams", pe);
+        } catch (HygieiaException e) {
+            LOGGER.error("Error in calling JIRA API", e);
+        }
+        return issueTypes;
+    }
 
     /**
      * Get list of Features (Issues in Jira terms) given a project.
@@ -300,13 +331,13 @@ public class DefaultJiraClient implements JiraClient {
      * @return List of Feature
      */
     @Override
-    public FeatureEpicResult getIssues(Scope project) {
+    public FeatureEpicResult getIssues(Scope project, Map<String, String> issueTypeIds) {
         Map<String, Epic> epicMap = new HashMap<>();
         FeatureEpicResult featureEpicResult = new FeatureEpicResult();
 
         String lookBackDate = getUpdatedSince(project.getLastCollected());
 
-        String issueTypes = featureSettings.getJiraIssueTypeNames() == null ? DEFAULT_ISSUE_TYPES : String.join(",", featureSettings.getJiraIssueTypeNames());
+        String issueTypes = getIssueTypes();
 
         List<Feature> features = new ArrayList<>();
 
@@ -319,7 +350,7 @@ public class DefaultJiraClient implements JiraClient {
                         + ISSUE_BY_PROJECT_REST_SUFFIX_BY_DATE;
                 url = String.format(url, project.getpId(), issueTypes.replaceAll(",", "','"), lookBackDate, issueFields, startAt);
 
-                IssueResult temp = getFeaturesFromQueryURL(url, epicMap, null);
+                IssueResult temp = getFeaturesFromQueryURL(url, epicMap, null, issueTypeIds);
 
                 features.addAll(temp.getFeatures());
                 isLast = temp.getTotal() == features.size() || CollectionUtils.isEmpty(temp.getFeatures());
@@ -336,7 +367,7 @@ public class DefaultJiraClient implements JiraClient {
     }
 
 
-    private IssueResult getFeaturesFromQueryURL(String url, Map<String, Epic> epicMap, Team board) throws HygieiaException, ParseException {
+    private IssueResult getFeaturesFromQueryURL(String url, Map<String, Epic> epicMap, Team board, Map<String, String> issueTypeIds) throws HygieiaException, ParseException {
         IssueResult result = new IssueResult();
         try {
             ResponseEntity<String> responseEntity = makeRestCall(url);
@@ -357,12 +388,16 @@ public class DefaultJiraClient implements JiraClient {
                     JSONObject issueJson = (JSONObject) issue;
                     String type = getIssueType(issueJson);
 
-                    if (!StringUtils.isEmpty(featureSettings.getJiraEpicId()) && featureSettings.getJiraEpicId().equals(type)) {
+                    if (!StringUtils.isEmpty(issueTypeIds.get(EPIC_ISSUE_TYPE)) && issueTypeIds.get(EPIC_ISSUE_TYPE).equals(type)) {
                         saveEpic(issueJson, epicMap, true);
                         return;
                     }
 
-                    if (featureSettings.getJiraStoryIds().length > 0 && Arrays.asList(featureSettings.getJiraStoryIds()).contains(type)) {
+                    boolean isValidIssueType = !issueTypeIds.get(EPIC_ISSUE_TYPE).equals(type)
+                            && !CollectionUtils.isEmpty(issueTypeIds.values())
+                            && issueTypeIds.values().contains(type);
+
+                    if (isValidIssueType) {
                         Feature feature = getFeature((JSONObject) issue, board);
                         String epicId = feature.getsEpicID();
                         if (!StringUtils.isEmpty(epicId)) {
@@ -385,6 +420,13 @@ public class DefaultJiraClient implements JiraClient {
         return getString(issueType, "id");
     }
 
+    /**
+     *  Returns issue types from settings or default values if settings don't exist
+     * @return issue type id string
+     */
+    private String getIssueTypes(){
+        return featureSettings.getJiraIssueTypeNames() == null ? DEFAULT_ISSUE_TYPES : String.join(",", featureSettings.getJiraIssueTypeNames());
+    }
 
     /**
      * Construct Feature object
@@ -724,7 +766,7 @@ public class DefaultJiraClient implements JiraClient {
         boolean isLast = false;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
         String updatedDate = LocalDateTime.now().minusDays(featureSettings.getFirstRunHistoryDays()).format(formatter);
-        String issueTypes = featureSettings.getJiraIssueTypeNames() == null ? DEFAULT_ISSUE_TYPES : String.join(",", featureSettings.getJiraIssueTypeNames());
+        String issueTypes = getIssueTypes();
         List<String> result = new ArrayList<>();
         while (!isLast) {
 

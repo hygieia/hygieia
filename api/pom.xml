@@ -79,6 +79,12 @@
     <dependency>
       <groupId>com.capitalone.dashboard</groupId>
       <artifactId>core</artifactId>
+        <exclusions>
+            <exclusion>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-all</artifactId>
+            </exclusion>
+        </exclusions>
         <version>3.1.1-SNAPSHOT</version>
     </dependency>
 
@@ -198,10 +204,16 @@
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
+        <exclusions>
+            <exclusion>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-core</artifactId>
+            </exclusion>
+        </exclusions>
     </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-all</artifactId>
+      <artifactId>hamcrest-core</artifactId>
       <version>1.3</version>
       <scope>test</scope>
     </dependency>
