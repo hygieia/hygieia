@@ -165,29 +165,17 @@ feature.jiraStoryPointsFieldName=customfield_10003
 #############################################################################
 feature.jiraTeamFieldName=
 
-#############################################################################
-# In Jira, your instance will have its own Id for the issueTypes. 
-# You can retrieve the issueType IDs from the following API request:
-# https://[your-jira-domain-name]/rest/api/2/issuetype
-#############################################################################
-feature.jiraStoryIds[0]=
-feature.jiraStoryIds[1]=
-
-#############################################################################
-# In Jira, your instance will have its own Id for the Epic
-# You can find the value from the following API request:
-# https://[your-jira-domain-name]/rest/api/2/issuetype
-#############################################################################
-feature.jiraEpicId=
-
 # Defines how to update features per board. If true then only update based on enabled collectorItems otherwise full update
-feature.collectorItemOnlyUpdate=
+feature.collectorItemOnlyUpdate=true
 
 #Defines the maximum number of features allow per board. If limit is reach collection will not happen for given board
-feature.maxNumberOfFeaturesPerBoard=
+feature.maxNumberOfFeaturesPerBoard=1000
 
 # Set this to true if you use boards as team
 feature.jiraBoardAsTeam=false
+
+#Defines the number of hours between each board/team and project data refresh
+feature.refreshTeamAndProjectHours=3
 ```
 
 ## Troubleshooting
