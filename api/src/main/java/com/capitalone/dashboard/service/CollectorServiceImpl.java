@@ -139,7 +139,7 @@ public class CollectorServiceImpl implements CollectorService {
     @Override
     public CollectorItem createCollectorItem(CollectorItem item) {
         List<CollectorItem> existing = lookUpCollectorItem(item);
-        existing.stream().sorted(Comparator.comparing(CollectorItem::getLastUpdated));
+        existing.sort(Comparator.comparing(CollectorItem::getLastUpdated).reversed());
         if (CollectionUtils.isNotEmpty(existing)) {
             Optional<CollectorItem> enabledItem = existing.stream().filter(CollectorItem::isEnabled).findFirst();
             //if enabled item is found, set itemId
