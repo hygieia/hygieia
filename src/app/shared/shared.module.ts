@@ -29,18 +29,20 @@ import { LineChartComponent } from './charts/line-chart/line-chart.component';
 import { NumberCardChartComponent } from './charts/number-card-chart/number-card-chart.component';
 import { PaginationComponent } from './pagination/pagination.component';
 import { PlaceholderWidgetComponent } from './widget/placeholder-widget/placeholder-widget.component';
+import { MinutesPipe } from './pipes/minutes.pipe';
 import { TemplatesDirective } from './templates/templates.directive';
 import { TestFormComponent} from '../widget_modules/build/test-form/test-form.component';
 import { TwoByTwoLayoutComponent } from './layouts/two-by-two-layout/two-by-two-layout.component';
 import { WidgetComponent } from './widget/widget.component';
 import { WidgetDirective } from './widget/widget.directive';
 import { WidgetHeaderComponent } from './widget-header/widget-header.component';
+import { WidgetHeaderDirectiveDirective } from './widget-header/widget-header-directive.directive';
 
 @NgModule({
   declarations: [
     BaseTemplateComponent,
     BuildConfigFormComponent,
-    // BuildWidgetComponent,
+    BuildWidgetComponent,
     CaponeTemplateComponent,
     ChartComponent,
     ChartDirective,
@@ -56,6 +58,7 @@ import { WidgetHeaderComponent } from './widget-header/widget-header.component';
     LayoutDirective,
     LineAndBarChartComponent,
     LineChartComponent,
+    MinutesPipe,
     NumberCardChartComponent,
     PaginationComponent,
     PlaceholderWidgetComponent,
@@ -65,11 +68,12 @@ import { WidgetHeaderComponent } from './widget-header/widget-header.component';
     TwoByTwoLayoutComponent,
     WidgetComponent,
     WidgetDirective,
-    WidgetHeaderComponent
+    WidgetHeaderComponent,
+    WidgetHeaderDirectiveDirective
   ],
   entryComponents: [
     BuildConfigFormComponent,
-    // BuildWidgetComponent,
+    BuildWidgetComponent,
     CaponeTemplateComponent,
     ClickListComponent,
     ComboChartComponent,
@@ -93,7 +97,7 @@ import { WidgetHeaderComponent } from './widget-header/widget-header.component';
     ReactiveFormsModule
   ],
   exports: [
-    // BuildWidgetComponent,
+    BuildWidgetComponent,
     CaponeTemplateComponent,
     ChartComponent,
     ChartDirective,

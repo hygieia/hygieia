@@ -23,7 +23,7 @@
     "@angular/router": "~7.2.0",
     "@auth0/angular-jwt": "^2.1.0",
     "@ng-bootstrap/ng-bootstrap": "^4.0.1",
-    "@swimlane/ngx-charts": "^10.1.0",
+    "@swimlane/ngx-charts": "^11.1.0",
     "@swimlane/ngx-ui": "^25.6.0",
     "@angular/flex-layout": "^7.0.0-beta.24",
     "@types/lodash": "^4.14.123",

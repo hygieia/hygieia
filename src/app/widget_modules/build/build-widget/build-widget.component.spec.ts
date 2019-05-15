@@ -5,7 +5,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { Observable, of, ReplaySubject } from 'rxjs';
+import { from, Observable, of, ReplaySubject } from 'rxjs';
 import { DashboardService } from 'src/app/shared/dashboard.service';
 import { SharedModule } from 'src/app/shared/shared.module';
 
@@ -278,6 +278,8 @@ class MockDashboardService {
   private dashboardSubject = new ReplaySubject<any>(1);
 
   public dashboardConfig$ = this.dashboardSubject.asObservable();
+
+  public dashboardRefresh$ = from([1, 2, 3]);
 
   loadDashboard(dashboardId: string) {
     of(GET_DASHBOARD_MOCK).subscribe(res => this.dashboardSubject.next(res));

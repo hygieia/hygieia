@@ -4,6 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxUIModule } from '@swimlane/ngx-ui';
 
+import { MinutesPipe } from '../../pipes/minutes.pipe';
 import { ComboSeriesVerticalComponent } from '../combo-series-vertical/combo-series-vertical.component';
 import { LineAndBarChartComponent } from '../line-and-bar-chart/line-and-bar-chart.component';
 import { ComboChartComponent } from './combo-chart.component';
@@ -14,7 +15,7 @@ describe('ComboChartComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ComboChartComponent, LineAndBarChartComponent, ComboSeriesVerticalComponent],
+      declarations: [ComboChartComponent, LineAndBarChartComponent, ComboSeriesVerticalComponent, MinutesPipe],
       imports: [CommonModule, NgxChartsModule, BrowserAnimationsModule, NgxUIModule]
     })
       .compileComponents();

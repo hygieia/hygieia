@@ -6,10 +6,11 @@ import { SharedModule } from '../../shared/shared.module';
 import { TeamDashboardRoutingModule } from './team-dashboard-routing.module';
 import { TestDashboardRoutingModule } from './test-dashboard-routing-module';
 import { TestDashComponent } from './test-dash/test-dash.component';
+import {WidgetHeaderComponent} from '../../shared/widget-header/widget-header.component';
 
 @NgModule({
   declarations: [
-    BuildWidgetComponent,
+    // BuildWidgetComponent,
     DashboardViewComponent,
     TestDashComponent
   ],
@@ -19,7 +20,8 @@ import { TestDashComponent } from './test-dash/test-dash.component';
     TestDashboardRoutingModule
   ],
   entryComponents: [
-    BuildWidgetComponent
+    BuildWidgetComponent,
+    // WidgetHeaderComponent
   ]
 })
 export class TeamDashboardModule { }

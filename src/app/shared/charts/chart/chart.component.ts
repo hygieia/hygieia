@@ -12,6 +12,7 @@ export class ChartComponent implements OnInit {
   data: any;
   xAxisLabel: string;
   yAxisLabel: string;
+  scaleFactor: number;
 
   colorScheme: any;
 

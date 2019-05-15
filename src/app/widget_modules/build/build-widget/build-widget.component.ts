@@ -9,8 +9,8 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { interval, of, Subscription } from 'rxjs';
-import { startWith, switchMap } from 'rxjs/operators';
+import { of, Subscription } from 'rxjs';
+import { distinctUntilChanged, startWith, switchMap } from 'rxjs/operators';
 import { DashboardService } from 'src/app/shared/dashboard.service';
 import { LayoutDirective } from 'src/app/shared/layouts/layout.directive';
 import { TwoByTwoLayoutComponent } from 'src/app/shared/layouts/two-by-two-layout/two-by-two-layout.component';
@@ -27,9 +27,6 @@ import { BUILD_CHARTS } from './build-charts';
   styleUrls: ['./build-widget.component.scss']
 })
 export class BuildWidgetComponent extends WidgetComponent implements OnInit, AfterViewInit, OnDestroy {
-
-  // Refresh interval in seconds
-  private readonly REFRESH_INTERVAL_SECONDS = 15;
 
   private readonly BUILDS_PER_DAY_TIME_RANGE = 14;
   private readonly TOTAL_BUILD_COUNTS_TIME_RANGES = [7, 14];
@@ -92,8 +89,9 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
   // Start a subscription to the widget configuration for this widget and refresh the graphs each
   // cycle.
   startRefreshInterval() {
-    this.intervalRefreshSubscription = interval(1000 * this.REFRESH_INTERVAL_SECONDS).pipe(
-      startWith(0),
+    this.intervalRefreshSubscription = this.dashboardService.dashboardRefresh$.pipe(
+      startWith(-1), // Refresh this widget seperate from dashboard (ex. config is updated)
+      distinctUntilChanged(), // If dashboard is loaded the first time, ignore widget double refresh
       switchMap(_ => this.getCurrentWidgetConfig()),
       switchMap(widgetConfig => {
         if (!widgetConfig) {

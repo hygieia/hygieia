@@ -37,7 +37,7 @@ export class WidgetComponent {
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver,
               private cdr: ChangeDetectorRef,
-              private dashboardService: DashboardService,
+              protected dashboardService: DashboardService,
               private route: ActivatedRoute) { }
 
 
