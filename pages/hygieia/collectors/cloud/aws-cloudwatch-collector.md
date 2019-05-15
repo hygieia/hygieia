@@ -1,5 +1,5 @@
 ---
-title: AWS CLoudwatch Collector
+title: AWS Cloudwatch Collector
 tags:
 keywords:
 summary:
@@ -7,7 +7,7 @@ sidebar: hygieia_sidebar
 permalink: aws-coudwatch-collector.html
 ---
 
-AWS Cloudwatch Collector is part of Hygieia 2.1 release and brings in Ops view to the already dev capabilities of Hygieia, such as DevOps Dashboard (Hygieia 1.0) and Program level Dev View (Hygieia 2.0). The AWS Cloudwatch Collector is a microservice with the sole task of collecting data from your AWS vloudwatch logs for the dashboards configured. As part of our component architecture, this is optional and if you don't use public cloud providers, you don't need to run the AWS Cloudwatch Collector.
+AWS Cloudwatch Collector is part of Hygieia 2.1 release and brings in Ops view to the already dev capabilities of Hygieia, such as DevOps Dashboard (Hygieia 1.0) and Program level Dev View (Hygieia 2.0). The AWS Cloudwatch Collector is a microservice with the sole task of collecting data from your AWS cloudwatch logs for the dashboards configured. As part of our component architecture, this is optional and if you don't use public cloud providers, you don't need to run the AWS Cloudwatch Collector.
 The intention is to present a simple analysis of any logs that are being sent into cloudwatch, allowing monitoring of the number of events in the specified
 logstreams
 
