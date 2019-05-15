@@ -4,7 +4,6 @@ import { IWidget } from '../../interfaces';
 import { WidgetComponent } from '../../widget/widget.component';
 import { WidgetDirective } from '../../widget/widget.directive';
 import {WidgetHeaderComponent} from '../../widget-header/widget-header.component';
-import {WidgetHeaderDirective} from '../../widget-header/widget-header.directive';
 
 @Component({
   template: '',
