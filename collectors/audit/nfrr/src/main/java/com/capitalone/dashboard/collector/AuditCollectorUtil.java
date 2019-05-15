@@ -679,7 +679,6 @@ public class AuditCollectorUtil {
             collectorItem.setEnabled(true);
             collectorItem.setPushed(false);
             collectorItem.setLastUpdated(System.currentTimeMillis());
-            collectorItem.setNiceName(auditType.name().toLowerCase());
             collectorItem.setDescription(description);
             collectorItem.getOptions().put(OPT_DBRD_ID, getDashboard().getId());
             return collectorItem;
