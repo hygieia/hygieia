@@ -1,6 +1,7 @@
 import { Component, AfterViewInit, ComponentFactoryResolver, ChangeDetectorRef, ViewChildren, QueryList } from '@angular/core';
 import { WidgetDirective } from 'src/app/shared/widget/widget.directive';
 import {BaseTemplateComponent} from '../../../shared/templates/base-template/base-template.component';
+import {WidgetHeaderComponent} from '../../../shared/widget-header/widget-header.component';
 
 @Component({
   selector: 'app-capone-template',
@@ -10,12 +11,13 @@ import {BaseTemplateComponent} from '../../../shared/templates/base-template/bas
 export class CaponeTemplateComponent extends BaseTemplateComponent implements AfterViewInit {
 
   @ViewChildren(WidgetDirective) childWidgetTags: QueryList<WidgetDirective>;
-  constructor( componentResolverFacotry: ComponentFactoryResolver, cdr: ChangeDetectorRef) {
-    super(componentResolverFacotry, cdr);
+  constructor( componentResolverFactory: ComponentFactoryResolver, cdr: ChangeDetectorRef) {
+    super(componentResolverFactory, cdr);
   }
 
   ngAfterViewInit() {
-    super.loadComponent(this.childWidgetTags);
+    // super.loadComponent(this.childWidgetTags);
+    // super.loadComponent(WidgetHeaderComponent);
   }
 
 }

@@ -25,6 +25,7 @@ export interface IChart {
 }
 
 export interface IWidget {
+  title: string;
   component: Type<any>;
   status: string;
 }

@@ -8,6 +8,7 @@ import { BuildWidgetComponent } from 'src/app/widget_modules/build/build-widget/
 
 import { CaponeTemplateComponent } from '../capone-template/capone-template.component';
 import { ITemplate } from './dashboard-view';
+import {Placeholder} from '@angular/compiler/src/i18n/i18n_ast';
 
 @Component({
   selector: 'app-dashboard-view',
@@ -36,27 +37,33 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
 
     this.widgets = [
       {
+        title: 'Placeholder',
         component: PlaceholderWidgetComponent,
         status: 'Success'
       },
       {
+        title: 'Build',
         component: BuildWidgetComponent,
         status: 'Success'
       }
       ,
       {
+        title: 'Placeholder',
         component: PlaceholderWidgetComponent,
         status: 'Success'
       },
       {
+        title: 'Placeholder',
         component: PlaceholderWidgetComponent,
         status: 'Success'
       },
       {
+        title: 'Placeholder',
         component: PlaceholderWidgetComponent,
         status: 'Success'
       },
       {
+        title: 'Placeholder',
         component: PlaceholderWidgetComponent,
         status: 'Success'
       }

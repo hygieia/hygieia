@@ -33,18 +33,19 @@
       <!-- widget content -->
       <ng-template appWidget></ng-template>
     </div>
-    <div class="widget-body-config clickable" ng-click="configModal()" ng-show="hasPermission()">
-      <div>
-        <div class="fa fa-cog fa-lg"></div>
-        <div>Configure<br/>widget</div>
-      </div>
-    </div>
-    <div class="widget-body-config" ng-hide="hasPermission()">
-      <div>
-        <div>Owner Modification Only</div>
-      </div>
-    </div>
+<!--    <div class="widget-body-config clickable" ng-click="configModal()" ng-show="hasPermission()">-->
+<!--      <div>-->
+<!--        <div class="fa fa-cog fa-lg"></div>-->
+<!--        <div>Configure<br/>widget</div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--    <div class="widget-body-config" ng-hide="hasPermission()">-->
+<!--      <div>-->
+<!--        <div>Owner Modification Only</div>-->
+<!--      </div>-->
+<!--    </div>-->
   </div>
 </div>
+{{widgetType | json}}
 
 

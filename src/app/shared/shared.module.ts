@@ -36,7 +36,7 @@ import { TwoByTwoLayoutComponent } from './layouts/two-by-two-layout/two-by-two-
 import { WidgetComponent } from './widget/widget.component';
 import { WidgetDirective } from './widget/widget.directive';
 import { WidgetHeaderComponent } from './widget-header/widget-header.component';
-import { WidgetHeaderDirectiveDirective } from './widget-header/widget-header-directive.directive';
+import { WidgetHeaderDirective } from './widget-header/widget-header.directive';
 
 @NgModule({
   declarations: [
@@ -69,7 +69,7 @@ import { WidgetHeaderDirectiveDirective } from './widget-header/widget-header-di
     WidgetComponent,
     WidgetDirective,
     WidgetHeaderComponent,
-    WidgetHeaderDirectiveDirective
+    WidgetHeaderDirective
   ],
   entryComponents: [
     BuildConfigFormComponent,

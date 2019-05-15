@@ -17,7 +17,7 @@ import {BuildConfigFormComponent} from '../../widget_modules/build/build-config-
 })
 export class WidgetHeaderComponent implements OnInit {
 
-  @Input() widget: Type<any>;
+  @Input() widgetType: Type<any>;
   @Input() title;
   @ViewChild(WidgetDirective) appWidget: WidgetDirective;
 
@@ -25,13 +25,14 @@ export class WidgetHeaderComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.widget = BuildWidgetComponent;
-    this.title = 'Build';
+    // this.widgetType = BuildWidgetComponent;
+    // this.title = 'Build';
     this.loadComponent();
+    console.log(this.widgetType);
   }
 
   loadComponent() {
-    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.widget);
+    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.widgetType);
     const viewContainerRef = this.appWidget.viewContainerRef;
     viewContainerRef.clear();
     const componentRef = viewContainerRef.createComponent(componentFactory);
