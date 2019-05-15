@@ -62,6 +62,10 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
     private static final String FAILURE_COUNT = "failureCount";
     private static final String SKIP_COUNT = "skippedCount";
     private static final String TOTAL_COUNT = "totalCount";
+    private static final String TEST_CASE_SUCCESS_COUNT = "successTestCaseCount";
+    private static final String TEST_CASE_FAILURE_COUNT = "failureTestCaseCount";
+    private static final String TEST_CASE_SKIPPED_COUNT = "skippedTestCaseCount";
+    private static final String TEST_CASE_TOTAL_COUNT = "totalTestCaseCount";
     private static final String PRIORITY_HIGH = "High";
 
     @Autowired
@@ -224,7 +228,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
                                     storyIndicatorList.add(storyIndicator);
                                 }
                             });
-                    }
+                        }
                     });
                     storyIndicatorList.forEach(storyIndicator -> {
                         if (!totalStoryIndicatorList.contains(storyIndicator)) {
@@ -324,6 +328,22 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
         featureTestResultMap.put(FAILURE_COUNT, testResult.getFailureCount());
         featureTestResultMap.put(SKIP_COUNT, testResult.getSkippedCount());
         featureTestResultMap.put(TOTAL_COUNT,testResult.getTotalCount());
+
+        Collection<TestCapability> testCapabilities = testResult.getTestCapabilities();
+        int totalTestCaseCount = testCapabilities.stream().mapToInt(testCapability ->
+                testCapability.getTestSuites().parallelStream().mapToInt(TestSuite::getTotalTestCaseCount).sum()).sum();
+        int testCaseSuccessCount = testCapabilities.stream().mapToInt(testCapability ->
+                testCapability.getTestSuites().parallelStream().mapToInt(TestSuite::getSuccessTestCaseCount).sum()).sum();
+        int testCaseFailureCount = testCapabilities.stream().mapToInt(testCapability ->
+                testCapability.getTestSuites().parallelStream().mapToInt(TestSuite::getFailedTestCaseCount).sum()).sum();
+        int testCaseSkippedCount = testCapabilities.stream().mapToInt(testCapability ->
+                testCapability.getTestSuites().parallelStream().mapToInt(TestSuite::getSkippedTestCaseCount).sum()).sum();
+        
+        featureTestResultMap.put(TEST_CASE_TOTAL_COUNT, totalTestCaseCount);
+        featureTestResultMap.put(TEST_CASE_SUCCESS_COUNT, testCaseSuccessCount);
+        featureTestResultMap.put(TEST_CASE_FAILURE_COUNT, testCaseFailureCount);
+        featureTestResultMap.put(TEST_CASE_SKIPPED_COUNT, testCaseSkippedCount);
+
         return featureTestResultMap;
     }
 
