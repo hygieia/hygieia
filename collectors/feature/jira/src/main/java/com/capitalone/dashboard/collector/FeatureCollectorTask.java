@@ -17,6 +17,7 @@ import com.capitalone.dashboard.repository.ScopeRepository;
 import com.capitalone.dashboard.repository.TeamRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.capitalone.dashboard.utils.Utilities;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
@@ -32,6 +33,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -89,6 +91,10 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         FeatureCollector existing = featureCollectorRepository.findByName(collector.getName());
         if (existing != null) {
             collector.setLastRefreshTime(existing.getLastRefreshTime());
+        }
+        Map<String, String> issueTypeIds = jiraClient.getJiraIssueTypeIds();
+        if (!MapUtils.isEmpty(issueTypeIds)){
+            collector.getProperties().put("issueTypesMap", issueTypeIds);
         }
         return collector;
     }
@@ -246,14 +252,14 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
     protected void updateStoryInformation(FeatureCollector collector) {
         long storyDataStart = System.currentTimeMillis();
         AtomicLong count = new AtomicLong();
-
+        Map<String, String> issueTypesMap = (Map<String, String>)  collector.getProperties().get("issueTypesMap");
         if (Objects.equals(collector.getMode(), JiraMode.Team)) {
             List<Scope> projects = new ArrayList<>(getScopeList(collector.getId()));
             projects.forEach(project -> {
                 LOGGER.info("Collecting " + count.incrementAndGet() + " of " + projects.size() + " projects.");
 
                 long lastCollection = System.currentTimeMillis();
-                FeatureEpicResult featureEpicResult = jiraClient.getIssues(project);
+                FeatureEpicResult featureEpicResult = jiraClient.getIssues(project, issueTypesMap);
                 List<Feature> features = featureEpicResult.getFeatureList();
                 saveFeatures(features, collector);
                 updateFeaturesWithLatestEpics(featureEpicResult.getEpicList(), collector);
@@ -268,7 +274,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
             boards.forEach(board -> {
                 LOGGER.info("Collecting " + count.incrementAndGet() + " of " + boards.size() + " boards.");
                 long lastCollection = System.currentTimeMillis();
-                FeatureEpicResult featureEpicResult = jiraClient.getIssues(board);
+                FeatureEpicResult featureEpicResult = jiraClient.getIssues(board, issueTypesMap);
                 List<Feature> features = featureEpicResult.getFeatureList();
                 saveFeatures(features, collector);
                 updateFeaturesWithLatestEpics(featureEpicResult.getEpicList(), collector);
