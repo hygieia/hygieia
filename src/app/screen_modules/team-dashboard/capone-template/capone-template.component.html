@@ -27,39 +27,12 @@
 </div>
 -->
 
+<!-- Gridster future implementation -->
+
 <div class="container">
-  <div class="row">
-    <div class="col-lg-3">
-      <app-widget-header [title]="'Placeholder'" [widgetType]="widgets[0].component"></app-widget-header>
-<!--      <ng-template appWidgetHeaderDirective></ng-template>-->
-<!--      <ng-template appWidget></ng-template>-->
-    </div>
-    <div class="col-lg-6">
-      <app-widget-header [title]="'Build'" [widgetType]="widgets[1].component"></app-widget-header>
-<!--      <ng-template appWidgetHeaderDirective></ng-template>-->
-<!--      <ng-template appWidget></ng-template>-->
-    </div>
-    <div class="col-lg-3">
-      <app-widget-header [title]="'Placeholder'" [widgetType]="widgets[2].component"></app-widget-header>
-<!--      <ng-template appWidgetHeaderDirective></ng-template>-->
-<!--      <ng-template appWidget></ng-template>-->
-    </div>
+  <div class="row" >
+    <div *ngFor="let widget of widgets;" [ngClass]="widget.widgetSize">
+    <app-widget-header [title]="widget.title" [widgetType]="widget.component"></app-widget-header>
   </div>
-  <div class="row">
-    <div class="col-lg-4">
-      <app-widget-header [title]="'Placeholder'" [widgetType]="widgets[3].component"></app-widget-header>
-<!--      <ng-template appWidgetHeaderDirective></ng-template>-->
-<!--      <ng-template appWidget></ng-template>-->
-    </div>
-    <div class="col-lg-4">
-      <app-widget-header [title]="'Placeholder'" [widgetType]="widgets[4].component"></app-widget-header>
-<!--      <ng-template appWidgetHeaderDirective></ng-template>-->
-<!--      <ng-template appWidget></ng-template>-->
-    </div>
-    <div class="col-lg-4">
-      <app-widget-header [title]="'Placeholder'" [widgetType]="widgets[5].component"></app-widget-header>
-<!--      <ng-template appWidgetHeaderDirective></ng-template>-->
-<!--      <ng-template appWidget></ng-template>-->
-    </div>
-  </div>
+</div>
 </div>

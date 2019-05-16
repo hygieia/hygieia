@@ -28,4 +28,5 @@ export interface IWidget {
   title: string;
   component: Type<any>;
   status: string;
+  widgetSize: string;
 }
