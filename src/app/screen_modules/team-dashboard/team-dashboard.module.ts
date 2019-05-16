@@ -4,20 +4,16 @@ import { BuildWidgetComponent} from '../../widget_modules/build/build-widget/bui
 import { DashboardViewComponent } from './dashboard-view/dashboard-view.component';
 import { SharedModule } from '../../shared/shared.module';
 import { TeamDashboardRoutingModule } from './team-dashboard-routing.module';
-import { TestDashboardRoutingModule } from './test-dashboard-routing-module';
-import { TestDashComponent } from './test-dash/test-dash.component';
 import {WidgetHeaderComponent} from '../../shared/widget-header/widget-header.component';
 
 @NgModule({
   declarations: [
     // BuildWidgetComponent,
-    DashboardViewComponent,
-    TestDashComponent
+    DashboardViewComponent
   ],
   imports: [
     SharedModule,
-    TeamDashboardRoutingModule,
-    TestDashboardRoutingModule
+    TeamDashboardRoutingModule
   ],
   entryComponents: [
     BuildWidgetComponent,
