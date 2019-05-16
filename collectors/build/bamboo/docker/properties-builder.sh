@@ -5,13 +5,13 @@ if [ "$SKIP_PROPERTIES_BUILDER" = true ]; then
   exit 0
 fi
   
-if [ "$MONGO_PORT" != "" ]; then
+if [ "$MONGODB_PORT" != "" ]; then
 	# Sample: MONGO_PORT=tcp://172.17.0.20:27017
-	MONGODB_HOST=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\1;'`
-	MONGODB_PORT=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\2;'`
+	MONGODB_HOST=`echo $MONGODB_HOST|sed 's;.*://\([^:]*\):\(.*\);\1;'`
+	MONGODB_PORT=`echo $MONGODB_PORT|sed 's;.*://\([^:]*\):\(.*\);\2;'`
 else
 	env
-	echo "ERROR: MONGO_PORT not defined"
+	echo "ERROR: MONGODB_PORT not defined"
 	exit 1
 fi
 
@@ -46,20 +46,23 @@ then
 fi
 
 cat > $PROP_FILE <<EOF
-#Database Name
-dbname=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_DATABASE:-dashboarddb}
+#Database Name - default is test
+dbname=${SPRING_DATA_MONGODB_DATABASE:-dashboarddb}
 
 #Database HostName - default is localhost
-dbhost=${MONGODB_HOST:-10.0.1.1}
+dbhost=${SPRING_DATA_MONGODB_HOST:-db}
 
 #Database Port - default is 27017
-dbport=${MONGODB_PORT:-27017}
+dbport=${SPRING_DATA_MONGODB_PORT:-27017}
 
 #Database Username - default is blank
-dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-dashboarduser}
+dbusername=${SPRING_DATA_MONGODB_USERNAME:-dashboarduser}
 
 #Database Password - default is blank
-dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpassword}
+dbpassword=${SPRING_DATA_MONGODB_PASSWORD:-dbpassword}
+
+#This is ensure if you are keeping DB outside docker compose.
+dbhostport=${SPRING_DATA_MONGODB_HOST}:${SPRING_DATA_MONGODB_PORT}
 
 #Collector schedule (required)
 bamboo.cron=${JENKINS_CRON:-0 0/5 * * * *}
@@ -73,6 +76,9 @@ bamboo.apiKey=${JENKINS_API_KEY}
 
 #Determines if build console log is collected - defaults to false
 bamboo.saveLog=${JENKINS_SAVE_LOG:-false}
+
+#Specifies the upper limit of plans to fetch. For really large orgs, this may be adjusted to the tens of thousands.
+bamboo.maxPlans=${JENKINS_MAX_PLANS:-2000}
 
 #map the entry localhost so URLS in jenkins resolve properly
 # Docker NATs the real host localhost to 10.0.2.2 when running in docker
