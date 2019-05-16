@@ -65,6 +65,6 @@ export let BUILD_CHARTS: IChart[] = [
     ],
     xAxisLabel: '',
     yAxisLabel: '',
-    colorScheme: 'nightLights'
+    colorScheme: 'vivid'
   },
 ];
