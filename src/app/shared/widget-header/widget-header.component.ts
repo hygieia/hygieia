@@ -1,14 +1,11 @@
 import {ChangeDetectorRef, Component, ComponentFactoryResolver, Input, OnInit, Type, ViewChild} from '@angular/core';
-import {FormModalComponent} from '../modals/form-modal/form-modal.component';
-import {TestFormComponent} from '../../widget_modules/build/test-form/test-form.component';
-import {ConfirmationModalComponent} from '../modals/confirmation-modal/confirmation-modal.component';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {DetailModalComponent} from '../modals/detail-modal/detail-modal.component';
-import {LayoutDirective} from '../layouts/layout.directive';
-import {LayoutComponent} from '../layouts/layout/layout.component';
-import {WidgetDirective} from '../widget/widget.directive';
-import {BuildWidgetComponent} from '../../widget_modules/build/build-widget/build-widget.component';
+
 import {BuildConfigFormComponent} from '../../widget_modules/build/build-config-form/build-config-form.component';
+import {ConfirmationModalComponent} from '../modals/confirmation-modal/confirmation-modal.component';
+import {FormModalComponent} from '../modals/form-modal/form-modal.component';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {WidgetComponent} from '../widget/widget.component';
+import {WidgetDirective} from '../widget/widget.directive';
 
 @Component({
   selector: 'app-widget-header',
@@ -19,16 +16,14 @@ export class WidgetHeaderComponent implements OnInit {
 
   @Input() widgetType: Type<any>;
   @Input() title;
+  @Input() status;
   @ViewChild(WidgetDirective) appWidget: WidgetDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver, private cdr: ChangeDetectorRef, private modalService: NgbModal) {
   }
 
   ngOnInit() {
-    // this.widgetType = BuildWidgetComponent;
-    // this.title = 'Build';
     this.loadComponent();
-    console.log(this.widgetType);
   }
 
   loadComponent() {
@@ -36,6 +31,8 @@ export class WidgetHeaderComponent implements OnInit {
     const viewContainerRef = this.appWidget.viewContainerRef;
     viewContainerRef.clear();
     const componentRef = viewContainerRef.createComponent(componentFactory);
+    const widgetComponent = ( componentRef.instance as WidgetComponent);
+    widgetComponent.status = status;
     this.cdr.detectChanges();
   }
 
@@ -57,7 +54,4 @@ export class WidgetHeaderComponent implements OnInit {
     // modalRef.componentInstance.modalType = ConfirmationModalComponent;
   }
 
-  ngAfterInit() {
-
-  }
 }
