@@ -29,4 +29,5 @@ export interface IWidget {
   component: Type<any>;
   status: string;
   widgetSize: string;
+  configForm: Type<any>;
 }

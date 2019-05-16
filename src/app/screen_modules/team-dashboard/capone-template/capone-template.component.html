@@ -32,7 +32,7 @@
 <div class="container">
   <div class="row" >
     <div *ngFor="let widget of widgets;" [ngClass]="widget.widgetSize">
-    <app-widget-header [title]="widget.title" [widgetType]="widget.component" [status]="widget.status"></app-widget-header>
+    <app-widget-header [title]="widget.title" [widgetType]="widget.component" [status]="widget.status" [configForm]="widget.configForm"></app-widget-header>
   </div>
 </div>
 </div>

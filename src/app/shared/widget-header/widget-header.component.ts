@@ -17,6 +17,7 @@ export class WidgetHeaderComponent implements OnInit {
   @Input() widgetType: Type<any>;
   @Input() title;
   @Input() status;
+  @Input() configForm: Type<any>;
   @ViewChild(WidgetDirective) appWidget: WidgetDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver, private cdr: ChangeDetectorRef, private modalService: NgbModal) {
@@ -39,7 +40,7 @@ export class WidgetHeaderComponent implements OnInit {
   openConfig() {
     const modalRef = this.modalService.open(FormModalComponent);
     modalRef.componentInstance.title = 'Configure';
-    modalRef.componentInstance.form = BuildConfigFormComponent;
+    modalRef.componentInstance.form = this.configForm;
     modalRef.componentInstance.id = 1;
     modalRef.result.then((result) => {
       console.log(result);

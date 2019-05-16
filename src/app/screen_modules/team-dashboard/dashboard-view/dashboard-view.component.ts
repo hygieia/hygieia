@@ -9,6 +9,7 @@ import { BuildWidgetComponent } from 'src/app/widget_modules/build/build-widget/
 import { CaponeTemplateComponent } from '../capone-template/capone-template.component';
 import { ITemplate } from './dashboard-view';
 import {Placeholder} from '@angular/compiler/src/i18n/i18n_ast';
+import {BuildConfigFormComponent} from '../../../widget_modules/build/build-config-form/build-config-form.component';
 
 @Component({
   selector: 'app-dashboard-view',
@@ -40,38 +41,44 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
         title: 'Placeholder',
         component: PlaceholderWidgetComponent,
         status: 'Success',
-        widgetSize: 'col-lg-3'
+        widgetSize: 'col-lg-3',
+        configForm: BuildConfigFormComponent
       },
       {
         title: 'Build',
         component: BuildWidgetComponent,
         status: 'Success',
-        widgetSize: 'col-lg-6'
+        widgetSize: 'col-lg-6',
+        configForm: BuildConfigFormComponent
       }
       ,
       {
         title: 'Placeholder',
         component: PlaceholderWidgetComponent,
         status: 'Success',
-        widgetSize: 'col-lg-3'
+        widgetSize: 'col-lg-3',
+        configForm: BuildConfigFormComponent
       },
       {
         title: 'Placeholder',
         component: PlaceholderWidgetComponent,
         status: 'Success',
-        widgetSize: 'col-lg-3'
+        widgetSize: 'col-lg-3',
+        configForm: BuildConfigFormComponent
       },
       {
         title: 'Placeholder',
         component: PlaceholderWidgetComponent,
         status: 'Success',
-        widgetSize: 'col-lg-6'
+        widgetSize: 'col-lg-6',
+        configForm: BuildConfigFormComponent
       },
       {
         title: 'Placeholder',
         component: PlaceholderWidgetComponent,
         status: 'Success',
-        widgetSize: 'col-lg-3'
+        widgetSize: 'col-lg-3',
+        configForm: BuildConfigFormComponent
       }
     ];
   }
