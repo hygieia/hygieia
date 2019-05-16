@@ -5,13 +5,13 @@ if [ "$SKIP_PROPERTIES_BUILDER" = true ]; then
   exit 0
 fi
   
-if [ "$MONGODB_PORT" != "" ]; then
+if [ "$MONGO_PORT" != "" ]; then
 	# Sample: MONGO_PORT=tcp://172.17.0.20:27017
-	MONGODB_HOST=`echo $MONGODB_HOST|sed 's;.*://\([^:]*\):\(.*\);\1;'`
-	MONGODB_PORT=`echo $MONGODB_PORT|sed 's;.*://\([^:]*\):\(.*\);\2;'`
+	MONGODB_HOST=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\1;'`
+	MONGODB_PORT=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\2;'`
 else
 	env
-	echo "ERROR: MONGODB_PORT not defined"
+	echo "ERROR: MONGO_PORT not defined"
 	exit 1
 fi
 
@@ -46,34 +46,23 @@ then
 fi
 
 cat > $PROP_FILE <<EOF
-#Database Name - default is test
-dbname=${SPRING_DATA_MONGODB_DATABASE:-dashboarddb}
-
+#Database Name
+dbname=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_DATABASE:-dashboarddb}
 #Database HostName - default is localhost
-dbhost=${SPRING_DATA_MONGODB_HOST:-db}
-
+dbhost=${MONGODB_HOST:-10.0.1.1}
 #Database Port - default is 27017
-dbport=${SPRING_DATA_MONGODB_PORT:-27017}
-
+dbport=${MONGODB_PORT:-27017}
 #Database Username - default is blank
-dbusername=${SPRING_DATA_MONGODB_USERNAME:-dashboarduser}
-
+dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-dashboarduser}
 #Database Password - default is blank
-dbpassword=${SPRING_DATA_MONGODB_PASSWORD:-dbpassword}
-
-#This is ensure if you are keeping DB outside docker compose.
-dbhostport=${SPRING_DATA_MONGODB_HOST}:${SPRING_DATA_MONGODB_PORT}
-
+dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpassword}
 #Collector schedule (required)
 bamboo.cron=${JENKINS_CRON:-0 0/5 * * * *}
-
 #Jenkins server (required) - Can provide multiple
 bamboo.servers[0]=${JENKINS_MASTER:-http://jenkins.company.com}
-
 #Another option: If using same username/password Jenkins auth - set username/apiKey to use HTTP Basic Auth (blank=no auth)
 bamboo.username=${JENKINS_USERNAME}
 bamboo.apiKey=${JENKINS_API_KEY}
-
 #Determines if build console log is collected - defaults to false
 bamboo.saveLog=${JENKINS_SAVE_LOG:-false}
 
