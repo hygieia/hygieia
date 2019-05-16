@@ -39,33 +39,39 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
       {
         title: 'Placeholder',
         component: PlaceholderWidgetComponent,
-        status: 'Success'
+        status: 'Success',
+        widgetSize: 'col-lg-3'
       },
       {
         title: 'Build',
         component: BuildWidgetComponent,
-        status: 'Success'
+        status: 'Success',
+        widgetSize: 'col-lg-6'
       }
       ,
       {
         title: 'Placeholder',
         component: PlaceholderWidgetComponent,
-        status: 'Success'
+        status: 'Success',
+        widgetSize: 'col-lg-3'
       },
       {
         title: 'Placeholder',
         component: PlaceholderWidgetComponent,
-        status: 'Success'
+        status: 'Success',
+        widgetSize: 'col-lg-3'
       },
       {
         title: 'Placeholder',
         component: PlaceholderWidgetComponent,
-        status: 'Success'
+        status: 'Success',
+        widgetSize: 'col-lg-6'
       },
       {
         title: 'Placeholder',
         component: PlaceholderWidgetComponent,
-        status: 'Success'
+        status: 'Success',
+        widgetSize: 'col-lg-3'
       }
     ];
   }
