@@ -526,19 +526,15 @@
     "_id" : "5ccc8cd6a63390416925b3a3",
     "_class" : "com.capitalone.dashboard.model.CollectorItem",
     "description" : "auditTestDashboard code_quality audit process",
-    "niceName" : "",
     "enabled" : true,
     "errors" : [
 
     ],
-    "pushed" : true,
+    "pushed" : false,
     "collectorId" : "5bb70128039798589fd792ec",
     "lastUpdated" : 1557101003814,
     "options" : {
-      "options" : {
-        "jobName" : "code quality audit job",
-        "instanceUrl" : "https://jira.company.com/browse/CQ-21755"
+      "dashboardId" : "56d9cf6b7fab7c42f5918b84"
       }
     }
-  }
 ]
