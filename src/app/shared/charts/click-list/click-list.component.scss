@@ -1,19 +1,59 @@
+@import "../../../../../node_modules/bootstrap/scss/mixins/";
 @import '../../../../styles/css/charts.scss';
+@import '../../../../styles/css/dashvariables.scss';
+@import '../../../../styles/css/dash-status.scss';
+@import '../../../../styles/css/mixins.scss';
+
+.text-standard-date {
+  @include text-standard-date;
+}
+
+.latest-builds {
+  font-size: 10px;
+  line-height: 10px;
+}
+
+tr.dash-row>td {
+  white-space: nowrap;
+  border-top: none !important;
+  padding: 0 !important;
+  // line-height: 3.25em;
+  vertical-align: middle !important;
+}
+
+.dash-row {
+  $dash-row-height: 3.25em;
+
+  @include clearfix;
+  line-height: $dash-row-height;
+  vertical-align: middle;
+
+  .fa {
+    margin-right: .5em;
+  }
+
+  &.clickable:hover {
+    background-color: $dash-widget-section-highlight;
+    color: $dash-dashboard-text;
+  }
+
+  // Added for bootstrap 4 compatibility
+  color: $dash-dashboard-text;
+}
 
 
-// .build-chevron {
-//   margin-right: 1rem;
-// }
+.build-chevron {
+  margin-right: 1em;
+}
 
-// .build-number {
-//   display: inline-block;
-//   margin-right: 1rem;
-//   min-width: 3rem;
-//   @include text-lg;
-// }
+.build-number {
+  display: inline-block;
+  margin-right: 1em;
+  min-width: 3em;
+  @include text-lg;
+}
 
-// .build-summary-type {
-//   @include text-standard;
-//   text-align: center;
-// }
-
+.build-summary-type {
+  @include text-standard;
+  text-align: center;
+}
