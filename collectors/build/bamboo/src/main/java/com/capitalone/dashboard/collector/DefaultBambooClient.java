@@ -49,7 +49,7 @@ public class DefaultBambooClient implements BambooClient {
     private final RestOperations rest;
     private final BambooSettings settings;
 
-    private static final String JOBS_URL_SUFFIX = "rest/api/latest/plan?expand=plans&max-result=2000";
+    private String jobsURLSuffix = "rest/api/latest/plan?expand=plans&max-result=";
     private static final String JOBS_RESULT_SUFFIX= "rest/api/latest/result/";
     private static final String BUILD_DETAILS_URL_SUFFIX = "?expand=results.result.artifacts&expand=changes.change.files";
 
@@ -57,22 +57,27 @@ public class DefaultBambooClient implements BambooClient {
     public DefaultBambooClient(Supplier<RestOperations> restOperationsSupplier, BambooSettings settings) {
         this.rest = restOperationsSupplier.get();
         this.settings = settings;
+        this.jobsURLSuffix += settings.getMaxPlans(); 
     }
     @SuppressWarnings("PMD.ExcessiveMethodLength")
     @Override
     public Map<BambooJob, Set<Build>> getInstanceJobs(String instanceUrl) {
         Map<BambooJob, Set<Build>> result = new LinkedHashMap<>();
         try {
-            String url = joinURL(instanceUrl, JOBS_URL_SUFFIX);
+            String url = joinURL(instanceUrl, jobsURLSuffix);
             ResponseEntity<String> responseEntity = makeRestCall(url);
             String returnJSON = responseEntity.getBody();
             // LOG.info(returnJSON);
             JSONParser parser = new JSONParser();
 
             try {
-                 JSONObject object = (JSONObject) parser.parse(returnJSON);
+                
+                JSONObject object = (JSONObject) parser.parse(returnJSON);
+                JSONArray  plans = getJsonArray((JSONObject)object.get("plans"), "plan");
+                
+                LOG.info("Received "+plans.size()+" plans"); 
 
-                for (Object job : getJsonArray((JSONObject)object.get("plans"), "plan")) {
+                for (Object job : plans) {
                     JSONObject jsonJob = (JSONObject) job;
 
                     final String planName = getString(jsonJob, "key");
