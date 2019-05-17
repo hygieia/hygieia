@@ -16,6 +16,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
@@ -27,8 +28,11 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -134,12 +138,38 @@ public class CollectorServiceImpl implements CollectorService {
 
     @Override
     public CollectorItem createCollectorItem(CollectorItem item) {
-        CollectorItem existing = collectorItemRepository.findByCollectorAndOptions(
-                item.getCollectorId(), item.getOptions());
-        if (existing != null) {
-            item.setId(existing.getId());
+        List<CollectorItem> existing = lookUpCollectorItem(item);
+        existing.sort(Comparator.comparing(CollectorItem::getLastUpdated).reversed());
+        if (CollectionUtils.isNotEmpty(existing)) {
+            Optional<CollectorItem> enabledItem = existing.stream().filter(CollectorItem::isEnabled).findFirst();
+            //if enabled item is found, set itemId
+            if(enabledItem.isPresent()){
+                item.setId(enabledItem.get().getId());
+            }else{    // if no enabled item found, get first from list sorted by lastUpdated.
+                item.setId(existing.stream().findFirst().get().getId());
+            }
         }
         return collectorItemRepository.save(item);
+    }
+
+    private  List<CollectorItem> lookUpCollectorItem(CollectorItem collectorItem){
+        if (collectorItem==null){
+            return Collections.emptyList();
+        }
+        Collector collector = collectorRepository.findOne(collectorItem.getId());
+        if (collector == null){
+            return Collections.emptyList();
+        }
+        Map<String, Object> uniqueOptions = collector.getUniqueFields()
+                .keySet()
+                .stream()
+                .filter(option ->collectorItem.getOptions().get(option)!=null )
+                .collect(Collectors.toMap(java.util.function.Function.identity(),option-> collectorItem.getOptions().get(option),(a,b)->a));
+        if(MapUtils.isEmpty(uniqueOptions)){
+            return Collections.emptyList();
+        }
+        return IterableUtils.toList(collectorItemRepository.findAllByOptionMapAndCollectorIdsIn(uniqueOptions,Lists.newArrayList(collector.getId())));
+
     }
 
     // This is to handle scenarios where the option contains user credentials etc. We do not want to create a new collector item -
