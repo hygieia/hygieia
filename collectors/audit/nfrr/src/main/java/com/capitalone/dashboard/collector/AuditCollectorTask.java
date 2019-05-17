@@ -4,6 +4,7 @@ import com.capitalone.dashboard.model.Audit;
 import com.capitalone.dashboard.model.AuditResult;
 import com.capitalone.dashboard.model.AuditType;
 import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.Cmdb;
 
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.AuditResultRepository;
@@ -91,7 +92,8 @@ public class AuditCollectorTask extends CollectorTask<AuditCollector> {
                         auditBeginDateTimeStamp, auditEndDateTimeStamp);
 
                 LOGGER.info("NFRR Audit Collector adding audit results for the dashboard : " + dashboard.getTitle());
-                AuditCollectorUtil.addAuditResultByAuditType(dashboard, auditMap, cmdbRepository, auditEndDateTimeStamp);
+                Cmdb cmdb = cmdbRepository.findByConfigurationItem(dashboard.getConfigurationItemBusServName());
+                AuditCollectorUtil.addAuditResultByAuditType(dashboard, auditMap, cmdb, auditEndDateTimeStamp);
         });
         return AuditCollectorUtil.getAuditResults();
     }

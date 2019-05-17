@@ -13,7 +13,6 @@ import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Component;
 
 import com.capitalone.dashboard.repository.AuditResultRepository;
-import com.capitalone.dashboard.repository.CmdbRepository;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 
@@ -559,10 +558,9 @@ public class AuditCollectorUtil {
      * Add audit result by audit type
      */
     @SuppressWarnings("PMD.NPathComplexity")
-    public static void addAuditResultByAuditType(Dashboard dashboard, Map<AuditType, Audit> auditMap, CmdbRepository cmdbRepository, long timestamp) {
+    public static void addAuditResultByAuditType(Dashboard dashboard, Map<AuditType, Audit> auditMap, Cmdb cmdb, long timestamp) {
 
         if(CollectionUtils.isEmpty(auditMap)){ return; }
-        Cmdb cmdb = cmdbRepository.findByConfigurationItem(dashboard.getConfigurationItemBusServName());
         ObjectId dashboardId = dashboard.getId();
         String dashboardTitle = dashboard.getTitle();
         String ownerDept = ((cmdb == null || cmdb.getOwnerDept() == null) ? "" : cmdb.getOwnerDept());
