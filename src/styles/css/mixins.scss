@@ -7,6 +7,12 @@
   @include border-bottom-radius($radius);
 }
 
+@mixin box-shadow ($string) {
+  -webkit-box-shadow: $string;
+  -moz-box-shadow: $string;
+  box-shadow: $string;
+}
+
 // TEXT
 // ========================================
 @mixin text($font-size, $line-height:$font-size) {
