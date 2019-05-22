@@ -1,9 +1,6 @@
 import {ChangeDetectorRef, Component, ComponentFactoryResolver, Input, OnInit, Type, ViewChild} from '@angular/core';
-import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-// import {DetailModalComponent} from '../detail-modal/detail-modal.component';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import {FormModalDirective} from './form-modal.directive';
-import {TestFormComponent} from '../../../widget_modules/build/test-form/test-form.component';
-import {BuildConfigFormComponent} from '../../../widget_modules/build/build-config-form/build-config-form.component';
 
 @Component({
   selector: 'app-form-modal',

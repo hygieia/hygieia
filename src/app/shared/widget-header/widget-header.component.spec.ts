@@ -28,13 +28,13 @@ describe('WidgetHeaderComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(WidgetHeaderComponent);
     component = fixture.componentInstance;
-    component.widget = BuildWidgetComponent;
+    component.widgetType = BuildWidgetComponent;
   });
 
   it('should have a widget value', () => {
     component.ngOnInit();
 
-    expect(component.widget).toBeDefined();
+    expect(component.widgetType).toBeDefined();
   });
 
   it('should create', () => {

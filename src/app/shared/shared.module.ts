@@ -31,7 +31,6 @@ import { PaginationComponent } from './pagination/pagination.component';
 import { PlaceholderWidgetComponent } from './widget/placeholder-widget/placeholder-widget.component';
 import { MinutesPipe } from './pipes/minutes.pipe';
 import { TemplatesDirective } from './templates/templates.directive';
-import { TestFormComponent} from '../widget_modules/build/test-form/test-form.component';
 import { TwoByTwoLayoutComponent } from './layouts/two-by-two-layout/two-by-two-layout.component';
 import { WidgetComponent } from './widget/widget.component';
 import { WidgetDirective } from './widget/widget.directive';
@@ -62,7 +61,6 @@ import { WidgetHeaderComponent } from './widget-header/widget-header.component';
     PaginationComponent,
     PlaceholderWidgetComponent,
     TemplatesDirective,
-    TestFormComponent,
     TimeAgoPipe,
     TwoByTwoLayoutComponent,
     WidgetComponent,
@@ -82,7 +80,6 @@ import { WidgetHeaderComponent } from './widget-header/widget-header.component';
     LineChartComponent,
     NumberCardChartComponent,
     PlaceholderWidgetComponent,
-    TestFormComponent,
     TwoByTwoLayoutComponent
   ],
   imports: [
