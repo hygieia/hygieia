@@ -10,8 +10,7 @@ import {FormModalDirective} from './form-modal.directive';
 export class FormModalComponent implements OnInit {
 
   @Input() title = 'Test';
-  @Input() form;
-  @Input() id = 1;
+  @Input() form: Type<any>;
   @Input() widgetConfig: Type<any>;
   @ViewChild(FormModalDirective) modalTypeTag: FormModalDirective;
 

@@ -11,11 +11,6 @@ import {CoreModule} from './core/core.module';
 import {SharedModule} from './shared/shared.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
-// Component Imports
-import {FormModalComponent} from './shared/modals/form-modal/form-modal.component';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {BuildConfigFormComponent} from './widget_modules/build/build-config-form/build-config-form.component';
-
 @NgModule({
   declarations: [
     AppComponent
@@ -26,15 +21,9 @@ import {BuildConfigFormComponent} from './widget_modules/build/build-config-form
     BrowserAnimationsModule,
     CoreModule,
     NgbModule,
-    SharedModule,
-    FormsModule,
-    ReactiveFormsModule
+    SharedModule
   ],
-  providers: [],
-  bootstrap: [AppComponent],
-  entryComponents: [
-    FormModalComponent
-  ]
+  bootstrap: [AppComponent]
 })
 export class AppModule {
 }

@@ -68,24 +68,6 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
     this.stopRefreshInterval();
   }
 
-  //
-  // openConfigForm() {
-  //   const configRef = this.modalService.open(BuildConfigFormComponent);
-  //   this.getCurrentWidgetConfig().subscribe(result => {
-  //     configRef.componentInstance.widgetConfig = result;
-  //   });
-  //   // Take form data, combine with widget config, and pass to update function
-  //   configRef.result.then((newConfig) => {
-  //     if (!newConfig) {
-  //       return;
-  //     }
-  //     this.stopRefreshInterval();
-  //     this.updateWidgetConfig(newConfig);
-  //   }).catch((error) => {
-  //     console.log(error);
-  //   });
-  // }
-
   // Start a subscription to the widget configuration for this widget and refresh the graphs each
   // cycle.
   startRefreshInterval() {

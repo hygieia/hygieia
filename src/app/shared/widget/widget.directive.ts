@@ -1,11 +1,11 @@
-import {Directive, ElementRef, ViewContainerRef} from '@angular/core';
+import {Directive, ViewContainerRef} from '@angular/core';
 
 @Directive({
   selector: '[appWidget]'
 })
 export class WidgetDirective {
 
-  constructor(public viewContainerRef: ViewContainerRef, public el: ElementRef) { }
+  constructor(public viewContainerRef: ViewContainerRef) { }
 
 
 }

@@ -1,8 +1,4 @@
 import { Component } from '@angular/core';
-import {NgbModal, NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {DetailModalComponent} from "./shared/modals/detail-modal/detail-modal.component";
-import {FormModalComponent} from "./shared/modals/form-modal/form-modal.component";
-import { WidgetHeaderComponent} from './shared/widget-header/widget-header.component';
 
 @Component({
   selector: 'app-root',
