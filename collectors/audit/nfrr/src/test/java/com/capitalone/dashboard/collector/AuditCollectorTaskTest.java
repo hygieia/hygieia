@@ -9,6 +9,7 @@ import com.capitalone.dashboard.model.Audit;
 import com.capitalone.dashboard.model.AuditStatus;
 import com.capitalone.dashboard.model.DataStatus;
 import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.repository.AuditResultRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
@@ -68,23 +69,31 @@ public class AuditCollectorTaskTest {
         TestUtils.loadDashBoard(dashboardRepository);
         TestUtils.loadCollector(collectorRepository);
         TestUtils.loadComponent(componentRepository);
-        TestUtils.loadCollectorItems(collectorItemRepository);
+        loadCollectorItem();
         settings = new TestConfig().settings();
+    }
+
+    private void loadCollectorItem() throws IOException {
+        TestUtils.loadCollectorItems(collectorItemRepository);
     }
 
 
     @Test
     public void test_testResultAuditCollect() throws IOException, ParseException {
+        this.loadCollectorItem();
         ResponseEntity<String> response = new ResponseEntity<>(getJSONResponse("response/auditresponse.json"),
                 HttpStatus.OK);
         JSONParser jsonParser = new JSONParser();
         JSONObject responseObj = (JSONObject) jsonParser.parse(response.getBody());
         JSONObject review = (JSONObject) responseObj.get("review");
-        Audit testAudit = AuditCollectorUtil.getTestAudit((JSONArray) review.get(AuditType.TEST_RESULT.name()),
+        AuditCollectorUtil auditCollectorUtil = new AuditCollectorUtil(null, null, collectorItemRepository);
+        CollectorItem collectorItem = collectorItemRepository.findByDescription("title test_result audit process").get(0);
+        Audit testAudit = auditCollectorUtil.getTestAudit((JSONArray) review.get(AuditType.TEST_RESULT.name()),
                 (JSONArray) responseObj.get("auditStatuses"));
         Assert.assertEquals(testAudit.getAuditStatus(), AuditStatus.OK);
         Assert.assertEquals(testAudit.getDataStatus(), DataStatus.OK);
         Assert.assertEquals(testAudit.getType(), AuditType.TEST_RESULT);
+        Assert.assertEquals(testAudit.getCollectorItem().getId(), collectorItem.getId());
         Assert.assertTrue(Optional.ofNullable(testAudit.getOptions().get("traceability")).isPresent());
         Assert.assertTrue(Optional.ofNullable(testAudit.getOptions().get("featureTestResult")).isPresent());
     }
@@ -97,6 +106,8 @@ public class AuditCollectorTaskTest {
         AuditResult auditResult1 = new AuditResult(ObjectId.get(),"auditTestDashboard" , "CARD",
                 "ASVC","BAP" ,"Owner" ,null ,
                 AuditType.CODE_QUALITY ,"OK","OK" ,null,null, 7883L );
+        CollectorItem collectorItem = collectorItemRepository.findByDescription("title test_result audit process").get(0);
+        auditResult1.setCollectorItemId(collectorItem.getId());
         auditResults.add(auditResult1);
 
         Set<AuditType> allAuditTypes = new HashSet<>();
@@ -110,12 +121,15 @@ public class AuditCollectorTaskTest {
                 auditCQ.setDataStatus(DataStatus.OK);
                 auditMap1.put(AuditType.CODE_QUALITY, auditCQ);
                 AuditResult auditResult = AuditCollectorUtil.getAuditResults().get(0);
-                Mockito.when(AuditCollectorUtil.getAudit(dashboard,settings,BEGIN_DATE,END_DATE)).thenReturn(auditMap1);
+                AuditCollectorUtil auditCollectorUtil = new AuditCollectorUtil(null, null, collectorItemRepository);
+                Mockito.when(auditCollectorUtil.getAudit(dashboard,settings,BEGIN_DATE,END_DATE)).thenReturn(auditMap1);
                 assertNotNull(auditResult.getDashboardId());
                 assertNotNull(auditResult.getDashboardTitle());
                 assertNotNull(auditResult.getTimestamp());
+                assertNotNull(auditResult.getCollectorItemId());
                 assertTrue(auditResult.getDashboardId().equals(dashboard.getId()));
                 assertTrue(auditResult.getDashboardTitle().equalsIgnoreCase(dashboard.getTitle()));
+                assertTrue(auditResult.getCollectorItemId().equals(collectorItem.getId()));
                 assertTrue(auditResult.getTimestamp() == END_DATE);
                 auditResults.add(auditResult);
                 assertNotNull(auditResults);
@@ -132,6 +146,7 @@ public class AuditCollectorTaskTest {
                     assertTrue(auditResult.getAuditType().equals(AuditType.CODE_QUALITY));
                     assertTrue(auditResult.getAuditTypeStatus().equals(DataStatus.OK.name()));
                     assertTrue(auditResult.getAuditStatus().equals(AuditStatus.OK.name()));
+                    assertTrue(auditResult.getCollectorItemId().equals(collectorItem.getId()));
                 });
             }
         });
