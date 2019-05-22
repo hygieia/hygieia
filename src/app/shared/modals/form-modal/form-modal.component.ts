@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ComponentFactoryResolver, Input, OnInit, ViewChild } from '@angular/core';
+import {ChangeDetectorRef, Component, ComponentFactoryResolver, Input, OnInit, Type, ViewChild} from '@angular/core';
 import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 // import {DetailModalComponent} from '../detail-modal/detail-modal.component';
 import {FormModalDirective} from './form-modal.directive';
@@ -15,19 +15,22 @@ export class FormModalComponent implements OnInit {
   @Input() title = 'Test';
   @Input() form;
   @Input() id = 1;
+  @Input() widgetConfig: Type<any>;
   @ViewChild(FormModalDirective) modalTypeTag: FormModalDirective;
 
   constructor(
-    public activeModal: NgbActiveModal, private componentFactoryResolver: ComponentFactoryResolver
+    public activeModal: NgbActiveModal,
+    private componentFactoryResolver: ComponentFactoryResolver,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.form);
-
     const viewContainerRef = this.modalTypeTag.viewContainerRef;
     viewContainerRef.clear();
-
     const componentRef = viewContainerRef.createComponent(componentFactory);
+    (componentRef.instance as FormModalComponent).widgetConfig = this.widgetConfig;
+    this.cdr.detectChanges();
   }
   onSubmit() {
     this.activeModal.close();
