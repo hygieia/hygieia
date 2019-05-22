@@ -1,5 +1,4 @@
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SharedModule } from 'src/app/shared/shared.module';
@@ -14,12 +13,10 @@ import { BuildWidgetComponent } from './build-widget/build-widget.component';
   imports: [
     BuildRoutingModule,
     CommonModule,
-    // FormsModule,
     NgbModule,
     SharedModule
   ],
   exports: [
-    // BuildWidgetComponent
   ]
 })
 export class BuildModule { }
