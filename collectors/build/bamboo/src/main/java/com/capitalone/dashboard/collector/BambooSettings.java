@@ -14,6 +14,7 @@ public class BambooSettings {
 
 
     private String cron;
+    private String maxPlans = "2000"; 
     private boolean saveLog = false;
     private List<String> servers;
     private List<String> niceNames;
@@ -28,6 +29,14 @@ public class BambooSettings {
     public void setCron(String cron) {
         this.cron = cron;
     }
+
+    public String getMaxPlans() { 
+        return maxPlans;
+    }
+
+    public void setMaxPlans(String maxPlans) { 
+        this.maxPlans = maxPlans; 
+    } 
 
     public boolean isSaveLog() {
         return saveLog;

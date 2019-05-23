@@ -502,5 +502,39 @@
       "userID": "",
       "url": "https://mygithub.com/Devopscode/NewPrOldCommit"
     }
-  }
+  },
+  {
+    "_id" : "5ccc8cd6a63390415925b3a3",
+    "_class" : "com.capitalone.dashboard.model.CollectorItem",
+    "description" : "title test_result audit process",
+    "niceName" : "",
+    "enabled" : true,
+    "errors" : [
+
+    ],
+    "pushed" : true,
+    "collectorId" : "5bb70128039798589fd792ec",
+    "lastUpdated" : 1557101003714,
+    "options" : {
+      "options" : {
+        "jobName" : "test result audit job",
+        "instanceUrl" : "https://jira.company.com/browse/TR-21750"
+      }
+    }
+  },
+  {
+    "_id" : "5ccc8cd6a63390416925b3a3",
+    "_class" : "com.capitalone.dashboard.model.CollectorItem",
+    "description" : "auditTestDashboard code_quality audit process",
+    "enabled" : true,
+    "errors" : [
+
+    ],
+    "pushed" : false,
+    "collectorId" : "5bb70128039798589fd792ec",
+    "lastUpdated" : 1557101003814,
+    "options" : {
+      "dashboardId" : "56d9cf6b7fab7c42f5918b84"
+      }
+    }
 ]
