@@ -2,25 +2,31 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { WidgetHeaderComponent } from './widget-header.component';
 import {findComponentView} from '@angular/core/src/render3/util';
-import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+import {Component, CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from '@angular/core';
 import {BuildWidgetComponent} from '../../widget_modules/build/build-widget/build-widget.component';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
+import {HttpClientModule} from '@angular/common/http';
 
 describe('WidgetHeaderComponent', () => {
   let component: WidgetHeaderComponent;
   let fixture: ComponentFixture<WidgetHeaderComponent>;
 
+  @Component({
+    template: ''
+  })
+  class TestWidgetTypeComponent {}
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ WidgetHeaderComponent, BuildWidgetComponent ],
-      imports: [  ],
-      schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
+      declarations: [ WidgetHeaderComponent, TestWidgetTypeComponent],
+      imports: [ HttpClientModule ],
+      schemas: [ NO_ERRORS_SCHEMA ]
     });
     // .compileComponents();
 
     TestBed.overrideModule(BrowserDynamicTestingModule, {
         set: {
-          entryComponents: [ BuildWidgetComponent ]
+          entryComponents: [ TestWidgetTypeComponent ]
         }
       });
   }));
@@ -28,18 +34,16 @@ describe('WidgetHeaderComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(WidgetHeaderComponent);
     component = fixture.componentInstance;
-    component.widgetType = BuildWidgetComponent;
+    component.widgetType = TestWidgetTypeComponent;
   });
-
-  it('should have a widget value', () => {
-    component.ngOnInit();
-
-    expect(component.widgetType).toBeDefined();
-  });
-
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+  // it('should not have an initial widget value before loading', () => {
+  //   component.ngOnInit();
+  //
+  //   expect(component.widgetType).toBeUndefined();
+  // });
   // it('should load a component type in based on the specified widget', () => {
   //
   // });
