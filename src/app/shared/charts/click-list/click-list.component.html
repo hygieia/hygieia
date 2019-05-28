@@ -2,18 +2,25 @@
     For now click list is specific to the build widget, based off of the old UI. Once we know
     what we will need from it we can modify it so it can serve for the other widgets as well.
 -->
-<div class="widget">
-  <div class="widget-heading">
+<div class="widget dark-chart-theme">
+  <div class="chart-heading">
     {{title}}
   </div>
   <div>
     <div class="widget-body latest-builds">
       <table class="table table-hover">
         <tr class="dash-row clickable" *ngFor="let build of data">
-          <td *ngIf="build.status==='success'"><span class="fa fa-check" style="color:green"></span></td>
-          <td *ngIf="build.status!=='success' && build.status != 'inprogress'"><span class="fa fa-exclamation-circle"
-              style="color:red"></span></td>
-          <td *ngIf="build.status=='inprogress'"><span class="fa fa-refresh fa-spin product-text-active"></span></td>
+          <td *ngIf="build.status==='success'">
+            <span class="dash-status fa">
+              <span class="dash-status-pass fa-check"></span>
+            </span>
+            </td>
+          <td *ngIf="build.status!=='success' && build.status != 'inprogress'">
+            <span class="dash-status fa">
+              <span class="dash-status-fail">!</span>
+            </span>
+          </td>
+          <td *ngIf="build.status=='inprogress'"><span class="dash-status fa fa-refresh fa-spin product-text-active"></span></td>
           <td><span class="build-number">{{build.number}}</span></td>
           <td><span class="text-standard-date">{{build.endTime | timeAgo}}</span></td>
           <td><span class="build-chevron pull-right fa fa-lg fa-angle-right"></span></td>

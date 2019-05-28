@@ -1,11 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 
 import { ChartComponent } from '../chart/chart.component';
 
 @Component({
   selector: 'app-number-card-chart',
   templateUrl: './number-card-chart.component.html',
-  styleUrls: ['./number-card-chart.component.scss']
+  styleUrls: ['./number-card-chart.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class NumberCardChartComponent extends ChartComponent {
 
