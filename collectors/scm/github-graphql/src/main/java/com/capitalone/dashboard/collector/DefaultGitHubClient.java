@@ -606,6 +606,7 @@ public class DefaultGitHubClient implements GitHubClient {
             String sha = str(node, "oid");
             int changedFiles = NumberUtils.toInt(str(node, "changedFiles"));
             int deletions = NumberUtils.toInt(str(node, "deletions"));
+            int additions = NumberUtils.toInt(str(node, "additions"));
             String message = str(node, "message");
             String authorName = str(authorJSON, "name");
             String authorLogin = authorUserJSON == null ? "unknown" : str(authorUserJSON, "login");
@@ -622,7 +623,7 @@ public class DefaultGitHubClient implements GitHubClient {
             }
             commit.setScmCommitLog(message);
             commit.setScmCommitTimestamp(getTimeStampMills(str(authorJSON, "date")));
-            commit.setNumberOfChanges(Integer.sum(changedFiles,deletions));
+            commit.setNumberOfChanges(changedFiles+deletions+additions);
             List<String> parentShas = getParentShas(node);
             commit.setScmParentRevisionNumbers(parentShas);
             commit.setFirstEverCommit(CollectionUtils.isEmpty(parentShas));
