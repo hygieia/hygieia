@@ -1,32 +1,13 @@
-<div class="widget row"
-     ng-class="{'configure' : state == widget_state.CONFIGURE, 'alert': display == display_state.ERROR}">
-  <div ng-class="(title!='Quality' && title!='Performance') ? 'widget-heading' : 'widget-heading-performance'"
-       ng-if="header">
-    <span ng-if="title!='Quality' && title!='Performance'">{{title}}</span>
-
+<div class="widget row">
+  <div ng-class="widget-heading">
+    <span>{{title}}</span>
     <span class="widget-settings-icon clickable pull-right fa fa-cog"
           type="button"
-          ng-if="hasPermission() && widgetDefinition && widgetDefinition.config && state == widget_state.READY"
           (click)="openConfig()"></span>
 
     <span class="widget-settings-icon clickable pull-right fa fa-trash"
           type="button"
           (click)="openConfirm()"></span>
-
-    <span ng-include-template="components/templates/deleteWidgetTemplate.html"
-          ng-include-variables="{ widget: widgetConfig, dashboardId : dashboard.id}"
-          ng-if="hasPermission() && widgetDefinition && widgetDefinition.config && state == widget_state.READY"></span>
-
-
-    <span ng-if="collectionError"
-          tooltip-trigger="focus" tooltip-placement="bottom" class="fa fa-circle widget-font-fail pull-right">
-        </span>
-    <span ng-if="!collectionError && lastUpdatedActual === 0" uib-tooltip-html="'<b>Pending data collection</b>'"
-          tooltip-trigger="focus" tooltip-placement="bottom" class="fa fa-circle widget-font-warn pull-right">
-        </span>
-    <span ng-if="!collectionError && lastUpdatedActual > 0" class="pull-right last-updated">
-            {{lastUpdatedDisplay}}
-        </span>
   </div>
   <div class="widget-body">
     <div class="widget-body-main">
@@ -35,6 +16,5 @@
     </div>
   </div>
 </div>
-{{widgetType | json}}
 
 
