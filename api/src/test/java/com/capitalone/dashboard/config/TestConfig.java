@@ -238,6 +238,11 @@ public class TestConfig {
         return Mockito.mock(ScoreDashboardService.class);
     }
 
+  @Bean
+  public LogAnalysisService logAnalysisService() {
+    return Mockito.mock(LogAnalysisService.class);
+  }
+
     @Bean
     public TeamInventoryService teamInventoryService() {
         return Mockito.mock(TeamInventoryService.class);

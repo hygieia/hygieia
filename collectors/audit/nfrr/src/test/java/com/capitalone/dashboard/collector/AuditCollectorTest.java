@@ -4,6 +4,7 @@ import com.capitalone.dashboard.collector.config.TestConfig;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.repository.AuditCollectorRepository;
 import com.capitalone.dashboard.repository.AuditResultRepository;
+import com.capitalone.dashboard.repository.CmdbRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.junit.Before;
@@ -20,6 +21,7 @@ public class AuditCollectorTest {
     private DashboardRepository dashboardRepository;
     private AuditResultRepository auditResultRepository;
     private AuditCollectorRepository auditCollectorRepository;
+    private CmdbRepository cmdbRepository;
     private AuditSettings auditSettings;
 
     @Before
@@ -28,9 +30,10 @@ public class AuditCollectorTest {
         auditResultRepository = mock(AuditResultRepository.class);
         auditCollectorRepository = mock(AuditCollectorRepository.class);
         dashboardRepository = mock(DashboardRepository.class);
+        this.cmdbRepository = cmdbRepository;
         auditSettings = new TestConfig().settings();
         this.taskToTest = new AuditCollectorTask(taskScheduler, dashboardRepository, auditResultRepository,
-                auditCollectorRepository, auditSettings);
+                auditCollectorRepository, cmdbRepository,null, null, auditSettings);
     }
 
     @Test

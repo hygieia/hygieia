@@ -1,0 +1,43 @@
+<widget-modal widget-modal-title="Configure Log Analysis Widget" class="log-config">
+    <form name="configForm" role="form"
+          ng-submit="logConfig.submit(configForm.$valid,logConfig.logCollectorItem, logConfig.maxDisplayEntries)"
+          novalidate="novalidate">
+
+        <div class="box">
+
+            <form-group input="logCollectorItem" class="text-center">
+
+                <div class="text-center modal-label">Log Analysis:</div>
+
+                <input type="text" name="logCollectorItem" class="form-control" placeholder="Search a Log Analysis Job"
+                       ng-model="logConfig.logCollectorItem"
+                       uib-typeahead="item as item.niceName for item in getLogCollectors($viewValue)" typeahead-focus
+                       typeahead-min-length="0"
+                       typeahead-wait-ms="250"
+                       autocomplete="off"
+                       typeahead-no-results="noResults">
+                <div class="form-control" ng-show="noResults">
+                    No Results Found
+                </div>
+
+            </form-group>
+
+            <form-group class="text-center" input="maxDisplayEntries" errors="{required:'Maximum number of entries required', pattern: 'Please enter a number'}">
+                <label class="modal-label">Maximum Entries</label>
+                <input
+                        type="text"
+                        name="maxDisplayEntries"
+                        class="form-control-inline text-center"
+                        ng-model="logConfig.maxDisplayEntries"
+                        size="5"
+                        minlength="1"
+                        maxlength="4"
+                        pattern="\d*"
+                        required>
+            </form-group>
+        </div>
+        <div class="button-row row text-center">
+            <button type="submit" class="btn btn-primary btn-wide">Save</button>
+        </div>
+    </form>
+</widget-modal>
