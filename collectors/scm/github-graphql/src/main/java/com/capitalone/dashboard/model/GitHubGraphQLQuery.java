@@ -57,6 +57,8 @@ public class GitHubGraphQLQuery {
                     "            cursor\n" +
                     "            node {\n" +
                     "              oid\n" +
+                    "              changedFiles\n" +
+                    "              deletions\n" +
                     "              parents(first:10) {\n" +
                     "                nodes {\n" +
                     "                  oid\n" +
@@ -138,6 +140,8 @@ public class GitHubGraphQLQuery {
                     "              commit {\n" +
                     "                oid\n" +
                     "                committedDate\n" +
+                    "                changedFiles\n" +
+                    "                deletions\n" +
                     "                message\n" +
                     "                status {\n" +
                     "                  state\n" +
