@@ -166,7 +166,9 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
         }
 
         List<GitRequest> pullRequests = gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(repoItem.getId(), beginDt-1, endDt+1);
-        List<Commit> commits = commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(repoItem.getId(), beginDt-1, endDt+1);
+        List<Commit> allCommits = commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(repoItem.getId(), beginDt-1, endDt+1);
+        //Filter empty commits
+        List<Commit> commits = allCommits.stream().filter(commit -> commit.getNumberOfChanges()>0).collect(Collectors.toList());
         commits.sort(Comparator.comparing(Commit::getScmCommitTimestamp).reversed());
         pullRequests.sort(Comparator.comparing(GitRequest::getMergedAt).reversed());
 

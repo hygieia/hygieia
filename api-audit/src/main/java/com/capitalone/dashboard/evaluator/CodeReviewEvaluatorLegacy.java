@@ -123,7 +123,10 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
         }
 
         List<GitRequest> pullRequests = gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(repoItem.getId(), beginDt-1, endDt+1);
-        List<Commit> commits = commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(repoItem.getId(), beginDt-1, endDt+1);
+        List<Commit> allCommits = commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(repoItem.getId(), beginDt-1, endDt+1);
+        //Filter empty commits
+        List<Commit> commits = allCommits.stream().filter(commit -> commit.getNumberOfChanges()>0).collect(Collectors.toList());
+        commits.sort(Comparator.comparing(Commit::getScmCommitTimestamp).reversed());
         if (CollectionUtils.isEmpty(pullRequests)) {
             CodeReviewAuditResponse noPRsCodeReviewAuditResponse = new CodeReviewAuditResponse();
             noPRsCodeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.NO_PULL_REQ_FOR_DATE_RANGE);
