@@ -1,11 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 
 import { ChartComponent } from '../chart/chart.component';
 
 @Component({
   selector: 'app-combo-chart',
   templateUrl: './combo-chart.component.html',
-  styleUrls: ['./combo-chart.component.scss']
+  styleUrls: ['./combo-chart.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class ComboChartComponent extends ChartComponent {
   constructor() {
