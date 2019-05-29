@@ -156,7 +156,7 @@ public class CollectorServiceImpl implements CollectorService {
         if (collectorItem==null){
             return Collections.emptyList();
         }
-        Collector collector = collectorRepository.findOne(collectorItem.getId());
+        Collector collector = collectorRepository.findOne(collectorItem.getCollectorId());
         if (collector == null){
             return Collections.emptyList();
         }
