@@ -225,7 +225,8 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
                             .findFirst().orElse(null);
         }
 
-        List<Commit> commitsRelatedToPr = pr.getCommits();
+        List<Commit> allCommitsRelatedToPr = pr.getCommits();
+        List<Commit> commitsRelatedToPr = allCommitsRelatedToPr.stream().filter(commit -> commit.getNumberOfChanges()>0).collect(Collectors.toList());
         commitsRelatedToPr.sort(Comparator.comparing(e -> (e.getScmCommitTimestamp())));
         if (mergeCommit == null) {
             codeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.MERGECOMMITER_NOT_FOUND);
