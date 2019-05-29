@@ -55,7 +55,7 @@
           "scmAuthor": "ghthree",
           "scmAuthorLogin": "unknown",
           "scmCommitTimestamp": 1525720774000,
-          "numberOfChanges": 0,
+          "numberOfChanges": 2,
           "timestamp": 0,
           "firstEverCommit": false
         },
@@ -65,7 +65,7 @@
           "scmAuthor": "ghthree",
           "scmAuthorLogin": "unknown",
           "scmCommitTimestamp": 1525721091000,
-          "numberOfChanges": 0,
+          "numberOfChanges": 1,
           "timestamp": 0,
           "firstEverCommit": false
         },
@@ -76,7 +76,7 @@
           "scmAuthorLogin": "ghone",
           "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=cof,DC=ds,DC=mycompany,DC=com",
           "scmCommitTimestamp": 1525723131000,
-          "numberOfChanges": 0,
+          "numberOfChanges": 1,
           "timestamp": 0,
           "firstEverCommit": false
         }
@@ -89,8 +89,8 @@
         "scmAuthor": "ghthree",
         "scmAuthorLogin": "unknown",
         "scmCommitTimestamp": 1525720774000,
-        "numberOfChanges": 0,
-        "timestamp": 0,
+        "numberOfChanges": 2,
+        "timestamp": 2,
         "firstEverCommit": false
       },
       {
@@ -99,7 +99,7 @@
         "scmAuthor": "ghthree",
         "scmAuthorLogin": "unknown",
         "scmCommitTimestamp": 1525721091000,
-        "numberOfChanges": 0,
+        "numberOfChanges": 1,
         "timestamp": 0,
         "firstEverCommit": false
       },
@@ -110,7 +110,7 @@
         "scmAuthorLogin": "ghone",
         "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=cof,DC=ds,DC=mycompany,DC=com",
         "scmCommitTimestamp": 1525723131000,
-        "numberOfChanges": 0,
+        "numberOfChanges": 2,
         "timestamp": 0,
         "firstEverCommit": false
       }
@@ -200,7 +200,7 @@
           "scmAuthorLogin": "ghtwo",
           "scmAuthorLDAPDN": "CN=ghtwo,OU=Developers,OU=All Users,DC=cof,DC=ds,DC=mycompany,DC=com",
           "scmCommitTimestamp": 1525698994000,
-          "numberOfChanges": 0,
+          "numberOfChanges": 1,
           "timestamp": 0,
           "firstEverCommit": false
         },
@@ -211,7 +211,7 @@
           "scmAuthorLogin": "ghone",
           "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=cof,DC=ds,DC=mycompany,DC=com",
           "scmCommitTimestamp": 1525699628000,
-          "numberOfChanges": 0,
+          "numberOfChanges": 1,
           "timestamp": 0,
           "firstEverCommit": false
         },
@@ -233,7 +233,7 @@
           "scmAuthorLogin": "ghtwo",
           "scmAuthorLDAPDN": "CN=ghtwo,OU=Developers,OU=All Users,DC=cof,DC=ds,DC=mycompany,DC=com",
           "scmCommitTimestamp": 1525709702000,
-          "numberOfChanges": 0,
+          "numberOfChanges": 2,
           "timestamp": 0,
           "firstEverCommit": false
         },
@@ -280,7 +280,7 @@
         "scmAuthorLogin": "ghtwo",
         "scmAuthorLDAPDN": "CN=ghtwo,OU=Developers,OU=All Users,DC=cof,DC=ds,DC=mycompany,DC=com",
         "scmCommitTimestamp": 1525698994000,
-        "numberOfChanges": 0,
+        "numberOfChanges": 2,
         "timestamp": 0,
         "firstEverCommit": false
       },
@@ -291,7 +291,7 @@
         "scmAuthorLogin": "ghone",
         "scmAuthorLDAPDN": "CN=ghone,OU=Developers,OU=All Users,DC=cof,DC=ds,DC=mycompany,DC=com",
         "scmCommitTimestamp": 1525699628000,
-        "numberOfChanges": 0,
+        "numberOfChanges": 1,
         "timestamp": 0,
         "firstEverCommit": false
       },
@@ -302,7 +302,7 @@
         "scmAuthorLogin": "ghthree",
         "scmAuthorLDAPDN": "CN=ghthree,OU=Developers,OU=All Users,DC=cof,DC=ds,DC=mycompany,DC=com",
         "scmCommitTimestamp": 1525709646000,
-        "numberOfChanges": 0,
+        "numberOfChanges": 1,
         "timestamp": 0,
         "firstEverCommit": false
       },
