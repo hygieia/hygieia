@@ -37,8 +37,6 @@ import javax.inject.Inject;
 
 public class HygieiaTestPublishStep extends AbstractStepImpl {
 
-    public static final String CUCUMBER = "cucumber";
-    public static final String MOCHA = "mocha";
     private String buildStatus;
     private String testFileNamePattern;
     private String testResultsDirectory;
@@ -101,7 +99,7 @@ public class HygieiaTestPublishStep extends AbstractStepImpl {
     }
 
     @DataBoundConstructor
-    public HygieiaTestPublishStep(String buildStatus, String testFileNamePattern, String testResultsDirectory, String testType, String testResultType, String testApplicationName, String testEnvironmentName) {
+    public HygieiaTestPublishStep(String buildStatus, String testFileNamePattern, String testResultsDirectory, String testType, String testApplicationName, String testEnvironmentName) {
         this.buildStatus = buildStatus;
         this.testFileNamePattern = testFileNamePattern;
         this.testResultsDirectory = testResultsDirectory;
@@ -153,14 +151,6 @@ public class HygieiaTestPublishStep extends AbstractStepImpl {
             model.add(HygieiaConstants.REGRESSION_TEST_DISPLAY, TestSuiteType.Regression.toString());
             model.add(HygieiaConstants.PERFORMANCE_TEST_DISPLAY, TestSuiteType.Performance.toString());
             model.add(HygieiaConstants.SECURITY_TEST_DISPLAY, TestSuiteType.Security.toString());
-            return model;
-        }
-
-        public ListBoxModel doFillTestResultType(String testResultType) {
-            ListBoxModel model = new ListBoxModel();
-
-            model.add(HygieiaConstants.CUCUMBER_JSON, CUCUMBER);
-            model.add(HygieiaConstants.MOCHA_JS_SPEC, MOCHA);
             return model;
         }
     }
