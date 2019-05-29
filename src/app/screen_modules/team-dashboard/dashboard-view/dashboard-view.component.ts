@@ -41,14 +41,14 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
         title: 'Placeholder',
         component: PlaceholderWidgetComponent,
         status: 'Success',
-        widgetSize: 'col-lg-3',
+        widgetSize: 'col-xl-3',
         configForm: BuildConfigFormComponent
       },
       {
         title: 'Build',
         component: BuildWidgetComponent,
         status: 'Success',
-        widgetSize: 'col-lg-6',
+        widgetSize: 'col-xl-6',
         configForm: BuildConfigFormComponent
       }
       ,
@@ -56,28 +56,28 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
         title: 'Placeholder',
         component: PlaceholderWidgetComponent,
         status: 'Success',
-        widgetSize: 'col-lg-3',
+        widgetSize: 'col-xl-3',
         configForm: BuildConfigFormComponent
       },
       {
         title: 'Placeholder',
         component: PlaceholderWidgetComponent,
         status: 'Success',
-        widgetSize: 'col-lg-3',
+        widgetSize: 'col-xl-4',
         configForm: BuildConfigFormComponent
       },
       {
         title: 'Placeholder',
         component: PlaceholderWidgetComponent,
         status: 'Success',
-        widgetSize: 'col-lg-6',
+        widgetSize: 'col-xl-4',
         configForm: BuildConfigFormComponent
       },
       {
         title: 'Placeholder',
         component: PlaceholderWidgetComponent,
         status: 'Success',
-        widgetSize: 'col-lg-3',
+        widgetSize: 'col-xl-4',
         configForm: BuildConfigFormComponent
       }
     ];
