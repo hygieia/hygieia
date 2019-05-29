@@ -1,20 +1,17 @@
-<div class="widget row">
-  <div ng-class="widget-heading">
-    <span>{{title}}</span>
-    <span class="widget-settings-icon clickable pull-right fa fa-cog"
-          type="button"
-          (click)="openConfig()"></span>
-
-    <span class="widget-settings-icon clickable pull-right fa fa-trash"
-          type="button"
-          (click)="openConfirm()"></span>
-  </div>
-  <div class="widget-body">
-    <div class="widget-body-main">
-      <!-- widget content -->
-      <ng-template appWidget></ng-template>
+<div class="widget-container-small">
+  <div class="widget">
+    <div class="widget-heading">
+      <span>{{title}}</span>
+      <span class="widget-settings-icon clickable pull-right fa fa-trash"
+            (click)="openConfirm()"></span>
+      <span class="widget-settings-icon clickable pull-right fa fa-cog"
+            (click)="openConfig()"></span>
+    </div>
+    <div class="widget-body">
+      <div class="build-view">
+        <!-- widget content -->
+        <ng-template appWidget></ng-template>
+      </div>
     </div>
   </div>
 </div>
-
-
