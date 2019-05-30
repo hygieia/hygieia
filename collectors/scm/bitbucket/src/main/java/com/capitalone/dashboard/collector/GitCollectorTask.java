@@ -107,12 +107,16 @@ public class GitCollectorTask extends CollectorTask<Collector> {
          * Logic: For each component, retrieve the collector item list of the type SCM.
          * Store their IDs in a unique set ONLY if their collector IDs match with Bitbucket collectors ID.
          */
-        for (com.capitalone.dashboard.model.Component comp : dbComponentRepository.findAll()) {
-            if (comp.getCollectorItems() == null || comp.getCollectorItems().isEmpty()) continue;
-            List<CollectorItem> itemList = comp.getCollectorItems().get(CollectorType.SCM);
+        for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
+                .findAll()) {
+            if (comp.getCollectorItems() == null || comp.getCollectorItems()
+                                                        .isEmpty()) continue;
+            List<CollectorItem> itemList = comp.getCollectorItems()
+                                               .get(CollectorType.SCM);
             if (itemList == null) continue;
             for (CollectorItem ci : itemList) {
-                if (ci != null && ci.getCollectorId().equals(collector.getId())) {
+                if (ci != null && ci.getCollectorId()
+                                    .equals(collector.getId())) {
                     uniqueIDs.add(ci.getId());
                 }
             }
@@ -154,7 +158,8 @@ public class GitCollectorTask extends CollectorTask<Collector> {
             List<Commit> newCommits = new ArrayList<>();
             for (Commit commit : commits) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug(commit.getTimestamp() + ":::" + commit.getScmCommitLog());
+                    LOG.debug(commit.getTimestamp() + ":::" + commit
+                            .getScmCommitLog());
                 }
 
                 if (isNewCommit(repo, commit)) {
@@ -172,7 +177,8 @@ public class GitCollectorTask extends CollectorTask<Collector> {
             }
 
             // Step 2: Get all the Pull Requests
-            LOG.info(repo.getOptions().toString() + "::" + repo.getBranch() + "::get pulls");
+            LOG.info(repo.getOptions().toString() + "::" + repo
+                    .getBranch() + "::get pulls");
 
             pullCount += pullRequestCollector.getPullRequests(repo, "all");
 
@@ -203,13 +209,14 @@ public class GitCollectorTask extends CollectorTask<Collector> {
 }
 
 /*
- * Copyright 2019 Pandora Media, Inc.
- *
+ * SPDX-Copyright: Copyright (c) Capital One Services, LLC
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2019 Capital One Services, LLC
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * See accompanying LICENSE file or you may obtain a copy of the License at
+ * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
