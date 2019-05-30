@@ -11,13 +11,12 @@ import { BuildWidgetComponent } from './build-widget/build-widget.component';
   declarations: [BuildWidgetComponent, BuildConfigFormComponent],
   entryComponents: [BuildConfigFormComponent],
   imports: [
-    CommonModule,
     BuildRoutingModule,
-    SharedModule,
-    NgbModule
+    CommonModule,
+    NgbModule,
+    SharedModule
   ],
   exports: [
-
   ]
 })
 export class BuildModule { }

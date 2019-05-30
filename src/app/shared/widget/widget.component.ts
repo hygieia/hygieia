@@ -27,7 +27,7 @@ export class WidgetComponent {
   public charts: IChart[];
 
   // Subjects can subscribe and emit. This allows us
-  // to subsribe to updates from the upstream dashboard
+  // to subscribe to updates from the upstream dashboard
   // config but also trigger updates for only this widget
   // if needed.
   protected widgetConfigSubject = new ReplaySubject<any>(1);
@@ -62,52 +62,6 @@ export class WidgetComponent {
   // Specific refresh logic for each widget should be
   // implemented in each subclass.
   startRefreshInterval() {
-  }
-
-  updateWidgetConfig(newWidgetConfig: any): void {
-    if (!newWidgetConfig) {
-      return;
-    }
-
-    // Take the current config and prepare it for saving
-    const newWidgetConfig$ = this.getCurrentWidgetConfig().pipe(
-      map(widgetConfig => {
-        extend(widgetConfig, newWidgetConfig);
-        return widgetConfig;
-      }),
-      map(widgetConfig => {
-        if (widgetConfig.collectorItemId) {
-          widgetConfig.collectorItemIds = [widgetConfig.collectorItemId];
-          delete widgetConfig.collectorItemId;
-        }
-        return widgetConfig;
-      })
-    );
-
-    // Take the modified widgetConfig and upsert it.
-    const upsertDashboardResult$ = newWidgetConfig$.pipe(
-      switchMap(widgetConfig => {
-        return this.dashboardService.upsertWidget(widgetConfig);
-      }));
-
-    // Take the new widget and the results from the API call
-    // and have the dashboard service take this data to
-    // publish the new config.
-    zip(newWidgetConfig$, upsertDashboardResult$).pipe(
-      map(([widgetConfig, upsertWidgetResponse]) => ({ widgetConfig, upsertWidgetResponse }))
-    ).subscribe(result => {
-      if (result.widgetConfig !== null && typeof result.widgetConfig === 'object') {
-        extend(result.widgetConfig, result.upsertWidgetResponse.widget);
-      }
-
-      this.dashboardService.upsertLocally(result.upsertWidgetResponse.component, result.widgetConfig);
-
-      // Push the new config to the widget, which
-      // will trigger whatever is subscribed to
-      // widgetConfig$
-      this.widgetConfigSubject.next(result.widgetConfig);
-      this.startRefreshInterval();
-    });
   }
 
   // Take one dashboard config from the dashboard service.

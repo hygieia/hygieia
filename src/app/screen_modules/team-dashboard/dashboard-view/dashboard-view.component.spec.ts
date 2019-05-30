@@ -16,11 +16,21 @@ import { DashboardViewComponent } from './dashboard-view.component';
 })
 class TestWidgetComponent {}
 
+@Component({
+  selector: 'app-test-form',
+  template: '<form></form>'
+})
+class TestFormComponent {}
+
 
 @NgModule({
-  declarations: [TestWidgetComponent],
+  declarations: [
+    TestWidgetComponent,
+    TestFormComponent
+  ],
   entryComponents: [
-    TestWidgetComponent
+    TestWidgetComponent,
+    TestFormComponent
   ]
 })
 class TestModule { }
@@ -52,8 +62,11 @@ describe('DashboardViewComponent', () => {
 
   it('should create template', () => {
     component.widgets = [{
+      title: 'Test Title',
       component: TestWidgetComponent,
-      status: 'Success'
+      status: 'Success',
+      widgetSize: 'col-lg-6',
+      configForm: TestFormComponent
     }];
     component.ngOnInit();
     component.ngAfterViewInit();

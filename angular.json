@@ -29,7 +29,8 @@
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/font-awesome/css/font-awesome.min.css",
-              "src/styles.scss"
+              "src/styles.scss",
+              "src/variables.scss"
             ],
             "scripts": [],
             "es5BrowserSupport": true
