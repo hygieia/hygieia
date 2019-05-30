@@ -79,23 +79,23 @@ public class LibraryPolicyEvaluator extends Evaluator<LibraryPolicyAuditResponse
 
         boolean isOk = true;
         //License Threats
-        if (!Objects.isNull(licenseThreats) && licenseThreats.stream().anyMatch(threat -> Objects.equals(threat.getLevel(), LibraryPolicyThreatLevel.Critical) && hasViolations(threat,settings.getCriticalLicenseVulnerabilitiesAge()))) {
+        if (CollectionUtils.isNotEmpty(licenseThreats) && licenseThreats.stream().anyMatch(threat -> Objects.equals(threat.getLevel(), LibraryPolicyThreatLevel.Critical) && hasViolations(threat,settings.getCriticalLicenseVulnerabilitiesAge()))) {
             libraryPolicyAuditResponse.addAuditStatus(LibraryPolicyAuditStatus.LIBRARY_POLICY_FOUND_CRITICAL_LICENSE);
             isOk = false;
         }
 
-        if (!Objects.isNull(licenseThreats) && licenseThreats.stream().anyMatch(threat -> Objects.equals(threat.getLevel(), LibraryPolicyThreatLevel.High) && hasViolations(threat,settings.getHighLicenseVulnerabilitiesAge()))) {
+        if (CollectionUtils.isNotEmpty(licenseThreats) && licenseThreats.stream().anyMatch(threat -> Objects.equals(threat.getLevel(), LibraryPolicyThreatLevel.High) && hasViolations(threat,settings.getHighLicenseVulnerabilitiesAge()))) {
             libraryPolicyAuditResponse.addAuditStatus(LibraryPolicyAuditStatus.LIBRARY_POLICY_FOUND_HIGH_LICENSE);
             isOk = false;
         }
 
         //Security Threats
-        if (!Objects.isNull(securityThreats) && securityThreats.stream().anyMatch(threat -> Objects.equals(threat.getLevel(), LibraryPolicyThreatLevel.Critical) && hasViolations(threat,settings.getCriticalSecurityVulnerabilitiesAge()))) {
+        if (CollectionUtils.isNotEmpty(securityThreats) && securityThreats.stream().anyMatch(threat -> Objects.equals(threat.getLevel(), LibraryPolicyThreatLevel.Critical) && hasViolations(threat,settings.getCriticalSecurityVulnerabilitiesAge()))) {
             libraryPolicyAuditResponse.addAuditStatus(LibraryPolicyAuditStatus.LIBRARY_POLICY_FOUND_CRITICAL_SECURITY);
             isOk = false;
         }
 
-        if (!Objects.isNull(securityThreats) && securityThreats.stream().anyMatch(threat -> Objects.equals(threat.getLevel(), LibraryPolicyThreatLevel.High) && hasViolations(threat,settings.getHighSecurityVulnerabilitiesAge()))) {
+        if (CollectionUtils.isNotEmpty(securityThreats) && securityThreats.stream().anyMatch(threat -> Objects.equals(threat.getLevel(), LibraryPolicyThreatLevel.High) && hasViolations(threat,settings.getHighSecurityVulnerabilitiesAge()))) {
             libraryPolicyAuditResponse.addAuditStatus(LibraryPolicyAuditStatus.LIBRARY_POLICY_FOUND_HIGH_SECURITY);
             isOk = false;
         }
