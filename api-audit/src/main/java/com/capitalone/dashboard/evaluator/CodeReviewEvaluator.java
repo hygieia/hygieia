@@ -166,7 +166,9 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
         }
 
         List<GitRequest> pullRequests = gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(repoItem.getId(), beginDt-1, endDt+1);
-        List<Commit> commits = commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(repoItem.getId(), beginDt-1, endDt+1);
+        List<Commit> allCommits = commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(repoItem.getId(), beginDt-1, endDt+1);
+        //Filter empty commits
+        List<Commit> commits = allCommits.stream().filter(commit -> commit.getNumberOfChanges()>0).collect(Collectors.toList());
         commits.sort(Comparator.comparing(Commit::getScmCommitTimestamp).reversed());
         pullRequests.sort(Comparator.comparing(GitRequest::getMergedAt).reversed());
 
@@ -250,7 +252,8 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
 
         CodeReviewAuditResponseV2.PullRequestAudit pullRequestAudit = new CodeReviewAuditResponseV2.PullRequestAudit();
         pullRequestAudit.setPullRequest(pr);
-        List<Commit> commitsRelatedToPr = pr.getCommits();
+        List<Commit> allCommitsRelatedToPr = pr.getCommits();
+        List<Commit> commitsRelatedToPr = allCommitsRelatedToPr.stream().filter(commit -> commit.getNumberOfChanges()>0).collect(Collectors.toList());
         commitsRelatedToPr.sort(Comparator.comparing(e -> (e.getScmCommitTimestamp())));
         if (mergeCommit == null) {
             pullRequestAudit.addAuditStatus(CodeReviewAuditStatus.MERGECOMMITER_NOT_FOUND);

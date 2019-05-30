@@ -53,7 +53,7 @@
                         "91dc75834718320ae7ee14a6455d0402ad066026"
                     ],
                     "scmCommitTimestamp": 1510954840000,
-                    "numberOfChanges": 0,
+                    "numberOfChanges": 1,
                     "timestamp": 0,
                     "firstEverCommit": false
                 }
@@ -69,7 +69,7 @@
                     "91dc75834718320ae7ee14a6455d0402ad066026"
                 ],
                 "scmCommitTimestamp": 1510954840000,
-                "numberOfChanges": 0,
+                "numberOfChanges": 1,
                 "timestamp": 0,
                 "firstEverCommit": false
             }

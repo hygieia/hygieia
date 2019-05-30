@@ -76,7 +76,7 @@
                         "2572585fce792204731df381071b4e3950c372a8"
                     ],
                     "scmCommitTimestamp": 1510955202000,
-                    "numberOfChanges": 0,
+                    "numberOfChanges": 1,
                     "timestamp": 0,
                     "firstEverCommit": false
                 },
@@ -90,7 +90,7 @@
                         "cd3a16a119085e8394c240653911c350029a5210"
                     ],
                     "scmCommitTimestamp": 1510956167000,
-                    "numberOfChanges": 0,
+                    "numberOfChanges": 1,
                     "timestamp": 0,
                     "firstEverCommit": false
                 },
@@ -104,7 +104,7 @@
                         "af6044794953ffdcb7e973b8db53ee79b5e1e807"
                     ],
                     "scmCommitTimestamp": 1510956239000,
-                    "numberOfChanges": 0,
+                    "numberOfChanges": 1,
                     "timestamp": 0,
                     "firstEverCommit": false
                 }
@@ -120,7 +120,7 @@
                     "2572585fce792204731df381071b4e3950c372a8"
                 ],
                 "scmCommitTimestamp": 1510955202000,
-                "numberOfChanges": 0,
+                "numberOfChanges": 1,
                 "timestamp": 0,
                 "firstEverCommit": false
             },
@@ -134,7 +134,7 @@
                     "cd3a16a119085e8394c240653911c350029a5210"
                 ],
                 "scmCommitTimestamp": 1510956167000,
-                "numberOfChanges": 0,
+                "numberOfChanges": 1,
                 "timestamp": 0,
                 "firstEverCommit": false
             },
@@ -148,7 +148,7 @@
                     "af6044794953ffdcb7e973b8db53ee79b5e1e807"
                 ],
                 "scmCommitTimestamp": 1510956239000,
-                "numberOfChanges": 0,
+                "numberOfChanges": 1,
                 "timestamp": 0,
                 "firstEverCommit": false
             }
