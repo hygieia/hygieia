@@ -262,6 +262,7 @@ public class CodeReviewEvaluatorLegecyTest {
         c.setFilesModified(Arrays.asList("pom.xml"));
         c.setFilesRemoved(Arrays.asList("cucumber.xml"));
         c.setFilesAdded(Arrays.asList("package.json"));
+        c.setNumberOfChanges(1);
         return c;
     }
 

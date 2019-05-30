@@ -317,6 +317,7 @@ public class CodeReviewEvaluatorTest {
         c.setFilesAdded(Arrays.asList("package.json"));
         c.setScmCommitterLogin(committer);
         c.setScmCommitTimestamp(timeStamp);
+        c.setNumberOfChanges(1);
         return c;
     }
 
