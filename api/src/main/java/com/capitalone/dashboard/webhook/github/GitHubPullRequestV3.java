@@ -18,6 +18,7 @@ import com.capitalone.dashboard.webhook.settings.GitHubWebHookSettings;
 import com.capitalone.dashboard.webhook.settings.WebHookSettings;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
@@ -431,6 +432,11 @@ public class GitHubPullRequestV3 extends GitHubV3 {
                     }
                 }
             }
+            int changedFiles = NumberUtils.toInt(restClient.getString(commit, "changedFiles"));
+            int deletions = NumberUtils.toInt(restClient.getString(commit, "deletions"));
+            int additions = NumberUtils.toInt(restClient.getString(commit, "additions"));
+            newCommit.setNumberOfChanges(changedFiles+deletions+additions);
+
             newCommit.setScmCommitTimestamp(getTimeStampMills(restClient.getString(author, "date")));
             JSONObject statusObj = (JSONObject) commit.get("status");
 
