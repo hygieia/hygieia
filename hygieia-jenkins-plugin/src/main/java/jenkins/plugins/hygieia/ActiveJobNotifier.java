@@ -1,15 +1,18 @@
 package jenkins.plugins.hygieia;
 
 import com.capitalone.dashboard.model.BuildStatus;
+import com.capitalone.dashboard.model.quality.CucumberJsonReport;
+import com.capitalone.dashboard.model.quality.MochaJsSpecReport;
 import com.capitalone.dashboard.request.BinaryArtifactCreateRequest;
 import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import com.capitalone.dashboard.request.DeployDataCreateRequest;
 import com.capitalone.dashboard.request.TestDataCreateRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hygieia.builder.ArtifactBuilder;
 import hygieia.builder.BuildBuilder;
-import hygieia.builder.CucumberTestBuilder;
+import hygieia.builder.FunctionalTestBuilder;
 import hygieia.builder.DeployBuilder;
 import hygieia.builder.SonarBuilder;
 import hygieia.utils.HygieiaUtils;
@@ -40,7 +43,6 @@ public class ActiveJobNotifier implements FineGrainedNotifier {
                 ((publisher.getHygieiaTest() != null) && publisher.getHygieiaTest().isPublishTestStart()) ||
                 ((publisher.getHygieiaSonar() != null) && publisher.getHygieiaSonar().isPublishBuildStart()) ||
                 ((publisher.getHygieiaDeploy() != null) && publisher.getHygieiaDeploy().isPublishDeployStart());
-
 
         if (publish) {
             HygieiaResponse response = getHygieiaService(r).publishBuildData(new BuildBuilder().createBuildRequest(r, publisher.getDescriptor().getHygieiaJenkinsName(), listener, false, true));
@@ -102,9 +104,11 @@ public class ActiveJobNotifier implements FineGrainedNotifier {
             boolean publishTest = (publisher.getHygieiaTest() != null) && (successBuild || publisher.getHygieiaTest().isPublishEvenBuildFails());
 
             if (publishTest) {
-//                CucumberTestBuilder(Run run, TaskListener listener, BuildStatus buildStatus, FilePath filePath, String applicationName, String environmentName, String testType, String filePattern, String directory, String jenkinsName, String buildId)
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.registerSubtypes(CucumberJsonReport.class, MochaJsSpecReport.class);
+//                FunctionalTestBuilder(Run run, TaskListener listener, BuildStatus buildStatus, FilePath filePath, String applicationName, String environmentName, String testType, String filePattern, String directory, String jenkinsName, String buildId)
                 BuildStatus buildStatus = BuildStatus.fromString(r.getResult().toString());
-                TestDataCreateRequest request = new CucumberTestBuilder().getTestDataCreateRequest(r, listener, buildStatus, r.getWorkspace(), publisher.getHygieiaTest().getTestApplicationName(),
+                TestDataCreateRequest request = new FunctionalTestBuilder(objectMapper).getTestDataCreateRequest(r, listener, buildStatus, r.getWorkspace(), publisher.getHygieiaTest().getTestApplicationName(),
                         publisher.getHygieiaTest().getTestEnvironmentName(), publisher.getHygieiaTest().getTestType(), publisher.getHygieiaTest().getTestFileNamePattern(), publisher.getHygieiaTest().getTestResultsDirectory(),
                         publisher.getDescriptor().getHygieiaJenkinsName(), HygieiaUtils.getBuildCollectionId(buildResponse.getResponseValue()));
                 if (request != null) {

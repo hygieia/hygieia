@@ -25,7 +25,7 @@ public interface CollectorService {
     /**
      * Finds all Collectors of a given id.
      *
-     * @param ObjectId
+     * @param id
      * @return Collectors matching the specified type
      */
     List<Collector>  collectorsById(ObjectId id);
@@ -100,4 +100,11 @@ public interface CollectorService {
      * @return List of collectorItems
      */
     List<CollectorItem> getCollectorItemForComponent (String id, String type);
+
+    /**
+     * Delete CollectorItem and remove association from component.
+     * @param id
+     * @param deleteFromComponent
+     */
+    void deleteCollectorItem(String id, boolean deleteFromComponent) throws HygieiaException;
 }
