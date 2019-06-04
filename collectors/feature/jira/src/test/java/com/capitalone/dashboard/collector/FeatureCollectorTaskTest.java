@@ -21,9 +21,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,8 +48,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.contains;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -104,6 +99,7 @@ public class FeatureCollectorTaskTest {
         featureSettings.setCollectorItemOnlyUpdate(false);
         featureCollectorTask = new FeatureCollectorTask(null,featureRepository,teamRepository,projectRepository,featureCollectorRepository,featureSettings,defaultJiraClient, featureBoardRepository);
 
+        doReturn(new ResponseEntity<>(getExpectedJSON("response/issuetype.json"), HttpStatus.OK)).when(rest).exchange(contains("rest/api/2/issuetype"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
         featureCollector = featureCollectorTask.getCollector();
         featureCollector.setId(new ObjectId("5c38f2f087cd1f53ca81bd3d"));
     }

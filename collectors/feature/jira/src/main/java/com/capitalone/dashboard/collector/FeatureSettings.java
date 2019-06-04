@@ -86,206 +86,89 @@ public class FeatureSettings {
 	 */
 	@Value("${feature.collectorItemOnlyUpdate:true}")
 	private boolean collectorItemOnlyUpdate;
-	/**
-	 * In Jira, your instance will have its own Id for the Story
-	 * <p>
-	 * </p>
-	 * <strong>Note:</strong> You can retrieve your instance's Story ID
-	 * via the following URI
-	 *  https://[your-jira-domain-name]/rest/api/2/issuetype
-	 */
-	private String[] jiraStoryIds;
-	/**
-	 * In Jira, your instance will have its own Id for the Epic
-	 * <p>
-	 * </p>
-	 * <strong>Note:</strong> You can retrieve your instance's Epic ID
-	 * via the following URI
-	 *  https://[your-jira-domain-name]/rest/api/2/issuetype
-	 */
-	private String jiraEpicId;
 
-	public boolean isCollectorItemOnlyUpdate() {
-		return collectorItemOnlyUpdate;
-	}
+	public boolean isCollectorItemOnlyUpdate() { return collectorItemOnlyUpdate; }
 
-	public void setCollectorItemOnlyUpdate(boolean collectorItemOnlyUpdate) {
-		this.collectorItemOnlyUpdate = collectorItemOnlyUpdate;
-	}
+	public void setCollectorItemOnlyUpdate(boolean collectorItemOnlyUpdate) { this.collectorItemOnlyUpdate = collectorItemOnlyUpdate; }
 
-	public int getMaxNumberOfFeaturesPerBoard() {
-		return maxNumberOfFeaturesPerBoard;
-	}
+	public int getMaxNumberOfFeaturesPerBoard() { return maxNumberOfFeaturesPerBoard; }
 
-	public void setMaxNumberOfFeaturesPerBoard(int maxNumberOfFeaturesPerBoard) {
-		this.maxNumberOfFeaturesPerBoard = maxNumberOfFeaturesPerBoard;
-	}
+	public void setMaxNumberOfFeaturesPerBoard(int maxNumberOfFeaturesPerBoard) { this.maxNumberOfFeaturesPerBoard = maxNumberOfFeaturesPerBoard; }
 
-	public String getCron() {
-		return cron;
-	}
+	public String getCron() { return cron; }
 
-	public void setCron(String cron) {
-		this.cron = cron;
-	}
+	public void setCron(String cron) { this.cron = cron; }
 
-	public int getPageSize() {
-		return pageSize;
-	}
+	public int getPageSize() { return pageSize; }
 
-	public void setPageSize(int pageSize) {
-		this.pageSize = pageSize;
-	}
+	public void setPageSize(int pageSize) { this.pageSize = pageSize; }
 
-	public int getFirstRunHistoryDays() {
-		return firstRunHistoryDays;
-	}
+	public int getFirstRunHistoryDays() { return firstRunHistoryDays; }
 
-	public void setFirstRunHistoryDays(int firstRunHistoryDays) {
-		this.firstRunHistoryDays = firstRunHistoryDays;
-	}
+	public void setFirstRunHistoryDays(int firstRunHistoryDays) { this.firstRunHistoryDays = firstRunHistoryDays; }
 
-	public String getJiraBaseUrl() {
-		return jiraBaseUrl;
-	}
+	public String getJiraBaseUrl() { return jiraBaseUrl; }
 
-	public void setJiraBaseUrl(String jiraBaseUrl) {
-		this.jiraBaseUrl = jiraBaseUrl;
-	}
+	public void setJiraBaseUrl(String jiraBaseUrl) { this.jiraBaseUrl = jiraBaseUrl; }
 
-	public String getJiraQueryEndpoint() {
-		return jiraQueryEndpoint;
-	}
+	public String getJiraQueryEndpoint() { return jiraQueryEndpoint; }
 
-	public void setJiraQueryEndpoint(String jiraQueryEndpoint) {
-		this.jiraQueryEndpoint = jiraQueryEndpoint;
-	}
+	public void setJiraQueryEndpoint(String jiraQueryEndpoint) { this.jiraQueryEndpoint = jiraQueryEndpoint; }
 
-	public String getJiraCredentials() {
-		return jiraCredentials;
-	}
+	public String getJiraCredentials() { return jiraCredentials; }
 
-	public void setJiraCredentials(String jiraCredentials) {
-		this.jiraCredentials = jiraCredentials;
-	}
+	public void setJiraCredentials(String jiraCredentials) { this.jiraCredentials = jiraCredentials; }
 
-	public String getJiraOauthAuthtoken() {
-		return jiraOauthAuthtoken;
-	}
+	public String getJiraOauthAuthtoken() { return jiraOauthAuthtoken; }
 
-	public void setJiraOauthAuthtoken(String jiraOauthAuthtoken) {
-		this.jiraOauthAuthtoken = jiraOauthAuthtoken;
-	}
+	public void setJiraOauthAuthtoken(String jiraOauthAuthtoken) { this.jiraOauthAuthtoken = jiraOauthAuthtoken; }
 
-	public String getJiraOauthRefreshtoken() {
-		return jiraOauthRefreshtoken;
-	}
+	public String getJiraOauthRefreshtoken() { return jiraOauthRefreshtoken; }
 
-	public void setJiraOauthRefreshtoken(String jiraOauthRefreshtoken) {
-		this.jiraOauthRefreshtoken = jiraOauthRefreshtoken;
-	}
+	public void setJiraOauthRefreshtoken(String jiraOauthRefreshtoken) { this.jiraOauthRefreshtoken = jiraOauthRefreshtoken; }
 
-	public String getJiraOauthRedirecturi() {
-		return jiraOauthRedirecturi;
-	}
+	public String getJiraOauthRedirecturi() { return jiraOauthRedirecturi; }
 
-	public void setJiraOauthRedirecturi(String jiraOauthRedirecturi) {
-		this.jiraOauthRedirecturi = jiraOauthRedirecturi;
-	}
+	public void setJiraOauthRedirecturi(String jiraOauthRedirecturi) { this.jiraOauthRedirecturi = jiraOauthRedirecturi; }
 
-	public String getJiraOauthExpiretime() {
-		return jiraOauthExpiretime;
-	}
+	public String getJiraOauthExpiretime() { return jiraOauthExpiretime; }
 
-	public void setJiraOauthExpiretime(String jiraOauthExpiretime) {
-		this.jiraOauthExpiretime = jiraOauthExpiretime;
-	}
+	public void setJiraOauthExpiretime(String jiraOauthExpiretime) { this.jiraOauthExpiretime = jiraOauthExpiretime; }
 
-	public String getJiraProxyUrl() {
-		return jiraProxyUrl;
-	}
+	public String getJiraProxyUrl() { return jiraProxyUrl; }
 
-	public void setJiraProxyUrl(String jiraProxyUrl) {
-		this.jiraProxyUrl = jiraProxyUrl;
-	}
+	public void setJiraProxyUrl(String jiraProxyUrl) { this.jiraProxyUrl = jiraProxyUrl; }
 
-	public String getJiraProxyPort() {
-		return jiraProxyPort;
-	}
+	public String getJiraProxyPort() { return jiraProxyPort; }
 
-	public void setJiraProxyPort(String jiraProxyPort) {
-		this.jiraProxyPort = jiraProxyPort;
-	}
+	public void setJiraProxyPort(String jiraProxyPort) { this.jiraProxyPort = jiraProxyPort; }
 
-	public String[] getJiraIssueTypeNames() {
-		return jiraIssueTypeNames;
-	}
+	public String[] getJiraIssueTypeNames() { return jiraIssueTypeNames; }
 
-	public void setJiraIssueTypeNames(String[] jiraIssueTypeNames) {
-		this.jiraIssueTypeNames = jiraIssueTypeNames;
-	}
+	public void setJiraIssueTypeNames(String[] jiraIssueTypeNames) { this.jiraIssueTypeNames = jiraIssueTypeNames; }
 
-	public String getJiraSprintDataFieldName() {
-		return jiraSprintDataFieldName;
-	}
+	public String getJiraSprintDataFieldName() { return jiraSprintDataFieldName; }
 
-	public void setJiraSprintDataFieldName(String jiraSprintDataFieldName) {
-		this.jiraSprintDataFieldName = jiraSprintDataFieldName;
-	}
+	public void setJiraSprintDataFieldName(String jiraSprintDataFieldName) { this.jiraSprintDataFieldName = jiraSprintDataFieldName; }
 
-    public String getJiraEpicIdFieldName() {
-        return jiraEpicIdFieldName;
-    }
+    public String getJiraEpicIdFieldName() { return jiraEpicIdFieldName; }
 
-    public void setJiraEpicIdFieldName(String jiraEpicIdFieldName) {
-        this.jiraEpicIdFieldName = jiraEpicIdFieldName;
-    }
+    public void setJiraEpicIdFieldName(String jiraEpicIdFieldName) { this.jiraEpicIdFieldName = jiraEpicIdFieldName; }
 
-    public String getJiraStoryPointsFieldName() {
-        return jiraStoryPointsFieldName;
-    }
+    public String getJiraStoryPointsFieldName() { return jiraStoryPointsFieldName; }
 
-    public void setJiraStoryPointsFieldName(String jiraStoryPointsFieldName) {
-        this.jiraStoryPointsFieldName = jiraStoryPointsFieldName;
-    }
+    public void setJiraStoryPointsFieldName(String jiraStoryPointsFieldName) { this.jiraStoryPointsFieldName = jiraStoryPointsFieldName; }
 
-    public String getJiraTeamFieldName() {
-        return jiraTeamFieldName;
-    }
+    public String getJiraTeamFieldName() { return jiraTeamFieldName; }
 
-    public void setJiraTeamFieldName(String jiraTeamFieldName) {
-        this.jiraTeamFieldName = jiraTeamFieldName;
-    }
+    public void setJiraTeamFieldName(String jiraTeamFieldName) { this.jiraTeamFieldName = jiraTeamFieldName; }
 
-    public int getRefreshTeamAndProjectHours() {
-        return refreshTeamAndProjectHours;
-    }
+    public int getRefreshTeamAndProjectHours() { return refreshTeamAndProjectHours; }
 
-    public void setRefreshTeamAndProjectHours(int refreshTeamAndProjectHours) {
-        this.refreshTeamAndProjectHours = refreshTeamAndProjectHours;
-    }
+    public void setRefreshTeamAndProjectHours(int refreshTeamAndProjectHours) { this.refreshTeamAndProjectHours = refreshTeamAndProjectHours; }
 
-	public boolean isJiraBoardAsTeam() {
-		return jiraBoardAsTeam;
-	}
+	public boolean isJiraBoardAsTeam() { return jiraBoardAsTeam; }
 
-	public void setJiraBoardAsTeam(boolean jiraBoardAsTeam) {
-		this.jiraBoardAsTeam = jiraBoardAsTeam;
-	}
+	public void setJiraBoardAsTeam(boolean jiraBoardAsTeam) { this.jiraBoardAsTeam = jiraBoardAsTeam; }
 
-	public String[] getJiraStoryIds() {
-		return jiraStoryIds;
-	}
-
-	public void setJiraStoryIds(String[] jiraStoryIds) {
-		this.jiraStoryIds = jiraStoryIds;
-	}
-
-	public String getJiraEpicId() {
-		return jiraEpicId;
-	}
-
-	public void setJiraEpicId(String jiraEpicId) {
-		this.jiraEpicId = jiraEpicId;
-	}
 }

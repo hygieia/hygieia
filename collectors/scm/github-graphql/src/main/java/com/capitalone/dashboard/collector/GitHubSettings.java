@@ -24,6 +24,10 @@ public class GitHubSettings {
 	private int errorResetWindow;
 	@Value("${github.rateLimitThreshold:10}")
 	private int rateLimitThreshold;
+	// GitHub Enterprise does not have ratelimit
+	// set to false to skip this check
+	@Value("${github.checkRateLimit:true}")
+	private boolean checkRateLimit;
 	@Value("${github.commitPullSyncTime:86400000}") // 1 day in milliseconds
 	private long commitPullSyncTime;
 	@Value("${github.offsetMinutes:10}") // 10 mins default
@@ -101,6 +105,14 @@ public class GitHubSettings {
 
 	public void setRateLimitThreshold(int rateLimitThreshold) {
 		this.rateLimitThreshold = rateLimitThreshold;
+	}
+
+	public boolean isCheckRateLimit() {
+		return checkRateLimit;
+	}
+
+	public void setCheckRateLimit(boolean checkRateLimit) {
+		this.checkRateLimit = checkRateLimit;
 	}
 
 	public String getPersonalAccessToken() {
