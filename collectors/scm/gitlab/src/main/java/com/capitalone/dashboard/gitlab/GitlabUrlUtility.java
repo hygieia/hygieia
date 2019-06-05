@@ -45,6 +45,7 @@ public class GitlabUrlUtility {
 	private static final String ORDER_BY_QUERY_PARAM_KEY = "order_by";
 	private static final String SORT_QUERY_PARAM_KEY = "sort";
 	private static final String NOTES_REQUESTS_API = "/notes/";
+	private static final String COMMITS_REQUESTS_API = "/commits/";
 	private static final String STATUSES_REQUESTS_API = "/statuses/";
 	private static final String REF_QUERY_PARAM_KEY = "ref";
 	private static final String PER_PAGE_QUERY_PARAM_KEY = "per_page";
@@ -197,6 +198,37 @@ public class GitlabUrlUtility {
         return uri;
     }
 
+    public URI buildMergeRequestCommitsApiUrl(String webUrl, String mergeRequestIid, int resultsPerPage) {
+        String apiVersion = getApiVersion();
+        String protocol = getProtocol();
+        String repoName = getRepoName(webUrl);
+        String host = getRepoHost();
+
+        UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
+
+        if (StringUtils.isNotBlank(gitlabSettings.getPort())) {
+            builder.port(gitlabSettings.getPort());
+        }
+
+        URI uri = builder.scheme(protocol)
+                .host(host)
+                .path(gitlabSettings.getPath())
+                .pathSegment(SEGMENT_API)
+                .pathSegment(apiVersion)
+                .pathSegment(PROJECTS_SEGMENT)
+                .path(repoName)
+                .path(MERGE_REQUESTS_API)
+                .path(mergeRequestIid)
+                .path(COMMITS_REQUESTS_API)
+                .queryParam(PER_PAGE_QUERY_PARAM_KEY, resultsPerPage)
+                .queryParam(ORDER_BY_QUERY_PARAM_KEY, "updated_at")
+                .queryParam(SORT_QUERY_PARAM_KEY, "desc")
+                .build(true).toUri();
+
+        LOG.info("---> Gitlab merge request commits URI: " + uri.toString());
+        return uri;
+    }
+
     public URI buildCommitStatusesApiUrl(String webUrl, String branch, String commitSha, int resultsPerPage) {
         String apiVersion = getApiVersion();
         String protocol = getProtocol();
@@ -224,6 +256,33 @@ public class GitlabUrlUtility {
                 .build(true).toUri();
 
         LOG.info("---> Gitlab commit statuses URI: " + uri.toString());
+        return uri;
+    }
+
+    public URI buildSingleCommitApiUrl(String webUrl, String commitSha) {
+        String apiVersion = getApiVersion();
+        String protocol = getProtocol();
+        String repoName = getRepoName(webUrl);
+        String host = getRepoHost();
+
+        UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
+
+        if (StringUtils.isNotBlank(gitlabSettings.getPort())) {
+            builder.port(gitlabSettings.getPort());
+        }
+
+        URI uri = builder.scheme(protocol)
+                .host(host)
+                .path(gitlabSettings.getPath())
+                .pathSegment(SEGMENT_API)
+                .pathSegment(apiVersion)
+                .pathSegment(PROJECTS_SEGMENT)
+                .path(repoName)
+                .path(COMMITS_API)
+                .path(commitSha)
+                .build(true).toUri();
+
+        LOG.info("---> Gitlab single commit URI: " + uri.toString());
         return uri;
     }
 

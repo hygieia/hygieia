@@ -18,11 +18,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestOperations;
 
+import com.capitalone.dashboard.gitlab.model.GitlabCommit;
 import com.capitalone.dashboard.gitlab.model.GitlabCommitStatus;
 import com.capitalone.dashboard.gitlab.model.GitlabNote;
 import com.capitalone.dashboard.gitlab.model.GitlabRequest;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Comment;
+import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.CommitStatus;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.Review;
@@ -126,6 +128,9 @@ public class GitlabRequestsResponseMapper {
 		request.setCommentsUrl(gitlabRequest.getWebUrl());
 		request.setReviewCommentsUrl(gitlabRequest.getWebUrl());
 
+		List<Commit> commits = getCommits(gitlabRequest.getWebUrl(), gitlabRequest);
+		request.setCommits(commits);
+
 		if (StringUtils.isNotBlank(gitlabRequest.getSha())) {
 			List<CommitStatus> commitStatuses = getCommitStatuses(gitlabRequest.getWebUrl(), branch,
 					gitlabRequest.getSha());
@@ -179,6 +184,48 @@ public class GitlabRequestsResponseMapper {
 
 		return comments;
 	}
+
+    private List<Commit> getCommits(String webUrl, GitlabRequest gitlabRequest) {
+        List<Commit> commits = new ArrayList<>();
+
+        URI apiUrl = gitlabUrlUtility.buildMergeRequestCommitsApiUrl(webUrl, gitlabRequest.getIid(), GitlabUrlUtility.RESULTS_PER_PAGE);
+
+        boolean hasMorePages = true;
+        int nextPage = 1;
+        while (hasMorePages) {
+            int pageOfRequestsSize = 0;
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("PRIVATE-TOKEN", apiToken);
+            ResponseEntity<GitlabCommit[]> response = restOperations.exchange(apiUrl, HttpMethod.GET,
+                    new HttpEntity<>(headers), GitlabCommit[].class);
+            GitlabCommit[] gitlabCommits = response.getBody();
+            for (GitlabCommit gitlabCommit : gitlabCommits) {
+                Commit commit = new Commit();
+                commit.setScmRevisionNumber(gitlabCommit.getId());
+                commit.setScmCommitLog(gitlabCommit.getMessage());
+                commit.setScmAuthor(gitlabCommit.getAuthorName());
+                commit.setScmAuthorLogin(gitlabCommit.getAuthorEmail());
+                commit.setScmCommitTimestamp(new DateTime(gitlabCommit.getCreatedAt()).getMillis());
+                // get single commit's detail info
+                URI singleCommitApiUrl = gitlabUrlUtility.buildSingleCommitApiUrl(webUrl, gitlabCommit.getId());
+                ResponseEntity<GitlabCommit> singleCommitResponse = restOperations.exchange(singleCommitApiUrl, HttpMethod.GET,
+                        new HttpEntity<>(headers), GitlabCommit.class);
+                GitlabCommit singleCommit = singleCommitResponse.getBody();
+                commit.setNumberOfChanges(singleCommit.getTotal());
+                commits.add(commit);
+
+                pageOfRequestsSize++;
+            }
+            if (pageOfRequestsSize < GitlabUrlUtility.RESULTS_PER_PAGE) {
+                hasMorePages = false;
+                continue;
+            }
+            apiUrl = gitlabUrlUtility.updatePage(apiUrl, nextPage);
+            nextPage++;
+        }
+
+        return commits;
+    }
 
 	private List<CommitStatus> getCommitStatuses(String webUrl, String branch, String commitSha) {
 		Map<String, CommitStatus> statuses = new HashMap<>();
