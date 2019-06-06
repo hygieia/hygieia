@@ -53,8 +53,8 @@ public class GitRepo extends CollectorItem {
         return (Date) latest;
     }
 
-    public void setLastUpdateTime(Date date) {
-        getOptions().put(LAST_UPDATE_TIME, date);
+    public void setLastUpdateTime(Long dateInMillis) {
+        getOptions().put(LAST_UPDATE_TIME, dateInMillis);
     }
     
     public String getLastUpdateCommit() {
