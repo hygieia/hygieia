@@ -45,7 +45,7 @@
                         "3913c72e49a7247c617607d5da2089be6a85dc6a"
                     ],
                     "scmCommitTimestamp": 1510954634000,
-                    "numberOfChanges": 0,
+                    "numberOfChanges": 1,
                     "timestamp": 0,
                     "firstEverCommit": false
                 }
@@ -61,7 +61,7 @@
                     "3913c72e49a7247c617607d5da2089be6a85dc6a"
                 ],
                 "scmCommitTimestamp": 1510954634000,
-                "numberOfChanges": 0,
+                "numberOfChanges": 1,
                 "timestamp": 0,
                 "firstEverCommit": false
             }

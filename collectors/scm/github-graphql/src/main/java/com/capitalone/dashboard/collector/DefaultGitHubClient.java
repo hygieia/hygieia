@@ -784,6 +784,10 @@ public class DefaultGitHubClient implements GitHubClient {
                     }
                 }
             }
+            int changedFiles = NumberUtils.toInt(str(commit, "changedFiles"));
+            int deletions = NumberUtils.toInt(str(commit, "deletions"));
+            int additions = NumberUtils.toInt(str(commit, "additions"));
+            newCommit.setNumberOfChanges(changedFiles+deletions+additions);
             prCommits.add(newCommit);
         }
 

@@ -1,0 +1,75 @@
+{
+  "auditStatuses": [
+    "DASHBOARD_TEST_CONFIGURED",
+    "DASHBOARD_CODEQUALITY_NOT_CONFIGURED",
+    "DASHBOARD_BUILD_CONFIGURED",
+    "DASHBOARD_PERFORMANCE_TEST_CONFIGURED",
+    "DASHBOARD_REPO_CONFIGURED"
+  ],
+  "lastUpdated": 0,
+  "dashboardTitle": "FS_COAF_DS_Slate",
+  "businessService": "unknown",
+  "businessApplication": "unknown",
+  "review": {
+    "TEST_RESULT": [
+      {
+        "auditStatuses": [
+          "TEST_RESULT_MISSING"
+        ],
+        "lastUpdated": 0,
+        "lastExecutionTime": 0
+      },
+      {
+        "auditStatuses": [
+          "TEST_RESULT_MISSING"
+        ],
+        "lastUpdated": 0,
+        "lastExecutionTime": 0
+      }
+    ],
+    "BUILD_REVIEW": [
+      {
+        "auditStatuses": [
+          "BUILD_AUTHOR_NE_REPO_AUTHOR",
+          "BUILD_REPO_MISMATCH"
+        ],
+        "lastUpdated": 0,
+        "lastBuildTime": 0,
+        "configHistory": []
+      }
+    ],
+    "PERF_TEST": [
+      {
+        "auditStatuses": [
+          "PERF_RESULT_AUDIT_MISSING"
+        ],
+        "lastUpdated": 0,
+        "lastExecutionTime": 0,
+        "result": []
+      },
+      {
+        "auditStatuses": [
+          "PERF_RESULT_AUDIT_MISSING"
+        ],
+        "lastUpdated": 0,
+        "lastExecutionTime": 0,
+        "result": []
+      }
+    ],
+    "CODE_REVIEW": [
+      {
+        "auditStatuses": [
+          "COLLECTOR_ITEM_ERROR"
+        ],
+        "errorMessage": "https://github.com/capitalone/Hygieia",
+        "lastUpdated": 0,
+        "url": "https://github.com/capitalone/Hygieia",
+        "branch": "master",
+        "lastCommitTime": 0,
+        "lastPRMergeTime": 0,
+        "directCommits": [],
+        "pullRequests": []
+      }
+    ]
+  }
+}

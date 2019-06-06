@@ -50,7 +50,7 @@
           "3913c72e49a7247c617607d5da2089be6a85dc6a"
         ],
         "scmCommitTimestamp": 1510954634000,
-        "numberOfChanges": 0
+        "numberOfChanges": 1
       }
     ]
   },
@@ -113,7 +113,7 @@
           "91dc75834718320ae7ee14a6455d0402ad066026"
         ],
         "scmCommitTimestamp": 1510954840000,
-        "numberOfChanges": 0
+        "numberOfChanges": 1
       }
     ]
   },
@@ -123,7 +123,7 @@
     "scmRevisionNumber": "c346f79cdcd5c9430b2f3c119d04c0c4fa922455",
     "scmCommitLog": "merging a commit to dev into master with a github review approval",
     "scmCommitTimestamp": 1511190544000,
-    "numberOfChanges": 0,
+    "numberOfChanges": 1,
     "id": {
       "timestamp": 1516222001,
       "machineIdentifier": 7316410,
@@ -176,7 +176,7 @@
           "4c0574a19cdd44b88ce9ca729309e81af2abb875"
         ],
         "scmCommitTimestamp": 1510955126000,
-        "numberOfChanges": 0
+        "numberOfChanges": 1
       }
     ]
   },
@@ -186,7 +186,7 @@
     "scmRevisionNumber": "3381055da77c47dd8420cad210bac61a42e3adbd",
     "scmCommitLog": "merging a commit to dev into master with an LGTM self review",
     "scmCommitTimestamp": 1510956337000,
-    "numberOfChanges": 0,
+    "numberOfChanges": 1,
     "id": {
       "timestamp": 1516222002,
       "machineIdentifier": 7316410,
@@ -260,7 +260,7 @@
           "2572585fce792204731df381071b4e3950c372a8"
         ],
         "scmCommitTimestamp": 1510955202000,
-        "numberOfChanges": 0
+        "numberOfChanges": 1
       },
       {
         "timestamp": 0,
@@ -274,7 +274,7 @@
           "cd3a16a119085e8394c240653911c350029a5210"
         ],
         "scmCommitTimestamp": 1510956167000,
-        "numberOfChanges": 0
+        "numberOfChanges": 1
       },
       {
         "timestamp": 0,
@@ -288,7 +288,7 @@
           "af6044794953ffdcb7e973b8db53ee79b5e1e807"
         ],
         "scmCommitTimestamp": 1510956239000,
-        "numberOfChanges": 0
+        "numberOfChanges": 1
       }
     ]
   },
@@ -343,7 +343,7 @@
           "2572585fce792204731df381071b4e3950c372a8"
         ],
         "scmCommitTimestamp": 1510955202000,
-        "numberOfChanges": 0
+        "numberOfChanges": 1
       }
     ]
   },
@@ -398,7 +398,7 @@
           "2572585fce792204731df381071b4e3950c372a8"
         ],
         "scmCommitTimestamp": 1510955202000,
-        "numberOfChanges": 0
+        "numberOfChanges": 1
       }
     ]
   },
@@ -468,7 +468,7 @@
           "af139cb3f030a26d4201106948b46285413e2b0a"
         ],
         "scmCommitTimestamp": 1510956604000,
-        "numberOfChanges": 0
+        "numberOfChanges": 1
       }
     ]
   },
@@ -478,7 +478,7 @@
     "scmRevisionNumber": "6a5c56e4f5c9e72702af77c4d69030f44188a80b",
     "scmCommitLog": "pr from fork",
     "scmCommitTimestamp": 1513102179000,
-    "numberOfChanges": 0,
+    "numberOfChanges": 1,
     "id": {
       "timestamp": 1516222002,
       "machineIdentifier": 7316410,
@@ -523,7 +523,7 @@
           "1ca6c08c7435be134b51f44325527667982afee1"
         ],
         "scmCommitTimestamp": 1513102119000,
-        "numberOfChanges": 0
+        "numberOfChanges": 1
       },
       {
         "timestamp": 0,
@@ -536,7 +536,7 @@
           "613330d0d6482f9e56d09051ff4cd082238c8f21"
         ],
         "scmCommitTimestamp": 1513102135000,
-        "numberOfChanges": 0
+        "numberOfChanges": 1
       }
     ]
   },
@@ -546,7 +546,7 @@
     "scmRevisionNumber": "451145cb358eb78b9d2e12051c48fe8d5219ba1e",
     "scmCommitLog": "pr from fork",
     "scmCommitTimestamp": 1513102363000,
-    "numberOfChanges": 0,
+    "numberOfChanges": 1,
     "id": {
       "timestamp": 1516222003,
       "machineIdentifier": 7316410,
@@ -591,7 +591,7 @@
           "b45d5a45765b83886e953ac4198d10145a42bdf4"
         ],
         "scmCommitTimestamp": 1513102320000,
-        "numberOfChanges": 0
+        "numberOfChanges": 1
       },
       {
         "timestamp": 0,
@@ -604,7 +604,7 @@
           "abdca9410a861d28ee0772433c1946d066577454"
         ],
         "scmCommitTimestamp": 1513102333000,
-        "numberOfChanges": 0
+        "numberOfChanges": 1
       }
     ]
   },
@@ -614,7 +614,7 @@
     "scmRevisionNumber": "716f74018129a5a3b2578b773f27bef0892c962a",
     "scmCommitLog": "pr from fork",
     "scmCommitTimestamp": 1513102525000,
-    "numberOfChanges": 0,
+    "numberOfChanges": 1,
     "id": {
       "timestamp": 1516222003,
       "machineIdentifier": 7316410,
@@ -659,7 +659,7 @@
           "baeee8676685fcf6b979b88a26f4f2c8c980c4ae"
         ],
         "scmCommitTimestamp": 1513102488000,
-        "numberOfChanges": 0
+        "numberOfChanges": 1
       },
       {
         "timestamp": 0,
@@ -672,7 +672,7 @@
           "cc4f007049ad2110e57b0a74b37c051d907040e6"
         ],
         "scmCommitTimestamp": 1513102501000,
-        "numberOfChanges": 0
+        "numberOfChanges": 1
       }
     ]
   },
@@ -682,7 +682,7 @@
     "scmRevisionNumber": "",
     "scmCommitLog": "pr from fork",
     "scmCommitTimestamp": 0,
-    "numberOfChanges": 0,
+    "numberOfChanges": 1,
     "id": {
       "timestamp": 1516222003,
       "machineIdentifier": 7316410,
@@ -727,7 +727,7 @@
           "b2a0fd195a5322161e72cdcea66729d8b94da4f6"
         ],
         "scmCommitTimestamp": 1513103212000,
-        "numberOfChanges": 0
+        "numberOfChanges": 1
       },
       {
         "timestamp": 0,
@@ -740,7 +740,7 @@
           "c91d42f07664b473a179f4bc7701fba6531511c6"
         ],
         "scmCommitTimestamp": 1513103223000,
-        "numberOfChanges": 0
+        "numberOfChanges": 1
       }
     ]
   },
@@ -750,7 +750,7 @@
     "scmRevisionNumber": "",
     "scmCommitLog": "Dev",
     "scmCommitTimestamp": 0,
-    "numberOfChanges": 0,
+    "numberOfChanges": 1,
     "id": {
       "timestamp": 1516222003,
       "machineIdentifier": 7316410,
@@ -795,7 +795,7 @@
           "cf17e1bfb82f815023b28e002aef85f54058ad11"
         ],
         "scmCommitTimestamp": 1513103623000,
-        "numberOfChanges": 0
+        "numberOfChanges": 1
       },
       {
         "timestamp": 0,
@@ -808,7 +808,7 @@
           "c65ee02012f12c3819d0961faab942406fe40e33"
         ],
         "scmCommitTimestamp": 1513103634000,
-        "numberOfChanges": 0
+        "numberOfChanges": 1
       }
     ]
   },
@@ -819,7 +819,7 @@
     "scmRevisionNumber" : "6375888315f3233e50a56aa6650227dfee7bdd9f",
     "scmCommitLog" : "Merge TestFile into master from dev",
     "scmCommitTimestamp" : 1516734773000,
-    "numberOfChanges" : 0,
+    "numberOfChanges" : 1,
     "orgName" : "Devopscode",
     "repoName" : "MultipleAuthorsLGTM",
     "sourceRepo" : "Devopscode/MultipleAuthorsLGTM",
@@ -865,7 +865,7 @@
         "scmAuthor" : "Author, One",
         "scmAuthorLogin" : "ghone",
         "scmCommitTimestamp" : 1516734408000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "timestamp" : 0,
@@ -875,7 +875,7 @@
         "scmAuthor" : "Author, One",
         "scmAuthorLogin" : "ghone",
         "scmCommitTimestamp" : 1516734422000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "timestamp" : 0,
@@ -885,7 +885,7 @@
         "scmAuthor" : "Author, Two",
         "scmAuthorLogin" : "ghtwo",
         "scmCommitTimestamp" : 1516734591000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       }
     ]
   },
@@ -896,7 +896,7 @@
     "scmRevisionNumber" : "b957f24c0506d96042a5bb698d0933184af7bcc3",
     "scmCommitLog" : "second pr from dev to master",
     "scmCommitTimestamp" : 1517026496000,
-    "numberOfChanges" : 0,
+    "numberOfChanges" : 1,
     "orgName" : "Devopscode",
     "repoName" : "MultipleAuthorsGHR",
     "sourceRepo" : "Devopscode/MultipleAuthorsGHR",
@@ -944,7 +944,7 @@
         "scmAuthor" : "Author One",
         "scmAuthorLogin" : "ghone",
         "scmCommitTimestamp" : 1517025913000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "id" : null,
@@ -955,7 +955,7 @@
         "scmAuthor" : "Author One",
         "scmAuthorLogin" : "ghone",
         "scmCommitTimestamp" : 1517025926000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "id" : null,
@@ -966,7 +966,7 @@
         "scmAuthor" : "Author Two",
         "scmAuthorLogin" : "ghtwo",
         "scmCommitTimestamp" : 1517026133000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       }
     ]
   },
@@ -977,7 +977,7 @@
     "scmRevisionNumber" : "d24f42ee7c706fefcc7c71e49f39e686f0d87f77",
     "scmCommitLog" : "pr from dev to master",
     "scmCommitTimestamp" : 1517025797000,
-    "numberOfChanges" : 0,
+    "numberOfChanges" : 1,
     "orgName" : "Devopscode",
     "repoName" : "MultipleAuthorsGHR",
     "sourceRepo" : "Devopscode/MultipleAuthorsGHR",
@@ -1017,7 +1017,7 @@
         "scmAuthor" : "Author One",
         "scmAuthorLogin" : "ghone",
         "scmCommitTimestamp" : 1517025349000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "id" : null,
@@ -1028,7 +1028,7 @@
         "scmAuthor" : "Author One",
         "scmAuthorLogin" : "ghone",
         "scmCommitTimestamp" : 1517025365000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "id" : null,
@@ -1039,7 +1039,7 @@
         "scmAuthor" : "Author Two",
         "scmAuthorLogin" : "ghtwo",
         "scmCommitTimestamp" : 1517025629000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       }
     ]
   },
@@ -1119,7 +1119,7 @@
       "scmAuthorLogin" : "ghone",
       "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
       "scmCommitTimestamp" : 1533573113000,
-      "numberOfChanges" : 0
+      "numberOfChanges" : 1
     },
     {
       "id" : null,
@@ -1131,7 +1131,7 @@
       "scmAuthorLogin" : "ghone",
       "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
       "scmCommitTimestamp" : 1533580361000,
-      "numberOfChanges" : 0
+      "numberOfChanges" : 1
     },
     {
       "id" : null,
@@ -1143,7 +1143,7 @@
       "scmAuthorLogin" : "ghtwo",
       "scmAuthorLDAPDN" : "CN=ghtwo,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
       "scmCommitTimestamp" : 1533824651000,
-      "numberOfChanges" : 0
+      "numberOfChanges" : 1
     }
   ]
   },
@@ -1221,7 +1221,7 @@
         "scmAuthorLogin" : "ghone",
         "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
         "scmCommitTimestamp" : 1533834582000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "_id" : null,
@@ -1233,7 +1233,7 @@
         "scmAuthorLogin" : "ghone",
         "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
         "scmCommitTimestamp" : 1533844954000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "_id" : null,
@@ -1245,7 +1245,7 @@
         "scmAuthorLogin" : "ghone",
         "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
         "scmCommitTimestamp" : 1533909401000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       }
     ]
   },
@@ -1359,7 +1359,7 @@
         "scmAuthorLogin" : "ghone",
         "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
         "scmCommitTimestamp" : 1532409906000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "_id" : null,
@@ -1371,7 +1371,7 @@
         "scmAuthorLogin" : "ghone",
         "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
         "scmCommitTimestamp" : 1532651603000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "_id" : null,
@@ -1383,7 +1383,7 @@
         "scmAuthorLogin" : "ghone",
         "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
         "scmCommitTimestamp" : 1532659800000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "_id" : null,
@@ -1395,7 +1395,7 @@
         "scmAuthorLogin" : "ghone",
         "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
         "scmCommitTimestamp" : 1532666060000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "_id" : null,
@@ -1407,7 +1407,7 @@
         "scmAuthorLogin" : "ghone",
         "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
         "scmCommitTimestamp" : 1532666104000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "_id" : null,
@@ -1419,7 +1419,7 @@
         "scmAuthorLogin" : "ghone",
         "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
         "scmCommitTimestamp" : 1532676017000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "_id" : null,
@@ -1431,7 +1431,7 @@
         "scmAuthorLogin" : "ghone",
         "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
         "scmCommitTimestamp" : 1532701410000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "_id" : null,
@@ -1443,7 +1443,7 @@
         "scmAuthorLogin" : "ghone",
         "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
         "scmCommitTimestamp" : 1532705484000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "_id" : null,
@@ -1455,7 +1455,7 @@
         "scmAuthorLogin" : "ghone",
         "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
         "scmCommitTimestamp" : 1532711068000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "_id" : null,
@@ -1467,7 +1467,7 @@
         "scmAuthorLogin" : "ghone",
         "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
         "scmCommitTimestamp" : 1532713242000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "_id" : null,
@@ -1479,7 +1479,7 @@
         "scmAuthorLogin" : "ghone",
         "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
         "scmCommitTimestamp" : 1532715537000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "_id" : null,
@@ -1491,7 +1491,7 @@
         "scmAuthorLogin" : "ghone",
         "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
         "scmCommitTimestamp" : 1532717602000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "_id" : null,
@@ -1503,7 +1503,7 @@
         "scmAuthorLogin" : "ghone",
         "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
         "scmCommitTimestamp" : 1532726911000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "_id" : null,
@@ -1515,7 +1515,7 @@
         "scmAuthorLogin" : "ghone",
         "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
         "scmCommitTimestamp" : 1532727730000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "_id" : null,
@@ -1527,7 +1527,7 @@
         "scmAuthorLogin" : "ghone",
         "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
         "scmCommitTimestamp" : 1532729643000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "_id" : null,
@@ -1539,7 +1539,7 @@
         "scmAuthorLogin" : "ghone",
         "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=myc,DC=ds,DC=mycorp,DC=com",
         "scmCommitTimestamp" : 1532731704000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       }
     ]
   },
@@ -1595,7 +1595,7 @@
         "scmAuthor" : "ghthree",
         "scmAuthorLogin" : "unknown",
         "scmCommitTimestamp" : 1525720774000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 2
       },
       {
         "_id" : null,
@@ -1606,7 +1606,7 @@
         "scmAuthor" : "ghthree",
         "scmAuthorLogin" : "unknown",
         "scmCommitTimestamp" : 1525721091000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 2
       },
       {
         "_id" : null,
@@ -1618,7 +1618,7 @@
         "scmAuthorLogin" : "ghone",
         "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=cof,DC=ds,DC=mycompany,DC=com",
         "scmCommitTimestamp" : 1525723131000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 2
       }
     ]
   },
@@ -1664,7 +1664,7 @@
         "scmAuthorLogin" : "ghtwo",
         "scmAuthorLDAPDN" : "CN=ghtwo,OU=Developers,OU=All Users,DC=cof,DC=ds,DC=mycompany,DC=com",
         "scmCommitTimestamp" : 1525698994000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "_id" : null,
@@ -1676,7 +1676,7 @@
         "scmAuthorLogin" : "ghone",
         "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=cof,DC=ds,DC=mycompany,DC=com",
         "scmCommitTimestamp" : 1525699628000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "_id" : null,
@@ -1688,7 +1688,7 @@
         "scmAuthorLogin" : "ghthree",
         "scmAuthorLDAPDN" : "CN=ghthree,OU=Developers,OU=All Users,DC=cof,DC=ds,DC=mycompany,DC=com",
         "scmCommitTimestamp" : 1525709646000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "_id" : null,
@@ -1700,7 +1700,7 @@
         "scmAuthorLogin" : "ghtwo",
         "scmAuthorLDAPDN" : "CN=ghtwo,OU=Developers,OU=All Users,DC=cof,DC=ds,DC=mycompany,DC=com",
         "scmCommitTimestamp" : 1525709702000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "_id" : null,
@@ -1712,7 +1712,7 @@
         "scmAuthorLogin" : "ghtwo",
         "scmAuthorLDAPDN" : "CN=ghtwo,OU=Developers,OU=All Users,DC=cof,DC=ds,DC=mycompany,DC=com",
         "scmCommitTimestamp" : 1525709735000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "_id" : null,
@@ -1724,7 +1724,7 @@
         "scmAuthorLogin" : "ghtwo",
         "scmAuthorLDAPDN" : "CN=ghtwo,OU=Developers,OU=All Users,DC=cof,DC=ds,DC=mycompany,DC=com",
         "scmCommitTimestamp" : 1525711414000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       },
       {
         "_id" : null,
@@ -1736,7 +1736,7 @@
         "scmAuthorLogin" : "ghone",
         "scmAuthorLDAPDN" : "CN=ghone,OU=Developers,OU=All Users,DC=cof,DC=ds,DC=mycompany,DC=com",
         "scmCommitTimestamp" : 1525711546000,
-        "numberOfChanges" : 0
+        "numberOfChanges" : 1
       }
     ]
   }
