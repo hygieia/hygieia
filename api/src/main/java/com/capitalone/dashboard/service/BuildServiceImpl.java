@@ -302,12 +302,10 @@ public class BuildServiceImpl implements BuildService {
                 item.getOptions().put("branch", repoBranch.getBranch());
                 item.getOptions().put("url", repoBranch.getUrl());
                 item.setEnabled(true);
-                item.setPushed(true);
                 item.setLastUpdated(0);
                 collectorItemRepository.save(item);
             } else if (!item.isEnabled()) {
                 item.setEnabled(true);
-                item.setPushed(true);
                 item.setLastUpdated(0);
                 collectorItemRepository.save(item);
             }
