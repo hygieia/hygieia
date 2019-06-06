@@ -1,9 +1,13 @@
 package com.capitalone.dashboard.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BaseArtifact {
 
     ArtifactItem artifactItem;
-    BinaryArtifact binaryArtifact;
+
+    List<BinaryArtifact> binaryArtifacts = new ArrayList<>();
 
 
     public ArtifactItem getArtifactItem() {
@@ -14,13 +18,16 @@ public class BaseArtifact {
         this.artifactItem = artifactItem;
     }
 
-    public BinaryArtifact getBinaryArtifact() {
-        return binaryArtifact;
+    public List<BinaryArtifact> getBinaryArtifacts() {
+        return binaryArtifacts;
     }
 
-    public void setBinaryArtifact(BinaryArtifact binaryArtifact) {
-        this.binaryArtifact = binaryArtifact;
+    public void setBinaryArtifacts(List<BinaryArtifact> binaryArtifacts) {
+        this.binaryArtifacts = binaryArtifacts;
     }
 
+    public  void addBinaryArtifact(BinaryArtifact ba){
+        getBinaryArtifacts().add(ba);
+    }
 
 }

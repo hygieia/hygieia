@@ -171,7 +171,7 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
 					// create artifactInfo
 					BinaryArtifact ba = createArtifact(artifactCanonicalName, artifactPath, timestamp, jsonArtifact);
 					if (ba != null) {
-						baseArtifact.setBinaryArtifact(ba);
+						baseArtifact.addBinaryArtifact(ba);
 					}
 
 					baseArtifact.setArtifactItem(artifactItem);
