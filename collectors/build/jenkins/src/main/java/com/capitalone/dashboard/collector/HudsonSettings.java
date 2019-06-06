@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.collector;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
