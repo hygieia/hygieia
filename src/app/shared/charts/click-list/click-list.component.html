@@ -1,29 +1,38 @@
-<!--
-    For now click list is specific to the build widget, based off of the old UI. Once we know
-    what we will need from it we can modify it so it can serve for the other widgets as well.
--->
 <div class="widget dark-chart-theme">
-  <div class="chart-heading">
+  <div class="chart-heading clickable">
     {{title}}
   </div>
   <div>
     <div class="widget-body latest-builds">
-      <table class="table table-hover">
-        <tr class="dash-row clickable" *ngFor="let build of data">
-          <td *ngIf="build.status==='success'">
+      <table class="table table-hover" [ngClass]="{'table-hover': data.clickableContent}">
+        <tr class="dash-row clickable" *ngFor="let item of data.items" [ngClass]="{'clickable': data.clickableContent}" (click)="openDetailView(item)">
+          <td *ngIf="item.status">
             <span class="dash-status fa">
-              <span class="dash-status-pass fa-check"></span>
-            </span>
-            </td>
-          <td *ngIf="build.status!=='success' && build.status != 'inprogress'">
-            <span class="dash-status fa">
-              <span class="dash-status-fail">!</span>
+              <span class="dash-status-ignore" *ngIf="item.status == DashStatus.IGNORE">
+                {{item.statusText}}
+              </span>
+              <span class="dash-status-pass fa-check" *ngIf="item.status == DashStatus.PASS"></span>
+              <span class="dash-status-warn fa-warning" *ngIf="item.status == DashStatus.WARN"></span>
+              <span class="dash-status-pass fa-lock" *ngIf="item.status == DashStatus.UNAUTH"></span>
+              <span class="dash-status-fail" *ngIf="item.status == DashStatus.FAIL">
+                {{item.statusText}}
+              </span>
+              <span class="dash-status-critical fas fa-times-circle" *ngIf="item.status == DashStatus.CRITICAL"></span>
             </span>
           </td>
-          <td *ngIf="build.status=='inprogress'"><span class="dash-status fa fa-refresh fa-spin product-text-active"></span></td>
-          <td><span class="build-number">{{build.number}}</span></td>
-          <td><span class="text-standard-date">{{build.endTime | timeAgo}}</span></td>
-          <td><span class="build-chevron pull-right fa fa-lg fa-angle-right"></span></td>
+          <td><span class="list-item-title">{{item.title}}</span></td>
+          <ng-container *ngFor="let subtitle of item.subtitles">
+            <td>
+              <ng-container *ngIf="isDate(subtitle); else elseBlock">
+                <span class="list-item-subtitle">{{subtitle.getTime() | timeAgo}}</span>
+              </ng-container>
+              <ng-template #elseBlock>
+                <span class="list-item-subtitle">{{subtitle?.toString()}}</span>
+              </ng-template>
+
+            </td>
+          </ng-container>
+          <td><span class="list-item-chevron pull-right fa fa-lg fa-angle-right"></span></td>
         </tr>
       </table>
     </div>

@@ -4,8 +4,12 @@
 @import '../../../../styles/css/dash-status.scss';
 @import '../../../../styles/css/mixins.scss';
 
-.text-standard-date {
+.list-item-subtitle {
   @include text-standard-date;
+}
+
+.clickable {
+  cursor: pointer;
 }
 
 .latest-builds {
@@ -41,12 +45,11 @@ tr.dash-row>td {
   color: $dash-dashboard-text;
 }
 
-
-.build-chevron {
+.list-item-chevron {
   margin-right: 1em;
 }
 
-.build-number {
+.list-item-title {
   display: inline-block;
   margin-right: 1em;
   min-width: 3em;

@@ -1,4 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, ComponentFactoryResolver, Input, OnInit, Type, ViewChild } from '@angular/core';
+import { Title } from '@angular/platform-browser';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+
+import { DetailModalDirective } from './detail-modal.directive';
 
 @Component({
   selector: 'app-detail-modal',
@@ -7,9 +11,29 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DetailModalComponent implements OnInit {
 
-  constructor() { }
+
+  @Input() Title;
+  @Input() detailView: Type<any>;
+  @ViewChild(DetailModalDirective) modalTypeTag: DetailModalDirective;
+
+  constructor(
+    public activeModal: NgbActiveModal,
+    private componentFactoryResolver: ComponentFactoryResolver,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit() {
+    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.detailView);
+    const viewContainerRef = this.modalTypeTag.viewContainerRef;
+    viewContainerRef.clear();
+    const componentRef = viewContainerRef.createComponent(componentFactory);
+    this.cdr.detectChanges();
+  }
+  onSubmit() {
+    this.activeModal.close();
+  }
+  closeModal() {
+    this.activeModal.close('Modal Closed');
   }
 
 }
