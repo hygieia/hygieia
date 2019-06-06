@@ -163,14 +163,13 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
         subtitles: [
           new Date(build.endTime)
         ],
-        clickable: false,
         url: build.buildUrl
       } as IClickListItem;
     });
     this.charts[1].data = {
       items: latestBuildData,
       clickableContent: BuildDetailComponent,
-      headerClickable: null
+      clickableHeader: null
     } as IClickListData;
   }
 

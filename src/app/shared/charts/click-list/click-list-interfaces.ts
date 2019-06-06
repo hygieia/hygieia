@@ -20,5 +20,5 @@ export interface IClickListItem {
 export interface IClickListData {
   items: IClickListItem[];
   clickableContent: Type<any>;
-  headerClickable: Type<any>;
+  clickableHeader: Type<any>;
 }

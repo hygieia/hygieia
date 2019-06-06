@@ -23,7 +23,9 @@ export class ClickListComponent extends ChartComponent {
     if (this.data.clickableContent) {
       const modalRef = this.modalService.open(DetailModalComponent);
       modalRef.componentInstance.title = 'Details';
-      (modalRef.componentInstance as DetailModalComponent).detailView = this.data.clickableContent;
+      if (this.data && this.data.clickableContent) {
+        (modalRef.componentInstance as DetailModalComponent).detailView = this.data.clickableContent;
+      }
     }
   }
 
