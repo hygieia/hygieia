@@ -321,13 +321,20 @@ public class ArtifactoryCollectorTask extends CollectorTaskWithGenericItem<Artif
                 newArtifactItem.setCollectorId(collector.getId());
                 newArtifactItem = artifactItemRepository.save(newArtifactItem);
                 existingSet.add(newArtifactItem);
-                BinaryArtifact binaryArtifact = baseArtifact.getBinaryArtifact();
-                if (binaryArtifact != null) {
-                    binaryArtifact.setCollectorItemId(newArtifactItem.getId());
-                    binaryArtifacts.add(binaryArtifact);
-                }
                 count++;
             }
+            List<BinaryArtifact> binaryArtifactsAssociated = baseArtifact.getBinaryArtifacts();
+            if (!CollectionUtils.isEmpty(binaryArtifactsAssociated) ) {
+                for (BinaryArtifact b:binaryArtifactsAssociated) {
+                    ArtifactItem found = existingSet.stream().filter(newArtifactItem::equals).findAny().orElse(null);
+                    ObjectId existingId = found.getId();
+                    ObjectId collectorItemId = newArtifactItem.getId()!=null? newArtifactItem.getId(): existingId;
+                    b.setCollectorItemId(collectorItemId);
+                    binaryArtifacts.add(b);
+                }
+
+            }
+
         }
         if (!binaryArtifacts.isEmpty()) {
             binaryArtifacts.forEach(binaryArtifact -> binaryArtifactRepository.save(binaryArtifact));

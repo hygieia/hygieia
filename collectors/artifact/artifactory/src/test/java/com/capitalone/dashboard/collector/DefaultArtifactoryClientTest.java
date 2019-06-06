@@ -104,18 +104,18 @@ public class DefaultArtifactoryClientTest {
 		assertThat(baseArtifacts.get(0).getArtifactItem().getInstanceUrl(),is("http://localhost:8081/artifactory/"));
 		assertThat(baseArtifacts.get(0).getArtifactItem().getRepoName(),is("repoName"));
 		assertThat(baseArtifacts.get(0).getArtifactItem().getPath(),is("dummy/test-dev"));
-		assertThat(baseArtifacts.get(0).getBinaryArtifact().getCanonicalName(),is("manifest.json"));
-		assertThat(baseArtifacts.get(0).getBinaryArtifact().getArtifactGroupId(),is("dummy"));
-		assertThat(baseArtifacts.get(0).getBinaryArtifact().getActual_md5(),is("111aadc11ed11b1111df111d16d6c8d821112f1"));
-		assertThat(baseArtifacts.get(0).getBinaryArtifact().getActual_sha1(),is("111aadc11ed11b1111df111d16d6c8d821112f1"));
-		assertThat(baseArtifacts.get(0).getBinaryArtifact().getArtifactExtension(),is("json"));
-		assertThat(baseArtifacts.get(0).getBinaryArtifact().getArtifactName(),is("test-dev"));
-		assertThat(baseArtifacts.get(0).getBinaryArtifact().getType(),is("file"));
-		assertThat(baseArtifacts.get(0).getBinaryArtifact().getModifiedBy(),is("robot"));
-		assertThat(baseArtifacts.get(0).getBinaryArtifact().getModifiedTimeStamp(),is(new Long("1539268736471")));
-		assertThat(baseArtifacts.get(0).getBinaryArtifact().getCreatedBy(),is("robot"));
-		assertThat(baseArtifacts.get(0).getBinaryArtifact().getCreatedTimeStamp(),is(new Long("1539268036031")));
-		assertThat(baseArtifacts.get(0).getBinaryArtifact().getArtifactVersion(),is("1"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getCanonicalName(),is("manifest.json"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getArtifactGroupId(),is("dummy"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getActual_md5(),is("111aadc11ed11b1111df111d16d6c8d821112f1"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getActual_sha1(),is("111aadc11ed11b1111df111d16d6c8d821112f1"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getArtifactExtension(),is("json"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getArtifactName(),is("test-dev"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getType(),is("file"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getModifiedBy(),is("robot"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getModifiedTimeStamp(),is(new Long("1539268736471")));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getCreatedBy(),is("robot"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getCreatedTimeStamp(),is(new Long("1539268036031")));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getArtifactVersion(),is("1"));
 
 	}
 
