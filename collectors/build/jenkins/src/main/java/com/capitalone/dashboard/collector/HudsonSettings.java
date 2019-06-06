@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.collector;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -16,12 +17,12 @@ public class HudsonSettings {
 	
     private String cron;
     private boolean saveLog = false;
-    private List<String> servers;
+    private List<String> servers = new ArrayList<>();
     private List<String> niceNames;
     //eg. DEV, QA, PROD etc
-    private List<String> environments;
-    private List<String> usernames;
-    private List<String> apiKeys;
+    private List<String> environments = new ArrayList<>();
+    private List<String> usernames = new ArrayList<>();
+    private List<String> apiKeys = new ArrayList<>();
     private String dockerLocalHostIP; //null if not running in docker on http://localhost
     private int pageSize;
     @Value("${folderDepth:10}")
