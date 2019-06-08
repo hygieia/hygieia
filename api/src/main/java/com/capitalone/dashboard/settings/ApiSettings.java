@@ -22,6 +22,9 @@ public class ApiSettings {
     @Value("${lookupDashboardForBuildDataCreate:false}")
     private boolean lookupDashboardForBuildDataCreate;
 
+    @Value("${gitToolName:Github}")
+    private String gitToolName;
+
     private WebHookSettings webHook;
 
     public WebHookSettings getWebHook() {
@@ -76,5 +79,13 @@ public class ApiSettings {
 
     public void setLookupDashboardForBuildDataCreate(boolean lookupDashboardForBuildDataCreate) {
         this.lookupDashboardForBuildDataCreate = lookupDashboardForBuildDataCreate;
+    }
+
+    public String getGitToolName() {
+        return gitToolName;
+    }
+
+    public void setGitToolName(String gitToolName) {
+        this.gitToolName = gitToolName;
     }
 }

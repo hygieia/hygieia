@@ -1,9 +1,17 @@
 package com.capitalone.dashboard.config;
 
-import java.util.List;
-
-import com.capitalone.dashboard.auth.webhook.github.GithubWebHookRequestFilter;
+import com.capitalone.dashboard.auth.AuthProperties;
+import com.capitalone.dashboard.auth.AuthenticationResultHandler;
+import com.capitalone.dashboard.auth.apitoken.ApiTokenAuthenticationProvider;
+import com.capitalone.dashboard.auth.apitoken.ApiTokenRequestFilter;
+import com.capitalone.dashboard.auth.ldap.CustomUserDetailsContextMapper;
+import com.capitalone.dashboard.auth.ldap.LdapLoginRequestFilter;
+import com.capitalone.dashboard.auth.sso.SsoAuthenticationFilter;
+import com.capitalone.dashboard.auth.standard.StandardLoginRequestFilter;
+import com.capitalone.dashboard.auth.token.JwtAuthenticationFilter;
 import com.capitalone.dashboard.auth.webhook.github.GithubWebHookAuthService;
+import com.capitalone.dashboard.auth.webhook.github.GithubWebHookRequestFilter;
+import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.settings.ApiSettings;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,16 +32,7 @@ import org.springframework.security.ldap.authentication.NullLdapAuthoritiesPopul
 import org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAuthenticationProvider;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.capitalone.dashboard.auth.AuthProperties;
-import com.capitalone.dashboard.auth.AuthenticationResultHandler;
-import com.capitalone.dashboard.auth.apitoken.ApiTokenAuthenticationProvider;
-import com.capitalone.dashboard.auth.apitoken.ApiTokenRequestFilter;
-import com.capitalone.dashboard.auth.ldap.CustomUserDetailsContextMapper;
-import com.capitalone.dashboard.auth.ldap.LdapLoginRequestFilter;
-import com.capitalone.dashboard.auth.sso.SsoAuthenticationFilter;
-import com.capitalone.dashboard.auth.standard.StandardLoginRequestFilter;
-import com.capitalone.dashboard.auth.token.JwtAuthenticationFilter;
-import com.capitalone.dashboard.model.AuthType;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -88,6 +87,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/v2/quality/test").permitAll()
                 .antMatchers(HttpMethod.POST, "/v2/quality/static-analysis").permitAll()
                 .antMatchers(HttpMethod.POST, "/generic-item").permitAll()
+                .antMatchers(HttpMethod.POST, "/metadata").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(standardLoginRequestFilter(), UsernamePasswordAuthenticationFilter.class)
