@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -191,11 +190,6 @@ public class GitCollectorTask extends CollectorTask<Collector> {
         log("New Commits", start, commitCount);
 
         log("Finished", start);
-    }
-
-    @SuppressWarnings("unused")
-    private Date lastUpdated(GitRepo repo) {
-        return repo.getLastUpdateTime();
     }
 
     private List<GitRepo> enabledRepos(Collector collector) {
