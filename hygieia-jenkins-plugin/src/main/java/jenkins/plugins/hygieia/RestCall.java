@@ -12,10 +12,13 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHeaders;
+import org.jasypt.contrib.org.apache.commons.codec_1_3.binary.Base64;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,6 +53,34 @@ public class RestCall {
         }
         return client;
     }
+
+    public RestCallResponse makeRestCallGet(String url, String jenkinsUser, String token) {
+        RestCallResponse response;
+        HttpClient client = getHttpClient();
+        GetMethod get = new GetMethod(url);
+        try {
+            get.getParams().setContentCharset("UTF-8");
+            if (!StringUtils.isEmpty(jenkinsUser) && !StringUtils.isEmpty(token)) {
+                get.setRequestHeader(HttpHeaders.AUTHORIZATION, getAuthHeader(jenkinsUser + ':' + token));
+            }
+            int responseCode = client.executeMethod(get);
+            String responseString = getResponseString(get.getResponseBodyAsStream());
+            response = new RestCallResponse(responseCode, responseString);
+        } catch (IOException e) {
+            logger.log(Level.WARNING, "Error connecting to endpoint " + url, e);
+            response = new RestCallResponse(HttpStatus.SC_BAD_REQUEST, "");
+        } finally {
+            get.releaseConnection();
+        }
+        return response;
+    }
+
+    protected String getAuthHeader (final String userInfo) {
+        byte[] encodedAuth = Base64.encodeBase64(
+                userInfo.getBytes(StandardCharsets.US_ASCII));
+        return "Basic " + new String(encodedAuth);
+    }
+
 
     private boolean bypassProxy (String url, List<Pattern> bypassList)  {
         for (Pattern bp: bypassList) {

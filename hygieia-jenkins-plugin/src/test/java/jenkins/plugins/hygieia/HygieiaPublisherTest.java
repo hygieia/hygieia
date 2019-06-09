@@ -106,6 +106,10 @@ public class HygieiaPublisherTest extends TestCase {
             return hygieiaResponse;
         }
 
+        public RestCall.RestCallResponse getStageResponse(String url, String jenkinsUser, String token){
+            return  null;
+        }
+
         @Override
         public HygieiaResponse publishGenericCollectorItemData(GenericCollectorItemCreateRequest request) {
             return hygieiaResponse;
