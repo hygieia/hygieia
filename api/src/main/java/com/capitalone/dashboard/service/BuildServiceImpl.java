@@ -26,13 +26,13 @@ import com.google.common.collect.Sets;
 import com.mysema.query.BooleanBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.bson.types.ObjectId;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -258,6 +258,7 @@ public class BuildServiceImpl implements BuildService {
         Set<RepoBranch> repoBranches = Sets.newHashSet();
         repoBranches.addAll(build.getCodeRepos());
         repoBranches.addAll(request.getCodeRepos());
+        repoBranches.stream().forEach(repoBranch -> createSCMCollectorItem(repoBranch));
         /*
         * This is a Quick fix until feature toggle via ff4j is implemented which is coming up soon
         * */
@@ -285,5 +286,29 @@ public class BuildServiceImpl implements BuildService {
         build.getCodeRepos().clear();
         build.getCodeRepos().addAll(repoBranches);
         return buildRepository.save(build); // Save = Update (if ID present) or Insert (if ID not there)
+    }
+
+    private void createSCMCollectorItem(@NotNull RepoBranch repoBranch) {
+        //Check if collector item exists else create one.
+        if (RepoBranch.RepoType.GIT.equals(repoBranch.getType())) {
+            Collector collector = collectorRepository.findByName(settings.getGitToolName());
+            if (collector == null) return;
+            // check if collector item exists and is disabled.
+            CollectorItem item = collectorItemRepository.findRepoByUrlAndBranch(collector.getId(),
+                    repoBranch.getBranch(), repoBranch.getUrl());
+            if (item == null) {
+                item = new CollectorItem();
+                item.setCollectorId(collector.getId());
+                item.getOptions().put("branch", repoBranch.getBranch());
+                item.getOptions().put("url", repoBranch.getUrl());
+                item.setEnabled(true);
+                item.setLastUpdated(0);
+                collectorItemRepository.save(item);
+            } else if (!item.isEnabled()) {
+                item.setEnabled(true);
+                item.setLastUpdated(0);
+                collectorItemRepository.save(item);
+            }
+        }
     }
 }

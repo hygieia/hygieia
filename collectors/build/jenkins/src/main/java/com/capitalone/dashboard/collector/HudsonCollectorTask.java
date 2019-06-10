@@ -75,19 +75,15 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
     @Override
     public HudsonCollector getCollector() {
     	Configuration config = configurationRepository.findByCollectorName("Hudson");
-		if (config != null ) {
+        // Only use Admin Page Jenkins server configuration when available
+        // otherwise use properties file Jenkins server configuration
+        if (config != null ) {
 			config.decryptOrEncrptInfo();
 			// To clear the username and password from existing run and
 			// pick the latest
-			if(hudsonSettings.getServers() == null) {
-				hudsonSettings.setUsernames(new ArrayList<>());
-				hudsonSettings.setApiKeys(new ArrayList<>());
-				hudsonSettings.setServers(new ArrayList<>());
-			} else {
-				hudsonSettings.getUsernames().clear();
-				hudsonSettings.getServers().clear();
-				hudsonSettings.getApiKeys().clear();
-			}
+            hudsonSettings.getUsernames().clear();
+            hudsonSettings.getServers().clear();
+            hudsonSettings.getApiKeys().clear();
 			for (Map<String, String> jenkinsServer : config.getInfo()) {
 				hudsonSettings.getServers().add(jenkinsServer.get("url"));
 				hudsonSettings.getUsernames().add(jenkinsServer.get("userName"));

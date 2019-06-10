@@ -46,6 +46,7 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -246,6 +247,54 @@ public class BuildServiceTest {
         assertEquals(build.getNumber(), response.getNumber());
     }
 
+    @Test
+    public void createV3WithGoodRequestExistingSCMCollectorItem() throws HygieiaException {
+        ObjectId collectorId = ObjectId.get();
+        BuildDataCreateRequest request = makeBuildRequest();
+        request.setCodeRepos(makeRepoBranches());
+
+        when(collectorRepository.findOne(collectorId)).thenReturn(new Collector());
+        when(collectorService.createCollector(any(Collector.class))).thenReturn(new Collector());
+        when(collectorService.createCollectorItem(any(CollectorItem.class))).thenReturn(new CollectorItem());
+        when(collectorRepository.findByName(anyString())).thenReturn(new Collector());
+        when(collectorItemRepository.findOne(any(ObjectId.class))).thenReturn(new CollectorItem());
+        when(collectorItemRepository.findRepoByUrlAndBranch(any(ObjectId.class), anyString(), anyString())).thenReturn(new CollectorItem());
+        Build build = makeBuild();
+        build.setCodeRepos(makeRepoBranches());
+        List<Dashboard> dashboards = new ArrayList<>();
+        when(buildRepository.save(any(Build.class))).thenReturn(build);
+        when(dashboardService.getDashboardsByCollectorItems(any(Set.class), any(CollectorType.class))).thenReturn(dashboards);
+        when(apiSettings.getWebHook()).thenReturn(webHookSettings);
+        when(webHookSettings.getJenkinsBuild()).thenReturn(jenkinsSettings());
+        BuildDataCreateResponse response = buildService.createV3(request);
+        assertEquals(build.getStartedBy(), response.getStartedBy());
+        assertEquals(build.getNumber(), response.getNumber());
+    }
+
+    @Test
+    public void createV3WithGoodRequestNewSCMCollectorItem() throws HygieiaException {
+        ObjectId collectorId = ObjectId.get();
+        BuildDataCreateRequest request = makeBuildRequest();
+        request.setCodeRepos(makeRepoBranches());
+
+        when(collectorRepository.findOne(collectorId)).thenReturn(new Collector());
+        when(collectorService.createCollector(any(Collector.class))).thenReturn(new Collector());
+        when(collectorService.createCollectorItem(any(CollectorItem.class))).thenReturn(new CollectorItem());
+        when(collectorRepository.findByName(anyString())).thenReturn(new Collector());
+        when(collectorItemRepository.findOne(any(ObjectId.class))).thenReturn(new CollectorItem());
+        when(collectorItemRepository.findRepoByUrlAndBranch(any(ObjectId.class), anyString(), anyString())).thenReturn(null);
+        Build build = makeBuild();
+        build.setCodeRepos(makeRepoBranches());
+        List<Dashboard> dashboards = new ArrayList<>();
+        when(buildRepository.save(any(Build.class))).thenReturn(build);
+        when(dashboardService.getDashboardsByCollectorItems(any(Set.class), any(CollectorType.class))).thenReturn(dashboards);
+        when(apiSettings.getWebHook()).thenReturn(webHookSettings);
+        when(webHookSettings.getJenkinsBuild()).thenReturn(jenkinsSettings());
+        BuildDataCreateResponse response = buildService.createV3(request);
+        assertEquals(build.getStartedBy(), response.getStartedBy());
+        assertEquals(build.getNumber(), response.getNumber());
+    }
+
     private CodeReposBuilds makeCodeReposBuilds() {
         CodeReposBuilds entity = new CodeReposBuilds();
         entity.getBuildCollectorItems().add(ObjectId.get());
@@ -292,8 +341,6 @@ public class BuildServiceTest {
         return scm;
     }
 
-
-
 	private BuildDataCreateRequest makeBuildRequest() {
         BuildDataCreateRequest build = new BuildDataCreateRequest();
         build.setNumber("1");
@@ -329,6 +376,13 @@ public class BuildServiceTest {
         settings.setExcludeLibraryRepoThreshold(3);
         settings.setExcludeCodeReposInBuild(Arrays.asList("https://github.com/someorg/somerepo"));
         return settings;
+    }
+
+    private List<RepoBranch> makeRepoBranches() {
+        List<RepoBranch> repoBranches = new ArrayList<>();
+        RepoBranch repoBranch = new RepoBranch("https://github.com/someorg/somerepo", "master", RepoBranch.RepoType.GIT);
+        repoBranches.add(repoBranch);
+        return repoBranches;
     }
 
 }
