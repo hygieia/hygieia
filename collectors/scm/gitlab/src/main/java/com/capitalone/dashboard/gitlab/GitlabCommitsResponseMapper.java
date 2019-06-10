@@ -3,7 +3,7 @@ package com.capitalone.dashboard.gitlab;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
