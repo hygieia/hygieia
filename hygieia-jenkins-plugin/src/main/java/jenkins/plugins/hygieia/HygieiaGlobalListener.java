@@ -1,5 +1,6 @@
 package jenkins.plugins.hygieia;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.BuildStage;
 import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.request.BuildDataCreateRequest;
@@ -26,12 +27,14 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Extension
 public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
 
-    public static final String WFAPI_RUNS = "/wfapi/runs";
+    public static final String WFAPI_DESCRIBE = "/wfapi/describe";
+    public static final String FAILED = "FAILED";
     public HygieiaGlobalListener() {
         super();
     }
@@ -118,23 +121,11 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
 
         boolean showConsoleOutput = hygieiaGlobalListenerDescriptor.isShowConsoleOutput();
         BuildStatus buildStatus = HygieiaUtils.getBuildStatus(run.getResult());
-        String jobUrl = HygieiaUtils.getJobUrl(run);
-        String wfapiUrl = jobUrl + WFAPI_RUNS;
-        listener.getLogger().println("Hygieia: wfapi url : " + wfapiUrl);
-        LinkedList<BuildStage> buildStages=null;
-        String responseString = "";
-        try{
-            RestCall.RestCallResponse callResponse = hygieiaService.getStageResponse(wfapiUrl,hygieiaGlobalListenerDescriptor.getJenkinsUserId(),hygieiaGlobalListenerDescriptor.getJenkinsToken());
-            listener.getLogger().println("Hygieia: call response code : " + callResponse.getResponseCode());
-            if(Objects.nonNull(callResponse)){
-                responseString = callResponse.getResponseString();
-                buildStages=  HygieiaUtils.getBuildStages(responseString);
-            }
-        }catch (Exception e){
-            listener.getLogger().println("Hygieia: call response error : " + e.getStackTrace());
-        }
+        LinkedList<BuildStage> buildStages = processStages(run, listener, hygieiaGlobalListenerDescriptor, hygieiaService);
+        buildStages = process_node_links(run, listener, hygieiaGlobalListenerDescriptor, hygieiaService,buildStages);
+        buildStages = process_logs(run, listener, hygieiaGlobalListenerDescriptor, hygieiaService,buildStages);
 
-         HygieiaResponse buildResponse = hygieiaService.publishBuildDataV3(new BuildBuilder().createBuildRequestFromRun(run, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(),
+        HygieiaResponse buildResponse = hygieiaService.publishBuildDataV3(new BuildBuilder().createBuildRequestFromRun(run, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(),
                  listener, buildStatus, true, buildStages));
         if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
             try {
@@ -157,6 +148,81 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
         }
 
         return Triple.of(buildString, dashboardLink, buildDataResponse);
+    }
+
+    private LinkedList<BuildStage> processStages(Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, HygieiaService hygieiaService){
+        String buildUrl = HygieiaUtils.getBuildUrl(run);
+        String wfapiUrl = buildUrl + WFAPI_DESCRIBE;
+        listener.getLogger().println("Hygieia: wfapi url : " + wfapiUrl);
+        LinkedList<BuildStage> buildStages=null;
+        String responseString = "";
+        try{
+            RestCall.RestCallResponse callResponse = hygieiaService.getStageResponse(wfapiUrl,hygieiaGlobalListenerDescriptor.getJenkinsUserId(),hygieiaGlobalListenerDescriptor.getJenkinsToken());
+            listener.getLogger().println("Hygieia: call response code : " + callResponse.getResponseCode());
+            if(Objects.nonNull(callResponse)){
+                responseString = callResponse.getResponseString();
+                buildStages=  HygieiaUtils.getBuildStages(responseString);
+            }
+        }catch (Exception e){
+            listener.getLogger().println("Hygieia: call response error : " + e.getStackTrace());
+        }
+        return buildStages;
+    }
+
+    private LinkedList<BuildStage> process_node_links(Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, HygieiaService hygieiaService, LinkedList<BuildStage> buildStages){
+        if (CollectionUtils.isEmpty(buildStages)) return buildStages;
+        for (BuildStage stage: buildStages) {
+                String self_url = getSelfUrl(stage.get_links());
+                String instanceUrl = HygieiaUtils.getInstanceUrl(run,listener);
+                String exec_node_url = instanceUrl+self_url;
+                listener.getLogger().println("Hygieia: exec_node_url : " +exec_node_url);
+                String responseString ="";
+            try{
+                RestCall.RestCallResponse callResponse = hygieiaService.getStageResponse(exec_node_url,hygieiaGlobalListenerDescriptor.getJenkinsUserId(),hygieiaGlobalListenerDescriptor.getJenkinsToken());
+                listener.getLogger().println("Hygieia: call response code exec_node url : " + callResponse.getResponseCode());
+                listener.getLogger().println("Hygieia: call response code exec_node url : " + callResponse.getResponseString());
+                if(Objects.nonNull(callResponse)){
+                    responseString = callResponse.getResponseString();
+                    HygieiaUtils.setLogUrl(responseString,stage);
+                }
+            }catch (Exception e){
+                listener.getLogger().println("Hygieia: call response error : " + e.getStackTrace());
+            }
+
+        }
+    return buildStages;
+    }
+
+    private LinkedList<BuildStage> process_logs(Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, HygieiaService hygieiaService, LinkedList<BuildStage> buildStages){
+        if (CollectionUtils.isEmpty(buildStages)) return buildStages;
+        for (BuildStage stage: buildStages) {
+            boolean isCaptureLog = hygieiaGlobalListenerDescriptor.isCaptureLogs();
+            if(FAILED.equalsIgnoreCase(stage.getStatus()) && isCaptureLog){
+                String logUrl = stage.getExec_node_logUrl();
+                String instanceUrl = HygieiaUtils.getInstanceUrl(run,listener);
+                String wfapi_log_url = instanceUrl+logUrl;
+                listener.getLogger().println("Hygieia: wfapi_log_url : " +wfapi_log_url);
+                String responseString ="";
+                try{
+                    RestCall.RestCallResponse callResponse = hygieiaService.getStageResponse(wfapi_log_url,hygieiaGlobalListenerDescriptor.getJenkinsUserId(),hygieiaGlobalListenerDescriptor.getJenkinsToken());
+                    listener.getLogger().println("Hygieia: call response code wfapi_log_url : " + callResponse.getResponseCode());
+                    listener.getLogger().println("Hygieia: call response code wfapi_log_url : " + callResponse.getResponseString());
+                    if(Objects.nonNull(callResponse)){
+                        responseString = callResponse.getResponseString();
+                        HygieiaUtils.set_logs(responseString,stage);
+                    }
+                }catch (Exception e){
+                    listener.getLogger().println("Hygieia: call response error : " + e.getStackTrace());
+                }
+            }
+        }
+        return buildStages;
+    }
+
+    private String getSelfUrl(Map<String,Object> _links){
+       Map<String,String> href = (Map<String, String>) _links.get("self");
+       String url = href.get("href");
+       return url;
     }
 
     private void publishSonarData(Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, HygieiaService hygieiaService, @Nonnull String convertedBuildResponseString) {

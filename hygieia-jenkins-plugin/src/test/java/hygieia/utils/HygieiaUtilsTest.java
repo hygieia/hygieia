@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.api.Assertions;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -60,41 +61,39 @@ public class HygieiaUtilsTest {
     }
 
     @Test
-    public void getBuildStages_multiple_builds() throws HygieiaException {
-        String json = loadJson("json/wfapi-runs-stages.json");
+    public void getBuildStages_describe_one_build() throws HygieiaException {
+        String json = loadJson("json/wfapi-describe-one-build.json");
         LinkedList<BuildStage> buildStages = HygieiaUtils.getBuildStages(json);
         Assertions.assertThat(buildStages.get(0)).isEqualToComparingFieldByField(generateExpected("json/build-stage.json"));
         assertThat(buildStages.size()).isEqualTo(4);
     }
 
     @Test
-    public void getBuildStages_one_build() throws HygieiaException {
-        String json = loadJson("json/wfapi-runs-one-build.json");
+    public void getBuildStages_describe_zero_build() throws HygieiaException {
+        String json = loadJson("json/wfapi-describe-zero-build.json");
+        LinkedList<BuildStage> buildStages = HygieiaUtils.getBuildStages(json);
+        assertThat(buildStages.size()).isEqualTo(0);
+    }
+    @Test(expected = HygieiaException.class)
+    public void getBuildStages_Parse_Exception() throws HygieiaException {
+        String json = loadJson("json/wfapi-describe-one-build-exception.json");
         LinkedList<BuildStage> buildStages = HygieiaUtils.getBuildStages(json);
         Assertions.assertThat(buildStages.get(0)).isEqualToComparingFieldByField(generateExpected("json/build-stage.json"));
         assertThat(buildStages.size()).isEqualTo(4);
     }
 
     @Test
-    public void getBuildStages_one_build_one_stage() throws HygieiaException {
-        String json = loadJson("json/wfapi-runs-one-build-one-stage.json");
-        LinkedList<BuildStage> buildStages = HygieiaUtils.getBuildStages(json);
-        Assertions.assertThat(buildStages.get(0)).isEqualToComparingFieldByField(generateExpected("json/build-stage.json"));
-        assertThat(buildStages.size()).isEqualTo(1);
+    public void setLogUrl(){
+        String json = loadJson("json/wfapi-describe-one-build-log-url.json");
+        BuildStage bs = HygieiaUtils.setLogUrl(json,new BuildStage());
+        Assert.assertEquals("/job/testGenericItem/61/execution/node/7/wfapi/log",bs.getExec_node_logUrl());
     }
 
     @Test
-    public void getBuildStages_one_build_zero_stage() throws HygieiaException {
-        String json = loadJson("json/wfapi-runs-one-build-zero-stage.json");
-        LinkedList<BuildStage> buildStages = HygieiaUtils.getBuildStages(json);
-        assertThat(buildStages.size()).isEqualTo(0);
-    }
-
-    @Test
-    public void getBuildStages_zero_build() throws HygieiaException {
-        String json = loadJson("json/wfapi-runs-zero-build.json");
-        LinkedList<BuildStage> buildStages = HygieiaUtils.getBuildStages(json);
-        assertThat(buildStages.size()).isEqualTo(0);
+    public void setLogUrl_zero_stage_flow_nodes(){
+        String json = loadJson("json/wfapi-describe-one-build-zero-stage-flow-nodes.json");
+        BuildStage bs = HygieiaUtils.setLogUrl(json,new BuildStage());
+        Assert.assertNull(bs.getExec_node_logUrl());
     }
 
 

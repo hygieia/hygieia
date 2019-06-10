@@ -54,6 +54,10 @@ public class HygieiaUtils {
     public static final String SEPERATOR = ",";
     public static final String DASHBOARD_URI = "#/dashboard/";
     public static final String STAGES="stages";
+    public static final String STAGE_FLOW_NODES="stageFlowNodes";
+    public static final String LINKS="_links";
+    public static final String LOG="log";
+    public static final String HREF="href";
 
     public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
         ObjectMapper mapper = new CustomObjectMapper();
@@ -436,11 +440,9 @@ public class HygieiaUtils {
     public static LinkedList<BuildStage> getBuildStages(String responseJSON) throws HygieiaException{
         if(responseJSON==null) return new LinkedList<>();
         try{
-            JSONArray jsonArray = (JSONArray) new JSONParser().parse(responseJSON);
-            if(jsonArray==null || jsonArray.isEmpty()) return new LinkedList<>();
-            JSONObject jsonObject = (JSONObject) jsonArray.get(0);
-            if(jsonObject == null) return new LinkedList<>();
-            JSONArray stages = (JSONArray) jsonObject.get(STAGES);
+            JSONObject buildJSON = (JSONObject) new JSONParser().parse(responseJSON);
+            if(Objects.isNull(buildJSON)) return new LinkedList<>();
+            JSONArray stages = (JSONArray) buildJSON.get(STAGES);
             if (stages == null) return new LinkedList<>();
             LinkedList<BuildStage> buildStages = new LinkedList<>();
             for (Object stage: stages) {
@@ -457,5 +459,44 @@ public class HygieiaUtils {
             throw new HygieiaException("Error in method :: HygieiaUtils.getBuildStages() :: ", HygieiaException.BAD_DATA);
         }
     }
+
+    public static BuildStage setLogUrl(String responseJSON, BuildStage stage){
+        if(responseJSON==null) return stage;
+        try{
+            JSONObject stageJSON = (JSONObject) new JSONParser().parse(responseJSON);
+            String url = getLogUrl(stageJSON);
+            stage.setExec_node_logUrl(url);
+        }catch (ParseException parseException){
+            logger.log(Level.INFO,ExceptionUtils.getStackTrace(parseException));
+        }
+        return stage;
+    }
+
+    public static String getLogUrl(JSONObject jsonObject){
+        JSONArray stageFlowNodes = (JSONArray) jsonObject.get(STAGE_FLOW_NODES);
+        if (CollectionUtils.isEmpty(stageFlowNodes)) return null;
+        JSONObject firstNode = (JSONObject) stageFlowNodes.get(0);
+        JSONObject _links = (JSONObject) firstNode.get(LINKS);
+        String url = getLog_href(_links);
+        return url;
+    }
+
+    public static String getLog_href(JSONObject jsonObject){
+        JSONObject logUrl = (JSONObject) jsonObject.get(LOG);
+        String url = (String) logUrl.get(HREF);
+        return url;
+    }
+
+    public static BuildStage set_logs(String responseJSON, BuildStage stage){
+        if (responseJSON==null) return stage;
+        try{
+            JSONObject logJSON = (JSONObject) new JSONParser().parse(responseJSON);
+            stage.setLog(logJSON!=null?logJSON.toJSONString():"");
+        }catch (ParseException parseException){
+            logger.log(Level.INFO,ExceptionUtils.getStackTrace(parseException));
+        }
+        return stage;
+    }
+
 
 }

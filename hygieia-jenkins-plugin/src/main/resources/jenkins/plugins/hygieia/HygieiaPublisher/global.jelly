@@ -42,6 +42,10 @@
     <f:entry title="Show Hygieia Logs on Build Console" help="/plugin/hygieia-publisher/help-globalConfig-hygieiaShowDashboard.html">
         <f:checkbox field="showConsoleOutput" name="showConsoleOutput" checked="${descriptor.isShowConsoleOutput()}" />
     </f:entry>
+    <f:entry title="Capture Build Logs " help="/plugin/hygieia-publisher/help-globalConfig-hygieiaShowDashboard.html">
+            <f:checkbox field="captureLogs" name="captureLogs" checked="${descriptor.isCaptureLogs()}" />
+    </f:entry>
+
     <f:entry title="Publish custom collector items (tool name : regex)" help="/plugin/hygieia-publisher/help-globalConfig-hygieiaPublishBuildData.html">
         <f:repeatable var="hygieiaPublishGenericCollectorItems" field="hygieiaPublishGenericCollectorItems" name="hygieiaPublishGenericCollectorItems" >
             <f:textbox field="toolName" name="toolName" clazz="required" checkMessage="Required!" value="${hygieiaPublishGenericCollectorItems.toolName}"/>

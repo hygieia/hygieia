@@ -153,7 +153,7 @@ public class HygieiaGlobalListenerTest {
         when(mockRun.getResult()).thenReturn(Result.SUCCESS);
         when(mockBuild.getChangeSet()).thenReturn(mockChangeSet);
         when(mockChangeSet.isEmptySet()).thenReturn(true);
-
+        when(mockHygieiaService.getStageResponse(any(String.class),any(String.class),any(String.class))).thenReturn(null);
         hygieiaGlobalListener.onCompleted(mockRun, mockBuildListener);
         ArgumentCaptor<BuildDataCreateRequest> captorBuild = ArgumentCaptor.forClass(BuildDataCreateRequest.class);
         verify(mockHygieiaService, times(1)).publishBuildDataV3(captorBuild.capture());

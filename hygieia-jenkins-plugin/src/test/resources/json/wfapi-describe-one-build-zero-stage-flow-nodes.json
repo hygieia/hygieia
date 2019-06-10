@@ -10,5 +10,6 @@
   "status": "SUCCESS",
   "startTimeMillis": 1560102299027,
   "durationMillis": 828,
-  "pauseDurationMillis": 0
+  "pauseDurationMillis": 0,
+  "stageFlowNodes": []
 }
