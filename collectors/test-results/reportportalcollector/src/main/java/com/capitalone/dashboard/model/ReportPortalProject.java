@@ -6,6 +6,7 @@ public class ReportPortalProject extends CollectorItem {
     protected static final String INSTANCE_URL = "instanceUrl";
     protected static final String PROJECT_NAME = "projectName";
     protected static final String PROJECT_ID = "projectId";
+
 	//private String launchNumber;
 	@Field
     private String launchId;
