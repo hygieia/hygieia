@@ -493,7 +493,7 @@ public class HygieiaUtils {
             JSONObject logJSON = (JSONObject) new JSONParser().parse(responseJSON);
             stage.setLog(logJSON!=null?logJSON.toJSONString():"");
         }catch (ParseException parseException){
-            logger.log(Level.INFO,ExceptionUtils.getStackTrace(parseException));
+            logger.log(Level.SEVERE,ExceptionUtils.getStackTrace(parseException));
         }
         return stage;
     }
