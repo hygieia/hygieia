@@ -1,5 +1,6 @@
 package hygieia.builder;
 
+import com.capitalone.dashboard.model.BuildStage;
 import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.DeployDataCreateRequest;
@@ -17,6 +18,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -105,8 +107,8 @@ public class DeployBuilder {
                 bac.setArtifactName(artifactName);
 
                 BuildDataCreateRequest buildDataCreateRequest = (run instanceof WorkflowRun)
-                        ? new BuildBuilder().createBuildRequestFromRun(run, jenkinsName, listener, result, false)
-                        : new BuildBuilder().createBuildRequest((AbstractBuild) run, jenkinsName, listener, true, false);
+                        ? new BuildBuilder().createBuildRequestFromRun(run, jenkinsName, listener, result, false,new LinkedList<BuildStage>())
+                        : new BuildBuilder().createBuildRequest((AbstractBuild) run, jenkinsName, listener, true, false,new LinkedList<BuildStage>());
 
                 bac.setDeployStatus(buildDataCreateRequest.getBuildStatus());
                 bac.setDuration(buildDataCreateRequest.getDuration());

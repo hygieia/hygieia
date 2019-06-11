@@ -58,6 +58,9 @@ public class GraphQLQuery {
                     "          commit {" +
                     "            oid" +
                     "            committedDate" +
+                    "            additions" +
+                    "            deletions" +
+                    "            changedFiles" +
                     "            message" +
                     "            status {" +
                     "              context(name: \"approvals/lgtmeow\") {" +

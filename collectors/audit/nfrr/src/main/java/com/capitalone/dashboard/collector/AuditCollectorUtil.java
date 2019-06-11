@@ -7,9 +7,16 @@ import com.capitalone.dashboard.model.AuditType;
 import com.capitalone.dashboard.model.AuditResult;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.Cmdb;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Component;
 
 import com.capitalone.dashboard.repository.AuditResultRepository;
-import com.capitalone.dashboard.repository.CmdbRepository;
+import com.capitalone.dashboard.repository.CollectorItemRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
+
+
 import com.capitalone.dashboard.status.CodeReviewAuditStatus;
 import com.capitalone.dashboard.status.DashboardAuditStatus;
 import com.capitalone.dashboard.status.CodeQualityAuditStatus;
@@ -40,6 +47,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.StringJoiner;
+
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -80,20 +89,37 @@ public class AuditCollectorUtil {
     private static final String FAILURE_COUNT = "failureCount";
     private static final String SKIP_COUNT = "skippedCount";
     private static final String TOTAL_COUNT = "totalCount";
+    private static final String OPT_DBRD_ID = "dashboardId";
 
+    private Dashboard dashboard;
+    static List<CollectorItem> auditCollectorItems = new ArrayList<>();
 
+    private CollectorItemRepository collectorItemRepository;
+    private ComponentRepository componentRepository;
+    private Collector collector;
+
+    public AuditCollectorUtil(Collector collector, ComponentRepository componentRepository,
+                              CollectorItemRepository collectorItemRepository){
+        this.collector = collector;
+        this.componentRepository = componentRepository;
+        this.collectorItemRepository = collectorItemRepository;
+    }
 
     /**
      * Get Code Review Audit Results
      */
-    private static Audit getCodeReviewAudit(JSONArray jsonArray, JSONArray global) {
+    private Audit getCodeReviewAudit(JSONArray jsonArray, JSONArray global) {
 
         LOGGER.info("NFRR Audit Collector auditing CODE_REVIEW");
         Audit audit = new Audit();
         audit.setType(AuditType.CODE_REVIEW);
 
+        CollectorItem collectorItem = createCollectorItem(audit.getType());
+        audit.setCollectorItem(collectorItem);
+        auditCollectorItems.add(collectorItem);
         Audit basicAudit;
         if ((basicAudit = doBasicAuditCheck(jsonArray, global, AuditType.CODE_REVIEW)) != null) {
+            basicAudit.setCollectorItem(collectorItem);
             return basicAudit;
         }
         audit.setAuditStatus(AuditStatus.OK);
@@ -135,7 +161,7 @@ public class AuditCollectorUtil {
     /**
      * Do basic audit check - configuration, collector error, no data
      */
-    private static Audit doBasicAuditCheck(JSONArray jsonArray, JSONArray global, AuditType auditType) {
+    private Audit doBasicAuditCheck(JSONArray jsonArray, JSONArray global, AuditType auditType) {
         Audit audit = new Audit();
         audit.setType(auditType);
         if (!isConfigured(auditType, global)) {
@@ -159,7 +185,7 @@ public class AuditCollectorUtil {
     /**
      * Check for collector error
      */
-    private static boolean isCollectorError(JSONArray jsonArray) {
+    private boolean isCollectorError(JSONArray jsonArray) {
         Stream<JSONObject> jsonObjectStream = jsonArray.stream().map((Object object) -> (JSONObject) object);
         Stream<JSONArray> auditStatusArray = jsonObjectStream.map(jsonObject -> (JSONArray) jsonObject.get(STR_AUDITSTATUSES));
         return auditStatusArray.anyMatch(aSArray -> aSArray.toJSONString().contains(DashboardAuditStatus.COLLECTOR_ITEM_ERROR.name()));
@@ -169,7 +195,7 @@ public class AuditCollectorUtil {
      * Check for dashboard audit type configuration
      */
     @SuppressWarnings("PMD.NPathComplexity")
-    private static boolean isConfigured(AuditType auditType, JSONArray jsonArray) {
+    private boolean isConfigured(AuditType auditType, JSONArray jsonArray) {
         if (auditType.equals(AuditType.CODE_REVIEW)) {
             return (jsonArray.toJSONString().contains(DashboardAuditStatus.DASHBOARD_REPO_CONFIGURED.name()) ? true : false);
         }
@@ -198,13 +224,18 @@ public class AuditCollectorUtil {
     /**
      * Get code quality audit results
      */
-    private static Audit getCodeQualityAudit(JSONArray jsonArray, JSONArray global) {
+    private Audit getCodeQualityAudit(JSONArray jsonArray, JSONArray global) {
 
         LOGGER.info("NFRR Audit Collector auditing CODE_QUALITY");
         Audit audit = new Audit();
         audit.setType(AuditType.CODE_QUALITY);
+        CollectorItem collectorItem = createCollectorItem(audit.getType());
+        audit.setCollectorItem(collectorItem);
+        auditCollectorItems.add(collectorItem);
+
         Audit basicAudit;
         if ((basicAudit = doBasicAuditCheck(jsonArray, global, AuditType.CODE_QUALITY)) != null) {
+            basicAudit.setCollectorItem(collectorItem);
             return basicAudit;
         }
         audit.setAuditStatus(AuditStatus.OK);
@@ -240,13 +271,18 @@ public class AuditCollectorUtil {
     /**
      * Get security audit results
      */
-    private static Audit getSecurityAudit(JSONArray jsonArray, JSONArray global) {
+    private Audit getSecurityAudit(JSONArray jsonArray, JSONArray global) {
 
         LOGGER.info("NFRR Audit Collector auditing STATIC_SECURITY_ANALYSIS");
         Audit audit = new Audit();
         audit.setType(AuditType.STATIC_SECURITY_ANALYSIS);
+        CollectorItem collectorItem = createCollectorItem(audit.getType());
+        audit.setCollectorItem(collectorItem);
+        auditCollectorItems.add(collectorItem);
+
         Audit basicAudit;
         if ((basicAudit = doBasicAuditCheck(jsonArray, global, AuditType.STATIC_SECURITY_ANALYSIS)) != null) {
+            basicAudit.setCollectorItem(collectorItem);
             return basicAudit;
         }
         Set<String> auditStatuses;
@@ -276,14 +312,18 @@ public class AuditCollectorUtil {
     /**
      * Get library policy  audit results
      */
-    private static Audit getOSSAudit(JSONArray jsonArray, JSONArray global) {
+    private Audit getOSSAudit(JSONArray jsonArray, JSONArray global) {
 
         LOGGER.info("NFRR Audit Collector auditing LIBRARY_POLICY");
         Audit audit = new Audit();
         audit.setType(AuditType.LIBRARY_POLICY);
+        CollectorItem collectorItem = createCollectorItem(audit.getType());
+        audit.setCollectorItem(collectorItem);
+        auditCollectorItems.add(collectorItem);
 
         Audit basicAudit;
         if ((basicAudit = doBasicAuditCheck(jsonArray, global, AuditType.LIBRARY_POLICY)) != null) {
+            basicAudit.setCollectorItem(collectorItem);
             return basicAudit;
         }
         audit.setAuditStatus(AuditStatus.OK);
@@ -319,14 +359,18 @@ public class AuditCollectorUtil {
     /**
      * Get test result audit results
      */
-    protected static Audit getTestAudit(JSONArray jsonArray, JSONArray global) {
+    protected Audit getTestAudit(JSONArray jsonArray, JSONArray global) {
 
         LOGGER.info("NFRR Audit Collector auditing TEST_RESULT");
         Audit audit = new Audit();
         audit.setType(AuditType.TEST_RESULT);
+        CollectorItem collectorItem = createCollectorItem(audit.getType());
+        audit.setCollectorItem(collectorItem);
+        auditCollectorItems.add(collectorItem);
 
         Audit basicAudit;
         if ((basicAudit = doBasicAuditCheck(jsonArray, global, AuditType.TEST_RESULT)) != null) {
+            basicAudit.setCollectorItem(collectorItem);
             return basicAudit;
         }
         audit.setAuditStatus(AuditStatus.OK);
@@ -357,14 +401,18 @@ public class AuditCollectorUtil {
     /**
      * Get performance testing audit results
      */
-    private static Audit getPerfAudit(JSONArray jsonArray, JSONArray global) {
+    private Audit getPerfAudit(JSONArray jsonArray, JSONArray global) {
 
         LOGGER.info("NFRR Audit Collector auditing PERF_TEST");
         Audit audit = new Audit();
         audit.setType(AuditType.PERF_TEST);
+        CollectorItem collectorItem = createCollectorItem(audit.getType());
+        audit.setCollectorItem(collectorItem);
+        auditCollectorItems.add(collectorItem);
 
         Audit basicAudit;
         if ((basicAudit = doBasicAuditCheck(jsonArray, global, AuditType.PERF_TEST)) != null) {
+            basicAudit.setCollectorItem(collectorItem);
             return basicAudit;
         }
         audit.setAuditStatus(AuditStatus.OK);
@@ -400,8 +448,9 @@ public class AuditCollectorUtil {
      * Get all audit results
      */
     @SuppressWarnings("PMD")
-    public static Map<AuditType, Audit> getAudit(Dashboard dashboard, AuditSettings settings, long begin, long end) {
+    public Map<AuditType, Audit> getAudit(Dashboard dashboard, AuditSettings settings, long begin, long end) {
         Map<AuditType, Audit> audits = new HashMap<>();
+        setDashboard(dashboard);
 
         String url = getAuditAPIUrl(dashboard, settings, begin, end);
         JSONObject auditResponseObj = parseObject(url, settings);
@@ -411,6 +460,7 @@ public class AuditCollectorUtil {
         JSONArray globalStatus = (JSONArray) auditResponseObj.get(STR_AUDITSTATUSES);
         JSONObject review = (JSONObject) auditResponseObj.get(STR_REVIEW);
 
+        auditCollectorItems.clear();
         JSONArray codeReviewJO = review.get(AuditType.CODE_REVIEW.name()) == null ? null : (JSONArray) review.get(AuditType.CODE_REVIEW.name());
         Audit audit = getCodeReviewAudit(codeReviewJO, globalStatus);
         audits.put(audit.getType(), audit);
@@ -434,13 +484,30 @@ public class AuditCollectorUtil {
         JSONArray sscaJO = review.get(AuditType.STATIC_SECURITY_ANALYSIS.name()) == null ? null : (JSONArray) review.get(AuditType.STATIC_SECURITY_ANALYSIS.name());
         audit = getSecurityAudit(sscaJO, globalStatus);
         audits.put(audit.getType(), audit);
+
+        updateComponent(dashboard);
         return audits;
+    }
+
+    /**
+     * Update component with audit collector items
+     * @param dashboard
+     */
+    private void updateComponent(Dashboard dashboard)  {
+        List<Component> components = dashboard.getApplication().getComponents();
+        if(components.iterator().hasNext()){
+            Component component = componentRepository.findOne(components.iterator().next().getId());
+            Map<CollectorType, List<CollectorItem>> collectorItems = component.getCollectorItems();
+            collectorItems.put(CollectorType.Audit, auditCollectorItems);
+            component.setCollectorItems(collectorItems);
+            componentRepository.save(component);
+        }
     }
 
     /**
      * Make audit api rest call and parse response
      */
-    protected static JSONObject parseObject(String url, AuditSettings settings){
+    protected JSONObject parseObject(String url, AuditSettings settings){
         LOGGER.info("NFRR Audit Collector Audit API Call");
         RestTemplate restTemplate = new RestTemplate();
         JSONObject responseObj = null;
@@ -457,7 +524,7 @@ public class AuditCollectorUtil {
     /**
      * Construct audit api url
      */
-    protected static String getAuditAPIUrl(Dashboard dashboard, AuditSettings settings, long beginDate, long endDate) {
+    protected String getAuditAPIUrl(Dashboard dashboard, AuditSettings settings, long beginDate, long endDate) {
         LOGGER.info("NFRR Audit Collector creates Audit API URL");
         if (CollectionUtils.isEmpty(settings.getServers())) {
             LOGGER.error("No Server Found to run NoFearRelease audit collector");
@@ -478,7 +545,7 @@ public class AuditCollectorUtil {
     /**
      * Get api authentication headers
      */
-    protected static HttpEntity getHeaders(AuditSettings auditSettings) {
+    protected HttpEntity getHeaders(AuditSettings auditSettings) {
         HttpHeaders headers = new HttpHeaders();
         if (!CollectionUtils.isEmpty(auditSettings.getUsernames()) && !CollectionUtils.isEmpty(auditSettings.getApiKeys())) {
             headers.set(STR_APIUSER, auditSettings.getUsernames().iterator().next());
@@ -491,10 +558,9 @@ public class AuditCollectorUtil {
      * Add audit result by audit type
      */
     @SuppressWarnings("PMD.NPathComplexity")
-    public static void addAuditResultByAuditType(Dashboard dashboard, Map<AuditType, Audit> auditMap, CmdbRepository cmdbRepository, long timestamp) {
+    public static void addAuditResultByAuditType(Dashboard dashboard, Map<AuditType, Audit> auditMap, Cmdb cmdb, long timestamp) {
 
         if(CollectionUtils.isEmpty(auditMap)){ return; }
-        Cmdb cmdb = cmdbRepository.findByConfigurationItem(dashboard.getConfigurationItemBusServName());
         ObjectId dashboardId = dashboard.getId();
         String dashboardTitle = dashboard.getTitle();
         String ownerDept = ((cmdb == null || cmdb.getOwnerDept() == null) ? "" : cmdb.getOwnerDept());
@@ -504,13 +570,16 @@ public class AuditCollectorUtil {
         String appBusAppOwner = ((cmdb == null || cmdb.getBusinessOwner() == null) ? "" : cmdb.getBusinessOwner());
 
         Arrays.stream(AuditType.values()).forEach((AuditType auditType) -> {
-            if (!(auditType.equals(AuditType.ALL) || auditType.equals(AuditType.BUILD_REVIEW))) {
+            if (!(auditType.equals(AuditType.ALL) || auditType.equals(AuditType.BUILD_REVIEW) || auditType.equals(AuditType.ARTIFACT))) {
                 Audit audit = auditMap.get(auditType);
-                AuditResult auditResult = new AuditResult(dashboardId, dashboardTitle, ownerDept, appService, appBusApp, appServiceOwner, appBusAppOwner,
-                        auditType, audit.getDataStatus().name(), audit.getAuditStatus().name(), String.join(",", audit.getAuditStatusCodes()),
-                        String.join(",", audit.getUrl()), timestamp);
-                auditResult.setOptions(audit.getOptions() != null ? audit.getOptions() : null);
-                auditResults.add(auditResult);
+                if (audit != null) {
+                    AuditResult auditResult = new AuditResult(dashboardId, dashboardTitle, ownerDept, appService, appBusApp, appServiceOwner, appBusAppOwner,
+                            auditType, audit.getDataStatus().name(), audit.getAuditStatus().name(), String.join(",", audit.getAuditStatusCodes()),
+                            String.join(",", audit.getUrl()), timestamp);
+                    auditResult.setCollectorItemId(audit.getCollectorItem().getId());
+                    auditResult.setOptions(audit.getOptions() != null ? audit.getOptions() : null);
+                    auditResults.add(auditResult);
+                }
             }
         });
     }
@@ -542,13 +611,13 @@ public class AuditCollectorUtil {
      * @return
      * @param jsonArray
      */
-    public static Map<String,Object> getTestAuditOptions(JSONArray jsonArray) {
+    public Map<String,Object> getTestAuditOptions(JSONArray jsonArray) {
         Map<String, Object> options = new HashMap<>();
 
         Supplier<Stream> manualTestStream = () -> jsonArray.stream()
-                .filter(jObj-> ((JSONObject)jObj).get(STR_TYPE).toString().equalsIgnoreCase(STR_MANUAL));
+                .filter(jObj-> Optional.ofNullable(((JSONObject)jObj).get(STR_TYPE)).orElse("").toString().equalsIgnoreCase(STR_MANUAL));
         Supplier<Stream>  automatedTestStream = () -> jsonArray.stream()
-                .filter(jObj-> ((JSONObject)jObj).get(STR_TYPE).toString().equalsIgnoreCase(STR_FUNCTIONAL));
+                .filter(jObj-> Optional.ofNullable(((JSONObject)jObj).get(STR_TYPE)).orElse("").toString().equalsIgnoreCase(STR_FUNCTIONAL));
 
         Map<String, Double> traceability = new HashMap<>();
         traceability.put(STR_AUTOMATED, getAvgTracePercent(automatedTestStream.get()));
@@ -575,17 +644,65 @@ public class AuditCollectorUtil {
         return options;
     }
 
-    private static Integer getFeatureTestCount(String countType, Stream stream) {
+    private Integer getFeatureTestCount(String countType, Stream stream) {
+
         return stream
-                .map(jObj -> ((JSONObject)jObj).get(STR_FEATURE_TEST_RESULT))
-                .map(featureTestResult -> ((JSONObject)featureTestResult).get(countType))
+                .map(jObj -> Optional.ofNullable(((JSONObject)jObj).get(STR_FEATURE_TEST_RESULT)).orElse(new Object()))
+                .map(featureTestResult -> Optional.ofNullable(((JSONObject)featureTestResult).get(countType)).orElse(NumberUtils.INTEGER_ZERO))
                 .mapToInt(n -> Integer.valueOf(n.toString())).sum();
     }
 
-    private static Double getAvgTracePercent(Stream stream) {
+    private Double getAvgTracePercent(Stream stream) {
         return stream
-                .map(jObj -> ((JSONObject)jObj).get(STR_TRACEABILITY))
-                .map(traceability -> ((JSONObject)traceability).get(STR_PERCENTAGE))
+                .map(jObj -> Optional.ofNullable(((JSONObject)jObj).get(STR_TRACEABILITY)).orElse(new Object()))
+                .map(traceability -> Optional.ofNullable(((JSONObject)traceability).get(STR_PERCENTAGE)).orElse(NumberUtils.DOUBLE_ZERO))
                 .mapToDouble(s-> Double.valueOf(s.toString())).average().orElse(NumberUtils.DOUBLE_ZERO);
+    }
+
+    /**
+     * Create collector item for audit type if not exists already
+     * @param auditType
+     * @return
+     */
+    protected CollectorItem createCollectorItem(AuditType auditType){
+        String description = getDescription(auditType);
+        Iterable<CollectorItem> collectorItems = collectorItemRepository.findByDescription(description);
+        Optional<CollectorItem> optCollectorItem = Optional.ofNullable(collectorItems.iterator().hasNext() ? collectorItems.iterator().next() : null);
+        optCollectorItem.ifPresent(collectorItem -> collectorItem.setLastUpdated(System.currentTimeMillis()));
+        optCollectorItem = Optional.ofNullable(optCollectorItem.orElseGet(() -> {
+            CollectorItem collectorItem = new CollectorItem();
+            collectorItem.setId(ObjectId.get());
+            collectorItem.setCollectorId(this.collector.getId());
+            collectorItem.setCollector(this.collector);
+            collectorItem.setEnabled(true);
+            collectorItem.setPushed(false);
+            collectorItem.setLastUpdated(System.currentTimeMillis());
+            collectorItem.setDescription(description);
+            collectorItem.getOptions().put(OPT_DBRD_ID, getDashboard().getId());
+            return collectorItem;
+        }));
+        return collectorItemRepository.save(optCollectorItem.get());
+    }
+
+    public void setDashboard(Dashboard dashboard) {
+        this.dashboard = dashboard;
+    }
+
+    public Dashboard getDashboard() {
+        return dashboard;
+    }
+
+    /**
+     * Get description for collector item
+     * @param auditType
+     * @return
+     */
+    public String getDescription(AuditType auditType) {
+        StringJoiner description = new StringJoiner(" ");
+        Optional<Dashboard> dashboardOpt = Optional.ofNullable(this.getDashboard());
+        description.add(dashboardOpt.isPresent() ? dashboardOpt.get().getTitle() : "title");
+        description.add(auditType.name().toLowerCase());
+        description.add("audit process");
+        return description.toString();
     }
 }

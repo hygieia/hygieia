@@ -4,12 +4,15 @@ import com.capitalone.dashboard.model.Audit;
 import com.capitalone.dashboard.model.AuditResult;
 import com.capitalone.dashboard.model.AuditType;
 import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.Cmdb;
 
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.AuditResultRepository;
 import com.capitalone.dashboard.repository.AuditCollectorRepository;
 import com.capitalone.dashboard.repository.CmdbRepository;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.repository.CollectorItemRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,31 +35,28 @@ import java.util.Map;
 public class AuditCollectorTask extends CollectorTask<AuditCollector> {
 
     private final Logger LOGGER = LoggerFactory.getLogger(AuditCollectorTask.class);
-
-    @Autowired
     private DashboardRepository dashboardRepository;
-    @Autowired
     private AuditResultRepository auditResultRepository;
-    @Autowired
     private AuditCollectorRepository auditCollectorRepository;
-    @Autowired
     private AuditSettings settings;
-    @Autowired
     private CmdbRepository cmdbRepository;
+    private ComponentRepository componentRepository;
+    private CollectorItemRepository collectorItemRepository;
+    private static final String COLLECTOR_NAME = "AuditCollector";
 
     @Autowired
     public AuditCollectorTask(TaskScheduler taskScheduler, DashboardRepository dashboardRepository,
                               AuditResultRepository auditResultRepository, AuditCollectorRepository auditCollectorRepository,
-                              AuditSettings settings) {
-        super(taskScheduler, "AuditCollector");
+                              CmdbRepository cmdbRepository, ComponentRepository componentRepository,
+                              CollectorItemRepository collectorItemRepository, AuditSettings settings) {
+        super(taskScheduler, COLLECTOR_NAME);
         this.dashboardRepository = dashboardRepository;
         this.auditResultRepository = auditResultRepository;
         this.auditCollectorRepository = auditCollectorRepository;
+        this.cmdbRepository = cmdbRepository;
+        this.componentRepository = componentRepository;
+        this.collectorItemRepository = collectorItemRepository;
         this.settings = settings;
-    }
-
-    public AuditCollectorTask (TaskScheduler taskScheduler) {
-        super(taskScheduler, "AuditCollector");
     }
 
     @Override
@@ -85,12 +85,15 @@ public class AuditCollectorTask extends CollectorTask<AuditCollector> {
         long auditEndDateTimeStamp = Instant.now().toEpochMilli();
         LOGGER.info("NFRR Audit Collector audits with begin,end timestamps as " + auditBeginDateTimeStamp + "," + auditEndDateTimeStamp);
 
+        AuditCollector collector = getCollectorRepository().findByName(COLLECTOR_NAME);
+        AuditCollectorUtil auditCollectorUtil = new AuditCollectorUtil(collector, componentRepository, collectorItemRepository);
         dashboards.forEach((Dashboard dashboard) -> {
-                Map<AuditType, Audit> auditMap = AuditCollectorUtil.getAudit(dashboard, settings,
+                Map<AuditType, Audit> auditMap = auditCollectorUtil.getAudit(dashboard, settings,
                         auditBeginDateTimeStamp, auditEndDateTimeStamp);
 
                 LOGGER.info("NFRR Audit Collector adding audit results for the dashboard : " + dashboard.getTitle());
-                AuditCollectorUtil.addAuditResultByAuditType(dashboard, auditMap, cmdbRepository, auditEndDateTimeStamp);
+                Cmdb cmdb = cmdbRepository.findByConfigurationItem(dashboard.getConfigurationItemBusServName());
+                AuditCollectorUtil.addAuditResultByAuditType(dashboard, auditMap, cmdb, auditEndDateTimeStamp);
         });
         return AuditCollectorUtil.getAuditResults();
     }

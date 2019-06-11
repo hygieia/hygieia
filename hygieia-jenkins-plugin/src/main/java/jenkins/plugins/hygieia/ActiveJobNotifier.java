@@ -1,5 +1,6 @@
 package jenkins.plugins.hygieia;
 
+import com.capitalone.dashboard.model.BuildStage;
 import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.quality.CucumberJsonReport;
 import com.capitalone.dashboard.model.quality.MochaJsSpecReport;
@@ -19,6 +20,7 @@ import hygieia.utils.HygieiaUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.json.simple.parser.ParseException;
 
+import java.util.LinkedList;
 import java.util.Set;
 
 @SuppressWarnings("rawtypes")
@@ -45,7 +47,7 @@ public class ActiveJobNotifier implements FineGrainedNotifier {
                 ((publisher.getHygieiaDeploy() != null) && publisher.getHygieiaDeploy().isPublishDeployStart());
 
         if (publish) {
-            HygieiaResponse response = getHygieiaService(r).publishBuildData(new BuildBuilder().createBuildRequest(r, publisher.getDescriptor().getHygieiaJenkinsName(), listener, false, true));
+            HygieiaResponse response = getHygieiaService(r).publishBuildData(new BuildBuilder().createBuildRequest(r, publisher.getDescriptor().getHygieiaJenkinsName(), listener, false, true,new LinkedList<BuildStage>()));
             if (response.getResponseCode() == HttpStatus.SC_CREATED) {
                 listener.getLogger().println("Hygieia: Published Build Start Data. " + response.toString());
             } else {
@@ -74,7 +76,7 @@ public class ActiveJobNotifier implements FineGrainedNotifier {
             HygieiaResponse buildResponse = getHygieiaService(r)
                     .publishBuildData(new BuildBuilder()
                             .createBuildRequestFromRun(r, publisher.getDescriptor().getHygieiaJenkinsName(),
-                                    listener, BuildStatus.fromString(String.valueOf(r.getResult())), true));
+                                    listener, BuildStatus.fromString(String.valueOf(r.getResult())), true,new LinkedList<BuildStage>()));
             if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
                 listener.getLogger().println("Hygieia: Published Build Complete Data. " + buildResponse.toString());
             } else {

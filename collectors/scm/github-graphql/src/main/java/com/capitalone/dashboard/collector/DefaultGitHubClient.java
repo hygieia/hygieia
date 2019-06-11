@@ -21,6 +21,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
@@ -603,6 +604,9 @@ public class DefaultGitHubClient implements GitHubClient {
             JSONObject authorUserJSON = (JSONObject) authorJSON.get("user");
 
             String sha = str(node, "oid");
+            int changedFiles = NumberUtils.toInt(str(node, "changedFiles"));
+            int deletions = NumberUtils.toInt(str(node, "deletions"));
+            int additions = NumberUtils.toInt(str(node, "additions"));
             String message = str(node, "message");
             String authorName = str(authorJSON, "name");
             String authorLogin = authorUserJSON == null ? "unknown" : str(authorUserJSON, "login");
@@ -619,7 +623,7 @@ public class DefaultGitHubClient implements GitHubClient {
             }
             commit.setScmCommitLog(message);
             commit.setScmCommitTimestamp(getTimeStampMills(str(authorJSON, "date")));
-            commit.setNumberOfChanges(1);
+            commit.setNumberOfChanges(changedFiles+deletions+additions);
             List<String> parentShas = getParentShas(node);
             commit.setScmParentRevisionNumbers(parentShas);
             commit.setFirstEverCommit(CollectionUtils.isEmpty(parentShas));
@@ -780,6 +784,10 @@ public class DefaultGitHubClient implements GitHubClient {
                     }
                 }
             }
+            int changedFiles = NumberUtils.toInt(str(commit, "changedFiles"));
+            int deletions = NumberUtils.toInt(str(commit, "deletions"));
+            int additions = NumberUtils.toInt(str(commit, "additions"));
+            newCommit.setNumberOfChanges(changedFiles+deletions+additions);
             prCommits.add(newCommit);
         }
 

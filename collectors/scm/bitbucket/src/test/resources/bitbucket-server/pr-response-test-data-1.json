@@ -1,0 +1,620 @@
+{
+  "size": 3,
+  "limit": 25,
+  "isLastPage": true,
+  "values": [
+    {
+      "id": 7462,
+      "version": 2,
+      "title": "Something meaningful",
+      "description": "Detailed description",
+      "state": "OPEN",
+      "open": true,
+      "closed": false,
+      "createdDate": 1538072053937,
+      "updatedDate": 1538072099541,
+      "fromRef": {
+        "id": "refs/heads/bugfix/userid/JiraId-fix-short-description",
+        "displayId": "bugfix/userid/JiraId-fix-short-description",
+        "latestCommit": "123456789012345678901234567890",
+        "repository": {
+          "slug": "repo1",
+          "id": 72,
+          "name": "repo1",
+          "scmId": "git",
+          "state": "AVAILABLE",
+          "statusMessage": "Available",
+          "forkable": true,
+          "project": {
+            "key": "repo1",
+            "id": 22,
+            "name": "A / B / C",
+            "description": "main respository for application source code",
+            "public": false,
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "https://company.com/projects/repo1"
+                }
+              ]
+            }
+          },
+          "public": false,
+          "links": {
+            "clone": [
+              {
+                "href": "ssh://git@company.com:2222/repo1/repo1.git",
+                "name": "ssh"
+              },
+              {
+                "href": "https://coreContributor@company.com/scm/repo1/repo1.git",
+                "name": "http"
+              }
+            ],
+            "self": [
+              {
+                "href": "https://company.com/projects/repo1/repos/repo1/browse"
+              }
+            ]
+          }
+        }
+      },
+      "toRef": {
+        "id": "refs/heads/develop",
+        "displayId": "develop",
+        "latestCommit": "7934y9838923e099hehyuf040jdcj8u030euncb819",
+        "repository": {
+          "slug": "repo1",
+          "id": 72,
+          "name": "repo1",
+          "scmId": "git",
+          "state": "AVAILABLE",
+          "statusMessage": "Available",
+          "forkable": true,
+          "project": {
+            "key": "repo1",
+            "id": 22,
+            "name": "A / B / C",
+            "description": "Primary Repository for framework code base",
+            "public": false,
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "https://company.com/projects/repo1"
+                }
+              ]
+            }
+          },
+          "public": false,
+          "links": {
+            "clone": [
+              {
+                "href": "ssh://git@company.com:2222/repo1/repo1.git",
+                "name": "ssh"
+              },
+              {
+                "href": "https://coreContributor@company.com/scm/repo1/repo1.git",
+                "name": "http"
+              }
+            ],
+            "self": [
+              {
+                "href": "https://company.com/projects/repo1/repos/repo1/browse"
+              }
+            ]
+          }
+        }
+      },
+      "locked": false,
+      "author": {
+        "user": {
+          "name": "xyz",
+          "emailAddress": "xyz@company.com",
+          "id": 1111,
+          "displayName": "XYZ ABC",
+          "active": true,
+          "slug": "xyz",
+          "type": "NORMAL",
+          "links": {
+            "self": [
+              {
+                "href": "https://mycompany.com/users/xyz"
+              }
+            ]
+          }
+        },
+        "role": "AUTHOR",
+        "approved": false,
+        "status": "UNAPPROVED"
+      },
+      "reviewers": [
+        {
+          "user": {
+            "name": "rsa",
+            "emailAddress": "rsa@company.com",
+            "id": 1039,
+            "displayName": "RSA RBG",
+            "active": true,
+            "slug": "rsa",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "https://mycompany.com/users/rsa"
+                }
+              ]
+            }
+          },
+          "lastReviewedCommit": "12345678912345612345678912341234567891234",
+          "role": "REVIEWER",
+          "approved": true,
+          "status": "APPROVED"
+        },
+        {
+          "user": {
+            "name": "tty",
+            "emailAddress": "tty@company.com",
+            "id": 2222,
+            "displayName": "tty",
+            "active": true,
+            "slug": "tty",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "https://mycompany.com/users/rnathan"
+                }
+              ]
+            }
+          },
+          "role": "REVIEWER",
+          "approved": false,
+          "status": "UNAPPROVED"
+        },
+        {
+          "user": {
+            "name": "dev11",
+            "emailAddress": "dev11@mycompany.com",
+            "id": 1481,
+            "displayName": "dev11",
+            "active": true,
+            "slug": "dev11",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "https://mycompany.com/users/dev11"
+                }
+              ]
+            }
+          },
+          "lastReviewedCommit": "125795403b989b06e0f1b89f9b0e1a6dd6f98936",
+          "role": "REVIEWER",
+          "approved": true,
+          "status": "APPROVED"
+        }
+      ],
+      "participants": [
+        {
+          "user": {
+            "name": "jenkins_user",
+            "emailAddress": "noreply@mycompany.com",
+            "id": 1049,
+            "displayName": "Jenkins",
+            "active": true,
+            "slug": "jenkins_user",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "https://mycompany.com/users/jenkins_user"
+                }
+              ]
+            }
+          },
+          "role": "PARTICIPANT",
+          "approved": false,
+          "status": "UNAPPROVED"
+        }
+      ],
+      "properties": {
+        "mergeResult": {
+          "outcome": "CLEAN",
+          "current": true
+        },
+        "resolvedTaskCount": 0,
+        "commentCount": 2,
+        "openTaskCount": 0
+      },
+      "links": {
+        "self": [
+          {
+            "href": "https://mycompany.com/projects/XYZ/repos/RSA/pull-requests/7462"
+          }
+        ]
+      }
+    },
+    {
+      "id": 7463,
+      "version": 0,
+      "title": "Feature/dev10/XYZ-19196",
+      "description": "##### Summary\r\n\r\n##### Test Plan",
+      "state": "OPEN",
+      "open": true,
+      "closed": false,
+      "createdDate": 1538072054312,
+      "updatedDate": 1538072054312,
+      "fromRef": {
+        "id": "refs/heads/feature/dev10/XYZ-19196",
+        "displayId": "feature/dev10/XYZ-19196",
+        "latestCommit": "cc7729f6e485229c313065c91257e6666086061f",
+        "repository": {
+          "slug": "RSA",
+          "id": 72,
+          "name": "RSA",
+          "scmId": "git",
+          "state": "AVAILABLE",
+          "statusMessage": "Available",
+          "forkable": true,
+          "project": {
+            "key": "XYZ",
+            "id": 22,
+            "name": "Eng / Software / XYZ",
+            "description": "main respository for application source code",
+            "public": false,
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "https://mycompany.com/projects/XYZ"
+                }
+              ]
+            }
+          },
+          "public": false,
+          "links": {
+            "clone": [
+              {
+                "href": "ssh://git@mycompany.com:2222/RSA/RSA.git",
+                "name": "ssh"
+              },
+              {
+                "href": "https://dev7@mycompany.com/scm/RSA/RSA.git",
+                "name": "http"
+              }
+            ],
+            "self": [
+              {
+                "href": "https://mycompany.com/projects/XYZ/repos/RSA/browse"
+              }
+            ]
+          }
+        }
+      },
+      "toRef": {
+        "id": "refs/heads/develop",
+        "displayId": "develop",
+        "latestCommit": "178bcf8a5c85f19c658cf9ce13e51aa4516fb819",
+        "repository": {
+          "slug": "RSA",
+          "id": 72,
+          "name": "RSA",
+          "scmId": "git",
+          "state": "AVAILABLE",
+          "statusMessage": "Available",
+          "forkable": true,
+          "project": {
+            "key": "XYZ",
+            "id": 22,
+            "name": "Eng / Software / XYZ",
+            "description": "main respository for application source code",
+            "public": false,
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "https://mycompany.com/projects/XYZ"
+                }
+              ]
+            }
+          },
+          "public": false,
+          "links": {
+            "clone": [
+              {
+                "href": "ssh://git@mycompany.com:2222/RSA/RSA.git",
+                "name": "ssh"
+              },
+              {
+                "href": "https://dev7@mycompany.com/scm/RSA/RSA.git",
+                "name": "http"
+              }
+            ],
+            "self": [
+              {
+                "href": "https://mycompany.com/projects/XYZ/repos/RSA/browse"
+              }
+            ]
+          }
+        }
+      },
+      "locked": false,
+      "author": {
+        "user": {
+          "name": "dev10",
+          "emailAddress": "dev10@mycompany.com",
+          "id": 1083,
+          "displayName": "dev10",
+          "active": true,
+          "slug": "dev10",
+          "type": "NORMAL",
+          "links": {
+            "self": [
+              {
+                "href": "https://mycompany.com/users/dev10"
+              }
+            ]
+          }
+        },
+        "role": "AUTHOR",
+        "approved": false,
+        "status": "UNAPPROVED"
+      },
+      "reviewers": [
+
+      ],
+      "participants": [
+
+      ],
+      "properties": {
+        "mergeResult": {
+          "outcome": "CONFLICTED",
+          "current": true
+        },
+        "resolvedTaskCount": 0,
+        "openTaskCount": 0
+      },
+      "links": {
+        "self": [
+          {
+            "href": "https://mycompany.com/projects/XYZ/repos/RSA/pull-requests/7463"
+          }
+        ]
+      }
+    },
+    {
+      "id": 7439,
+      "version": 14,
+      "title": "XYZ-19670 Podcasts: Browse SmartURL support",
+      "description": "Implements custom logic to improve user experience",
+      "state": "OPEN",
+      "open": true,
+      "closed": false,
+      "createdDate": 1537987668044,
+      "updatedDate": 1538071463469,
+      "fromRef": {
+        "id": "refs/heads/feature/dev-three/XYZ-19670",
+        "displayId": "feature/dev-three/XYZ-19670",
+        "latestCommit": "539b3d1aea2df9c2de7014d18b84d0acdca87a84",
+        "repository": {
+          "slug": "RSA",
+          "id": 72,
+          "name": "RSA",
+          "scmId": "git",
+          "state": "AVAILABLE",
+          "statusMessage": "Available",
+          "forkable": true,
+          "project": {
+            "key": "XYZ",
+            "id": 22,
+            "name": "Eng / Software / iOS",
+            "description": "main respository for application source code",
+            "public": false,
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "https://mycompany.com/projects/XYZ"
+                }
+              ]
+            }
+          },
+          "public": false,
+          "links": {
+            "clone": [
+              {
+                "href": "ssh://git@mycompany.com:2222/RSA/RSA.git",
+                "name": "ssh"
+              },
+              {
+                "href": "https://dev7@mycompany.com/scm/RSA/RSA.git",
+                "name": "http"
+              }
+            ],
+            "self": [
+              {
+                "href": "https://mycompany.com/projects/XYZ/repos/RSA/browse"
+              }
+            ]
+          }
+        }
+      },
+      "toRef": {
+        "id": "refs/heads/develop",
+        "displayId": "develop",
+        "latestCommit": "178bcf8a5c85f19c658cf9ce13e51aa4516fb819",
+        "repository": {
+          "slug": "RSA",
+          "id": 72,
+          "name": "RSA",
+          "scmId": "git",
+          "state": "AVAILABLE",
+          "statusMessage": "Available",
+          "forkable": true,
+          "project": {
+            "key": "XYZ",
+            "id": 22,
+            "name": "Eng / Software / iOS",
+            "description": "main respository for application source code",
+            "public": false,
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "https://mycompany.com/projects/XYZ"
+                }
+              ]
+            }
+          },
+          "public": false,
+          "links": {
+            "clone": [
+              {
+                "href": "ssh://git@mycompany.com:2222/RSA/RSA.git",
+                "name": "ssh"
+              },
+              {
+                "href": "https://dev7@mycompany.com/scm/RSA/RSA.git",
+                "name": "http"
+              }
+            ],
+            "self": [
+              {
+                "href": "https://mycompany.com/projects/XYZ/repos/RSA/browse"
+              }
+            ]
+          }
+        }
+      },
+      "locked": false,
+      "author": {
+        "user": {
+          "name": "dev-three",
+          "emailAddress": "dev-three@mycompany.com",
+          "id": 1091,
+          "displayName": "dev 33",
+          "active": true,
+          "slug": "dev-three",
+          "type": "NORMAL",
+          "links": {
+            "self": [
+              {
+                "href": "https://mycompany.com/users/dev-three"
+              }
+            ]
+          }
+        },
+        "role": "AUTHOR",
+        "approved": false,
+        "status": "UNAPPROVED"
+      },
+      "reviewers": [
+        {
+          "user": {
+            "name": "dev-four",
+            "emailAddress": "dev-four@mycompany.com",
+            "id": 1753,
+            "displayName": "dev-four",
+            "active": true,
+            "slug": "dev-four",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "https://mycompany.com/users/dev-four"
+                }
+              ]
+            }
+          },
+          "role": "REVIEWER",
+          "approved": false,
+          "status": "UNAPPROVED"
+        },
+        {
+          "user": {
+            "name": "dev2",
+            "emailAddress": "dev2@mycompany.com",
+            "id": 1039,
+            "displayName": "dev two",
+            "active": true,
+            "slug": "dev2",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "https://mycompany.com/users/dev2"
+                }
+              ]
+            }
+          },
+          "role": "REVIEWER",
+          "approved": false,
+          "status": "UNAPPROVED"
+        },
+        {
+          "user": {
+            "name": "dev1",
+            "emailAddress": "dev1@mycompany.com",
+            "id": 2057,
+            "displayName": "dev one",
+            "active": true,
+            "slug": "dev1",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "https://mycompany.com/users/dev1"
+                }
+              ]
+            }
+          },
+          "role": "REVIEWER",
+          "approved": false,
+          "status": "UNAPPROVED"
+        }
+      ],
+      "participants": [
+        {
+          "user": {
+            "name": "jenkins_user",
+            "emailAddress": "noreply@mycompany.com",
+            "id": 1049,
+            "displayName": "Jenkins",
+            "active": true,
+            "slug": "jenkins_user",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "https://mycompany.com/users/jenkins_user"
+                }
+              ]
+            }
+          },
+          "role": "PARTICIPANT",
+          "approved": false,
+          "status": "UNAPPROVED"
+        }
+      ],
+      "properties": {
+        "mergeResult": {
+          "outcome": "CLEAN",
+          "current": true
+        },
+        "resolvedTaskCount": 0,
+        "commentCount": 3,
+        "openTaskCount": 0
+      },
+      "links": {
+        "self": [
+          {
+            "href": "https://mycompany.com/projects/XYZ/repos/RSA/pull-requests/7439"
+          }
+        ]
+      }
+    }
+  ],
+  "start": 0
+}

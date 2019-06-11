@@ -1,0 +1,76 @@
+[
+  {
+    "_links": {
+      "self": {
+        "href": "/job/testGenericItem/48/wfapi/describe"
+      }
+    },
+    "durationMillis": 0,
+    "endTimeMillis": 0,
+    "id": "48",
+    "name": "#48",
+    "pauseDurationMillis": 0,
+    "queueDurationMillis": 782,
+    "stages": [
+      {
+        "_links": {
+          "self": {
+            "href": "/job/testGenericItem/48/execution/node/6/wfapi/describe"
+          }
+        },
+        "durationMillis": 1130,
+        "execNode": "",
+        "id": "6",
+        "name": "Preparation",
+        "pauseDurationMillis": 0,
+        "startTimeMillis": 1559928411089,
+        "status": "SUCCESS"
+      },
+      {
+        "_links": {
+          "self": {
+            "href": "/job/testGenericItem/48/execution/node/11/wfapi/describe"
+          }
+        },
+        "durationMillis": 10923,
+        "execNode": "",
+        "id": "11",
+        "name": "Build",
+        "pauseDurationMillis": 0,
+        "startTimeMillis": 1559928412236,
+        "status": "SUCCESS"
+      },
+      {
+        "_links": {
+          "self": {
+            "href": "/job/testGenericItem/48/execution/node/16/wfapi/describe"
+          }
+        },
+        "durationMillis": 46370,
+        "execNode": "",
+        "id": "16",
+        "name": "OSS",
+        "pauseDurationMillis": 0,
+        "startTimeMillis": 1559928423175,
+        "status": "SUCCESS"
+      },
+      {
+        "_links": {
+          "self": {
+            "href": "/job/testGenericItem/48/execution/node/22/wfapi/describe"
+          }
+        },
+        "durationMillis": 284,
+        "execNode": "",
+        "id": "22",
+        "name": "Docker push images",
+        "pauseDurationMillis": 0,
+        "startTimeMillis": 1559928469557,
+        "status": "SUCCESS"
+      }
+    ],
+    "startTimeMillis": 1559928410307,
+    "status": "SUCCESS"
+  }
+  ]
+
