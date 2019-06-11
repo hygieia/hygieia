@@ -7,14 +7,15 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.api.Assertions;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.LinkedList;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class HygieiaUtilsTest {
 
@@ -86,14 +87,14 @@ public class HygieiaUtilsTest {
     public void setLogUrl(){
         String json = loadJson("json/wfapi-describe-one-build-log-url.json");
         BuildStage bs = HygieiaUtils.setLogUrl(json,new BuildStage());
-        Assert.assertEquals("/job/testGenericItem/61/execution/node/7/wfapi/log",bs.getExec_node_logUrl());
+        assertEquals("/job/testGenericItem/61/execution/node/7/wfapi/log",bs.getExec_node_logUrl());
     }
 
     @Test
     public void setLogUrl_zero_stage_flow_nodes(){
         String json = loadJson("json/wfapi-describe-one-build-zero-stage-flow-nodes.json");
         BuildStage bs = HygieiaUtils.setLogUrl(json,new BuildStage());
-        Assert.assertNull(bs.getExec_node_logUrl());
+        assertNull(bs.getExec_node_logUrl());
     }
 
 

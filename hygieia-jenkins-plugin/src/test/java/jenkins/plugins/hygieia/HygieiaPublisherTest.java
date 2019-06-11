@@ -78,34 +78,42 @@ public class HygieiaPublisherTest extends TestCase {
             this.hygieiaResponse = hygieiaResponse;
         }
 
+        @Override
         public HygieiaResponse publishBuildData(BuildDataCreateRequest request) {
             return hygieiaResponse;
         }
 
+        @Override
         public HygieiaResponse publishBuildDataV3(BuildDataCreateRequest request) {
             return hygieiaResponse;
         }
 
+        @Override
         public HygieiaResponse publishArtifactData(BinaryArtifactCreateRequest request) {
             return hygieiaResponse;
         }
 
+        @Override
         public boolean testConnection() {
             return responseBoolean;
         }
 
+        @Override
         public HygieiaResponse publishTestResults(TestDataCreateRequest request) {
             return hygieiaResponse;
         }
 
+        @Override
         public HygieiaResponse publishSonarResults(CodeQualityCreateRequest request) {
             return hygieiaResponse;
         }
 
+        @Override
         public HygieiaResponse publishDeployData(DeployDataCreateRequest request) {
             return hygieiaResponse;
         }
 
+        @Override
         public RestCall.RestCallResponse getStageResponse(String url, String jenkinsUser, String token){
             return  null;
         }
@@ -115,10 +123,12 @@ public class HygieiaPublisherTest extends TestCase {
             return hygieiaResponse;
         }
 
+        @Override
         public List<JSONObject> getCollectorItemOptions(String type) {
             return null;
         }
 
+        @Override
         public Set<String> getDeploymentEnvironments(String appName) {
             return null;
         }
