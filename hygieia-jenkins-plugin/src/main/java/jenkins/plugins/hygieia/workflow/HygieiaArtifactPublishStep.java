@@ -1,5 +1,6 @@
 package jenkins.plugins.hygieia.workflow;
 
+import com.capitalone.dashboard.model.BuildStage;
 import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.request.BinaryArtifactCreateRequest;
 import hudson.Extension;
@@ -27,6 +28,7 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -149,7 +151,7 @@ public class HygieiaArtifactPublishStep extends AbstractStepImpl {
 						hygieiaDesc.getHygieiaJenkinsName(), hygieiaDesc.isUseProxy());
 
 				HygieiaResponse buildResponse = hygieiaService.publishBuildData(new BuildBuilder().createBuildRequestFromRun(this.run, hygieiaDesc.getHygieiaJenkinsName(),
-						this.listener, BuildStatus.Success, true));
+						this.listener, BuildStatus.Success, true,new LinkedList<BuildStage>()));
 
 				if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
 					listener.getLogger().println(
