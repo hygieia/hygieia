@@ -55,8 +55,9 @@ describe('ClickListComponent', () => {
         } as IClickListItem
       ],
       clickableContent: TestDetailViewComponent,
-      clickableHeader: null
+      clickableHeader: TestDetailViewComponent
     } as IClickListData;
     component.openDetailView(null);
+    component.openHeaderView();
   });
 });
