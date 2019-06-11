@@ -1,5 +1,6 @@
 package jenkins.plugins.hygieia.workflow;
 
+import com.capitalone.dashboard.model.BuildStage;
 import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.TestSuiteType;
 import com.capitalone.dashboard.model.quality.QualityVisitee;
@@ -33,6 +34,7 @@ import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 
 import javax.inject.Inject;
+import java.util.LinkedList;
 
 
 public class HygieiaTestPublishStep extends AbstractStepImpl {
@@ -197,7 +199,7 @@ public class HygieiaTestPublishStep extends AbstractStepImpl {
 
             HygieiaResponse buildResponse = hygieiaService.publishBuildData(new BuildBuilder()
                     .createBuildRequestFromRun(run, hygieiaDesc.getHygieiaJenkinsName(),
-                            listener, BuildStatus.fromString(step.buildStatus), false));
+                            listener, BuildStatus.fromString(step.buildStatus), false,new LinkedList<BuildStage>()));
 
             if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
                 listener.getLogger().println("Hygieia: Published Build Data For Test Publishing. " + buildResponse.toString());

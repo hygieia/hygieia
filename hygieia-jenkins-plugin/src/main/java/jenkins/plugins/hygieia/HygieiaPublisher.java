@@ -1,4 +1,3 @@
-
 package jenkins.plugins.hygieia;
 
 import com.capitalone.dashboard.model.BuildStatus;
@@ -334,6 +333,8 @@ public class HygieiaPublisher extends Notifier {
     @Extension
     public static class DescriptorImpl extends BuildStepDescriptor<Publisher> {
 
+        private volatile String jenkinsUserId;
+        private volatile String jenkinsToken;
         private volatile String hygieiaAPIUrl;
         private volatile String hygieiaAppUrl;
         private volatile String hygieiaToken;
@@ -343,6 +344,7 @@ public class HygieiaPublisher extends Notifier {
         private volatile boolean hygieiaPublishBuildDataGlobal;
         private volatile boolean hygieiaPublishSonarDataGlobal;
         private volatile boolean showConsoleOutput;
+        private volatile boolean captureLogs;
         private volatile GenericCollectorItem[] hygieiaPublishGenericCollectorItems =  new GenericCollectorItem[0];
         public String pluginVersionInfo;
 
@@ -355,13 +357,29 @@ public class HygieiaPublisher extends Notifier {
             load();
         }
 
+        public String getJenkinsUserId() {
+            return jenkinsUserId;
+        }
+
+        public void setJenkinsUserId(String jenkinsUserId) {
+            this.jenkinsUserId = jenkinsUserId;
+        }
+
+        public String getJenkinsToken() {
+            return jenkinsToken;
+        }
+
+        public void setJenkinsToken(String jenkinsToken) {
+            this.jenkinsToken = jenkinsToken;
+        }
+
         public String getHygieiaAPIUrl() {
             return hygieiaAPIUrl;
         }
 
         public String getHygieiaAppUrl() {
             return hygieiaAppUrl;
-        }    
+        }
 
         public String getHygieiaToken() {
             return hygieiaToken;
@@ -394,6 +412,14 @@ public class HygieiaPublisher extends Notifier {
         public String getTestApplicationNameSelected() { return testApplicationNameSelected; }
 
         public String getTestEnvSelected() { return testEnvSelected; }
+
+        public boolean isCaptureLogs() {
+            return captureLogs;
+        }
+
+        public void setCaptureLogs(boolean captureLogs) {
+            this.captureLogs = captureLogs;
+        }
 
         public String getPluginVersionInfo() {
             return StringUtils.isNotEmpty(pluginVersionInfo) ? pluginVersionInfo : this.getPlugin().getShortName()+" version "+this.getPlugin().getVersion(); }
@@ -455,6 +481,9 @@ public class HygieiaPublisher extends Notifier {
             hygieiaPublishBuildDataGlobal = jsonObject.getBoolean("hygieiaPublishBuildDataGlobal");
             hygieiaPublishSonarDataGlobal = jsonObject.getBoolean("hygieiaPublishSonarDataGlobal");
             showConsoleOutput = jsonObject.getBoolean("showConsoleOutput");
+            jenkinsUserId = jsonObject.getString("jenkinsUserId");
+            jenkinsToken = jsonObject.getString("jenkinsToken");
+            captureLogs=jsonObject.getBoolean("captureLogs");
             if(jsonObject.containsKey("hygieiaPublishGenericCollectorItems")) {
                 List<GenericCollectorItem> genericCollectorItems = sr.bindJSONToList(GenericCollectorItem.class, jsonObject.get("hygieiaPublishGenericCollectorItems"));
                 hygieiaPublishGenericCollectorItems =  genericCollectorItems.toArray(new GenericCollectorItem[genericCollectorItems.size()]);
