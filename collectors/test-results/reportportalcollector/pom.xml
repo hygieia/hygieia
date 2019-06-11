@@ -42,7 +42,7 @@
         <artifactId>docker-maven-plugin</artifactId>
         <configuration>
           <skipDockerBuild>false</skipDockerBuild>
-          <imageName>hygieia-sonar-codequality-collector</imageName>
+          <imageName>hygieia-reportportal-testresults-collector</imageName>
           <dockerDirectory>${project.basedir}/docker</dockerDirectory>
           <resources>
             <resource>
