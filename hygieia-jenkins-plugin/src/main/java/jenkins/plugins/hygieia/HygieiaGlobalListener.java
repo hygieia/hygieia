@@ -121,9 +121,14 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
 
         boolean showConsoleOutput = hygieiaGlobalListenerDescriptor.isShowConsoleOutput();
         BuildStatus buildStatus = HygieiaUtils.getBuildStatus(run.getResult());
-        LinkedList<BuildStage> buildStages = processStages(run, listener, hygieiaGlobalListenerDescriptor, hygieiaService);
-        buildStages = process_node_links(run, listener, hygieiaGlobalListenerDescriptor, hygieiaService,buildStages);
-        buildStages = process_logs(run, listener, hygieiaGlobalListenerDescriptor, hygieiaService,buildStages);
+        LinkedList<BuildStage> buildStages = new LinkedList<>();
+        try{
+            buildStages = processStages(run, listener, hygieiaGlobalListenerDescriptor, hygieiaService);
+            buildStages = process_node_links(run, listener, hygieiaGlobalListenerDescriptor, hygieiaService,buildStages);
+            buildStages = process_logs(run, listener, hygieiaGlobalListenerDescriptor, hygieiaService,buildStages);
+        }catch (Exception e){
+            listener.getLogger().println("Hygieia: call response error : " + e.getStackTrace());
+        }
 
         HygieiaResponse buildResponse = hygieiaService.publishBuildDataV3(new BuildBuilder().createBuildRequestFromRun(run, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(),
                  listener, buildStatus, true, buildStages));
@@ -150,7 +155,7 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
         return Triple.of(buildString, dashboardLink, buildDataResponse);
     }
 
-    private LinkedList<BuildStage> processStages(Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, HygieiaService hygieiaService){
+    private LinkedList<BuildStage> processStages(Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, HygieiaService hygieiaService) throws HygieiaException{
         String buildUrl = HygieiaUtils.getBuildUrl(run);
         String wfapiUrl = buildUrl + WFAPI_DESCRIBE;
         listener.getLogger().println("Hygieia: wfapi url : " + wfapiUrl);
@@ -164,12 +169,13 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
                 buildStages=  HygieiaUtils.getBuildStages(responseString);
             }
         }catch (Exception e){
-            listener.getLogger().println("Hygieia: call response error : " + e.getStackTrace());
+
+            throw new HygieiaException("Hygieia: api call response error: HygieiaGlobalListener.processStages()", e.getCause(),HygieiaException.BAD_DATA);
         }
         return buildStages;
     }
 
-    private LinkedList<BuildStage> process_node_links(Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, HygieiaService hygieiaService, LinkedList<BuildStage> buildStages){
+    private LinkedList<BuildStage> process_node_links(Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, HygieiaService hygieiaService, LinkedList<BuildStage> buildStages) throws HygieiaException{
         if (CollectionUtils.isEmpty(buildStages)) return buildStages;
         for (BuildStage stage: buildStages) {
                 String self_url = getSelfUrl(stage.get_links());
@@ -186,14 +192,14 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
                     HygieiaUtils.setLogUrl(responseString,stage);
                 }
             }catch (Exception e){
-                listener.getLogger().println("Hygieia: call response error : " + e.getStackTrace());
+                throw new HygieiaException("Hygieia: api call response error: HygieiaGlobalListener.process_node_links()", e.getCause(),HygieiaException.BAD_DATA);
             }
 
         }
     return buildStages;
     }
 
-    private LinkedList<BuildStage> process_logs(Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, HygieiaService hygieiaService, LinkedList<BuildStage> buildStages){
+    private LinkedList<BuildStage> process_logs(Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, HygieiaService hygieiaService, LinkedList<BuildStage> buildStages) throws HygieiaException{
         if (CollectionUtils.isEmpty(buildStages)) return buildStages;
         for (BuildStage stage: buildStages) {
             boolean isCaptureLog = hygieiaGlobalListenerDescriptor.isCaptureLogs();
@@ -212,7 +218,7 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
                         HygieiaUtils.set_logs(responseString,stage);
                     }
                 }catch (Exception e){
-                    listener.getLogger().println("Hygieia: call response error : " + e.getStackTrace());
+                    throw new HygieiaException("Hygieia: api call response error: HygieiaGlobalListener.process_logs()", e.getCause(),HygieiaException.BAD_DATA);
                 }
             }
         }
