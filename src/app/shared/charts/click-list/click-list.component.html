@@ -1,9 +1,12 @@
 <div class="widget dark-chart-theme">
-  <div class="chart-heading clickable">
+  <div [ngClass]="{'clickable-title': data?.clickableHeader, 'chart-heading': !data?.clickableHeader}" (click)="headerClicked()">
     {{title}}
+    <ng-container *ngIf="data?.clickableHeader">
+      <span class="header-arrow fa fa-arrow-right"></span>
+    </ng-container>
   </div>
   <div>
-    <div class="widget-body latest-builds">
+    <div class="widget-body">
       <table class="table table-hover" [ngClass]="{'table-hover': data?.clickableContent}">
         <tr class="dash-row clickable" *ngFor="let item of data?.items" [ngClass]="{'clickable': data?.clickableContent}" (click)="openDetailView(item)">
           <td *ngIf="item.status">
@@ -32,7 +35,10 @@
 
             </td>
           </ng-container>
-          <td><span class="list-item-chevron pull-right fa fa-lg fa-angle-right"></span></td>
+
+          <ng-container *ngIf="data?.clickableContent">
+            <td><span class="list-item-chevron pull-right fa fa-lg fa-angle-right"></span></td>
+          </ng-container>
         </tr>
       </table>
     </div>

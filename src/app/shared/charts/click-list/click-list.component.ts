@@ -29,6 +29,10 @@ export class ClickListComponent extends ChartComponent {
     }
   }
 
+  headerClicked() {
+    console.log('Header clicked');
+  }
+
   isDate(obj): boolean {
     return obj instanceof Date;
   }
