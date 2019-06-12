@@ -276,4 +276,12 @@ public class DefaultHygieiaService implements HygieiaService {
         }
         return true;
     }
+
+    @Override
+    public RestCall.RestCallResponse getStageResponse(String url, String jenkinsUser, String token){
+        RestCall restCall = new RestCall(useProxy);
+        RestCall.RestCallResponse callResponse;
+        callResponse = restCall.makeRestCallGet(url,jenkinsUser,token);
+        return callResponse;
+    }
 }

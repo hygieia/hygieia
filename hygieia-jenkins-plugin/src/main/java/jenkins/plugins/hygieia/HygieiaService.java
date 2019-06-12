@@ -31,4 +31,6 @@ public interface HygieiaService {
     List<JSONObject> getCollectorItemOptions(String type);
 
     Set<String> getDeploymentEnvironments(String appName);
+
+    RestCall.RestCallResponse getStageResponse(String url, String jenkinsUser, String token);
 }

@@ -255,6 +255,7 @@ public class BuildServiceImpl implements BuildService {
         build.setCollectorItemId(collectorItem.getId());
         build.setSourceChangeSet(request.getSourceChangeSet());
         build.setTimestamp(System.currentTimeMillis());
+        build.setStages(request.getStages());
         Set<RepoBranch> repoBranches = Sets.newHashSet();
         repoBranches.addAll(build.getCodeRepos());
         repoBranches.addAll(request.getCodeRepos());

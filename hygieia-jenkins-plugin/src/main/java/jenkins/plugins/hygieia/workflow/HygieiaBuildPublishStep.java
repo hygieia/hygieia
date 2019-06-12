@@ -1,5 +1,6 @@
 package jenkins.plugins.hygieia.workflow;
 
+import com.capitalone.dashboard.model.BuildStage;
 import com.capitalone.dashboard.model.BuildStatus;
 import hudson.Extension;
 import hudson.model.Run;
@@ -24,6 +25,7 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 public class HygieiaBuildPublishStep extends AbstractStepImpl {
@@ -117,7 +119,7 @@ public class HygieiaBuildPublishStep extends AbstractStepImpl {
 				HygieiaService hygieiaService = getHygieiaService(hygieiaAPIUrl, hygieiaDesc.getHygieiaToken(),
 						hygieiaDesc.getHygieiaJenkinsName(), hygieiaDesc.isUseProxy());
 				HygieiaResponse buildResponse = hygieiaService.publishBuildData(new BuildBuilder().createBuildRequestFromRun(run, hygieiaDesc.getHygieiaJenkinsName(), listener,
-						BuildStatus.fromString(step.buildStatus), true));
+						BuildStatus.fromString(step.buildStatus), true,new LinkedList<BuildStage>()));
 				if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
 					listener.getLogger().println("Hygieia: Published Build Complete Data. " + buildResponse.toString());
 				} else {
