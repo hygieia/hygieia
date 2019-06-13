@@ -1,7 +1,6 @@
 package com.capitalone.dashboard.request;
 
 import com.capitalone.dashboard.model.Widget;
-import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +22,7 @@ public class WidgetRequestTest {
         allOptions.put("teamId", "321");
 
         WidgetRequest widgetRequest = new WidgetRequest();
-        widgetRequest.setName("feature");
+        widgetRequest.setName("AgileTool");
         widgetRequest.setOptions(allOptions);
         Widget widget = widgetRequest.widget();
 
