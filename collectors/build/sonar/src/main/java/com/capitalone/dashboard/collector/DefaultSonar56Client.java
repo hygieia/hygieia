@@ -21,8 +21,8 @@ public class DefaultSonar56Client extends DefaultSonarClient {
     private static final String URL_PROJECTS = "/api/projects?format=json";
 
     @Autowired
-    public DefaultSonar56Client(Supplier<RestOperations> restOperationsSupplier, SonarSettings settings) {
-      super(restOperationsSupplier,settings);
+    public DefaultSonar56Client(Supplier<RestOperations> restOperationsSupplier) {
+        super(restOperationsSupplier);
     }
 
     @Override

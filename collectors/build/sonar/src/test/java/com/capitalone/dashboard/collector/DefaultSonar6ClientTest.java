@@ -48,8 +48,7 @@ public class DefaultSonar6ClientTest {
     public void init() {
         when(restOperationsSupplier.get()).thenReturn(rest);
         settings = new SonarSettings();
-        settings.setMetrics(Collections.singletonList(METRICS));
-        defaultSonar6Client = new DefaultSonar6Client(restOperationsSupplier, settings);
+        defaultSonar6Client = new DefaultSonar6Client(restOperationsSupplier);
     }
 
     @Test
@@ -95,7 +94,7 @@ public class DefaultSonar6ClientTest {
         String analysesUrl = String.format(SONAR_URL + URL_PROJECT_ANALYSES,project.getProjectName());
         doReturn(new ResponseEntity<>(measureJson, HttpStatus.OK)).when(rest).exchange(eq(measureUrl), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
         doReturn(new ResponseEntity<>(analysesJson, HttpStatus.OK)).when(rest).exchange(eq(analysesUrl), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
-        CodeQuality quality = defaultSonar6Client.currentCodeQuality(getProject(),settings.getMetrics().get(0));
+        CodeQuality quality = defaultSonar6Client.currentCodeQuality(getProject());
         assertThat(quality.getMetrics().size(), is(15));
         assertThat(quality.getType(), is (CodeQualityType.StaticAnalysis));
         assertThat(quality.getName(), is ("com.capitalone.test:TestProject"));
@@ -112,7 +111,7 @@ public class DefaultSonar6ClientTest {
         String analysesUrl = String.format(SONAR_URL + URL_PROJECT_ANALYSES,project.getProjectName());
         doReturn(new ResponseEntity<>(measureJson, HttpStatus.OK)).when(rest).exchange(eq(measureUrl), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
         doReturn(new ResponseEntity<>(analysesJson, HttpStatus.OK)).when(rest).exchange(eq(analysesUrl), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
-        CodeQuality quality = defaultSonar6Client.currentCodeQuality(getProject(),settings.getMetrics().get(0));
+        CodeQuality quality = defaultSonar6Client.currentCodeQuality(getProject());
         assertThat(quality.getMetrics().size(), is(15));
         assertThat(quality.getType(), is (CodeQualityType.StaticAnalysis));
         assertThat(quality.getName(), is ("com.capitalone.test:TestProject"));

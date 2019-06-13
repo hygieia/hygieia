@@ -40,6 +40,7 @@ public class DefaultSonarClient implements SonarClient {
     protected static final String URL_QUALITY_PROFILES = "/api/qualityprofiles/search";
     protected static final String URL_QUALITY_PROFILE_PROJECT_DETAILS = "/api/qualityprofiles/projects?key=";
     protected static final String URL_QUALITY_PROFILE_CHANGES = "/api/qualityprofiles/changelog?profileKey=";
+    protected static final String METRICS = "ncloc,line_coverage,violations,critical_violations,major_violations,blocker_violations,violations_density,sqale_index,test_success_density,test_failures,test_errors,tests";
 
     protected static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
     protected static final String ID = "id";
@@ -56,16 +57,20 @@ public class DefaultSonarClient implements SonarClient {
     protected static final String DATE = "date";
 
     protected final RestOperations rest;
-    protected final HttpEntity<String> httpHeaders;
+    protected HttpEntity<String> httpHeaders;
 
     @Autowired
-    public DefaultSonarClient(Supplier<RestOperations> restOperationsSupplier, SonarSettings settings) {
-        this.httpHeaders = new HttpEntity<>(
-                this.createHeaders(settings.getUsername(), settings.getPassword())
-            );
+    public DefaultSonarClient(Supplier<RestOperations> restOperationsSupplier) {
         this.rest = restOperationsSupplier.get();
     }
 
+    @Override
+    public void setServerDetails(String username, String password) {
+        this.httpHeaders = new HttpEntity<>(
+                this.createHeaders(username, password)
+        );
+    }
+    
     @Override
     public List<SonarProject> getProjects(String instanceUrl) {
         List<SonarProject> projects = new ArrayList<>();
@@ -94,9 +99,9 @@ public class DefaultSonarClient implements SonarClient {
 
 
     @Override
-    public CodeQuality currentCodeQuality(SonarProject project, String metrics) {
+    public CodeQuality currentCodeQuality(SonarProject project) {
         String url = String.format(
-                project.getInstanceUrl() + URL_RESOURCE_DETAILS, project.getProjectId(), metrics);
+                project.getInstanceUrl() + URL_RESOURCE_DETAILS, project.getProjectId(), METRICS);
 
         try {
             JSONArray jsonArray = parseAsArray(url);
@@ -244,16 +249,16 @@ public class DefaultSonarClient implements SonarClient {
         }
     }
 
-    private final HttpHeaders createHeaders(String username, String password){
+    private final HttpHeaders createHeaders(String username, String password) {
         HttpHeaders headers = new HttpHeaders();
         if (username != null && !username.isEmpty() &&
             password != null && !password.isEmpty()) {
-          String auth = username + ":" + password;
-          byte[] encodedAuth = Base64.encodeBase64(
-              auth.getBytes(Charset.forName("US-ASCII"))
-          );
-          String authHeader = "Basic " + new String(encodedAuth);
-          headers.set("Authorization", authHeader);
+            String auth = username + ":" + password;
+            byte[] encodedAuth = Base64.encodeBase64(
+                auth.getBytes(Charset.forName("US-ASCII"))
+            );
+            String authHeader = "Basic " + new String(encodedAuth);
+            headers.set("Authorization", authHeader);
         }
         return headers;
     }

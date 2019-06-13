@@ -3,6 +3,7 @@ package com.capitalone.dashboard.collector;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,11 +13,9 @@ import java.util.List;
 @ConfigurationProperties(prefix = "sonar")
 public class SonarSettings {
     private String cron;
-    private String username;
-    private String password;
-    private List<String> servers;
-    private List<Double> versions;
-    private List<String> metrics;
+    private List<String> usernames = new ArrayList<>();
+    private List<String> passwords = new ArrayList<>();
+    private List<String> servers = new ArrayList<>();
     private List<String> niceNames;
 
     public String getCron() {
@@ -27,28 +26,20 @@ public class SonarSettings {
         this.cron = cron;
     }
 
-    public String getUsername() {
-        return username;
+    public List<String> getUsernames() {
+        return usernames;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUsernames(List<String> usernames) {
+        this.usernames = usernames;
     }
 
-    public String getPassword() {
-        return password;
+    public List<String> getPasswords() {
+        return passwords;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public List<String> getMetrics() {
-        return metrics;
-    }
-
-    public void setMetrics(List<String> metrics) {
-        this.metrics = metrics;
+    public void setPasswords(List<String> passwords) {
+        this.passwords = passwords;
     }
 
     public List<String> getServers() {
@@ -59,14 +50,6 @@ public class SonarSettings {
         this.servers = servers;
     }
 
-    public List<Double> getVersions() {
-        return versions;
-    }
-
-    public void setVersions(List<Double> versions) {
-        this.versions = versions;
-    }
-
     public List<String> getNiceNames() {
         return niceNames;
     }
@@ -75,4 +58,8 @@ public class SonarSettings {
         this.niceNames = niceNames;
     }
 
+    public List<String> getVersions() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

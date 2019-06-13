@@ -5,6 +5,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.web.client.RestOperations;
+
+import com.capitalone.dashboard.util.Supplier;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -21,6 +24,8 @@ public class SonarClientSelectorTest {
     private DefaultSonar6Client defaultSonar6Client;
     @Mock
     private DefaultSonar56Client defaultSonar56Client;
+    @Mock
+    private Supplier<RestOperations> restOperationsSupplier;
 
     @Test
     public void getSonarClient4() throws Exception {
