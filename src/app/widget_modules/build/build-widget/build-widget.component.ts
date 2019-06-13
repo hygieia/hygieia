@@ -10,7 +10,8 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { of, Subscription } from 'rxjs';
 import { distinctUntilChanged, startWith, switchMap } from 'rxjs/operators';
-import { DashStatus, IClickListData, IClickListItem } from 'src/app/shared/charts/click-list/click-list-interfaces';
+import { IClickListData, IClickListItem } from 'src/app/shared/charts/click-list/click-list-interfaces';
+import { DashStatus } from 'src/app/shared/dash-status/DashStatus';
 import { DashboardService } from 'src/app/shared/dashboard.service';
 import { LayoutDirective } from 'src/app/shared/layouts/layout.directive';
 import { TwoByTwoLayoutComponent } from 'src/app/shared/layouts/two-by-two-layout/two-by-two-layout.component';

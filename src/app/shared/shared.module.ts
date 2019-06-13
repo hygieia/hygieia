@@ -37,6 +37,7 @@ import { WidgetHeaderComponent } from './widget-header/widget-header.component';
 import { PlaceholderWidgetComponent } from './widget/placeholder-widget/placeholder-widget.component';
 import { WidgetComponent } from './widget/widget.component';
 import { WidgetDirective } from './widget/widget.directive';
+import { DashStatusComponent } from './dash-status/dash-status.component';
 
 @NgModule({
   declarations: [
@@ -70,6 +71,7 @@ import { WidgetDirective } from './widget/widget.directive';
     WidgetComponent,
     WidgetDirective,
     WidgetHeaderComponent,
+    DashStatusComponent,
   ],
   entryComponents: [
     BuildConfigFormComponent,

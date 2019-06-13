@@ -3,8 +3,10 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TimeAgoPipe } from 'time-ago-pipe';
 
+import { DashStatusComponent } from '../../dash-status/dash-status.component';
+import { DashStatus } from '../../dash-status/DashStatus';
 import { DetailModalComponent } from '../../modals/detail-modal/detail-modal.component';
-import { DashStatus, IClickListData, IClickListItem } from './click-list-interfaces';
+import { IClickListData, IClickListItem } from './click-list-interfaces';
 import { ClickListComponent } from './click-list.component';
 
 @Component({
@@ -26,7 +28,7 @@ describe('ClickListComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ClickListComponent, TimeAgoPipe],
+      declarations: [ClickListComponent, TimeAgoPipe, DashStatusComponent],
       imports: [TestModule, NgbModule]
     })
       .compileComponents();
