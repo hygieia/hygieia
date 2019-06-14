@@ -3,7 +3,6 @@ package jenkins.plugins.hygieia;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.BuildStage;
 import com.capitalone.dashboard.model.BuildStatus;
-import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import com.capitalone.dashboard.request.GenericCollectorItemCreateRequest;
 import com.capitalone.dashboard.response.BuildDataCreateResponse;
@@ -59,7 +58,7 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
         if(!publish) { super.onCompleted(run, listener); return; }
 
         //added to print the Status of Jenkins Job before attempting to publish to Hygieia
-        listener.getLogger().println("Finished: " + String.valueOf(run.getResult()));
+        listener.getLogger().println("Finished: " + run.getResult());
 
         if (HygieiaUtils.isJobExcluded(run.getParent().getName(), hygieiaGlobalListenerDescriptor.getHygieiaExcludeJobNames())) {
             if (showConsoleOutput) { listener.getLogger().println("Hygieia: Skipping Automatic publish to Hygieia as the job was excluded in global configuration. "); }
@@ -130,8 +129,10 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
             listener.getLogger().println("Hygieia: call response error : " + e.getStackTrace());
         }
 
+        String startedBy = HygieiaUtils.getUserID(run, listener);
+        listener.getLogger().println("Hygieia: This build was initiated by - " + startedBy);
         HygieiaResponse buildResponse = hygieiaService.publishBuildDataV3(new BuildBuilder().createBuildRequestFromRun(run, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(),
-                 listener, buildStatus, true, buildStages));
+                listener, buildStatus, true, buildStages, startedBy));
         if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
             try {
                 buildDataResponse = HygieiaUtils.convertJsonToObject(buildResponse.getResponseValue(), BuildDataCreateResponse.class);

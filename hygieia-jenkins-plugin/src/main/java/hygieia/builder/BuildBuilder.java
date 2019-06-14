@@ -23,7 +23,7 @@ public class BuildBuilder {
     public BuildBuilder() {
     }
 
-    public BuildDataCreateRequest createBuildRequestFromRun(Run<?, ?> run, String jenkinsName, TaskListener listener, BuildStatus result, boolean buildChangeSet, LinkedList<BuildStage> stages) {
+    public BuildDataCreateRequest createBuildRequestFromRun(Run<?, ?> run, String jenkinsName, TaskListener listener, BuildStatus result, boolean buildChangeSet, LinkedList<BuildStage> stages, String startedBy) {
 
         BuildDataCreateRequest request = new BuildDataCreateRequest();
         request.setNiceName(jenkinsName);
@@ -35,6 +35,7 @@ public class BuildBuilder {
         request.setStartTime(run.getStartTimeInMillis());
         request.setBuildStatus(result.toString());
         request.setStages(stages);
+        request.setStartedBy(startedBy);
 
         if (!result.equals(BuildStatus.InProgress)) {
             request.setDuration(System.currentTimeMillis() - run.getStartTimeInMillis());
@@ -50,7 +51,7 @@ public class BuildBuilder {
         return request;
     }
 
-    public BuildDataCreateRequest createBuildRequest(AbstractBuild<?, ?> build, String jenkinsName, TaskListener listener, boolean isComplete, boolean buildChangeSet,LinkedList<BuildStage> stages) {
+    public BuildDataCreateRequest createBuildRequest(AbstractBuild<?, ?> build, String jenkinsName, TaskListener listener, boolean isComplete, boolean buildChangeSet, LinkedList<BuildStage> stages, String startedBy) {
         BuildDataCreateRequest request = new BuildDataCreateRequest();
         BuildStatus result = null;
         if(!isComplete) {
@@ -65,6 +66,7 @@ public class BuildBuilder {
         request.setNumber(HygieiaUtils.getBuildNumber(build));
         request.setStartTime(build.getStartTimeInMillis());
         request.setStages(stages);
+        request.setStartedBy(startedBy);
         if (isBuildComplete) {
             request.setBuildStatus(Objects.requireNonNull(HygieiaUtils.getBuildStatus(build.getResult())).toString());
             request.setDuration(build.getDuration());
@@ -72,7 +74,7 @@ public class BuildBuilder {
             if (buildChangeSet) {
                 request.setCodeRepos(getRepoBranch(build));
                 ChangeLogSet<? extends ChangeLogSet.Entry> sets = build.getChangeSet();
-                List<ChangeLogSet<? extends ChangeLogSet.Entry>> changeLogSets = sets.isEmptySet() ? Collections.<ChangeLogSet<? extends ChangeLogSet.Entry>>emptyList() : Collections.<ChangeLogSet<? extends ChangeLogSet.Entry>>singletonList(sets);
+                List<ChangeLogSet<? extends ChangeLogSet.Entry>> changeLogSets = sets.isEmptySet() ? Collections.emptyList() : Collections.singletonList(sets);
                 request.setSourceChangeSet(getCommitList(changeLogSets));
             }
         } else {
