@@ -88,8 +88,9 @@ public class FunctionalTestBuilder {
 
     public TestDataCreateRequest getTestDataCreateRequest(Run run, TaskListener listener, BuildStatus buildStatus, FilePath filePath, String applicationName, String environmentName, String testType, String filePattern, String directory, String jenkinsName, String buildId) {
 
+        String startedBy = HygieiaUtils.getUserID(run, listener);
         BuildDataCreateRequest buildDataCreateRequest = new BuildBuilder()
-                .createBuildRequestFromRun(run, jenkinsName, listener, buildStatus, false,new LinkedList<BuildStage>());
+                .createBuildRequestFromRun(run, jenkinsName, listener, buildStatus, false, new LinkedList<BuildStage>(), startedBy);
 
         TestResult testResult = buildTestResults(run, listener, filePattern, filePath, directory, buildDataCreateRequest, testType);
 

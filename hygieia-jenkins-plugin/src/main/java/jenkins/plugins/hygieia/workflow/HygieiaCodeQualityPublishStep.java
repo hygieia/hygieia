@@ -17,6 +17,7 @@ import hudson.FilePath;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hygieia.builder.BuildBuilder;
+import hygieia.utils.HygieiaUtils;
 import jenkins.model.Jenkins;
 import jenkins.plugins.hygieia.DefaultHygieiaService;
 import jenkins.plugins.hygieia.HygieiaPublisher;
@@ -166,9 +167,10 @@ public class HygieiaCodeQualityPublishStep extends AbstractStepImpl {
         @Override
         protected Void run() throws Exception {
             HygieiaService service = step.getService();
+            String startedBy = HygieiaUtils.getUserID(run, listener);
             HygieiaResponse buildResponse = service.publishBuildData(new BuildBuilder()
                     .createBuildRequestFromRun(run, step.getHygieiaDesc().getHygieiaJenkinsName(),
-                            listener, BuildStatus.Success, false,new LinkedList<BuildStage>()));
+                            listener, BuildStatus.Success, false, new LinkedList<BuildStage>(), startedBy));
             CodeQualityMetricsConverter converter = new CodeQualityMetricsConverter();
             Unmarshaller unmarshaller = step.getContext().createUnmarshaller();
 

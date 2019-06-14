@@ -105,10 +105,10 @@ public class DeployBuilder {
                 
                 bac.setArtifactVersion(artifactVersion);
                 bac.setArtifactName(artifactName);
-
+                String startedBy = HygieiaUtils.getUserID(run, listener);
                 BuildDataCreateRequest buildDataCreateRequest = (run instanceof WorkflowRun)
-                        ? new BuildBuilder().createBuildRequestFromRun(run, jenkinsName, listener, result, false,new LinkedList<BuildStage>())
-                        : new BuildBuilder().createBuildRequest((AbstractBuild) run, jenkinsName, listener, true, false,new LinkedList<BuildStage>());
+                        ? new BuildBuilder().createBuildRequestFromRun(run, jenkinsName, listener, result, false, new LinkedList<BuildStage>(), startedBy)
+                        : new BuildBuilder().createBuildRequest((AbstractBuild) run, jenkinsName, listener, true, false, new LinkedList<BuildStage>(), startedBy);
 
                 bac.setDeployStatus(buildDataCreateRequest.getBuildStatus());
                 bac.setDuration(buildDataCreateRequest.getDuration());

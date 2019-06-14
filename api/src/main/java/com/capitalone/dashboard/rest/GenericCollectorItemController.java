@@ -34,4 +34,14 @@ public class GenericCollectorItemController {
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
+
+    @RequestMapping(value = "/generic-binary-artifact", method = POST,
+            consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> createGenericBinaryArtifact (@Valid @RequestBody GenericCollectorItemCreateRequest request) throws HygieiaException {
+        String response = genericCollectorItemService.createGenericBinaryArtifactData(request);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
 }
