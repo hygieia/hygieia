@@ -4,9 +4,11 @@ import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.BuildStage;
 import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.RepoBranch;
+import com.capitalone.dashboard.model.adapter.BuildStageAdapter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.model.AbstractBuild;
@@ -61,6 +63,7 @@ public class HygieiaUtils {
     public static final String LINKS="_links";
     public static final String LOG="log";
     public static final String HREF="href";
+    public static final GsonBuilder buildStageGsonBuilder = new GsonBuilder().registerTypeAdapter(BuildStage.class, new BuildStageAdapter());
 
     public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
         ObjectMapper mapper = new CustomObjectMapper();
@@ -90,19 +93,19 @@ public class HygieiaUtils {
         }
         return results;
     }
-    
+
     /**
      * Determine the artifact's name. The name excludes the version string and the file extension.
-     * 
+     *
      * Does not currently support classifiers
-     * 
+     *
      * @param file
      * @param version
      * @return
      */
     public static String determineArtifactName(FilePath file, String version) {
-    	String fileName = file.getBaseName();
-    	
+        String fileName = file.getBaseName();
+
         if ("".equals(version)) return fileName;
 
         int vIndex = fileName.indexOf(version);
@@ -138,7 +141,7 @@ public class HygieiaUtils {
         }
         return versionNumber;
     }
-    
+
     public static String getBuildUrl(AbstractBuild<?, ?> build) {
         return build.getProject().getAbsoluteUrl() + build.getNumber() + "/";
     }
@@ -148,7 +151,7 @@ public class HygieiaUtils {
     }
 
     public static String getBuildNumber(AbstractBuild<?, ?> build) {
-    	return String.valueOf(build.getNumber());
+        return String.valueOf(build.getNumber());
     }
 
     public static String getBuildNumber(Run<?, ?> run) {
@@ -156,16 +159,16 @@ public class HygieiaUtils {
     }
 
     public static String getJobUrl(AbstractBuild<?, ?> build) {
-    	return build.getProject().getAbsoluteUrl();
+        return build.getProject().getAbsoluteUrl();
     }
 
     public static String getJobUrl(Run<?, ?> run) {
         return run.getParent().getAbsoluteUrl();
     }
 
-    
+
     public static String getJobName(AbstractBuild<?, ?> build) {
-    	return build.getProject().getName();
+        return build.getProject().getName();
     }
 
     public static String getJobName(Run<?, ?> run) {
@@ -187,7 +190,7 @@ public class HygieiaUtils {
 
     public static String getInstanceUrl(AbstractBuild<?, ?> build, TaskListener listener) {
         String envValue = getEnvironmentVariable(build, listener, "JENKINS_URL");
-        
+
         if (envValue != null) {
             return envValue;
         } else {
@@ -210,43 +213,43 @@ public class HygieiaUtils {
     }
 
     public static String getScmUrl(AbstractBuild<?, ?> build, TaskListener listener) {
-    	if (isGitScm(build)) {
-    		return getEnvironmentVariable(build, listener, "GIT_URL");
-    	} else if (isSvnScm(build)) {
-    		return getEnvironmentVariable(build, listener, "SVN_URL");
-    	}
-    	
-    	return null;
+        if (isGitScm(build)) {
+            return getEnvironmentVariable(build, listener, "GIT_URL");
+        } else if (isSvnScm(build)) {
+            return getEnvironmentVariable(build, listener, "SVN_URL");
+        }
+
+        return null;
     }
 
     public static String getScmBranch(AbstractBuild<?, ?> build, TaskListener listener) {
-    	if (isGitScm(build)) {
-    		return getEnvironmentVariable(build, listener, "GIT_BRANCH");
-    	} else if (isSvnScm(build)) {
-    		return null;
-    	}
-    	
-    	return null;
+        if (isGitScm(build)) {
+            return getEnvironmentVariable(build, listener, "GIT_BRANCH");
+        } else if (isSvnScm(build)) {
+            return null;
+        }
+
+        return null;
     }
 
 
     public static String getScmRevisionNumber(AbstractBuild<?, ?> build, TaskListener listener) {
-    	if (isGitScm(build)) {
-    		return getEnvironmentVariable(build, listener, "GIT_COMMIT");
-    	} else if (isSvnScm(build)) {
-    		return getEnvironmentVariable(build, listener, "SVN_REVISION");
-    	}
-    	
-    	return null;
+        if (isGitScm(build)) {
+            return getEnvironmentVariable(build, listener, "GIT_COMMIT");
+        } else if (isSvnScm(build)) {
+            return getEnvironmentVariable(build, listener, "SVN_REVISION");
+        }
+
+        return null;
     }
-    
+
     private static boolean isGitScm(AbstractBuild<?, ?> build) {
-    	return "hudson.plugins.git.GitSCM".equalsIgnoreCase(build.getProject().getScm().getType());
+        return "hudson.plugins.git.GitSCM".equalsIgnoreCase(build.getProject().getScm().getType());
     }
 
 
     private static boolean isSvnScm(AbstractBuild<?, ?> build) {
-    	return "hudson.scm.SubversionSCM".equalsIgnoreCase(build.getProject().getScm().getType());
+        return "hudson.scm.SubversionSCM".equalsIgnoreCase(build.getProject().getScm().getType());
     }
 
     public static EnvVars getEnvironment(Run<?, ?> run, TaskListener listener) {
@@ -450,7 +453,8 @@ public class HygieiaUtils {
             LinkedList<BuildStage> buildStages = new LinkedList<>();
             for (Object stage: stages) {
                 JSONObject j =(JSONObject) stage;
-                BuildStage bs = new Gson().fromJson(j.toJSONString(),BuildStage.class);
+                Gson gson = buildStageGsonBuilder.create();
+                BuildStage bs = gson.fromJson(j.toJSONString(), BuildStage.class);
                 buildStages.add(bs);
             }
             return buildStages;
