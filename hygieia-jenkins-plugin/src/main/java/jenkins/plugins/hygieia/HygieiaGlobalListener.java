@@ -34,7 +34,7 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
 
     public static final String WFAPI_DESCRIBE = "/wfapi/describe";
     public static final String FAILED = "FAILED";
-    public static final String ARTIFACTORY="Artifactory";
+
     public HygieiaGlobalListener() {
         super();
     }
