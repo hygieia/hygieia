@@ -5,6 +5,7 @@ import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import com.capitalone.dashboard.request.DeployDataCreateRequest;
 import com.capitalone.dashboard.request.GenericCollectorItemCreateRequest;
+import com.capitalone.dashboard.request.MetadataCreateRequest;
 import com.capitalone.dashboard.request.TestDataCreateRequest;
 import hudson.util.FormValidation;
 import junit.framework.TestCase;
@@ -127,6 +128,12 @@ public class HygieiaPublisherTest extends TestCase {
         public HygieiaResponse publishGenericArtifactData(GenericCollectorItemCreateRequest request){
             return hygieiaResponse;
         }
+
+        @Override
+        public HygieiaResponse publishMetaData(MetadataCreateRequest request){
+            return hygieiaResponse;
+        }
+
         @Override
         public List<JSONObject> getCollectorItemOptions(String type) {
             return null;

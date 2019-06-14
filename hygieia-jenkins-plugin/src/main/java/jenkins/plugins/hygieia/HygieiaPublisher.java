@@ -40,6 +40,7 @@ public class HygieiaPublisher extends Notifier {
     private HygieiaArtifact hygieiaArtifact;
     private HygieiaSonar hygieiaSonar;
     private HygieiaDeploy hygieiaDeploy;
+    private HygieiaMetaData hygieiaMetaData;
 
     @Override
     public DescriptorImpl getDescriptor() {
@@ -57,6 +58,10 @@ public class HygieiaPublisher extends Notifier {
 
     public HygieiaArtifact getHygieiaArtifact() {
         return hygieiaArtifact;
+    }
+
+    public HygieiaMetaData getHygieiaMetaData() {
+        return hygieiaMetaData;
     }
 
     public HygieiaSonar getHygieiaSonar() {
@@ -149,6 +154,39 @@ public class HygieiaPublisher extends Notifier {
         public boolean isPublishDeployStart() {
             return publishDeployStart;
         }
+    }
+
+    public static class HygieiaMetaData {
+        private final String key;
+        private final String type;
+        private final String rawData;
+        private final String source;
+
+        @DataBoundConstructor
+        public HygieiaMetaData(String key, String type, String rawData, String source){
+            this.key = key;
+            this.type = type;
+            this.rawData = rawData;
+            this.source = source;
+
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public String getRawData() {
+            return rawData;
+        }
+
+        public String getSource() {
+            return source;
+        }
+
     }
 
     public static class HygieiaBuild {

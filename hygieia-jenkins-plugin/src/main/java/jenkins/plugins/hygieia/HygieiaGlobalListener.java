@@ -99,7 +99,6 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
             }
             publishSonarData(run, listener, hygieiaGlobalListenerDescriptor, hygieiaService, StringUtils.trimToNull(convertedBuildResponseString));
             publishGenericCollectorItems(run, listener, hygieiaGlobalListenerDescriptor, hygieiaService, StringUtils.trimToNull(convertedBuildResponseString));
-            publishArtifactData(run, listener, hygieiaGlobalListenerDescriptor, hygieiaService, StringUtils.trimToNull(convertedBuildResponseString));
 
             // publish the dashboard link
             if (showConsoleOutput && StringUtils.isNotEmpty(dashboardLink)) {
@@ -265,27 +264,6 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
             }
         }
     }
-
-    private void publishArtifactData(Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, HygieiaService hygieiaService, @Nonnull String convertedBuildResponseString) {
-        if (CollectionUtils.isEmpty(hygieiaGlobalListenerDescriptor.getHygieiaPublishGenericCollectorItems())) { return; }
-        boolean showConsoleOutput = hygieiaGlobalListenerDescriptor.isShowConsoleOutput();
-        List<HygieiaPublisher.GenericCollectorItem> items = hygieiaGlobalListenerDescriptor.getHygieiaPublishGenericCollectorItems();
-        for (HygieiaPublisher.GenericCollectorItem item : items) {
-            try {
-                if(ARTIFACTORY.equalsIgnoreCase(item.toolName)){
-                    List<GenericCollectorItemCreateRequest> genericCollectorItemCreateRequests = GenericCollectorItemBuilder.getInstance().getRequests(run, item.toolName, item.pattern, convertedBuildResponseString);
-                    if (CollectionUtils.isEmpty(genericCollectorItemCreateRequests)) continue;
-                    for (GenericCollectorItemCreateRequest gcir : genericCollectorItemCreateRequests) {
-                        HygieiaResponse genericBinaryArtifactData = hygieiaService.publishGenericArtifactData(gcir);
-                    }
-                }
-          } catch (IOException e) {
-                if (showConsoleOutput) { listener.getLogger().println("Hygieia: Error Auto Publishing Generic Binary Artifact Item data." + '\n' + e.getMessage()); }
-            }
-        }
-    }
-
-
 
     private CodeQualityCreateRequest buildCodeQualityCreateRequest(Run run, TaskListener listener, String jenkinsName, String convertedBuildResponseString, boolean useProxy) throws ParseException {
        return SonarBuilder.getInstance().getSonarMetrics(run, listener, jenkinsName, null,

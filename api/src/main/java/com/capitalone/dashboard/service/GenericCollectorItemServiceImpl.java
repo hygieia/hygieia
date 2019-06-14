@@ -73,6 +73,10 @@ public class GenericCollectorItemServiceImpl implements GenericCollectorItemServ
             throw new HygieiaException("Bad relatedItemId: " + ie.getMessage(), HygieiaException.BAD_DATA);
         }
 
+        if("Artifactory".equalsIgnoreCase(request.getToolName())){
+            createGenericBinaryArtifactData(request);
+        }
+
         item = genericCollectorItemRepository.save(item);
         return item.getId().toString();
     }

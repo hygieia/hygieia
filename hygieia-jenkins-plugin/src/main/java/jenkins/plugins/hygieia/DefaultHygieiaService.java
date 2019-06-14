@@ -5,6 +5,7 @@ import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import com.capitalone.dashboard.request.DeployDataCreateRequest;
 import com.capitalone.dashboard.request.GenericCollectorItemCreateRequest;
+import com.capitalone.dashboard.request.MetadataCreateRequest;
 import com.capitalone.dashboard.request.TestDataCreateRequest;
 import hudson.model.BuildListener;
 import hygieia.utils.HygieiaUtils;
@@ -201,13 +202,9 @@ public class DefaultHygieiaService implements HygieiaService {
         try {
             String jsonString = new String(HygieiaUtils.convertObjectToJsonBytes(request));
             RestCall restCall = new RestCall(useProxy);
-            logger.log(Level.SEVERE, "Error posting generic artifact data to endpoint ", hygieiaAPIUrl + "/generic-binary-artifact");
-            logger.log(Level.SEVERE, "Error posting generic artifact data to endpoint json ", jsonString);
             RestCall.RestCallResponse callResponse = restCall.makeRestCallPost(hygieiaAPIUrl + "/generic-binary-artifact", jsonString);
             responseCode = callResponse.getResponseCode();
             responseValue = callResponse.getResponseString();
-            logger.log(Level.SEVERE, "Error posting generic artifact data to endpoint json response code", responseCode);
-            logger.log(Level.SEVERE, "Error posting generic artifact data to endpoint json response ", responseValue);
             if (responseCode != HttpStatus.SC_CREATED) {
                 logger.log(Level.SEVERE, "Hygieia publish artifact post may have failed. Response: " + responseCode);
             }
@@ -218,6 +215,30 @@ public class DefaultHygieiaService implements HygieiaService {
         }
         return new HygieiaResponse(responseCode, responseValue);
     }
+
+
+    @Override
+    public HygieiaResponse publishMetaData(MetadataCreateRequest request){
+        String responseValue;
+        int responseCode = HttpStatus.SC_NO_CONTENT;
+        try {
+            String jsonString = new String(HygieiaUtils.convertObjectToJsonBytes(request));
+            RestCall restCall = new RestCall(useProxy);
+            RestCall.RestCallResponse callResponse = restCall.makeRestCallPost(hygieiaAPIUrl + "/metadata/create", jsonString);
+            responseCode = callResponse.getResponseCode();
+            responseValue = callResponse.getResponseString();
+            if (responseCode != HttpStatus.SC_CREATED) {
+                logger.log(Level.SEVERE, "Hygieia publish metadata post may have failed. Response: " + responseCode);
+            }
+            return new HygieiaResponse(responseCode, responseValue);
+        } catch (IOException ioe) {
+            logger.log(Level.SEVERE, "Error posting meta data to Hygieia", ioe);
+            responseValue = "";
+        }
+        return new HygieiaResponse(responseCode, responseValue);
+    }
+
+
 
     private String getCollectorItemJSON(String type) {
         RestCall restCall = new RestCall(useProxy);
