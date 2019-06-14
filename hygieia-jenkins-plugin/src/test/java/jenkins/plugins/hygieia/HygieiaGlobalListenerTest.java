@@ -104,6 +104,7 @@ public class HygieiaGlobalListenerTest {
         PowerMockito.when(HygieiaUtils.getInstanceUrl(mockBuild, mockBuildListener)).thenReturn("http://jenkins.test.com");
         PowerMockito.when(HygieiaUtils.getInstanceUrl(mockRun, mockBuildListener)).thenReturn("http://jenkins.test.com");
         PowerMockito.when(HygieiaUtils.getBuildStatus(Result.SUCCESS)).thenReturn(BuildStatus.Success);
+        PowerMockito.when(HygieiaUtils.getUserID(mockRun, mockBuildListener)).thenReturn("jenkinsuser");
         when(mockDescriptor.getHygieiaService(any(String.class), any(String.class), any(String.class), any(Boolean.class))).thenReturn(mockHygieiaService);
 
         when(mockHygieiaService.getStageResponse(any(String.class),any(String.class),any(String.class))).thenReturn(null);

@@ -10,6 +10,8 @@ import com.google.gson.Gson;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.model.AbstractBuild;
+import hudson.model.Cause;
+import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
@@ -17,6 +19,7 @@ import hudson.plugins.git.GitSCM;
 import hudson.plugins.git.util.Build;
 import hudson.scm.SubversionSCM;
 import hudson.util.IOUtils;
+import jenkins.model.Jenkins;
 import jenkins.plugins.hygieia.CustomObjectMapper;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
@@ -30,12 +33,12 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Nonnull;
 import java.io.BufferedReader;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -137,11 +140,11 @@ public class HygieiaUtils {
     }
     
     public static String getBuildUrl(AbstractBuild<?, ?> build) {
-    	return build.getProject().getAbsoluteUrl() + String.valueOf(build.getNumber()) + "/";
+        return build.getProject().getAbsoluteUrl() + build.getNumber() + "/";
     }
 
     public static String getBuildUrl(Run<?, ?> run) {
-        return run.getParent().getAbsoluteUrl() + String.valueOf(run.getNumber()) + "/";
+        return run.getParent().getAbsoluteUrl() + run.getNumber() + "/";
     }
 
     public static String getBuildNumber(AbstractBuild<?, ?> build) {
@@ -427,7 +430,7 @@ public class HygieiaUtils {
 
     public static boolean isJobExcluded (String jobName, String patterns) {
         if(StringUtils.isNotBlank(patterns)){
-            List<String> patternsList = Arrays.asList(patterns.split(SEPERATOR));
+            String[] patternsList = patterns.split(SEPERATOR);
             for (String pattern : patternsList) {
                 if (StringUtils.startsWithIgnoreCase(jobName, pattern)) {
                     return Boolean.TRUE;
@@ -496,6 +499,28 @@ public class HygieiaUtils {
             logger.log(Level.SEVERE,ExceptionUtils.getStackTrace(parseException));
         }
         return stage;
+    }
+
+    public static String getUserID(@Nonnull Run run, TaskListener listener) {
+        // If build has been triggered form an upstream build, get UserCause from there to set user build variables
+        Cause.UpstreamCause upstreamCause = (Cause.UpstreamCause) run.getCause(Cause.UpstreamCause.class);
+
+        if (upstreamCause != null) {
+            Job job = Jenkins.getInstance().getItemByFullName(upstreamCause.getUpstreamProject(), Job.class);
+            if (job != null) {
+                Run upstream = job.getBuildByNumber(upstreamCause.getUpstreamBuild());
+                if (upstream != null) {
+                    getUserID(upstream, listener);
+                }
+            }
+        }
+
+        Cause.UserIdCause userIdCause = (Cause.UserIdCause) run.getCause(Cause.UserIdCause.class);
+        String userId = "";
+        if (userIdCause != null) {
+            userId = StringUtils.trimToEmpty(userIdCause.getUserId());
+        }
+        return StringUtils.isEmpty(userId) ? "anonymous" : userId;
     }
 
 
