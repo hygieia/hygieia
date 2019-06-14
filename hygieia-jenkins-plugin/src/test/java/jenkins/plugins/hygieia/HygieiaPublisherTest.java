@@ -124,6 +124,10 @@ public class HygieiaPublisherTest extends TestCase {
         }
 
         @Override
+        public HygieiaResponse publishGenericArtifactData(GenericCollectorItemCreateRequest request){
+            return hygieiaResponse;
+        }
+        @Override
         public List<JSONObject> getCollectorItemOptions(String type) {
             return null;
         }

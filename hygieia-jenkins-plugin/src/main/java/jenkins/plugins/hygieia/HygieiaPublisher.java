@@ -266,7 +266,7 @@ public class HygieiaPublisher extends Notifier {
         public GenericCollectorItem(String toolName, String pattern) {
             this.toolName = toolName;
             this.pattern = pattern;
-        }
+           }
 
         public String getToolName() {
             return toolName;
@@ -276,13 +276,6 @@ public class HygieiaPublisher extends Notifier {
             return pattern;
         }
 
-        @Extension
-        public static class DescriptorImpl extends Descriptor<GenericCollectorItem> {
-            @Override
-            public String getDisplayName() {
-                return "";
-            }
-        }
 
     }
 

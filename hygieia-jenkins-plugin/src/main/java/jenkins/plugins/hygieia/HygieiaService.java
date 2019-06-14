@@ -28,6 +28,9 @@ public interface HygieiaService {
 
     HygieiaResponse publishGenericCollectorItemData(GenericCollectorItemCreateRequest request);
 
+    HygieiaResponse publishGenericArtifactData(GenericCollectorItemCreateRequest request);
+
+
     List<JSONObject> getCollectorItemOptions(String type);
 
     Set<String> getDeploymentEnvironments(String appName);

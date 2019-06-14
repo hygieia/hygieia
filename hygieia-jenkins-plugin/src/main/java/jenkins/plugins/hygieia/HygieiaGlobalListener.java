@@ -34,6 +34,7 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
 
     public static final String WFAPI_DESCRIBE = "/wfapi/describe";
     public static final String FAILED = "FAILED";
+    public static final String ARTIFACTORY="Artifactory";
     public HygieiaGlobalListener() {
         super();
     }
@@ -98,6 +99,7 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
             }
             publishSonarData(run, listener, hygieiaGlobalListenerDescriptor, hygieiaService, StringUtils.trimToNull(convertedBuildResponseString));
             publishGenericCollectorItems(run, listener, hygieiaGlobalListenerDescriptor, hygieiaService, StringUtils.trimToNull(convertedBuildResponseString));
+            publishArtifactData(run, listener, hygieiaGlobalListenerDescriptor, hygieiaService, StringUtils.trimToNull(convertedBuildResponseString));
 
             // publish the dashboard link
             if (showConsoleOutput && StringUtils.isNotEmpty(dashboardLink)) {
@@ -130,7 +132,7 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
         }
 
         String startedBy = HygieiaUtils.getUserID(run, listener);
-        listener.getLogger().println("Hygieia: This build was initiated by - " + startedBy);
+        listener.getLogger().println("Hygieia: This build was initiated by " + startedBy);
         HygieiaResponse buildResponse = hygieiaService.publishBuildDataV3(new BuildBuilder().createBuildRequestFromRun(run, hygieiaGlobalListenerDescriptor.getHygieiaJenkinsName(),
                 listener, buildStatus, true, buildStages, startedBy));
         if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
@@ -159,12 +161,10 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
     private LinkedList<BuildStage> processStages(Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, HygieiaService hygieiaService) throws HygieiaException{
         String buildUrl = HygieiaUtils.getBuildUrl(run);
         String wfapiUrl = buildUrl + WFAPI_DESCRIBE;
-        listener.getLogger().println("Hygieia: wfapi url : " + wfapiUrl);
         LinkedList<BuildStage> buildStages=null;
         String responseString = "";
         try{
             RestCall.RestCallResponse callResponse = hygieiaService.getStageResponse(wfapiUrl,hygieiaGlobalListenerDescriptor.getJenkinsUserId(),hygieiaGlobalListenerDescriptor.getJenkinsToken());
-            listener.getLogger().println("Hygieia: call response code : " + callResponse.getResponseCode());
             if(Objects.nonNull(callResponse)){
                 responseString = callResponse.getResponseString();
                 buildStages=  HygieiaUtils.getBuildStages(responseString);
@@ -182,12 +182,9 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
                 String self_url = getSelfUrl(stage.get_links());
                 String instanceUrl = HygieiaUtils.getInstanceUrl(run,listener);
                 String exec_node_url = instanceUrl+self_url;
-                listener.getLogger().println("Hygieia: exec_node_url : " +exec_node_url);
                 String responseString ="";
             try{
                 RestCall.RestCallResponse callResponse = hygieiaService.getStageResponse(exec_node_url,hygieiaGlobalListenerDescriptor.getJenkinsUserId(),hygieiaGlobalListenerDescriptor.getJenkinsToken());
-                listener.getLogger().println("Hygieia: call response code exec_node url : " + callResponse.getResponseCode());
-                listener.getLogger().println("Hygieia: call response code exec_node url : " + callResponse.getResponseString());
                 if(Objects.nonNull(callResponse)){
                     responseString = callResponse.getResponseString();
                     HygieiaUtils.setLogUrl(responseString,stage);
@@ -208,12 +205,9 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
                 String logUrl = stage.getExec_node_logUrl();
                 String instanceUrl = HygieiaUtils.getInstanceUrl(run,listener);
                 String wfapi_log_url = instanceUrl+logUrl;
-                listener.getLogger().println("Hygieia: wfapi_log_url : " +wfapi_log_url);
                 String responseString ="";
                 try{
                     RestCall.RestCallResponse callResponse = hygieiaService.getStageResponse(wfapi_log_url,hygieiaGlobalListenerDescriptor.getJenkinsUserId(),hygieiaGlobalListenerDescriptor.getJenkinsToken());
-                    listener.getLogger().println("Hygieia: call response code wfapi_log_url : " + callResponse.getResponseCode());
-                    listener.getLogger().println("Hygieia: call response code wfapi_log_url : " + callResponse.getResponseString());
                     if(Objects.nonNull(callResponse)){
                         responseString = callResponse.getResponseString();
                         HygieiaUtils.set_logs(responseString,stage);
@@ -271,6 +265,27 @@ public class HygieiaGlobalListener extends RunListener<Run<?, ?>> {
             }
         }
     }
+
+    private void publishArtifactData(Run run, TaskListener listener, HygieiaPublisher.DescriptorImpl hygieiaGlobalListenerDescriptor, HygieiaService hygieiaService, @Nonnull String convertedBuildResponseString) {
+        if (CollectionUtils.isEmpty(hygieiaGlobalListenerDescriptor.getHygieiaPublishGenericCollectorItems())) { return; }
+        boolean showConsoleOutput = hygieiaGlobalListenerDescriptor.isShowConsoleOutput();
+        List<HygieiaPublisher.GenericCollectorItem> items = hygieiaGlobalListenerDescriptor.getHygieiaPublishGenericCollectorItems();
+        for (HygieiaPublisher.GenericCollectorItem item : items) {
+            try {
+                if(ARTIFACTORY.equalsIgnoreCase(item.toolName)){
+                    List<GenericCollectorItemCreateRequest> genericCollectorItemCreateRequests = GenericCollectorItemBuilder.getInstance().getRequests(run, item.toolName, item.pattern, convertedBuildResponseString);
+                    if (CollectionUtils.isEmpty(genericCollectorItemCreateRequests)) continue;
+                    for (GenericCollectorItemCreateRequest gcir : genericCollectorItemCreateRequests) {
+                        HygieiaResponse genericBinaryArtifactData = hygieiaService.publishGenericArtifactData(gcir);
+                    }
+                }
+          } catch (IOException e) {
+                if (showConsoleOutput) { listener.getLogger().println("Hygieia: Error Auto Publishing Generic Binary Artifact Item data." + '\n' + e.getMessage()); }
+            }
+        }
+    }
+
+
 
     private CodeQualityCreateRequest buildCodeQualityCreateRequest(Run run, TaskListener listener, String jenkinsName, String convertedBuildResponseString, boolean useProxy) throws ParseException {
        return SonarBuilder.getInstance().getSonarMetrics(run, listener, jenkinsName, null,
