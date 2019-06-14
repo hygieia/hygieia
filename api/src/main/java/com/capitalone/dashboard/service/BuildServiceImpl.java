@@ -2,6 +2,7 @@ package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Build;
+import com.capitalone.dashboard.model.BuildStage;
 import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.CodeReposBuilds;
 import com.capitalone.dashboard.model.Collector;
@@ -26,6 +27,7 @@ import com.google.common.collect.Sets;
 import com.mysema.query.BooleanBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.bson.types.ObjectId;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -182,19 +184,19 @@ public class BuildServiceImpl implements BuildService {
     }
 
     private void populateDashboardId(BuildDataCreateResponse response) {
-            if(response == null) return;
+        if (response == null) return;
 
-            CollectorItem collectorItem = collectorItemRepository.findOne(response.getCollectorItemId());
-            if (collectorItem == null) return;
+        CollectorItem collectorItem = collectorItemRepository.findOne(response.getCollectorItemId());
+        if (collectorItem == null) return;
 
-            List<Dashboard> dashboards = dashboardService.getDashboardsByCollectorItems
-                    (Collections.singleton(collectorItem), CollectorType.Build);
-            /*
-            * retrieve the dashboardId only if 1 dashboard is associated for this collectorItem
-            * */
-            if(CollectionUtils.isNotEmpty(dashboards) && dashboards.size() == 1) {
-                response.setDashboardId(dashboards.iterator().next().getId());
-            }
+        List<Dashboard> dashboards = dashboardService.getDashboardsByCollectorItems
+                (Collections.singleton(collectorItem), CollectorType.Build);
+        /*
+         * retrieve the dashboardId only if 1 dashboard is associated for this collectorItem
+         * */
+        if (CollectionUtils.isNotEmpty(dashboards) && dashboards.size() == 1) {
+            response.setDashboardId(dashboards.iterator().next().getId());
+        }
 
     }
 
@@ -255,13 +257,16 @@ public class BuildServiceImpl implements BuildService {
         build.setCollectorItemId(collectorItem.getId());
         build.setSourceChangeSet(request.getSourceChangeSet());
         build.setTimestamp(System.currentTimeMillis());
+        if (CollectionUtils.isNotEmpty(request.getStages())) {
+            build.setStages(populateStages(request.getStages()));
+        }
         Set<RepoBranch> repoBranches = Sets.newHashSet();
         repoBranches.addAll(build.getCodeRepos());
         repoBranches.addAll(request.getCodeRepos());
         repoBranches.stream().forEach(repoBranch -> createSCMCollectorItem(repoBranch));
         /*
-        * This is a Quick fix until feature toggle via ff4j is implemented which is coming up soon
-        * */
+         * This is a Quick fix until feature toggle via ff4j is implemented which is coming up soon
+         * */
         boolean  filterLibraryRepos = settings.getWebHook() != null && settings.getWebHook().getJenkinsBuild() != null
                 && settings.getWebHook().getJenkinsBuild().isEnableFilterLibraryRepos();
         if(filterLibraryRepos && CollectionUtils.isNotEmpty(repoBranches)) {
@@ -286,6 +291,13 @@ public class BuildServiceImpl implements BuildService {
         build.getCodeRepos().clear();
         build.getCodeRepos().addAll(repoBranches);
         return buildRepository.save(build); // Save = Update (if ID present) or Insert (if ID not there)
+    }
+
+    private List<BuildStage> populateStages(List<BuildStage> buildStages) {
+        buildStages.stream().forEach(buildStage -> {
+            buildStage.setId(ObjectId.get());
+        });
+        return buildStages;
     }
 
     private void createSCMCollectorItem(@NotNull RepoBranch repoBranch) {

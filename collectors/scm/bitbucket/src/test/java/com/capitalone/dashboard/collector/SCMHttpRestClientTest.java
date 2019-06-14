@@ -1,6 +1,5 @@
 package com.capitalone.dashboard.collector;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.utils.URIBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,13 +15,10 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SCMHttpRestClientTest {
@@ -57,15 +53,18 @@ public class SCMHttpRestClientTest {
 
     @Test
     public void makeRestCallAndtestBasicAuthentication() throws URISyntaxException {
-        URI uri = new URIBuilder("https://mycompany.com/rest/api/1.0/xyz/project/rsa").build();
+        URI uri = new URIBuilder(
+                "https://mycompany.com/rest/api/1.0/xyz/project/rsa").build();
 
         given(restTemplate.exchange(uriArgumentCaptor.capture(),
-                httpMethodArgumentCaptor.capture(), httpEntityArgumentCaptor.capture(),
+                httpMethodArgumentCaptor.capture(),
+                httpEntityArgumentCaptor.capture(),
                 classArgumentCaptor.capture()))
                 .willReturn(responseEntity);
 
         //when
-        ResponseEntity<String> stringResponseEntity = scmHttpRestClient.makeRestCall(uri, "user", "password");
+        ResponseEntity<String> stringResponseEntity = scmHttpRestClient
+                .makeRestCall(uri, "user", "password");
 
         //then
         assertNotNull(stringResponseEntity);
@@ -73,9 +72,39 @@ public class SCMHttpRestClientTest {
         assertEquals(uriArgumentCaptor.getValue(), uri);
         HttpEntity<?> entity = httpEntityArgumentCaptor.getValue();
 
-        assertEquals("Basic dXNlcjpwYXNzd29yZA==", entity.getHeaders().get("Authorization").iterator().next());
+        assertEquals("Basic dXNlcjpwYXNzd29yZA==",
+                entity.getHeaders().get("Authorization").iterator().next());
 
     }
 
+    @Test
+    public void makeRestCallAndtestBasicAuthenticationForGlobalCredentials() throws URISyntaxException {
+        URI uri = new URIBuilder(
+                "https://mycompany.com/rest/api/1.0/xyz/project/rsa").build();
+
+        given(restTemplate.exchange(uriArgumentCaptor.capture(),
+                httpMethodArgumentCaptor.capture(),
+                httpEntityArgumentCaptor.capture(),
+                classArgumentCaptor.capture()))
+                .willReturn(responseEntity);
+
+        given(settings.getKey()).willReturn("WI9XFb8cW9bxeS/fwdka0LBXFbqtwvEa");
+        given(settings.getPassword()).willReturn("GASWrg0aNQAbMu0LxTjAhg==");
+        given(settings.getUsername()).willReturn("user");
+
+        //when
+        ResponseEntity<String> stringResponseEntity = scmHttpRestClient
+                .makeRestCall(uri, null, null);
+
+        //then
+        assertNotNull(stringResponseEntity);
+        assertEquals(classArgumentCaptor.getValue(), String.class);
+        assertEquals(uriArgumentCaptor.getValue(), uri);
+        HttpEntity<?> entity = httpEntityArgumentCaptor.getValue();
+
+        assertEquals("Basic dXNlcjpwYXNzd29yZA==",
+                entity.getHeaders().get("Authorization").iterator().next());
+
+    }
 
 }

@@ -1,6 +1,7 @@
 package jenkins.plugins.hygieia.workflow;
 
 
+import com.capitalone.dashboard.model.BuildStage;
 import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.CodeQuality;
 import com.capitalone.dashboard.model.CodeQualityMetric;
@@ -16,6 +17,7 @@ import hudson.FilePath;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hygieia.builder.BuildBuilder;
+import hygieia.utils.HygieiaUtils;
 import jenkins.model.Jenkins;
 import jenkins.plugins.hygieia.DefaultHygieiaService;
 import jenkins.plugins.hygieia.HygieiaPublisher;
@@ -40,6 +42,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.sax.SAXSource;
 import java.io.IOException;
+import java.util.LinkedList;
 
 
 public class HygieiaCodeQualityPublishStep extends AbstractStepImpl {
@@ -164,9 +167,10 @@ public class HygieiaCodeQualityPublishStep extends AbstractStepImpl {
         @Override
         protected Void run() throws Exception {
             HygieiaService service = step.getService();
+            String startedBy = HygieiaUtils.getUserID(run, listener);
             HygieiaResponse buildResponse = service.publishBuildData(new BuildBuilder()
                     .createBuildRequestFromRun(run, step.getHygieiaDesc().getHygieiaJenkinsName(),
-                            listener, BuildStatus.Success, false));
+                            listener, BuildStatus.Success, false, new LinkedList<BuildStage>(), startedBy));
             CodeQualityMetricsConverter converter = new CodeQualityMetricsConverter();
             Unmarshaller unmarshaller = step.getContext().createUnmarshaller();
 

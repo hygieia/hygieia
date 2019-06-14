@@ -27,6 +27,8 @@ public class ApiSettings {
 
     private WebHookSettings webHook;
 
+    private String capturePattern;
+
     public WebHookSettings getWebHook() {
         return webHook;
     }
@@ -87,5 +89,13 @@ public class ApiSettings {
 
     public void setGitToolName(String gitToolName) {
         this.gitToolName = gitToolName;
+    }
+
+    public String getCapturePattern() {
+        return capturePattern;
+    }
+
+    public void setCapturePattern(String capturePattern) {
+        this.capturePattern = capturePattern;
     }
 }

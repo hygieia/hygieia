@@ -1,5 +1,7 @@
 package com.capitalone.dashboard.collector;
 
+import com.capitalone.dashboard.util.Encryption;
+import com.capitalone.dashboard.util.EncryptionException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -35,6 +37,11 @@ public class SCMHttpRestClient {
     if (StringUtils.isEmpty(userId) || StringUtils.isEmpty(password)) {
       id = settings.getUsername();
       secret = settings.getPassword();
+        try {
+            secret = Encryption.decryptString(secret, settings.getKey());
+        } catch (EncryptionException e) {
+            LOG.error(e.getMessage());
+        }
     }
     // Basic Auth only.
     if (!"".equals(id) && !"".equals(secret)) {

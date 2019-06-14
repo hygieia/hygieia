@@ -1,5 +1,6 @@
 package jenkins.plugins.hygieia.workflow;
 
+import com.capitalone.dashboard.model.BuildStage;
 import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.TestSuiteType;
 import com.capitalone.dashboard.model.quality.QualityVisitee;
@@ -15,8 +16,8 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import hygieia.builder.BuildBuilder;
 import hygieia.builder.FunctionalTestBuilder;
-import hygieia.transformer.QualityVisiteeDeserializer;
 import hygieia.transformer.HygieiaConstants;
+import hygieia.transformer.QualityVisiteeDeserializer;
 import hygieia.utils.HygieiaUtils;
 import jenkins.model.Jenkins;
 import jenkins.plugins.hygieia.DefaultHygieiaService;
@@ -33,6 +34,7 @@ import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 
 import javax.inject.Inject;
+import java.util.LinkedList;
 
 
 public class HygieiaTestPublishStep extends AbstractStepImpl {
@@ -195,9 +197,10 @@ public class HygieiaTestPublishStep extends AbstractStepImpl {
             HygieiaService hygieiaService = getHygieiaService(hygieiaDesc.getHygieiaAPIUrl(), hygieiaDesc.getHygieiaToken(),
                     hygieiaDesc.getHygieiaJenkinsName(), hygieiaDesc.isUseProxy());
 
+            String startedBy = HygieiaUtils.getUserID(run, listener);
             HygieiaResponse buildResponse = hygieiaService.publishBuildData(new BuildBuilder()
                     .createBuildRequestFromRun(run, hygieiaDesc.getHygieiaJenkinsName(),
-                            listener, BuildStatus.fromString(step.buildStatus), false));
+                            listener, BuildStatus.fromString(step.buildStatus), false, new LinkedList<BuildStage>(), startedBy));
 
             if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
                 listener.getLogger().println("Hygieia: Published Build Data For Test Publishing. " + buildResponse.toString());

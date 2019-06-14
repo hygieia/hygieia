@@ -104,8 +104,10 @@ public class HygieiaGlobalListenerTest {
         PowerMockito.when(HygieiaUtils.getInstanceUrl(mockBuild, mockBuildListener)).thenReturn("http://jenkins.test.com");
         PowerMockito.when(HygieiaUtils.getInstanceUrl(mockRun, mockBuildListener)).thenReturn("http://jenkins.test.com");
         PowerMockito.when(HygieiaUtils.getBuildStatus(Result.SUCCESS)).thenReturn(BuildStatus.Success);
+        PowerMockito.when(HygieiaUtils.getUserID(mockRun, mockBuildListener)).thenReturn("jenkinsuser");
         when(mockDescriptor.getHygieiaService(any(String.class), any(String.class), any(String.class), any(Boolean.class))).thenReturn(mockHygieiaService);
 
+        when(mockHygieiaService.getStageResponse(any(String.class),any(String.class),any(String.class))).thenReturn(null);
         when(mockHygieiaService.publishBuildDataV3(any(BuildDataCreateRequest.class))).thenReturn(hygieiaResponse);
         when(mockHygieiaService.publishSonarResults(any(CodeQualityCreateRequest.class))).thenReturn(hygieiaResponse);
         when(mockHygieiaService.publishGenericCollectorItemData(any(GenericCollectorItemCreateRequest.class))).thenReturn(hygieiaResponse);
@@ -152,7 +154,7 @@ public class HygieiaGlobalListenerTest {
         when(mockRun.getResult()).thenReturn(Result.SUCCESS);
         when(mockBuild.getChangeSet()).thenReturn(mockChangeSet);
         when(mockChangeSet.isEmptySet()).thenReturn(true);
-
+        when(mockHygieiaService.getStageResponse(any(String.class),any(String.class),any(String.class))).thenReturn(null);
         hygieiaGlobalListener.onCompleted(mockRun, mockBuildListener);
         ArgumentCaptor<BuildDataCreateRequest> captorBuild = ArgumentCaptor.forClass(BuildDataCreateRequest.class);
         verify(mockHygieiaService, times(1)).publishBuildDataV3(captorBuild.capture());
@@ -170,6 +172,7 @@ public class HygieiaGlobalListenerTest {
         when(mockBuild.getResult()).thenReturn(Result.SUCCESS);
         when(mockBuild.getChangeSet()).thenReturn(mockChangeSet);
         when(mockChangeSet.isEmptySet()).thenReturn(true);
+        when(mockHygieiaService.getStageResponse(any(String.class),any(String.class),any(String.class))).thenReturn(null);
         when(mockHygieiaService.publishBuildDataV3(any(BuildDataCreateRequest.class))).thenReturn(new HygieiaResponse(HttpStatus.SC_UNAUTHORIZED, ""));
         hygieiaGlobalListener.onCompleted(mockBuild, mockBuildListener);
         ArgumentCaptor<BuildDataCreateRequest> captorBuild = ArgumentCaptor.forClass(BuildDataCreateRequest.class);
