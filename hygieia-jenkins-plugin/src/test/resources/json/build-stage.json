@@ -4,7 +4,8 @@
       "href": "/job/testGenericItem/61/execution/node/6/wfapi/describe"
     }
   },
-  "id": "6",
+  "_id": null,
+  "stageId": "6",
   "name": "Preparation",
   "execNode": "",
   "status": "SUCCESS",
