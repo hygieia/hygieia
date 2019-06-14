@@ -87,6 +87,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/v2/quality/test").permitAll()
                 .antMatchers(HttpMethod.POST, "/v2/quality/static-analysis").permitAll()
                 .antMatchers(HttpMethod.POST, "/generic-item").permitAll()
+                .antMatchers(HttpMethod.POST, "/generic-binary-artifact").permitAll()
                 .antMatchers(HttpMethod.POST, "/metadata").permitAll()
                 .anyRequest().authenticated()
                 .and()
