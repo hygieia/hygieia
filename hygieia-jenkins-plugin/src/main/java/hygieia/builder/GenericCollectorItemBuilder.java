@@ -33,6 +33,7 @@ public class GenericCollectorItemBuilder {
             gc.setBuildId(HygieiaUtils.getBuildCollectionId(buildId));
             gc.setSource(run.getParent().getAbsoluteUrl());
             gc.setToolName(toolName);
+            gc.setPattern(pattern);
             requests.add(gc);
         }
         return requests;
