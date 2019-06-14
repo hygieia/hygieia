@@ -9,7 +9,7 @@ export class ChartComponent implements OnInit {
   @Input() title: string;
 
   @Input() view: any[];
-  data: any;
+  @Input() data: any;
   xAxisLabel: string;
   yAxisLabel: string;
   scaleFactor: number;
