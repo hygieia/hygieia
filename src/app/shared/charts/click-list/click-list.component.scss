@@ -4,9 +4,34 @@
 @import '../../../../styles/css/dash-status.scss';
 @import '../../../../styles/css/mixins.scss';
 
-.text-standard-date {
+.list-item-subtitle {
   @include text-standard-date;
 }
+
+.clickable {
+  cursor: pointer;
+}
+
+.clickable-title {
+  border-bottom: 1px solid;
+  color: $dash-widget-heading-text;
+  letter-spacing: .1em;
+  padding-bottom: .5em;
+  margin-bottom: 1em;
+
+  @include border-top-radius($dash-widget-border-radius);
+  border-bottom-color: $dash-widget-sub-heading-border;
+  @include text-standard;
+  text-transform: uppercase;
+
+  cursor: pointer;
+  @include transition(color 300ms ease);
+
+  &:hover {
+    color: $dash-dashboard-text-hover;
+  }
+}
+
 
 .latest-builds {
   font-size: 10px;
@@ -41,12 +66,15 @@ tr.dash-row>td {
   color: $dash-dashboard-text;
 }
 
-
-.build-chevron {
+.list-item-chevron {
   margin-right: 1em;
 }
 
-.build-number {
+.header-arrow {
+  padding-left: 0.5em;
+}
+
+.list-item-title {
   display: inline-block;
   margin-right: 1em;
   min-width: 3em;

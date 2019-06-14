@@ -8,15 +8,16 @@ import {
   ViewChild,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { of, Subscription } from 'rxjs';
 import { distinctUntilChanged, startWith, switchMap } from 'rxjs/operators';
+import { IClickListData, IClickListItem } from 'src/app/shared/charts/click-list/click-list-interfaces';
+import { DashStatus } from 'src/app/shared/dash-status/DashStatus';
 import { DashboardService } from 'src/app/shared/dashboard.service';
 import { LayoutDirective } from 'src/app/shared/layouts/layout.directive';
 import { TwoByTwoLayoutComponent } from 'src/app/shared/layouts/two-by-two-layout/two-by-two-layout.component';
 import { WidgetComponent } from 'src/app/shared/widget/widget.component';
 
-import { BuildConfigFormComponent } from '../build-config-form/build-config-form.component';
+import { BuildDetailComponent } from '../build-detail/build-detail.component';
 import { BuildService } from '../build.service';
 import { IBuild } from '../interfaces';
 import { BUILD_CHARTS } from './build-charts';
@@ -45,8 +46,7 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
               cdr: ChangeDetectorRef,
               dashboardService: DashboardService,
               route: ActivatedRoute,
-              private buildService: BuildService,
-              private modalService: NgbModal) {
+              private buildService: BuildService) {
     super(componentFactoryResolver, cdr, dashboardService, route);
   }
 
@@ -145,15 +145,33 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
     const sorted = result.sort((a: IBuild, b: IBuild): number => {
       return a.endTime - b.endTime;
     }).reverse().slice(0, 5);
+
+    const buildStatusTable = {
+      success: DashStatus.PASS,
+      inprogress: DashStatus.IN_PROGRESS
+    };
     const latestBuildData = sorted.map(build => {
+      let buildStatusText = '';
+      const buildStatus = buildStatusTable[build.buildStatus.toLowerCase()] ?
+        buildStatusTable[build.buildStatus.toLowerCase()] : DashStatus.FAIL;
+      if (buildStatus === DashStatus.FAIL) {
+        buildStatusText = '!';
+      }
       return {
-        status: build.buildStatus.toLowerCase(),
-        number: build.number,
-        endTime: build.endTime,
+        status: buildStatus,
+        statusText: buildStatusText,
+        title: build.number,
+        subtitles: [
+          new Date(build.endTime)
+        ],
         url: build.buildUrl
-      };
+      } as IClickListItem;
     });
-    this.charts[1].data = latestBuildData;
+    this.charts[1].data = {
+      items: latestBuildData,
+      clickableContent: BuildDetailComponent,
+      clickableHeader: null
+    } as IClickListData;
   }
 
   // *********************** TOTAL BUILD COUNTS ************************

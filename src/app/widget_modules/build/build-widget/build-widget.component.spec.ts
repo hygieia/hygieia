@@ -351,8 +351,7 @@ describe('BuildWidgetComponent', () => {
       expect(component.charts[0].data[0].series[0].value).toEqual(7);
       expect(component.charts[0].data[1].series[0].value).toEqual(6);
 
-      expect(component.charts[1].data[0].number).toEqual('708');
-
+      expect(component.charts[1].data.items[0].title).toEqual('708');
       expect(component.charts[3].data[0].value).toEqual(0);
       expect(component.charts[3].data[1].value).toEqual(0);
       expect(component.charts[3].data[2].value).toEqual(7);
