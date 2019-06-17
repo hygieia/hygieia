@@ -37,7 +37,7 @@ public class WidgetRequestTest {
     }
 
     @Test
-    public void widgetTest() {
+    public void widgetTest2() {
         Map<String, Object> allOptions = new HashMap<>();
         allOptions.put("id", "feature0");
         allOptions.put("featureTool", "Jira");
