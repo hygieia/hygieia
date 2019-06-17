@@ -24,28 +24,26 @@
         function processResponse(data) {
             ctrl.toolsDropdownPlaceholder = 'Select the project';
             ctrl.toolsDropdownDisabled = false;
-            var filteredData = _.uniq(data, 'description');
+            var filteredData = _.uniqBy(data, 'options.projectId'); //keep unique projects by projectId
             ctrl.rallyProjects = filteredData;
             var selectedIndex = _.findIndex(filteredData, function(selectedItem) { return selectedItem.options.projectId == widgetConfig.options.projectId});
             ctrl.rallyProject = filteredData[selectedIndex];
             ctrl.rallySelectedIteration = true;
 
         }
-        function submitForm(valid, collector) {
+        function submitForm(valid, collectorItemId) {
             if (valid) {
-            var rallyCollector = modalData.dashboard.application.components[0].collectorItems.AgileTool;
-            var rallyCollectorId = rallyCollector ? rallyCollector[0].id : null;
-            var projectId= ctrl.rallyProject.options.projectId;
-            var projectName= ctrl.rallyProject.options.projectName;
+                var projectId = ctrl.rallyProject.options.projectId;
+                var projectName = ctrl.rallyProject.options.projectName;
                 var postObj = {
                     name: 'AgileTool',
                     options: {
                         id: widgetConfig.options.id,
-                        projectId:projectId,
-                        projectName:projectName
+                        projectId: projectId,
+                        projectName: projectName
                     },
                     componentId: modalData.dashboard.application.components[0].id,
-                    collectorItemId: collector
+                    collectorItemId: collectorItemId
                 };
                 // pass this new config to the modal closing so it's saved
                 $uibModalInstance.close(postObj);
