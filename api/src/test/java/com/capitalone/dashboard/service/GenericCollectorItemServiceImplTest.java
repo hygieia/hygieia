@@ -3,9 +3,13 @@ package com.capitalone.dashboard.service;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.GenericCollectorItem;
+import com.capitalone.dashboard.repository.BinaryArtifactRepository;
+import com.capitalone.dashboard.repository.BuildRepository;
+import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.GenericCollectorItemRepository;
 import com.capitalone.dashboard.request.GenericCollectorItemCreateRequest;
+import com.capitalone.dashboard.settings.ApiSettings;
 import com.capitalone.dashboard.testutil.FongoConfig;
 import com.capitalone.dashboard.testutil.GsonUtil;
 import com.github.fakemongo.junit.FongoRule;
@@ -44,10 +48,22 @@ public class GenericCollectorItemServiceImplTest {
     @Autowired
     private CollectorRepository collectorRepository;
 
+    @Autowired
+    private BuildRepository buildRepository;
+
+    @Autowired
+    private CollectorItemRepository collectorItemRepository;
+
+    private ApiSettings apiSettings;
+
+    @Autowired
+    private BinaryArtifactRepository binaryArtifactRepository;
+
+
 
     @Bean
     private GenericCollectorItemService genericCollectorItemService() {
-        return new GenericCollectorItemServiceImpl(genericCollectorItemRepository, collectorRepository);
+        return new GenericCollectorItemServiceImpl(genericCollectorItemRepository, collectorRepository,buildRepository,collectorItemRepository,binaryArtifactRepository,apiSettings);
     }
 
     @Test
