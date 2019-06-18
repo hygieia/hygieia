@@ -20,6 +20,8 @@ import { ComboSeriesVerticalComponent } from './charts/combo-series-vertical/com
 import { LineAndBarChartComponent } from './charts/line-and-bar-chart/line-and-bar-chart.component';
 import { LineChartComponent } from './charts/line-chart/line-chart.component';
 import { NumberCardChartComponent } from './charts/number-card-chart/number-card-chart.component';
+import { PlainTextChartComponent } from './charts/plain-text-chart/plain-text-chart.component';
+import { DashStatusComponent } from './dash-status/dash-status.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { LayoutDirective } from './layouts/layout.directive';
 import { LayoutComponent } from './layouts/layout/layout.component';
@@ -37,7 +39,6 @@ import { WidgetHeaderComponent } from './widget-header/widget-header.component';
 import { PlaceholderWidgetComponent } from './widget/placeholder-widget/placeholder-widget.component';
 import { WidgetComponent } from './widget/widget.component';
 import { WidgetDirective } from './widget/widget.directive';
-import { DashStatusComponent } from './dash-status/dash-status.component';
 
 @NgModule({
   declarations: [
@@ -72,6 +73,7 @@ import { DashStatusComponent } from './dash-status/dash-status.component';
     WidgetDirective,
     WidgetHeaderComponent,
     DashStatusComponent,
+    PlainTextChartComponent,
   ],
   entryComponents: [
     BuildConfigFormComponent,
@@ -87,6 +89,7 @@ import { DashStatusComponent } from './dash-status/dash-status.component';
     LineChartComponent,
     NumberCardChartComponent,
     PlaceholderWidgetComponent,
+    PlainTextChartComponent,
     TwoByTwoLayoutComponent
   ],
   imports: [
