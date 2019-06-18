@@ -45,6 +45,7 @@ public class ApiSettings {
     private int highLicenseVulnerabilitiesAge;
     @Value("${criticalLicenseVulnerabilitiesAge:0}")
     private int criticalLicenseVulnerabilitiesAge;
+    private String buildStageRegEx;
 
     public String getKey() {
         return key;
@@ -212,6 +213,14 @@ public class ApiSettings {
 
     public void setCriticalLicenseVulnerabilitiesAge(int criticalLicenseVulnerabilitiesAge) {
         this.criticalLicenseVulnerabilitiesAge = criticalLicenseVulnerabilitiesAge;
+    }
+
+    public String getBuildStageRegEx() {
+        return buildStageRegEx;
+    }
+
+    public void setBuildStageRegEx(String buildStageRegEx) {
+        this.buildStageRegEx = buildStageRegEx;
     }
 
 
