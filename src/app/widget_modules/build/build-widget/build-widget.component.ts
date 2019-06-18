@@ -111,8 +111,8 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
       && !this.checkBuildStatus(build, 'InProgress'));
     const failedBuilds = result.filter(build => this.checkBuildAfterDate(build, startDate)
       && !this.checkBuildStatus(build, 'InProgress') && !this.checkBuildStatus(build, 'Success'));
-    this.charts[0].data[0].series = this.countBuildsPerDay(allBuilds, startDate);
-    this.charts[0].data[1].series = this.countBuildsPerDay(failedBuilds, startDate);
+    this.charts[0].data.data[0].series = this.countBuildsPerDay(allBuilds, startDate);
+    this.charts[0].data.data[1].series = this.countBuildsPerDay(failedBuilds, startDate);
   }
 
   private countBuildsPerDay(builds: IBuild[], startDate: Date): any[] {

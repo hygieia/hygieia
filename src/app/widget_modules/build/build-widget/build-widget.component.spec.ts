@@ -346,10 +346,10 @@ describe('BuildWidgetComponent', () => {
     buildService.fetchDetails('123', 14).subscribe(result => {
       component.loadCharts(result);
 
-      expect(component.charts[0].data[0].series.length).toEqual(14);
-      expect(component.charts[0].data[1].series.length).toEqual(14);
-      expect(component.charts[0].data[0].series[0].value).toEqual(7);
-      expect(component.charts[0].data[1].series[0].value).toEqual(6);
+      expect(component.charts[0].data.data[0].series.length).toEqual(14);
+      expect(component.charts[0].data.data[1].series.length).toEqual(14);
+      expect(component.charts[0].data.data[0].series[0].value).toEqual(7);
+      expect(component.charts[0].data.data[1].series[0].value).toEqual(6);
 
       expect(component.charts[1].data.items[0].title).toEqual('708');
       expect(component.charts[3].data[0].value).toEqual(0);
