@@ -326,15 +326,15 @@ public class DefaultUDeployClient implements UDeployClient {
     private String normalizeUrl(String instanceUrl, String remainder) {
         return StringUtils.removeEnd(instanceUrl, "/") + remainder;
     }
-	// If we are putting token in the application.properties file
+    // If we are putting token in the application.properties file
     // Then it overrides all usernames and passwords given in the UI 
 	
     protected HttpHeaders createHeaders(String instanceUrl) {
         String authHeader = null;
         String token = uDeploySettings.getToken();
         if (StringUtils.isEmpty(token)) {
-            int i = uDeploySettings.getServers().indexOf(instanceUrl);
-            String auth = uDeploySettings.getUsernames().get(i) + ":" + uDeploySettings.getPasswords().get(i); 
+            int i = uDeploySettings.getServers().indexOf(instanceUrl);       
+            String auth = uDeploySettings.getUsernames().get(i) + ":" + uDeploySettings.getPasswords().get(i);
             byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(
                     StandardCharsets.US_ASCII));
             authHeader = "Basic " + new String(encodedAuth);

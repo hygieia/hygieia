@@ -36,7 +36,7 @@ public class DefaultUDeployClientTest {
 
     private DefaultUDeployClient defaultUDeployClient;
 
-//    private static final String URL = "URL";
+//  private static final String URL = "URL";
 
 
     @Before
@@ -54,7 +54,7 @@ public class DefaultUDeployClientTest {
         when(rest.exchange(eq(appListUrl), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
                 .thenReturn(new ResponseEntity<>(appJson, HttpStatus.OK));
         when(settings.getServers()).thenReturn(Arrays.asList(instanceUrl));
-		when(settings.getUsernames()).thenReturn(Arrays.asList("Username"));
+        when(settings.getUsernames()).thenReturn(Arrays.asList("Username"));
         when(settings.getPasswords()).thenReturn(Arrays.asList("password"));
         List<UDeployApplication> apps = defaultUDeployClient.getApplications(instanceUrl);
         assertThat(apps.size(), is(2));
@@ -72,7 +72,7 @@ public class DefaultUDeployClientTest {
         when(rest.exchange(eq(appListUrl), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
                 .thenReturn(new ResponseEntity<>(appJson, HttpStatus.OK));
         when(settings.getServers()).thenReturn(Arrays.asList(instanceUrl));
-		when(settings.getUsernames()).thenReturn(Arrays.asList("Username"));
+        when(settings.getUsernames()).thenReturn(Arrays.asList("Username"));
         when(settings.getPasswords()).thenReturn(Arrays.asList("password"));
         List<UDeployApplication> apps = defaultUDeployClient.getApplications(instanceUrl);
 

@@ -58,7 +58,7 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
                                 EnvironmentComponentRepository envComponentRepository,
                                 EnvironmentStatusRepository environmentStatusRepository,
                                 UDeploySettings uDeploySettings, UDeployClient uDeployClient,
-								ConfigurationRepository configurationRepository,
+                                ConfigurationRepository configurationRepository,
                                 ComponentRepository dbComponentRepository) {
         super(taskScheduler, "UDeploy");
         this.uDeployCollectorRepository = uDeployCollectorRepository;
@@ -165,7 +165,6 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
         uDeployApplicationRepository.delete(deleteAppList);
 
     }
-
     private List<EnvironmentComponent> getEnvironmentComponent(List<UDeployEnvResCompData> dataList, Environment environment, UDeployApplication application) {
         List<EnvironmentComponent> returnList = new ArrayList<>();
         for (UDeployEnvResCompData data : dataList) {
@@ -190,7 +189,6 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
         return returnList;
     }
 
-
     private List<EnvironmentStatus> getEnvironmentStatus(List<UDeployEnvResCompData> dataList) {
         List<EnvironmentStatus> returnList = new ArrayList<>();
         for (UDeployEnvResCompData data : dataList) {
@@ -206,7 +204,6 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
         }
         return returnList;
     }
-
 
     /**
      * For each {@link UDeployApplication}, update the current
