@@ -294,14 +294,16 @@
                         lastDayPullContributors.push(pull.userId);
                     }
                 }
-                else if(pull.timestamp >= sevenDays.getTime()) {
+                
+                if(pull.timestamp >= sevenDays.getTime()) {
                     lastsevenDayPullCount++;
 
                     if(lastsevenDaysPullContributors.indexOf(pull.userId) == -1) {
                         lastsevenDaysPullContributors.push(pull.userId);
                     }
                 }
-                else if(pull.timestamp >= fourteenDays.getTime()) {
+                
+                export if(pull.timestamp >= fourteenDays.getTime()) {
                     lastfourteenDayPullCount++;
                     ctrl.pulls.push(pull);
                     if(lastfourteenDaysPullContributors.indexOf(pull.userId) == -1) {
