@@ -165,6 +165,7 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
         uDeployApplicationRepository.delete(deleteAppList);
 
     }
+    
     private List<EnvironmentComponent> getEnvironmentComponent(List<UDeployEnvResCompData> dataList, Environment environment, UDeployApplication application) {
         List<EnvironmentComponent> returnList = new ArrayList<>();
         for (UDeployEnvResCompData data : dataList) {
