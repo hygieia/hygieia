@@ -314,7 +314,7 @@ public class DefaultUDeployClient implements UDeployClient {
         ResponseEntity<String> response = null;
         try {
             response = restOperations.exchange(url, HttpMethod.GET,
-                    new HttpEntity<>(createHeaders()), String.class);
+                    new HttpEntity<>(createHeaders(instanceUrl)), String.class);
 
         } catch (RestClientException re) {
             LOGGER.error("Error with REST url: " + url);
@@ -326,13 +326,15 @@ public class DefaultUDeployClient implements UDeployClient {
     private String normalizeUrl(String instanceUrl, String remainder) {
         return StringUtils.removeEnd(instanceUrl, "/") + remainder;
     }
-
-    protected HttpHeaders createHeaders() {
+	// If we are putting token in the application.properties file
+    // Then it overrides all usernames and passwords given in the UI 
+	
+    protected HttpHeaders createHeaders(String instanceUrl) {
         String authHeader = null;
         String token = uDeploySettings.getToken();
         if (StringUtils.isEmpty(token)) {
-            String auth = uDeploySettings.getUsername() + ":"
-                    + uDeploySettings.getPassword();
+            int i = uDeploySettings.getServers().indexOf(instanceUrl);
+            String auth = uDeploySettings.getUsernames().get(i) + ":" + uDeploySettings.getPasswords().get(i); 
             byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(
                     StandardCharsets.US_ASCII));
             authHeader = "Basic " + new String(encodedAuth);
