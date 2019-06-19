@@ -38,6 +38,7 @@ logs
 .pmdruleset.xml
 .classpath
 .README.md.html
+.factorypath
 
 # Eclipse specific ignore settings
 .settings/
