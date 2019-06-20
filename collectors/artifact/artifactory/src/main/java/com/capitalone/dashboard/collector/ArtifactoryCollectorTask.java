@@ -48,6 +48,8 @@ import java.util.stream.Collectors;
 @Component
 public class ArtifactoryCollectorTask extends CollectorTaskWithGenericItem<ArtifactoryCollector> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ArtifactoryCollectorTask.class);
+    private static final int ARTIFACT_GROUP = 1;
+    private static final int ARTIFACT_NAME = 2;
 
     private final ArtifactoryCollectorRepository artifactoryCollectorRepository;
     private final ArtifactoryRepoRepository artifactoryRepoRepository;
@@ -145,7 +147,7 @@ public class ArtifactoryCollectorTask extends CollectorTaskWithGenericItem<Artif
     protected void collectArtifactBased(ArtifactoryCollector collector) {
         Set<ObjectId> udId = new HashSet<>();
         udId.add(collector.getId());
-        Map<ObjectId, Set<ObjectId>> artifactBuilds = processGenericItems(collector);
+        processGenericItems(collector);
         List<ArtifactItem> existingItems = artifactItemRepository.findByCollectorIdIn(udId);
         List<String> instanceUrls = collector.getArtifactoryServers();
         instanceUrls.forEach(instanceUrl -> {
@@ -160,7 +162,6 @@ public class ArtifactoryCollectorTask extends CollectorTaskWithGenericItem<Artif
                     log("Collecting repository ====>>> " + repo);
                     addNewArtifactsItems(baseArtifacts, existingItems, collector);
                 });
-                refreshData(artifactBuilds);
                 log("Fetched repos", start, getRepos().size());
             } else {
                 LOGGER.error("Error with artifactory url: " + instanceUrl + ". Url does not end with '/'");
@@ -389,11 +390,13 @@ public class ArtifactoryCollectorTask extends CollectorTaskWithGenericItem<Artif
         List<GenericCollectorItem> genericCollectorItems = genericCollectorItemRepository.findAllByToolNameAndProcessTimeEquals(collector.getName(), 0L);
         Map<ObjectId, Set<ObjectId>> artifactBuilds = new HashMap<>();
         genericCollectorItems.forEach(gci -> {
-            String capture = capturePattern(gci).trim();
+            String capture = capturePattern(gci,ARTIFACT_NAME).trim();
+            String captureGroupId = capturePattern(gci,ARTIFACT_GROUP).trim();
+            String capturePath = captureGroupId+"/"+capture;
             if (StringUtils.isEmpty(capture)) {
                 return;
             }
-            List<CollectorItem> artifactCollectorItems = collectorItemRepository.findByArtifactName(capture);
+            List<CollectorItem> artifactCollectorItems = collectorItemRepository.findByArtifactNameAndPath(capture,capturePath);
             artifactCollectorItems.forEach(
                     item -> {
                         if (!artifactBuilds.containsKey(item.getId()) || CollectionUtils.isEmpty(artifactBuilds.get(item))) {
@@ -421,15 +424,14 @@ public class ArtifactoryCollectorTask extends CollectorTaskWithGenericItem<Artif
         return artifactBuilds;
     }
 
-
-    protected String capturePattern(GenericCollectorItem gci) {
+    protected String capturePattern(GenericCollectorItem gci,int group) {
         List<String> regex = Arrays.asList(artifactorySettings.getCapturePattern());
         return regex
                 .stream().map(Pattern::compile)
                 .map(p -> p.matcher(gci.getRawData()))
                 .filter(Matcher::find)
                 .findFirst()
-                .map(match -> match.group(2))
+                .map(match -> match.group(group))
                 .orElse("");
     }
 
