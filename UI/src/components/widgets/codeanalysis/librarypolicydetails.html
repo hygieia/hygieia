@@ -26,7 +26,7 @@
                     <table class="table">
                         <tbody ng-repeat="component in libraryPolicyDetails.getDetails(level)" ng-class-odd="'alt'">
                         <tr id="component">
-                            <td><span dash-status="{{getDashStatus(level)}}"></span></td>
+                            <td class="col-sm-1"><span dash-status="{{getDashStatus(level)}}"></span></td>
                             <td>{{component}}</td>
                         </tr>
                         </tbody>
