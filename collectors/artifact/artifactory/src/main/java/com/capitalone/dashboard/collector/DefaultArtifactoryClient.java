@@ -5,10 +5,12 @@ import com.capitalone.dashboard.model.ArtifactoryRepo;
 import com.capitalone.dashboard.model.BaseArtifact;
 import com.capitalone.dashboard.model.BinaryArtifact;
 import com.capitalone.dashboard.model.ServerSetting;
+import com.capitalone.dashboard.repository.BinaryArtifactRepository;
 import com.capitalone.dashboard.util.ArtifactUtil;
 import com.capitalone.dashboard.util.Supplier;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -50,10 +52,13 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
 
 	private final List<Pattern> artifactPatterns;
 
+	private final BinaryArtifactRepository binaryArtifactRepository;
+
 	@Autowired
-	public DefaultArtifactoryClient(ArtifactorySettings artifactorySettings, Supplier<RestOperations> restOperationsSupplier) {
+	public DefaultArtifactoryClient(ArtifactorySettings artifactorySettings, Supplier<RestOperations> restOperationsSupplier,BinaryArtifactRepository binaryArtifactRepository) {
 		this.artifactorySettings = artifactorySettings;
 		this.restOperations = restOperationsSupplier.get();
+		this.binaryArtifactRepository = binaryArtifactRepository;
 		this.artifactPatterns = new ArrayList<>();
 
 		if (artifactorySettings.getServers() != null) {
@@ -169,11 +174,10 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
 						}
 					}
 					// create artifactInfo
-					BinaryArtifact ba = createArtifact(artifactCanonicalName, artifactPath, timestamp, jsonArtifact);
-					if (ba != null) {
-						baseArtifact.addBinaryArtifact(ba);
+					List<BinaryArtifact> bas = createArtifactForArtifactBased(artifactCanonicalName, artifactPath, timestamp, jsonArtifact);
+					if (CollectionUtils.isNotEmpty(bas)) {
+						bas.forEach(ba->baseArtifact.addBinaryArtifact(ba));
 					}
-
 					baseArtifact.setArtifactItem(artifactItem);
 					baseArtifacts.add(baseArtifact);
 				}
@@ -288,6 +292,63 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
 			LOGGER.debug("Artifact at " + fullPath + " did not match any patterns.");
 		}
 		return null;
+	}
+
+	private List<BinaryArtifact> createArtifactForArtifactBased(String artifactCanonicalName, String artifactPath, long timestamp, JSONObject jsonArtifact) {
+		BinaryArtifact result = null;
+		String fullPath = artifactPath + "/" + artifactCanonicalName;
+		List<BinaryArtifact> binaryArtifactList = new ArrayList<>();
+		int idx = 0;
+		for (Pattern pattern : artifactPatterns) {
+         result = ArtifactUtil.parse(pattern, fullPath);
+            if (result != null) {
+                String artifactName = result.getArtifactName();
+                String artifactVersion = result.getArtifactVersion();
+                Iterable<BinaryArtifact> bas = binaryArtifactRepository.findByArtifactNameAndArtifactVersionAndCreatedTimeStamp(artifactName, artifactVersion, 0L);
+                if (!IterableUtils.isEmpty(bas)) {
+                    bas.forEach(ba -> {
+                        ba.setType(getString(jsonArtifact, "type"));
+                        ba.setCreatedTimeStamp(convertTimestamp(getString(jsonArtifact, "created")));
+                        ba.setCreatedBy(getString(jsonArtifact, "created_by"));
+                        ba.setModifiedTimeStamp(convertTimestamp(getString(jsonArtifact, "modified")));
+                        ba.setModifiedBy(getString(jsonArtifact, "modified_by"));
+                        ba.setActual_md5(getString(jsonArtifact, "actual_md5"));
+                        ba.setActual_sha1(getString(jsonArtifact, "actual_sha1"));
+                        ba.setCanonicalName(artifactCanonicalName);
+                        ba.setTimestamp(timestamp);
+                        ba.setVirtualRepos(getJsonArray(jsonArtifact, "virtual_repos"));
+                        addMetadataToArtifact(ba, jsonArtifact);
+                        binaryArtifactList.add(ba);
+                    });
+                } else {
+
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("Artifact at " + fullPath + " matched pattern " + idx);
+                    }
+
+                    result.setType(getString(jsonArtifact, "type"));
+                    result.setCreatedTimeStamp(convertTimestamp(getString(jsonArtifact, "created")));
+                    result.setCreatedBy(getString(jsonArtifact, "created_by"));
+                    result.setModifiedTimeStamp(convertTimestamp(getString(jsonArtifact, "modified")));
+                    result.setModifiedBy(getString(jsonArtifact, "modified_by"));
+                    result.setActual_md5(getString(jsonArtifact, "actual_md5"));
+                    result.setActual_sha1(getString(jsonArtifact, "actual_sha1"));
+                    result.setCanonicalName(artifactCanonicalName);
+                    result.setTimestamp(timestamp);
+                    result.setVirtualRepos(getJsonArray(jsonArtifact, "virtual_repos"));
+                    addMetadataToArtifact(result, jsonArtifact);
+                    binaryArtifactList.add(result);
+                }
+            }
+
+
+			idx++;
+		}
+
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Artifact at " + fullPath + " did not match any patterns.");
+		}
+		return binaryArtifactList;
 	}
 
 

@@ -34,6 +34,9 @@ public class GenericCollectorItemServiceImpl implements GenericCollectorItemServ
     private final CollectorItemRepository collectorItemRepository;
     private final ApiSettings apiSettings;
     private final BinaryArtifactRepository binaryArtifactRepository;
+    private static final int ARTIFACT_GROUP =1;
+    private static final int ARTIFACT_NAME = 2;
+    private static final int ARTIFACT_VERSION =3;
 
 
     @Autowired
@@ -86,9 +89,11 @@ public class GenericCollectorItemServiceImpl implements GenericCollectorItemServ
     public String createGenericBinaryArtifactData(GenericCollectorItemCreateRequest request){
         ObjectId id = new ObjectId(request.getBuildId());
         Build currentBuild = buildRepository.findOne(id);
-        String artifactName = captureArtifactName(apiSettings.getCapturePattern(),request.getRawData());
-        String artifactVersion = captureArtifactVersion(apiSettings.getCapturePattern(),request.getRawData());
-        List<CollectorItem> artifactCollectorItems = collectorItemRepository.findByArtifactName(artifactName);
+        String artifactName = captureArtifactAttributes(apiSettings.getCapturePattern(),request.getRawData(),ARTIFACT_NAME);
+        String artifactVersion = captureArtifactAttributes(apiSettings.getCapturePattern(),request.getRawData(),ARTIFACT_VERSION);
+        String artifactGroupId = captureArtifactAttributes(apiSettings.getCapturePattern(),request.getRawData(),ARTIFACT_GROUP);
+        String path = artifactGroupId+"/"+artifactName;
+        List<CollectorItem> artifactCollectorItems = collectorItemRepository.findByArtifactNameAndPath(artifactName,path);
         List<ObjectId> artifactCollectorItemIds = !CollectionUtils.isEmpty(artifactCollectorItems)?artifactCollectorItems.stream().map(CollectorItem::getId).collect(Collectors.toList()):null;
         List<BinaryArtifact> genericBinaryArtifacts = new ArrayList<>();
         for (ObjectId item:artifactCollectorItemIds) {
@@ -99,25 +104,14 @@ public class GenericCollectorItemServiceImpl implements GenericCollectorItemServ
         return genericBinaryArtifacts.stream().map(BinaryArtifact::getId).toString();
     }
 
-    private String captureArtifactName(String capturePattern, String rawData) {
+    private String captureArtifactAttributes(String capturePattern, String rawData,int group) {
         List<String> regex = Arrays.asList(capturePattern);
         return regex
                 .stream().map(Pattern::compile)
                 .map(p -> p.matcher(rawData))
                 .filter(Matcher::find)
                 .findFirst()
-                .map(match -> match.group(2))
-                .orElse("");
-    }
-
-    private String captureArtifactVersion(String capturePattern, String rawData) {
-        List<String> regex = Arrays.asList(capturePattern);
-        return regex
-                .stream().map(Pattern::compile)
-                .map(p -> p.matcher(rawData))
-                .filter(Matcher::find)
-                .findFirst()
-                .map(match -> match.group(3))
+                .map(match -> match.group(group))
                 .orElse("");
     }
 

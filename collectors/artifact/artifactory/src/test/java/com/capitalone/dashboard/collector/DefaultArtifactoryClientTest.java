@@ -5,6 +5,7 @@ import com.capitalone.dashboard.model.BaseArtifact;
 import com.capitalone.dashboard.model.BinaryArtifact;
 import com.capitalone.dashboard.model.RepoAndPattern;
 import com.capitalone.dashboard.model.ServerSetting;
+import com.capitalone.dashboard.repository.BinaryArtifactRepository;
 import com.capitalone.dashboard.util.ArtifactUtilTest;
 import com.capitalone.dashboard.util.Supplier;
 import org.apache.commons.io.IOUtils;
@@ -38,6 +39,7 @@ public class DefaultArtifactoryClientTest {
 	@Mock private Supplier<RestOperations> restOperationsSupplier;
     @Mock private RestOperations rest;
     @Mock private ArtifactorySettings settings;
+    @Mock private BinaryArtifactRepository binaryArtifactRepository;
     
     private final DateFormat FULL_DATE = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
     
@@ -53,7 +55,7 @@ public class DefaultArtifactoryClientTest {
 		r.setPatterns(Arrays.asList(ArtifactUtilTest.IVY_PATTERN1, ArtifactUtilTest.IVY_ARTIFACT_PATTERN1, ArtifactUtilTest.MAVEN_PATTERN1,ArtifactUtilTest.ARTIFACT_PATTERN));
 		serverSetting.setRepoAndPatterns(Collections.singletonList(r));
         settings.setServers(Collections.singletonList(serverSetting));
-        defaultArtifactoryClient = new DefaultArtifactoryClient(settings, restOperationsSupplier);
+        defaultArtifactoryClient = new DefaultArtifactoryClient(settings, restOperationsSupplier,binaryArtifactRepository);
     }
     
     @Test
