@@ -14,7 +14,7 @@ export let BUILD_CHARTS: IChart[] = [
     data: {
       areaChart: true,
       detailComponent: BuildDetailComponent,
-      data: [
+      dataPoints: [
       {
         name: 'All Builds',
         series: []
