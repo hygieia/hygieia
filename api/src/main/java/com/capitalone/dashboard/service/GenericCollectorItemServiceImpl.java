@@ -94,7 +94,7 @@ public class GenericCollectorItemServiceImpl implements GenericCollectorItemServ
         String artifactGroupId = captureArtifactAttributes(apiSettings.getCapturePattern(),request.getRawData(),ARTIFACT_GROUP);
         String path = artifactGroupId+"/"+artifactName;
         List<CollectorItem> artifactCollectorItems = collectorItemRepository.findByArtifactNameAndPath(artifactName,path);
-        List<ObjectId> artifactCollectorItemIds = !CollectionUtils.isEmpty(artifactCollectorItems)?artifactCollectorItems.stream().map(CollectorItem::getId).collect(Collectors.toList()):null;
+        List<ObjectId> artifactCollectorItemIds = !CollectionUtils.isEmpty(artifactCollectorItems)?artifactCollectorItems.stream().map(CollectorItem::getId).collect(Collectors.toList()):new ArrayList<>();
         List<BinaryArtifact> genericBinaryArtifacts = new ArrayList<>();
         for (ObjectId item:artifactCollectorItemIds) {
             BinaryArtifact gba = createGenericBinaryArtifact(artifactName,artifactVersion,item,currentBuild);
