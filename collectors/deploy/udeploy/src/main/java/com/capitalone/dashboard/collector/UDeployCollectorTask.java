@@ -2,6 +2,7 @@ package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Configuration;
 import com.capitalone.dashboard.model.Environment;
 import com.capitalone.dashboard.model.EnvironmentComponent;
 import com.capitalone.dashboard.model.EnvironmentStatus;
@@ -10,6 +11,7 @@ import com.capitalone.dashboard.model.UDeployCollector;
 import com.capitalone.dashboard.model.UDeployEnvResCompData;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.repository.ConfigurationRepository;
 import com.capitalone.dashboard.repository.EnvironmentComponentRepository;
 import com.capitalone.dashboard.repository.EnvironmentStatusRepository;
 import com.capitalone.dashboard.repository.UDeployApplicationRepository;
@@ -27,6 +29,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.List;
 import java.util.Set;
 
@@ -43,10 +46,9 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
     private final UDeployApplicationRepository uDeployApplicationRepository;
     private final UDeployClient uDeployClient;
     private final UDeploySettings uDeploySettings;
-
     private final EnvironmentComponentRepository envComponentRepository;
     private final EnvironmentStatusRepository environmentStatusRepository;
-
+	private final ConfigurationRepository configurationRepository;
     private final ComponentRepository dbComponentRepository;
 
     @Autowired
@@ -56,6 +58,7 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
                                 EnvironmentComponentRepository envComponentRepository,
                                 EnvironmentStatusRepository environmentStatusRepository,
                                 UDeploySettings uDeploySettings, UDeployClient uDeployClient,
+                                ConfigurationRepository configurationRepository,
                                 ComponentRepository dbComponentRepository) {
         super(taskScheduler, "UDeploy");
         this.uDeployCollectorRepository = uDeployCollectorRepository;
@@ -65,10 +68,25 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
         this.envComponentRepository = envComponentRepository;
         this.environmentStatusRepository = environmentStatusRepository;
         this.dbComponentRepository = dbComponentRepository;
+		this.configurationRepository = configurationRepository;
     }
 
     @Override
     public UDeployCollector getCollector() {
+		Configuration config = configurationRepository.findByCollectorName("UDeploy");
+        if (config != null) {
+            config.decryptOrEncrptInfo();
+            // TO clear the username and password from existing run and
+            // pick the latest
+            uDeploySettings.getUsernames().clear();
+            uDeploySettings.getServers().clear();
+            uDeploySettings.getPasswords().clear();
+            for (Map<String, String> udeployServer : config.getInfo()) {
+                uDeploySettings.getServers().add(udeployServer.get("url"));
+                uDeploySettings.getUsernames().add(udeployServer.get("userName"));
+                uDeploySettings.getPasswords().add(udeployServer.get("password"));
+            }
+        }
         return UDeployCollector.prototype(uDeploySettings.getServers(), uDeploySettings.getNiceNames());
     }
 
@@ -147,7 +165,7 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
         uDeployApplicationRepository.delete(deleteAppList);
 
     }
-
+    
     private List<EnvironmentComponent> getEnvironmentComponent(List<UDeployEnvResCompData> dataList, Environment environment, UDeployApplication application) {
         List<EnvironmentComponent> returnList = new ArrayList<>();
         for (UDeployEnvResCompData data : dataList) {
@@ -172,7 +190,6 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
         return returnList;
     }
 
-
     private List<EnvironmentStatus> getEnvironmentStatus(List<UDeployEnvResCompData> dataList) {
         List<EnvironmentStatus> returnList = new ArrayList<>();
         for (UDeployEnvResCompData data : dataList) {
@@ -188,7 +205,6 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
         }
         return returnList;
     }
-
 
     /**
      * For each {@link UDeployApplication}, update the current

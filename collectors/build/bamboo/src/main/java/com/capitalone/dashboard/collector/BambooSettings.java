@@ -15,6 +15,7 @@ public class BambooSettings {
 
     private String cron;
     private String maxPlans = "2000"; 
+    private int batchSize = 10; 
     private boolean saveLog = false;
     private List<String> servers;
     private List<String> niceNames;
@@ -37,6 +38,14 @@ public class BambooSettings {
     public void setMaxPlans(String maxPlans) { 
         this.maxPlans = maxPlans; 
     } 
+
+    public int getBatchSize() {
+        return batchSize;
+    }
+
+    public void setBatchSize(int batchSize) {
+        this.batchSize = batchSize;
+    }
 
     public boolean isSaveLog() {
         return saveLog;
