@@ -1,10 +1,6 @@
 package com.capitalone.dashboard.request;
 
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.Collector;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
