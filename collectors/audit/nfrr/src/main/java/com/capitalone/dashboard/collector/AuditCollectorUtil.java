@@ -23,6 +23,7 @@ import com.capitalone.dashboard.status.CodeQualityAuditStatus;
 import com.capitalone.dashboard.status.PerformanceTestAuditStatus;
 import com.capitalone.dashboard.status.LibraryPolicyAuditStatus;
 import com.capitalone.dashboard.status.TestResultAuditStatus;
+import com.capitalone.dashboard.status.ArtifactAuditStatus;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.http.client.utils.URIBuilder;
@@ -63,11 +64,8 @@ public class AuditCollectorUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(AuditCollectorUtil.class);
     private static final String HYGIEIA_AUDIT_URL = "/dashboardReview";
     private static List<AuditResult> auditResults = new ArrayList<>();
-    private static final String AUDITTYPES_PARAM  = "CODE_REVIEW,CODE_QUALITY,STATIC_SECURITY_ANALYSIS,LIBRARY_POLICY,TEST_RESULT,PERF_TEST";
-
-    private enum AUDIT_PARAMS {title,businessService,businessApplication,beginDate,endDate,auditType};
-
-
+    private static final String AUDIT_TYPES_PARAM  = "CODE_REVIEW,CODE_QUALITY,STATIC_SECURITY_ANALYSIS,LIBRARY_POLICY,TEST_RESULT,PERF_TEST,ARTIFACT";
+    private enum AUDIT_PARAMS {title,businessService,businessApplication,beginDate,endDate,auditType}
     private static final String STR_URL = "url";
     private static final String STR_REPORTURL = "reportUrl";
     private static final String STR_LIBRARYPOLICYRESULT = "libraryPolicyResult";
@@ -216,6 +214,9 @@ public class AuditCollectorUtil {
         }
         if (auditType.equals(AuditType.BUILD_REVIEW)) {
             return (jsonArray.toJSONString().contains(DashboardAuditStatus.DASHBOARD_BUILD_CONFIGURED.name()) ? true : false);
+        }
+        if (auditType.equals(AuditType.ARTIFACT)) {
+            return (jsonArray.toJSONString().contains(DashboardAuditStatus.DASHBOARD_ARTIFACT_CONFIGURED.name()) ? true : false);
         }
         return false;
     }
@@ -445,22 +446,90 @@ public class AuditCollectorUtil {
     }
 
     /**
+     * Get artifact audit results
+     */
+    protected Audit getArtifactAudit(JSONArray jsonArray, JSONArray global) {
+
+        LOGGER.info("NFRR Audit Collector auditing ARTIFACT");
+        Audit audit = new Audit();
+        audit.setType(AuditType.ARTIFACT);
+        CollectorItem collectorItem = createCollectorItem(audit.getType());
+        audit.setCollectorItem(collectorItem);
+        auditCollectorItems.add(collectorItem);
+
+        Audit basicAudit;
+        if ((basicAudit = doBasicAuditCheck(jsonArray, global, AuditType.ARTIFACT)) != null) {
+            basicAudit.setCollectorItem(collectorItem);
+            return basicAudit;
+        }
+        audit.setAuditStatus(AuditStatus.OK);
+        audit.setDataStatus(DataStatus.OK);
+        Set<String> auditStatuses;
+        for (Object o : jsonArray) {
+            JSONArray auditJO = (JSONArray) ((JSONObject) o).get(STR_AUDITSTATUSES);
+            Optional<Object> urlOptObj = Optional.ofNullable(((JSONObject) o).get(STR_URL));
+            urlOptObj.ifPresent(urlObj -> audit.getUrl().add(urlOptObj.get().toString()));
+            auditJO.stream().forEach(status -> audit.getAuditStatusCodes().add((String) status));
+        }
+        auditStatuses = audit.getAuditStatusCodes();
+        if (auditStatuses.contains(ArtifactAuditStatus.ART_SYS_ACCT_BUILD_USER.name())
+                || auditStatuses.contains(ArtifactAuditStatus.ART_PROD_DEPLOY_FAIL.name())
+                || auditStatuses.contains(ArtifactAuditStatus.ART_TEST_NOT_FOUND.name())){
+            audit.setAuditStatus(AuditStatus.FAIL);
+            audit.setDataStatus(DataStatus.OK);
+        } else if (auditStatuses.contains(ArtifactAuditStatus.ART_SYS_ACCT_BUILD_AUTO.name())
+                || auditStatuses.contains(ArtifactAuditStatus.ART_SYS_ACCT_BUILD_THIRD_PARTY.name())
+                || auditStatuses.contains(ArtifactAuditStatus.ART_PROD_DEPLOY_OK.name())) {
+            audit.setAuditStatus(AuditStatus.OK);
+            audit.setDataStatus(DataStatus.OK);
+        } else if (auditStatuses.contains(ArtifactAuditStatus.UNAVAILABLE.name())) {
+            audit.setAuditStatus(AuditStatus.NA);
+            audit.setDataStatus(DataStatus.ERROR);
+        }
+        else if (auditStatuses.contains(ArtifactAuditStatus.NO_ACTIVITY.name())) {
+            audit.setAuditStatus(AuditStatus.NA);
+            audit.setDataStatus(DataStatus.NO_DATA);
+        }
+        else{
+            audit.setAuditStatus(AuditStatus.NA);
+            audit.setDataStatus(DataStatus.NO_DATA);
+        }
+        return audit;
+    }
+
+    /**
+     * Get failure audit
+     */
+    public Audit getFailureAudit() {
+        Audit audit = new Audit();
+        audit.setDataStatus(DataStatus.ERROR);
+        audit.setAuditStatus(AuditStatus.NA);
+        audit.setType(AuditType.ALL);
+        audit.setCollectorItem(createCollectorItem(audit.getType()));
+        auditCollectorItems.add(audit.getCollectorItem());
+        return audit;
+    }
+
+    /**
      * Get all audit results
      */
     @SuppressWarnings("PMD")
     public Map<AuditType, Audit> getAudit(Dashboard dashboard, AuditSettings settings, long begin, long end) {
         Map<AuditType, Audit> audits = new HashMap<>();
         setDashboard(dashboard);
+        auditCollectorItems.clear();
 
         String url = getAuditAPIUrl(dashboard, settings, begin, end);
         JSONObject auditResponseObj = parseObject(url, settings);
         if(auditResponseObj == null){
+            Audit audit = getFailureAudit();
+            audits.put(audit.getType(), audit);
+            updateComponent(dashboard);
             return audits;
         }
         JSONArray globalStatus = (JSONArray) auditResponseObj.get(STR_AUDITSTATUSES);
         JSONObject review = (JSONObject) auditResponseObj.get(STR_REVIEW);
 
-        auditCollectorItems.clear();
         JSONArray codeReviewJO = review.get(AuditType.CODE_REVIEW.name()) == null ? null : (JSONArray) review.get(AuditType.CODE_REVIEW.name());
         Audit audit = getCodeReviewAudit(codeReviewJO, globalStatus);
         audits.put(audit.getType(), audit);
@@ -483,6 +552,10 @@ public class AuditCollectorUtil {
 
         JSONArray sscaJO = review.get(AuditType.STATIC_SECURITY_ANALYSIS.name()) == null ? null : (JSONArray) review.get(AuditType.STATIC_SECURITY_ANALYSIS.name());
         audit = getSecurityAudit(sscaJO, globalStatus);
+        audits.put(audit.getType(), audit);
+
+        JSONArray artifJO = review.get(AuditType.ARTIFACT.name()) == null ? null : (JSONArray) review.get(AuditType.ARTIFACT.name());
+        audit = getArtifactAudit(artifJO, globalStatus);
         audits.put(audit.getType(), audit);
 
         updateComponent(dashboard);
@@ -517,6 +590,7 @@ public class AuditCollectorUtil {
             responseObj = (JSONObject) jsonParser.parse(response.getBody());
         } catch (Exception e) {
             LOGGER.error("Error while calling audit api for the params : " + url.substring(url.lastIndexOf("?")),e);
+            responseObj = null;
         }
         return responseObj;
     }
@@ -539,7 +613,7 @@ public class AuditCollectorUtil {
         auditURI.addParameter(AUDIT_PARAMS.endDate.name(), String.valueOf(endDate));
         auditURI.addParameter(AUDIT_PARAMS.auditType.name(),"");
         String auditURIStr = auditURI.toString().replace("+", " ");
-        return auditURIStr + AUDITTYPES_PARAM;
+        return auditURIStr + AUDIT_TYPES_PARAM;
     }
 
     /**
@@ -569,19 +643,26 @@ public class AuditCollectorUtil {
         String appServiceOwner = ((cmdb == null || cmdb.getAppServiceOwner() == null) ? "" : cmdb.getAppServiceOwner());
         String appBusAppOwner = ((cmdb == null || cmdb.getBusinessOwner() == null) ? "" : cmdb.getBusinessOwner());
 
-        Arrays.stream(AuditType.values()).forEach((AuditType auditType) -> {
-            if (!(auditType.equals(AuditType.ALL) || auditType.equals(AuditType.BUILD_REVIEW) || auditType.equals(AuditType.ARTIFACT))) {
-                Audit audit = auditMap.get(auditType);
-                if (audit != null) {
-                    AuditResult auditResult = new AuditResult(dashboardId, dashboardTitle, ownerDept, appService, appBusApp, appServiceOwner, appBusAppOwner,
-                            auditType, audit.getDataStatus().name(), audit.getAuditStatus().name(), String.join(",", audit.getAuditStatusCodes()),
-                            String.join(",", audit.getUrl()), timestamp);
-                    auditResult.setCollectorItemId(audit.getCollectorItem().getId());
-                    auditResult.setOptions(audit.getOptions() != null ? audit.getOptions() : null);
-                    auditResults.add(auditResult);
+        try {
+            Arrays.stream(AuditType.values()).forEach((AuditType auditType) -> {
+                if (!(auditType.equals(AuditType.BUILD_REVIEW))) {
+                    Audit audit = auditMap.get(auditType);
+                    if (audit != null) {
+                        AuditResult auditResult = new AuditResult(dashboardId, dashboardTitle, ownerDept, appService, appBusApp, appServiceOwner, appBusAppOwner,
+                                auditType, audit.getDataStatus().name(), audit.getAuditStatus().name(), String.join(",", audit.getAuditStatusCodes()),
+                                String.join(",", audit.getUrl()), timestamp);
+                        auditResult.setCollectorItemId(audit.getCollectorItem() != null ? audit.getCollectorItem().getId() : null);
+                        auditResult.setOptions(audit.getOptions());
+                        auditResults.add(auditResult);
+                    }
                 }
-            }
-        });
+            });
+        } catch(Exception e){
+            LOGGER.error("Error while constructing audit result modal for : " + dashboard.getTitle(), e);
+            AuditResult errAuditResult = new AuditResult(dashboardId, dashboardTitle, ownerDept, appService, appBusApp, appServiceOwner, appBusAppOwner,
+                    AuditType.ALL, DataStatus.ERROR.name(), AuditStatus.NA.name(), null, null, timestamp);
+            auditResults.add(errAuditResult);
+        }
     }
 
     /**
@@ -702,7 +783,7 @@ public class AuditCollectorUtil {
         Optional<Dashboard> dashboardOpt = Optional.ofNullable(this.getDashboard());
         description.add(dashboardOpt.isPresent() ? dashboardOpt.get().getTitle() : "title");
         description.add(auditType.name().toLowerCase());
-        description.add("audit process");
+        description.add(auditType.equals(AuditType.ALL) ? "audit process failure" : "audit process");
         return description.toString();
     }
 }
