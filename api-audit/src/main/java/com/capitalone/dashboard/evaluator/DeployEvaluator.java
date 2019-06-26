@@ -42,7 +42,7 @@ public class DeployEvaluator extends Evaluator<DeployAuditResponse> {
     public Collection<DeployAuditResponse> evaluate(Dashboard dashboard, long beginDate, long endDate, Map<?, ?> data) throws AuditException {
         List<CollectorItem> buildItems = getCollectorItems(dashboard, "build", CollectorType.Build);
         if (CollectionUtils.isEmpty(buildItems)) {
-            return Arrays.asList(getErrorResponse(DeployAuditStatus.COLLECTOR_ITEM_ERROR));
+            return Arrays.asList(getErrorResponse(DeployAuditStatus.COLLECTOR_ITEM_ERROR, null));
         }
         return buildItems.stream().map(item -> evaluate(item, beginDate, endDate, null)).collect(Collectors.toList());
     }
@@ -61,8 +61,9 @@ public class DeployEvaluator extends Evaluator<DeployAuditResponse> {
      */
     private DeployAuditResponse getDeployAuditResponse(CollectorItem buildItem, long beginDate, long endDate, ApiSettings apiSettings) {
         DeployAuditResponse deployAuditResponse = new DeployAuditResponse();
+        deployAuditResponse.setAuditEntity(buildItem.getOptions());
         Build build = buildRepository.findTop1ByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(buildItem.getId(), beginDate - 1, endDate + 1);
-        if (Objects.isNull(build)) return getErrorResponse(DeployAuditStatus.NO_ACTIVITY);
+        if (Objects.isNull(build)) return getErrorResponse(DeployAuditStatus.NO_ACTIVITY, buildItem);
         if (Objects.nonNull(build)) {
             List<BuildStage> stages = build.getStages();
             if (matchStage(stages, SUCCESS, apiSettings)) {
@@ -79,10 +80,13 @@ public class DeployEvaluator extends Evaluator<DeployAuditResponse> {
         return deployAuditResponse;
     }
 
-    private DeployAuditResponse getErrorResponse(DeployAuditStatus auditStatus) {
+    private DeployAuditResponse getErrorResponse(DeployAuditStatus auditStatus, CollectorItem collectorItem) {
         DeployAuditResponse deployAuditResponse = new DeployAuditResponse();
         deployAuditResponse.addAuditStatus(auditStatus);
         deployAuditResponse.setErrorMessage("Unable to register in Hygieia- Deployment scripts not configured");
+        if (collectorItem != null){
+            deployAuditResponse.setAuditEntity(collectorItem.getOptions());
+        }
         return deployAuditResponse;
     }
 
