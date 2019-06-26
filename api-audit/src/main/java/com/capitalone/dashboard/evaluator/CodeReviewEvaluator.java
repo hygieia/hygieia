@@ -122,7 +122,7 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
     protected CodeReviewAuditResponseV2 getErrorResponse(CollectorItem repoItem, String scmBranch, String scmUrl) {
         CodeReviewAuditResponseV2 noPRsCodeReviewAuditResponse = new CodeReviewAuditResponseV2();
         noPRsCodeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.COLLECTOR_ITEM_ERROR);
-
+        noPRsCodeReviewAuditResponse.setAuditEntity(repoItem.getOptions());
         noPRsCodeReviewAuditResponse.setLastUpdated(repoItem.getLastUpdated());
         noPRsCodeReviewAuditResponse.setBranch(scmBranch);
         noPRsCodeReviewAuditResponse.setUrl(scmUrl);
@@ -140,6 +140,8 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
             reviewAuditResponseV2.addAuditStatus(CodeReviewAuditStatus.REPO_NOT_CONFIGURED);
             return reviewAuditResponseV2;
         }
+        reviewAuditResponseV2.setAuditEntity(repoItem.getOptions());
+
         String scmUrl = (String) repoItem.getOptions().get("url");
         String scmBranch = (String) repoItem.getOptions().get("branch");
 

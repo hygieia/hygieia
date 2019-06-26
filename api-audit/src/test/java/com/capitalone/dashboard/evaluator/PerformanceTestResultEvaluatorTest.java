@@ -54,6 +54,8 @@ public class PerformanceTestResultEvaluatorTest {
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("PERFORMANCE_MET"));
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("PERFORMANCE_THRESHOLD_RESPONSE_TIME_MET"));
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("PERF_RESULT_AUDIT_OK"));
+        Assert.assertEquals(true, responseV2.getAuditEntity().toString().contains("url"));
+
     }
 
     @Test
@@ -68,6 +70,7 @@ public class PerformanceTestResultEvaluatorTest {
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("PERFORMANCE_THRESHOLDS_TRANSACTIONS_PER_SECOND_FOUND"));
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("PERFORMANCE_MET"));
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("PERF_RESULT_AUDIT_OK"));
+        Assert.assertEquals(true, responseV2.getAuditEntity().toString().contains("url"));
     }
 
     @Test
@@ -82,6 +85,7 @@ public class PerformanceTestResultEvaluatorTest {
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("PERFORMANCE_MET"));
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("PERFORMANCE_THRESHOLD_ERROR_RATE_MET"));
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("PERF_RESULT_AUDIT_OK"));
+        Assert.assertEquals(true, responseV2.getAuditEntity().toString().contains("url"));
     }
 
     @Test
@@ -94,6 +98,7 @@ public class PerformanceTestResultEvaluatorTest {
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("PERFORMANCE_MET"));
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("PERFORMANCE_THRESHOLD_ERROR_RATE_MET"));
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("PERF_RESULT_AUDIT_FAIL"));
+        Assert.assertEquals(true, responseV2.getAuditEntity().toString().contains("url"));
     }
 
 
@@ -105,6 +110,7 @@ public class PerformanceTestResultEvaluatorTest {
         item.setEnabled(true);
         item.getOptions().put("jobName", "testHygieiaPerf");
         item.getOptions().put("instanceUrl", "http://github.com/capone/hygieia");
+        item.getOptions().put("url", "http://github.com/capone/hygieia/testHygieiaPerf");
         item.setLastUpdated(lastUpdated);
         return item;
 
