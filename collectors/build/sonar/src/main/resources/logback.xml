@@ -3,7 +3,7 @@
     <!-- encoders are assigned the type
          ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
     <encoder>
-      <pattern>%d %-5level %logger{36} - %msg%n</pattern>
+      <pattern>%d [%thread] %-5level %logger{36} - %msg%n</pattern>
     </encoder>
   </appender>
  <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -18,7 +18,7 @@
       <maxHistory>30</maxHistory>
     </rollingPolicy>
     <encoder>
-       <pattern>%d %-5level %logger{36} - %msg%n</pattern>
+       <pattern>%d [%thread] %-5level %logger{36} - %msg%n</pattern>
     </encoder>
  </appender>
 
