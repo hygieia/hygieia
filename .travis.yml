@@ -6,7 +6,7 @@ branches:
   - master
   - gerrit-integration
   - "/^v[0-9]+\\.[0-9]+\\.[0-9]+.*$/"
-sudo: true
+sudo: required
 cache:
   directories:
   - "$TRAVIS_BUILD_DIR/UI/node_modules"
