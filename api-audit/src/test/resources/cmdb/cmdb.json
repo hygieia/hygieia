@@ -1,0 +1,19 @@
+[
+{
+  "_id" : "5d10f364930f703aa01f5d81",
+  "collectorItemId" : "5be9a46ce4b0389bb3653542",
+  "timestamp" : 1555708859798,
+  "configurationItem" : "",
+  "configurationItemSubType" : "Business",
+  "configurationItemType" : "Application",
+  "assignmentGroup" : "IPS_RETAIL_SBLC",
+  "appServiceOwner" : "",
+  "businessOwner" : "",
+  "developmentOwner" : "",
+  "ownerDept" : "Tech",
+  "ownerSubDept" : "Small Business",
+  "commonName" : "TestAudit",
+  "itemType" : "component",
+  "validConfigItem" : true
+}
+]

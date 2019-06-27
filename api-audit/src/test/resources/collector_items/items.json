@@ -474,6 +474,24 @@
     }
   },
   {
+    "id": "57f2a0193b55670a9e06d63b",
+    "description": "TEST-UI",
+    "niceName": "TEST",
+    "enabled": true,
+    "errors": [],
+    "pushed": true,
+    "collectorId": "56df29df7fab7c3ec3c432ea",
+    "lastUpdated": 1513106044147,
+    "options": {
+      "jobName": "TEST-UI",
+      "jobUrl": "https://myjenkins.com/myjenkins/job/TEST-UI/",
+      "instanceUrl": "https://myjenkins.com/myjenkins/",
+      "applicationID": [
+        "TestBusServ"
+      ]
+    }
+  },
+  {
     "id": "5b7b33d6b2ea1a4c58a61a2d",
     "enabled": true,
     "errors": [],
