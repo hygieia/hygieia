@@ -58,7 +58,7 @@ public class ArtifactEvaluator extends Evaluator<ArtifactAuditResponse> {
         String artifactName = getValue(collectorItem, ARTIFACT_NAME);
         String path = getValue(collectorItem, PATH);
         String repoName = getValue(collectorItem, REPO_NAME);
-
+        artifactAuditResponse.setAuditEntity(collectorItem.getOptions());
         if (StringUtils.isEmpty(artifactName) || StringUtils.isEmpty(repoName) || StringUtils.isEmpty(path)) {
             return getErrorResponse(collectorItem, ArtifactAuditStatus.COLLECTOR_ITEM_ERROR);
         }
@@ -105,6 +105,7 @@ public class ArtifactEvaluator extends Evaluator<ArtifactAuditResponse> {
         errorAuditResponse.addAuditStatus(artifactAuditStatus);
         errorAuditResponse.setLastExecutionTime(collectorItem.getLastUpdated());
         errorAuditResponse.setArtifactName(getValue(collectorItem, ARTIFACT_NAME));
+        errorAuditResponse.setAuditEntity(collectorItem.getOptions());
         return errorAuditResponse;
     }
 

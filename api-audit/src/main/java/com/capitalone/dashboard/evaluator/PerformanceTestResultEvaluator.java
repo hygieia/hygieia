@@ -65,6 +65,7 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
             perfReviewResponse.addAuditStatus(PerformanceTestAuditStatus.COLLECTOR_ITEM_ERROR);
             return perfReviewResponse;
         }
+        perfReviewResponse.setAuditEntity(perfItem.getOptions());
         List<TestResult> testResults = testResultRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(perfItem.getId(), beginDate-1, endDate+1);
         List<PerfTest> testlist = new ArrayList<>();
 

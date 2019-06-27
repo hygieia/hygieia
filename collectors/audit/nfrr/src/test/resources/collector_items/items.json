@@ -523,6 +523,25 @@
     }
   },
   {
+    "_id" : "5ccc8cd6a63390416752b3a3",
+    "_class" : "com.capitalone.dashboard.model.CollectorItem",
+    "description" : "title artifact audit process",
+    "niceName" : "",
+    "enabled" : true,
+    "errors" : [
+
+    ],
+    "pushed" : true,
+    "collectorId" : "5bb70128039798589fd792ec",
+    "lastUpdated" : 1557101003914,
+    "options" : {
+      "options" : {
+        "jobName" : "artifact audit job",
+        "instanceUrl" : "https://jira.company.com/browse/TR-21550"
+      }
+    }
+  },
+  {
     "_id" : "5ccc8cd6a63390416925b3a3",
     "_class" : "com.capitalone.dashboard.model.CollectorItem",
     "description" : "auditTestDashboard code_quality audit process",

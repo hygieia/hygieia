@@ -42,6 +42,7 @@ public class DeployEvaluatorTest {
     public void testEvaluate_CollectorItemError_Artifact_NULL() {
         response = deployEvaluator.evaluate(getCollectorItem("testGenericItem", "/test", false), 125634536, 6235263, null);
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("NO_ACTIVITY"));
+        Assert.assertEquals(true,response.getAuditEntity().toString().contains("jobUrl"));
     }
 
     @Test
@@ -50,7 +51,7 @@ public class DeployEvaluatorTest {
         response = deployEvaluator.evaluate(getCollectorItem("testGenericItem", "/test", false), 125634536, 6235263, null);
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("NO_ACTIVITY"));
         verify(buildRepository, times(1)).findTop1ByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class), any(Long.class), any(Long.class));
-
+        Assert.assertEquals(true,response.getAuditEntity().toString().contains("jobUrl"));
     }
 
     @Test
@@ -60,6 +61,7 @@ public class DeployEvaluatorTest {
         response = deployEvaluator.evaluate(getCollectorItem("testGenericItem", "/test", false), 125634536, 6235263, null);
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("DEPLOY_SCRIPTS_FOUND_TESTED"));
         verify(buildRepository, times(1)).findTop1ByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class), any(Long.class), any(Long.class));
+        Assert.assertEquals(true,response.getAuditEntity().toString().contains("jobUrl"));
 
     }
 
@@ -70,6 +72,7 @@ public class DeployEvaluatorTest {
         response = deployEvaluator.evaluate(getCollectorItem("testGenericItem", "/test", false), 125634536, 6235263, null);
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("DEPLOY_SCRIPTS_FOUND_NOT_TESTED"));
         verify(buildRepository, times(1)).findTop1ByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class), any(Long.class), any(Long.class));
+        Assert.assertEquals(true,response.getAuditEntity().toString().contains("jobUrl"));
 
     }
 
@@ -80,6 +83,7 @@ public class DeployEvaluatorTest {
         response = deployEvaluator.evaluate(getCollectorItem("testGenericItem", "/test", false), 125634536, 6235263, null);
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("DEPLOYMENT_SCRIPTS_TEST_NOT_FOUND"));
         verify(buildRepository, times(1)).findTop1ByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class), any(Long.class), any(Long.class));
+        Assert.assertEquals(true,response.getAuditEntity().toString().contains("jobUrl"));
 
     }
 
