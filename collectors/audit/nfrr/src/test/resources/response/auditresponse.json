@@ -1,6 +1,7 @@
 {
   "auditStatuses": [
-    "DASHBOARD_TEST_CONFIGURED"
+    "DASHBOARD_TEST_CONFIGURED",
+    "DASHBOARD_ARTIFACT_CONFIGURED"
   ],
   "lastUpdated": 0,
   "dashboardTitle": "tychehygieiatitle",
@@ -149,6 +150,17 @@
           "EA-3682"
         ]
       }
-    }]
+    }],
+    "ARTIFACT": [
+      {
+        "auditStatuses": [
+          "NO_ACTIVITY"
+        ],
+        "lastUpdated": 0,
+        "auditEntity": {},
+        "artifactName": "artifact_001",
+        "lastExecutionTime": 1559313024789
+      }
+    ]
   }
 }

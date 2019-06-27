@@ -6,6 +6,7 @@ branches:
   - master
   - gerrit-integration
   - "/^v[0-9]+\\.[0-9]+\\.[0-9]+.*$/"
+sudo: required
 cache:
   directories:
   - "$TRAVIS_BUILD_DIR/UI/node_modules"
@@ -25,7 +26,6 @@ notifications:
   email:
     recipients:
     - tapabrata.pal@capitalone.com
-    - brock.beatty@capitalone.com
     - ragha.vema@capitalone.com
     - nireesh.thiruveedula@capitalone.com
     - Stephen.Hughes@capitalone.com
@@ -33,8 +33,6 @@ notifications:
     - brian.shriver@capitalone.com
     - kaitlyn.heinzmann@capitalone.com
     - Justin.Hoelscher@capitalone.com
-    - Andrew.Tran@capitalone.com
-    - Christopher.Tompkins@capitalone.com
     on_success: always
     on_failure: always
 after_failure:

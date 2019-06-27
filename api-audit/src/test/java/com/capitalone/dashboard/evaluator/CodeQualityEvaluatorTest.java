@@ -51,6 +51,7 @@ public class CodeQualityEvaluatorTest {
 
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("COLLECTOR_ITEM_ERROR"));
         Assert.assertEquals(true, response.getMessage().toString().contains("Unable to collect scan results at this point - check Sonar project exist"));
+        Assert.assertEquals(true, response.getAuditEntity().toString().contains("url"));
     }
 
     @Test
@@ -68,6 +69,7 @@ public class CodeQualityEvaluatorTest {
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_THRESHOLD_UNIT_TEST_MET"));
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_AUDIT_OK"));
         Assert.assertEquals(false, response.getAuditStatuses().toString().contains("CODE_QUALITY_GATES_FOUND"));
+        Assert.assertEquals(true, response.getAuditEntity().toString().contains("url"));
     }
 
     @Test
@@ -87,6 +89,7 @@ public class CodeQualityEvaluatorTest {
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_THRESHOLD_UNIT_TEST_MET"));
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_AUDIT_FAIL"));
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_GATES_FOUND"));
+        Assert.assertEquals(true, response.getAuditEntity().toString().contains("url"));
     }
 
 
@@ -107,6 +110,7 @@ public class CodeQualityEvaluatorTest {
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_THRESHOLD_CODE_COVERAGE_FOUND"));
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_THRESHOLD_CRITICAL_MET"));
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_THRESHOLD_BLOCKER_FOUND"));
+        Assert.assertEquals(true, response.getAuditEntity().toString().contains("url"));
     }
 
     @Test
@@ -127,6 +131,7 @@ public class CodeQualityEvaluatorTest {
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_THRESHOLD_CRITICAL_MET"));
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("CODE_QUALITY_THRESHOLD_BLOCKER_FOUND"));
         Assert.assertEquals(false, response.getAuditStatuses().toString().contains("CODE_QUALITY_THRESHOLD_BLOCKER_MET"));
+        Assert.assertEquals(true, response.getAuditEntity().toString().contains("url"));
     }
 
     private CollectorItem createCollectorItem1(int lastUpdated) {
@@ -135,6 +140,7 @@ public class CodeQualityEvaluatorTest {
         items.setEnabled(true);
         items.getOptions().put("jobName", "testHygieiaCodeQuality");
         items.getOptions().put("instanceUrl", "http://github.com/capone/hygieia");
+        items.getOptions().put("url", "http://github.com/capone/hygieia/testHygieiaCodeQuality");
         items.setLastUpdated(lastUpdated);
         return items;
     }
@@ -146,6 +152,7 @@ public class CodeQualityEvaluatorTest {
         items.getOptions().put("jobName", "testHygieiaCodeQuality");
         items.getOptions().put("instanceUrl", "http://github.com/capone/hygieia");
         items.getOptions().put("projectId", projectId);
+        items.getOptions().put("url", "http://github.com/capone/hygieia/testHygieiaCodeQuality");
         return items;
     }
 

@@ -113,6 +113,7 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
         codeQualityAuditResponse.setUrl(returnQuality.getUrl());
         codeQualityAuditResponse.setCodeQuality(returnQuality);
         codeQualityAuditResponse.setLastExecutionTime(returnQuality.getTimestamp());
+        codeQualityAuditResponse.setAuditEntity(collectorItem.getOptions());
 
         for (CodeQualityMetric metric : returnQuality.getMetrics()) {
             //TODO: This is sonar specific - need to move this to api settings via properties file
@@ -186,6 +187,7 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
         missingInputResponse.setUrl((String)codeQualityCollectorItem.getOptions().get("instanceUrl"));
         missingInputResponse.setMessage("Unable to collect scan results at this point - check Sonar project exist");
         missingInputResponse.setName((String)codeQualityCollectorItem.getOptions().get("projectName"));
+        missingInputResponse.setAuditEntity(codeQualityCollectorItem.getOptions());
         return  missingInputResponse;
     }
 
@@ -205,6 +207,7 @@ public class CodeQualityEvaluator extends Evaluator<CodeQualityAuditResponse> {
         CodeQualityAuditResponse detailsMissing =new CodeQualityAuditResponse();
         detailsMissing.addAuditStatus(CodeQualityAuditStatus.CODE_QUALITY_DETAIL_MISSING);
         detailsMissing.setLastUpdated(codeQualityCollectorItem.getLastUpdated());
+        detailsMissing.setAuditEntity(codeQualityCollectorItem.getOptions());
         List<CodeQuality> codeQualities = codeQualityRepository.findByCollectorItemIdOrderByTimestampDesc(codeQualityCollectorItem.getId());
         for(CodeQuality returnCodeQuality:codeQualities) {
             detailsMissing.setUrl(returnCodeQuality.getUrl());
