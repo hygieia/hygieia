@@ -205,7 +205,7 @@ To carry out basic authentication for secure APIs, execute the following steps:
 	String passwordIsAuthToken = "PasswordIsAuthToken:{\"apiKey\":\"" + <generated apitoken> + "\"}";
 	byte[] encodedAuth = Base64.encodeBase64(passwordIsAuthToken.getBytes(StandardCharsets.US_ASCII));
 	String authHeader = "apiToken " + new String(encodedAuth);
-	Authorization: apiToken <authHeader>
+	Authorization: <authHeader>
 	```
 
    - Add apiUser header
