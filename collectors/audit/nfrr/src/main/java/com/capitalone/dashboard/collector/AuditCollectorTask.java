@@ -13,6 +13,7 @@ import com.capitalone.dashboard.repository.CmdbRepository;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * <h1>AuditCollectorTask</h1>
@@ -87,11 +89,14 @@ public class AuditCollectorTask extends CollectorTask<AuditCollector> {
 
         AuditCollector collector = getCollectorRepository().findByName(COLLECTOR_NAME);
         AuditCollectorUtil auditCollectorUtil = new AuditCollectorUtil(collector, componentRepository, collectorItemRepository);
+        int totTeamDbdCount = CollectionUtils.size(dashboards);
+        final AtomicInteger index = new AtomicInteger();
         dashboards.forEach((Dashboard dashboard) -> {
                 Map<AuditType, Audit> auditMap = auditCollectorUtil.getAudit(dashboard, settings,
                         auditBeginDateTimeStamp, auditEndDateTimeStamp);
 
-                LOGGER.info("NFRR Audit Collector adding audit results for the dashboard : " + dashboard.getTitle());
+                LOGGER.info("NFRR Audit Collector adding audit results for the dashboard : " + dashboard.getTitle()
+                        + " - " + index.getAndIncrement() + "/" + totTeamDbdCount);
                 Cmdb cmdb = cmdbRepository.findByConfigurationItem(dashboard.getConfigurationItemBusServName());
                 AuditCollectorUtil.addAuditResultByAuditType(dashboard, auditMap, cmdb, auditEndDateTimeStamp);
         });

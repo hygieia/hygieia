@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.gitlab.model;
 
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -27,6 +28,10 @@ public class GitlabCommit {
     private String message;
     @JsonProperty("parent_ids")
     private List<String> parentIds;
+
+    private Integer additions;
+    private Integer deletions;
+    private Integer total;
 
     public String getId() {
         return id;
@@ -122,6 +127,37 @@ public class GitlabCommit {
 
     public void setParentIds(List<String> parentIds) {
         this.parentIds = parentIds;
+    }
+
+    public Integer getAdditions() {
+        return additions;
+    }
+
+    public void setAdditions(Integer additions) {
+        this.additions = additions;
+    }
+
+    public Integer getDeletions() {
+        return deletions;
+    }
+
+    public void setDeletions(Integer deletions) {
+        this.deletions = deletions;
+    }
+
+    public Integer getTotal() {
+        return total;
+    }
+
+    public void setTotal(Integer total) {
+        this.total = total;
+    }
+
+    @JsonProperty("stats")
+    private void unpackStatsInfo(Map<String, Object> statsInfo) {
+        this.additions = (Integer) statsInfo.get("additions");
+        this.deletions = (Integer) statsInfo.get("deletions");
+        this.total = (Integer) statsInfo.get("total");
     }
 
 }

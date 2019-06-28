@@ -62,6 +62,7 @@ public class LibraryPolicyEvaluator extends Evaluator<LibraryPolicyAuditResponse
         List<LibraryPolicyResult> libraryPolicyResults = libraryPolicyResultsRepository.findByCollectorItemIdAndEvaluationTimestampIsBetweenOrderByTimestampDesc(collectorItem.getId(), beginDate - 1, endDate + 1);
 
         LibraryPolicyAuditResponse libraryPolicyAuditResponse = new LibraryPolicyAuditResponse();
+        libraryPolicyAuditResponse.setAuditEntity(collectorItem.getOptions());
 
         if (CollectionUtils.isEmpty(libraryPolicyResults)) {
             libraryPolicyAuditResponse.addAuditStatus(LibraryPolicyAuditStatus.LIBRARY_POLICY_AUDIT_MISSING);

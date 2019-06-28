@@ -48,24 +48,28 @@ public class ArtifactEvaluatorTest {
     public void testEvaluate_CollectorItemError_Artifact_NULL() {
         response = artifactEvaluator.evaluate(getCollectorItem(null, "/test", "repo", false), 125634536, 6235263, null);
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("COLLECTOR_ITEM_ERROR"));
+        Assert.assertEquals(true, response.getAuditEntity().toString().contains("path"));
     }
 
     @Test
     public void testEvaluate_CollectorItemError_Path_NULL() {
         response = artifactEvaluator.evaluate(getCollectorItem("artifact", null, "repo", false), 125634536, 6235263, null);
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("COLLECTOR_ITEM_ERROR"));
+        Assert.assertEquals(true, response.getAuditEntity().toString().contains("path"));
     }
 
     @Test
     public void testEvaluate_CollectorItemError_RepoName_NULL() {
         response = artifactEvaluator.evaluate(getCollectorItem("artifact", "/test", null, false), 125634536, 6235263, null);
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("COLLECTOR_ITEM_ERROR"));
+        Assert.assertEquals(true, response.getAuditEntity().toString().contains("path"));
     }
 
     @Test
     public void testEvaluate_Unavailable() {
         response = artifactEvaluator.evaluate(getCollectorItem("artifact", "/test", "repo", true), 125634536, 6235263, null);
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("UNAVAILABLE"));
+        Assert.assertEquals(true, response.getAuditEntity().toString().contains("path"));
 
     }
 
@@ -75,6 +79,7 @@ public class ArtifactEvaluatorTest {
         response = artifactEvaluator.evaluate(getCollectorItem("artifact", "/test", "repo", false), 125634536, 6235263, null);
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("NO_ACTIVITY"));
         Mockito.verify(binaryArtifactRepository, times(1)).findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class), any(Long.class), any(Long.class));
+        Assert.assertEquals(true, response.getAuditEntity().toString().contains("path"));
 
     }
 
@@ -85,6 +90,7 @@ public class ArtifactEvaluatorTest {
         response = artifactEvaluator.evaluate(getCollectorItem("artifact", "/test", "repo", false), 125634536, 6235263, null);
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("ART_SYS_ACCT_BUILD_AUTO"));
         Mockito.verify(binaryArtifactRepository, times(1)).findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class), any(Long.class), any(Long.class));
+        Assert.assertEquals(true, response.getAuditEntity().toString().contains("path"));
 
     }
 
@@ -94,7 +100,9 @@ public class ArtifactEvaluatorTest {
         when(apiSettings.getServiceAccountRegEx()).thenReturn("/./g");
         response = artifactEvaluator.evaluate(getCollectorItem("artifact", "/test", "repo", false), 125634536, 6235263, null);
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("ART_SYS_ACCT_BUILD_USER"));
+        Assert.assertEquals(true, response.getAuditEntity().toString().contains("artifactName"));
         Mockito.verify(binaryArtifactRepository, times(1)).findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class), any(Long.class), any(Long.class));
+        Assert.assertEquals(true, response.getAuditEntity().toString().contains("path"));
 
     }
 
@@ -105,6 +113,7 @@ public class ArtifactEvaluatorTest {
         response = artifactEvaluator.evaluate(getCollectorItem("artifact", "/test", "repo", false), 125634536, 6235263, null);
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("ART_DOCK_IMG_FOUND"));
         Mockito.verify(binaryArtifactRepository, times(1)).findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class), any(Long.class), any(Long.class));
+        Assert.assertEquals(true, response.getAuditEntity().toString().contains("path"));
 
     }
 

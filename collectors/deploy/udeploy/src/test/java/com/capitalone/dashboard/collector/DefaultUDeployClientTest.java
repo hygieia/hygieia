@@ -8,6 +8,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -19,6 +20,7 @@ import org.springframework.web.client.RestOperations;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -34,13 +36,12 @@ public class DefaultUDeployClientTest {
 
     private DefaultUDeployClient defaultUDeployClient;
 
-//    private static final String URL = "URL";
+//  private static final String URL = "URL";
 
 
     @Before
     public void init() {
         when(restOperationsSupplier.get()).thenReturn(rest);
-        settings = new UDeploySettings();
         defaultUDeployClient = new DefaultUDeployClient(settings, restOperationsSupplier);
     }
     @Test
@@ -52,6 +53,9 @@ public class DefaultUDeployClientTest {
 
         when(rest.exchange(eq(appListUrl), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
                 .thenReturn(new ResponseEntity<>(appJson, HttpStatus.OK));
+        when(settings.getServers()).thenReturn(Arrays.asList(instanceUrl));
+        when(settings.getUsernames()).thenReturn(Arrays.asList("Username"));
+        when(settings.getPasswords()).thenReturn(Arrays.asList("password"));
         List<UDeployApplication> apps = defaultUDeployClient.getApplications(instanceUrl);
         assertThat(apps.size(), is(2));
         assertThat(apps.get(0).getApplicationName(), is("AA-JPetstore"));
@@ -67,14 +71,16 @@ public class DefaultUDeployClientTest {
 
         when(rest.exchange(eq(appListUrl), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
                 .thenReturn(new ResponseEntity<>(appJson, HttpStatus.OK));
+        when(settings.getServers()).thenReturn(Arrays.asList(instanceUrl));
+        when(settings.getUsernames()).thenReturn(Arrays.asList("Username"));
+        when(settings.getPasswords()).thenReturn(Arrays.asList("password"));
         List<UDeployApplication> apps = defaultUDeployClient.getApplications(instanceUrl);
 
         String environments = getJson("environments.json");
         String envUrl = "http://udeploy.com/rest/deploy/application/ad88482e-3577-44cd-a6d8-00056062260b/environments/false";
 
         when(rest.exchange(eq(envUrl), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
-                .thenReturn(new ResponseEntity<>(environments, HttpStatus.OK));
-
+                .thenReturn(new ResponseEntity<>(environments, HttpStatus.OK));       
         List<Environment> envs = defaultUDeployClient.getEnvironments(apps.get(0));
 
         assertThat(envs.size(), is(6));
@@ -98,6 +104,9 @@ public class DefaultUDeployClientTest {
 
         when(rest.exchange(eq(appListUrl), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
                 .thenReturn(new ResponseEntity<>(appJson, HttpStatus.OK));
+        when(settings.getServers()).thenReturn(Arrays.asList(instanceUrl));
+        when(settings.getUsernames()).thenReturn(Arrays.asList("Username"));
+        when(settings.getPasswords()).thenReturn(Arrays.asList("password"));
         List<UDeployApplication> apps = defaultUDeployClient.getApplications(instanceUrl);
 
         String resourceUrl = "http://udeploy.com/rest/deploy/environment/e32de740-160b-4ffb-a63f-0690607d9903/resources";

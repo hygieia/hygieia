@@ -129,6 +129,10 @@ public class BuildWidgetScore extends WidgetScoreAbstract {
       buildCategoryStatusScore.setScore(
         new ScoreTypeValue(buildSuccessRatio)
         );
+      buildCategoryStatusScore.setMessage(
+              "% passing builds over last "
+              + buildScoreSettings.getNumberOfDays()
+              + " days");
       buildCategoryStatusScore.setState(ScoreWeight.ProcessingState.complete);
     }
 
@@ -142,6 +146,9 @@ public class BuildWidgetScore extends WidgetScoreAbstract {
       buildCategoryDurationScore.setScore(
         new ScoreTypeValue(buildDurationWithinThresholdRatio)
         );
+      buildCategoryDurationScore.setMessage("% passing builds under "
+              + (buildDurationSettings.getBuildDurationThresholdInMillis()/1000/60)
+              + "m");
       buildCategoryDurationScore.setState(ScoreWeight.ProcessingState.complete);
     }
 

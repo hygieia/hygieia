@@ -77,7 +77,7 @@ public class ApplicationScoreService {
       processWidgetScores(dashboard.getWidgets(), scoreCriteriaSettings)
       );
 
-    LOGGER.info("dashboardScore: {}" + dashboardScore);
+    LOGGER.debug("dashboardScore: {}" + dashboardScore);
     ScoreMetric scoreMetric = ScoreCalculationUtils.generateScoreMetric(
       dashboardScore,
       scoreCriteriaSettings.getMaxScore(),
@@ -85,7 +85,7 @@ public class ApplicationScoreService {
       dashboard.getId()
       );
 
-    LOGGER.info("ScoreMetric scoreMetric " + scoreMetric.toString());
+    LOGGER.debug("ScoreMetric scoreMetric {}", scoreMetric);
 
     return scoreMetric;
   }
