@@ -250,10 +250,10 @@ public class ScoreSettingsService {
    * @param scmScoreSettings
    */
   private void initGithubScmScoreChildrenSettings(ScmScoreSettings scmScoreSettings) {
-    ScoreComponentSettings commitsPerDaySettings = Utils.getInstanceIfNull(scmScoreSettings.getCommitsPerDay(), ScoreComponentSettings.class);
-    commitsPerDaySettings.setCriteria(
-      Utils.mergeCriteria(scmScoreSettings.getCriteria(), commitsPerDaySettings.getCriteria())
+    ScoreComponentSettings daysWithCommitsSettings = Utils.getInstanceIfNull(scmScoreSettings.getDaysWithCommits(), ScoreComponentSettings.class);
+    daysWithCommitsSettings.setCriteria(
+      Utils.mergeCriteria(scmScoreSettings.getCriteria(), daysWithCommitsSettings.getCriteria())
     );
-    scmScoreSettings.setCommitsPerDay(commitsPerDaySettings);
+    scmScoreSettings.setDaysWithCommits(daysWithCommitsSettings);
   }
 }

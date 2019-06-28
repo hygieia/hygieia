@@ -27,17 +27,17 @@ import java.util.*;
 @Service
 public class GithubScmWidgetScore extends WidgetScoreAbstract {
 
-  protected final static String WIDGET_GITHUB_SCM_COMMITS_PER_DAY = "commitsPerDay";
-  protected final static String WIDGET_GITHUB_SCM_COMMITS_PER_DAY_NAME = "Commits Per Day";
+  protected final static String WIDGET_GITHUB_SCM_DAYS_WITH_COMMITS = "daysWithCommits";
+  protected final static String WIDGET_GITHUB_SCM_DAYS_WITH_COMMITS_NAME = "Days with commits";
 
   public final static IdName WIDGET_ID_NAME = new IdName(
     Constants.WIDGET_GITHUB_SCM,
     Constants.WIDGET_GITHUB_SCM_NAME
   );
 
-  public final static IdName WIDGET_GITHUB_SCM_COMMITS_PER_DAY_ID_NAME = new IdName(
-    WIDGET_GITHUB_SCM_COMMITS_PER_DAY,
-    WIDGET_GITHUB_SCM_COMMITS_PER_DAY_NAME
+  public final static IdName WIDGET_GITHUB_SCM_DAYS_WITH_COMMITS_ID_NAME = new IdName(
+    WIDGET_GITHUB_SCM_DAYS_WITH_COMMITS,
+    WIDGET_GITHUB_SCM_DAYS_WITH_COMMITS_NAME
   );
 
   //Categories are various factors which contribute to the overall score of the widget
@@ -52,7 +52,7 @@ public class GithubScmWidgetScore extends WidgetScoreAbstract {
     this.commitRepository = commitRepository;
     this.componentRepository = componentRepository;
     this.categories = Lists.newArrayList(
-      WIDGET_GITHUB_SCM_COMMITS_PER_DAY_ID_NAME
+      WIDGET_GITHUB_SCM_DAYS_WITH_COMMITS_ID_NAME
     );
   }
 
@@ -75,18 +75,18 @@ public class GithubScmWidgetScore extends WidgetScoreAbstract {
 
     ScmScoreSettings scmScoreSettings = (ScmScoreSettings) paramSettings;
 
-    ScoreComponentSettings commitsPerDaySettings = Utils.getInstanceIfNull(
-      scmScoreSettings.getCommitsPerDay(),
+    ScoreComponentSettings daysWithCommitsSettings = Utils.getInstanceIfNull(
+      scmScoreSettings.getDaysWithCommits(),
       ScoreComponentSettings.class
     );
 
-    setCategoryScoreWeight(categoryScores, WIDGET_GITHUB_SCM_COMMITS_PER_DAY_ID_NAME, commitsPerDaySettings.getWeight());
+    setCategoryScoreWeight(categoryScores, WIDGET_GITHUB_SCM_DAYS_WITH_COMMITS_ID_NAME, daysWithCommitsSettings.getWeight());
 
-    boolean isCommitsPerDayScoreEnabled = Utils.isScoreEnabled(commitsPerDaySettings);
+    boolean isDaysWithCommitsScoreEnabled = Utils.isScoreEnabled(daysWithCommitsSettings);
 
     Iterable<Commit> commits = null;
 
-    if (isCommitsPerDayScoreEnabled) {
+    if (isDaysWithCommitsScoreEnabled) {
       commits = search(githubScmWidget.getComponentId(), scmScoreSettings.getNumberOfDays());
     }
 
@@ -97,10 +97,10 @@ public class GithubScmWidgetScore extends WidgetScoreAbstract {
     //Check thresholds at widget level
     checkWidgetDataThresholds(scmScoreSettings, commits, scmScoreSettings.getNumberOfDays());
 
-    if (isCommitsPerDayScoreEnabled) {
-      processCommitsPerDayScore(
+    if (isDaysWithCommitsScoreEnabled) {
+      processDaysWithCommitsScore(
         commits,
-        scmScoreSettings.getCommitsPerDay(),
+        scmScoreSettings.getDaysWithCommits(),
         scmScoreSettings.getNumberOfDays(),
         categoryScores
       );
@@ -177,24 +177,23 @@ public class GithubScmWidgetScore extends WidgetScoreAbstract {
     return timestamps;
   }
 
-
-  private void processCommitsPerDayScore(
+  private void processDaysWithCommitsScore(
     Iterable<Commit> commits,
-    ScoreComponentSettings commitsPerDaySettings,
+    ScoreComponentSettings daysWithCommitsSettings,
     int numberOfDays,
     List<ScoreWeight> categoryScores) {
-    ScoreWeight commitsPerDayScore = getCategoryScoreByIdName(categoryScores, WIDGET_GITHUB_SCM_COMMITS_PER_DAY_ID_NAME);
+    ScoreWeight daysWithCommitsScore = getCategoryScoreByIdName(categoryScores, WIDGET_GITHUB_SCM_DAYS_WITH_COMMITS_ID_NAME);
     try {
-      //Check thresholds at widget level
-      checkWidgetDataThresholds(commitsPerDaySettings, commits, numberOfDays);
-      commitsPerDayScore.setScore(
+      //Check thresholds at commitsPerDay category level
+      checkWidgetDataThresholds(daysWithCommitsSettings, commits, numberOfDays);
+      daysWithCommitsScore.setScore(
         new ScoreTypeValue(
           getPercentCoverageForDays(commits, numberOfDays)
         )
       );
-      commitsPerDayScore.setState(ScoreWeight.ProcessingState.complete);
+      daysWithCommitsScore.setState(ScoreWeight.ProcessingState.complete);
     } catch (ThresholdException ex) {
-      setThresholdFailureWeight(ex, commitsPerDayScore);
+      setThresholdFailureWeight(ex, daysWithCommitsScore);
     }
   }
 
