@@ -156,7 +156,7 @@ public class ApplicationScoreService {
         getWidgetByName(widgets, widgetType),
         scoreSettings
         );
-      LOGGER.info("Widget for type: " + widgetType + " score" + score);
+      LOGGER.debug("Widget for type: {} score {}", widgetType, score);
 
       if (null != score) {
         setWidgetAlert(score, scoreCriteriaSettings.getComponentAlert());
@@ -185,7 +185,7 @@ public class ApplicationScoreService {
    * @param scoreComponentSettings score settings for the widget
    */
   private void addSettingsToMap(Map<String, ScoreComponentSettings> scoreParamSettingsMap, String widgetType, ScoreComponentSettings scoreComponentSettings) {
-    LOGGER.info("addSettingsToMap with widgetType:" + widgetType + " scoreParamSettings:" + scoreComponentSettings);
+    LOGGER.debug("addSettingsToMap with widgetType: {} scoreParamSettings: {}", widgetType, scoreComponentSettings);
     if (null != scoreComponentSettings) {
       scoreParamSettingsMap.put(widgetType, scoreComponentSettings);
     }
