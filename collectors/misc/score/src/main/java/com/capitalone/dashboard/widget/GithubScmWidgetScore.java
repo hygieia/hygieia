@@ -191,6 +191,7 @@ public class GithubScmWidgetScore extends WidgetScoreAbstract {
           getPercentCoverageForDays(commits, numberOfDays)
         )
       );
+      daysWithCommitsScore.setMessage("% of last "+numberOfDays+" days with commits");
       daysWithCommitsScore.setState(ScoreWeight.ProcessingState.complete);
     } catch (ThresholdException ex) {
       setThresholdFailureWeight(ex, daysWithCommitsScore);
