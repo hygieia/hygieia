@@ -13,7 +13,7 @@ then
         #for testing locally
         PROP_FILE=application.properties
 else 
-	PROP_FILE=config/hygieia-jenkins-build-collector.properties
+	PROP_FILE=/hygieia/config/application.properties
 fi
   
 if [ "$MONGO_PORT" != "" ]; then
