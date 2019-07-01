@@ -1,5 +1,4 @@
 import { ChangeDetectorRef, Component, ComponentFactoryResolver, Input, OnInit, Type, ViewChild } from '@angular/core';
-import { Title } from '@angular/platform-browser';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { DetailModalDirective } from './detail-modal.directive';
@@ -14,7 +13,7 @@ export class DetailModalComponent implements OnInit {
 
   @Input() Title;
   @Input() detailView: Type<any>;
-  @ViewChild(DetailModalDirective) modalTypeTag: DetailModalDirective;
+  @ViewChild(DetailModalDirective, {static: true}) modalTypeTag: DetailModalDirective;
 
   constructor(
     public activeModal: NgbActiveModal,

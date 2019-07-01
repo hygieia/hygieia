@@ -21,7 +21,7 @@ export class WidgetHeaderComponent implements OnInit {
   @Input() title;
   @Input() status;
   @Input() configForm: Type<any>;
-  @ViewChild(WidgetDirective) appWidget: WidgetDirective;
+  @ViewChild(WidgetDirective, {static: true}) appWidget: WidgetDirective;
   private widgetComponent;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver,
@@ -101,10 +101,10 @@ export class WidgetHeaderComponent implements OnInit {
       map(([widgetConfig, upsertWidgetResponse]) => ({ widgetConfig, upsertWidgetResponse }))
     ).subscribe(result => {
       if (result.widgetConfig !== null && typeof result.widgetConfig === 'object') {
-        extend(result.widgetConfig, result.upsertWidgetResponse.widget);
+        extend(result.widgetConfig, result.upsertWidgetResponse['widget']);
       }
 
-      this.dashboardService.upsertLocally(result.upsertWidgetResponse.component, result.widgetConfig);
+      this.dashboardService.upsertLocally(result.upsertWidgetResponse['component'], result.widgetConfig);
 
       // Push the new config to the widget, which
       // will trigger whatever is subscribed to

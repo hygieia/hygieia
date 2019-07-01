@@ -12,7 +12,7 @@ export class FormModalComponent implements OnInit {
   @Input() title = 'Test';
   @Input() form: Type<any>;
   @Input() widgetConfig: Type<any>;
-  @ViewChild(FormModalDirective) modalTypeTag: FormModalDirective;
+  @ViewChild(FormModalDirective, {static: true}) modalTypeTag: FormModalDirective;
 
   constructor(
     public activeModal: NgbActiveModal,
