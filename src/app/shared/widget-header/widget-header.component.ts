@@ -9,6 +9,7 @@ import {DashboardService} from '../dashboard.service';
 import {map, switchMap} from 'rxjs/operators';
 import {zip} from 'rxjs';
 import { extend } from 'lodash';
+import {IWidgetConfigResponse} from "../interfaces";
 
 @Component({
   selector: 'app-widget-header',
@@ -99,12 +100,12 @@ export class WidgetHeaderComponent implements OnInit {
     // publish the new config.
     zip(newWidgetConfig$, upsertDashboardResult$).pipe(
       map(([widgetConfig, upsertWidgetResponse]) => ({ widgetConfig, upsertWidgetResponse }))
-    ).subscribe(result => {
+    ).subscribe((result: IWidgetConfigResponse) => {
       if (result.widgetConfig !== null && typeof result.widgetConfig === 'object') {
-        extend(result.widgetConfig, result.upsertWidgetResponse['widget']);
+        extend(result.widgetConfig, result.upsertWidgetResponse.widget);
       }
 
-      this.dashboardService.upsertLocally(result.upsertWidgetResponse['component'], result.widgetConfig);
+      this.dashboardService.upsertLocally(result.upsertWidgetResponse.component, result.widgetConfig);
 
       // Push the new config to the widget, which
       // will trigger whatever is subscribed to
@@ -121,3 +122,4 @@ export class WidgetHeaderComponent implements OnInit {
   }
 
 }
+
