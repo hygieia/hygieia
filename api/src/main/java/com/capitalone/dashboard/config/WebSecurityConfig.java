@@ -124,12 +124,34 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private void configureLdap(AuthenticationManagerBuilder auth) throws Exception {
         String ldapServerUrl = authProperties.getLdapServerUrl();
         String ldapUserDnPattern = authProperties.getLdapUserDnPattern();
-        if (StringUtils.isNotBlank(ldapServerUrl) && StringUtils.isNotBlank(ldapUserDnPattern)) {
+        String ldapUserSearchFilter = authProperties.getLdapUserSearchFilter();
+        if (StringUtils.isNotBlank(ldapServerUrl) &&
+          //LDAP User Search Filter or Dn Pattern can be used
+          (StringUtils.isNotBlank(ldapUserDnPattern) || StringUtils.isNotBlank(ldapUserSearchFilter))) {
             LdapAuthenticationProviderConfigurer<AuthenticationManagerBuilder> ldapAuthConfigurer = auth.ldapAuthentication();
 
-            ldapAuthConfigurer
-                    .userDnPatterns(ldapUserDnPattern)
-                    .contextSource().url(ldapServerUrl);
+            if (StringUtils.isNotBlank(ldapUserDnPattern)) {
+                ldapAuthConfigurer.userDnPatterns(ldapUserDnPattern);
+            }
+
+            if (StringUtils.isNotBlank(ldapUserSearchFilter)) {
+                ldapAuthConfigurer.userSearchFilter(ldapUserSearchFilter);
+            }
+
+            ldapAuthConfigurer.userDetailsContextMapper(new CustomUserDetailsContextMapper());
+
+            LdapAuthenticationProviderConfigurer.ContextSourceBuilder contextSource = ldapAuthConfigurer.contextSource();
+            contextSource.url(ldapServerUrl);
+
+            String ldapManagerDn = authProperties.getLdapManagerDn();
+            String ldapManagerPassword = authProperties.getLdapManagerPassword();
+            /**
+             * If managerDn is present, managerPassword is required
+             */
+            if ((StringUtils.isNotBlank(ldapManagerDn)) && (StringUtils.isNotBlank(ldapManagerPassword))) {
+                contextSource.managerDn(ldapManagerDn);
+                contextSource.managerPassword(ldapManagerPassword);
+            }
 
             if (authProperties.isLdapDisableGroupAuthorization()) {
                 ldapAuthConfigurer.ldapAuthoritiesPopulator(new NullLdapAuthoritiesPopulator());

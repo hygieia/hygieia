@@ -37,6 +37,25 @@ public class AuthProperties {
 
 	private boolean ldapDisableGroupAuthorization = false;
 
+	/**
+	 * The LDAP filter used to search for users (optional). For example "(&(objectClass=user)(sAMAccountName={0}))". The
+	 * substituted parameter is the user's login name.
+	 **/
+	private String ldapUserSearchFilter;
+
+	/**
+	 * Username (DN) of the "manager" user identity (i.e. "uid=admin,ou=system") which
+	 * will be used to authenticate to a (non-embedded) LDAP server. If omitted,
+	 * anonymous access will be used.
+ 	 **/
+	private String ldapManagerDn;
+
+	/**
+	 * The password for the manager DN. This is required if the ldapManagerDn is
+	 * specified.
+ 	 **/
+	private String ldapManagerPassword;
+
 	// -- SSO properties
 	private String userEid;
 	private String userEmail;
@@ -132,6 +151,30 @@ public class AuthProperties {
 
 	public void setLdapDisableGroupAuthorization(boolean ldapDisableGroupAuthorization) {
 		this.ldapDisableGroupAuthorization = ldapDisableGroupAuthorization;
+	}
+
+	public String getLdapUserSearchFilter() {
+		return ldapUserSearchFilter;
+	}
+
+	public void setLdapUserSearchFilter(String ldapUserSearchFilter) {
+		this.ldapUserSearchFilter = ldapUserSearchFilter;
+	}
+
+	public String getLdapManagerDn() {
+		return ldapManagerDn;
+	}
+
+	public void setLdapManagerDn(String ldapManagerDn) {
+		this.ldapManagerDn = ldapManagerDn;
+	}
+
+	public String getLdapManagerPassword() {
+		return ldapManagerPassword;
+	}
+
+	public void setLdapManagerPassword(String ldapManagerPassword) {
+		this.ldapManagerPassword = ldapManagerPassword;
 	}
 
 	@PostConstruct

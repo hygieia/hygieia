@@ -72,6 +72,12 @@ auth.authenticationProviders=${AUTH_AUTHENTICATION_PROVIDERS:-STANDARD}
 # This is your active directory url
 # auth.adUrl=${AUTH_AD_URL:-}
 
+# LDAP User Search Filter can be used instead of Dn Pattern
+auth.ldapUserSearchFilter=${AUTH_LDAP_USER_SEARCH_FILTER:-}
+# If LDAP is configured with a manager Dn and password add the properties
+auth.ldapManagerDn=${AUTH_LDAP_MANAGER_DN:-}
+auth.ldapManagerPassword=${AUTH_LDAP_MANAGER_PWD:-}
+
 # Needed if you want to query ldap
 # auth.ldapBindUser=${AUTH_LDAP_BIND_USER:-}
 # auth.ldapBindPass=${AUTH_LDAP_BIND_PASS:-}
