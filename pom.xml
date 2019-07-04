@@ -213,7 +213,6 @@
         <module>collectors/misc/chat-ops</module>
         <module>collectors/performance/appdynamics</module>
         <module>collectors/scm/bitbucket</module>
-        <module>collectors/scm/github</module>
         <module>collectors/scm/github-graphql</module>
         <module>collectors/scm/gitlab</module>
         <module>collectors/cmdb/hpsm</module>
