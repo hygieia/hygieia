@@ -246,7 +246,6 @@
         <module>collectors/artifact/artifactory</module>
         <module>collectors/audit/nfrr</module>
         <module>collectors/build/bamboo</module>
-        <module>collectors/build/jenkins</module>
         <module>collectors/build/jenkins-cucumber</module>
         <module>collectors/build/jenkins-codequality</module>
         <module>collectors/build/sonar</module>
