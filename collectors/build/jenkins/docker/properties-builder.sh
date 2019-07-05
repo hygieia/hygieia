@@ -7,15 +7,6 @@ fi
 
 # mongo container provides the HOST/PORT
 # api container provided DB Name, ID & PWD
-
-if [ "$TEST_SCRIPT" != "" ]
-then
-        #for testing locally
-        PROP_FILE=application.properties
-else 
-	PROP_FILE=config/hygieia-jenkins-build-collector.properties
-fi
-  
 if [ "$MONGO_PORT" != "" ]; then
 	# Sample: MONGO_PORT=tcp://172.17.0.20:27017
 	MONGODB_HOST=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\1;'`
