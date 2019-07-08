@@ -321,6 +321,12 @@ public class DefaultJiraClient implements JiraClient {
         } catch (HygieiaException e) {
             LOGGER.error("Error in calling JIRA API", e);
         }
+
+        if (!issueTypes.containsKey(EPIC_ISSUE_TYPE)) {
+            LOGGER.error("Missing the Epic issue type configuration.  You need to ensure that " + EPIC_ISSUE_TYPE
+                  + " is configured in your feature.jiraIssueTypeNames, and that the corresponding issue type is configured in Jira.");
+        }
+
         return issueTypes;
     }
 
