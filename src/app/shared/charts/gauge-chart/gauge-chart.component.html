@@ -2,19 +2,19 @@
   <div class="chart-heading">
     {{title}}
   </div>
-  <ng-container *ngIf="!data.linearGauge else elseBlock">
+  <ng-container *ngIf="!data?.linearGauge else elseBlock">
     <ngx-charts-gauge
       [view]="view"
-      [results]="data.dataPoints"
+      [results]="data?.dataPoints"
       [scheme] = "colorScheme"
-      [min]="data.min"
-      [max]="data.max"
+      [min]="data?.min"
+      [max]="data?.max"
       [angleSpan]="180"
       [startAngle]="-90"
       [showAxis]="false"
       [bigSegments]="10"
       [smallSegments]="5"
-      [units]= "data.units"
+      [units]= "data?.units"
       (select)="onSelect($event)">
     </ngx-charts-gauge>
   </ng-container>
@@ -22,10 +22,10 @@
     <ngx-charts-linear-gauge
       [view]="view"
       [scheme]="colorScheme"
-      [value]="data.dataPoints"
-      [min]="data.min"
-      [max]="data.max"
-      [units]="data.units"
+      [value]="data?.dataPoints"
+      [min]="data?.min"
+      [max]="data?.max"
+      [units]="data?.units"
       [valueFormatting]="formatting">
     </ngx-charts-linear-gauge>
   </ng-template>
