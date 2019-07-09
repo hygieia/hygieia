@@ -1,5 +1,5 @@
 export interface IGaugeChartData {
-  data: any;
+  dataPoints: any;
   min: number;
   max: number;
   units: string;

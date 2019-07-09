@@ -1,47 +1,33 @@
 import { ClickListComponent } from 'src/app/shared/charts/click-list/click-list.component';
 import { ComboChartComponent } from 'src/app/shared/charts/combo-chart/combo-chart.component';
-import { GaugeChartComponent } from 'src/app/shared/charts/gauge-chart/gauge-chart.component';
-import { IGaugeChartData } from 'src/app/shared/charts/gauge-chart/IGaugeChartData';
+import { ILineChartData } from 'src/app/shared/charts/line-chart/ILineChartData';
+import { LineChartComponent } from 'src/app/shared/charts/line-chart/line-chart.component';
 import { NumberCardChartComponent } from 'src/app/shared/charts/number-card-chart/number-card-chart.component';
 import { IChart } from 'src/app/shared/interfaces';
 
+import { BuildDetailComponent } from '../build-detail/build-detail.component';
+
 export let BUILD_CHARTS: IChart[] = [
-  // {
-  //   title: 'Builds Per Day',
-  //   component: LineChartComponent,
-  //   data: {
-  //     areaChart: true,
-  //     detailComponent: BuildDetailComponent,
-  //     data: [
-  //     {
-  //       name: 'All Builds',
-  //       series: []
-  //     },
-  //     {
-  //       name: 'Failed Builds',
-  //       series: []
-  //     }
-  //   ]} as ILineChartData,
-  //   xAxisLabel: 'Days',
-  //   yAxisLabel: 'Builds',
-  //   colorScheme: {
-  //     domain: ['green', 'red']
-  //   }
-  // },
   {
-    title: 'Test Gauge',
-    component: GaugeChartComponent,
+    title: 'Builds Per Day',
+    component: LineChartComponent,
     data: {
-      min: 0,
-      max: 100,
-      data: '55',
-      units: '8,382 lines of code',
-      linearGauge: true
-    } as IGaugeChartData,
-    xAxisLabel: null,
-    yAxisLabel: null,
+      areaChart: true,
+      detailComponent: BuildDetailComponent,
+      dataPoints: [
+      {
+        name: 'All Builds',
+        series: []
+      },
+      {
+        name: 'Failed Builds',
+        series: []
+      }
+    ]} as ILineChartData,
+    xAxisLabel: 'Days',
+    yAxisLabel: 'Builds',
     colorScheme: {
-      domain: ['#5AA454']
+      domain: ['green', 'red']
     }
   },
   {

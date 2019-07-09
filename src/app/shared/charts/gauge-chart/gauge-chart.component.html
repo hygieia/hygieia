@@ -5,7 +5,7 @@
   <ng-container *ngIf="!data.linearGauge else elseBlock">
     <ngx-charts-gauge
       [view]="view"
-      [results]="data.data"
+      [results]="data.dataPoints"
       [scheme] = "colorScheme"
       [min]="data.min"
       [max]="data.max"
@@ -22,7 +22,7 @@
     <ngx-charts-linear-gauge
       [view]="view"
       [scheme]="colorScheme"
-      [value]="data.data"
+      [value]="data.dataPoints"
       [min]="data.min"
       [max]="data.max"
       [units]="data.units"
