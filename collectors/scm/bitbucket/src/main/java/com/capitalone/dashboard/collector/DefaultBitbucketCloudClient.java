@@ -107,8 +107,9 @@ public class DefaultBitbucketCloudClient implements GitClient {
 				dt = getDate(new Date(), -FIRST_RUN_HISTORY_DEFAULT, 0);
 			}
 		} else {
-			dt = getDate(repo.getLastUpdateTime(), 0, -10);
+			dt = getDate(new Date(repo.getLastUpdateTime()), 0, -10);
 		}
+
 		Calendar calendar = new GregorianCalendar();
 		TimeZone timeZone = calendar.getTimeZone();
 		Calendar cal = Calendar.getInstance(timeZone);

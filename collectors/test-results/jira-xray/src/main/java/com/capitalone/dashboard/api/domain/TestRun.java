@@ -214,7 +214,7 @@ public class TestRun extends BasicIssue implements Versionable<TestRun> {
     }
 
 
-    public enum Status{TODO,EXECUTING,ABORTED,FAIL,PASS,SKIP}
+    public enum Status{TODO,EXECUTING,ABORTED,FAIL,PASS,SKIP,BLOCKED}
 
 
 }

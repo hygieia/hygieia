@@ -1,5 +1,7 @@
 package com.capitalone.dashboard.gitlab.model;
 
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class GitlabNote {
@@ -9,9 +11,7 @@ public class GitlabNote {
 	private boolean system;
 	private boolean resolvable;
 
-	@JsonProperty("author.id")
 	private String authorId;
-	@JsonProperty("author.username")
 	private String authorName;
 
 	@JsonProperty("created_at")
@@ -130,5 +130,11 @@ public class GitlabNote {
 	public void setUpdatedAt(String updatedAt) {
 		this.updatedAt = updatedAt;
 	}
+
+    @JsonProperty("author")
+    private void unpackAuthorInfo(Map<String, Object> authorInfo) {
+        this.authorId = String.valueOf((Integer) authorInfo.get("id"));
+        this.authorName = (String) authorInfo.get("name");
+    }
 
 }

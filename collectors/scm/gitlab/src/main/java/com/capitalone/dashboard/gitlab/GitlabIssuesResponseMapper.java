@@ -47,14 +47,14 @@ public class GitlabIssuesResponseMapper {
 			issue.setScmCommitTimestamp(mergedTimestamp);
 			issue.setResolutiontime((mergedTimestamp - createdTimestamp) / (24 * 3600000));
 		}
-		issue.setUserId(gitlabIssue.getAuthorId());
+		issue.setUserId(gitlabIssue.getAuthorName());
 		issue.setScmUrl(repoUrl);
 		issue.setTimestamp(createdTimestamp);
 		issue.setScmCommitLog(gitlabIssue.getTitle());
 		issue.setCreatedAt(createdTimestamp);
 		issue.setUpdatedAt(new DateTime(gitlabIssue.getUpdatedAt()).getMillis());
 		issue.setClosedAt(new DateTime(closed).getMillis());
-		issue.setNumber(gitlabIssue.getId());
+		issue.setNumber(gitlabIssue.getIid());
 		issue.setRequestType("issue");
 		if (closed != null) {
 			issue.setState("closed");

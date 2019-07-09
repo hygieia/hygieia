@@ -87,6 +87,7 @@
             }
           ]
         },
+        "auditEntity": {},
         "codeAuthors": [],
         "configChanges": []
       }

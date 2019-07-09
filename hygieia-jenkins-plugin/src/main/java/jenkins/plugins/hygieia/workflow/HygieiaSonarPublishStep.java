@@ -1,5 +1,6 @@
 package jenkins.plugins.hygieia.workflow;
 
+import com.capitalone.dashboard.model.BuildStage;
 import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import hudson.Extension;
@@ -7,6 +8,7 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hygieia.builder.BuildBuilder;
 import hygieia.builder.SonarBuilder;
+import hygieia.utils.HygieiaUtils;
 import jenkins.model.Jenkins;
 import jenkins.plugins.hygieia.DefaultHygieiaService;
 import jenkins.plugins.hygieia.HygieiaPublisher;
@@ -22,6 +24,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
 import javax.inject.Inject;
+import java.util.LinkedList;
 
 
 public class HygieiaSonarPublishStep extends AbstractStepImpl {
@@ -109,9 +112,10 @@ public class HygieiaSonarPublishStep extends AbstractStepImpl {
             HygieiaService hygieiaService = getHygieiaService(hygieiaDesc.getHygieiaAPIUrl(), hygieiaDesc.getHygieiaToken(),
                     hygieiaDesc.getHygieiaJenkinsName(), hygieiaDesc.isUseProxy());
 
+            String startedBy = HygieiaUtils.getUserID(run, listener);
             HygieiaResponse buildResponse = hygieiaService.publishBuildData(new BuildBuilder()
                     .createBuildRequestFromRun(run, hygieiaDesc.getHygieiaJenkinsName(),
-                            listener, BuildStatus.Success, false));
+                            listener, BuildStatus.Success, false, new LinkedList<BuildStage>(), startedBy));
 
             if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
                 listener.getLogger().println("Hygieia: Published Build Data For Sonar Publishing. " + buildResponse.toString());

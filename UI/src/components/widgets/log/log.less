@@ -1,0 +1,53 @@
+@import (reference) '../../../app/css/variables.less';
+@import (reference) '../../../app/css/mixins.less';
+
+.loop(@i) when ( @i >= 0 ) {
+  .ct-series-@{i}:before {
+    top: 5px;
+    left: 5px;
+    background-color: extract(@ct-series-colors, @i+1);
+    border-color:  extract(@ct-series-colors, @i+1);
+  }
+  .loop((@i - 1));
+}
+
+.log-view {
+
+}
+.ct-legend {
+  position: relative;
+  z-index: 10;
+
+
+  li {
+    position: relative;
+    padding-left: 23px;
+    margin-bottom: 3px;
+    top: 5px;
+    left: 10px;
+    list-style: none;
+  }
+
+  li:before {
+    width: 12px;
+    height: 12px;
+    position: absolute;
+    left: 0;
+    content: '';
+    border: 3px solid transparent;
+    border-radius: 2px;
+  }
+
+  li.inactive:before {
+    background: transparent;
+  }
+
+  &.ct-legend-inside {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  .loop(length(@ct-series-colors));
+
+}

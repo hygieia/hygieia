@@ -1,0 +1,77 @@
+[
+  {
+    "id": "id",
+    "keyword": "keyword",
+    "name": "name",
+    "elements": [
+      {
+        "id": "elem1",
+        "keyword": "keyword1",
+        "name": "name1",
+        "steps": [
+          {
+            "id": "elem1",
+            "keyword": "keyword1",
+            "line": "line1",
+            "result": {
+              "duration": 100,
+              "status": "passed"
+            }
+          },
+          {
+            "id": "elem2",
+            "keyword": "keyword2",
+            "line": "line2",
+            "result": {
+              "duration": 100,
+              "status": "passed"
+            }
+          },
+          {
+            "id": "elem3",
+            "keyword": "keyword3",
+            "line": "line3",
+            "result": {
+              "duration": 100,
+              "status": "failed"
+            }
+          }
+        ]
+      },
+      {
+        "id": "elem2",
+        "keyword": "keyword2",
+        "name": "name2",
+        "steps": [
+          {
+            "id": "elem1",
+            "keyword": "keyword1",
+            "line": "line1",
+            "result": {
+              "duration": 100,
+              "status": "passed"
+            }
+          },
+          {
+            "id": "elem2",
+            "keyword": "keyword2",
+            "line": "line2",
+            "result": {
+              "duration": 100,
+              "status": "passed"
+            }
+          },
+          {
+            "id": "elem3",
+            "keyword": "keyword3",
+            "line": "line3",
+            "result": {
+              "duration": 100,
+              "status": "failed"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

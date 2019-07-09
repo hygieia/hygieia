@@ -1,8 +1,13 @@
 package jenkins.plugins.hygieia.workflow;
 
+import com.capitalone.dashboard.model.BuildStage;
 import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.TestSuiteType;
+import com.capitalone.dashboard.model.quality.QualityVisitee;
 import com.capitalone.dashboard.request.TestDataCreateRequest;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.model.Run;
@@ -10,8 +15,10 @@ import hudson.model.TaskListener;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import hygieia.builder.BuildBuilder;
-import hygieia.builder.CucumberTestBuilder;
+import hygieia.builder.FunctionalTestBuilder;
 import hygieia.transformer.HygieiaConstants;
+import hygieia.transformer.QualityVisiteeDeserializer;
+import hygieia.utils.HygieiaUtils;
 import jenkins.model.Jenkins;
 import jenkins.plugins.hygieia.DefaultHygieiaService;
 import jenkins.plugins.hygieia.HygieiaPublisher;
@@ -27,11 +34,12 @@ import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 
 import javax.inject.Inject;
+import java.util.LinkedList;
 
 
 public class HygieiaTestPublishStep extends AbstractStepImpl {
 
-    private String  buildStatus;
+    private String buildStatus;
     private String testFileNamePattern;
     private String testResultsDirectory;
     private String testType;
@@ -126,6 +134,7 @@ public class HygieiaTestPublishStep extends AbstractStepImpl {
             }
             return FormValidation.ok();
         }
+
         public ListBoxModel doFillBuildStatusItems() {
             ListBoxModel model = new ListBoxModel();
             model.add("Success", BuildStatus.Success.toString());
@@ -134,6 +143,7 @@ public class HygieiaTestPublishStep extends AbstractStepImpl {
             model.add("Aborted", BuildStatus.Aborted.toString());
             return model;
         }
+
         public ListBoxModel doFillTestTypeItems(String testType) {
             ListBoxModel model = new ListBoxModel();
 
@@ -167,6 +177,13 @@ public class HygieiaTestPublishStep extends AbstractStepImpl {
         @Override
         protected Integer run() {
 
+            //setup the object mapper so auto choose between the supported types
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            SimpleModule module = new SimpleModule();
+            module.addDeserializer(QualityVisitee.class, new QualityVisiteeDeserializer());
+            objectMapper.registerModule(module);
+
             //default to global config values if not set in step, but allow step to override all global settings
 
             Jenkins jenkins;
@@ -180,18 +197,20 @@ public class HygieiaTestPublishStep extends AbstractStepImpl {
             HygieiaService hygieiaService = getHygieiaService(hygieiaDesc.getHygieiaAPIUrl(), hygieiaDesc.getHygieiaToken(),
                     hygieiaDesc.getHygieiaJenkinsName(), hygieiaDesc.isUseProxy());
 
+            String startedBy = HygieiaUtils.getUserID(run, listener);
             HygieiaResponse buildResponse = hygieiaService.publishBuildData(new BuildBuilder()
                     .createBuildRequestFromRun(run, hygieiaDesc.getHygieiaJenkinsName(),
-                            listener, BuildStatus.fromString(step.buildStatus), false));
+                            listener, BuildStatus.fromString(step.buildStatus), false, new LinkedList<BuildStage>(), startedBy));
 
             if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
                 listener.getLogger().println("Hygieia: Published Build Data For Test Publishing. " + buildResponse.toString());
             } else {
                 listener.getLogger().println("Hygieia: Failed Publishing Build Data for Test Publishing. " + buildResponse.toString());
             }
-            TestDataCreateRequest request = new CucumberTestBuilder().getTestDataCreateRequest(run, listener, BuildStatus.fromString(step.buildStatus), filepath, step.testApplicationName,
-                    step.testEnvironmentName, step.testType, step.testFileNamePattern, step.testResultsDirectory,
-                    hygieiaDesc.getHygieiaJenkinsName(), buildResponse.getResponseValue());
+            TestDataCreateRequest request =  new FunctionalTestBuilder(objectMapper).getTestDataCreateRequest(run, listener, BuildStatus.fromString(step.buildStatus), filepath, step.testApplicationName,
+                            step.testEnvironmentName, step.testType, step.testFileNamePattern, step.testResultsDirectory,
+                            hygieiaDesc.getHygieiaJenkinsName(), HygieiaUtils.getBuildCollectionId(buildResponse.getResponseValue()));
+
             if (request != null) {
                 HygieiaResponse testResponse = hygieiaService.publishTestResults(request);
                 if (testResponse.getResponseCode() == HttpStatus.SC_CREATED) {

@@ -1,8 +1,10 @@
 package com.capitalone.dashboard.model;
 
+import com.capitalone.dashboard.evaluator.ArtifactEvaluator;
 import com.capitalone.dashboard.evaluator.BuildEvaluator;
 import com.capitalone.dashboard.evaluator.CodeQualityEvaluator;
 import com.capitalone.dashboard.evaluator.CodeReviewEvaluator;
+import com.capitalone.dashboard.evaluator.DeployEvaluator;
 import com.capitalone.dashboard.evaluator.Evaluator;
 import com.capitalone.dashboard.evaluator.LibraryPolicyEvaluator;
 import com.capitalone.dashboard.evaluator.PerformanceTestResultEvaluator;
@@ -29,6 +31,8 @@ public class DashboardAuditModel {
     private final PerformanceTestResultEvaluator performanceTestResultEvaluator;
     private final StaticSecurityAnalysisEvaluator staticSecurityAnalysisEvaluator;
     private final LibraryPolicyEvaluator libraryPolicyEvaluator;
+    private final ArtifactEvaluator artifactEvaluator;
+    private final DeployEvaluator deployEvaluator;
 
 
 
@@ -39,7 +43,8 @@ public class DashboardAuditModel {
                                RegressionTestResultEvaluator regressionTestResultEvaluator,
                                PerformanceTestResultEvaluator performanceTestResultEvaluator,
                                StaticSecurityAnalysisEvaluator staticSecurityAnalysisEvaluator,
-                               LibraryPolicyEvaluator libraryPolicyEvaluator) {
+                               LibraryPolicyEvaluator libraryPolicyEvaluator,ArtifactEvaluator artifactEvaluator,
+                               DeployEvaluator deployEvaluator) {
         this.codeReviewEvaluator = codeReviewEvaluator;
         this.buildEvaluator = buildEvaluator;
         this.codeQualityEvaluator = codeQualityEvaluator;
@@ -47,6 +52,8 @@ public class DashboardAuditModel {
         this.regressionTestResultEvaluator = regressionTestResultEvaluator;
         this.performanceTestResultEvaluator = performanceTestResultEvaluator;
         this.libraryPolicyEvaluator = libraryPolicyEvaluator;
+        this.artifactEvaluator = artifactEvaluator;
+        this.deployEvaluator = deployEvaluator;
     }
 
 
@@ -58,7 +65,9 @@ public class DashboardAuditModel {
                 new SimpleEntry<>(AuditType.LIBRARY_POLICY, (Evaluator)libraryPolicyEvaluator),
                 new SimpleEntry<>(AuditType.BUILD_REVIEW, (Evaluator)buildEvaluator),
                 new SimpleEntry<>(AuditType.TEST_RESULT, (Evaluator)regressionTestResultEvaluator),
-                new SimpleEntry<>(AuditType.PERF_TEST, (Evaluator)performanceTestResultEvaluator))
+                new SimpleEntry<>(AuditType.PERF_TEST, (Evaluator)performanceTestResultEvaluator),
+                new SimpleEntry<>(AuditType.ARTIFACT,(Evaluator)artifactEvaluator),
+                new SimpleEntry<>(AuditType.DEPLOY,(Evaluator)deployEvaluator))
                 .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue)));
     }
 
@@ -72,7 +81,9 @@ public class DashboardAuditModel {
                 new SimpleEntry<>(AuditType.BUILD_REVIEW, DashboardAuditStatus.DASHBOARD_BUILD_CONFIGURED),
                 new SimpleEntry<>(AuditType.TEST_RESULT, DashboardAuditStatus.DASHBOARD_TEST_CONFIGURED),
                 new SimpleEntry<>(AuditType.PERF_TEST, DashboardAuditStatus.DASHBOARD_PERFORMANCE_TEST_CONFIGURED),
-                new SimpleEntry<>(AuditType.STATIC_SECURITY_ANALYSIS, DashboardAuditStatus.DASHBOARD_STATIC_SECURITY_ANALYSIS_CONFIGURED))
+                new SimpleEntry<>(AuditType.STATIC_SECURITY_ANALYSIS, DashboardAuditStatus.DASHBOARD_STATIC_SECURITY_ANALYSIS_CONFIGURED),
+                new SimpleEntry<>(AuditType.ARTIFACT, DashboardAuditStatus.DASHBOARD_ARTIFACT_CONFIGURED),
+                new SimpleEntry<>(AuditType.DEPLOY, DashboardAuditStatus.DASHBOARD_DEPLOYMENT_SCRIPTS_CONFIGURED))
                 .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue)));
     }
 
@@ -85,7 +96,9 @@ public class DashboardAuditModel {
                 new SimpleEntry<>(AuditType.BUILD_REVIEW, DashboardAuditStatus.DASHBOARD_BUILD_NOT_CONFIGURED),
                 new SimpleEntry<>(AuditType.TEST_RESULT, DashboardAuditStatus.DASHBOARD_TEST_NOT_CONFIGURED),
                 new SimpleEntry<>(AuditType.PERF_TEST, DashboardAuditStatus.DASHBOARD_PERFORMANCE_TEST_NOT_CONFIGURED),
-                new SimpleEntry<>(AuditType.STATIC_SECURITY_ANALYSIS, DashboardAuditStatus.DASHBOARD_STATIC_SECURITY_ANALYSIS_NOT_CONFIGURED))
+                new SimpleEntry<>(AuditType.STATIC_SECURITY_ANALYSIS, DashboardAuditStatus.DASHBOARD_STATIC_SECURITY_ANALYSIS_NOT_CONFIGURED),
+                new SimpleEntry<>(AuditType.ARTIFACT, DashboardAuditStatus.DASHBOARD_ARTIFACT_NOT_CONFIGURED),
+                new SimpleEntry<>(AuditType.DEPLOY, DashboardAuditStatus.DASHBOARD_DEPLOYMENT_SCRIPTS_NOT_CONFIGURED))
                 .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue)));
     }
 

@@ -24,6 +24,12 @@
     <f:entry title="Name your Jenkins" help="/plugin/hygieia-publisher/help-globalConfig-hygieiaJenkinsName.html">
         <f:textbox field="hygieiaJenkinsName" name="hygieiaJenkinsName" value="${descriptor.getHygieiaJenkinsName()}" />
     </f:entry>
+    <f:entry title="Jenkins User">
+        <f:textbox field="jenkinsUserId" name="jenkinsUserId" value="${descriptor.getJenkinsUserId()}" />
+    </f:entry>
+    <f:entry title="Jenkins Token" >
+        <f:textbox field="jenkinsToken" name="jenkinsToken" value="${descriptor.getJenkinsToken()}" />
+    </f:entry>
     <f:entry title="Exclude Jenkins Job Names" help="/plugin/hygieia-publisher/help-globalConfig-hygieiaExcludeJobNames.html">
         <f:textbox field="hygieiaExcludeJobNames" name="hygieiaExcludeJobNames" value="${descriptor.getHygieiaExcludeJobNames()}" />
     </f:entry>
@@ -36,6 +42,10 @@
     <f:entry title="Show Hygieia Logs on Build Console" help="/plugin/hygieia-publisher/help-globalConfig-hygieiaShowDashboard.html">
         <f:checkbox field="showConsoleOutput" name="showConsoleOutput" checked="${descriptor.isShowConsoleOutput()}" />
     </f:entry>
+    <f:entry title="Capture Build Logs " help="/plugin/hygieia-publisher/help-globalConfig-hygieiaShowDashboard.html">
+            <f:checkbox field="captureLogs" name="captureLogs" checked="${descriptor.isCaptureLogs()}" />
+    </f:entry>
+
     <f:entry title="Publish custom collector items (tool name : regex)" help="/plugin/hygieia-publisher/help-globalConfig-hygieiaPublishBuildData.html">
         <f:repeatable var="hygieiaPublishGenericCollectorItems" field="hygieiaPublishGenericCollectorItems" name="hygieiaPublishGenericCollectorItems" >
             <f:textbox field="toolName" name="toolName" clazz="required" checkMessage="Required!" value="${hygieiaPublishGenericCollectorItems.toolName}"/>

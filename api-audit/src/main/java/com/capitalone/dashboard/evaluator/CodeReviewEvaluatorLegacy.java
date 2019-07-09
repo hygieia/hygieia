@@ -69,7 +69,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
     protected CodeReviewAuditResponse getErrorResponse(CollectorItem repoItem, String scmBranch, String scmUrl) {
         CodeReviewAuditResponse noPRsCodeReviewAuditResponse = new CodeReviewAuditResponse();
         noPRsCodeReviewAuditResponse.addAuditStatus(COLLECTOR_ITEM_ERROR);
-
+        noPRsCodeReviewAuditResponse.setAuditEntity(repoItem.getOptions());
         noPRsCodeReviewAuditResponse.setLastUpdated(repoItem.getLastUpdated());
         noPRsCodeReviewAuditResponse.setScmBranch(scmBranch);
         noPRsCodeReviewAuditResponse.setScmUrl(scmUrl);
@@ -114,7 +114,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
         if (repoItem.getLastUpdated() == 0) {
             CodeReviewAuditResponse noPRsCodeReviewAuditResponse = new CodeReviewAuditResponse();
             noPRsCodeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.PENDING_DATA_COLLECTION);
-
+            noPRsCodeReviewAuditResponse.setAuditEntity(repoItem.getOptions());
             noPRsCodeReviewAuditResponse.setLastUpdated(repoItem.getLastUpdated());
             noPRsCodeReviewAuditResponse.setScmBranch(scmBranch);
             noPRsCodeReviewAuditResponse.setScmUrl(scmUrl);
@@ -123,10 +123,14 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
         }
 
         List<GitRequest> pullRequests = gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(repoItem.getId(), beginDt-1, endDt+1);
-        List<Commit> commits = commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(repoItem.getId(), beginDt-1, endDt+1);
+        List<Commit> allCommits = commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(repoItem.getId(), beginDt-1, endDt+1);
+        //Filter empty commits
+        List<Commit> commits = allCommits.stream().filter(commit -> commit.getNumberOfChanges()>0).collect(Collectors.toList());
+        commits.sort(Comparator.comparing(Commit::getScmCommitTimestamp).reversed());
         if (CollectionUtils.isEmpty(pullRequests)) {
             CodeReviewAuditResponse noPRsCodeReviewAuditResponse = new CodeReviewAuditResponse();
             noPRsCodeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.NO_PULL_REQ_FOR_DATE_RANGE);
+            noPRsCodeReviewAuditResponse.setAuditEntity(repoItem.getOptions());
             allPeerReviews.add(noPRsCodeReviewAuditResponse);
         }
 
@@ -141,6 +145,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
 
         //check any commits not directly tied to pr
         CodeReviewAuditResponse codeReviewAuditResponse = new CodeReviewAuditResponse();
+        codeReviewAuditResponse.setAuditEntity(repoItem.getOptions());
         List<Commit> commitsNotDirectlyTiedToPr = new ArrayList<>();
         commits.forEach(commit -> {
 
@@ -163,6 +168,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
         if (!CollectionUtils.isEmpty(pullRequests)) {
             if (allPeerReviews.isEmpty()) {
                 CodeReviewAuditResponse prsButNoCommitsInRangeCodeReviewAuditResponse = new CodeReviewAuditResponse();
+                prsButNoCommitsInRangeCodeReviewAuditResponse.setAuditEntity(repoItem.getOptions());
                 prsButNoCommitsInRangeCodeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.NO_PULL_REQ_FOR_DATE_RANGE);
                 allPeerReviews.add(prsButNoCommitsInRangeCodeReviewAuditResponse);
             }
@@ -207,6 +213,7 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
                                     List<String> mergeCommitShas, List<String> allPrCommitShas,
                                     List<CodeReviewAuditResponse> allPeerReviews) {
         CodeReviewAuditResponse codeReviewAuditResponse = new CodeReviewAuditResponse();
+        codeReviewAuditResponse.setAuditEntity(repoItem.getOptions());
         codeReviewAuditResponse.setPullRequest(pr);
         String mergeSha = pr.getScmRevisionNumber();
 
@@ -222,7 +229,8 @@ public class CodeReviewEvaluatorLegacy extends LegacyEvaluator {
                             .findFirst().orElse(null);
         }
 
-        List<Commit> commitsRelatedToPr = pr.getCommits();
+        List<Commit> allCommitsRelatedToPr = pr.getCommits();
+        List<Commit> commitsRelatedToPr = allCommitsRelatedToPr.stream().filter(commit -> commit.getNumberOfChanges()>0).collect(Collectors.toList());
         commitsRelatedToPr.sort(Comparator.comparing(e -> (e.getScmCommitTimestamp())));
         if (mergeCommit == null) {
             codeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.MERGECOMMITER_NOT_FOUND);
