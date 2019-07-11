@@ -1,5 +1,5 @@
 # build environment
-FROM node:9.6.1 as builder
+FROM node:10.16.0 as builder
 
 # set working directory
 RUN mkdir /usr/src/app
@@ -9,7 +9,7 @@ ENV PATH /usr/src/app/node_modules/.bin:$PATH
 
 COPY package.json /usr/src/app/package.json
 RUN npm install
-RUN npm install -g @angular/cli@7.3.4 --unsafe
+RUN npm install -g @angular/cli@8.0.6 --unsafe
 
 COPY . /usr/src/app
 
@@ -31,5 +31,6 @@ RUN chmod +x /startup.sh
 # expose port 80
 EXPOSE 80
 
-# run httpd
-CMD ["/startup.sh"]
+ENTRYPOINT ["/startup.sh"]
+
+CMD ["httpd-foreground"]
