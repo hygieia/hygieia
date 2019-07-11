@@ -20,7 +20,7 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
 
   teamDashboard: ITemplate;
   dashboardId: string;
-  @ViewChild(TemplatesDirective) childTemplateTag: TemplatesDirective;
+  @ViewChild(TemplatesDirective , {static: false}) childTemplateTag: TemplatesDirective;
 
   constructor(componentFactoryResolver: ComponentFactoryResolver,
               cdr: ChangeDetectorRef,

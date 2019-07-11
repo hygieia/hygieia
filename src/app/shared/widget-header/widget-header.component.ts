@@ -1,14 +1,17 @@
 import {ChangeDetectorRef, Component, ComponentFactoryResolver, Input, OnInit, Type, ViewChild} from '@angular/core';
-
-import {ConfirmationModalComponent} from '../modals/confirmation-modal/confirmation-modal.component';
-import {FormModalComponent} from '../modals/form-modal/form-modal.component';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {WidgetComponent} from '../widget/widget.component';
-import {WidgetDirective} from '../widget/widget.directive';
-import {DashboardService} from '../dashboard.service';
 import {map, switchMap} from 'rxjs/operators';
 import {zip} from 'rxjs';
 import { extend } from 'lodash';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+
+import {IWidgetConfigResponse} from '../interfaces';
+import {ConfirmationModalComponent} from '../modals/confirmation-modal/confirmation-modal.component';
+import {FormModalComponent} from '../modals/form-modal/form-modal.component';
+import {WidgetComponent} from '../widget/widget.component';
+import {WidgetDirective} from '../widget/widget.directive';
+import {DashboardService} from '../dashboard.service';
+
+
 
 @Component({
   selector: 'app-widget-header',
@@ -21,7 +24,7 @@ export class WidgetHeaderComponent implements OnInit {
   @Input() title;
   @Input() status;
   @Input() configForm: Type<any>;
-  @ViewChild(WidgetDirective) appWidget: WidgetDirective;
+  @ViewChild(WidgetDirective, {static: true}) appWidget: WidgetDirective;
   private widgetComponent;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver,
@@ -99,7 +102,7 @@ export class WidgetHeaderComponent implements OnInit {
     // publish the new config.
     zip(newWidgetConfig$, upsertDashboardResult$).pipe(
       map(([widgetConfig, upsertWidgetResponse]) => ({ widgetConfig, upsertWidgetResponse }))
-    ).subscribe(result => {
+    ).subscribe((result: IWidgetConfigResponse) => {
       if (result.widgetConfig !== null && typeof result.widgetConfig === 'object') {
         extend(result.widgetConfig, result.upsertWidgetResponse.widget);
       }
@@ -121,3 +124,4 @@ export class WidgetHeaderComponent implements OnInit {
   }
 
 }
+

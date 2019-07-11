@@ -31,3 +31,7 @@ export interface IWidget {
   widgetSize: string;
   configForm: Type<any>;
 }
+export interface IWidgetConfigResponse {
+  widgetConfig: any;
+  upsertWidgetResponse: any;
+}
