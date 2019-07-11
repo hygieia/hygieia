@@ -1,7 +1,8 @@
 {
   "auditStatuses": [
     "DASHBOARD_TEST_CONFIGURED",
-    "DASHBOARD_ARTIFACT_CONFIGURED"
+    "DASHBOARD_ARTIFACT_CONFIGURED",
+    "DASHBOARD_DEPLOYMENT_SCRIPTS_CONFIGURED"
   ],
   "lastUpdated": 0,
   "dashboardTitle": "tychehygieiatitle",
@@ -160,6 +161,34 @@
         "auditEntity": {},
         "artifactName": "artifact_001",
         "lastExecutionTime": 1559313024789
+      }
+    ],
+    "DEPLOY": [
+      {
+        "auditStatuses": [
+          "DEPLOYMENT_SCRIPTS_TEST_NOT_FOUND"
+        ],
+        "lastUpdated": 1556721789462,
+        "auditEntity": {
+          "jobName": "test_job_1",
+          "jobUrl": "https://company.cloud.com/tests/test_job_1",
+          "instanceUrl": "https://jenkins.company.com/"
+        },
+        "lastBuildTime": 1556721789286,
+        "build": {
+          "id": "5cc9b07dd58e811e841509a4",
+          "collectorItemId": "5c3ca35440b65d70e84a2bd2",
+          "timestamp": 1556721789462,
+          "number": "210",
+          "buildUrl": "https://jenkins.company.com/builds/test_build_1",
+          "startTime": 1556720939282,
+          "endTime": 1556721789286,
+          "duration": 850004,
+          "buildStatus": "Success",
+          "codeRepos": [],
+          "sourceChangeSet": [],
+          "stages": []
+        }
       }
     ]
   }
