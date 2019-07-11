@@ -1,9 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { WidgetHeaderComponent } from './widget-header.component';
-import {findComponentView} from '@angular/core/src/render3/util';
-import {Component, CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from '@angular/core';
-import {BuildWidgetComponent} from '../../widget_modules/build/build-widget/build-widget.component';
+import {Component, NO_ERRORS_SCHEMA} from '@angular/core';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 import {HttpClientModule} from '@angular/common/http';
 
