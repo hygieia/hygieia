@@ -22,6 +22,7 @@ import com.capitalone.dashboard.gitlab.model.GitlabCommit;
 import com.capitalone.dashboard.gitlab.model.GitlabCommitStatus;
 import com.capitalone.dashboard.gitlab.model.GitlabNote;
 import com.capitalone.dashboard.gitlab.model.GitlabRequest;
+import com.capitalone.dashboard.gitlab.model.GitlabRequestChanges;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Comment;
 import com.capitalone.dashboard.model.Commit;
@@ -100,8 +101,25 @@ public class GitlabRequestsResponseMapper {
 		if (merged != null && merged.length() >= 10) {
 			long mergedTimestamp = new DateTime(merged).getMillis();
 			request.setScmCommitTimestamp(mergedTimestamp);
-			request.setResolutiontime((mergedTimestamp - createdTimestamp) / (24 * 3600000));
+			request.setResolutiontime((mergedTimestamp - createdTimestamp));
 			request.setMergedAt(new DateTime(merged).getMillis());
+			// get merge request changes' detail info
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("PRIVATE-TOKEN", apiToken);
+            URI requestChangesApiUrl = 
+                    gitlabUrlUtility.buildMergeRequestChangesApiUrl(gitlabRequest.getWebUrl(), gitlabRequest.getIid());
+            ResponseEntity<GitlabRequestChanges> requestChangesResponse = restOperations.exchange(requestChangesApiUrl, HttpMethod.GET, 
+                    new HttpEntity<>(headers), GitlabRequestChanges.class);
+            GitlabRequestChanges requestChanges = requestChangesResponse.getBody();
+            request.setNumberOfChanges(gitlabUrlUtility.toLong(requestChanges.getChangesCount()));
+            request.setScmMergeEventRevisionNumber(requestChanges.getMergeCommitSha());
+            // get single commit's detail info
+            URI singleCommitApiUrl = 
+                    gitlabUrlUtility.buildSingleCommitApiUrl(gitlabRequest.getWebUrl(), requestChanges.getMergeCommitSha());
+            ResponseEntity<GitlabCommit> singleCommitResponse = restOperations.exchange(singleCommitApiUrl, HttpMethod.GET,
+                    new HttpEntity<>(headers), GitlabCommit.class);
+            GitlabCommit singleCommit = singleCommitResponse.getBody();
+            request.setMergeAuthor(singleCommit.getAuthorName());
 		}
 
 		if (closed != null && closed.length() >= 10) {
@@ -169,6 +187,8 @@ public class GitlabRequestsResponseMapper {
 						review.setState("approved");
 					}
 					review.setBody(gitlabNote.getBody());
+					review.setCreatedAt(new DateTime(gitlabNote.getCreatedAt()).getMillis());
+					review.setUpdatedAt(new DateTime(gitlabNote.getUpdatedAt()).getMillis());
 					reviews.add(review);
 				}
 

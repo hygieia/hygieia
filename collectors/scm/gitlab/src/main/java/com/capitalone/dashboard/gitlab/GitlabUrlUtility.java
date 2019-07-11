@@ -46,6 +46,7 @@ public class GitlabUrlUtility {
 	private static final String SORT_QUERY_PARAM_KEY = "sort";
 	private static final String NOTES_REQUESTS_API = "/notes/";
 	private static final String COMMITS_REQUESTS_API = "/commits/";
+	private static final String CHANGES_REQUESTS_API = "/changes/";
 	private static final String STATUSES_REQUESTS_API = "/statuses/";
 	private static final String REF_QUERY_PARAM_KEY = "ref";
 	private static final String PER_PAGE_QUERY_PARAM_KEY = "per_page";
@@ -229,6 +230,34 @@ public class GitlabUrlUtility {
         return uri;
     }
 
+    public URI buildMergeRequestChangesApiUrl(String webUrl, String mergeRequestIid) {
+        String apiVersion = getApiVersion();
+        String protocol = getProtocol();
+        String repoName = getRepoName(webUrl);
+        String host = getRepoHost();
+
+        UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
+
+        if (StringUtils.isNotBlank(gitlabSettings.getPort())) {
+            builder.port(gitlabSettings.getPort());
+        }
+
+        URI uri = builder.scheme(protocol)
+                .host(host)
+                .path(gitlabSettings.getPath())
+                .pathSegment(SEGMENT_API)
+                .pathSegment(apiVersion)
+                .pathSegment(PROJECTS_SEGMENT)
+                .path(repoName)
+                .path(MERGE_REQUESTS_API)
+                .path(mergeRequestIid)
+                .path(CHANGES_REQUESTS_API)
+                .build(true).toUri();
+
+        LOG.info("---> Gitlab merge request changes URI: " + uri.toString());
+        return uri;
+    }
+
     public URI buildCommitStatusesApiUrl(String webUrl, String branch, String commitSha, int resultsPerPage) {
         String apiVersion = getApiVersion();
         String protocol = getProtocol();
@@ -335,6 +364,17 @@ public class GitlabUrlUtility {
 		LOG.info("Paging - Gitlab URI updated to: " + ret.toString());
 		return ret;
 	}
+
+    public long toLong(String value) {
+        try {
+            if (value != null) {
+                return Long.parseLong(value);
+            }
+        } catch (NumberFormatException ex) {
+            LOG.error("Invalid number format: " + ex.getMessage());
+        }
+        return 0;
+    }
 
 	private String getRepoHost() {
 		String providedGitLabHost = gitlabSettings.getHost();
