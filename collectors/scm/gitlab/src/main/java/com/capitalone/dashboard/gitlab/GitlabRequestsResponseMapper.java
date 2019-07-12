@@ -12,7 +12,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -104,12 +103,10 @@ public class GitlabRequestsResponseMapper {
 			request.setResolutiontime((mergedTimestamp - createdTimestamp));
 			request.setMergedAt(new DateTime(merged).getMillis());
 			// get merge request changes' detail info
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("PRIVATE-TOKEN", apiToken);
             URI requestChangesApiUrl = 
                     gitlabUrlUtility.buildMergeRequestChangesApiUrl(gitlabRequest.getWebUrl(), gitlabRequest.getIid());
             ResponseEntity<GitlabRequestChanges> requestChangesResponse = restOperations.exchange(requestChangesApiUrl, HttpMethod.GET, 
-                    new HttpEntity<>(headers), GitlabRequestChanges.class);
+                    new HttpEntity<>(gitlabUrlUtility.createHttpHeaders(apiToken)), GitlabRequestChanges.class);
             GitlabRequestChanges requestChanges = requestChangesResponse.getBody();
             request.setNumberOfChanges(gitlabUrlUtility.toLong(requestChanges.getChangesCount()));
             request.setScmMergeEventRevisionNumber(requestChanges.getMergeCommitSha());
@@ -117,7 +114,7 @@ public class GitlabRequestsResponseMapper {
             URI singleCommitApiUrl = 
                     gitlabUrlUtility.buildSingleCommitApiUrl(gitlabRequest.getWebUrl(), requestChanges.getMergeCommitSha());
             ResponseEntity<GitlabCommit> singleCommitResponse = restOperations.exchange(singleCommitApiUrl, HttpMethod.GET,
-                    new HttpEntity<>(headers), GitlabCommit.class);
+                    new HttpEntity<>(gitlabUrlUtility.createHttpHeaders(apiToken)), GitlabCommit.class);
             GitlabCommit singleCommit = singleCommitResponse.getBody();
             request.setMergeAuthor(singleCommit.getAuthorName());
 		}
@@ -167,10 +164,8 @@ public class GitlabRequestsResponseMapper {
 		int nextPage = 1;
 		while (hasMorePages) {
 			int pageOfRequestsSize = 0;
-			HttpHeaders headers = new HttpHeaders();
-			headers.add("PRIVATE-TOKEN", apiToken);
 			ResponseEntity<GitlabNote[]> response = restOperations.exchange(apiUrl, HttpMethod.GET,
-					new HttpEntity<>(headers), GitlabNote[].class);
+					new HttpEntity<>(gitlabUrlUtility.createHttpHeaders(apiToken)), GitlabNote[].class);
 			GitlabNote[] gitlabNotes = response.getBody();
 			for (GitlabNote gitlabNote : gitlabNotes) {
 				Comment comment = new Comment();
@@ -214,10 +209,8 @@ public class GitlabRequestsResponseMapper {
         int nextPage = 1;
         while (hasMorePages) {
             int pageOfRequestsSize = 0;
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("PRIVATE-TOKEN", apiToken);
             ResponseEntity<GitlabCommit[]> response = restOperations.exchange(apiUrl, HttpMethod.GET,
-                    new HttpEntity<>(headers), GitlabCommit[].class);
+                    new HttpEntity<>(gitlabUrlUtility.createHttpHeaders(apiToken)), GitlabCommit[].class);
             GitlabCommit[] gitlabCommits = response.getBody();
             for (GitlabCommit gitlabCommit : gitlabCommits) {
                 Commit commit = new Commit();
@@ -229,7 +222,7 @@ public class GitlabRequestsResponseMapper {
                 // get single commit's detail info
                 URI singleCommitApiUrl = gitlabUrlUtility.buildSingleCommitApiUrl(webUrl, gitlabCommit.getId());
                 ResponseEntity<GitlabCommit> singleCommitResponse = restOperations.exchange(singleCommitApiUrl, HttpMethod.GET,
-                        new HttpEntity<>(headers), GitlabCommit.class);
+                        new HttpEntity<>(gitlabUrlUtility.createHttpHeaders(apiToken)), GitlabCommit.class);
                 GitlabCommit singleCommit = singleCommitResponse.getBody();
                 commit.setNumberOfChanges(singleCommit.getTotal());
                 commits.add(commit);
@@ -256,10 +249,8 @@ public class GitlabRequestsResponseMapper {
 		int nextPage = 1;
 		while (hasMorePages) {
 			int pageOfRequestsSize = 0;
-			HttpHeaders headers = new HttpHeaders();
-			headers.add("PRIVATE-TOKEN", apiToken);
 			ResponseEntity<GitlabCommitStatus[]> response = restOperations.exchange(apiUrl, HttpMethod.GET,
-					new HttpEntity<>(headers), GitlabCommitStatus[].class);
+					new HttpEntity<>(gitlabUrlUtility.createHttpHeaders(apiToken)), GitlabCommitStatus[].class);
 			GitlabCommitStatus[] gitlabCommitStatuses = response.getBody();
 			for (GitlabCommitStatus gitlabCommitStatus : gitlabCommitStatuses) {
 				String context = gitlabCommitStatus.getName();

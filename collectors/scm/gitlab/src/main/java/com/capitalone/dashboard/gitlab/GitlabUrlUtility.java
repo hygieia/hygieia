@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -374,6 +375,12 @@ public class GitlabUrlUtility {
             LOG.error("Invalid number format: " + ex.getMessage());
         }
         return 0;
+    }
+
+    public HttpHeaders createHttpHeaders(String apiToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("PRIVATE-TOKEN", apiToken);
+        return headers;
     }
 
 	private String getRepoHost() {
