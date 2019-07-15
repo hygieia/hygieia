@@ -1,5 +1,6 @@
 package hygieia.builder;
 
+import com.capitalone.dashboard.model.BuildStage;
 import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.TestResult;
 import com.capitalone.dashboard.model.quality.QualityVisitee;
@@ -17,6 +18,7 @@ import hygieia.utils.HygieiaUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -86,8 +88,9 @@ public class FunctionalTestBuilder {
 
     public TestDataCreateRequest getTestDataCreateRequest(Run run, TaskListener listener, BuildStatus buildStatus, FilePath filePath, String applicationName, String environmentName, String testType, String filePattern, String directory, String jenkinsName, String buildId) {
 
+        String startedBy = HygieiaUtils.getUserID(run, listener);
         BuildDataCreateRequest buildDataCreateRequest = new BuildBuilder()
-                .createBuildRequestFromRun(run, jenkinsName, listener, buildStatus, false);
+                .createBuildRequestFromRun(run, jenkinsName, listener, buildStatus, false, new LinkedList<BuildStage>(), startedBy);
 
         TestResult testResult = buildTestResults(run, listener, filePattern, filePath, directory, buildDataCreateRequest, testType);
 

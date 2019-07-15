@@ -1,11 +1,13 @@
 package jenkins.plugins.hygieia.workflow;
 
+import com.capitalone.dashboard.model.BuildStage;
 import com.capitalone.dashboard.model.BuildStatus;
 import hudson.Extension;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.util.ListBoxModel;
 import hygieia.builder.BuildBuilder;
+import hygieia.utils.HygieiaUtils;
 import jenkins.model.Jenkins;
 import jenkins.plugins.hygieia.DefaultHygieiaService;
 import jenkins.plugins.hygieia.HygieiaPublisher;
@@ -23,7 +25,7 @@ import org.kohsuke.stapler.DataBoundSetter;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 public class HygieiaBuildPublishStep extends AbstractStepImpl {
@@ -110,14 +112,18 @@ public class HygieiaBuildPublishStep extends AbstractStepImpl {
 
 			if(skipPublish) { return new ArrayList<>();}
 
-			List<String> hygieiaAPIUrls = Arrays.asList(hygieiaDesc.getHygieiaAPIUrl().split(";"));
+			String[] hygieiaAPIUrls = hygieiaDesc.getHygieiaAPIUrl().split(";");
 			List<Integer> responseCodes = new ArrayList<>();
 			for (String hygieiaAPIUrl : hygieiaAPIUrls) {
-				this.listener.getLogger().println("Publishing data for API " + hygieiaAPIUrl.toString());
+				this.listener.getLogger().println("Publishing data for API " + hygieiaAPIUrl);
 				HygieiaService hygieiaService = getHygieiaService(hygieiaAPIUrl, hygieiaDesc.getHygieiaToken(),
 						hygieiaDesc.getHygieiaJenkinsName(), hygieiaDesc.isUseProxy());
-				HygieiaResponse buildResponse = hygieiaService.publishBuildData(new BuildBuilder().createBuildRequestFromRun(run, hygieiaDesc.getHygieiaJenkinsName(), listener,
-						BuildStatus.fromString(step.buildStatus), true));
+				String startedBy = HygieiaUtils.getUserID(run, listener);
+				HygieiaResponse buildResponse = hygieiaService.publishBuildData(
+						new BuildBuilder().createBuildRequestFromRun(run,
+								hygieiaDesc.getHygieiaJenkinsName(), listener,
+								BuildStatus.fromString(step.buildStatus), true,
+								new LinkedList<BuildStage>(), startedBy));
 				if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
 					listener.getLogger().println("Hygieia: Published Build Complete Data. " + buildResponse.toString());
 				} else {

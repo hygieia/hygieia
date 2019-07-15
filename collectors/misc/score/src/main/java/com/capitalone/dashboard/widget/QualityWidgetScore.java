@@ -168,6 +168,7 @@ public class QualityWidgetScore extends WidgetScoreAbstract {
         qualityCCScore.setScore(
           new ScoreTypeValue(qualityCCRatio)
         );
+        qualityCCScore.setMessage("% code coverage");
         qualityCCScore.setState(ScoreWeight.ProcessingState.complete);
       } catch (ThresholdException ex) {
         setThresholdFailureWeight(ex, qualityCCScore);
@@ -202,6 +203,7 @@ public class QualityWidgetScore extends WidgetScoreAbstract {
         qualityUTScore.setScore(
           new ScoreTypeValue(qualityUTRatio)
         );
+        qualityUTScore.setMessage("% tests passed");
         qualityUTScore.setState(ScoreWeight.ProcessingState.complete);
       } catch (ThresholdException ex) {
         setThresholdFailureWeight(ex, qualityUTScore);
@@ -252,6 +254,7 @@ public class QualityWidgetScore extends WidgetScoreAbstract {
         qualityViolationsScore.setScore(
           new ScoreTypeValue(violationScore)
         );
+        qualityViolationsScore.setMessage("Weighted average");
         qualityViolationsScore.setState(ScoreWeight.ProcessingState.complete);
       } catch (ThresholdException ex) {
         setThresholdFailureWeight(ex, qualityViolationsScore);

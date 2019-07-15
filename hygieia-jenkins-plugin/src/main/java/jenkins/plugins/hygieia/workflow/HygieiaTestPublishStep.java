@@ -1,5 +1,6 @@
 package jenkins.plugins.hygieia.workflow;
 
+import com.capitalone.dashboard.model.BuildStage;
 import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.TestSuiteType;
 import com.capitalone.dashboard.model.quality.QualityVisitee;
@@ -15,8 +16,8 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import hygieia.builder.BuildBuilder;
 import hygieia.builder.FunctionalTestBuilder;
-import hygieia.transformer.QualityVisiteeDeserializer;
 import hygieia.transformer.HygieiaConstants;
+import hygieia.transformer.QualityVisiteeDeserializer;
 import hygieia.utils.HygieiaUtils;
 import jenkins.model.Jenkins;
 import jenkins.plugins.hygieia.DefaultHygieiaService;
@@ -33,12 +34,11 @@ import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 
 import javax.inject.Inject;
+import java.util.LinkedList;
 
 
 public class HygieiaTestPublishStep extends AbstractStepImpl {
 
-    public static final String CUCUMBER = "cucumber";
-    public static final String MOCHA = "mocha";
     private String buildStatus;
     private String testFileNamePattern;
     private String testResultsDirectory;
@@ -101,7 +101,7 @@ public class HygieiaTestPublishStep extends AbstractStepImpl {
     }
 
     @DataBoundConstructor
-    public HygieiaTestPublishStep(String buildStatus, String testFileNamePattern, String testResultsDirectory, String testType, String testResultType, String testApplicationName, String testEnvironmentName) {
+    public HygieiaTestPublishStep(String buildStatus, String testFileNamePattern, String testResultsDirectory, String testType, String testApplicationName, String testEnvironmentName) {
         this.buildStatus = buildStatus;
         this.testFileNamePattern = testFileNamePattern;
         this.testResultsDirectory = testResultsDirectory;
@@ -155,14 +155,6 @@ public class HygieiaTestPublishStep extends AbstractStepImpl {
             model.add(HygieiaConstants.SECURITY_TEST_DISPLAY, TestSuiteType.Security.toString());
             return model;
         }
-
-        public ListBoxModel doFillTestResultType(String testResultType) {
-            ListBoxModel model = new ListBoxModel();
-
-            model.add(HygieiaConstants.CUCUMBER_JSON, CUCUMBER);
-            model.add(HygieiaConstants.MOCHA_JS_SPEC, MOCHA);
-            return model;
-        }
     }
 
     public static class HygieiaArtifactPublishStepExecution extends AbstractSynchronousNonBlockingStepExecution<Integer> {
@@ -205,9 +197,10 @@ public class HygieiaTestPublishStep extends AbstractStepImpl {
             HygieiaService hygieiaService = getHygieiaService(hygieiaDesc.getHygieiaAPIUrl(), hygieiaDesc.getHygieiaToken(),
                     hygieiaDesc.getHygieiaJenkinsName(), hygieiaDesc.isUseProxy());
 
+            String startedBy = HygieiaUtils.getUserID(run, listener);
             HygieiaResponse buildResponse = hygieiaService.publishBuildData(new BuildBuilder()
                     .createBuildRequestFromRun(run, hygieiaDesc.getHygieiaJenkinsName(),
-                            listener, BuildStatus.fromString(step.buildStatus), false));
+                            listener, BuildStatus.fromString(step.buildStatus), false, new LinkedList<BuildStage>(), startedBy));
 
             if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
                 listener.getLogger().println("Hygieia: Published Build Data For Test Publishing. " + buildResponse.toString());

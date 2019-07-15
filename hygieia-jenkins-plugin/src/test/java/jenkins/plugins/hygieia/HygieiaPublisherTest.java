@@ -5,6 +5,7 @@ import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import com.capitalone.dashboard.request.DeployDataCreateRequest;
 import com.capitalone.dashboard.request.GenericCollectorItemCreateRequest;
+import com.capitalone.dashboard.request.MetadataCreateRequest;
 import com.capitalone.dashboard.request.TestDataCreateRequest;
 import hudson.util.FormValidation;
 import junit.framework.TestCase;
@@ -78,32 +79,44 @@ public class HygieiaPublisherTest extends TestCase {
             this.hygieiaResponse = hygieiaResponse;
         }
 
+        @Override
         public HygieiaResponse publishBuildData(BuildDataCreateRequest request) {
             return hygieiaResponse;
         }
 
+        @Override
         public HygieiaResponse publishBuildDataV3(BuildDataCreateRequest request) {
             return hygieiaResponse;
         }
 
+        @Override
         public HygieiaResponse publishArtifactData(BinaryArtifactCreateRequest request) {
             return hygieiaResponse;
         }
 
+        @Override
         public boolean testConnection() {
             return responseBoolean;
         }
 
+        @Override
         public HygieiaResponse publishTestResults(TestDataCreateRequest request) {
             return hygieiaResponse;
         }
 
+        @Override
         public HygieiaResponse publishSonarResults(CodeQualityCreateRequest request) {
             return hygieiaResponse;
         }
 
+        @Override
         public HygieiaResponse publishDeployData(DeployDataCreateRequest request) {
             return hygieiaResponse;
+        }
+
+        @Override
+        public RestCall.RestCallResponse getStageResponse(String url, String jenkinsUser, String token){
+            return  null;
         }
 
         @Override
@@ -111,10 +124,22 @@ public class HygieiaPublisherTest extends TestCase {
             return hygieiaResponse;
         }
 
+        @Override
+        public HygieiaResponse publishGenericArtifactData(GenericCollectorItemCreateRequest request){
+            return hygieiaResponse;
+        }
+
+        @Override
+        public HygieiaResponse publishMetaData(MetadataCreateRequest request){
+            return hygieiaResponse;
+        }
+
+        @Override
         public List<JSONObject> getCollectorItemOptions(String type) {
             return null;
         }
 
+        @Override
         public Set<String> getDeploymentEnvironments(String appName) {
             return null;
         }

@@ -131,9 +131,9 @@ public class GithubScmWidgetScoreTest {
     scmScoreSettings.setNumberOfDays(14);
     scmScoreSettings.setWeight(33);
 
-    ScoreComponentSettings commitsPerDay = new ScoreComponentSettings();
-    commitsPerDay.setWeight(40);
-    scmScoreSettings.setCommitsPerDay(commitsPerDay);
+    ScoreComponentSettings daysWithCommits = new ScoreComponentSettings();
+    daysWithCommits.setWeight(40);
+    scmScoreSettings.setDaysWithCommits(daysWithCommits);
 
     return scmScoreSettings;
   }
@@ -156,9 +156,9 @@ public class GithubScmWidgetScoreTest {
 
     criteria.setDataRangeThresholds(Lists.newArrayList(scoreThresholdSettings));
 
-    ScoreComponentSettings commitsPerDay = new ScoreComponentSettings();
-    commitsPerDay.setWeight(40);
-    scmScoreSettings.setCommitsPerDay(commitsPerDay);
+    ScoreComponentSettings daysWithCommits = new ScoreComponentSettings();
+    daysWithCommits.setWeight(40);
+    scmScoreSettings.setDaysWithCommits(daysWithCommits);
 
     scmScoreSettings.setCriteria(criteria);
 

@@ -1,12 +1,19 @@
 package hygieia.utils;
 
+import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.BuildStage;
 import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.RepoBranch;
+import com.capitalone.dashboard.model.adapter.BuildStageAdapter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.model.AbstractBuild;
+import hudson.model.Cause;
+import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
@@ -14,24 +21,32 @@ import hudson.plugins.git.GitSCM;
 import hudson.plugins.git.util.Build;
 import hudson.scm.SubversionSCM;
 import hudson.util.IOUtils;
+import jenkins.model.Jenkins;
 import jenkins.plugins.hygieia.CustomObjectMapper;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Nonnull;
 import java.io.BufferedReader;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,6 +58,12 @@ public class HygieiaUtils {
     public static final String JOB_URL_SEARCH_PARM = "job/";
     public static final String SEPERATOR = ",";
     public static final String DASHBOARD_URI = "#/dashboard/";
+    public static final String STAGES="stages";
+    public static final String STAGE_FLOW_NODES="stageFlowNodes";
+    public static final String LINKS="_links";
+    public static final String LOG="log";
+    public static final String HREF="href";
+    public static final GsonBuilder buildStageGsonBuilder = new GsonBuilder().registerTypeAdapter(BuildStage.class, new BuildStageAdapter());
 
     public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
         ObjectMapper mapper = new CustomObjectMapper();
@@ -72,19 +93,19 @@ public class HygieiaUtils {
         }
         return results;
     }
-    
+
     /**
      * Determine the artifact's name. The name excludes the version string and the file extension.
-     * 
+     *
      * Does not currently support classifiers
-     * 
+     *
      * @param file
      * @param version
      * @return
      */
     public static String determineArtifactName(FilePath file, String version) {
-    	String fileName = file.getBaseName();
-    	
+        String fileName = file.getBaseName();
+
         if ("".equals(version)) return fileName;
 
         int vIndex = fileName.indexOf(version);
@@ -120,17 +141,17 @@ public class HygieiaUtils {
         }
         return versionNumber;
     }
-    
+
     public static String getBuildUrl(AbstractBuild<?, ?> build) {
-    	return build.getProject().getAbsoluteUrl() + String.valueOf(build.getNumber()) + "/";
+        return build.getProject().getAbsoluteUrl() + build.getNumber() + "/";
     }
 
     public static String getBuildUrl(Run<?, ?> run) {
-        return run.getParent().getAbsoluteUrl() + String.valueOf(run.getNumber()) + "/";
+        return run.getParent().getAbsoluteUrl() + run.getNumber() + "/";
     }
 
     public static String getBuildNumber(AbstractBuild<?, ?> build) {
-    	return String.valueOf(build.getNumber());
+        return String.valueOf(build.getNumber());
     }
 
     public static String getBuildNumber(Run<?, ?> run) {
@@ -138,16 +159,16 @@ public class HygieiaUtils {
     }
 
     public static String getJobUrl(AbstractBuild<?, ?> build) {
-    	return build.getProject().getAbsoluteUrl();
+        return build.getProject().getAbsoluteUrl();
     }
 
     public static String getJobUrl(Run<?, ?> run) {
         return run.getParent().getAbsoluteUrl();
     }
 
-    
+
     public static String getJobName(AbstractBuild<?, ?> build) {
-    	return build.getProject().getName();
+        return build.getProject().getName();
     }
 
     public static String getJobName(Run<?, ?> run) {
@@ -169,7 +190,7 @@ public class HygieiaUtils {
 
     public static String getInstanceUrl(AbstractBuild<?, ?> build, TaskListener listener) {
         String envValue = getEnvironmentVariable(build, listener, "JENKINS_URL");
-        
+
         if (envValue != null) {
             return envValue;
         } else {
@@ -192,43 +213,43 @@ public class HygieiaUtils {
     }
 
     public static String getScmUrl(AbstractBuild<?, ?> build, TaskListener listener) {
-    	if (isGitScm(build)) {
-    		return getEnvironmentVariable(build, listener, "GIT_URL");
-    	} else if (isSvnScm(build)) {
-    		return getEnvironmentVariable(build, listener, "SVN_URL");
-    	}
-    	
-    	return null;
+        if (isGitScm(build)) {
+            return getEnvironmentVariable(build, listener, "GIT_URL");
+        } else if (isSvnScm(build)) {
+            return getEnvironmentVariable(build, listener, "SVN_URL");
+        }
+
+        return null;
     }
 
     public static String getScmBranch(AbstractBuild<?, ?> build, TaskListener listener) {
-    	if (isGitScm(build)) {
-    		return getEnvironmentVariable(build, listener, "GIT_BRANCH");
-    	} else if (isSvnScm(build)) {
-    		return null;
-    	}
-    	
-    	return null;
+        if (isGitScm(build)) {
+            return getEnvironmentVariable(build, listener, "GIT_BRANCH");
+        } else if (isSvnScm(build)) {
+            return null;
+        }
+
+        return null;
     }
 
 
     public static String getScmRevisionNumber(AbstractBuild<?, ?> build, TaskListener listener) {
-    	if (isGitScm(build)) {
-    		return getEnvironmentVariable(build, listener, "GIT_COMMIT");
-    	} else if (isSvnScm(build)) {
-    		return getEnvironmentVariable(build, listener, "SVN_REVISION");
-    	}
-    	
-    	return null;
+        if (isGitScm(build)) {
+            return getEnvironmentVariable(build, listener, "GIT_COMMIT");
+        } else if (isSvnScm(build)) {
+            return getEnvironmentVariable(build, listener, "SVN_REVISION");
+        }
+
+        return null;
     }
-    
+
     private static boolean isGitScm(AbstractBuild<?, ?> build) {
-    	return "hudson.plugins.git.GitSCM".equalsIgnoreCase(build.getProject().getScm().getType());
+        return "hudson.plugins.git.GitSCM".equalsIgnoreCase(build.getProject().getScm().getType());
     }
 
 
     private static boolean isSvnScm(AbstractBuild<?, ?> build) {
-    	return "hudson.scm.SubversionSCM".equalsIgnoreCase(build.getProject().getScm().getType());
+        return "hudson.scm.SubversionSCM".equalsIgnoreCase(build.getProject().getScm().getType());
     }
 
     public static EnvVars getEnvironment(Run<?, ?> run, TaskListener listener) {
@@ -412,7 +433,7 @@ public class HygieiaUtils {
 
     public static boolean isJobExcluded (String jobName, String patterns) {
         if(StringUtils.isNotBlank(patterns)){
-            List<String> patternsList = Arrays.asList(patterns.split(SEPERATOR));
+            String[] patternsList = patterns.split(SEPERATOR);
             for (String pattern : patternsList) {
                 if (StringUtils.startsWithIgnoreCase(jobName, pattern)) {
                     return Boolean.TRUE;
@@ -421,5 +442,90 @@ public class HygieiaUtils {
         }
         return Boolean.FALSE;
     }
+
+    public static LinkedList<BuildStage> getBuildStages(String responseJSON) throws HygieiaException{
+        if(responseJSON==null) return new LinkedList<>();
+        try{
+            JSONObject buildJSON = (JSONObject) new JSONParser().parse(responseJSON);
+            if(Objects.isNull(buildJSON)) return new LinkedList<>();
+            JSONArray stages = (JSONArray) buildJSON.get(STAGES);
+            if (stages == null) return new LinkedList<>();
+            LinkedList<BuildStage> buildStages = new LinkedList<>();
+            for (Object stage: stages) {
+                JSONObject j =(JSONObject) stage;
+                Gson gson = buildStageGsonBuilder.create();
+                BuildStage bs = gson.fromJson(j.toJSONString(), BuildStage.class);
+                buildStages.add(bs);
+            }
+            return buildStages;
+        }catch (ParseException parseException){
+            logger.log(Level.INFO,ExceptionUtils.getStackTrace(parseException));
+            throw new HygieiaException("Error parsing stage information", HygieiaException.JSON_FORMAT_ERROR);
+        }catch (Exception ex){
+            logger.log(Level.INFO,ExceptionUtils.getStackTrace(ex));
+            throw new HygieiaException("Error in method :: HygieiaUtils.getBuildStages() :: ", HygieiaException.BAD_DATA);
+        }
+    }
+
+    public static BuildStage setLogUrl(String responseJSON, BuildStage stage){
+        if(responseJSON==null) return stage;
+        try{
+            JSONObject stageJSON = (JSONObject) new JSONParser().parse(responseJSON);
+            String url = getLogUrl(stageJSON);
+            stage.setExec_node_logUrl(url);
+        }catch (ParseException parseException){
+            logger.log(Level.INFO,ExceptionUtils.getStackTrace(parseException));
+        }
+        return stage;
+    }
+
+    public static String getLogUrl(JSONObject jsonObject){
+        JSONArray stageFlowNodes = (JSONArray) jsonObject.get(STAGE_FLOW_NODES);
+        if (CollectionUtils.isEmpty(stageFlowNodes)) return null;
+        JSONObject firstNode = (JSONObject) stageFlowNodes.get(0);
+        JSONObject _links = (JSONObject) firstNode.get(LINKS);
+        String url = getLog_href(_links);
+        return url;
+    }
+
+    public static String getLog_href(JSONObject jsonObject){
+        JSONObject logUrl = (JSONObject) jsonObject.get(LOG);
+        String url = (String) logUrl.get(HREF);
+        return url;
+    }
+
+    public static BuildStage set_logs(String responseJSON, BuildStage stage){
+        if (responseJSON==null) return stage;
+        try{
+            JSONObject logJSON = (JSONObject) new JSONParser().parse(responseJSON);
+            stage.setLog(logJSON!=null?logJSON.toJSONString():"");
+        }catch (ParseException parseException){
+            logger.log(Level.SEVERE,ExceptionUtils.getStackTrace(parseException));
+        }
+        return stage;
+    }
+
+    public static String getUserID(@Nonnull Run run, TaskListener listener) {
+        // If build has been triggered form an upstream build, get UserCause from there to set user build variables
+        Cause.UpstreamCause upstreamCause = (Cause.UpstreamCause) run.getCause(Cause.UpstreamCause.class);
+
+        if (upstreamCause != null) {
+            Job job = Jenkins.getInstance().getItemByFullName(upstreamCause.getUpstreamProject(), Job.class);
+            if (job != null) {
+                Run upstream = job.getBuildByNumber(upstreamCause.getUpstreamBuild());
+                if (upstream != null) {
+                    getUserID(upstream, listener);
+                }
+            }
+        }
+
+        Cause.UserIdCause userIdCause = (Cause.UserIdCause) run.getCause(Cause.UserIdCause.class);
+        String userId = "";
+        if (userIdCause != null) {
+            userId = StringUtils.trimToEmpty(userIdCause.getUserId());
+        }
+        return StringUtils.isEmpty(userId) ? "anonymous" : userId;
+    }
+
 
 }

@@ -15,7 +15,9 @@ import com.capitalone.dashboard.repository.DashboardRepository;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.IterableUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +27,12 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -86,8 +92,8 @@ public class CollectorServiceImpl implements CollectorService {
     // method to remove jobUrl and instanceUrl from build collector items.
     private Page<CollectorItem> removeJobUrlAndInstanceUrl(Page<CollectorItem> collectorItems) {
         for (CollectorItem cItem : collectorItems) {
-            if(cItem.getOptions().containsKey("jobUrl")) cItem.getOptions().remove("jobUrl");
-            if(cItem.getOptions().containsKey("instanceUrl")) cItem.getOptions().remove("instanceUrl");
+            cItem.getOptions().remove("jobUrl");
+            cItem.getOptions().remove("instanceUrl");
         }
         return collectorItems;
     }
@@ -132,12 +138,38 @@ public class CollectorServiceImpl implements CollectorService {
 
     @Override
     public CollectorItem createCollectorItem(CollectorItem item) {
-        CollectorItem existing = collectorItemRepository.findByCollectorAndOptions(
-                item.getCollectorId(), item.getOptions());
-        if (existing != null) {
-            item.setId(existing.getId());
+        List<CollectorItem> existing = lookUpCollectorItem(item);
+        existing.sort(Comparator.comparing(CollectorItem::getLastUpdated).reversed());
+        if (CollectionUtils.isNotEmpty(existing)) {
+            Optional<CollectorItem> enabledItem = existing.stream().filter(CollectorItem::isEnabled).findFirst();
+            //if enabled item is found, set itemId
+            if(enabledItem.isPresent()){
+                item.setId(enabledItem.get().getId());
+            }else{    // if no enabled item found, get first from list sorted by lastUpdated.
+                item.setId(existing.stream().findFirst().get().getId());
+            }
         }
         return collectorItemRepository.save(item);
+    }
+
+    private  List<CollectorItem> lookUpCollectorItem(CollectorItem collectorItem){
+        if (collectorItem==null){
+            return Collections.emptyList();
+        }
+        Collector collector = collectorRepository.findOne(collectorItem.getCollectorId());
+        if (collector == null){
+            return Collections.emptyList();
+        }
+        Map<String, Object> uniqueOptions = collector.getUniqueFields()
+                .keySet()
+                .stream()
+                .filter(option ->collectorItem.getOptions().get(option)!=null )
+                .collect(Collectors.toMap(java.util.function.Function.identity(),option-> collectorItem.getOptions().get(option),(a,b)->a));
+        if(MapUtils.isEmpty(uniqueOptions)){
+            return Collections.emptyList();
+        }
+        return IterableUtils.toList(collectorItemRepository.findAllByOptionMapAndCollectorIdsIn(uniqueOptions,Lists.newArrayList(collector.getId())));
+
     }
 
     // This is to handle scenarios where the option contains user credentials etc. We do not want to create a new collector item -
@@ -222,6 +254,37 @@ public class CollectorServiceImpl implements CollectorService {
             ids.add(item.getId());
         }
         return (List<CollectorItem>) collectorItemRepository.findAll(ids);
+    }
+
+    @Override
+    public void deleteCollectorItem(String id, boolean deleteFromComponent) throws HygieiaException {
+        ObjectId objectId = new ObjectId(id);
+        CollectorItem ci = getCollectorItem(objectId);
+        if(ci == null) {return;}
+        CollectorType type = ci.getCollector().getCollectorType();
+        // First remove the association from component
+        if(deleteFromComponent) {
+            List<Component> components = componentRepository.findByCollectorTypeAndItemIdIn(type, Arrays.asList(objectId));
+            if (CollectionUtils.isEmpty(components)) return;
+            for (Component component : components) {
+                if (component == null) continue;
+                Map<CollectorType, List<CollectorItem>> itemMap = component.getCollectorItems();
+                if(MapUtils.isEmpty(itemMap)) continue;
+                List<CollectorItem> items = component.getCollectorItems(type);
+                if(CollectionUtils.isEmpty(items)) continue;
+                List<CollectorItem> itemsCopy = Lists.newArrayList(items);
+                items.stream().filter(item -> objectId.equals(item.getId())).forEach(itemsCopy::remove);
+                if(CollectionUtils.isEmpty(itemsCopy)) {
+                    itemMap.remove(type);
+                } else {
+                    itemMap.put(type,itemsCopy);
+                }
+                componentRepository.save(component);
+            }
+        }
+
+        //delete the collector item.
+        collectorItemRepository.delete(objectId);
     }
 
     private Collector collectorById(ObjectId collectorId, List<Collector> collectors) {

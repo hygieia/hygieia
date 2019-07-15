@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.collector;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -16,16 +17,22 @@ public class HudsonSettings {
 	
     private String cron;
     private boolean saveLog = false;
-    private List<String> servers;
+    private List<String> servers = new ArrayList<>();
     private List<String> niceNames;
     //eg. DEV, QA, PROD etc
-    private List<String> environments;
-    private List<String> usernames;
-    private List<String> apiKeys;
+    private List<String> environments = new ArrayList<>();
+    private List<String> usernames = new ArrayList<>();
+    private List<String> apiKeys = new ArrayList<>();
     private String dockerLocalHostIP; //null if not running in docker on http://localhost
     private int pageSize;
     @Value("${folderDepth:10}")
     private int folderDepth;
+
+    @Value("${jenkins.connectTimeout:20000}")
+    private int connectTimeout;
+
+    @Value("${jenkins.readTimeout:20000}")
+    private int readTimeout;
 
     public String getCron() {
         return cron;
@@ -115,4 +122,12 @@ public class HudsonSettings {
     public int getFolderDepth() {
         return folderDepth;
     }
+
+    public int getConnectTimeout() { return connectTimeout; }
+
+    public void setConnectTimeout(int connectTimeout) { this.connectTimeout = connectTimeout; }
+
+    public int getReadTimeout() { return readTimeout; }
+
+    public void setReadTimeout(int readTimeout) { this.readTimeout = readTimeout; }
 }
