@@ -159,6 +159,7 @@ public class DeployWidgetScore extends WidgetScoreAbstract {
       deploySuccessStatusScore.setScore(
         new ScoreTypeValue(deploySuccessRatio)
       );
+      deploySuccessStatusScore.setMessage("% deploys succeeded overall");
       deploySuccessStatusScore.setState(ScoreWeight.ProcessingState.complete);
     }
   }
@@ -179,6 +180,7 @@ public class DeployWidgetScore extends WidgetScoreAbstract {
       deployInstancesOnlineScore.setScore(
         new ScoreTypeValue(instancesOnlineRatio)
       );
+      deployInstancesOnlineScore.setMessage("% instances online");
       deployInstancesOnlineScore.setState(ScoreWeight.ProcessingState.complete);
     }
   }

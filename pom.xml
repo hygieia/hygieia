@@ -39,13 +39,28 @@
   <developers>
     <developer>
       <name>Amit Mawkin</name>
-      <email>amit.mawkin@capitalone.com</email>
-      <organization>CapitalOne</organization>
-      <organizationUrl>http://www.capitalone.com</organizationUrl>
     </developer>
     <developer>
       <name>Tapabrata Topo Pal</name>
       <email>tapabrata.pal@capitalone.com</email>
+      <organization>CapitalOne</organization>
+      <organizationUrl>http://www.capitalone.com</organizationUrl>
+    </developer>
+    <developer>
+      <name>Raghavendra Vema</name>
+      <email>ragha.vema@capitalone.com</email>
+      <organization>CapitalOne</organization>
+      <organizationUrl>http://www.capitalone.com</organizationUrl>
+    </developer>
+    <developer>
+      <name>Nireesh Thiruveedula</name>
+      <email>nireesh.thiruveedula@capitalone.com</email>
+      <organization>CapitalOne</organization>
+      <organizationUrl>http://www.capitalone.com</organizationUrl>
+    </developer>
+    <developer>
+      <name>Stephen Hughes</name>
+      <email>stephen.hughes@capitalone.com</email>
       <organization>CapitalOne</organization>
       <organizationUrl>http://www.capitalone.com</organizationUrl>
     </developer>

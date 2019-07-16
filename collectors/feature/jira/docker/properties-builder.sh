@@ -74,7 +74,7 @@ feature.jiraBaseUrl=${JIRA_BASE_URL:-https://jira.atlassian.com}
 feature.jiraQueryEndpoint=${JIRA_QUERY_ENDPOINT:-rest/api/2/}
 
 #64-bit encoded credentials with the pattern username:password 
-#on a mac you con create them with : echo "username:password" | base64
+#on a mac you con create them with : echo -n 'username:password' | base64
 #reference:  https://www.base64decode.org/ 
 feature.jiraCredentials=${JIRA_CREDENTIALS}
 
