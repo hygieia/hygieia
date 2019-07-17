@@ -1,6 +1,9 @@
 package com.capitalone.dashboard.rest;
 
+import com.capitalone.dashboard.model.ExecutiveFeatureMetrics;
 import com.capitalone.dashboard.model.FeatureMetrics;
+import com.capitalone.dashboard.model.LobFeatureMetrics;
+import com.capitalone.dashboard.model.ProductFeatureMetrics;
 import com.capitalone.dashboard.service.FeatureMetricsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -36,5 +39,50 @@ public class FeatureMetricsController {
         FeatureMetrics featureMetrics = featureMetricsService.getFeatureMetricsByType(componentName, metricName);
 
         return ResponseEntity.ok().body(featureMetrics);
+    }
+
+    @RequestMapping(value = "metrics/application/{applicationName}")
+    public ResponseEntity<ProductFeatureMetrics> getProductMetrics(@Valid @PathVariable String applicationName){
+
+        ProductFeatureMetrics productFeatureMetrics = featureMetricsService.getProductFeatureMetrics(applicationName);
+        return ResponseEntity.ok(productFeatureMetrics);
+    }
+
+    @RequestMapping(value = "metrics/application/{applicationName}/metric/{metricName}")
+    public ResponseEntity<ProductFeatureMetrics> getProductMetricsByType(@Valid @PathVariable String applicationName
+                                                                         ,@Valid @PathVariable String metricName){
+
+        ProductFeatureMetrics productFeatureMetrics = featureMetricsService.getProductFeatureMetricsByType(applicationName,metricName);
+        return ResponseEntity.ok(productFeatureMetrics);
+    }
+
+    @RequestMapping(value = "metrics/lob/{lobName}")
+    public ResponseEntity<LobFeatureMetrics> getLobMetrics(@Valid @PathVariable String lobName){
+
+        LobFeatureMetrics lobFeatureMetrics = featureMetricsService.getLobFeatureMetrics(lobName);
+        return ResponseEntity.ok(lobFeatureMetrics);
+    }
+
+    @RequestMapping(value = "metrics/lob/{lobName}/type/{type}")
+    public ResponseEntity<LobFeatureMetrics> getLobMetricsByType(@Valid @PathVariable String lobName,
+                                                                 @Valid @PathVariable String type){
+
+        LobFeatureMetrics lobFeatureMetrics = featureMetricsService.getLobFeatureMetricsByType(lobName,type );
+        return ResponseEntity.ok(lobFeatureMetrics);
+    }
+
+    @RequestMapping(value = "metrics/executive/{executiveName}")
+    public ResponseEntity<ExecutiveFeatureMetrics> getExecutiveMetrics(@Valid @PathVariable String executiveName){
+
+        ExecutiveFeatureMetrics executiveFeatureMetrics = featureMetricsService.getExecutiveFeatureMetrics(executiveName);
+        return ResponseEntity.ok(executiveFeatureMetrics);
+    }
+
+    @RequestMapping(value = "metrics/executive/{executiveName}/type/{type}")
+    public ResponseEntity<ExecutiveFeatureMetrics> getExecutiveMetricsByType(@Valid @PathVariable String executiveName,
+                                                                             @Valid @PathVariable String type){
+
+        ExecutiveFeatureMetrics executiveFeatureMetrics = featureMetricsService.getExecutiveFeatureMetricsByType(executiveName, type);
+        return ResponseEntity.ok(executiveFeatureMetrics);
     }
 }

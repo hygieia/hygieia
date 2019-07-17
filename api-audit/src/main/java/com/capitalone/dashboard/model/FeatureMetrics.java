@@ -1,22 +1,32 @@
 package com.capitalone.dashboard.model;
 
+import org.springframework.stereotype.Component;
+
 import java.util.HashMap;
 
 import java.util.List;
-
+@Component
 public class FeatureMetrics {
 
-    private String name;
+    private String id;
 
     private String type;
 
-    private String application;
+    private String name;
 
     private String lob;
 
     private List<HashMap> metrics;
 
     private String message;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
 
     public String getName() {
@@ -35,13 +45,6 @@ public class FeatureMetrics {
         this.type = type;
     }
 
-    public String getApplication() {
-        return application;
-    }
-
-    public void setApplication(String application) {
-        this.application = application;
-    }
 
     public List<HashMap> getMetrics() {
         return metrics;

@@ -3,7 +3,10 @@ package com.capitalone.dashboard.service;
 import com.capitalone.dashboard.common.TestUtils;
 import com.capitalone.dashboard.config.FongoConfig;
 import com.capitalone.dashboard.config.TestConfig;
+import com.capitalone.dashboard.model.ExecutiveFeatureMetrics;
 import com.capitalone.dashboard.model.FeatureMetrics;
+import com.capitalone.dashboard.model.LobFeatureMetrics;
+import com.capitalone.dashboard.model.ProductFeatureMetrics;
 import com.capitalone.dashboard.repository.*;
 import org.junit.Assert;
 import org.junit.Before;
@@ -26,6 +29,7 @@ import java.util.List;
 @ContextConfiguration(classes = {TestConfig.class, FongoConfig.class})
 @DirtiesContext
 public class FeatureMetricsServiceTest {
+
     @Autowired
     private DashboardRepository dashboardRepository;
 
@@ -66,9 +70,9 @@ public class FeatureMetricsServiceTest {
     public void getFeatureMetrics(){
         FeatureMetrics featureMetrics = featureMetricsService.getFeatureMetrics("TestSSA");
 
-        Assert.assertEquals("TestSSA", featureMetrics.getName());
+        Assert.assertEquals("TestSSA", featureMetrics.getId());
         Assert.assertEquals("Component", featureMetrics.getType());
-        Assert.assertEquals("TestAudit", featureMetrics.getApplication());
+        Assert.assertEquals("TestAudit", featureMetrics.getName());
         Assert.assertEquals(getMetrics(), featureMetrics.getMetrics());
 
     }
@@ -76,26 +80,111 @@ public class FeatureMetricsServiceTest {
     @Test
     public void getFetatureMetricsByType(){
         FeatureMetrics featureMetrics = featureMetricsService.getFeatureMetricsByType("TestSSA","FEATURE_TEST_PASS");
-        Assert.assertEquals("TestSSA", featureMetrics.getName());
+        Assert.assertEquals("TestSSA", featureMetrics.getId());
         Assert.assertEquals("Component", featureMetrics.getType());
-        Assert.assertEquals("TestAudit", featureMetrics.getApplication());
+        Assert.assertEquals("TestAudit", featureMetrics.getName());
         Assert.assertEquals(getMetricsByType(), featureMetrics.getMetrics());
+    }
+
+
+    @Test
+    public void getProductFeatureMetrics(){
+        ProductFeatureMetrics productFeatureMetrics = featureMetricsService.getProductFeatureMetrics("product1");
+        Assert.assertEquals("product1", productFeatureMetrics.getId());
+        Assert.assertEquals("TestAudit", productFeatureMetrics.getName());
+        Assert.assertEquals("application", productFeatureMetrics.getType());
+        Assert.assertEquals("Tech", productFeatureMetrics.getLob());
+        Assert.assertEquals("TestSSA", productFeatureMetrics.getComponents().get(0).getId());
+        Assert.assertEquals("Component", productFeatureMetrics.getComponents().get(0).getType());
+        Assert.assertEquals("TestAudit", productFeatureMetrics.getComponents().get(0).getName());
+        Assert.assertEquals(getMetrics(), productFeatureMetrics.getComponents().get(0).getMetrics());
+    }
+
+    @Test
+    public void getProductFeatureMetricsByType(){
+        ProductFeatureMetrics productFeatureMetrics = featureMetricsService.getProductFeatureMetricsByType("product1","FEATURE_TEST_PASS");
+        Assert.assertEquals("product1", productFeatureMetrics.getId());
+        Assert.assertEquals("TestAudit", productFeatureMetrics.getName());
+        Assert.assertEquals("application", productFeatureMetrics.getType());
+        Assert.assertEquals("Tech", productFeatureMetrics.getLob());
+        Assert.assertEquals("TestSSA", productFeatureMetrics.getComponents().get(0).getId());
+        Assert.assertEquals("Component", productFeatureMetrics.getComponents().get(0).getType());
+        Assert.assertEquals("TestAudit", productFeatureMetrics.getComponents().get(0).getName());
+        Assert.assertEquals(getMetricsByType(), productFeatureMetrics.getComponents().get(0).getMetrics());
+    }
+
+    @Test
+    public void getLobFeatureMetrics(){
+        LobFeatureMetrics lobFeatureMetrics = featureMetricsService.getLobFeatureMetrics("Tech");
+        Assert.assertEquals("Tech", lobFeatureMetrics.getName());
+        Assert.assertEquals("lob", lobFeatureMetrics.getType());
+        Assert.assertEquals("product1", lobFeatureMetrics.getApplications().get(0).getId());
+        Assert.assertEquals("TestAudit", lobFeatureMetrics.getApplications().get(0).getName());
+        Assert.assertEquals("application", lobFeatureMetrics.getApplications().get(0).getType());
+        Assert.assertEquals("TestSSA", lobFeatureMetrics.getApplications().get(0).getComponents().get(0).getId());
+        Assert.assertEquals("Component", lobFeatureMetrics.getApplications().get(0).getComponents().get(0).getType());
+        Assert.assertEquals("TestAudit", lobFeatureMetrics.getApplications().get(0).getComponents().get(0).getName());
+        Assert.assertEquals(getMetrics(), lobFeatureMetrics.getApplications().get(0).getComponents().get(0).getMetrics());
+    }
+
+    @Test
+    public void getLobFeatureMetricsByType(){
+        LobFeatureMetrics lobFeatureMetrics = featureMetricsService.getLobFeatureMetricsByType("Tech","FEATURE_TEST_PASS");
+        Assert.assertEquals("Tech", lobFeatureMetrics.getName());
+        Assert.assertEquals("lob", lobFeatureMetrics.getType());
+        Assert.assertEquals("product1", lobFeatureMetrics.getApplications().get(0).getId());
+        Assert.assertEquals("100", lobFeatureMetrics.getPercentage());
+        Assert.assertEquals("TestAudit", lobFeatureMetrics.getApplications().get(0).getName());
+        Assert.assertEquals("application", lobFeatureMetrics.getApplications().get(0).getType());
+        Assert.assertEquals("TestSSA", lobFeatureMetrics.getApplications().get(0).getComponents().get(0).getId());
+        Assert.assertEquals("Component", lobFeatureMetrics.getApplications().get(0).getComponents().get(0).getType());
+        Assert.assertEquals("TestAudit", lobFeatureMetrics.getApplications().get(0).getComponents().get(0).getName());
+        Assert.assertEquals(getMetricsByType(), lobFeatureMetrics.getApplications().get(0).getComponents().get(0).getMetrics());
+    }
+
+    @Test
+    public void getExecutiveFeatureMetrics(){
+        ExecutiveFeatureMetrics executiveFeatureMetrics = featureMetricsService.getExecutiveFeatureMetrics("chow");
+        Assert.assertEquals("chow", executiveFeatureMetrics.getName());
+        Assert.assertEquals("executive", executiveFeatureMetrics.getType());
+        Assert.assertEquals("product1", executiveFeatureMetrics.getApplications().get(0).getId());
+        Assert.assertEquals("TestAudit", executiveFeatureMetrics.getApplications().get(0).getName());
+        Assert.assertEquals("application", executiveFeatureMetrics.getApplications().get(0).getType());
+        Assert.assertEquals("TestSSA", executiveFeatureMetrics.getApplications().get(0).getComponents().get(0).getId());
+        Assert.assertEquals("Component", executiveFeatureMetrics.getApplications().get(0).getComponents().get(0).getType());
+        Assert.assertEquals("TestAudit", executiveFeatureMetrics.getApplications().get(0).getComponents().get(0).getName());
+        Assert.assertEquals(getMetrics(), executiveFeatureMetrics.getApplications().get(0).getComponents().get(0).getMetrics());
 
     }
 
+    @Test
+    public void getExecutiveFeatureMetricsByType(){
+        ExecutiveFeatureMetrics executiveFeatureMetrics = featureMetricsService.getExecutiveFeatureMetricsByType("chow","FEATURE_TEST_PASS");
+        Assert.assertEquals("chow", executiveFeatureMetrics.getName());
+        Assert.assertEquals("executive", executiveFeatureMetrics.getType());
+        Assert.assertEquals("100", executiveFeatureMetrics.getPercentage());
+        Assert.assertEquals("product1", executiveFeatureMetrics.getApplications().get(0).getId());
+        Assert.assertEquals("TestAudit", executiveFeatureMetrics.getApplications().get(0).getName());
+        Assert.assertEquals("application", executiveFeatureMetrics.getApplications().get(0).getType());
+        Assert.assertEquals("TestSSA", executiveFeatureMetrics.getApplications().get(0).getComponents().get(0).getId());
+        Assert.assertEquals("Component", executiveFeatureMetrics.getApplications().get(0).getComponents().get(0).getType());
+        Assert.assertEquals("TestAudit", executiveFeatureMetrics.getApplications().get(0).getComponents().get(0).getName());
+        Assert.assertEquals(getMetricsByType(), executiveFeatureMetrics.getApplications().get(0).getComponents().get(0).getMetrics());
+
+    }
     private List<HashMap> getMetrics(){
         List<HashMap> metrics = new ArrayList<>();
-        HashMap<String,HashMap<String,Double>> codeQuality = new HashMap<>();
-        HashMap<String,Double> codeQualityPercent = new HashMap<>();
-        codeQualityPercent.put("percentage", 93.5);
+        HashMap<String,HashMap<String,String>> codeQuality = new HashMap<>();
+        HashMap<String,String> codeQualityPercent = new HashMap<>();
+        codeQualityPercent.put("percentage", "93.5");
         codeQuality.put("CODE_COVERAGE", codeQualityPercent);
-        HashMap<String,HashMap<String,Double>> errorRate = new HashMap<>();
-        HashMap<String,Double> errorRatePercent = new HashMap<>();
-        errorRatePercent.put("percentage", 0.0);
+        HashMap<String,HashMap<String,String>> errorRate = new HashMap<>();
+        HashMap<String,String> errorRatePercent = new HashMap<>();
+        errorRatePercent.put("percentage", "0");
         errorRate.put("PERF_ERROR_RATE", errorRatePercent);
-        HashMap<String,HashMap<String,Double>> featureTest = new HashMap<>();
-        HashMap<String,Double> featureTestPercent = new HashMap<>();
-        featureTestPercent.put("percentage", 100.0);
+        HashMap<String,HashMap<String,String>> featureTest = new HashMap<>();
+        HashMap<String,String> featureTestPercent = new HashMap<>();
+        featureTestPercent.put("percentage", "100");
         featureTest.put("FEATURE_TEST_PASS", featureTestPercent);
 
         metrics.add(codeQuality);
@@ -106,12 +195,11 @@ public class FeatureMetricsServiceTest {
 
     }
 
-
     private List<HashMap> getMetricsByType(){
         List<HashMap> metrics = new ArrayList<>();
-        HashMap<String,HashMap<String,Double>> featureTest = new HashMap<>();
-        HashMap<String,Double> featureTestPercent = new HashMap<>();
-        featureTestPercent.put("percentage", 100.0);
+        HashMap<String,HashMap<String,String>> featureTest = new HashMap<>();
+        HashMap<String,String> featureTestPercent = new HashMap<>();
+        featureTestPercent.put("percentage", "100");
         featureTest.put("FEATURE_TEST_PASS", featureTestPercent);
         metrics.add(featureTest);
         return metrics;
