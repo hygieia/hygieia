@@ -1,11 +1,11 @@
 package com.capitalone.dashboard.model;
 
-import org.springframework.stereotype.Component;
+
 
 import java.util.HashMap;
 
 import java.util.List;
-@Component
+
 public class FeatureMetrics {
 
     private String id;
@@ -28,7 +28,6 @@ public class FeatureMetrics {
         this.id = id;
     }
 
-
     public String getName() {
         return name;
     }
@@ -45,10 +44,7 @@ public class FeatureMetrics {
         this.type = type;
     }
 
-
-    public List<HashMap> getMetrics() {
-        return metrics;
-    }
+    public List<HashMap> getMetrics() { return metrics; }
 
     public void setMetrics(List<HashMap> metrics) {
         this.metrics = metrics;

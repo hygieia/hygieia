@@ -1,9 +1,9 @@
 package com.capitalone.dashboard.model;
 
-import org.springframework.stereotype.Component;
+
 
 import java.util.List;
-@Component
+
 public class ProductFeatureMetrics {
     
     private String id;

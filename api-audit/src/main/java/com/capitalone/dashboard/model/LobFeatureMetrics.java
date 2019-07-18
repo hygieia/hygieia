@@ -1,9 +1,8 @@
 package com.capitalone.dashboard.model;
 
-import org.springframework.stereotype.Component;
 
 import java.util.List;
-@Component
+
 public class LobFeatureMetrics {
 
     private String name;
@@ -37,8 +36,4 @@ public class LobFeatureMetrics {
     public List<ProductFeatureMetrics> getApplications() { return applications;}
 
     public void setApplications(List<ProductFeatureMetrics> applications) { this.applications = applications;}
-
-
-
-
 }

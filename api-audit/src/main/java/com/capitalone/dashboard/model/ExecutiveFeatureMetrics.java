@@ -46,8 +46,6 @@ public class ExecutiveFeatureMetrics {
         this.applications = applications;
     }
 
-
-
     public String getPercentage() {
         return percentage;
     }

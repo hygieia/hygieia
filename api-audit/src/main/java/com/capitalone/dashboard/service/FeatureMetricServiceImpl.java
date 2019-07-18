@@ -1,6 +1,22 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.FeatureMetrics;
+import com.capitalone.dashboard.model.ProductFeatureMetrics;
+import com.capitalone.dashboard.model.ExecutiveFeatureMetrics;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.Cmdb;
+import com.capitalone.dashboard.model.LobFeatureMetrics;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.CodeQuality;
+import com.capitalone.dashboard.model.CodeQualityMetric;
+import com.capitalone.dashboard.model.TestResult;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.Widget;
+import com.capitalone.dashboard.model.TestCapability;
+import com.capitalone.dashboard.model.TestSuite;
+import com.capitalone.dashboard.model.TestCase;
+import com.capitalone.dashboard.model.TestSuiteType;
 
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
@@ -76,8 +92,6 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
             featureMetrics.setId(dashboard.getTitle());
             featureMetrics.setType("Component");
             featureMetrics.setName(dashboard.getApplication().getName());
-           // Cmdb cmdb = cmdbRepository.findByItemTypeAndCommonNameContainingIgnoreCase("component", dashboard.getApplication().getName());
-            //featureMetrics.setLob(cmdb.getOwnerDept());
             featureMetrics.setMetrics(metrics);
         }else{
             featureMetrics.setName(name);
@@ -91,16 +105,11 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
 
         FeatureMetrics featureMetrics = new FeatureMetrics();
         Dashboard dashboard = dashboardRepository.findByTitleAndType(name, DashboardType.Team);
-
-
-
         if(dashboard != null){
             List<HashMap> metrics = getMetrics(dashboard, type);
             featureMetrics.setId(dashboard.getTitle());
             featureMetrics.setType("Component");
             featureMetrics.setName(dashboard.getApplication().getName());
-            //Cmdb cmdb = cmdbRepository.findByItemTypeAndCommonNameContainingIgnoreCase("component",dashboard.getApplication().getName());
-            //featureMetrics.setLob(cmdb.getOwnerDept());
             featureMetrics.setMetrics(metrics);
         }else{
             featureMetrics.setName(name);
@@ -108,7 +117,6 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
         }
 
         return featureMetrics;
-
     }
 
     @Override
@@ -133,8 +141,6 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
     @Override
     public ProductFeatureMetrics getProductFeatureMetricsByType(String name, String type) {
         ProductFeatureMetrics productFeatureMetrics = new ProductFeatureMetrics();
-
-
         Cmdb cmdb = cmdbRepository.findByConfigurationItemAndItemTypeAndValidConfigItem(name,"app" ,true );
         List<String> components = cmdb.getComponents();
         List<FeatureMetrics> productComponent = new ArrayList<>();
@@ -222,7 +228,12 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
         return executiveFeatureMetrics;
     }
 
-
+    /**
+     *
+     * @param cmdb
+     * @param type
+     * @return
+     */
     private ProductFeatureMetrics getProductMetrics(Cmdb cmdb,String type){
         ProductFeatureMetrics productFeatureMetrics = new ProductFeatureMetrics();
         List<Double> percentages = new ArrayList<>();
@@ -314,7 +325,6 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
         HashMap<String,HashMap<String,String>> codeQuality = new HashMap<>();
         HashMap<String,String> codeQualityPercent = new HashMap<>();
 
-
         if(CollectionUtils.isNotEmpty(codeQualityItemsIds)){
             codeQualityItemsIds.forEach(collectorItemId -> {
 
@@ -392,6 +402,7 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
         return perfErrorRate;
     }
 
+
     /**
      *
      * @param testItems
@@ -440,6 +451,11 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
 
     }
 
+    /**
+     *
+     * @param values
+     * @return
+     */
     private HashMap<String,String> componentLevelAverage(List<Double> values){
         HashMap<String,String> featureTestPercent = new HashMap<>();
         if(values.size() > 0) {

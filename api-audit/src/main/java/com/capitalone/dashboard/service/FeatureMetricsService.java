@@ -7,6 +7,7 @@ import com.capitalone.dashboard.model.ProductFeatureMetrics;
 
 
 public interface FeatureMetricsService {
+
     FeatureMetrics getFeatureMetrics(String name);
 
     FeatureMetrics getFeatureMetricsByType(String name,String type);
