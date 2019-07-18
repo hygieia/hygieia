@@ -86,6 +86,9 @@ The sample `application.properties` file lists parameter values to configure the
 		#Gitlab protocol (optional, defaults to 'http')
 		gitlab.protocol=http
 
+        #If enabled, dashboard URL configured in UI follows this example <gitlab.protocol>://<gitlab.host>/<gitlab_project_id>
+		#gitlab.useProjectId (optional, defaults to false)
+
 		#Gitlab port (optional, defaults to protocol default port)
 		gitlab.port=80
 
