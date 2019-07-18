@@ -70,6 +70,7 @@ public class DefaultJiraClient implements JiraClient {
     private static final String EPIC_REST_SUFFIX = "rest/agile/1.0/issue/%s";
     private static final String ISSUE_TYPES_REST_SUFFIX = "rest/api/2/issuetype";
     private static final String ISSUE_BY_BOARD_FULL_REFRESH_REST_SUFFIX = "rest/agile/1.0/%s/%s/issue?jql=issueType in ('%s') and updatedDate>='%s'&fields=id&startAt=%s";
+    private static final String CUSTOM_FIELDS_SUFFIX = "rest/api/2/field";
 
     private static final String STATIC_ISSUE_FIELDS = "id,key,issuetype,status,summary,created,updated,project,issuelinks,assignee,sprint,epic,aggregatetimeoriginalestimate,timeoriginalestimate";
 
@@ -78,20 +79,14 @@ public class DefaultJiraClient implements JiraClient {
     private static final int JIRA_BOARDS_PAGING = 50;
     private final FeatureSettings featureSettings;
     private final RestOperations restOperations;
-    private String issueFields;
+    private String issueFields, teamFieldName, sprintDataFieldName, epicIdFieldName, storyPointsFieldName;
     private static JSONParser parser = new JSONParser();
 
     @Autowired
     public DefaultJiraClient(FeatureSettings featureSettings, Supplier<RestOperations> restOperationsSupplier) {
         this.featureSettings = featureSettings;
         this.restOperations = restOperationsSupplier.get();
-        issueFields = STATIC_ISSUE_FIELDS + ','
-                + featureSettings.getJiraTeamFieldName() + ','
-                + featureSettings.getJiraSprintDataFieldName() + ','
-                + featureSettings.getJiraEpicIdFieldName() + ','
-                + featureSettings.getJiraStoryPointsFieldName();
     }
-
 
     /**
      * Get all the Scope (Project in Jira terms)
@@ -448,7 +443,7 @@ public class DefaultJiraClient implements JiraClient {
         JSONObject fields = (JSONObject) issue.get("fields");
 
         JSONObject epic = (JSONObject) fields.get("epic");
-        String epicId = getString(fields, featureSettings.getJiraEpicIdFieldName());
+        String epicId = getString(fields, epicIdFieldName);
         feature.setsEpicID(epic != null ? getString(epic, "id") : epicId);
 
         JSONObject issueType = (JSONObject) fields.get("issuetype");
@@ -481,7 +476,7 @@ public class DefaultJiraClient implements JiraClient {
 
         feature.setsEstimateTime(originalEstimate);
 
-        String storyPoints = getString(fields, featureSettings.getJiraStoryPointsFieldName());
+        String storyPoints = getString(fields, storyPointsFieldName);
 
         feature.setsEstimate(storyPoints);
 
@@ -508,7 +503,7 @@ public class DefaultJiraClient implements JiraClient {
             feature.setsTeamID(board.getTeamId());
             feature.setsTeamName(board.getName());
         } else {
-            JSONObject team = (JSONObject) fields.get(featureSettings.getJiraTeamFieldName());
+            JSONObject team = (JSONObject) fields.get(teamFieldName);
             if (team != null) {
                 feature.setsTeamID(getString(team, "id"));
                 feature.setsTeamName(getString(team, "value"));
@@ -607,7 +602,7 @@ public class DefaultJiraClient implements JiraClient {
             sprint.setRapidViewId(getString(sprintJson, "originBoardId"));
             return sprint;
         } else {
-            JSONArray sprintCustom = (JSONArray) fields.get(featureSettings.getJiraSprintDataFieldName());
+            JSONArray sprintCustom = (JSONArray) fields.get(sprintDataFieldName);
             return SprintFormatter.parseSprint(sprintCustom);
         }
     }
@@ -810,6 +805,90 @@ public class DefaultJiraClient implements JiraClient {
                 isLast = true;
                 LOGGER.error("Error in calling JIRA API: " + url , e.getMessage());
             }
+        }
+        return result;
+    }
+
+    @Override
+    public void updateFieldNames() {
+        if (featureSettings.isJiraLookupCustomFields()) {
+            Map<String, String> customFields = lookupCustomFields();
+            teamFieldName = customFields.get("team");
+            sprintDataFieldName = customFields.get("sprint");
+            epicIdFieldName = customFields.get("epic");
+            storyPointsFieldName = customFields.get("storypoints");
+        } else {
+            teamFieldName = featureSettings.getJiraTeamFieldName();
+            sprintDataFieldName = featureSettings.getJiraSprintDataFieldName();
+            epicIdFieldName = featureSettings.getJiraEpicIdFieldName();
+            storyPointsFieldName = featureSettings.getJiraStoryPointsFieldName();
+        }
+
+        issueFields = STATIC_ISSUE_FIELDS + ','
+                + teamFieldName + ','
+                + sprintDataFieldName + ','
+                + epicIdFieldName + ','
+                + storyPointsFieldName;
+    }
+
+
+    @Override
+    public Map<String, String> lookupCustomFields() {
+        Map<String, String> result = new HashMap<>();
+        try {
+            String url = featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/") ? "" : "/")
+                    + CUSTOM_FIELDS_SUFFIX;
+            ResponseEntity<String> responseEntity = makeRestCall(url);
+            String responseBody = responseEntity.getBody();
+
+            JSONArray allFields = (JSONArray) parser.parse(responseBody);
+            if (allFields == null) {
+                throw new HygieiaException("Unable to get Jira field names: " + url, HygieiaException.INVALID_CONFIGURATION);
+            }
+            for (Object obj : allFields) {
+                JSONObject fieldObj = (JSONObject) obj;
+                String name = getString(fieldObj, "name");
+                String id = getString(fieldObj, "id");
+                JSONObject schemaObj = (JSONObject) fieldObj.get("schema");
+                String customType = getString(schemaObj, "custom");
+
+                // TODO: verify the customType for tempo-teams.  I don't have this plugin, so I can't look it up.
+                if (name.equals(featureSettings.getJiraTeamFieldName()) && customType.equals("com.tempoplugin.tempo-teams:team.customfield")) {
+                    if (result.containsKey("team")) {
+                        LOGGER.error(String.format("There was more than one team custom field found.  Using %s, but the duplicate found was %s",
+                              result.get("team")));
+                    } else {
+                        result.put("team", id);
+                    }
+                } else if (name.equals(featureSettings.getJiraSprintDataFieldName()) && customType.equals("com.pyxis.greenhopper.jira:gh-sprint")) {
+                    if (result.containsKey("sprint")) {
+                        LOGGER.error(String.format("There was more than one sprint custom field found.  Using %s, but the duplicate found was %s",
+                              result.get("sprint")));
+                    } else {
+                        result.put("sprint", id);
+                    }
+                } else if (name.equals(featureSettings.getJiraEpicIdFieldName())) {
+                    // note that the controller logic will first try to lookup a field with name "epic", and then fall back to this field if it couldn't find "epic"
+                    if (result.containsKey("epic") && customType.equals("com.pyxis.greenhopper.jira:gh-epic-link")) {
+                        LOGGER.error(String.format("There was more than one epic custom field found.  Using %s, but the duplicate found was %s",
+                              result.get("epic")));
+                    } else {
+                        result.put("epic", id);
+                    }
+                } else if (name.equals(featureSettings.getJiraStoryPointsFieldName()) && customType.equals("com.atlassian.jira.plugin.system.customfieldtypes:float")) {
+                    if (result.containsKey("storypoints")) {
+                        LOGGER.error(String.format("There was more than one storypoints custom field found.  Using %s, but the duplicate found was %s",
+                              result.get("storypoints")));
+                    } else {
+                        result.put("storypoints", id);
+                    }
+                }
+            }
+
+        } catch (ParseException pe) {
+            LOGGER.error("Parser exception when parsing teams", pe);
+        } catch (HygieiaException e) {
+            LOGGER.error("Error in calling JIRA API", e);
         }
         return result;
     }

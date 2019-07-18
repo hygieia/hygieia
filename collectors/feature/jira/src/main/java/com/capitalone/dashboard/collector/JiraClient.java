@@ -27,4 +27,8 @@ public interface JiraClient {
 	List<String> getAllIssueIds(String id, JiraMode mode);
 
 	Map<String, String> getJiraIssueTypeIds();
+
+        void updateFieldNames();
+
+	Map<String, String> lookupCustomFields();
 }

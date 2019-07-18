@@ -98,13 +98,20 @@ feature.masterStartDate=${JIRA_MASTER_START_DATE:-2008-01-01T00:00:00.000000}
 # Multiple comma-separated values can be specified.
 feature.jiraIssueTypeNames=${JIRA_ISSUE_TYPE_NAMES:-Story,Epic,Bug,Task,Sub-task}
 
+# Setting this to true will make this collector attempt to automatically look up the Sprint, Epic, Story Points, and Team
+# custom field IDs based on the "friendly" field names provided in jiraSprintDataFieldName, jiraEpicIdFieldName,
+# jiraStoryPointsFieldName, and jiraTeamFieldName.  If this doesn't work for some reason, you can set this to false,
+# and manually provide the custom field names (e.g. customfield_10002) in jiraSprintDataFieldName, jiraEpicIdFieldName,
+# jiraStoryPointsFieldName, and jiraTeamFieldName.
+feature.jiraLookupCustomFields=${JIRA_LOOKUP_CUSTOM_FIELDS:-true}
+
 # In Jira, your instance will have its own custom field created for "sprint" or "timebox" details,
 # which includes a list of information.  This field allows you to specify that data field for your
 # instance of Jira. Note: You can retrieve your instance's sprint data field name
 # via the following URI, and look for a package name com.atlassian.greenhopper.service.sprint.Sprint;
 # your custom field name describes the values in this field:
 # https://[your-jira-domain-name]/rest/api/2/issue/[some-issue-name]
-feature.jiraSprintDataFieldName=${JIRA_SPRINT_DATA_FIELD_NAME:-customfield_10007}
+feature.jiraSprintDataFieldName=${JIRA_SPRINT_DATA_FIELD_NAME:-Sprint}
 
 # In Jira, your instance will have its own custom field created for "super story" or "epic" back-end ID,
 # which includes a list of information.  This field allows you to specify that data field for your instance
@@ -112,7 +119,7 @@ feature.jiraSprintDataFieldName=${JIRA_SPRINT_DATA_FIELD_NAME:-customfield_10007
 # queried user story issue has a super issue (e.g., epic) tied to it; your custom field name describes the
 # epic value you expect to see, and is the only field that does this for a given issue:
 # https://[your-jira-domain-name]/rest/api/2/issue/[some-issue-name]
-feature.jiraEpicIdFieldName=${JIRA_EPIC_FIELD_NAME:-customfield_10400}
+feature.jiraEpicIdFieldName=${JIRA_EPIC_FIELD_NAME:-Epic Link}
 
 # In Jira, your instance will have its own custom field created for "story points"
 # This field allows you to specify that data field for your instance
@@ -120,7 +127,7 @@ feature.jiraEpicIdFieldName=${JIRA_EPIC_FIELD_NAME:-customfield_10400}
 # queried user story issue has story points set on it; your custom field name describes the
 # story points value you expect to see:
 # https://[your-jira-domain-name]/rest/api/2/issue/[some-issue-name]
-feature.jiraStoryPointsFieldName=${JIRA_STORY_POINTS_FIELD_NAME:-customfield_10002}
+feature.jiraStoryPointsFieldName=${JIRA_STORY_POINTS_FIELD_NAME:-Story Points}
 
 # In Jira, your instance will have its own custom field created for "team"
 # This field allows you to specify that data field for your instance
@@ -128,7 +135,7 @@ feature.jiraStoryPointsFieldName=${JIRA_STORY_POINTS_FIELD_NAME:-customfield_100
 # queried user story issue has team set on it; your custom field name describes the
 # team value you expect to see:
 # https://[your-jira-domain-name]/rest/api/2/issue/[some-issue-name]
-feature.jiraTeamFieldName=${JIRA_TEAM_FIELD_NAME}
+feature.jiraTeamFieldName=${JIRA_TEAM_FIELD_NAME:-Team}
 
 # Set this to true if you use boards as team
 feature.jiraBoardAsTeam=${JIRA_BOARD_AS_TEAM:-false}

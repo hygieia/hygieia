@@ -43,8 +43,14 @@ public class FeatureSettings {
 	 * Multiple comma-separated values can be specified.
 	 */
 	private String[] jiraIssueTypeNames;
+        /**
+         * If this is set to true (default), this will make the collector automatically look up the "customfield" names for jiraSprintDataFieldName, jiraEpicIdFieldName, jiraStoryPointsFieldName, and jiraTeamFieldName.
+         * If this is false, you will need to provide the actually "customfield" names for those parameters.
+         */
+        private boolean jiraLookupCustomFields;
 	/**
-	 * In Jira, your instance will have its own custom field created for "sprint" or "timebox" details, which includes a list of information.  This field allows you to specify that data field for your instance of Jira.
+	 * In Jira, your instance will have its own custom field created for "sprint" or "timebox" details, which includes a list of information.  When jiraLookupCustomFields is set to true, specify the friendly name of this field (e.g. "Sprint", note that it is case-sensitive).
+         * If jiraLookupCustomFields is false, specify the data field name (e.g. "customfield_10100") for your instance of Jira.
 	 * <p>
 	 * </p>
 	 * <strong>Note:</strong> You can retrieve your instance's sprint data field name
@@ -53,34 +59,28 @@ public class FeatureSettings {
 	 */
 	private String jiraSprintDataFieldName;
 	/**
-	 * In Jira, your instance will have its own custom field created for "super story" or "epic" back-end ID, which includes a list of information.  This field allows you to specify that data field for your instance of Jira.
+	 * In Jira, your instance will have its own custom field created for "super story" or "epic" back-end ID, which includes a list of information.   When jiraLookupCustomFields is set to true, specify the friendly name of this field (e.g. "Epic", note that it is case-sensitive).
 	 * <p>
 	 * </p>
-     * <strong>Note:</strong> You can retrieve your instance's epic ID field name
+         * <strong>Note:</strong> You can retrieve your instance's epic ID field name
 	 * via the following URI where your queried user story issue has a super issue (e.g., epic) tied to it; your custom field name describes the epic value you expect to see, and is the only field that does this for a given issue:
 	 *  https://[your-jira-domain-name]/rest/api/2/issue/[some-issue-name]
 	 */
-
-    private String jiraEpicIdFieldName;
-
-    private String jiraStoryPointsFieldName;
-
+        private String jiraEpicIdFieldName;
+        private String jiraStoryPointsFieldName;
 	/**
 	 * Its a custom field in JIRA, set it here
 	 */
 	private String jiraTeamFieldName;
-
 	/**
 	 * If you want to select boards in the Hygieia UI
 	 */
 	private boolean jiraBoardAsTeam;
-
 	/**
 	 * Defines the maximum number of features allow per board. If limit is reach collection will not happen for given board
 	 */
 	@Value("${feature.maxNumberOfFeaturesPerBoard:2000}")
 	private int maxNumberOfFeaturesPerBoard;
-
 	/**
 	 *  Defines how to update features per board. If true then only update based on enabled collectorItems otherwise full update
 	 */
@@ -147,25 +147,29 @@ public class FeatureSettings {
 
 	public void setJiraIssueTypeNames(String[] jiraIssueTypeNames) { this.jiraIssueTypeNames = jiraIssueTypeNames; }
 
+	public boolean isJiraLookupCustomFields() { return jiraLookupCustomFields; }
+
+	public void setJiraLookupCustomFields(boolean jiraLookupCustomFields) { this.jiraLookupCustomFields = jiraLookupCustomFields; }
+
 	public String getJiraSprintDataFieldName() { return jiraSprintDataFieldName; }
 
 	public void setJiraSprintDataFieldName(String jiraSprintDataFieldName) { this.jiraSprintDataFieldName = jiraSprintDataFieldName; }
 
-    public String getJiraEpicIdFieldName() { return jiraEpicIdFieldName; }
+        public String getJiraEpicIdFieldName() { return jiraEpicIdFieldName; }
 
-    public void setJiraEpicIdFieldName(String jiraEpicIdFieldName) { this.jiraEpicIdFieldName = jiraEpicIdFieldName; }
+        public void setJiraEpicIdFieldName(String jiraEpicIdFieldName) { this.jiraEpicIdFieldName = jiraEpicIdFieldName; }
 
-    public String getJiraStoryPointsFieldName() { return jiraStoryPointsFieldName; }
+        public String getJiraStoryPointsFieldName() { return jiraStoryPointsFieldName; }
 
-    public void setJiraStoryPointsFieldName(String jiraStoryPointsFieldName) { this.jiraStoryPointsFieldName = jiraStoryPointsFieldName; }
+        public void setJiraStoryPointsFieldName(String jiraStoryPointsFieldName) { this.jiraStoryPointsFieldName = jiraStoryPointsFieldName; }
 
-    public String getJiraTeamFieldName() { return jiraTeamFieldName; }
+        public String getJiraTeamFieldName() { return jiraTeamFieldName; }
 
-    public void setJiraTeamFieldName(String jiraTeamFieldName) { this.jiraTeamFieldName = jiraTeamFieldName; }
+        public void setJiraTeamFieldName(String jiraTeamFieldName) { this.jiraTeamFieldName = jiraTeamFieldName; }
 
-    public int getRefreshTeamAndProjectHours() { return refreshTeamAndProjectHours; }
+        public int getRefreshTeamAndProjectHours() { return refreshTeamAndProjectHours; }
 
-    public void setRefreshTeamAndProjectHours(int refreshTeamAndProjectHours) { this.refreshTeamAndProjectHours = refreshTeamAndProjectHours; }
+        public void setRefreshTeamAndProjectHours(int refreshTeamAndProjectHours) { this.refreshTeamAndProjectHours = refreshTeamAndProjectHours; }
 
 	public boolean isJiraBoardAsTeam() { return jiraBoardAsTeam; }
 

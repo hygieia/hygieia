@@ -96,6 +96,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         if (!MapUtils.isEmpty(issueTypeIds)){
             collector.getProperties().put("issueTypesMap", issueTypeIds);
         }
+        jiraClient.updateFieldNames();
         return collector;
     }
 
