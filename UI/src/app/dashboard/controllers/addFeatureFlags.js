@@ -9,7 +9,7 @@
 
     function AddFeatureFlagController($uibModalInstance, featureFlagsData,$sce) {
         var ctrl = this;
-        ctrl.configTooltip = $sce.trustAsHtml("<div class='tooltipList'>{\"name\":\"auto_discovery_update\",\"description\":\"this is flag\",\"flags\":{\"agileTool\":false,\"artifact\":false,\"build\":false,\"codeQuality\":false,\"deployment\":false,\"libraryPolicy\":false,\"scm\":false,\"staticSecurityScan\":false,\"test\":false}}</div>");
+        ctrl.configTooltip = $sce.trustAsHtml("<div class='tooltipList'>{\"name\": \"name\", \"description\":\"Default description\", \"flags\": {}}</div>");
 
         // public methods
         ctrl.submit = submit;
