@@ -75,12 +75,6 @@ services:
     depends_on:
       - db-setup
 
-  github-collector:
-    build: collectors/scm/github
-    image: hygieia-github-scm-collector
-    depends_on:
-      - db-setup
-
   github-graphql-collector:
     build: collectors/scm/github-graphql
     image: hygieia-github-graphql-scm-collector
@@ -96,12 +90,6 @@ services:
   gitlab-scm-collector:
     build: collectors/scm/gitlab
     image: hygieia-gitlab-scm-collector
-    depends_on:
-      - db-setup
-
-  jenkins-build-collector:
-    build: collectors/build/jenkins
-    image: hygieia-jenkins-build-collector
     depends_on:
       - db-setup
 
@@ -126,18 +114,6 @@ services:
   nexus-iq-collector:
     build: collectors/library-policy/nexus-iq-collector
     image: hygieia-nexus-iq-collector
-    depends_on:
-      - db-setup
-
-  sonar-codequality-collector:
-    build: collectors/build/sonar
-    image: hygieia-sonar-codequality-collector
-    depends_on:
-      - db-setup
-
-  subversion-collector:
-    build: collectors/scm/subversion
-    image: hygieia-subversion-scm-collector
     depends_on:
       - db-setup
 
