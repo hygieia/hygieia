@@ -195,16 +195,13 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
-        <module>api</module>
         <module>api-audit</module>
         <module>collectors/audit/nfrr</module>
         <module>collectors/feature/rally</module>
         <module>collectors/artifact/artifactory</module>
         <module>collectors/build/bamboo</module>
-        <module>collectors/build/jenkins</module>
         <module>collectors/build/jenkins-cucumber</module>
         <module>collectors/build/jenkins-codequality</module>
-        <module>collectors/build/sonar</module>
         <module>collectors/cloud/aws</module>
         <module>collectors/cloud/cloudwatch</module>
         <module>collectors/deploy/udeploy</module>
@@ -215,14 +212,12 @@
         <module>collectors/misc/chat-ops</module>
         <module>collectors/performance/appdynamics</module>
         <module>collectors/scm/bitbucket</module>
-        <module>collectors/scm/github</module>
         <module>collectors/scm/github-graphql</module>
         <module>collectors/scm/gitlab</module>
         <module>collectors/cmdb/hpsm</module>
         <module>collectors/library-policy/nexus-iq-collector</module>
         <module>collectors/misc/score</module>
         <module>collectors/test-results/jira-xray</module>
-        <module>hygieia-jenkins-plugin</module>
         <module>UI</module>
         <module>UI-tests</module>
       </modules>
@@ -245,15 +240,12 @@
     <profile>
       <id>release</id>
       <modules>
-        <module>api</module>
         <module>api-audit</module>
         <module>collectors/artifact/artifactory</module>
         <module>collectors/audit/nfrr</module>
         <module>collectors/build/bamboo</module>
-        <module>collectors/build/jenkins</module>
         <module>collectors/build/jenkins-cucumber</module>
         <module>collectors/build/jenkins-codequality</module>
-        <module>collectors/build/sonar</module>
         <module>collectors/cloud/aws</module>
         <module>collectors/deploy/udeploy</module>
         <module>collectors/deploy/xldeploy</module>
@@ -263,14 +255,12 @@
         <module>collectors/misc/chat-ops</module>
         <module>collectors/performance/appdynamics</module>
         <module>collectors/scm/bitbucket</module>
-        <module>collectors/scm/github</module>
         <module>collectors/scm/github-graphql</module>
         <module>collectors/scm/gitlab</module>
         <module>collectors/cmdb/hpsm</module>
         <module>collectors/library-policy/nexus-iq-collector</module>
         <module>collectors/misc/score</module>
         <module>collectors/test-results/jira-xray</module>
-        <module>hygieia-jenkins-plugin</module>
      	<module>UI</module>
         <module>UI-tests</module>
  </modules>
