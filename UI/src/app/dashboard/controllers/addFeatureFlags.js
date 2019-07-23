@@ -10,6 +10,7 @@
     function AddFeatureFlagController($uibModalInstance, featureFlagsData,$sce) {
         var ctrl = this;
         ctrl.configTooltip = $sce.trustAsHtml("<div class='tooltipList'>{\"name\": \"name\", \"description\":\"Default description\", \"flags\": {}}</div>");
+        ctrl.placeHolder= '{"name": "name", "description":"Default description", "flags": {}}';
 
         // public methods
         ctrl.submit = submit;
