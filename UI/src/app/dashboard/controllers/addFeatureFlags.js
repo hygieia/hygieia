@@ -5,10 +5,12 @@
         .module(HygieiaConfig.module)
         .controller('AddFeatureFlagController', AddFeatureFlagController);
 
-    AddFeatureFlagController.$inject = ['$uibModalInstance', 'featureFlagsData'];
+    AddFeatureFlagController.$inject = ['$uibModalInstance', 'featureFlagsData','$sce'];
 
-    function AddFeatureFlagController($uibModalInstance, featureFlagsData) {
+    function AddFeatureFlagController($uibModalInstance, featureFlagsData,$sce) {
         var ctrl = this;
+        ctrl.configTooltip = $sce.trustAsHtml("<div class='tooltipList'>{\"name\":\"auto_discovery_update\",\"description\":\"this is flag\",\"flags\":{\"agileTool\":false,\"artifact\":false,\"build\":false,\"codeQuality\":false,\"deployment\":false,\"libraryPolicy\":false,\"scm\":false,\"staticSecurityScan\":false,\"test\":false}}</div>");
+
         // public methods
         ctrl.submit = submit;
 
