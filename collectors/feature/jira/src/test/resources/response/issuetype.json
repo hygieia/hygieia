@@ -1,0 +1,20 @@
+[
+  {
+    "self": "https://jira.com/rest/api/2/issuetype/6",
+    "id": "6",
+    "description": "Created by JIRA Software - do not edit or delete. Issue type for a big user story that needs to be broken down.",
+    "iconUrl": "https://jira.com/secure/viewavatar?size=xsmall&avatarId=12345&avatarType=issuetype",
+    "name": "Epic",
+    "subtask": false,
+    "avatarId": 12345
+  },
+  {
+    "self": "https://jira.com/rest/api/2/issuetype/7",
+    "id": "7",
+    "description": "Created by JIRA Software - do not edit or delete. Issue type for a user story.",
+    "iconUrl": "https://jira.com/secure/viewavatar?size=xsmall&avatarId=123456&avatarType=issuetype",
+    "name": "Story",
+    "subtask": false,
+    "avatarId": 123456
+  },
+]

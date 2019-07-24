@@ -9,8 +9,8 @@
         .controller('AdminController', AdminController);
 
 
-    AdminController.$inject = ['$scope', 'dashboardData', '$location', '$uibModal', 'userService', 'authService', 'userData', 'dashboardService', 'templateMangerData', 'paginationWrapperService','$sce','$q','serviceAccountData'];
-    function AdminController($scope, dashboardData, $location, $uibModal, userService, authService, userData, dashboardService, templateMangerData, paginationWrapperService,$sce,$q,serviceAccountData) {
+    AdminController.$inject = ['$scope', 'dashboardData', '$location', '$uibModal', 'userService', 'authService', 'userData', 'dashboardService', 'templateMangerData', 'paginationWrapperService','$sce','$q','serviceAccountData','featureFlagsData'];
+    function AdminController($scope, dashboardData, $location, $uibModal, userService, authService, userData, dashboardService, templateMangerData, paginationWrapperService,$sce,$q,serviceAccountData,featureFlagsData) {
         var ctrl = this;
         if (userService.isAuthenticated() && userService.isAdmin()) {
             $location.path('/admin');
@@ -46,6 +46,8 @@
         ctrl.addServiceAccount = addServiceAccount;
         ctrl.editAccount = editAccount;
         ctrl.deleteAccount = deleteAccount;
+        ctrl.addFeatureFlag = addFeatureFlag;
+        ctrl.deleteFlags = deleteFlags;
 
 
 
@@ -123,6 +125,7 @@
         userData.apitokens().then(processTokenResponse);
         templateMangerData.getAllTemplates().then(processTemplateResponse);
         serviceAccountData.getAllServiceAccounts().then(processServAccResponse);
+        featureFlagsData.getFeatureFlagsData().then(processFeatureFlagResponse);
 
 
         function pageChangeHandler(pageNumber) {
@@ -266,6 +269,28 @@
             });
         }
 
+        function addFeatureFlag() {
+            console.log("Add Feature flags");
+
+            var mymodalInstance = $uibModal.open({
+                templateUrl: 'app/dashboard/views/add-featureflag.html',
+                controller: 'AddFeatureFlagController',
+                controllerAs: 'ctrl',
+                resolve: {}
+            });
+
+            mymodalInstance.result.then(function (condition) {
+                window.location.reload(false);
+            });
+        }
+
+        function deleteFlags(id) {
+            featureFlagsData.deleteFeatureFlags(id).then(function() {
+                _.remove( ctrl.featureFlags , {id: id});
+            });
+        }
+
+
         function deleteAccount(id) {
             serviceAccountData.deleteAccount(id).then(function() {
                 _.remove( ctrl.serviceAccounts , {id: id});
@@ -291,6 +316,10 @@
 
         function processServAccResponse(response){
             ctrl.serviceAccounts = response.data;
+        }
+
+        function processFeatureFlagResponse(response){
+            ctrl.featureFlags = response.data;
         }
 
         // navigate to create template modal

@@ -337,7 +337,7 @@ public class DashboardAuditServiceTest {
                     boolean bothNull = (lhsPR == null) && (rhsPR == null);
                     if (!bothNull) {
                         assertThat(lhsPR).isEqualToComparingOnlyGivenFields(rhsPR, "scmUrl", "scmBranch", "number", "orgName", "repoName", "scmMergeEventRevisionNumber",
-                                "scmCommitLog", "scmCommitTimestamp", "scmAuthor", "numberOfChanges", "sourceRepo", "sourceBranch", "targetRepo", "targetBranch", "updatedAt", "createdAt",
+                                "scmCommitLog", "scmCommitTimestamp", "scmAuthor", "sourceRepo", "sourceBranch", "targetRepo", "targetBranch", "updatedAt", "createdAt",
                                 "closedAt", "state", "mergedAt", "headSha", "baseSha");
 
                         List<Commit> lhsPRCommits = Objects.requireNonNull(lhsPR).getCommits();
@@ -422,7 +422,7 @@ public class DashboardAuditServiceTest {
             assertThat(lhsCommits.size()).isEqualByComparingTo(rhsCommits.size());
             lhsCommits.sort(Comparator.comparing(Commit::getScmRevisionNumber));
             rhsCommits.sort(Comparator.comparing(Commit::getScmRevisionNumber));
-            IntStream.range(0, lhsCommits.size()).forEach(j -> assertThat(lhsCommits.get(j)).isEqualToIgnoringGivenFields(rhsCommits.get(j), "id", "timestamp"));
+            IntStream.range(0, lhsCommits.size()).forEach(j -> assertThat(lhsCommits.get(j)).isEqualToIgnoringGivenFields(rhsCommits.get(j), "id", "timestamp","numberOfChanges"));
         }
     }
 

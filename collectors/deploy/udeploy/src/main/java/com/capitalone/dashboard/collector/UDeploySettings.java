@@ -3,6 +3,7 @@ package com.capitalone.dashboard.collector;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,10 +14,10 @@ import java.util.List;
 public class UDeploySettings {
     private String cron;
     private String token;
-    private String username;
-    private String password;
-    private List<String> servers;
-    private List<String> niceNames;
+    private List<String> usernames = new ArrayList<>();
+    private List<String> passwords = new ArrayList<>();
+    private List<String> servers = new ArrayList<>();
+    private List<String> niceNames = new ArrayList<>();
 
     public String getCron() {
         return cron;
@@ -34,20 +35,20 @@ public class UDeploySettings {
         this.token = token;
     }
 
-    public String getUsername() {
-        return username;
+    public List<String> getUsernames() {
+        return usernames;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUsername(List<String> usernames) {
+        this.usernames = usernames;
     }
 
-    public String getPassword() {
-        return password;
+    public List<String> getPasswords() {
+        return passwords;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPassword(List<String> passwords) {
+        this.passwords = passwords;
     }
 
     public List<String> getServers() {

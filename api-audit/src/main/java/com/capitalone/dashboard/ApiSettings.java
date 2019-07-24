@@ -37,6 +37,15 @@ public class ApiSettings {
     @Value("${testResultSkippedPriority:High}")
     public String testResultSkippedPriority;
     private String serviceAccountRegEx;
+    @Value("${highSecurityVulnerabilitiesAge:0}")
+    private int highSecurityVulnerabilitiesAge;
+    @Value("${criticalSecurityVulnerabilitiesAge:0}")
+    private int criticalSecurityVulnerabilitiesAge;
+    @Value("${highLicenseVulnerabilitiesAge:0}")
+    private int highLicenseVulnerabilitiesAge;
+    @Value("${criticalLicenseVulnerabilitiesAge:0}")
+    private int criticalLicenseVulnerabilitiesAge;
+    private String buildStageRegEx;
 
     public String getKey() {
         return key;
@@ -173,4 +182,46 @@ public class ApiSettings {
     public void setTestResultThreshold(double testResultThreshold) {
         this.testResultThreshold = testResultThreshold;
     }
+
+    public int getHighSecurityVulnerabilitiesAge() {
+        return highSecurityVulnerabilitiesAge;
+    }
+
+    public void setHighSecurityVulnerabilitiesAge(int highSecurityVulnerabilitiesAge) {
+        this.highSecurityVulnerabilitiesAge = highSecurityVulnerabilitiesAge;
+    }
+
+    public int getCriticalSecurityVulnerabilitiesAge() {
+        return criticalSecurityVulnerabilitiesAge;
+    }
+
+    public void setCriticalSecurityVulnerabilitiesAge(int criticalSecurityVulnerabilitiesAge) {
+        this.criticalSecurityVulnerabilitiesAge = criticalSecurityVulnerabilitiesAge;
+    }
+
+    public int getHighLicenseVulnerabilitiesAge() {
+        return highLicenseVulnerabilitiesAge;
+    }
+
+    public void setHighLicenseVulnerabilitiesAge(int highLicenseVulnerabilitiesAge) {
+        this.highLicenseVulnerabilitiesAge = highLicenseVulnerabilitiesAge;
+    }
+
+    public int getCriticalLicenseVulnerabilitiesAge() {
+        return criticalLicenseVulnerabilitiesAge;
+    }
+
+    public void setCriticalLicenseVulnerabilitiesAge(int criticalLicenseVulnerabilitiesAge) {
+        this.criticalLicenseVulnerabilitiesAge = criticalLicenseVulnerabilitiesAge;
+    }
+
+    public String getBuildStageRegEx() {
+        return buildStageRegEx;
+    }
+
+    public void setBuildStageRegEx(String buildStageRegEx) {
+        this.buildStageRegEx = buildStageRegEx;
+    }
+
+
 }

@@ -5,6 +5,7 @@ import com.capitalone.dashboard.model.BaseArtifact;
 import com.capitalone.dashboard.model.BinaryArtifact;
 import com.capitalone.dashboard.model.RepoAndPattern;
 import com.capitalone.dashboard.model.ServerSetting;
+import com.capitalone.dashboard.repository.BinaryArtifactRepository;
 import com.capitalone.dashboard.util.ArtifactUtilTest;
 import com.capitalone.dashboard.util.Supplier;
 import org.apache.commons.io.IOUtils;
@@ -38,6 +39,7 @@ public class DefaultArtifactoryClientTest {
 	@Mock private Supplier<RestOperations> restOperationsSupplier;
     @Mock private RestOperations rest;
     @Mock private ArtifactorySettings settings;
+    @Mock private BinaryArtifactRepository binaryArtifactRepository;
     
     private final DateFormat FULL_DATE = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
     
@@ -53,7 +55,7 @@ public class DefaultArtifactoryClientTest {
 		r.setPatterns(Arrays.asList(ArtifactUtilTest.IVY_PATTERN1, ArtifactUtilTest.IVY_ARTIFACT_PATTERN1, ArtifactUtilTest.MAVEN_PATTERN1,ArtifactUtilTest.ARTIFACT_PATTERN));
 		serverSetting.setRepoAndPatterns(Collections.singletonList(r));
         settings.setServers(Collections.singletonList(serverSetting));
-        defaultArtifactoryClient = new DefaultArtifactoryClient(settings, restOperationsSupplier);
+        defaultArtifactoryClient = new DefaultArtifactoryClient(settings, restOperationsSupplier,binaryArtifactRepository);
     }
     
     @Test
@@ -104,18 +106,18 @@ public class DefaultArtifactoryClientTest {
 		assertThat(baseArtifacts.get(0).getArtifactItem().getInstanceUrl(),is("http://localhost:8081/artifactory/"));
 		assertThat(baseArtifacts.get(0).getArtifactItem().getRepoName(),is("repoName"));
 		assertThat(baseArtifacts.get(0).getArtifactItem().getPath(),is("dummy/test-dev"));
-		assertThat(baseArtifacts.get(0).getBinaryArtifact().getCanonicalName(),is("manifest.json"));
-		assertThat(baseArtifacts.get(0).getBinaryArtifact().getArtifactGroupId(),is("dummy"));
-		assertThat(baseArtifacts.get(0).getBinaryArtifact().getActual_md5(),is("111aadc11ed11b1111df111d16d6c8d821112f1"));
-		assertThat(baseArtifacts.get(0).getBinaryArtifact().getActual_sha1(),is("111aadc11ed11b1111df111d16d6c8d821112f1"));
-		assertThat(baseArtifacts.get(0).getBinaryArtifact().getArtifactExtension(),is("json"));
-		assertThat(baseArtifacts.get(0).getBinaryArtifact().getArtifactName(),is("test-dev"));
-		assertThat(baseArtifacts.get(0).getBinaryArtifact().getType(),is("file"));
-		assertThat(baseArtifacts.get(0).getBinaryArtifact().getModifiedBy(),is("robot"));
-		assertThat(baseArtifacts.get(0).getBinaryArtifact().getModifiedTimeStamp(),is(new Long("1539268736471")));
-		assertThat(baseArtifacts.get(0).getBinaryArtifact().getCreatedBy(),is("robot"));
-		assertThat(baseArtifacts.get(0).getBinaryArtifact().getCreatedTimeStamp(),is(new Long("1539268036031")));
-		assertThat(baseArtifacts.get(0).getBinaryArtifact().getArtifactVersion(),is("1"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getCanonicalName(),is("manifest.json"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getArtifactGroupId(),is("dummy"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getActual_md5(),is("111aadc11ed11b1111df111d16d6c8d821112f1"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getActual_sha1(),is("111aadc11ed11b1111df111d16d6c8d821112f1"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getArtifactExtension(),is("json"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getArtifactName(),is("test-dev"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getType(),is("file"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getModifiedBy(),is("robot"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getModifiedTimeStamp(),is(new Long("1539268736471")));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getCreatedBy(),is("robot"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getCreatedTimeStamp(),is(new Long("1539268036031")));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getArtifactVersion(),is("1"));
 
 	}
 

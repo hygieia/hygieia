@@ -13,7 +13,7 @@ public class Audit {
     private DataStatus dataStatus;
     private List<String> url = new ArrayList<>();
     private Set<String> auditStatusCodes = new HashSet<>();
-
+    private CollectorItem collectorItem;
     private Map<String, Object> options;
 
     public AuditType getType() {
@@ -54,6 +54,14 @@ public class Audit {
 
     public void setAuditStatusCodes(Set<String> auditStatusCodes) {
         this.auditStatusCodes = auditStatusCodes;
+    }
+
+    public CollectorItem getCollectorItem() {
+        return collectorItem;
+    }
+
+    public void setCollectorItem(CollectorItem collectorItem) {
+        this.collectorItem = collectorItem;
     }
 
     public Map<String, Object> getOptions() { return options; }
