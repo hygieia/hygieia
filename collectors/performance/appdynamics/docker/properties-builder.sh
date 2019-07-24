@@ -58,7 +58,4 @@ appdynamics.username=${APPDYNAMICS_USERNAME} # (if multi-tenancy APPD_USERNAME@T
 #Appdynamics Password (required)
 appdynamics.password=${APPDYNAMICS_PASSWORD}
 
-#Appdynamics Dashboard (required)
-appdynamics.dashboardUrl=${APPDYNAMICS_DASHBOARD_URL:-'http://appdynamics/controller/#/location=APP_DASHBOARD&timeRange=last_15_minutes.BEFORE_NOW.-1.-1.15&application=%s&dashboardMode=force'}
-
 EOF
