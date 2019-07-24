@@ -6,7 +6,9 @@ import org.junit.Test;
 
 import java.util.Date;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 public class GitRepoTests {
 
@@ -50,7 +52,8 @@ public class GitRepoTests {
 	@Test
 	public void getLastUpdateTimeDoesNotThrowCastExceptionWhenFieldIsDate() {
 		// See #3024
-		gitRepo1.setLastUpdateTimeBypass(new Date());
+        Date currentDate = new Date(System.currentTimeMillis() - 2000);
+        gitRepo1.setLastUpdateTimeBypass(currentDate);
 
 		assertTrue(DateTime.now().isAfter(gitRepo1.getLastUpdateTime()));
 	}
