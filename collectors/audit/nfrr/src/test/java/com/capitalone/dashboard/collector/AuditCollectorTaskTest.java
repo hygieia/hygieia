@@ -117,6 +117,24 @@ public class AuditCollectorTaskTest {
     }
 
     @Test
+    public void test_deployAuditCollect() throws IOException, ParseException {
+        this.loadCollectorItem();
+        ResponseEntity<String> response = new ResponseEntity<>(getJSONResponse("response/auditresponse.json"),
+                HttpStatus.OK);
+        JSONParser jsonParser = new JSONParser();
+        JSONObject responseObj = (JSONObject) jsonParser.parse(response.getBody());
+        JSONObject review = (JSONObject) responseObj.get("review");
+        AuditCollectorUtil auditCollectorUtil = new AuditCollectorUtil(null, null, collectorItemRepository);
+        CollectorItem collectorItem = collectorItemRepository.findByDescription("title deploy audit process").get(0);
+        Audit deployAudit = auditCollectorUtil.getDeployAudit((JSONArray) review.get(AuditType.DEPLOY.name()),
+                (JSONArray) responseObj.get("auditStatuses"));
+        Assert.assertEquals(deployAudit.getAuditStatus(), AuditStatus.FAIL);
+        Assert.assertEquals(deployAudit.getDataStatus(), DataStatus.OK);
+        Assert.assertEquals(deployAudit.getType(), AuditType.DEPLOY);
+        Assert.assertEquals(deployAudit.getCollectorItem().getId(), collectorItem.getId());
+    }
+
+    @Test
     public void getCollectAuditStatusData() throws IOException {
         this.setup();
         Iterable<Dashboard> recentDashboards = dashboardRepository.findAll();
