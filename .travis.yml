@@ -1,26 +1,22 @@
 language: java
 jdk:
-  - openjdk8
-
+- openjdk8
 branches:
   only:
-    - master
-    - gerrit-integration
-    - "/^v[0-9]+\\.[0-9]+\\.[0-9]+.*$/"
-
+  - master
+  - gerrit-integration
+  - "/^v[0-9]+\\.[0-9]+\\.[0-9]+.*$/"
+sudo: required
 cache:
   directories:
-    - "$TRAVIS_BUILD_DIR/UI/node_modules"
-
+  - "$TRAVIS_BUILD_DIR/UI/node_modules"
 install: true
-
 before_script:
-  - sudo chown -R $USER:$GROUP $TRAVIS_BUILD_DIR
-
+- sudo chown -R $USER:$GROUP $TRAVIS_BUILD_DIR
 script:
-  - if [ "$TRAVIS_PULL_REQUEST" != "false" ] || [ "$TRAVIS_BRANCH" = "master" ]; then mvn clean install -q -U; fi
-  - if [ "$TRAVIS_PULL_REQUEST" = "false" ] && [[ "$TRAVIS_BRANCH" =~ ^v[0-9]+\.[0-9]+\.[0-9]+.*$ ]]; then cp ./travis-utilities/release.sh . && ./release.sh; fi
-
+- if [ "$TRAVIS_PULL_REQUEST" != "false" ] || [ "$TRAVIS_BRANCH" = "master" ]; then mvn clean install -q -U; fi
+- if [ "$TRAVIS_PULL_REQUEST" = "false" ] && [ "$TRAVIS_BRANCH" = "master" ]; then cp ./travis-utilities/deploy-snapshot.sh . && ./deploy-snapshot.sh; fi
+- if [ "$TRAVIS_PULL_REQUEST" = "false" ] && [[ "$TRAVIS_BRANCH" =~ ^v[0-9]+\.[0-9]+\.[0-9]+.*$ ]]; then cp ./travis-utilities/release.sh . && ./release.sh; fi
 notifications:
   webhooks:
     urls: https://webhooks.gitter.im/e/48597b0f75dd571734bc
@@ -29,19 +25,18 @@ notifications:
     on_start: always
   email:
     recipients:
-      - tapabrata.pal@capitalone.com
-      - nireesh.thiruveedula@capitalone.com
-      - Stephen.Hughes@capitalone.com
-      - Prashant.Parekh@capitalone.com
-      - Matthew.Beasley@capitalone.com
-      - Subodh.Battina@capitalone.com
-      - Ragha.Vema@capitalone.com
+    - tapabrata.pal@capitalone.com
+    - ragha.vema@capitalone.com
+    - nireesh.thiruveedula@capitalone.com
+    - Stephen.Hughes@capitalone.com
+    - jiyang.xu@capitalone.com
+    - brian.shriver@capitalone.com
+    - kaitlyn.heinzmann@capitalone.com
+    - Justin.Hoelscher@capitalone.com
     on_success: always
     on_failure: always
-
 after_failure:
-  - sudo free -m -t
-  - sudo dmesg
-
+- sudo free -m -t
+- sudo dmesg
 after_success:
-  - codecov
+- codecov

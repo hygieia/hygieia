@@ -29,6 +29,11 @@ public class GitHubParsed {
         parse();
     }
 
+    public void updateForRedirect(String redirectedUrl) throws MalformedURLException, HygieiaException {
+        this.url = redirectedUrl;
+        parse();
+    }
+
     private void parse() throws MalformedURLException, HygieiaException {
         if (url.endsWith(".git")) {
             url = url.substring(0, url.lastIndexOf(".git"));
@@ -46,7 +51,7 @@ public class GitHubParsed {
         if (host.startsWith(PUBLIC_GITHUB_HOST_NAME)) {
             baseApiUrl = protocol + "://" + PUBLIC_GITHUB_BASE_API;
             apiUrl = protocol + "://" + PUBLIC_GITHUB_REPO_HOST + path;
-            graphQLUrl = protocol + "://" + PUBLIC_GITHUB_REPO_HOST + PUBLIC_GITHUB_GRAPHQL;
+            graphQLUrl = protocol + "://" + PUBLIC_GITHUB_GRAPHQL;
         } else {
             apiUrl = protocol + "://" + host + SEGMENT_API + path;
             baseApiUrl = protocol + "://" + host + BASE_API;

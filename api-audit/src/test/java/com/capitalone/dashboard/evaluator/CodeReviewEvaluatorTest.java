@@ -59,6 +59,7 @@ public class CodeReviewEvaluatorTest {
     public void evaluate_PENDING_DATA_COLLECTION() {
         CodeReviewAuditResponseV2 responseV2 = codeReviewEvaluator.evaluate(makeCollectorItem(0,"master"),125634536, 6235263, null);
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("PENDING_DATA_COLLECTION"));
+        Assert.assertEquals(true,responseV2.getAuditEntity().toString().contains("url"));
     }
 
 
@@ -69,6 +70,7 @@ public class CodeReviewEvaluatorTest {
         CodeReviewAuditResponseV2 responseV2 = codeReviewEvaluator.evaluate(makeCollectorItem(1,"master"),125634536, 6235263, null);
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("NO_PULL_REQ_FOR_DATE_RANGE"));
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("NO_COMMIT_FOR_DATE_RANGE"));
+        Assert.assertEquals(true,responseV2.getAuditEntity().toString().contains("url"));
     }
 
     @Test
@@ -77,6 +79,7 @@ public class CodeReviewEvaluatorTest {
         when(commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(any(ObjectId.class), any(Long.class), any(Long.class))).thenReturn(new ArrayList<Commit>());
         CodeReviewAuditResponseV2 responseV2 = codeReviewEvaluator.evaluate(makeCollectorItem(1,"master"),125634536, 6235263, null);
         Assert.assertEquals(false, responseV2.getAuditStatuses().toString().contains("COMMITAUTHOR_EQ_SERVICEACCOUNT"));
+        Assert.assertEquals(true,responseV2.getAuditEntity().toString().contains("url"));
     }
 
     @Test
@@ -86,6 +89,7 @@ public class CodeReviewEvaluatorTest {
         when(serviceAccountRepository.findAll()).thenReturn(Stream.of(makeServiceAccount()).collect(Collectors.toList()));
         CodeReviewAuditResponseV2 responseV2 = codeReviewEvaluator.evaluate(makeCollectorItem(1, "master"), 125634536, 6235263, null);
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("COMMITAUTHOR_EQ_SERVICEACCOUNT"));
+        Assert.assertEquals(true,responseV2.getAuditEntity().toString().contains("url"));
     }
 
     @Test
@@ -98,6 +102,7 @@ public class CodeReviewEvaluatorTest {
         when(serviceAccountRepository.findAll()).thenReturn(Stream.of(makeServiceAccount()).collect(Collectors.toList()));
         CodeReviewAuditResponseV2 responseV2 = codeReviewEvaluator.evaluate(makeCollectorItem(1,"master"),125634536, 6235263, null);
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("DIRECT_COMMIT_NONCODE_CHANGE_SERVICE_ACCOUNT"));
+        Assert.assertEquals(true,responseV2.getAuditEntity().toString().contains("url"));
     }
 
     @Test
@@ -110,6 +115,7 @@ public class CodeReviewEvaluatorTest {
         when(serviceAccountRepository.findAll()).thenReturn(Stream.of(makeServiceAccount()).collect(Collectors.toList()));
         CodeReviewAuditResponseV2 responseV2 = codeReviewEvaluator.evaluate(makeCollectorItem(1,"master"),125634536, 6235263, null);
         Assert.assertEquals(true, responseV2.getAuditStatuses().toString().contains("DIRECT_COMMIT_NONCODE_CHANGE_USER_ACCOUNT"));
+        Assert.assertEquals(true,responseV2.getAuditEntity().toString().contains("url"));
     }
 
     @Test
@@ -122,6 +128,7 @@ public class CodeReviewEvaluatorTest {
         when(serviceAccountRepository.findAll()).thenReturn(Stream.of(makeServiceAccount()).collect(Collectors.toList()));
         CodeReviewAuditResponseV2 responseV2 = codeReviewEvaluator.evaluate(makeCollectorItem(1,"master"),125634536, 6235263, null);
         Assert.assertEquals(Boolean.FALSE, responseV2.getAuditStatuses().contains(CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE));
+        Assert.assertEquals(true,responseV2.getAuditEntity().toString().contains("url"));
     }
 
     @Test
@@ -141,6 +148,7 @@ public class CodeReviewEvaluatorTest {
         when(serviceAccountRepository.findAll()).thenReturn(Stream.of(makeServiceAccount()).collect(Collectors.toList()));
         CodeReviewAuditResponseV2 responseV2 = codeReviewEvaluator.evaluate(makeCollectorItem(1,"master"), collectorItemList,125634536, 6235263, null);
         Assert.assertTrue(responseV2.getAuditStatuses().contains(CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE));
+        Assert.assertEquals(3,responseV2.getDirectCommitsToBase().size());
 
         pullRequestList.get(0).setUserId("NotAuthor1");
 
@@ -149,6 +157,7 @@ public class CodeReviewEvaluatorTest {
 
         responseV2 = codeReviewEvaluator.evaluate(makeCollectorItem(1,"master"), collectorItemList,125634536, 6235263, null);
         Assert.assertFalse(responseV2.getAuditStatuses().contains(CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE));
+        Assert.assertEquals(true,responseV2.getAuditEntity().toString().contains("url"));
     }
 
     @Test
@@ -316,6 +325,7 @@ public class CodeReviewEvaluatorTest {
         c.setFilesAdded(Arrays.asList("package.json"));
         c.setScmCommitterLogin(committer);
         c.setScmCommitTimestamp(timeStamp);
+        c.setNumberOfChanges(1);
         return c;
     }
 

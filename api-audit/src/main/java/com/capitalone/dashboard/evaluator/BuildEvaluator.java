@@ -118,6 +118,7 @@ public class BuildEvaluator extends Evaluator<BuildAuditResponse> {
         //Check Jenkins Job config log to validate pr author is not modifying the Prod Job
         //since beginDate and endDate are the same column and between is excluding the edge values, we need to subtract/add a millisec
         buildAuditResponse.setConfigHistory(jobConfigHists);
+        buildAuditResponse.setAuditEntity(buildItem.getOptions());
 
 
         if (!CollectionUtils.isEmpty(repoItems)) {

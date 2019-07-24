@@ -62,6 +62,7 @@ public class LibraryPolicyEvaluator extends Evaluator<LibraryPolicyAuditResponse
         List<LibraryPolicyResult> libraryPolicyResults = libraryPolicyResultsRepository.findByCollectorItemIdAndEvaluationTimestampIsBetweenOrderByTimestampDesc(collectorItem.getId(), beginDate - 1, endDate + 1);
 
         LibraryPolicyAuditResponse libraryPolicyAuditResponse = new LibraryPolicyAuditResponse();
+        libraryPolicyAuditResponse.setAuditEntity(collectorItem.getOptions());
 
         if (CollectionUtils.isEmpty(libraryPolicyResults)) {
             libraryPolicyAuditResponse.addAuditStatus(LibraryPolicyAuditStatus.LIBRARY_POLICY_AUDIT_MISSING);
@@ -79,23 +80,23 @@ public class LibraryPolicyEvaluator extends Evaluator<LibraryPolicyAuditResponse
 
         boolean isOk = true;
         //License Threats
-        if (licenseThreats.stream().anyMatch(threat -> Objects.equals(threat.getLevel(), LibraryPolicyThreatLevel.Critical) && hasViolations(threat))) {
+        if (CollectionUtils.isNotEmpty(licenseThreats) && licenseThreats.stream().anyMatch(threat -> Objects.equals(threat.getLevel(), LibraryPolicyThreatLevel.Critical) && hasViolations(threat,settings.getCriticalLicenseVulnerabilitiesAge()))) {
             libraryPolicyAuditResponse.addAuditStatus(LibraryPolicyAuditStatus.LIBRARY_POLICY_FOUND_CRITICAL_LICENSE);
             isOk = false;
         }
 
-        if (licenseThreats.stream().anyMatch(threat -> Objects.equals(threat.getLevel(), LibraryPolicyThreatLevel.High) && hasViolations(threat))) {
+        if (CollectionUtils.isNotEmpty(licenseThreats) && licenseThreats.stream().anyMatch(threat -> Objects.equals(threat.getLevel(), LibraryPolicyThreatLevel.High) && hasViolations(threat,settings.getHighLicenseVulnerabilitiesAge()))) {
             libraryPolicyAuditResponse.addAuditStatus(LibraryPolicyAuditStatus.LIBRARY_POLICY_FOUND_HIGH_LICENSE);
             isOk = false;
         }
 
         //Security Threats
-        if (securityThreats.stream().anyMatch(threat -> Objects.equals(threat.getLevel(), LibraryPolicyThreatLevel.Critical) && hasViolations(threat))) {
+        if (CollectionUtils.isNotEmpty(securityThreats) && securityThreats.stream().anyMatch(threat -> Objects.equals(threat.getLevel(), LibraryPolicyThreatLevel.Critical) && hasViolations(threat,settings.getCriticalSecurityVulnerabilitiesAge()))) {
             libraryPolicyAuditResponse.addAuditStatus(LibraryPolicyAuditStatus.LIBRARY_POLICY_FOUND_CRITICAL_SECURITY);
             isOk = false;
         }
 
-        if (securityThreats.stream().anyMatch(threat -> Objects.equals(threat.getLevel(), LibraryPolicyThreatLevel.High) && hasViolations(threat))) {
+        if (CollectionUtils.isNotEmpty(securityThreats) && securityThreats.stream().anyMatch(threat -> Objects.equals(threat.getLevel(), LibraryPolicyThreatLevel.High) && hasViolations(threat,settings.getHighSecurityVulnerabilitiesAge()))) {
             libraryPolicyAuditResponse.addAuditStatus(LibraryPolicyAuditStatus.LIBRARY_POLICY_FOUND_HIGH_SECURITY);
             isOk = false;
         }
@@ -108,11 +109,11 @@ public class LibraryPolicyEvaluator extends Evaluator<LibraryPolicyAuditResponse
     }
 
 
-    private boolean hasViolations(LibraryPolicyResult.Threat threat) {
+    private boolean hasViolations(LibraryPolicyResult.Threat threat, int age) {
         if (MapUtils.isEmpty(threat.getDispositionCounts())) {
             return threat.getCount() > 0;
         }
         return threat.getDispositionCounts().containsKey(LibraryPolicyThreatDisposition.Open) &&
-                (threat.getDispositionCounts().get(LibraryPolicyThreatDisposition.Open) > 0);
+                (threat.getDispositionCounts().get(LibraryPolicyThreatDisposition.Open) > 0) && (threat.getMaxAge() > age);
     }
 }

@@ -74,6 +74,12 @@ bamboo.apiKey=${JENKINS_API_KEY}
 #Determines if build console log is collected - defaults to false
 bamboo.saveLog=${JENKINS_SAVE_LOG:-false}
 
+#Specifies the upper limit of plans to fetch. For really large orgs, this may be adjusted to the tens of thousands.
+bamboo.maxPlans=${JENKINS_MAX_PLANS:-2000}
+
+#Specifies the how many plans to process at the same time. This equals the number of HTTP calls to your Bamboo API at the same time. Settings this value too high may result in failed API calls. 
+bamboo.batchSize=${JENKINS_BATCH_SIZE:-10}
+
 #map the entry localhost so URLS in jenkins resolve properly
 # Docker NATs the real host localhost to 10.0.2.2 when running in docker
 # as localhost is stored in the JSON payload from jenkins we need

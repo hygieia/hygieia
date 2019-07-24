@@ -1,14 +1,20 @@
 package com.capitalone.dashboard.model;
 
-import java.util.ArrayList;
+import java.util.Set;
 import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashSet;
+
 
 public class Audit {
     private AuditType type;
     private AuditStatus auditStatus;
     private DataStatus dataStatus;
     private List<String> url = new ArrayList<>();
-    private List<String> auditStatusCodes = new ArrayList<>();
+    private Set<String> auditStatusCodes = new HashSet<>();
+    private CollectorItem collectorItem;
+    private Map<String, Object> options;
 
     public AuditType getType() {
         return type;
@@ -42,11 +48,23 @@ public class Audit {
         this.url = url;
     }
 
-    public List<String> getAuditStatusCodes() {
+    public Set<String> getAuditStatusCodes() {
         return auditStatusCodes;
     }
 
-    public void setAuditStatusCodes(List<String> auditStatusCodes) {
+    public void setAuditStatusCodes(Set<String> auditStatusCodes) {
         this.auditStatusCodes = auditStatusCodes;
     }
+
+    public CollectorItem getCollectorItem() {
+        return collectorItem;
+    }
+
+    public void setCollectorItem(CollectorItem collectorItem) {
+        this.collectorItem = collectorItem;
+    }
+
+    public Map<String, Object> getOptions() { return options; }
+
+    public void setOptions(Map<String, Object> options) { this.options = options; }
 }

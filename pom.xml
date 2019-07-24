@@ -21,7 +21,7 @@
 
   <groupId>com.capitalone.dashboard</groupId>
   <artifactId>Hygieia</artifactId>
-  <version>3.0.1</version>
+  <version>3.0.2-SNAPSHOT</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -39,13 +39,28 @@
   <developers>
     <developer>
       <name>Amit Mawkin</name>
-      <email>amit.mawkin@capitalone.com</email>
-      <organization>CapitalOne</organization>
-      <organizationUrl>http://www.capitalone.com</organizationUrl>
     </developer>
     <developer>
       <name>Tapabrata Topo Pal</name>
       <email>tapabrata.pal@capitalone.com</email>
+      <organization>CapitalOne</organization>
+      <organizationUrl>http://www.capitalone.com</organizationUrl>
+    </developer>
+    <developer>
+      <name>Raghavendra Vema</name>
+      <email>ragha.vema@capitalone.com</email>
+      <organization>CapitalOne</organization>
+      <organizationUrl>http://www.capitalone.com</organizationUrl>
+    </developer>
+    <developer>
+      <name>Nireesh Thiruveedula</name>
+      <email>nireesh.thiruveedula@capitalone.com</email>
+      <organization>CapitalOne</organization>
+      <organizationUrl>http://www.capitalone.com</organizationUrl>
+    </developer>
+    <developer>
+      <name>Stephen Hughes</name>
+      <email>stephen.hughes@capitalone.com</email>
       <organization>CapitalOne</organization>
       <organizationUrl>http://www.capitalone.com</organizationUrl>
     </developer>
@@ -180,17 +195,15 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
-        <module>api</module>
         <module>api-audit</module>
         <module>collectors/audit/nfrr</module>
         <module>collectors/feature/rally</module>
         <module>collectors/artifact/artifactory</module>
         <module>collectors/build/bamboo</module>
-        <module>collectors/build/jenkins</module>
         <module>collectors/build/jenkins-cucumber</module>
         <module>collectors/build/jenkins-codequality</module>
-        <module>collectors/build/sonar</module>
         <module>collectors/cloud/aws</module>
+        <module>collectors/cloud/cloudwatch</module>
         <module>collectors/deploy/udeploy</module>
         <module>collectors/deploy/xldeploy</module>
         <module>collectors/feature/jira</module>
@@ -199,14 +212,12 @@
         <module>collectors/misc/chat-ops</module>
         <module>collectors/performance/appdynamics</module>
         <module>collectors/scm/bitbucket</module>
-        <module>collectors/scm/github</module>
         <module>collectors/scm/github-graphql</module>
-        <module>collectors/scm/subversion</module>
         <module>collectors/scm/gitlab</module>
         <module>collectors/cmdb/hpsm</module>
         <module>collectors/library-policy/nexus-iq-collector</module>
         <module>collectors/misc/score</module>
-        <module>hygieia-jenkins-plugin</module>
+        <module>collectors/test-results/jira-xray</module>
         <module>UI</module>
         <module>UI-tests</module>
       </modules>
@@ -229,15 +240,12 @@
     <profile>
       <id>release</id>
       <modules>
-        <module>api</module>
         <module>api-audit</module>
         <module>collectors/artifact/artifactory</module>
         <module>collectors/audit/nfrr</module>
         <module>collectors/build/bamboo</module>
-        <module>collectors/build/jenkins</module>
         <module>collectors/build/jenkins-cucumber</module>
         <module>collectors/build/jenkins-codequality</module>
-        <module>collectors/build/sonar</module>
         <module>collectors/cloud/aws</module>
         <module>collectors/deploy/udeploy</module>
         <module>collectors/deploy/xldeploy</module>
@@ -247,14 +255,12 @@
         <module>collectors/misc/chat-ops</module>
         <module>collectors/performance/appdynamics</module>
         <module>collectors/scm/bitbucket</module>
-        <module>collectors/scm/github</module>
         <module>collectors/scm/github-graphql</module>
-        <module>collectors/scm/subversion</module>
         <module>collectors/scm/gitlab</module>
         <module>collectors/cmdb/hpsm</module>
         <module>collectors/library-policy/nexus-iq-collector</module>
         <module>collectors/misc/score</module>
-        <module>hygieia-jenkins-plugin</module>
+        <module>collectors/test-results/jira-xray</module>
      	<module>UI</module>
         <module>UI-tests</module>
  </modules>
@@ -287,7 +293,7 @@
             <artifactId>maven-javadoc-plugin</artifactId>
             <version>2.9.1</version>
             <configuration>
-              <additionalparam>-Xdoclint:none</additionalparam>
+              <doclint>none</doclint>
             </configuration>
             <executions>
               <execution>

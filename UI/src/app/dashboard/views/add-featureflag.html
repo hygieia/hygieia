@@ -1,0 +1,13 @@
+<widget-modal widget-modal-title="Add/Update Feature flags">
+    <form name="cdf" class="form" ng-submit="ctrl.submit(cdf)" novalidate>
+        <form-group input="featureflags" errors="{required: 'feature flags are required in standard json format. Please see information icon for sample format.'}">
+            <span><label class="modal-label">Feature flags <i class="fa fa-info-circle" aria-hidden="true" uib-tooltip-html="ctrl.configTooltip"></i></label></span>
+            <textarea name="featureflags" class="form-control modal-view-status-input" rows="3" ng-model="ctrl.featureflags" placeholder="{{ctrl.placeHolder}}" required></textarea>
+            <span class="text-danger"></span>
+        </form-group>
+
+        <div class="button-row row text-center">
+            <button type="submit" class="btn btn-primary btn-wide">Save</button>
+        </div>
+    </form>
+</widget-modal>

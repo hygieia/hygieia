@@ -1,0 +1,29 @@
+<div class="log-view">
+    <div class="widget">
+        <div class="widget-heading">
+           {{ctrl.title}}
+        </div>
+        <div class="widget-body">
+            <chartist class="commit-view ct-octave dash-chart-alt"
+                      chartist-chart-type="Line"
+                      chartist-data="ctrl.combinedChartData"
+                      chartist-chart-options="ctrl.combinedChartOptions"
+                      chartist-events="ctrl.logEvents"
+            >
+            </chartist>
+        </div>
+    </div>
+
+    <div class="widget">
+        <div class="widget-heading">
+            Last @ {{ctrl.lastResult.timestamp | date:"dd/MM/yyyy h:mma"}}
+        </div>
+        <div class="widget-body">
+            <table class="table">
+                <tr ng-repeat="metric in ctrl.lastResult.metrics">
+                    <td>{{metric.name}}</td><td>{{metric.value}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

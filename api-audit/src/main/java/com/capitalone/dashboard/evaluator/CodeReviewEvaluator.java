@@ -122,7 +122,7 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
     protected CodeReviewAuditResponseV2 getErrorResponse(CollectorItem repoItem, String scmBranch, String scmUrl) {
         CodeReviewAuditResponseV2 noPRsCodeReviewAuditResponse = new CodeReviewAuditResponseV2();
         noPRsCodeReviewAuditResponse.addAuditStatus(CodeReviewAuditStatus.COLLECTOR_ITEM_ERROR);
-
+        noPRsCodeReviewAuditResponse.setAuditEntity(repoItem.getOptions());
         noPRsCodeReviewAuditResponse.setLastUpdated(repoItem.getLastUpdated());
         noPRsCodeReviewAuditResponse.setBranch(scmBranch);
         noPRsCodeReviewAuditResponse.setUrl(scmUrl);
@@ -140,6 +140,8 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
             reviewAuditResponseV2.addAuditStatus(CodeReviewAuditStatus.REPO_NOT_CONFIGURED);
             return reviewAuditResponseV2;
         }
+        reviewAuditResponseV2.setAuditEntity(repoItem.getOptions());
+
         String scmUrl = (String) repoItem.getOptions().get("url");
         String scmBranch = (String) repoItem.getOptions().get("branch");
 
@@ -166,7 +168,9 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
         }
 
         List<GitRequest> pullRequests = gitRequestRepository.findByCollectorItemIdAndMergedAtIsBetween(repoItem.getId(), beginDt-1, endDt+1);
-        List<Commit> commits = commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(repoItem.getId(), beginDt-1, endDt+1);
+        List<Commit> allCommits = commitRepository.findByCollectorItemIdAndScmCommitTimestampIsBetween(repoItem.getId(), beginDt-1, endDt+1);
+        //Filter empty commits
+        List<Commit> commits = allCommits.stream().filter(commit -> commit.getNumberOfChanges()>0).collect(Collectors.toList());
         commits.sort(Comparator.comparing(Commit::getScmCommitTimestamp).reversed());
         pullRequests.sort(Comparator.comparing(GitRequest::getMergedAt).reversed());
 
@@ -250,7 +254,8 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
 
         CodeReviewAuditResponseV2.PullRequestAudit pullRequestAudit = new CodeReviewAuditResponseV2.PullRequestAudit();
         pullRequestAudit.setPullRequest(pr);
-        List<Commit> commitsRelatedToPr = pr.getCommits();
+        List<Commit> allCommitsRelatedToPr = pr.getCommits();
+        List<Commit> commitsRelatedToPr = allCommitsRelatedToPr.stream().filter(commit -> commit.getNumberOfChanges()>0).collect(Collectors.toList());
         commitsRelatedToPr.sort(Comparator.comparing(e -> (e.getScmCommitTimestamp())));
         if (mergeCommit == null) {
             pullRequestAudit.addAuditStatus(CodeReviewAuditStatus.MERGECOMMITER_NOT_FOUND);
@@ -389,9 +394,18 @@ public class CodeReviewEvaluator extends Evaluator<CodeReviewAuditResponseV2> {
         if (CommonCodeReview.matchIncrementVersionTag(commit.getScmCommitLog(), settings)) {
             reviewAuditResponseV2.addAuditStatus(directCommitIncrementVersionTagStatus);
         } else {
-            reviewAuditResponseV2.addAuditStatus(commit.isFirstEverCommit() ? CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT : CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
+           addDirectCommitsToBase(reviewAuditResponseV2,commit);
         }
     }
+
+    private void addDirectCommitsToBase(CodeReviewAuditResponseV2 reviewAuditResponseV2,Commit commit){
+        if(commit.isFirstEverCommit()){
+            reviewAuditResponseV2.addAuditStatus(CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT );
+        }else if(StringUtils.isEmpty(commit.getPullNumber())){
+                reviewAuditResponseV2.addAuditStatus(CodeReviewAuditStatus.DIRECT_COMMITS_TO_BASE);
+                reviewAuditResponseV2.addDirectCommitsToBase(commit);
+        }
+   }
 
     public Map<String,String> getAllServiceAccounts(){
         List<ServiceAccount> serviceAccounts = (List<ServiceAccount>) serviceAccountRepository.findAll();

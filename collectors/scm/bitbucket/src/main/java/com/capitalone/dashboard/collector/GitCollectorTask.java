@@ -17,9 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -39,6 +38,10 @@ public class GitCollectorTask extends CollectorTask<Collector> {
     private final GitClient gitClient;
     private final GitSettings gitSettings;
     private final ComponentRepository dbComponentRepository;
+
+    @Inject
+    private PullRequestCollector pullRequestCollector;
+
 
     @Autowired
     public GitCollectorTask(TaskScheduler taskScheduler,
@@ -70,7 +73,7 @@ public class GitCollectorTask extends CollectorTask<Collector> {
         allOptions.put(GitRepo.BRANCH, "");
         allOptions.put(GitRepo.USER_ID, "");
         allOptions.put(GitRepo.PASSWORD, "");
-        allOptions.put(GitRepo.LAST_UPDATE_TIME, new Date());
+        allOptions.put(GitRepo.LAST_UPDATE_TIME, System.currentTimeMillis());
         allOptions.put(GitRepo.LAST_UPDATE_COMMIT, "");
         protoType.setAllFields(allOptions);
 
@@ -98,17 +101,21 @@ public class GitCollectorTask extends CollectorTask<Collector> {
      */
 
     private void clean(Collector collector) {
-        Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
+        Set<ObjectId> uniqueIDs = new HashSet<>();
         /**
          * Logic: For each component, retrieve the collector item list of the type SCM.
          * Store their IDs in a unique set ONLY if their collector IDs match with Bitbucket collectors ID.
          */
-        for (com.capitalone.dashboard.model.Component comp : dbComponentRepository.findAll()) {
-            if (comp.getCollectorItems() == null || comp.getCollectorItems().isEmpty()) continue;
-            List<CollectorItem> itemList = comp.getCollectorItems().get(CollectorType.SCM);
+        for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
+                .findAll()) {
+            if (comp.getCollectorItems() == null || comp.getCollectorItems()
+                                                        .isEmpty()) continue;
+            List<CollectorItem> itemList = comp.getCollectorItems()
+                                               .get(CollectorType.SCM);
             if (itemList == null) continue;
             for (CollectorItem ci : itemList) {
-                if (ci != null && ci.getCollectorId().equals(collector.getId())) {
+                if (ci != null && ci.getCollectorId()
+                                    .equals(collector.getId())) {
                     uniqueIDs.add(ci.getId());
                 }
             }
@@ -138,6 +145,7 @@ public class GitCollectorTask extends CollectorTask<Collector> {
         long start = System.currentTimeMillis();
         int repoCount = 0;
         int commitCount = 0;
+        int pullCount = 0;
 
         clean(collector);
         for (GitRepo repo : enabledRepos(collector)) {
@@ -149,7 +157,8 @@ public class GitCollectorTask extends CollectorTask<Collector> {
             List<Commit> newCommits = new ArrayList<>();
             for (Commit commit : commits) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug(commit.getTimestamp() + ":::" + commit.getScmCommitLog());
+                    LOG.debug(commit.getTimestamp() + ":::" + commit
+                            .getScmCommitLog());
                 }
 
                 if (isNewCommit(repo, commit)) {
@@ -160,12 +169,19 @@ public class GitCollectorTask extends CollectorTask<Collector> {
             commitRepository.save(newCommits);
             commitCount += newCommits.size();
 
-            repo.setLastUpdateTime(Calendar.getInstance().getTime());
+
             if (!commits.isEmpty()) {
                 // It appears that the first commit in the list is the HEAD of the branch
                 repo.setLastUpdateCommit(commits.get(0).getScmRevisionNumber());
             }
 
+            // Step 2: Get all the Pull Requests
+            LOG.info(repo.getOptions().toString() + "::" + repo
+                    .getBranch() + "::get pulls");
+
+            pullCount += pullRequestCollector.getPullRequests(repo, "all");
+
+            repo.setLastUpdateTime(System.currentTimeMillis());
             gitRepoRepository.save(repo);
 
             repoCount++;
@@ -174,11 +190,6 @@ public class GitCollectorTask extends CollectorTask<Collector> {
         log("New Commits", start, commitCount);
 
         log("Finished", start);
-    }
-
-    @SuppressWarnings("unused")
-    private Date lastUpdated(GitRepo repo) {
-        return repo.getLastUpdateTime();
     }
 
     private List<GitRepo> enabledRepos(Collector collector) {
@@ -190,3 +201,20 @@ public class GitCollectorTask extends CollectorTask<Collector> {
                 repo.getId(), commit.getScmRevisionNumber()) == null;
     }
 }
+
+/*
+ * SPDX-Copyright: Copyright (c) Capital One Services, LLC
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2019 Capital One Services, LLC
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
