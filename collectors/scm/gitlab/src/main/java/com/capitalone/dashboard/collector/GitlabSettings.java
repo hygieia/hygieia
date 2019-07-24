@@ -33,9 +33,10 @@ public class GitlabSettings {
     private String port;
     private String path;
     private String apiToken;
-	private int firstRunHistoryDays;
-	private boolean selfSignedCertificate;
-	private int apiVersion;
+    private int firstRunHistoryDays;
+    private boolean selfSignedCertificate;
+    private boolean useProjectId = false;
+    private int apiVersion;
 
     public String getCron() {
         return cron;
@@ -101,6 +102,14 @@ public class GitlabSettings {
 		this.selfSignedCertificate = selfSigned;
 	}
 
+	public boolean isUseProjectId() {
+		return useProjectId;
+	}
+
+	public void setUseProjectId(boolean projectId) {
+        this.useProjectId = projectId;
+    }
+    
     public int getApiVersion() {
         return apiVersion;
     }

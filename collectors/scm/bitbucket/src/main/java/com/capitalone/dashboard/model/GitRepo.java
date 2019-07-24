@@ -1,6 +1,10 @@
 package com.capitalone.dashboard.model;
 
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+import java.util.Date;
 
 /**
  * CollectorItem extension to store the git repo url and branch.
@@ -29,7 +33,6 @@ public class GitRepo extends CollectorItem {
         getOptions().put(PASSWORD, password);
     }
 
-
     public String getRepoUrl() {
         return (String) getOptions().get(REPO_URL);
     }
@@ -47,7 +50,15 @@ public class GitRepo extends CollectorItem {
     }
 
     public Long getLastUpdateTime() {
+        // See #3024
         Object latest = getOptions().get(LAST_UPDATE_TIME);
+
+        if (latest == null) return null;
+
+        if (latest instanceof Date) {
+            return ((Date)latest).getTime();
+        }
+
         return (Long) latest;
     }
 
@@ -102,4 +113,8 @@ public class GitRepo extends CollectorItem {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+    }
 }
