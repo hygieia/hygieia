@@ -75,14 +75,11 @@ The sample `application.properties` file lists parameters with sample values to 
 		appdynamics.cron=1 * * * * *
 
 		#AppDynamics server (required)
-		appdynamics.instanceUrl=http://appdynamics.company.com
+		appdynamics.instanceUrls=http://appdynamics.company.com
 
 		#AppDynamics Username (required)
 		appdynamics.username=APPD_USERNAME (if multi-tenancy, then APPD_USERNAME@TENANT)
 
 		#AppDynamics Password (required)
 		appdynamics.password=APPD_PASSWORD
-
-		#AppDynamics Dashboard (required)
-		appdynamics.dashboardUrl=http://appdynamics.company.com/controller/#/location=APP_DASHBOARD&timeRange=last_15_minutes.BEFORE_NOW.-1.-1.15&application=%s&dashboardMode=force
 ```
