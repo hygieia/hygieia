@@ -542,6 +542,25 @@
     }
   },
   {
+    "_id" : "5ccc8cd6a69940416752b3a3",
+    "_class" : "com.capitalone.dashboard.model.CollectorItem",
+    "description" : "title deploy audit process",
+    "niceName" : "",
+    "enabled" : true,
+    "errors" : [
+
+    ],
+    "pushed" : true,
+    "collectorId" : "5bb7012803979858979fd2ec",
+    "lastUpdated" : 1557101004114,
+    "options" : {
+      "options" : {
+        "jobName" : "deploy audit job",
+        "instanceUrl" : "https://jira.company.com/browse/TR-11550"
+      }
+    }
+  },
+  {
     "_id" : "5ccc8cd6a63390416925b3a3",
     "_class" : "com.capitalone.dashboard.model.CollectorItem",
     "description" : "auditTestDashboard code_quality audit process",

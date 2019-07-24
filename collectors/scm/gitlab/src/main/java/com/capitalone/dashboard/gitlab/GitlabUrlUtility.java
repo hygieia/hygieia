@@ -52,7 +52,9 @@ public class GitlabUrlUtility {
 	private static final String REF_QUERY_PARAM_KEY = "ref";
 	private static final String PER_PAGE_QUERY_PARAM_KEY = "per_page";
 	private static final String PUBLIC_GITLAB_HOST_NAME = "gitlab.com";
-	private static final int FIRST_RUN_HISTORY_DEFAULT = 14;
+  private static final int FIRST_RUN_HISTORY_DEFAULT = 14;
+
+  private static String projectIdValue; 
 
 	@Autowired
 	public GitlabUrlUtility(GitlabSettings gitlabSettings) {
@@ -64,7 +66,12 @@ public class GitlabUrlUtility {
         if (repoUrl.endsWith(GIT_EXTENSION)) {
             repoUrl = StringUtils.removeEnd(repoUrl, GIT_EXTENSION);
         }
-        
+
+        if (gitlabSettings.isUseProjectId()) {
+          projectIdValue = repoUrl.substring(repoUrl.lastIndexOf('/') + 1);
+          LOG.info("projectIdValue: " + projectIdValue);
+        }
+
         String apiVersion = getApiVersion();
         String protocol = getProtocol();
 		String repoName = getRepoName(repoUrl);
@@ -403,8 +410,13 @@ public class GitlabUrlUtility {
 			LOG.error(e.getMessage(), e);
 		}
 		repoName = StringUtils.removeStart(repoName, "/");
-		String[] urlParts = repoName.split("/");
-		repoName = urlParts[0] + "%2F" + urlParts[1];
+        String[] urlParts = repoName.split("/");
+        repoName = urlParts[0];
+        if (gitlabSettings.isUseProjectId()) {
+            repoName = projectIdValue;
+        } else {
+            repoName = urlParts[0] + "%2F" + urlParts[1];
+        }
 		return repoName;
 	}
 
