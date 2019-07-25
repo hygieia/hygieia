@@ -64,7 +64,7 @@ public class SCMHttpRestClientTest {
 
         //when
         ResponseEntity<String> stringResponseEntity = scmHttpRestClient
-                .makeRestCall(uri, "user", "password");
+                .makeRestCall(uri, "abcdefgh","dXNlcjpwYXNzd29yZA==");
 
         //then
         assertNotNull(stringResponseEntity);
@@ -72,7 +72,7 @@ public class SCMHttpRestClientTest {
         assertEquals(uriArgumentCaptor.getValue(), uri);
         HttpEntity<?> entity = httpEntityArgumentCaptor.getValue();
 
-        assertEquals("Basic dXNlcjpwYXNzd29yZA==",
+        assertEquals("Basic YWJjZGVmZ2g6ZFhObGNqcHdZWE56ZDI5eVpBPT0=",
                 entity.getHeaders().get("Authorization").iterator().next());
 
     }
@@ -88,13 +88,13 @@ public class SCMHttpRestClientTest {
                 classArgumentCaptor.capture()))
                 .willReturn(responseEntity);
 
-        given(settings.getKey()).willReturn("WI9XFb8cW9bxeS/fwdka0LBXFbqtwvEa");
-        given(settings.getPassword()).willReturn("GASWrg0aNQAbMu0LxTjAhg==");
-        given(settings.getUsername()).willReturn("user");
+//        given(settings.getKey()).willReturn("WI9XFb8cW9bxeS/fwdka0LBXFbqtwvEa");
+//        given(settings.getPassword()).willReturn("GASWrg0aNQAbMu0LxTjAhg==");
+//        given(settings.getUsername()).willReturn("user");
 
         //when
         ResponseEntity<String> stringResponseEntity = scmHttpRestClient
-                .makeRestCall(uri, null, null);
+                .makeRestCall(uri, "abcdefgh","dXNlcjpwYXNzd29yZA==");
 
         //then
         assertNotNull(stringResponseEntity);
@@ -102,7 +102,7 @@ public class SCMHttpRestClientTest {
         assertEquals(uriArgumentCaptor.getValue(), uri);
         HttpEntity<?> entity = httpEntityArgumentCaptor.getValue();
 
-        assertEquals("Basic dXNlcjpwYXNzd29yZA==",
+        assertEquals("Basic YWJjZGVmZ2g6ZFhObGNqcHdZWE56ZDI5eVpBPT0=",
                 entity.getHeaders().get("Authorization").iterator().next());
 
     }

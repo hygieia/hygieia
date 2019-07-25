@@ -3,8 +3,6 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.bitbucketapi.BitbucketApiUrlBuilder;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitRepo;
-import com.capitalone.dashboard.util.Encryption;
-import com.capitalone.dashboard.util.EncryptionException;
 import com.capitalone.dashboard.util.Supplier;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -14,7 +12,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -28,10 +25,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import static java.util.function.Predicate.isEqual;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.eq;
@@ -99,12 +94,12 @@ public class DefaultBitbucketServerClientTest {
         when(rest.exchange(eq(uri2), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
                 .thenReturn(new ResponseEntity<>(jsonResponse2, HttpStatus.OK));
 
-        when(scmHttpRestClient.makeRestCall(uri1, null, "")).thenReturn(new ResponseEntity<>(jsonResponse1, HttpStatus.OK));
-        when(scmHttpRestClient.makeRestCall(uri2, null, "")).thenReturn(new ResponseEntity<>(jsonResponse2, HttpStatus.OK));
+        when(scmHttpRestClient.makeRestCall(uri1, "abcdefgh", "abcdefghijklmnopqrstuvwxyz1234567")).thenReturn(new ResponseEntity<>(jsonResponse1, HttpStatus.OK));
+        when(scmHttpRestClient.makeRestCall(uri2, "abcdefgh", "abcdefghijklmnopqrstuvwxyz1234567")).thenReturn(new ResponseEntity<>(jsonResponse2, HttpStatus.OK));
         URI value = new URI("https://company.com/rest/api/1.0/projects/myproject/repos/myrepository");
 
         given(bitbucketApiUrlBuilder.buildReposApiUrl(repoUrl)).willReturn(value);
-        List<Commit> commits = client.getCommits(repo, true);
+        List<Commit> commits = client.getCommits(repo, true, "abcdefgh","abcdefghijklmnopqrstuvwxyz1234567");
 
         assertEquals(2, commits.size());
 
@@ -129,17 +124,18 @@ public class DefaultBitbucketServerClientTest {
     }
 
     @Test
-    public void testCommits() throws EncryptionException, URISyntaxException {
+    public void testCommits() throws Exception, URISyntaxException {
         // Note that there always is paging even if results only take 1 page
         String jsonResponse1 = "{ \"values\": [] }";
-        settings.setKey("abcdefghijklmnopqrstuvwxyz1234567");
-        String encPassword = Encryption.encryptString("password", settings.getKey());
+       // settings.setKey("abcdefghijklmnopqrstuvwxyz1234567");
+        //String encPassword = Encryption.encryptString("password", settings.getKey());
+        //String encPassword = "cGFzc3dvcmQ=";
 
         settings.setPageSize(1);
 
         GitRepo repo = new GitRepo();
         repo.setUserId("user");
-        repo.setPassword(encPassword);
+        //repo.setPassword(encPassword);
 
         String repoUrl = "https://username@company.com/scm/myproject/myrepository.git";
         repo.setRepoUrl(repoUrl);
@@ -152,12 +148,12 @@ public class DefaultBitbucketServerClientTest {
 
         URI value = new URI("https://company.com/rest/api/1.0/projects/myproject/repos/myrepository");
 
-        when(scmHttpRestClient.makeRestCall(uri1, "user", "password")).thenReturn(new ResponseEntity<>(jsonResponse1, HttpStatus.OK));
+        when(scmHttpRestClient.makeRestCall(uri1,"abcdefgh", "abcdefghijklmnopqrstuvwxyz1234567")).thenReturn(new ResponseEntity<>(jsonResponse1, HttpStatus.OK));
 
         given(bitbucketApiUrlBuilder.buildReposApiUrl(repoUrl)).willReturn(value);
 
 
-        List<Commit> commits = client.getCommits(repo, true);
+        List<Commit> commits = client.getCommits(repo, true, "abcdefgh","abcdefghijklmnopqrstuvwxyz1234567");
 
         assertNotNull(commits);
         assertEquals(commits.size(), 0);
