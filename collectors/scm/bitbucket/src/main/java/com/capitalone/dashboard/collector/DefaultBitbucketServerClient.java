@@ -4,8 +4,6 @@ import com.capitalone.dashboard.bitbucketapi.BitbucketApiUrlBuilder;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitRepo;
-import com.capitalone.dashboard.util.Encryption;
-import com.capitalone.dashboard.util.EncryptionException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.utils.URIBuilder;
@@ -60,7 +58,7 @@ public class DefaultBitbucketServerClient implements GitClient {
 
     @SuppressWarnings("PMD.NPathComplexity")
     @Override
-    public List<Commit> getCommits(GitRepo repo, boolean firstRun) {
+    public List<Commit> getCommits(GitRepo repo, boolean firstRun, String userName, String password) {
         List<Commit> commits = new ArrayList<>();
         URI queryUriPage = null;
 
@@ -70,21 +68,10 @@ public class DefaultBitbucketServerClient implements GitClient {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Rest Url: " + queryUri);
             }
-
-            // decrypt password
-            String decryptedPassword = "";
-            if (repo.getPassword() != null && !repo.getPassword().isEmpty()) {
-                try {
-                    decryptedPassword = Encryption.decryptString(repo.getPassword(), settings.getKey());
-                } catch (EncryptionException e) {
-                    LOG.error(e.getMessage());
-                }
-            }
-
             boolean lastPage = false;
             queryUriPage = queryUri;
             while (!lastPage) {
-                ResponseEntity<String> response = scmHttpRestClient.makeRestCall(queryUriPage, repo.getUserId(), decryptedPassword);
+                ResponseEntity<String> response = scmHttpRestClient.makeRestCall(queryUriPage, userName, password);
                 JSONObject jsonParentObject = JSONParserUtils.parseAsObject(response);
                 JSONArray jsonArray = (JSONArray) jsonParentObject.get("values");
 

@@ -3,6 +3,8 @@ package com.capitalone.dashboard.collector;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * Bean to hold settings specific to the git collector.
  */
@@ -10,21 +12,21 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "git")
 public class GitSettings {
     private String cron;
-    private String host;
-    private String key;
+    private List<String> host;
+    private List<String> key;
     private int firstRunHistoryDays;
     private String api;
     private int pageSize;
-    private String username;
-    private String password;
+    private List<String> username;
+    private List<String> password;
 
-	public String getHost() {
-		return host;
-	}
+    public List<String> getHost() {
+        return host;
+    }
 
-	public void setHost(String host) {
-		this.host = host;
-	}
+    public void setHost(List<String> host) {
+        this.host = host;
+    }
 
 	public String getCron() {
         return cron;
@@ -34,11 +36,11 @@ public class GitSettings {
         this.cron = cron;
     }
 
-	public String getKey() {
+	public List<String> getKey() {
 		return key;
 	}
-	
-	public void setKey(String key) {
+
+	public void setKey(List<String> key) {
 		this.key = key;
 	}
 	
@@ -66,19 +68,19 @@ public class GitSettings {
 		this.pageSize = pageSize;
 	}
 
-    public String getUsername() {
+    public List<String> getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
+    public void setUsername(List<String> username) {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
+    public void setPassword(List<String> password) {
+        this.password = password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public List<String> getPassword() {
+        return password;
     }
 }

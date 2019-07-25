@@ -7,8 +7,6 @@ import com.capitalone.dashboard.model.GitRepo;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
-import com.capitalone.dashboard.util.Encryption;
-import com.capitalone.dashboard.util.EncryptionException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -62,13 +60,15 @@ public class PullRequestCollector {
      * @return
      * @throws EncryptionException
      */
-    public int getPullRequests(GitRepo repo, String status) {
-        String decryptedPassword;
-        try {
-            decryptedPassword = Encryption.decryptString(repo.getPassword(), settings.getKey());
-        } catch (EncryptionException e) {
+    @SuppressWarnings("PMD.NPathComplexity")
+    public int getPullRequests(GitRepo repo, String status, String userName, String password) {
+        //String decodePassword;
+        /*try {
+            //decryptedPassword = Encryption.decryptString(repo.getPassword(), settings.getKey());
+            decodePassword = new String(Base64.decodeBase64(settings.getPassword()));
+        } catch (Exception e) {
             throw new RuntimeException("Unable to decrypt SCM credentials", e);
-        }
+        }*/
         String branch = (repo.getBranch() != null) ? repo.getBranch() : "master";
         List<GitRequest> pulls;
 
@@ -92,8 +92,13 @@ public class PullRequestCollector {
                 LOG.info("Executing [" + queryUrlPage);
                 pulls = new ArrayList<>();
                 ResponseEntity<String> response =
-                        scmHttpRestClient.makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
-                JSONObject jsonArray = parseAsObject(response);
+                        scmHttpRestClient.makeRestCall(queryUrlPage, userName, password);
+                JSONObject jsonArray = new JSONObject();
+                try {
+                    jsonArray = parseAsObject(response);
+                }catch (Exception e){
+                    LOG.error("Exception=> "+e.getMessage());
+                }
                 JSONArray values = (JSONArray) jsonArray.get("values");
                 for (Object item : values) {
                     JSONObject jsonObject = (JSONObject) item;
@@ -112,7 +117,7 @@ public class PullRequestCollector {
                         }
                     }
 
-                    populatePullRequestMergeCommit(repo, pull);
+                    populatePullRequestMergeCommit(repo, pull,userName, password);
                     pulls.add(pull);
                 }
                 try {
@@ -128,6 +133,8 @@ public class PullRequestCollector {
             }
         } catch (URISyntaxException e) {
             LOG.error("Unable to construct Bitbucket API URL" + e.getMessage());
+        }catch (Exception e){
+            LOG.error("Exception block: "+e.getMessage());
         }
         return pullCount;
     }
@@ -139,15 +146,14 @@ public class PullRequestCollector {
      * @param repo
      * @param pull
      */
-    private void populatePullRequestMergeCommit(GitRepo repo, GitRequest pull) {
+    private void populatePullRequestMergeCommit(GitRepo repo, GitRequest pull, String userName, String password) {
         if (MERGED.equals(pull.getState())) {
-            String decryptedPassword =
-                    null;
-            try {
-                decryptedPassword = Encryption.decryptString(repo.getPassword(), settings.getKey());
-            } catch (EncryptionException e) {
+            //String decodePassword = null;
+            /*try {
+                decodePassword = new String(Base64.decodeBase64(settings.getPassword()));
+            } catch (Exception e) {
                 throw new RuntimeException("Unable to decrypt SCM credentials", e);
-            }
+            }*/
             URI pageUrl;
             try {
                 URI uri =
@@ -163,7 +169,7 @@ public class PullRequestCollector {
                 while (!lastPage && !stop) {
                     LOG.info("Executing [" + queryUrlPage);
                     ResponseEntity<String> response =
-                            scmHttpRestClient.makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
+                            scmHttpRestClient.makeRestCall(queryUrlPage, userName, password);
                     JSONObject jsonArray = parseAsObject(response);
                     JSONArray values = (JSONArray) jsonArray.get("values");
                     for (Object item : values) {

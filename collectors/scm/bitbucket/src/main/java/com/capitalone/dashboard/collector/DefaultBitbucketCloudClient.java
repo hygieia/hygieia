@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
+import javax.crypto.SecretKey;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -33,6 +34,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.function.Supplier;
 
 /**
  * Implementation of a git client to connect to an Atlassian Bitbucket <i>Cloud</i> product. 
@@ -69,7 +71,7 @@ public class DefaultBitbucketCloudClient implements GitClient {
 
 	@Override
 	@SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.NPathComplexity"}) // agreed, fixme
-	public List<Commit> getCommits(GitRepo repo, boolean firstRun) {
+	public List<Commit> getCommits(GitRepo repo, boolean firstRun, String userName, String password) {
 
 		List<Commit> commits = new ArrayList<>();
 
@@ -92,11 +94,14 @@ public class DefaultBitbucketCloudClient implements GitClient {
 		String hostUrl = protocol + "://" + hostName + "/";
 		String repoName = repoUrl.substring(hostUrl.length(), repoUrl.length());
 		String apiUrl = "";
-		if (hostName.startsWith(settings.getHost())) {
-			apiUrl = protocol + "://" + settings.getHost() + repoName;
-		} else {
-			apiUrl = protocol + "://" + hostName + settings.getApi() + repoName;
-			LOG.debug("API URL IS:"+apiUrl);
+		for (int i = 0; i < settings.getHost().size(); i++) {
+			String host = settings.getHost().get(i);
+			if (hostName.startsWith(host)) {
+				apiUrl = protocol + "://" + host + repoName;
+			} else {
+				apiUrl = protocol + "://" + hostName + settings.getApi() + repoName;
+				LOG.debug("API URL IS:" + apiUrl);
+			}
 		}
 		Date dt;
 		if (firstRun) {
@@ -128,7 +133,7 @@ public class DefaultBitbucketCloudClient implements GitClient {
 		if (repo.getPassword() != null && !repo.getPassword().isEmpty()) {
 			try {
 				decryptedPassword = Encryption.decryptString(
-						repo.getPassword(), settings.getKey());
+						repo.getPassword(), (SecretKey) settings.getKey());
 			} catch (EncryptionException e) {
 				LOG.error(e.getMessage());
 			}

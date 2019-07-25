@@ -1,9 +1,6 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.util.Encryption;
-import com.capitalone.dashboard.util.EncryptionException;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpEntity;
@@ -21,32 +18,31 @@ import java.nio.charset.StandardCharsets;
 public class SCMHttpRestClient {
   private static final Log LOG = LogFactory.getLog(SCMHttpRestClient.class);
 
-  @Inject
-  private GitSettings settings;
+    /*@Inject
+    private GitSettings settings;*/
 
   @Inject
   private RestTemplate restTemplate;
 
-  public ResponseEntity<String> makeRestCall(URI uri, String userId, String password) {
-    String id = userId;
-    String secret = password;
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("GET " + uri);
-    }
-    // fallback to global credentials
-    if (StringUtils.isEmpty(userId) || StringUtils.isEmpty(password)) {
-      id = settings.getUsername();
-      secret = settings.getPassword();
-        try {
-            secret = Encryption.decryptString(secret, settings.getKey());
-        } catch (EncryptionException e) {
-            LOG.error(e.getMessage());
+    public ResponseEntity<String> makeRestCall(URI uri, String userId, String password) {
+        String id = userId;
+        String secret = password;
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("GET " + uri);
         }
-    }
-    // Basic Auth only.
-    if (!"".equals(id) && !"".equals(secret)) {
-      return restTemplate.exchange(
-          uri, HttpMethod.GET, new HttpEntity<>(createHeaders(id, secret)), String.class);
+        // fallback to global credentials
+        /*if (StringUtils.isEmpty(userId) || StringUtils.isEmpty(password)) {
+            id = settings.getUsername();
+            try {
+                secret = new String(Base64.decodeBase64(settings.getPassword()));
+            } catch (Exception e) {
+                LOG.error(e.getMessage());
+            }
+        }*/
+        // Basic Auth only.
+        if (!"".equals(id) && !"".equals(secret)) {
+            return restTemplate.exchange(
+                    uri, HttpMethod.GET, new HttpEntity<>(createHeaders(id, secret)), String.class);
 
     } else {
       return restTemplate.exchange(uri, HttpMethod.GET, null, String.class);

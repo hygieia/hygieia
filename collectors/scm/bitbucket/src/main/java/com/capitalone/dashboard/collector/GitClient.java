@@ -18,6 +18,6 @@ public interface GitClient {
      * @return all commits in repo
      */
 
-	List<Commit> getCommits(GitRepo repo, boolean firstRun);
+    List<Commit> getCommits(GitRepo repo, boolean firstRun, String userName, String password);
 
 }
