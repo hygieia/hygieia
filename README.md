@@ -2,7 +2,7 @@ As a part of making Hygieia more modular, this repo will host Hygieia UI code. M
 
 # HygieiaUi
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.3.1.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.0.3.
 
 ## Development server
 
