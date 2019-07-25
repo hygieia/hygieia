@@ -3,6 +3,7 @@ package com.capitalone.dashboard.collector;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,9 +13,9 @@ import java.util.List;
 @ConfigurationProperties(prefix = "rally")
 public class RallySettings {
     private String cron;
-    private List<String> servers;
-    private List<String> usernames;
-    private List<String> passwords;
+    private List<String> servers = new ArrayList<>();
+    private List<String> usernames = new ArrayList<>();
+    private List<String> passwords = new ArrayList<>();
     private String httpProxyPort;
     private String httpProxyHost;
     private String httpsProxyPort;

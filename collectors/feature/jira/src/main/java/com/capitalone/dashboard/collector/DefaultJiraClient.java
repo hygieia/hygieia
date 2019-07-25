@@ -306,12 +306,16 @@ public class DefaultJiraClient implements JiraClient {
             if (issueTypesArray == null) {
                 throw new HygieiaException("Unable to get Issue Type IDs from: " + url, HygieiaException.INVALID_CONFIGURATION);
             }
-            List<String> list = new ArrayList<>(Arrays.asList( getIssueTypes().split(",")));
+            List<String> issueTypesFromSettings = new ArrayList<>(Arrays.asList(getIssueTypes().split(",")));
+            if(!issueTypesFromSettings.contains(EPIC_ISSUE_TYPE)) {
+                // If the EPIC_ISSUE_TYPE isn't configured, add it automatically as this issue type is required by this collector.
+                issueTypesFromSettings.add(EPIC_ISSUE_TYPE);
+            }
             for (Object obj : issueTypesArray) {
                 JSONObject jo = (JSONObject) obj;
                 String name = getString(jo,"name");
                 String id = getString(jo,"id");
-                if(list.contains(name)){
+                if(issueTypesFromSettings.contains(name)){
                     issueTypes.put(name, id);
                 }
             }
@@ -321,6 +325,7 @@ public class DefaultJiraClient implements JiraClient {
         } catch (HygieiaException e) {
             LOGGER.error("Error in calling JIRA API", e);
         }
+
         return issueTypes;
     }
 
