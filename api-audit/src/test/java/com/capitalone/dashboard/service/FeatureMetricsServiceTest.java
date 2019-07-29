@@ -52,6 +52,9 @@ public class FeatureMetricsServiceTest {
     @Autowired
     private FeatureMetricsService featureMetricsService;
 
+    @Autowired
+    private FeatureRepository featureRepository;
+
 
 
     @Before
@@ -62,6 +65,7 @@ public class FeatureMetricsServiceTest {
         TestUtils.loadTestResults(testResultsRepository);
         TestUtils.loadCodeQuality(codeQualityRepository);
         TestUtils.loadCollectorItems(collectorItemRepository);
+        TestUtils.loadFeature(featureRepository);
         TestUtils.loadCmdb(cmdbRepository);
 
     }
@@ -172,6 +176,23 @@ public class FeatureMetricsServiceTest {
         Assert.assertEquals(getMetricsByType(), executiveFeatureMetrics.getApplications().get(0).getComponents().get(0).getMetrics());
 
     }
+
+    @Test
+    public void getExecutiveTraceabilityByType(){
+        ExecutiveFeatureMetrics executiveFeatureMetrics = featureMetricsService.getExecutiveFeatureMetricsByType("chow","TRACEABILITY");
+        Assert.assertEquals("chow", executiveFeatureMetrics.getName());
+        Assert.assertEquals("executive", executiveFeatureMetrics.getType());
+        Assert.assertEquals("50", executiveFeatureMetrics.getPercentage());
+        Assert.assertEquals("product1", executiveFeatureMetrics.getApplications().get(0).getId());
+        Assert.assertEquals("TestAudit", executiveFeatureMetrics.getApplications().get(0).getName());
+        Assert.assertEquals("application", executiveFeatureMetrics.getApplications().get(0).getType());
+        Assert.assertEquals("TestSSA", executiveFeatureMetrics.getApplications().get(0).getComponents().get(0).getId());
+        Assert.assertEquals("Component", executiveFeatureMetrics.getApplications().get(0).getComponents().get(0).getType());
+        Assert.assertEquals("TestAudit", executiveFeatureMetrics.getApplications().get(0).getComponents().get(0).getName());
+        Assert.assertEquals(getTraceabilityMetricByType(), executiveFeatureMetrics.getApplications().get(0).getComponents().get(0).getMetrics());
+
+    }
+
     private List<HashMap> getMetrics(){
         List<HashMap> metrics = new ArrayList<>();
         HashMap<String,HashMap<String,String>> codeQuality = new HashMap<>();
@@ -186,10 +207,14 @@ public class FeatureMetricsServiceTest {
         HashMap<String,String> featureTestPercent = new HashMap<>();
         featureTestPercent.put("percentage", "100");
         featureTest.put("FEATURE_TEST_PASS", featureTestPercent);
-
+        HashMap<String,HashMap<String,String>> traceability = new HashMap<>();
+        HashMap<String,String> traceabilityPercent = new HashMap<>();
+        traceabilityPercent.put("message", "Traceability Not Found");
+        traceability.put("TRACEABILITY", traceabilityPercent);
         metrics.add(codeQuality);
         metrics.add(errorRate);
         metrics.add(featureTest);
+        metrics.add(traceability);
 
         return metrics;
 
@@ -201,6 +226,16 @@ public class FeatureMetricsServiceTest {
         HashMap<String,String> featureTestPercent = new HashMap<>();
         featureTestPercent.put("percentage", "100");
         featureTest.put("FEATURE_TEST_PASS", featureTestPercent);
+        metrics.add(featureTest);
+        return metrics;
+    }
+
+    private List<HashMap> getTraceabilityMetricByType(){
+        List<HashMap> metrics = new ArrayList<>();
+        HashMap<String,HashMap<String,String>> featureTest = new HashMap<>();
+        HashMap<String,String> featureTestPercent = new HashMap<>();
+        featureTestPercent.put("percentage", "50");
+        featureTest.put("TRACEABILITY", featureTestPercent);
         metrics.add(featureTest);
         return metrics;
     }

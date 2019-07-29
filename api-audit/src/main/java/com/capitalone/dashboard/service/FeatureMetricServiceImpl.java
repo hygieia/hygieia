@@ -1,29 +1,11 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.model.FeatureMetrics;
-import com.capitalone.dashboard.model.ProductFeatureMetrics;
-import com.capitalone.dashboard.model.ExecutiveFeatureMetrics;
-import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.DashboardType;
-import com.capitalone.dashboard.model.Cmdb;
-import com.capitalone.dashboard.model.LobFeatureMetrics;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.CodeQuality;
-import com.capitalone.dashboard.model.CodeQualityMetric;
-import com.capitalone.dashboard.model.TestResult;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.Widget;
-import com.capitalone.dashboard.model.TestCapability;
-import com.capitalone.dashboard.model.TestSuite;
-import com.capitalone.dashboard.model.TestCase;
-import com.capitalone.dashboard.model.TestSuiteType;
+import com.capitalone.dashboard.ApiSettings;
+import com.capitalone.dashboard.model.*;
 
-import com.capitalone.dashboard.repository.DashboardRepository;
-import com.capitalone.dashboard.repository.ComponentRepository;
-import com.capitalone.dashboard.repository.CodeQualityRepository;
-import com.capitalone.dashboard.repository.TestResultRepository;
-import com.capitalone.dashboard.repository.CmdbRepository;
+import com.capitalone.dashboard.repository.*;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -38,6 +20,7 @@ import java.util.Optional;
 import java.util.DoubleSummaryStatistics;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Component
@@ -49,6 +32,8 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
 
     private static final String STR_FEATURE_TEST_PASS = "FEATURE_TEST_PASS";
 
+    private static final String STR_TRACEABILITY = "TRACEABILITY";
+
     private static final String STR_PERCENTAGE = "percentage";
 
     private static final String STR_ACTUAL_ERRORRATE = "Actual Error Rate";
@@ -58,6 +43,19 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
     private static final String STR_MTR_COVERAGE = "coverage";
 
     private static final String STR_WIDGETNAME = "codeanalysis";
+
+    private static final String WIDGET_FEATURE = "feature";
+
+    private static final String STR_TEAM_ID = "teamId";
+
+    private static final String STR_UNDERSCORE = "_";
+
+    private static final String STR_HYPHEN = "-";
+
+    private static final String STR_AT = "@";
+
+    private static final String STR_EMPTY = "";
+
 
     private final DashboardRepository dashboardRepository;
 
@@ -69,16 +67,22 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
 
     private final CmdbRepository cmdbRepository;
 
+    private final FeatureRepository featureRepository;
+
+    private final ApiSettings apiSettings;
+
     private static DecimalFormat df2 = new DecimalFormat("#.##");
 
 
     @Autowired
-    public FeatureMetricServiceImpl(DashboardRepository dashboardRepository, ComponentRepository componentRepository, CodeQualityRepository codeQualityRepository, TestResultRepository testResultRepository, CmdbRepository cmdbRepository) {
+    public FeatureMetricServiceImpl(DashboardRepository dashboardRepository, ComponentRepository componentRepository, CodeQualityRepository codeQualityRepository, TestResultRepository testResultRepository, CmdbRepository cmdbRepository, FeatureRepository featureRepository, ApiSettings apiSettings) {
         this.dashboardRepository = dashboardRepository;
         this.componentRepository = componentRepository;
         this.codeQualityRepository = codeQualityRepository;
         this.testResultRepository = testResultRepository;
         this.cmdbRepository = cmdbRepository;
+        this.featureRepository = featureRepository;
+        this.apiSettings = apiSettings;
     }
 
 
@@ -266,7 +270,7 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
         productFeatureMetrics.setName(cmdb.getCommonName());
         productFeatureMetrics.setType("application");
         if(actualPercentage.size() > 0){
-        productFeatureMetrics.setPercentage(Double.valueOf(df2.format(stats.getAverage())));
+            productFeatureMetrics.setPercentage(Double.valueOf(df2.format(stats.getAverage())));
         }else{
             productFeatureMetrics.setPercentage(Double.NaN);
         }
@@ -291,12 +295,15 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
             List<ObjectId> codeQualityItems = getCollectorItems(dashboard, STR_WIDGETNAME, CollectorType.CodeQuality);
             List<ObjectId> perfItems = getCollectorItems(dashboard, STR_WIDGETNAME, CollectorType.Test);
             List<ObjectId> testItems = getCollectorItems(dashboard, STR_WIDGETNAME, CollectorType.Test);
+            List<ObjectId> testItems1 = getCollectorItems(dashboard, STR_WIDGETNAME, CollectorType.Test);
             HashMap<String, HashMap<String, String>> codeQuality = getAggregatedCodeQuality(codeQualityItems);
             HashMap<String, HashMap<String, String>> errorRate = getAggregatedErrorRate(perfItems);
             HashMap<String, HashMap<String, String>> featureTest = getAggregatedFeatureTestPass(testItems);
+            HashMap<String, HashMap<String, String>> traceability = getAggregatedTraceability(testItems1,dashboard);
             metrics.add(codeQuality);
             metrics.add(errorRate);
             metrics.add(featureTest);
+            metrics.add(traceability);
         }else if(STR_COVERAGE.equalsIgnoreCase(type)){
             List<ObjectId> codeQualityItems = getCollectorItems(dashboard, STR_WIDGETNAME, CollectorType.CodeQuality);
             HashMap<String, HashMap<String, String>> codeQuality = getAggregatedCodeQuality(codeQualityItems);
@@ -309,9 +316,95 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
             List<ObjectId> testItems = getCollectorItems(dashboard, STR_WIDGETNAME, CollectorType.Test);
             HashMap<String, HashMap<String, String>> testItems1 = getAggregatedFeatureTestPass(testItems);
             metrics.add(testItems1);
+        } else if (STR_TRACEABILITY.equalsIgnoreCase(type)) {
+            List<ObjectId> testItems = getCollectorItems(dashboard, STR_WIDGETNAME, CollectorType.Test);
+            HashMap<String, HashMap<String, String>> traceability = getAggregatedTraceability(testItems,dashboard);
+            metrics.add(traceability);
         }
 
         return metrics;
+    }
+
+    private HashMap<String,HashMap<String,String>> getAggregatedTraceability(List<ObjectId> testItems,Dashboard dashboard) {
+        List<Double> values = new ArrayList<>();
+        HashMap<String,HashMap<String,String>> traceability = new HashMap<>();
+        HashMap<String,String> featureTestPercent = new HashMap<>();
+        Widget featureWidget = getFeatureWidget(dashboard);
+        Optional<Object> teamIdOpt = Optional.ofNullable(featureWidget.getOptions().get(STR_TEAM_ID));
+
+        List<String> totalCompletedList = new ArrayList<>();
+
+            if(CollectionUtils.isNotEmpty(testItems)){
+                if(teamIdOpt.isPresent()){
+                List<Feature> featureList = featureRepository.getStoryByTeamID(teamIdOpt.get().toString());
+                featureList.stream().forEach(feature -> {
+                    if(this.isValidStoryStatus(feature.getsStatus())){
+                        totalCompletedList.add(feature.getsNumber());}});}
+                testItems.forEach(collectorItemId -> {
+                    TestResult testResults = testResultRepository.findTop1ByCollectorItemIdOrderByTimestampDesc(collectorItemId);
+                    if((testResults != null) && (testResults.getType().equals(TestSuiteType.Functional))){
+
+                         values.add((double) getTotalStoryIndicators(testResults).size());
+                    }
+                });
+                if(totalCompletedList.size()> NumberUtils.INTEGER_ZERO) {
+                    double traceabilityPercentage = (values.size() * 100) / totalCompletedList.size();
+                    featureTestPercent.put(STR_PERCENTAGE, String.valueOf(df2.format(traceabilityPercentage)));
+                    traceability.put(STR_TRACEABILITY, featureTestPercent);
+                }else {
+                    featureTestPercent.put("message", "Traceability Not Found");
+                    traceability.put(STR_TRACEABILITY, featureTestPercent);
+                }
+            }else {
+                featureTestPercent.put("message","TestItems not configured");
+                traceability.put(STR_TRACEABILITY,featureTestPercent);
+            }
+        return traceability;
+    }
+
+    private  List<String> getTotalStoryIndicators(TestResult testResult) {
+
+        Pattern featureIdPattern = Pattern.compile(apiSettings.getFeatureIDPattern());
+        List<String> totalStoryIndicatorList = new ArrayList<>();
+        testResult.getTestCapabilities().stream()
+                .map(TestCapability::getTestSuites).flatMap(Collection::stream)
+                .map(TestSuite::getTestCases).flatMap(Collection::stream)
+                .forEach(testCase -> {
+                    List<String> storyList = new ArrayList<>();
+                    testCase.getTags().forEach(tag -> {
+                        if (featureIdPattern.matcher(getValidFeatureId(tag)).find()) {
+                            List<Feature> features = featureRepository.getStoryByNumber(tag);
+                            features.forEach(feature -> {
+                                if (isValidStoryStatus(feature.getsStatus())) {
+                                    storyList.add(feature.getsNumber());
+                                }
+                            });
+                        }
+                    });
+                    storyList.forEach(storyIndicator -> {
+                        if (!totalStoryIndicatorList.contains(storyIndicator)) {
+                            totalStoryIndicatorList.add(storyIndicator);
+                        }
+                    });
+                });
+        return totalStoryIndicatorList;
+    }
+
+    private CharSequence getValidFeatureId(String tag) {
+        tag = tag.replaceAll(STR_UNDERSCORE, STR_HYPHEN).replaceAll(STR_AT, STR_EMPTY);
+        return tag;
+    }
+
+    public Widget getFeatureWidget(Dashboard dashboard) {
+        return dashboard.getWidgets()
+                .stream()
+                .filter(widget -> widget.getName().equalsIgnoreCase(WIDGET_FEATURE))
+                .findFirst().orElse(new Widget());
+    }
+
+    private boolean isValidStoryStatus(String storyStatus) {
+        final List<String> validStatus = apiSettings.getValidStoryStatus();
+        return validStatus.contains(storyStatus.toUpperCase());
     }
 
     /**
@@ -330,7 +423,7 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
 
                 CodeQuality codeQualities = codeQualityRepository.findTop1ByCollectorItemIdOrderByTimestampDesc(collectorItemId);
                 if(codeQualities != null){
-                    Set<CodeQualityMetric> javaCollection =codeQualities.getMetrics();
+                    Set<CodeQualityMetric> javaCollection = codeQualities.getMetrics();
                     Optional.ofNullable(javaCollection)
                             .orElseGet(Collections::emptySet)
                             .forEach(m -> {
@@ -466,6 +559,7 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
         }
         return featureTestPercent;
     }
+
 
     /**
      *
