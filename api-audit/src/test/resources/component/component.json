@@ -66,7 +66,7 @@
     ],
     "Test": [
       {
-        "id": "57f2a0193b55670a9e06d63a",
+        "id": "57f2a0193b55670a9e06d63b",
         "description": "Functional-SLATE",
         "niceName": "ABCD",
         "enabled": true,
@@ -79,6 +79,22 @@
           "jobName": "Functional-SLATE",
           "jobUrl": "https://myjenkins.com/jenkins/job/Functional-SLATE/",
           "instanceUrl": "https://myjenkins.com/jenkins/"
+        }
+      },
+      {
+        "id": "57f2a0193b55670a9e06d63a",
+        "description": "Performance-SLATE",
+        "niceName": "ABCD",
+        "enabled": true,
+        "errors": [
+        ],
+        "pushed": true,
+        "collectorId": "56df29df7fab7c3ec3c432ea",
+        "lastUpdated": 1513106044147,
+        "options": {
+          "jobName": "Performance-SLATE",
+          "jobUrl": "",
+          "instanceUrl": ""
         }
       }
     ],
