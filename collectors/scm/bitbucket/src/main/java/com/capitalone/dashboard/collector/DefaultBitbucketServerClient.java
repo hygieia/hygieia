@@ -4,6 +4,8 @@ import com.capitalone.dashboard.bitbucketapi.BitbucketApiUrlBuilder;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitRepo;
+import com.capitalone.dashboard.util.Encryption;
+import com.capitalone.dashboard.util.EncryptionException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.utils.URIBuilder;
@@ -68,10 +70,28 @@ public class DefaultBitbucketServerClient implements GitClient {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Rest Url: " + queryUri);
             }
+
+            // decrypt password
+            String repoUser = null;
+            String repoPassword = null;
+            if (repo.getPassword() != null && !repo.getPassword().isEmpty()) {
+            	try {
+                    repoUser = repo.getUserId();
+                    repoPassword = Encryption.decryptString(repo.getPassword(),settings.getKey());
+                    LOG.info("userName1:" + repoUser);
+                    LOG.info("password1:" + repoPassword);
+            	} catch (EncryptionException e) {
+            		LOG.error(e.getMessage());
+            	}
+            } else {
+                repoUser = userName;
+                repoPassword = password;
+            }
+
             boolean lastPage = false;
             queryUriPage = queryUri;
             while (!lastPage) {
-                ResponseEntity<String> response = scmHttpRestClient.makeRestCall(queryUriPage, userName, password);
+                ResponseEntity<String> response = scmHttpRestClient.makeRestCall(queryUriPage, repoUser, repoPassword);
                 JSONObject jsonParentObject = JSONParserUtils.parseAsObject(response);
                 JSONArray jsonArray = (JSONArray) jsonParentObject.get("values");
 
@@ -113,7 +133,7 @@ public class DefaultBitbucketServerClient implements GitClient {
         } catch (URISyntaxException e) {
             LOG.error("Invalid uri: " + e.getMessage());
         } catch (RestClientException re) {
-            LOG.error("Failed to obtain commits from " + queryUriPage, re);
+            LOG.debug("Failed to obtain commits from " + queryUriPage, re);
         }
 
         return commits;

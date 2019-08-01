@@ -5,7 +5,6 @@ import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitRepo;
 import com.capitalone.dashboard.util.Encryption;
 import com.capitalone.dashboard.util.EncryptionException;
-import com.capitalone.dashboard.util.Supplier;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,7 +23,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
-import javax.crypto.SecretKey;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -128,22 +126,27 @@ public class DefaultBitbucketCloudClient implements GitClient {
 		 * cal.add(Calendar.DATE, -30); Date dateBefore30Days = cal.getTime();
 		 */
 
-		// decrypt password
+//		 decrypt password
+		String repoUser = "";
 		String decryptedPassword = "";
 		if (repo.getPassword() != null && !repo.getPassword().isEmpty()) {
 			try {
+				repoUser = repo.getUserId();
 				decryptedPassword = Encryption.decryptString(
-						repo.getPassword(), (SecretKey) settings.getKey());
+						repo.getPassword(), settings.getKey());
 			} catch (EncryptionException e) {
 				LOG.error(e.getMessage());
 			}
+		} else {
+			repoUser = userName;
+			decryptedPassword = password;
 		}
 		boolean lastPage = false;
 		int pageNumber = 1;
 		String queryUrlPage = queryUrl;
 		while (!lastPage) {
 			try {
-				ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
+				ResponseEntity<String> response = makeRestCall(queryUrlPage, repoUser, decryptedPassword);
 				JSONObject jsonParentObject = paresAsObject(response);
 				JSONArray jsonArray = (JSONArray) jsonParentObject.get("values");
 

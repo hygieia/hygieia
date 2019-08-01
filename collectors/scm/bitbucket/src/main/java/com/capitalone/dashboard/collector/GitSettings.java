@@ -13,7 +13,7 @@ import java.util.List;
 public class GitSettings {
     private String cron;
     private List<String> host;
-    private List<String> key;
+    private String key;
     private int firstRunHistoryDays;
     private String api;
     private int pageSize;
@@ -36,11 +36,11 @@ public class GitSettings {
         this.cron = cron;
     }
 
-	public List<String> getKey() {
+	public String getKey() {
 		return key;
 	}
 
-	public void setKey(List<String> key) {
+	public void setKey(String key) {
 		this.key = key;
 	}
 	
