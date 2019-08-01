@@ -81,8 +81,13 @@ The sample `application.properties` file lists parameters with sample values to 
 		# Collector schedule (required)
 		git.cron=0 0/5 * * * *
 
-		# Mandatory parameters
-		git.host=mybitbucketrepo.com/
+		# Mandatory parameters (comma separated, if multiple)
+		git.host=https://mybitbucketrepo.com,https://mybitbucketrepo2.com
+		git.username=user_for_git.host1,user_for_git.host2
+		
+		#convert password to base64
+		git.password=password_for_git.host1,password_for_git.host2
+		
 		git.api=/rest/api/1.0/
 
 		# Maximum number of days to go back in time when fetching commits
