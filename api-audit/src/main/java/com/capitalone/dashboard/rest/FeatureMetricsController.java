@@ -63,7 +63,7 @@ public class FeatureMetricsController {
         return ResponseEntity.ok(lobFeatureMetrics);
     }
 
-    @RequestMapping(value = "metrics/lob/{lobName}/type/{type}")
+    @RequestMapping(value = "metrics/lob/{lobName}/metric/{type}")
     public ResponseEntity<LobFeatureMetrics> getLobMetricsByType(@Valid @PathVariable String lobName,
                                                                  @Valid @PathVariable String type){
 
@@ -78,7 +78,7 @@ public class FeatureMetricsController {
         return ResponseEntity.ok(executiveFeatureMetrics);
     }
 
-    @RequestMapping(value = "metrics/executive/{executiveName}/type/{type}")
+    @RequestMapping(value = "metrics/executive/{executiveName}/metric/{type}")
     public ResponseEntity<ExecutiveFeatureMetrics> getExecutiveMetricsByType(@Valid @PathVariable String executiveName,
                                                                              @Valid @PathVariable String type){
 

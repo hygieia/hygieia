@@ -209,7 +209,7 @@ public class FeatureMetricsServiceTest {
         featureTest.put("FEATURE_TEST_PASS", featureTestPercent);
         HashMap<String,HashMap<String,String>> traceability = new HashMap<>();
         HashMap<String,String> traceabilityPercent = new HashMap<>();
-        traceabilityPercent.put("message", "Traceability Not Found");
+        traceabilityPercent.put("percentage", "50");
         traceability.put("TRACEABILITY", traceabilityPercent);
         metrics.add(codeQuality);
         metrics.add(errorRate);

@@ -299,7 +299,7 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
             HashMap<String, HashMap<String, String>> codeQuality = getAggregatedCodeQuality(codeQualityItems);
             HashMap<String, HashMap<String, String>> errorRate = getAggregatedErrorRate(perfItems);
             HashMap<String, HashMap<String, String>> featureTest = getAggregatedFeatureTestPass(testItems);
-            HashMap<String, HashMap<String, String>> traceability = getAggregatedTraceability(testItems1,dashboard);
+            HashMap<String, HashMap<String, String>> traceability = getAggregatedTraceability(testItems,dashboard);
             metrics.add(codeQuality);
             metrics.add(errorRate);
             metrics.add(featureTest);
@@ -337,6 +337,7 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
             if(CollectionUtils.isNotEmpty(testItems)){
                 if(teamIdOpt.isPresent()){
                 List<Feature> featureList = featureRepository.getStoryByTeamID(teamIdOpt.get().toString());
+                if(CollectionUtils.isNotEmpty(featureList))
                 featureList.stream().forEach(feature -> {
                     if(this.isValidStoryStatus(feature.getsStatus())){
                         totalCompletedList.add(feature.getsNumber());}});}
