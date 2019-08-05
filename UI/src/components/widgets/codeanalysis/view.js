@@ -105,9 +105,9 @@
                 getMetric(caData.metrics, 'tests', 'Tests')
             ];
 
-            ctrl.lineCoverage = getMetric(caData.metrics, 'line_coverage');
+            ctrl.codeCoverage = getMetric(caData.metrics, 'coverage');
 
-            coveragePieChart(ctrl.lineCoverage);
+            coveragePieChart(ctrl.codeCoverage);
 
             deferred.resolve(response.lastUpdated);
             return deferred.promise;
