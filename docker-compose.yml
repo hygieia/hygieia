@@ -15,14 +15,6 @@ services:
     depends_on:
       - db
 
-  api:
-    build: api
-    image: hygieia-api
-    depends_on:
-      - db-setup
-    ports:
-      - "8080:8080"
-
   api-audit:
     build: api-audit
     image: hygieia-api-audit
@@ -54,12 +46,6 @@ services:
   bamboo-build-collector:
     build: collectors/build/bamboo
     image: hygieia-bamboo-build-collector
-    depends_on:
-      - db-setup
-
-  bitbucket-collector:
-    build: collectors/scm/bitbucket
-    image: hygieia-bitbucket-scm-collector
     depends_on:
       - db-setup
 
