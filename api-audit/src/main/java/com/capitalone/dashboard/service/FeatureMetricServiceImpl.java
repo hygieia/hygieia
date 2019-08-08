@@ -1,11 +1,38 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.ApiSettings;
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.FeatureMetrics;
+import com.capitalone.dashboard.model.Feature;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.ProductFeatureMetrics;
+import com.capitalone.dashboard.model.Cmdb;
+import com.capitalone.dashboard.model.CodeQuality;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.TestResult;
+import com.capitalone.dashboard.model.TestSuiteType;
+import com.capitalone.dashboard.model.TestCase;
+import com.capitalone.dashboard.model.TestCapability;
+import com.capitalone.dashboard.model.LobFeatureMetrics;
+import com.capitalone.dashboard.model.ExecutiveFeatureMetrics;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Build;
+import com.capitalone.dashboard.model.BuildStage;
+import com.capitalone.dashboard.model.Widget;
+import com.capitalone.dashboard.model.TestSuite;
+import com.capitalone.dashboard.model.CodeQualityMetric;
 
-import com.capitalone.dashboard.repository.*;
+import com.capitalone.dashboard.repository.TestResultRepository;
+import com.capitalone.dashboard.repository.CmdbRepository;
+import com.capitalone.dashboard.repository.CodeQualityRepository;
+import com.capitalone.dashboard.repository.DashboardRepository;
+import com.capitalone.dashboard.repository.BuildRepository;
+import com.capitalone.dashboard.repository.FeatureRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,6 +61,8 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
 
     private static final String STR_TRACEABILITY = "TRACEABILITY";
 
+    private static final String STR_DEPLOY_SCRIPTS = "DEPLOY_SCRIPTS";
+
     private static final String STR_PERCENTAGE = "percentage";
 
     private static final String STR_ACTUAL_ERRORRATE = "Actual Error Rate";
@@ -44,9 +73,15 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
 
     private static final String STR_WIDGETNAME = "codeanalysis";
 
+    private static final String STR_WIDGET_BUILD = "build";
+
     private static final String WIDGET_FEATURE = "feature";
 
     private static final String STR_TEAM_ID = "teamId";
+
+    private static final String SUCCESS = "success";
+
+    private static final String FAILED = "failed";
 
     private static final String STR_UNDERSCORE = "_";
 
@@ -69,19 +104,22 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
 
     private final FeatureRepository featureRepository;
 
+    private final BuildRepository buildRepository;
+
     private final ApiSettings apiSettings;
 
     private static DecimalFormat df2 = new DecimalFormat("#.##");
 
 
     @Autowired
-    public FeatureMetricServiceImpl(DashboardRepository dashboardRepository, ComponentRepository componentRepository, CodeQualityRepository codeQualityRepository, TestResultRepository testResultRepository, CmdbRepository cmdbRepository, FeatureRepository featureRepository, ApiSettings apiSettings) {
+    public FeatureMetricServiceImpl(DashboardRepository dashboardRepository, ComponentRepository componentRepository, CodeQualityRepository codeQualityRepository, TestResultRepository testResultRepository, CmdbRepository cmdbRepository, FeatureRepository featureRepository, BuildRepository buildRepository, ApiSettings apiSettings) {
         this.dashboardRepository = dashboardRepository;
         this.componentRepository = componentRepository;
         this.codeQualityRepository = codeQualityRepository;
         this.testResultRepository = testResultRepository;
         this.cmdbRepository = cmdbRepository;
         this.featureRepository = featureRepository;
+        this.buildRepository = buildRepository;
         this.apiSettings = apiSettings;
     }
 
@@ -295,15 +333,18 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
             List<ObjectId> codeQualityItems = getCollectorItems(dashboard, STR_WIDGETNAME, CollectorType.CodeQuality);
             List<ObjectId> perfItems = getCollectorItems(dashboard, STR_WIDGETNAME, CollectorType.Test);
             List<ObjectId> testItems = getCollectorItems(dashboard, STR_WIDGETNAME, CollectorType.Test);
-            List<ObjectId> testItems1 = getCollectorItems(dashboard, STR_WIDGETNAME, CollectorType.Test);
+            List<ObjectId> buildItems = getCollectorItems(dashboard, STR_WIDGET_BUILD, CollectorType.Build);
             HashMap<String, HashMap<String, String>> codeQuality = getAggregatedCodeQuality(codeQualityItems);
             HashMap<String, HashMap<String, String>> errorRate = getAggregatedErrorRate(perfItems);
             HashMap<String, HashMap<String, String>> featureTest = getAggregatedFeatureTestPass(testItems);
             HashMap<String, HashMap<String, String>> traceability = getAggregatedTraceability(testItems,dashboard);
+            HashMap<String, HashMap<String, String>> deployScripts = getAggregatedDeployScripts(buildItems,dashboard);
+
             metrics.add(codeQuality);
             metrics.add(errorRate);
             metrics.add(featureTest);
             metrics.add(traceability);
+            metrics.add(deployScripts);
         }else if(STR_COVERAGE.equalsIgnoreCase(type)){
             List<ObjectId> codeQualityItems = getCollectorItems(dashboard, STR_WIDGETNAME, CollectorType.CodeQuality);
             HashMap<String, HashMap<String, String>> codeQuality = getAggregatedCodeQuality(codeQualityItems);
@@ -320,9 +361,48 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
             List<ObjectId> testItems = getCollectorItems(dashboard, STR_WIDGETNAME, CollectorType.Test);
             HashMap<String, HashMap<String, String>> traceability = getAggregatedTraceability(testItems,dashboard);
             metrics.add(traceability);
+        }else if(STR_DEPLOY_SCRIPTS.equalsIgnoreCase(type)){
+            List<ObjectId> buildItems = getCollectorItems(dashboard, STR_WIDGET_BUILD, CollectorType.Build);
+            HashMap<String, HashMap<String, String>> deployScripts = getAggregatedDeployScripts(buildItems,dashboard);
+            metrics.add(deployScripts);
         }
 
         return metrics;
+    }
+
+    private HashMap<String,HashMap<String,String>> getAggregatedDeployScripts(List<ObjectId> buildItems, Dashboard dashboard) {
+        List<Double> values = new ArrayList();
+        HashMap<String,HashMap<String,String>> deployScripts = new HashMap<>();
+        HashMap<String,String> deployScriptsPercentage = new HashMap<>();
+
+        if(CollectionUtils.isNotEmpty(buildItems)){
+            buildItems.forEach(collectorItemId -> {
+
+                Build build = buildRepository.findTop1ByCollectorItemIdOrderByTimestampDesc(collectorItemId);
+                if(build != null){
+                    List<BuildStage> stages = build.getStages();
+                    if (matchStage(stages, SUCCESS, apiSettings)) {
+                        values.add(100.0);
+                    } else if (matchStage(stages, FAILED, apiSettings)) {
+                        values.add(0.0);
+                    }else{
+                        values.add(0.0);
+                    }
+
+                }
+            });
+            deployScripts.put(STR_DEPLOY_SCRIPTS, componentLevelAverage(values));
+
+        }else {
+            deployScriptsPercentage.put("message", "BuildItems not configured");
+            deployScripts.put(STR_DEPLOY_SCRIPTS, deployScriptsPercentage);
+        }
+        return deployScripts;
+    }
+
+    public boolean matchStage(List<BuildStage> stages, String status, ApiSettings settings) {
+        if (StringUtils.isEmpty(settings.getBuildStageRegEx())) return false;
+        return stages.stream().filter(s -> Pattern.compile(settings.getBuildStageRegEx()).matcher(s.getName()).find() && s.getStatus().equalsIgnoreCase(status)).findAny().isPresent();
     }
 
     private HashMap<String,HashMap<String,String>> getAggregatedTraceability(List<ObjectId> testItems,Dashboard dashboard) {
@@ -432,10 +512,8 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
                                     String valueStr = m.getValue();
                                     double value = Double.parseDouble(valueStr);
                                     values.add(value);
-
                                 }
                             });
-
                 }
             });
             codeQuality.put(STR_COVERAGE, componentLevelAverage(values));

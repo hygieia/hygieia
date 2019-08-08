@@ -12,6 +12,7 @@ import com.capitalone.dashboard.model.LibraryPolicyResult;
 import com.capitalone.dashboard.model.TestResult;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.Cmdb;
+import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.repository.BinaryArtifactRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
@@ -24,7 +25,7 @@ import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.repository.LibraryPolicyResultsRepository;
 import com.capitalone.dashboard.repository.CmdbRepository;
-import com.capitalone.dashboard.repository.TestResultRepository;
+import com.capitalone.dashboard.repository.BuildRepository;
 import com.capitalone.dashboard.testutil.GsonUtil;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
@@ -126,6 +127,12 @@ public class TestUtils {
         String json = IOUtils.toString(Resources.getResource("./cmdb/cmdb.json"));
         List<Cmdb> binaryArtifact = gson.fromJson(json, new TypeToken<List<Cmdb>>(){}.getType());
         cmdbRepository.save(binaryArtifact.get(0));
+    }
+    public static void loadBuilds(BuildRepository buildRepository) throws IOException{
+        Gson gson = GsonUtil.getGson();
+        String json = IOUtils.toString(Resources.getResource("./build/build.json"));
+        List<Build> builds = gson.fromJson(json,new TypeToken<List<Build>>(){}.getType());
+        buildRepository.save(builds.get(0));
     }
 
 
