@@ -63,6 +63,14 @@ public class DefaultJiraClientTest {
     }
 
     @Test
+    public void getJiraIssueTypeIds() throws IOException{
+        doReturn(new ResponseEntity<>(getExpectedJSON("response/issuetype.json"), HttpStatus.OK)).when(rest).exchange(contains("rest/api/2/issuetype"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));
+        Map<String,String> issueTypeIds = defaultJiraClient.getJiraIssueTypeIds();
+        featureSettings.setJiraIssueTypeNames(new String[]{"Story"});
+        defaultJiraClient = new DefaultJiraClient(featureSettings,restOperationsSupplier);
+        assertEquals(issueTypeIds.containsKey("Epic"), true);
+    }
+    @Test
     public void getIssuesBoard() throws IOException{
         Team team = new Team("123","testTeam");
         doReturn(new ResponseEntity<>(getExpectedJSON("response/epicresponse.json"), HttpStatus.OK)).when(rest).exchange(contains("rest/agile/1.0/issue/"), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class));

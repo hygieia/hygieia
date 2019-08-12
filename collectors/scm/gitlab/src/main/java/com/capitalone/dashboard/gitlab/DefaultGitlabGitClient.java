@@ -9,7 +9,6 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -146,21 +145,18 @@ public class DefaultGitlabGitClient implements GitlabGitClient {
 	}
 
 	private ResponseEntity<GitlabCommit[]> makeCommitRestCall(URI url, String apiToken) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("PRIVATE-TOKEN", apiToken);
-		return restOperations.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), GitlabCommit[].class);
+		return restOperations.exchange(url, HttpMethod.GET, 
+		        new HttpEntity<>(gitlabUrlUtility.createHttpHeaders(apiToken)), GitlabCommit[].class);
 	}
 
 	private ResponseEntity<GitlabIssue[]> makeIssueRestCall(URI url, String apiToken) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("PRIVATE-TOKEN", apiToken);
-		return restOperations.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), GitlabIssue[].class);
+		return restOperations.exchange(url, HttpMethod.GET, 
+		        new HttpEntity<>(gitlabUrlUtility.createHttpHeaders(apiToken)), GitlabIssue[].class);
 	}
 
 	private ResponseEntity<GitlabRequest[]> makeRequestRestCall(URI url, String apiToken) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("PRIVATE-TOKEN", apiToken);
-		return restOperations.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), GitlabRequest[].class);
+		return restOperations.exchange(url, HttpMethod.GET, 
+		        new HttpEntity<>(gitlabUrlUtility.createHttpHeaders(apiToken)), GitlabRequest[].class);
 	}
 
 }

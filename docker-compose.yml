@@ -15,14 +15,6 @@ services:
     depends_on:
       - db
 
-  api:
-    build: api
-    image: hygieia-api
-    depends_on:
-      - db-setup
-    ports:
-      - "8080:8080"
-
   api-audit:
     build: api-audit
     image: hygieia-api-audit
@@ -57,12 +49,6 @@ services:
     depends_on:
       - db-setup
 
-  bitbucket-collector:
-    build: collectors/scm/bitbucket
-    image: hygieia-bitbucket-scm-collector
-    depends_on:
-      - db-setup
-
   chat-ops-collector:
     build: collectors/misc/chat-ops
     image: hygieia-chat-ops-collector
@@ -72,12 +58,6 @@ services:
   hpsm-cmdb-collector:
     build: collectors/cmdb/hpsm
     image: hygieia-hpsm-cmdb-collector
-    depends_on:
-      - db-setup
-
-  github-collector:
-    build: collectors/scm/github
-    image: hygieia-github-scm-collector
     depends_on:
       - db-setup
 
@@ -96,12 +76,6 @@ services:
   gitlab-scm-collector:
     build: collectors/scm/gitlab
     image: hygieia-gitlab-scm-collector
-    depends_on:
-      - db-setup
-
-  jenkins-build-collector:
-    build: collectors/build/jenkins
-    image: hygieia-jenkins-build-collector
     depends_on:
       - db-setup
 
@@ -126,18 +100,6 @@ services:
   nexus-iq-collector:
     build: collectors/library-policy/nexus-iq-collector
     image: hygieia-nexus-iq-collector
-    depends_on:
-      - db-setup
-
-  sonar-codequality-collector:
-    build: collectors/build/sonar
-    image: hygieia-sonar-codequality-collector
-    depends_on:
-      - db-setup
-
-  subversion-collector:
-    build: collectors/scm/subversion
-    image: hygieia-subversion-scm-collector
     depends_on:
       - db-setup
 

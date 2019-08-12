@@ -96,7 +96,7 @@ feature.masterStartDate=${JIRA_MASTER_START_DATE:-2008-01-01T00:00:00.000000}
 # instance.  Note:  You can retrieve your instance's IssueType Name
 # listings via the following URI:  https://[your-jira-domain-name]/rest/api/2/issuetype/
 # Multiple comma-separated values can be specified.
-feature.jiraIssueTypeNames=${JIRA_ISSUE_TYPE_NAMES:-Story}
+feature.jiraIssueTypeNames=${JIRA_ISSUE_TYPE_NAMES:-Story,Epic,Bug,Task,Sub-task}
 
 # In Jira, your instance will have its own custom field created for "sprint" or "timebox" details,
 # which includes a list of information.  This field allows you to specify that data field for your

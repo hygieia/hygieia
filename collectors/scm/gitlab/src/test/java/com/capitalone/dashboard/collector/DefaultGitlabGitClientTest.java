@@ -24,6 +24,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -141,6 +142,9 @@ public class DefaultGitlabGitClientTest {
 		when(restOperations.exchange(isA(URI.class), eq(HttpMethod.GET), captor.capture(), eq(GitlabCommit[].class))).thenReturn(response);
 		String expectedApiKey = "fakeApiKey";
 		when(repo.getUserId()).thenReturn(expectedApiKey);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("PRIVATE-TOKEN", expectedApiKey);
+		when(gitlabUrlUtility.createHttpHeaders(anyString())).thenReturn(headers);
 
 		gitlabClient.getCommits(repo, true);
 
@@ -154,6 +158,9 @@ public class DefaultGitlabGitClientTest {
 		when(restOperations.exchange(isA(URI.class), eq(HttpMethod.GET), captor.capture(), eq(GitlabCommit[].class))).thenReturn(response);
 		String expectedApiKey = "fakeApiKey";
 		when(gitlabSettings.getApiToken()).thenReturn(expectedApiKey);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("PRIVATE-TOKEN", expectedApiKey);
+        when(gitlabUrlUtility.createHttpHeaders(anyString())).thenReturn(headers);
 
 		gitlabClient.getCommits(repo, true);
 

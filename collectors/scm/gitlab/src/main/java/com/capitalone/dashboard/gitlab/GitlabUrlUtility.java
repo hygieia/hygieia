@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -46,11 +47,14 @@ public class GitlabUrlUtility {
 	private static final String SORT_QUERY_PARAM_KEY = "sort";
 	private static final String NOTES_REQUESTS_API = "/notes/";
 	private static final String COMMITS_REQUESTS_API = "/commits/";
+	private static final String CHANGES_REQUESTS_API = "/changes/";
 	private static final String STATUSES_REQUESTS_API = "/statuses/";
 	private static final String REF_QUERY_PARAM_KEY = "ref";
 	private static final String PER_PAGE_QUERY_PARAM_KEY = "per_page";
 	private static final String PUBLIC_GITLAB_HOST_NAME = "gitlab.com";
-	private static final int FIRST_RUN_HISTORY_DEFAULT = 14;
+  private static final int FIRST_RUN_HISTORY_DEFAULT = 14;
+
+  private static String projectIdValue; 
 
 	@Autowired
 	public GitlabUrlUtility(GitlabSettings gitlabSettings) {
@@ -62,7 +66,12 @@ public class GitlabUrlUtility {
         if (repoUrl.endsWith(GIT_EXTENSION)) {
             repoUrl = StringUtils.removeEnd(repoUrl, GIT_EXTENSION);
         }
-        
+
+        if (gitlabSettings.isUseProjectId()) {
+          projectIdValue = repoUrl.substring(repoUrl.lastIndexOf('/') + 1);
+          LOG.info("projectIdValue: " + projectIdValue);
+        }
+
         String apiVersion = getApiVersion();
         String protocol = getProtocol();
 		String repoName = getRepoName(repoUrl);
@@ -229,6 +238,34 @@ public class GitlabUrlUtility {
         return uri;
     }
 
+    public URI buildMergeRequestChangesApiUrl(String webUrl, String mergeRequestIid) {
+        String apiVersion = getApiVersion();
+        String protocol = getProtocol();
+        String repoName = getRepoName(webUrl);
+        String host = getRepoHost();
+
+        UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
+
+        if (StringUtils.isNotBlank(gitlabSettings.getPort())) {
+            builder.port(gitlabSettings.getPort());
+        }
+
+        URI uri = builder.scheme(protocol)
+                .host(host)
+                .path(gitlabSettings.getPath())
+                .pathSegment(SEGMENT_API)
+                .pathSegment(apiVersion)
+                .pathSegment(PROJECTS_SEGMENT)
+                .path(repoName)
+                .path(MERGE_REQUESTS_API)
+                .path(mergeRequestIid)
+                .path(CHANGES_REQUESTS_API)
+                .build(true).toUri();
+
+        LOG.info("---> Gitlab merge request changes URI: " + uri.toString());
+        return uri;
+    }
+
     public URI buildCommitStatusesApiUrl(String webUrl, String branch, String commitSha, int resultsPerPage) {
         String apiVersion = getApiVersion();
         String protocol = getProtocol();
@@ -336,6 +373,23 @@ public class GitlabUrlUtility {
 		return ret;
 	}
 
+    public long toLong(String value) {
+        try {
+            if (value != null) {
+                return Long.parseLong(value);
+            }
+        } catch (NumberFormatException ex) {
+            LOG.error("Invalid number format: " + ex.getMessage());
+        }
+        return 0;
+    }
+
+    public HttpHeaders createHttpHeaders(String apiToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("PRIVATE-TOKEN", apiToken);
+        return headers;
+    }
+
 	private String getRepoHost() {
 		String providedGitLabHost = gitlabSettings.getHost();
 		String apiHost;
@@ -356,8 +410,13 @@ public class GitlabUrlUtility {
 			LOG.error(e.getMessage(), e);
 		}
 		repoName = StringUtils.removeStart(repoName, "/");
-		String[] urlParts = repoName.split("/");
-		repoName = urlParts[0] + "%2F" + urlParts[1];
+        String[] urlParts = repoName.split("/");
+        repoName = urlParts[0];
+        if (gitlabSettings.isUseProjectId()) {
+            repoName = projectIdValue;
+        } else {
+            repoName = urlParts[0] + "%2F" + urlParts[1];
+        }
 		return repoName;
 	}
 

@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.http.HttpHeaders;
 
 import com.capitalone.dashboard.gitlab.GitlabUrlUtility;
 import com.capitalone.dashboard.model.GitlabGitRepo;
@@ -231,4 +232,11 @@ public class GitlabUrlUtilityMergeRequestsTest {
 		assertTrue(result.getQuery().contains("page=2"));
 	}
 
+	@Test
+	public void shouldBuildHttpHeaders() {
+	    String expectedApiToken = "fakeApiToken";
+	    HttpHeaders httpHeaders = gitlabUrlUtility.createHttpHeaders(expectedApiToken);
+
+        assertEquals(expectedApiToken, httpHeaders.get("PRIVATE-TOKEN").get(0));
+	}
 }
