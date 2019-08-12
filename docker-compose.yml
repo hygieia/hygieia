@@ -61,21 +61,9 @@ services:
     depends_on:
       - db-setup
 
-  github-graphql-collector:
-    build: collectors/scm/github-graphql
-    image: hygieia-github-graphql-scm-collector
-    depends_on:
-      - db-setup
-
   gitlab-feature-collector:
     build: collectors/feature/gitlab
     image: hygieia-gitlab-feature-collector
-    depends_on:
-      - db-setup
-
-  gitlab-scm-collector:
-    build: collectors/scm/gitlab
-    image: hygieia-gitlab-scm-collector
     depends_on:
       - db-setup
 
