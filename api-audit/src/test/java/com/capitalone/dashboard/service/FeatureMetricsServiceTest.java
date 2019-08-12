@@ -55,6 +55,9 @@ public class FeatureMetricsServiceTest {
     @Autowired
     private FeatureRepository featureRepository;
 
+    @Autowired
+    private BuildRepository buildRepository;
+
 
 
     @Before
@@ -67,6 +70,7 @@ public class FeatureMetricsServiceTest {
         TestUtils.loadCollectorItems(collectorItemRepository);
         TestUtils.loadFeature(featureRepository);
         TestUtils.loadCmdb(cmdbRepository);
+        TestUtils.loadBuilds(buildRepository);
 
     }
 
@@ -209,12 +213,17 @@ public class FeatureMetricsServiceTest {
         featureTest.put("FEATURE_TEST_PASS", featureTestPercent);
         HashMap<String,HashMap<String,String>> traceability = new HashMap<>();
         HashMap<String,String> traceabilityPercent = new HashMap<>();
-        traceabilityPercent.put("message", "Traceability Not Found");
+        traceabilityPercent.put("percentage", "50");
         traceability.put("TRACEABILITY", traceabilityPercent);
+        HashMap<String,HashMap<String,String>> deployScripts = new HashMap<>();
+        HashMap<String,String> deployScriptPercent = new HashMap<>();
+        deployScriptPercent.put("percentage", "0");
+        deployScripts.put("DEPLOY_SCRIPTS", deployScriptPercent);
         metrics.add(codeQuality);
         metrics.add(errorRate);
         metrics.add(featureTest);
         metrics.add(traceability);
+        metrics.add(deployScripts);
 
         return metrics;
 
@@ -239,7 +248,4 @@ public class FeatureMetricsServiceTest {
         metrics.add(featureTest);
         return metrics;
     }
-
-
-
 }

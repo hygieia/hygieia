@@ -22,7 +22,7 @@ public interface FeatureMetricsService {
 
     ExecutiveFeatureMetrics getExecutiveFeatureMetrics(String name);
 
-    ExecutiveFeatureMetrics getExecutiveFeatureMetricsByType(String name, String MetricType);
+    ExecutiveFeatureMetrics getExecutiveFeatureMetricsByType(String name, String metricType);
 
 
 }
