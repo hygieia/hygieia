@@ -55,12 +55,6 @@ services:
     depends_on:
       - db-setup
 
-  hpsm-cmdb-collector:
-    build: collectors/cmdb/hpsm
-    image: hygieia-hpsm-cmdb-collector
-    depends_on:
-      - db-setup
-
   gitlab-feature-collector:
     build: collectors/feature/gitlab
     image: hygieia-gitlab-feature-collector

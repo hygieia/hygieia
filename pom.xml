@@ -207,8 +207,6 @@
         <module>collectors/build/bamboo</module>
         <module>collectors/build/jenkins-cucumber</module>
         <module>collectors/build/jenkins-codequality</module>
-        <module>collectors/cloud/aws</module>
-        <module>collectors/cloud/cloudwatch</module>
         <module>collectors/deploy/udeploy</module>
         <module>collectors/deploy/xldeploy</module>
         <module>collectors/feature/jira</module>
@@ -216,7 +214,6 @@
         <module>collectors/feature/gitlab</module>
         <module>collectors/misc/chat-ops</module>
         <module>collectors/performance/appdynamics</module>
-        <module>collectors/cmdb/hpsm</module>
         <module>collectors/library-policy/nexus-iq-collector</module>
         <module>collectors/misc/score</module>
         <module>collectors/test-results/jira-xray</module>
@@ -248,7 +245,6 @@
         <module>collectors/build/bamboo</module>
         <module>collectors/build/jenkins-cucumber</module>
         <module>collectors/build/jenkins-codequality</module>
-        <module>collectors/cloud/aws</module>
         <module>collectors/deploy/udeploy</module>
         <module>collectors/deploy/xldeploy</module>
         <module>collectors/feature/jira</module>
@@ -256,7 +252,6 @@
         <module>collectors/feature/gitlab</module>
         <module>collectors/misc/chat-ops</module>
         <module>collectors/performance/appdynamics</module>
-        <module>collectors/cmdb/hpsm</module>
         <module>collectors/library-policy/nexus-iq-collector</module>
         <module>collectors/misc/score</module>
         <module>collectors/test-results/jira-xray</module>
