@@ -31,12 +31,6 @@ services:
     ports:
       - "3000:80"
 
-  appdynamics-collector:
-    build: collectors/performance/appdynamics
-    image: hygieia-appdynamics-collector
-    depends_on:
-      - db-setup
-
   artifactory-artifact-collector:
     build: collectors/artifact/artifactory
     image: hygieia-artifactory-artifact-collector
