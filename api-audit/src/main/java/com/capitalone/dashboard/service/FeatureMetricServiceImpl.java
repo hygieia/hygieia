@@ -137,7 +137,7 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
             featureMetrics.setMetrics(metrics);
         }else{
             featureMetrics.setName(name);
-            featureMetrics.setMessage("Component is not available");
+            featureMetrics.setMessage("Component is not configured");
         }
         return featureMetrics;
     }
