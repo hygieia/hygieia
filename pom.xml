@@ -204,7 +204,6 @@
         <module>collectors/audit/nfrr</module>
         <module>collectors/feature/rally</module>
         <module>collectors/artifact/artifactory</module>
-        <module>collectors/build/bamboo</module>
         <module>collectors/build/jenkins-cucumber</module>
         <module>collectors/build/jenkins-codequality</module>
         <module>collectors/deploy/udeploy</module>
@@ -242,7 +241,6 @@
         <module>api-audit</module>
         <module>collectors/artifact/artifactory</module>
         <module>collectors/audit/nfrr</module>
-        <module>collectors/build/bamboo</module>
         <module>collectors/build/jenkins-cucumber</module>
         <module>collectors/build/jenkins-codequality</module>
         <module>collectors/deploy/udeploy</module>
