@@ -31,6 +31,9 @@ To package all components of Hygieia's source code into executable JAR files, ru
 
 Hygieia uses Spring Boot to package the components as an executable JAR file with dependencies.
 
+** Note: 
+The collectors are being migrated to their own repositories. Please see Module breakout section of [Hygieia-2019-Roadmap-(draft,-work-in-progress)](https://github.com/Hygieia/Hygieia/wiki/Hygieia-2019-Roadmap-(draft,-work-in-progress)) for the latest information on the repositories. Documentation will be updated after the migration is complete.
+
 To configure Hygieia, execute the following steps:
 
 *	**Step 1: Run Maven Build**
@@ -40,8 +43,13 @@ To configure Hygieia, execute the following steps:
 	```bash 
 	mvn clean install package
 	```
+	Next you must build the api. In the command line/terminal, run the following command from the `\api` directory:
 	
-	After the core is successfully built, you will be able to build the Hygieia project. In the command line/terminal, run the following command from the `\Hygieia` directory of your source code installation:
+	```bash 
+	mvn clean install package
+	```
+	
+	After the core and api are successfully built, you will be able to build the Hygieia project. In the command line/terminal, run the following command from the `\Hygieia` directory of your source code installation:
 	 
 	```bash
 	mvn clean install package
@@ -50,9 +58,8 @@ To configure Hygieia, execute the following steps:
 	This will build all the following components:
 
 	~~~
-	└── Hygieia
+	└── Hygieia (https://github.com/Hygieia/Hygieia)
 		├── UI
-		├── API
 		├── AuditAPI
 		└── Collectors
 			├─ Feature
@@ -67,7 +74,7 @@ To configure Hygieia, execute the following steps:
 			'
 			and so on. 		   
 	~~~
-
+	
 	The output `.jar` file is generated in the `\target` folder for each component of Hygieia, including collectors.
 
 *	**Step 2: Set Parameters in the Properties File**
@@ -79,7 +86,7 @@ To configure Hygieia, execute the following steps:
 	To run the executable file for API module, change directory to 'api\target' and then execute the following command from the command prompt:
 
 	```bash
-	java -jar api.jar --spring.config.location=C:\[path to]\Hygieia\api\dashboard.properties -Djasypt.encryptor.password=hygieiasecret
+	java -jar api.jar --spring.config.location=C:\[path to]\api\dashboard.properties -Djasypt.encryptor.password=hygieiasecret
 	```
 	
 	To run the UI module, in the command prompt, navigate to `\Hygieia\UI`, and then execute the following command:
