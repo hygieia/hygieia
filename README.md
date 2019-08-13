@@ -16,7 +16,7 @@
 
 <div align="center">
   <!-- Build Status -->
-  <a href="https://travis-ci.org/Hygieia/Hygieia.svg?branch=master"><img src="https://travis-ci.org/capitalone/Hygieia.svg?branch=master" alt="Build Status"/></a>
+  <a href="https://api.travis-ci.com/Hygieia/Hygieia.svg?branch=master"><img src="https://api.travis-ci.com/Hygieia/Hygieia.svg?branch=master" alt="Build Status"/></a>
   <!-- Codacy Badge -->
   <a href="https://www.codacy.com/app/amit-mawkin/Hygieia"><img src="https://api.codacy.com/project/badge/grade/de1a2a557f8e458e9a959be8c2e7fcba"
       alt="Codacy Badge"/></a>
