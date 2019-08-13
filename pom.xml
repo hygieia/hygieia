@@ -215,7 +215,6 @@
         <module>collectors/performance/appdynamics</module>
         <module>collectors/library-policy/nexus-iq-collector</module>
         <module>collectors/misc/score</module>
-        <module>collectors/test-results/jira-xray</module>
         <module>UI</module>
         <module>UI-tests</module>
       </modules>
@@ -252,7 +251,6 @@
         <module>collectors/performance/appdynamics</module>
         <module>collectors/library-policy/nexus-iq-collector</module>
         <module>collectors/misc/score</module>
-        <module>collectors/test-results/jira-xray</module>
      	<module>UI</module>
         <module>UI-tests</module>
  </modules>
