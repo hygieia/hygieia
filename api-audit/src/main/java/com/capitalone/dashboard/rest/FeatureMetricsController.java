@@ -33,7 +33,7 @@ public class FeatureMetricsController {
     }
 
 
-    @RequestMapping(value = "/metrics/component/{componentName}/metric/{metricName}")
+    @RequestMapping(value = "/metrics/component/{componentName}/metric/{metricName}", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<FeatureMetrics> getFeatureMetricByType(@Valid @PathVariable String componentName,
                                                                   @Valid @PathVariable String metricName){
         FeatureMetrics featureMetrics = featureMetricsService.getFeatureMetricsByType(componentName, metricName);
@@ -41,14 +41,14 @@ public class FeatureMetricsController {
         return ResponseEntity.ok().body(featureMetrics);
     }
 
-    @RequestMapping(value = "metrics/application/{applicationName}")
+    @RequestMapping(value = "metrics/application/{applicationName}", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<ProductFeatureMetrics> getProductMetrics(@Valid @PathVariable String applicationName){
 
         ProductFeatureMetrics productFeatureMetrics = featureMetricsService.getProductFeatureMetrics(applicationName);
         return ResponseEntity.ok(productFeatureMetrics);
     }
 
-    @RequestMapping(value = "metrics/application/{applicationName}/metric/{metricName}")
+    @RequestMapping(value = "metrics/application/{applicationName}/metric/{metricName}", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<ProductFeatureMetrics> getProductMetricsByType(@Valid @PathVariable String applicationName
                                                                          ,@Valid @PathVariable String metricName){
 
@@ -56,14 +56,14 @@ public class FeatureMetricsController {
         return ResponseEntity.ok(productFeatureMetrics);
     }
 
-    @RequestMapping(value = "metrics/lob/{lobName}")
+    @RequestMapping(value = "metrics/lob/{lobName}", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<LobFeatureMetrics> getLobMetrics(@Valid @PathVariable String lobName){
 
         LobFeatureMetrics lobFeatureMetrics = featureMetricsService.getLobFeatureMetrics(lobName);
         return ResponseEntity.ok(lobFeatureMetrics);
     }
 
-    @RequestMapping(value = "metrics/lob/{lobName}/metric/{type}")
+    @RequestMapping(value = "metrics/lob/{lobName}/metric/{type}", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<LobFeatureMetrics> getLobMetricsByType(@Valid @PathVariable String lobName,
                                                                  @Valid @PathVariable String type){
 
@@ -71,14 +71,14 @@ public class FeatureMetricsController {
         return ResponseEntity.ok(lobFeatureMetrics);
     }
 
-    @RequestMapping(value = "metrics/executive/{executiveName}")
+    @RequestMapping(value = "metrics/executive/{executiveName}", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<ExecutiveFeatureMetrics> getExecutiveMetrics(@Valid @PathVariable String executiveName){
 
         ExecutiveFeatureMetrics executiveFeatureMetrics = featureMetricsService.getExecutiveFeatureMetrics(executiveName);
         return ResponseEntity.ok(executiveFeatureMetrics);
     }
 
-    @RequestMapping(value = "metrics/executive/{executiveName}/metric/{type}")
+    @RequestMapping(value = "metrics/executive/{executiveName}/metric/{type}", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<ExecutiveFeatureMetrics> getExecutiveMetricsByType(@Valid @PathVariable String executiveName,
                                                                              @Valid @PathVariable String type){
 
