@@ -205,7 +205,6 @@
         <module>collectors/feature/rally</module>
         <module>collectors/artifact/artifactory</module>
         <module>collectors/build/jenkins-cucumber</module>
-        <module>collectors/build/jenkins-codequality</module>
         <module>collectors/deploy/udeploy</module>
         <module>collectors/deploy/xldeploy</module>
         <module>collectors/feature/jira</module>
@@ -240,7 +239,6 @@
         <module>collectors/artifact/artifactory</module>
         <module>collectors/audit/nfrr</module>
         <module>collectors/build/jenkins-cucumber</module>
-        <module>collectors/build/jenkins-codequality</module>
         <module>collectors/deploy/udeploy</module>
         <module>collectors/deploy/xldeploy</module>
         <module>collectors/feature/jira</module>

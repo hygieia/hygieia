@@ -49,12 +49,6 @@ services:
     depends_on:
       - db-setup
 
-  jenkins-codequality-collector:
-    build: collectors/build/jenkins-codequality
-    image: hygieia-jenkins-codequality-collector
-    depends_on:
-      - db-setup
-
   jenkins-cucumber-test-collector:
     build: collectors/build/jenkins-cucumber
     image: hygieia-jenkins-cucumber-test-collector
