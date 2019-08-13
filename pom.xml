@@ -212,7 +212,6 @@
         <module>collectors/feature/versionone</module>
         <module>collectors/feature/gitlab</module>
         <module>collectors/misc/chat-ops</module>
-        <module>collectors/performance/appdynamics</module>
         <module>collectors/library-policy/nexus-iq-collector</module>
         <module>collectors/misc/score</module>
         <module>UI</module>
@@ -248,7 +247,6 @@
         <module>collectors/feature/versionone</module>
         <module>collectors/feature/gitlab</module>
         <module>collectors/misc/chat-ops</module>
-        <module>collectors/performance/appdynamics</module>
         <module>collectors/library-policy/nexus-iq-collector</module>
         <module>collectors/misc/score</module>
      	<module>UI</module>
