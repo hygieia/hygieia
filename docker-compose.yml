@@ -61,12 +61,6 @@ services:
     depends_on:
       - db-setup
 
-  udeploy-collector:
-    build: collectors/deploy/udeploy
-    image: hygieia-udeploy-collector
-    depends_on:
-      - db-setup
-
   versionone-collector:
     build: collectors/feature/versionone
     image: hygieia-versionone-collector
