@@ -67,12 +67,6 @@ services:
     depends_on:
       - db-setup
 
-  xldeploy-collector:
-    build: collectors/deploy/xldeploy
-    image: hygieia-xldeploy-collector
-    depends_on:
-      - db-setup
-
   score-collector:
     build: collectors/misc/score
     image: hygieia-score-collector
