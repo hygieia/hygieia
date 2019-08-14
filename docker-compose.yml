@@ -37,12 +37,6 @@ services:
     depends_on:
       - db-setup
 
-  chat-ops-collector:
-    build: collectors/misc/chat-ops
-    image: hygieia-chat-ops-collector
-    depends_on:
-      - db-setup
-
   gitlab-feature-collector:
     build: collectors/feature/gitlab
     image: hygieia-gitlab-feature-collector
