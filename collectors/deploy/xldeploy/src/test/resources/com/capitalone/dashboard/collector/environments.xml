@@ -1,4 +1,0 @@
-<list>
-	<ci ref="Environments/prod/Production" type="udm.Environment"/>
-	<ci ref="Environments/qa/QA01" type="udm.ExtendedEnvironment"/>
-</list>

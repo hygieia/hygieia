@@ -1,14 +1,5 @@
 version: '3'
 services:
-  api:
-    # environment: # for a full list check the corresponding properties-builder file
-    #   - DB_DATABASE: dashboarddb
-    #   - DB_HOST: db
-    #   - DB_PORT: 27017
-    #   - DB_USERNAME: dashboarduser
-    #   - DB_PASSWORD: dbpassword
-    # volumes:
-    #   - ./logs:/hygieia/logs
 
   api-audit:
     # environment:
@@ -25,13 +16,7 @@ services:
   bamboo-build-collector:
     # environment:
 
-  bitbucket-collector:
-    # environment:
-
   chat-ops-collector:
-    # environment:
-
-  github-collector:
     # environment:
 
   hpsm-cmdb-collector:
@@ -59,12 +44,6 @@ services:
     # environment:
 
   nexus-iq-collector:
-    # environment:
-
-  sonar-codequality-collector:
-    # environment:
-
-  subversion-collector:
     # environment:
 
   udeploy-collector:

@@ -15,14 +15,6 @@ services:
     depends_on:
       - db
 
-  api:
-    build: api
-    image: hygieia-api
-    depends_on:
-      - db-setup
-    ports:
-      - "8080:8080"
-
   api-audit:
     build: api-audit
     image: hygieia-api-audit
@@ -39,27 +31,9 @@ services:
     ports:
       - "3000:80"
 
-  appdynamics-collector:
-    build: collectors/performance/appdynamics
-    image: hygieia-appdynamics-collector
-    depends_on:
-      - db-setup
-
   artifactory-artifact-collector:
     build: collectors/artifact/artifactory
     image: hygieia-artifactory-artifact-collector
-    depends_on:
-      - db-setup
-
-  bamboo-build-collector:
-    build: collectors/build/bamboo
-    image: hygieia-bamboo-build-collector
-    depends_on:
-      - db-setup
-
-  bitbucket-collector:
-    build: collectors/scm/bitbucket
-    image: hygieia-bitbucket-scm-collector
     depends_on:
       - db-setup
 
@@ -69,39 +43,9 @@ services:
     depends_on:
       - db-setup
 
-  hpsm-cmdb-collector:
-    build: collectors/cmdb/hpsm
-    image: hygieia-hpsm-cmdb-collector
-    depends_on:
-      - db-setup
-
-  github-graphql-collector:
-    build: collectors/scm/github-graphql
-    image: hygieia-github-graphql-scm-collector
-    depends_on:
-      - db-setup
-
   gitlab-feature-collector:
     build: collectors/feature/gitlab
     image: hygieia-gitlab-feature-collector
-    depends_on:
-      - db-setup
-
-  gitlab-scm-collector:
-    build: collectors/scm/gitlab
-    image: hygieia-gitlab-scm-collector
-    depends_on:
-      - db-setup
-
-  jenkins-codequality-collector:
-    build: collectors/build/jenkins-codequality
-    image: hygieia-jenkins-codequality-collector
-    depends_on:
-      - db-setup
-
-  jenkins-cucumber-test-collector:
-    build: collectors/build/jenkins-cucumber
-    image: hygieia-jenkins-cucumber-test-collector
     depends_on:
       - db-setup
 
@@ -117,21 +61,9 @@ services:
     depends_on:
       - db-setup
 
-  udeploy-collector:
-    build: collectors/deploy/udeploy
-    image: hygieia-udeploy-collector
-    depends_on:
-      - db-setup
-
   versionone-collector:
     build: collectors/feature/versionone
     image: hygieia-versionone-collector
-    depends_on:
-      - db-setup
-
-  xldeploy-collector:
-    build: collectors/deploy/xldeploy
-    image: hygieia-xldeploy-collector
     depends_on:
       - db-setup
 
