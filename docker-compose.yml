@@ -55,12 +55,6 @@ services:
     depends_on:
       - db-setup
 
-  nexus-iq-collector:
-    build: collectors/library-policy/nexus-iq-collector
-    image: hygieia-nexus-iq-collector
-    depends_on:
-      - db-setup
-
   versionone-collector:
     build: collectors/feature/versionone
     image: hygieia-versionone-collector
