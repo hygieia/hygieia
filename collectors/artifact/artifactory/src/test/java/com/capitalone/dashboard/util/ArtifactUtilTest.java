@@ -54,6 +54,586 @@ public class ArtifactUtilTest {
 
     public static final String HELM_PATTERN = "(?<group>.+)/(?<artifact>[^\\./]+)-(?<version>[^/]+)\\.(?<ext>.+)";
 
+
+    // Daniel added regex
+    public static final String MAVEN_PUB_PATTERN1 = "(?<group>[^/]+)/(?<version>[\\d].+)/(?<artifact>[^/|.]+)(-\\k<version>([^.]+))?(\\.(?<ext>.+))?";
+
+    public static final String MAVEN_PUB_PATTERN2 = "(?<group>[^/]+)(/[^/|\\d]+){0,2}/(?<version>[\\d].+)/(?<artifact>[^/|.]+)-\\k<version>(-\\w+)?\\.(?<ext>.+)";
+
+    public static final String MAVEN_PUB_PATTERN3 = "(?<group>[^/]+)/(?<artifact>[^/|.|\\d]+)-(?<version>[\\d|\\.]+)\\.(?<ext>(\\w+)(.\\w+)?)";
+
+    public static final String MAVEN_PUB_PATTERN4 = "(?<group>[^/]+)(/[^/|\\d]+){0,2}/(?<artifact>[\\w]+(-[\\w]+)+)(/|$|/maven-metadata.xml)";
+
+    public static final String NPM_PATTERN = "(?<group>[^@|/|.]+)/((@.+)\\/)?((?<artifact>[^\\/]+)/-/\\k<artifact>-)?(?<version>\\d[^/]+)\\.(?<ext>t.*gz)";
+
+    public static final String NUGET_PATTERN = "(?<group>[^/]+)/([^/]+/)?(?<artifact>\\D+)\\.(?<version>\\d+\\.[\\d\\.]+)(-(?<classifier>\\w+))?\\.(?<ext>nupkg)";
+
+    public static final String PIPY_PATTERN = "(?<group>[^/]+)/([^/]+/)*(?<artifact>\\w+)-(?<version>\\d[\\d\\.]+)(-(?<classifier>[^.]+))?\\.(?<ext>\\w{2,3}(.\\w{2,3})?)";
+
+    public static final String PIPY_INT_PATTERN = "(?<group>.+)/(?<artifact>.+)\\.(?<ext>py)";
+
+    public static final String PIPY_PUB_PATTERN = "(?<group>[^/]+)/(?<artifact>[^/]+)/(?<version>\\d[\\d\\.]+)/\\k<artifact>-\\k<version>(-(?<classifier>[^.]+))?\\.(?<ext>\\w{2,3}(.\\w{2,3})?)";
+
+    public static final String REMOTEKEYS_PATTERN = "(?<group>.+)/(?<artifact>.+)\\.(?<ext>key)";
+
+    public static final String RPM_INT_PATTERN = "(?<group>.+)/\\d/(?<module>[^/]+)/(?<artifact>[^/]+)/\\w/(?<classifier>[^\\d]+)-(?<version>.+)\\.(?<ext>rpm)";
+
+    public static final String RPM_PUB_PATTERN = "(?<group>.+)/(?<module>[^/]+)/(?<artifact>[^/]+)/\\k<artifact>(-(?<version>.+))\\.(?<ext>rpm)";
+
+    public static final String SBT_INT_PATTERN1 = "(?<group>.+)/(?<module>.+)/(?<artifact>.+)/(?<version>.+)/([a-z]+)/(?<filename>.+)\\.(?<ext>.+)";
+
+    public static final String SBT_INT_PATTERN2 = "(?<group>[^/]+)/([^/]+/)*(?<artifact>[^/]+)-(?<version>\\d[\\d\\.]+)\\.(?<ext>\\w{3}(.\\w{3})?)";
+
+    public static final String SBT_PATTERN = "(?<group>[^/]+)/(?<module>[^/]+)/([^/]+/)?(?<artifact>[^/]+)/(?<version>\\d.+)/(?<filename>.+)-\\k<version>(-(?<classifier>\\w+))?\\.(?<ext>\\w{3}(.\\w{3})?)";
+
+    public static final String SBT_PUB_PATTERN1 = "(?<group>[^/]+)/(?<module>[^/]+)/([^/]+/)?(?<artifact>[^/]+)(/(?<version>\\d.+))?/((?<filename>.+)\\.(?<ext>xml))?";
+
+    public static final String SBT_PUB_PATTERN2 = "(?<group>[^/]+)/([^/]+/)+(?<version>\\d.+)/([^/]+/)+((?<filename>.+)\\.(?<ext>xml|jar.*))?";
+
+    @Test
+    public void testMvnPub1() {
+        String patternStr = MAVEN_PUB_PATTERN1;
+        String path = "maven-publicfacing/4.3.1/myArtifactName";
+
+        Pattern pattern = Pattern.compile(patternStr);
+        BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("maven-publicfacing", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals("4.3.1", ba.getArtifactVersion());
+        assertEquals("myArtifactName", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals(null, ba.getArtifactExtension());
+
+        path = "myGroupName/3.1.0/ui.tar.gz";
+
+        pattern = Pattern.compile(patternStr);
+        ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("myGroupName", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals("3.1.0", ba.getArtifactVersion());
+        assertEquals("ui", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("tar.gz", ba.getArtifactExtension());
+    }
+
+    @Test
+    public void testMvnPub2() {
+        String patternStr = MAVEN_PUB_PATTERN2;
+        String path = "maven-publicfacing/5.1.4/connector-java-5.1.4-bin.jar";
+
+        Pattern pattern = Pattern.compile(patternStr);
+        BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("maven-publicfacing", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals("5.1.4", ba.getArtifactVersion());
+        assertEquals("connector-java", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("jar", ba.getArtifactExtension());
+
+        path = "maven-publicfacing/myDept/myDept/0.1.0/myDept-0.1.0.pom.asc";
+
+        pattern = Pattern.compile(patternStr);
+        ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("maven-publicfacing", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals("0.1.0", ba.getArtifactVersion());
+        assertEquals("myDept", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("pom.asc", ba.getArtifactExtension());
+    }
+
+    @Test
+    public void testMvnPub3() {
+        String patternStr = MAVEN_PUB_PATTERN3;
+        String path = "maven-publicfacing/myArtifactName-2.4.4.zip.asc";
+
+        Pattern pattern = Pattern.compile(patternStr);
+        BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("maven-publicfacing", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals("2.4.4", ba.getArtifactVersion());
+        assertEquals("myArtifactName", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("zip.asc", ba.getArtifactExtension());
+    }
+
+    @Test
+    public void testMvnPub4() {
+        String patternStr = MAVEN_PUB_PATTERN4;
+        String path = "maven-publicfacing/.com/jar/myUtil-installer/";
+
+        Pattern pattern = Pattern.compile(patternStr);
+        BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("maven-publicfacing", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals(null, ba.getArtifactVersion());
+        assertEquals("myUtil-installer", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals(null, ba.getArtifactExtension());
+
+        path = "maven-archive-remote-cache/.com/java/jdk-linux/maven-metadata.xml";
+
+        pattern = Pattern.compile(patternStr);
+        ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("maven-archive-remote-cache", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals(null, ba.getArtifactVersion());
+        assertEquals("jdk-linux", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals(null, ba.getArtifactExtension());
+
+        path = "maven-publicfacing/@dummy/my-dummy-helper-util";
+
+        pattern = Pattern.compile(patternStr);
+        ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("maven-publicfacing", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals(null, ba.getArtifactVersion());
+        assertEquals("my-dummy-helper-util", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals(null, ba.getArtifactExtension());
+    }
+
+    @Test
+    public void testNpmInt() {
+        String patternStr = NPM_PATTERN;
+        String path = "npm-internalfacing/@myPlace/common/-/common-0.7.87.tgz";
+
+        Pattern pattern = Pattern.compile(patternStr);
+        BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("npm-internalfacing", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals("0.7.87", ba.getArtifactVersion());
+        assertEquals("common", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("tgz", ba.getArtifactExtension());
+
+        path = "NPM-cache/myUtil/-/myUtil-0.1.6.tgz";
+
+        pattern = Pattern.compile(patternStr);
+        ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("NPM-cache", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals("0.1.6", ba.getArtifactVersion());
+        assertEquals("myUtil", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("tgz", ba.getArtifactExtension());
+
+        path = "NPM-cache/8.9.4/-/8.9.4-1.0.5.tgz";
+
+        pattern = Pattern.compile(patternStr);
+        ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("NPM-cache", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals("1.0.5", ba.getArtifactVersion());
+        assertEquals("8.9.4", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("tgz", ba.getArtifactExtension());
+
+    }
+
+    @Test
+    public void testNpmPub() {
+        String patternStr = NPM_PATTERN;
+        String path = "NPM-cache/@angular/animation/-/animation-4.0.0-beta.8.tgz";
+
+        Pattern pattern = Pattern.compile(patternStr);
+        BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("NPM-cache", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals("4.0.0-beta.8", ba.getArtifactVersion());
+        assertEquals("animation", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("tgz", ba.getArtifactExtension());
+
+        path = "npm-publicfacing/my-ui-ctrl/-/my-ui-ctrl-2.2.0.tgz";
+
+        pattern = Pattern.compile(patternStr);
+        ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("npm-publicfacing", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals("2.2.0", ba.getArtifactVersion());
+        assertEquals("my-ui-ctrl", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("tgz", ba.getArtifactExtension());
+    }
+
+    @Test
+    public void testNugetInt() {
+        String patternStr = NUGET_PATTERN;
+        String path = "nuget-internalfacing/myArtifactName.1.0.11119.0.nupkg";
+
+        Pattern pattern = Pattern.compile(patternStr);
+        BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("nuget-internalfacing", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals("1.0.11119.0", ba.getArtifactVersion());
+        assertEquals("myArtifactName", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("nupkg", ba.getArtifactExtension());
+
+        path = "dummyGroup/myArtifactName.1.0.0-prerelease0021.nupkg";
+
+        pattern = Pattern.compile(patternStr);
+        ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("dummyGroup", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals("1.0.0", ba.getArtifactVersion());
+        assertEquals("myArtifactName", ba.getArtifactName());
+        assertEquals("prerelease0021", ba.getArtifactClassifier());
+        assertEquals("nupkg", ba.getArtifactExtension());
+    }
+
+    @Test
+    public void testNugetPub() {
+        String patternStr = NUGET_PATTERN;
+        String path = "nuget-publicfacing/myArtifactName.18.1.1.nupkg";
+
+        Pattern pattern = Pattern.compile(patternStr);
+        BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("nuget-publicfacing", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals("18.1.1", ba.getArtifactVersion());
+        assertEquals("myArtifactName", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("nupkg", ba.getArtifactExtension());
+
+        path = "dummyGroup/dummyArtifactName.5.14.5506.26202.nupkg";
+
+        pattern = Pattern.compile(patternStr);
+        ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("dummyGroup", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals("5.14.5506.26202", ba.getArtifactVersion());
+        assertEquals("dummyArtifactName", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("nupkg", ba.getArtifactExtension());
+    }
+
+    @Test
+    public void testPypiPub() {
+        String patternStr = PIPY_PATTERN;
+        String path = "pypi-publicfacing/0a/00/8cc925deac3a87046a4148d7846b571cf433515872b5430de4cd9dea83cb/requests-2.7.0.tar.gz";
+
+        Pattern pattern = Pattern.compile(patternStr);
+        BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("pypi-publicfacing", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals("2.7.0", ba.getArtifactVersion());
+        assertEquals("requests", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("tar.gz", ba.getArtifactExtension());
+
+        path = "dummyGroup/2c/2b/33af741a5f53307691382d3bd5ba45fee3da21658f0bdf1f016d70ac3fb0/dummyArtifactName-1.11.0-my36-classifier-1_2_3.whl";
+
+        pattern = Pattern.compile(patternStr);
+        ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("dummyGroup", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals("1.11.0", ba.getArtifactVersion());
+        assertEquals("dummyArtifactName", ba.getArtifactName());
+        assertEquals("my36-classifier-1_2_3", ba.getArtifactClassifier());
+        assertEquals("whl", ba.getArtifactExtension());
+        
+        path = "dummyGroup/dummyApp/1.0.3/dummyApp-1.0.3.tar.gz";
+        pattern = Pattern.compile(patternStr);
+        ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("dummyGroup", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals("1.0.3", ba.getArtifactVersion());
+        assertEquals("dummyApp", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("tar.gz", ba.getArtifactExtension());
+
+    }
+    @Test
+    public void testPypiPub1() {
+        String patternStr = PIPY_PUB_PATTERN;
+        String path = "dummyGrp/dummyApp/0.0.2/dummyApp-0.0.2.zip";
+        Pattern pattern = Pattern.compile(patternStr);
+        BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
+
+        assertNotNull(ba);
+        assertEquals("dummyGrp", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals("0.0.2", ba.getArtifactVersion());
+        assertEquals("dummyApp", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("zip", ba.getArtifactExtension());
+    }
+
+    @Test
+    public void testPypiInt() {
+        String patternStr = PIPY_INT_PATTERN;
+        String path = "dummyGrp/dummyArtifact.py";
+
+        Pattern pattern = Pattern.compile(patternStr);
+        BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("dummyGrp", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals(null, ba.getArtifactVersion());
+        assertEquals("dummyArtifact", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("py", ba.getArtifactExtension());
+    }
+
+    @Test
+    public void testPypiInt1() {
+        String patternStr = PIPY_PATTERN;
+        String path = "pypi-internalfacing/00/0e/5a8c34adb97fc1cd6636d78050e575945e874c8516d501421d5a0f377a6c/dummyArtifact-1.15.4-my37-n-sys_w86.whl";
+
+        Pattern pattern = Pattern.compile(patternStr);
+        BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("pypi-internalfacing", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals("1.15.4", ba.getArtifactVersion());
+        assertEquals("dummyArtifact", ba.getArtifactName());
+        assertEquals("my37-n-sys_w86", ba.getArtifactClassifier());
+        assertEquals("whl", ba.getArtifactExtension());
+    }
+
+    @Test
+    public void testRemote() {
+        String patternStr = REMOTEKEYS_PATTERN;
+        String path = "remote-repository-keys/dummy-rpm.key";
+
+        Pattern pattern = Pattern.compile(patternStr);
+        BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("remote-repository-keys", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals(null, ba.getArtifactVersion());
+        assertEquals("dummy-rpm", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("key", ba.getArtifactExtension());
+
+        path = "dummyGrp/my-d-artifact.key";
+        pattern = Pattern.compile(patternStr);
+        ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("dummyGrp", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals(null, ba.getArtifactVersion());
+        assertEquals("my-d-artifact", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("key", ba.getArtifactExtension());
+
+        path = "dummyGrp/my.dc.org.key";
+        pattern = Pattern.compile(patternStr);
+        ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("dummyGrp", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals(null, ba.getArtifactVersion());
+        assertEquals("my.dc.org", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("key", ba.getArtifactExtension());
+    }
+
+    @Test
+    public void testRpmInt() {
+        String patternStr = RPM_INT_PATTERN;
+        String path = "rpm-internalfacing/7/myx98_23/Packages/t/tar-1.29-4.fc26.myx98_23.rpm";
+
+        Pattern pattern = Pattern.compile(patternStr);
+        BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("rpm-internalfacing", ba.getArtifactGroupId());
+        assertEquals("myx98_23", ba.getArtifactModule());
+        assertEquals("1.29-4.fc26.myx98_23", ba.getArtifactVersion());
+        assertEquals("Packages", ba.getArtifactName());
+        assertEquals("tar", ba.getArtifactClassifier());
+        assertEquals("rpm", ba.getArtifactExtension());
+    }
+
+    @Test
+    public void testRpmPub() {
+        String patternStr = RPM_PUB_PATTERN;
+        String path = "rpm-publicfacing/myModule/myApp/myApp-1.12.1-1.el6.rpm";
+
+        Pattern pattern = Pattern.compile(patternStr);
+        BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("rpm-publicfacing", ba.getArtifactGroupId());
+        assertEquals("myModule", ba.getArtifactModule());
+        assertEquals("1.12.1-1.el6", ba.getArtifactVersion());
+        assertEquals("myApp", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("rpm", ba.getArtifactExtension());
+    }
+
+    @Test
+    public void testSbtInt1() {
+        String patternStr = SBT_INT_PATTERN1;
+        String path = "myGrp/ai.my88gt/my88gt-myModel/3.12.0.1/jars/my88gt-myModel.jar";
+
+        Pattern pattern = Pattern.compile(patternStr);
+        BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("myGrp", ba.getArtifactGroupId());
+        assertEquals("ai.my88gt", ba.getArtifactModule());
+        assertEquals("3.12.0.1", ba.getArtifactVersion());
+        assertEquals("my88gt-myModel", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("jar", ba.getArtifactExtension());
+
+        path = "myGrp/ai.my88gt/my88gt-myModel/3.12.0.1/ivys/ivy.xml";
+        pattern = Pattern.compile(patternStr);
+        ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("myGrp", ba.getArtifactGroupId());
+        assertEquals("ai.my88gt", ba.getArtifactModule());
+        assertEquals("3.12.0.1", ba.getArtifactVersion());
+        assertEquals("my88gt-myModel", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("xml", ba.getArtifactExtension());
+
+    }
+
+    @Test
+    public void testSbtInt2() {
+        String patternStr = SBT_INT_PATTERN2;
+        String path = "myGrp/myModel-package-01.00.02.01.tar";
+
+        Pattern pattern = Pattern.compile(patternStr);
+        BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("myGrp", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals("01.00.02.01", ba.getArtifactVersion());
+        assertEquals("myModel-package", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("tar", ba.getArtifactExtension());
+
+        path = "sbt-internalfacing/myModel/myModel/1.0.0.12/myModel-1.0.0.12.jar";
+        pattern = Pattern.compile(patternStr);
+        ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("sbt-internalfacing", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals("1.0.0.12", ba.getArtifactVersion());
+        assertEquals("myModel", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("jar", ba.getArtifactExtension());
+
+    }
+
+    @Test
+    public void testSbtPub() {
+        String patternStr = SBT_PATTERN;
+        String path = "sbt-publicfacing/myApp/myApp/1.4.0/myApp-1.4.0-javadoc.jar.asc";
+
+        Pattern pattern = Pattern.compile(patternStr);
+        BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("sbt-publicfacing", ba.getArtifactGroupId());
+        assertEquals("myApp", ba.getArtifactModule());
+        assertEquals("1.4.0", ba.getArtifactVersion());
+        assertEquals("myApp", ba.getArtifactName());
+        assertEquals("javadoc", ba.getArtifactClassifier());
+        assertEquals("jar.asc", ba.getArtifactExtension());
+
+
+        path = "sbt-publicfacing/myModule/alex/myArtifact/1.0/myArtifact-1.0-sources.jar.asc";
+
+        pattern = Pattern.compile(patternStr);
+        ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("sbt-publicfacing", ba.getArtifactGroupId());
+        assertEquals("myModule", ba.getArtifactModule());
+        assertEquals("1.0", ba.getArtifactVersion());
+        assertEquals("myArtifact", ba.getArtifactName());
+        assertEquals("sources", ba.getArtifactClassifier());
+        assertEquals("jar.asc", ba.getArtifactExtension());
+    }
+
+    @Test
+    public void testSbtPub1() {
+        String patternStr = SBT_PUB_PATTERN1;
+        String path = "sbt-publicfacing/myModule/alex/myArtifact/1.0/";
+        Pattern pattern = Pattern.compile(patternStr);
+        BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("sbt-publicfacing", ba.getArtifactGroupId());
+        assertEquals("myModule", ba.getArtifactModule());
+        assertEquals("1.0", ba.getArtifactVersion());
+        assertEquals("myArtifact", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals(null, ba.getArtifactExtension());
+
+        path = "sbt-publicfacing/myModule/alex/myArtifact/maven-metadata.xml";
+        pattern = Pattern.compile(patternStr);
+        ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("sbt-publicfacing", ba.getArtifactGroupId());
+        assertEquals("myModule", ba.getArtifactModule());
+        assertEquals(null, ba.getArtifactVersion());
+        assertEquals("myArtifact", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("xml", ba.getArtifactExtension());
+
+    }
+
+    @Test
+    public void testSbtPub2() {
+        String patternStr = SBT_PUB_PATTERN2;
+        String path = "sbt-publicfacing/com.github.sbt/dummy/scala_2.12/sbt_1.0/3.2.0/jars/dummy.jar.asc.md5.asc";
+        Pattern pattern = Pattern.compile(patternStr);
+        BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("sbt-publicfacing", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals("3.2.0", ba.getArtifactVersion());
+        assertEquals(null, ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("jar.asc.md5.asc", ba.getArtifactExtension());
+
+        path = "sbt-publicfacing/com.dummy/dummy-sbt-community-settings/scala_2.10/sbt_0.13/3.12.0/abcd/dummy-sbt-community-settings-sources.jar";
+        pattern = Pattern.compile(patternStr);
+        ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("sbt-publicfacing", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals("3.12.0", ba.getArtifactVersion());
+        assertEquals(null, ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals("jar", ba.getArtifactExtension());
+
+        path = "sbt-publicfacing/com.dummy/my-app_2.12/scala_2.12/sbt_1.0/0.2.0/jars/";
+        pattern = Pattern.compile(patternStr);
+        ba = ArtifactUtil.parse(pattern, path);
+        assertNotNull(ba);
+        assertEquals("sbt-publicfacing", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactModule());
+        assertEquals("0.2.0", ba.getArtifactVersion());
+        assertEquals(null, ba.getArtifactName());
+        assertEquals(null, ba.getArtifactClassifier());
+        assertEquals(null, ba.getArtifactExtension());
+
+    }
+
     @Test
     public void testGeneric() {
         String patternStr = GENERIC_INTERNAL_PATTERN;
