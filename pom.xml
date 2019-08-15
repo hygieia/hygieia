@@ -204,7 +204,6 @@
         <module>collectors/audit/nfrr</module>
         <module>collectors/artifact/artifactory</module>
         <module>collectors/feature/jira</module>
-        <module>collectors/feature/versionone</module>
         <module>collectors/feature/gitlab</module>
         <module>UI</module>
         <module>UI-tests</module>
@@ -232,7 +231,6 @@
         <module>collectors/artifact/artifactory</module>
         <module>collectors/audit/nfrr</module>
         <module>collectors/feature/jira</module>
-        <module>collectors/feature/versionone</module>
         <module>collectors/feature/gitlab</module>
      	<module>UI</module>
         <module>UI-tests</module>

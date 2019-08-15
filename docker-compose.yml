@@ -49,12 +49,6 @@ services:
     depends_on:
       - db-setup
 
-  versionone-collector:
-    build: collectors/feature/versionone
-    image: hygieia-versionone-collector
-    depends_on:
-      - db-setup
-
 volumes:
   db-data:
   certs:
