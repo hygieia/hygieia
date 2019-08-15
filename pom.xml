@@ -207,7 +207,6 @@
         <module>collectors/feature/jira</module>
         <module>collectors/feature/versionone</module>
         <module>collectors/feature/gitlab</module>
-        <module>collectors/misc/score</module>
         <module>UI</module>
         <module>UI-tests</module>
       </modules>
@@ -236,7 +235,6 @@
         <module>collectors/feature/jira</module>
         <module>collectors/feature/versionone</module>
         <module>collectors/feature/gitlab</module>
-        <module>collectors/misc/score</module>
      	<module>UI</module>
         <module>UI-tests</module>
  </modules>
