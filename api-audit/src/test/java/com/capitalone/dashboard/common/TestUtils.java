@@ -130,7 +130,7 @@ public class TestUtils {
     }
     public static void loadBuilds(BuildRepository buildRepository) throws IOException{
         Gson gson = GsonUtil.getGson();
-        String json = IOUtils.toString(Resources.getResource("./build/build.json"));
+        String json = IOUtils.toString(Resources.getResource("./builds/build.json"));
         List<Build> builds = gson.fromJson(json,new TypeToken<List<Build>>(){}.getType());
         buildRepository.save(builds.get(0));
     }

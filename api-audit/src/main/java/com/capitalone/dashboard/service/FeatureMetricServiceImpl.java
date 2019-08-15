@@ -271,7 +271,7 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
     }
 
     /**
-     *
+     * Get product metrics
      * @param cmdb
      * @param type
      * @return
@@ -320,7 +320,7 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
 
 
     /**
-     *
+     * Get metrics
      * @param dashboard
      * @param type
      * @return
@@ -370,6 +370,12 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
         return metrics;
     }
 
+    /**
+     * Get deploy scripts map
+     * @param buildItems
+     * @param dashboard
+     * @return
+     */
     private HashMap<String,HashMap<String,String>> getAggregatedDeployScripts(List<ObjectId> buildItems, Dashboard dashboard) {
         List<Double> values = new ArrayList();
         HashMap<String,HashMap<String,String>> deployScripts = new HashMap<>();
@@ -405,6 +411,12 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
         return stages.stream().filter(s -> Pattern.compile(settings.getBuildStageRegEx()).matcher(s.getName()).find() && s.getStatus().equalsIgnoreCase(status)).findAny().isPresent();
     }
 
+    /**
+     * Get traceability
+     * @param testItems
+     * @param dashboard
+     * @return
+     */
     private HashMap<String,HashMap<String,String>> getAggregatedTraceability(List<ObjectId> testItems,Dashboard dashboard) {
         List<Double> values = new ArrayList<>();
         HashMap<String,HashMap<String,String>> traceability = new HashMap<>();
@@ -443,6 +455,11 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
         return traceability;
     }
 
+    /**
+     * Get Total Story Indicators
+     * @param testResult
+     * @return
+     */
     private  List<String> getTotalStoryIndicators(TestResult testResult) {
 
         Pattern featureIdPattern = Pattern.compile(apiSettings.getFeatureIDPattern());
@@ -471,11 +488,21 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
         return totalStoryIndicatorList;
     }
 
+    /**
+     * Get valid feature id
+     * @param tag
+     * @return
+     */
     private CharSequence getValidFeatureId(String tag) {
         tag = tag.replaceAll(STR_UNDERSCORE, STR_HYPHEN).replaceAll(STR_AT, STR_EMPTY);
         return tag;
     }
 
+    /**
+     * Get Feature widget
+     * @param dashboard
+     * @return
+     */
     public Widget getFeatureWidget(Dashboard dashboard) {
         return dashboard.getWidgets()
                 .stream()
@@ -483,13 +510,18 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
                 .findFirst().orElse(new Widget());
     }
 
+    /**
+     * Check valid story status
+     * @param storyStatus
+     * @return
+     */
     private boolean isValidStoryStatus(String storyStatus) {
         final List<String> validStatus = apiSettings.getValidStoryStatus();
         return validStatus.contains(storyStatus.toUpperCase());
     }
 
     /**
-     *
+     * Get Code Quality map
      * @param codeQualityItemsIds
      * @return
      */
@@ -528,7 +560,7 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
     }
 
     /**
-     *
+     * Get performance error rate map
      * @param perfItems
      * @return
      */
@@ -576,7 +608,7 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
 
 
     /**
-     *
+     * Get Feature test pass
      * @param testItems
      * @return
      */
@@ -605,7 +637,7 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
     }
 
     /**
-     *
+     * Feature Test Pass count
      * @param testCapabilities
      * @return
      */
@@ -624,7 +656,7 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
     }
 
     /**
-     *
+     * Component average
      * @param values
      * @return
      */
@@ -641,7 +673,7 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
 
 
     /**
-     *
+     * Get Collector Items
      * @param dashboard
      * @param widgetName
      * @param collectorType
