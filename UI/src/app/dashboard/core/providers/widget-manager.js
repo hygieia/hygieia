@@ -12,6 +12,7 @@
 
 
     function widgetManagerProvider() {
+
         return {
             $get: widgetManagerApi,
             register: register
@@ -20,6 +21,7 @@
 
     function widgetManagerApi() {
         return {
+            clearWidgets: clearWidgets,
             getWidgets: getWidgets,
             getWidget: getWidget
         };
@@ -50,4 +52,9 @@
 
         return widgets[widgetName];
     }
+
+  // Used for unit tests only
+  function clearWidgets() {
+    widgets = {};
+  }
 })();
