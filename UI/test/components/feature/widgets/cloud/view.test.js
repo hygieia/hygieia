@@ -2,18 +2,14 @@
  * Created by nmande on 4/12/16.
  */
 
-
 describe('CloudWidgetViewController', function () {
 
 
     var controller;
     var scope;
-    var cloudData;
     var q;
     var deferred;
     var mockInstanceData = [{"id":"571f9af9ed678095d297aaca","instanceId":"i-5b5f99c6","cpuUtilization": 10 }, {"id":"571f9af9ed678095d297aaca","instanceId":"i-5b5f99c6", "cpuUtilization": 20}, {"id":"571f9af9ed678095d297aaca","instanceId":"i-5b5f99c6", "cpuUtilization": 30}];
-
-
 
     function retrieveTestDate(dayOffset) {
 
@@ -38,40 +34,26 @@ describe('CloudWidgetViewController', function () {
     beforeEach(module(HygieiaConfig.module));
     beforeEach(module(HygieiaConfig.module + '.core'));
 
+    // inject the required services and instantiate the controller
+    beforeEach(inject(function ($rootScope, $controller, $q) {
+        scope = $rootScope.$new();
 
-
-
-    // define the mock people service
-    beforeEach(function() {
-        cloudData = {
-            getAWSInstancesByAccount: function(accountNumber) {
-                deferred = q.defer();
-                deferred.resolve(mockInstanceData);
-                return deferred.promise;
+        scope.widgetConfig = {
+            options: {
+                tag: "MyTag"
             }
         };
-    });
 
-    // inject the required services and instantiate the controller
-    beforeEach(
-        function () {
-            inject(function ($rootScope, cloudData, $controller,$q) {
-                scope = $rootScope.$new();
-
-                scope.widgetConfig = {
-                    options: {
-                        tag: "MyTag"
-                    }
-                };
-
-                controller = $controller('CloudWidgetViewController', {
-                    $scope: scope,
-                    cloudData: cloudData,
-                    $q: $q
-                });
-            })
+        controller = $controller('CloudWidgetViewController', {
+            $scope: scope,
+            $q: $q
         });
+    }));
 
+    afterEach(inject(function (widgetManager) {
+        // clear out widgets to avoid error on registering them multiple times
+        widgetManager.clearWidgets();
+    }));
 
     describe('calculateUtilization()', function () {
         describe('When I call calculateUtilization', function () {
@@ -94,7 +76,7 @@ describe('CloudWidgetViewController', function () {
                 it('Then I expect "N/A" to be returned', function () {
 
                     //Arrange
-                   var emptyInstances = [];
+                    var emptyInstances = [];
                     var expected = 'N/A';
 
                     //Act
@@ -256,11 +238,10 @@ describe('CloudWidgetViewController', function () {
                 it('Then I expect "fail" to be returned', function() {
 
                     //Arrange
-                    var expirationDate = retrieveTestDate(-10);
                     var expected = "fail";
 
                     //Act
-                    var actual = controller.checkImageAgeStatus(expirationDate);
+                    var actual = controller.checkImageAgeStatus(-10);
 
                     //Assert
                     expect(actual).toBe(expected);
@@ -271,11 +252,10 @@ describe('CloudWidgetViewController', function () {
                 it('Then I expect "warn" to be returned', function() {
 
                     //Arrange
-                    var expirationDate = retrieveTestDate(0);
                     var expected = "warn";
 
                     //Act
-                    var actual = controller.checkImageAgeStatus(expirationDate);
+                    var actual = controller.checkImageAgeStatus(0);
 
                     //Assert
                     expect(actual).toBe(expected);
@@ -286,11 +266,10 @@ describe('CloudWidgetViewController', function () {
                 it('Then I expect "warn" to be returned', function() {
 
                     //Arrange
-                    var expirationDate = retrieveTestDate(15);
                     var expected = "warn";
 
                     //Act
-                    var actual = controller.checkImageAgeStatus(expirationDate);
+                    var actual = controller.checkImageAgeStatus(15);
 
                     //Assert
                     expect(actual).toBe(expected);
@@ -301,55 +280,15 @@ describe('CloudWidgetViewController', function () {
                 it('Then I expect "pass" to be returned', function() {
 
                     //Arrange
-                    var expirationDate = retrieveTestDate(16);
                     var expected = "pass";
 
                     //Act
-                    var actual = controller.checkImageAgeStatus(expirationDate);
+                    var actual = controller.checkImageAgeStatus(16);
 
                     //Assert
                     expect(actual).toBe(expected);
                 });
             });
-        });
-    });
-
-    describe('checkNOTTDisabledStatus()', function () {
-        describe('When I call checkNOTTDisabledStatus', function () {
-            describe('And the NOTT value is set to "exclude"', function () {
-                it('Then I expect "true" to be returned', function () {
-
-                    //Arrange
-                    var tags = [{"name": "Owner", "value": "joe.doe@email.com"}, {
-                        "name": "visigoths:nott",
-                        "value": "exclude"
-                    }];
-                    var expected = true;
-
-                    //Act
-                    var actual = controller.checkNOTTDisabledStatus(tags);
-
-                    //Assert
-                    expect(actual).toBe(expected);
-                });
-            });
-
-            describe('And the NOTT value is not set', function () {
-                it('Then I expect "false" to be returned', function () {
-
-                    //Arrange
-                    var tags = [{"name": "Owner", "value": "joe.doe@email.com"}];
-                    var expected = false;
-
-                    //Act
-                    var actual = controller.checkNOTTDisabledStatus(status);
-
-                    //Assert
-                    expect(actual).toBe(expected);
-                });
-            });
-
-
         });
     });
 
@@ -465,7 +404,7 @@ describe('CloudWidgetViewController', function () {
 
                     //Arrange
                     var fakeData = [{"id":"571f9af9ed678095d297aaca","instanceId":"i-5b5f99c6","cpuUtilization": 10, "hourlyCost": 0.25, "tags": [{"name": "Owner", "value": "joe.doe@email.com"}]},
-                        {"id":"571f9af9ed678095d297aaca","instanceId":"i-5b5f99c6", "cpuUtilization": 20, "hourlyCost": 0.25, "tags": [{"name": "Owner", "value": "joe.doe@email.com"}]}
+                                    {"id":"571f9af9ed678095d297aaca","instanceId":"i-5b5f99c6", "cpuUtilization": 20, "hourlyCost": 0.25, "tags": [{"name": "Owner", "value": "joe.doe@email.com"}]}
                     ];
 
                     var expected = 3; // formula = (12 hours * $0.25 * 2 instances)/2 instances
@@ -484,13 +423,15 @@ describe('CloudWidgetViewController', function () {
 
                     //Arrange
                     var fakeData = [{"id":"571f9af9ed678095d297aaca","instanceId":"i-5b5f99c6","cpuUtilization": 10, "hourlyCost": 0.25, "tags": [{"name": "Owner", "value": "joe.doe@email.com"}, {
-                        "name": "visigoths:nott",
-                        "value": "exclude"
-                    }]},
-                        {"id":"571f9af9ed678095d297aaca","instanceId":"i-5b5f99c6", "cpuUtilization": 20, "hourlyCost": 0.25, "tags": [{"name": "Owner", "value": "joe.doe@email.com"}, {
-                            "name": "visigoths:nott",
-                            "value": "exclude"
-                        }]}
+                                        "name": "visigoths:nott",
+                                        "value": "exclude"
+                                    }],
+                                    "alarmClockStatus": "disabled"},
+                                    {"id":"571f9af9ed678095d297aaca","instanceId":"i-5b5f99c6", "cpuUtilization": 20, "hourlyCost": 0.25, "tags": [{"name": "Owner", "value": "joe.doe@email.com"}, {
+                                        "name": "visigoths:nott",
+                                        "value": "exclude"
+                                    }],
+                                    "alarmClockStatus": "disabled"}
                     ];
 
                     var expected = 6; // formula = (24 hours * $0.25 * 2 instances)/2 instances
