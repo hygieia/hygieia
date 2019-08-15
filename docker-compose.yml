@@ -37,12 +37,6 @@ services:
     depends_on:
       - db-setup
 
-  chat-ops-collector:
-    build: collectors/misc/chat-ops
-    image: hygieia-chat-ops-collector
-    depends_on:
-      - db-setup
-
   gitlab-feature-collector:
     build: collectors/feature/gitlab
     image: hygieia-gitlab-feature-collector
@@ -55,21 +49,9 @@ services:
     depends_on:
       - db-setup
 
-  nexus-iq-collector:
-    build: collectors/library-policy/nexus-iq-collector
-    image: hygieia-nexus-iq-collector
-    depends_on:
-      - db-setup
-
   versionone-collector:
     build: collectors/feature/versionone
     image: hygieia-versionone-collector
-    depends_on:
-      - db-setup
-
-  score-collector:
-    build: collectors/misc/score
-    image: hygieia-score-collector
     depends_on:
       - db-setup
 
