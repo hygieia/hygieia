@@ -201,7 +201,6 @@
       </activation>
       <modules>
         <module>api-audit</module>
-        <module>collectors/audit/nfrr</module>
         <module>collectors/artifact/artifactory</module>
         <module>UI</module>
         <module>UI-tests</module>
@@ -227,7 +226,6 @@
       <modules>
         <module>api-audit</module>
         <module>collectors/artifact/artifactory</module>
-        <module>collectors/audit/nfrr</module>
      	<module>UI</module>
         <module>UI-tests</module>
  </modules>
