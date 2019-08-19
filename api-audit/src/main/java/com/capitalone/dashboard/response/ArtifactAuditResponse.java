@@ -3,11 +3,13 @@ package com.capitalone.dashboard.response;
 import com.capitalone.dashboard.model.BinaryArtifact;
 import com.capitalone.dashboard.status.ArtifactAuditStatus;
 
+import java.util.List;
+
 public class ArtifactAuditResponse extends AuditReviewResponse<ArtifactAuditStatus> {
 
     private String artifactName;
     private long lastExecutionTime;
-    private BinaryArtifact binaryArtifact;
+    private List<BinaryArtifact> binaryArtifacts;
 
     public String getArtifactName() {
         return artifactName;
@@ -25,12 +27,12 @@ public class ArtifactAuditResponse extends AuditReviewResponse<ArtifactAuditStat
         this.lastExecutionTime = lastExecutionTime;
     }
 
-    public BinaryArtifact getBinaryArtifact() {
-        return binaryArtifact;
+    public List<BinaryArtifact> getBinaryArtifacts() {
+        return binaryArtifacts;
     }
 
-    public void setBinaryArtifact(BinaryArtifact binaryArtifact) {
-        this.binaryArtifact = binaryArtifact;
+    public void setBinaryArtifacts(List<BinaryArtifact> binaryArtifacts) {
+        this.binaryArtifacts = binaryArtifacts;
     }
 
 
