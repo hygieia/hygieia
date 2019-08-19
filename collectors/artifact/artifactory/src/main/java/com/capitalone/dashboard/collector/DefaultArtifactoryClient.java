@@ -35,11 +35,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 @Component
 public class DefaultArtifactoryClient implements ArtifactoryClient {
+	public static final int UPPER_INDEX = -1;
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultArtifactoryClient.class);
 
 	private static final String REPOS_URL_SUFFIX = "api/repositories";
@@ -134,6 +136,7 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
 			try {
 				JSONObject json = (JSONObject) parser.parse(returnJSON);
 				JSONArray jsonArtifacts = getJsonArray(json, "results");
+				int count =0;
 				for (Object artifact : jsonArtifacts) {
 					JSONObject jsonArtifact = (JSONObject) artifact;
 					BaseArtifact baseArtifact = new BaseArtifact();
@@ -173,19 +176,76 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
 							LOGGER.error("Parsing artifact timestamp: " + sTimestamp, e);
 						}
 					}
+
+					// find existing base artifact matching artifact item unique options
+					BaseArtifact suspect = baseArtifacts.stream().filter(b->b.getArtifactItem().getArtifactName().equalsIgnoreCase(artifactItem.getArtifactName()) && b.getArtifactItem().getRepoName().equalsIgnoreCase(artifactItem.getRepoName())
+					&& b.getArtifactItem().getPath().equalsIgnoreCase(artifactItem.getPath())).findFirst().orElse(baseArtifact);
 					// create artifactInfo
 					List<BinaryArtifact> bas = createArtifactForArtifactBased(artifactCanonicalName, artifactPath, timestamp, jsonArtifact);
 					if (CollectionUtils.isNotEmpty(bas)) {
-						bas.forEach(ba->baseArtifact.addBinaryArtifact(ba));
+						insertOrUpdateBaseArtifact(baseArtifacts, artifactItem, suspect, bas);
 					}
-					baseArtifact.setArtifactItem(artifactItem);
-					baseArtifacts.add(baseArtifact);
+					count++;
+					LOGGER.info("artifact count -- "+count+ "  artifactPath-- "+artifactPath);
 				}
 			} catch (ParseException e) {
 				LOGGER.error("Parsing artifact items on instance: " + instanceUrl + " and repo: " + repoName, e);
 			}
 		}
 		return baseArtifacts;
+	}
+
+	private void insertOrUpdateBaseArtifact(List<BaseArtifact> baseArtifacts, ArtifactItem artifactItem, BaseArtifact suspect, List<BinaryArtifact> bas) {
+		for (BinaryArtifact ba: bas) {
+			if(containsBinaryArtifactWithBuildInfo(suspect, ba)){
+				if(baseArtifactNotNull(baseArtifacts, suspect)){
+					addOrUpdateBinaryArtifactToBaseArtifact(baseArtifacts, artifactItem, suspect, ba);
+				}else{
+					addNewBaseArtifact(baseArtifacts, artifactItem, suspect, ba);
+				}
+			}
+
+		}
+	}
+
+	private void addNewBaseArtifact(List<BaseArtifact> baseArtifacts, ArtifactItem artifactItem, BaseArtifact suspect, BinaryArtifact ba) {
+		suspect.getBinaryArtifacts().add(ba);
+		suspect.setArtifactItem(artifactItem);
+		baseArtifacts.add(suspect);
+	}
+
+	private void addOrUpdateBinaryArtifactToBaseArtifact(List<BaseArtifact> baseArtifacts, ArtifactItem artifactItem, BaseArtifact suspect, BinaryArtifact ba) {
+		int index = baseArtifacts.indexOf(suspect);
+		if (index > UPPER_INDEX) {
+			updateArtifactsInExistingBaseArtifact(baseArtifacts, ba, index);
+		} else {
+			addNewBaseArtifact(baseArtifacts,artifactItem,suspect,ba);
+		}
+	}
+
+	private void updateArtifactsInExistingBaseArtifact(List<BaseArtifact> baseArtifacts, BinaryArtifact ba, int index) {
+		int ind = baseArtifacts.get(index).getBinaryArtifacts().indexOf(ba);
+		if(ind > UPPER_INDEX){
+			baseArtifacts.get(index).getBinaryArtifacts().set(ind,ba);
+		}else{
+			baseArtifacts.get(index).getBinaryArtifacts().add(ba);
+		}
+	}
+
+	private boolean baseArtifactNotNull(List<BaseArtifact> baseArtifacts, BaseArtifact suspect) {
+		return baseArtifacts!= null && suspect.getArtifactItem()!=null && !baseArtifacts.isEmpty();
+	}
+
+	private boolean containsBinaryArtifactWithBuildInfo(BaseArtifact suspect, BinaryArtifact ba) {
+		return isNewData(suspect, ba) || artifactWithBuildData(suspect, ba);
+	}
+
+	private boolean artifactWithBuildData(BaseArtifact suspect, BinaryArtifact ba) {
+		return suspect.getBinaryArtifacts().contains(ba) && CollectionUtils.isNotEmpty(ba.getBuildInfos());
+	}
+
+	private boolean isNewData(BaseArtifact suspect, BinaryArtifact ba) {
+		return !suspect.getBinaryArtifacts().contains(ba);
 	}
 
 
@@ -304,44 +364,31 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
             if (result != null) {
                 String artifactName = result.getArtifactName();
                 String artifactVersion = result.getArtifactVersion();
-                Iterable<BinaryArtifact> bas = binaryArtifactRepository.findByArtifactNameAndArtifactVersionAndCreatedTimeStamp(artifactName, artifactVersion, 0L);
-                if (!IterableUtils.isEmpty(bas)) {
-                    bas.forEach(ba -> {
-                        ba.setType(getString(jsonArtifact, "type"));
-                        ba.setCreatedTimeStamp(convertTimestamp(getString(jsonArtifact, "created")));
-                        ba.setCreatedBy(getString(jsonArtifact, "created_by"));
-                        ba.setModifiedTimeStamp(convertTimestamp(getString(jsonArtifact, "modified")));
-                        ba.setModifiedBy(getString(jsonArtifact, "modified_by"));
-                        ba.setActual_md5(getString(jsonArtifact, "actual_md5"));
-                        ba.setActual_sha1(getString(jsonArtifact, "actual_sha1"));
-                        ba.setCanonicalName(artifactCanonicalName);
-                        ba.setTimestamp(timestamp);
-                        ba.setVirtualRepos(getJsonArray(jsonArtifact, "virtual_repos"));
-                        addMetadataToArtifact(ba, jsonArtifact);
-                        binaryArtifactList.add(ba);
-                    });
-                } else {
+                Iterable<BinaryArtifact> bas = binaryArtifactRepository.findByArtifactNameAndArtifactVersion(artifactName, artifactVersion);
+                if(!IterableUtils.isEmpty(bas)){
+				   for (BinaryArtifact ba: bas) {
+					   setCollectorItemId(result, ba);
+					   setBuilds(result, ba);
+					   binaryArtifactRepository.delete(ba.getId());
+				   }
+			   	}
+				result.setType(getString(jsonArtifact, "type"));
+				result.setCreatedTimeStamp(convertTimestamp(getString(jsonArtifact, "created")));
+				result.setCreatedBy(getString(jsonArtifact, "created_by"));
+				result.setModifiedTimeStamp(convertTimestamp(getString(jsonArtifact, "modified")));
+				result.setModifiedBy(getString(jsonArtifact, "modified_by"));
+				result.setActual_md5(getString(jsonArtifact, "actual_md5"));
+				result.setActual_sha1(getString(jsonArtifact, "actual_sha1"));
+				result.setCanonicalName(artifactCanonicalName);
+				result.setTimestamp(timestamp);
+				result.setVirtualRepos(getJsonArray(jsonArtifact, "virtual_repos"));
+				addMetadataToArtifact(result, jsonArtifact);
 
-                    if (LOGGER.isDebugEnabled()) {
+				binaryArtifactList.add(result);
+				if (LOGGER.isDebugEnabled()) {
                         LOGGER.debug("Artifact at " + fullPath + " matched pattern " + idx);
-                    }
-
-                    result.setType(getString(jsonArtifact, "type"));
-                    result.setCreatedTimeStamp(convertTimestamp(getString(jsonArtifact, "created")));
-                    result.setCreatedBy(getString(jsonArtifact, "created_by"));
-                    result.setModifiedTimeStamp(convertTimestamp(getString(jsonArtifact, "modified")));
-                    result.setModifiedBy(getString(jsonArtifact, "modified_by"));
-                    result.setActual_md5(getString(jsonArtifact, "actual_md5"));
-                    result.setActual_sha1(getString(jsonArtifact, "actual_sha1"));
-                    result.setCanonicalName(artifactCanonicalName);
-                    result.setTimestamp(timestamp);
-                    result.setVirtualRepos(getJsonArray(jsonArtifact, "virtual_repos"));
-                    addMetadataToArtifact(result, jsonArtifact);
-                    binaryArtifactList.add(result);
                 }
             }
-
-
 			idx++;
 		}
 
@@ -349,6 +396,18 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
 			LOGGER.debug("Artifact at " + fullPath + " did not match any patterns.");
 		}
 		return binaryArtifactList;
+	}
+
+	private void setBuilds(BinaryArtifact result, BinaryArtifact ba) {
+		if(Objects.nonNull(ba.getBuildInfos())&& !ba.getBuildInfos().isEmpty()){
+			result.setBuildInfos(ba.getBuildInfos());
+		}
+	}
+
+	private void setCollectorItemId(BinaryArtifact result, BinaryArtifact ba) {
+		if(ba.getCollectorItemId()!=null){
+			result.setCollectorItemId(ba.getCollectorItemId());
+		}
 	}
 
 
