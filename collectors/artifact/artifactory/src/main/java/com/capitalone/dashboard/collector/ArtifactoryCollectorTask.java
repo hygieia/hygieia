@@ -148,7 +148,7 @@ public class ArtifactoryCollectorTask extends CollectorTaskWithGenericItem<Artif
         Set<ObjectId> udId = new HashSet<>();
         udId.add(collector.getId());
         processGenericItems(collector);
-        List<ArtifactItem> existingItems = artifactItemRepository.findByCollectorIdIn(udId);
+        Set<ArtifactItem> existingItemsSet = artifactItemRepository.findByCollectorIdInSet(collector.getId());
         List<String> instanceUrls = collector.getArtifactoryServers();
         instanceUrls.forEach(instanceUrl -> {
             long start = System.currentTimeMillis();
@@ -160,7 +160,7 @@ public class ArtifactoryCollectorTask extends CollectorTaskWithGenericItem<Artif
                     String pattern = (getPatterns().get(repo)).get(0);
                     List<BaseArtifact> baseArtifacts = artifactoryClient.getArtifactItems(instanceUrl, repo, pattern, lastUpdated);
                     log("Collecting repository ====>>> " + repo);
-                    addNewArtifactsItems(baseArtifacts, existingItems, collector);
+                    addNewArtifactsItems(baseArtifacts, existingItemsSet, collector);
                 });
                 log("Fetched repos", start, getRepos().size());
             } else {
@@ -310,24 +310,23 @@ public class ArtifactoryCollectorTask extends CollectorTaskWithGenericItem<Artif
      * Add any new {@link ArtifactItem}s
      */
 
-    private void addNewArtifactsItems(List<BaseArtifact> baseArtifacts, List<ArtifactItem> existingArtifactItems, ArtifactoryCollector collector) {
+    private void addNewArtifactsItems(List<BaseArtifact> baseArtifacts, Set<ArtifactItem> existingArtifactItems, ArtifactoryCollector collector) {
         long start = System.currentTimeMillis();
         List<BinaryArtifact> binaryArtifacts = new ArrayList<>();
         int count = 0;
-        Set<ArtifactItem> existingSet = new HashSet<>(existingArtifactItems);
         for (BaseArtifact baseArtifact : baseArtifacts) {
             ArtifactItem newArtifactItem = baseArtifact.getArtifactItem();
-            if (newArtifactItem != null && !existingSet.contains(newArtifactItem)) {
+            if (newArtifactItem != null && !existingArtifactItems.contains(newArtifactItem)) {
                 newArtifactItem.setLastUpdated(System.currentTimeMillis());
                 newArtifactItem.setCollectorId(collector.getId());
                 newArtifactItem = artifactItemRepository.save(newArtifactItem);
-                existingSet.add(newArtifactItem);
+                existingArtifactItems.add(newArtifactItem);
                 count++;
             }
             List<BinaryArtifact> binaryArtifactsAssociated = baseArtifact.getBinaryArtifacts();
             if (!CollectionUtils.isEmpty(binaryArtifactsAssociated) ) {
                 for (BinaryArtifact b:binaryArtifactsAssociated) {
-                    ArtifactItem found = existingSet.stream().filter(newArtifactItem::equals).findAny().orElse(null);
+                    ArtifactItem found = existingArtifactItems.stream().filter(newArtifactItem::equals).findAny().orElse(null);
                     ObjectId existingId = found.getId();
                     ObjectId collectorItemId = newArtifactItem.getId()!=null? newArtifactItem.getId(): existingId;
                     b.setCollectorItemId(collectorItemId);
