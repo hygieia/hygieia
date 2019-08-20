@@ -19,11 +19,6 @@ describe('CapOneTemplateController', function () {
     }));
 
 
-    afterEach(inject(function (widgetManager) {
-        // clear out widgets to avoid error on registering them multiple times
-        widgetManager.clearWidgets();
-    }));
-
 
 
     describe('toggleView()', function () {
