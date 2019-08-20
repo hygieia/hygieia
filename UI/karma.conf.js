@@ -1,12 +1,5 @@
 // Karma configuration
-
-// This is copied from the gulpfile.js to ensure we load the same files.
-// Similarly, the additional files that are concatenated to this list are
-// based off the files in the gulpfile.
-const jsFiles = require('npm-wiredep')({
-  directory: 'node_modules',
-  exclude: [/bootstrap\.js/, /bootstrap\.css/, /bootstrap\.css/, /foundation\.css/, /bin\.js/, /strip-json-comments\/cli\.js/]
-}).js
+// Generated on Mon Apr 11 2016 15:57:58 GMT-0400 (EDT)
 
 module.exports = function(config) {
   config.set({
@@ -21,16 +14,28 @@ module.exports = function(config) {
 
 
     // list of files / patterns to load in the browser
-    files: jsFiles.concat([
+    files: [
+        'node_modules/angular/angular.js',
+        'node_modules/angular-animate/angular-animate.js',
         'node_modules/angular-mocks/angular-mocks.js',
+        'node_modules/angular-route/angular-route.js',
+        'node_modules/angular-sanitize/angular-sanitize.js',
+        'node_modules/angular-bootstrap/ui-bootstrap.js',
+        'node_modules/angular-bootstrap/ui-bootstrap-tpls.js',
+        'src/app/dashboard/core/extensions/ng-fitText.js',
+        'node_module/angular-chartist.js/dist/angular-chartist.js',
+        'node_modules/angular-cookies/angular-cookies.js',
+        'node_modules/angular-validation-match/src/angular-validation-match.js',
+        'node_modules/ng-sortable/dist/ng-sortable.js',
         'test/appGlobals.js',
-        'src/app/app.js', 
-        'src/app/dashboard/core/module.js', 
-        'src/app/**/*.js', 
-        'src/components/**/*.js',
-        'src/etc/**/*.js',
+        'src/app/app.js',
+        'src/app/dashboard/core/module.js',
+        'src/components/templates/capone.js',
+        'src/app/dashboard/core/data-factories/cloud-data.js',
+        'src/components/widgets/cloud/view.js',
+        'src/components/widgets/cloud/config.js',
         'test/**/*.test.js'
-    ]),
+    ],
 
 
     // list of files to exclude
@@ -42,6 +47,7 @@ module.exports = function(config) {
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
     },
+
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
