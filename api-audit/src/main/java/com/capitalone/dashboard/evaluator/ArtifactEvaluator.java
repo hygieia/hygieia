@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -69,15 +70,16 @@ public class ArtifactEvaluator extends Evaluator<ArtifactAuditResponse> {
         if (CollectionUtils.isEmpty(binaryArtifacts)) {
             return getErrorResponse(collectorItem, ArtifactAuditStatus.NO_ACTIVITY);
         }
-
-        BinaryArtifact binaryArtifact = binaryArtifacts.get(0);
-        artifactAuditResponse.setBinaryArtifact(binaryArtifact);
-        artifactAuditResponse.setLastUpdated(binaryArtifact.getTimestamp());
-        boolean isBuild = !CollectionUtils.isEmpty(binaryArtifact.getBuildInfos());
-        if (isServiceAccount(binaryArtifact.getCreatedBy())) {
+        artifactAuditResponse.setBinaryArtifacts(binaryArtifacts);
+        binaryArtifacts.sort(Comparator.comparing(BinaryArtifact::getCreatedTimeStamp));
+        artifactAuditResponse.setLastUpdated(CollectionUtils.isNotEmpty(binaryArtifacts)?binaryArtifacts.get(0).getModifiedTimeStamp():0);
+        boolean isBuild = binaryArtifacts.stream().anyMatch(ba-> CollectionUtils.isNotEmpty(ba.getBuildInfos()));
+        boolean isServiceAccount = binaryArtifacts.stream().anyMatch(ba-> isServiceAccount(ba.getCreatedBy()));
+        boolean isDocker = binaryArtifacts.stream().anyMatch(ba-> ba.getVirtualRepos().stream().anyMatch(repo -> repo.contains(DOCKER)));
+        if (isServiceAccount) {
             evaluateArtifactForServiceAccountAndBuild(artifactAuditResponse, isBuild);
         }
-        if (binaryArtifact.getVirtualRepos().stream().anyMatch(repo -> repo.contains(DOCKER))) {
+        if (isDocker) {
             artifactAuditResponse.addAuditStatus(ArtifactAuditStatus.ART_DOCK_IMG_FOUND);
         }
         return artifactAuditResponse;
