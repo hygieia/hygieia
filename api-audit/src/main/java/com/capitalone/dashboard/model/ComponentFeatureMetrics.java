@@ -6,7 +6,11 @@ import java.util.HashMap;
 
 import java.util.List;
 
-public class FeatureMetrics {
+/**
+ * Quality metrics data model of a component
+ */
+
+public class ComponentFeatureMetrics {
 
     private String id;
 

@@ -1,7 +1,7 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.ApiSettings;
-import com.capitalone.dashboard.model.FeatureMetrics;
+import com.capitalone.dashboard.model.ComponentFeatureMetrics;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
@@ -125,8 +125,8 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
 
 
     @Override
-    public FeatureMetrics getFeatureMetrics(String name) {
-        FeatureMetrics featureMetrics = new FeatureMetrics();
+    public ComponentFeatureMetrics getComponentFeatureMetrics(String name) {
+        ComponentFeatureMetrics featureMetrics = new ComponentFeatureMetrics();
         Dashboard dashboard = dashboardRepository.findByTitleAndType(name, DashboardType.Team);
         if(dashboard != null) {
             List<HashMap> metrics = getMetrics(dashboard, null);
@@ -143,9 +143,9 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
     }
 
     @Override
-    public FeatureMetrics getFeatureMetricsByType(String name, String type) {
+    public ComponentFeatureMetrics getComponentFeatureMetricByType(String name, String type) {
 
-        FeatureMetrics featureMetrics = new FeatureMetrics();
+        ComponentFeatureMetrics featureMetrics = new ComponentFeatureMetrics();
         Dashboard dashboard = dashboardRepository.findByTitleAndType(name, DashboardType.Team);
         if(dashboard != null){
             List<HashMap> metrics = getMetrics(dashboard, type);
@@ -166,9 +166,9 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
         ProductFeatureMetrics productFeatureMetrics = new ProductFeatureMetrics();
         Cmdb cmdb = cmdbRepository.findByConfigurationItemAndItemTypeAndValidConfigItem(name, "app", true);
         List<String> components = cmdb.getComponents();
-        List<FeatureMetrics> productComponent = new ArrayList<>();
+        List<ComponentFeatureMetrics> productComponent = new ArrayList<>();
         Optional.ofNullable(components).orElseGet(Collections::emptyList)
-                .stream().forEach(component -> {productComponent.add(getFeatureMetrics(component));});
+                .stream().forEach(component -> {productComponent.add(getComponentFeatureMetrics(component));});
 
         productFeatureMetrics.setId(name);
         productFeatureMetrics.setLob(cmdb.getOwnerDept());
@@ -185,9 +185,9 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
         ProductFeatureMetrics productFeatureMetrics = new ProductFeatureMetrics();
         Cmdb cmdb = cmdbRepository.findByConfigurationItemAndItemTypeAndValidConfigItem(name,"app" ,true );
         List<String> components = cmdb.getComponents();
-        List<FeatureMetrics> productComponent = new ArrayList<>();
+        List<ComponentFeatureMetrics> productComponent = new ArrayList<>();
         Optional.ofNullable(components).orElseGet(Collections::emptyList)
-                .stream().forEach(component -> {productComponent.add(getFeatureMetricsByType(component,type));});
+                .stream().forEach(component -> {productComponent.add(getComponentFeatureMetricByType(component,type));});
         productFeatureMetrics.setId(name);
         productFeatureMetrics.setLob(cmdb.getOwnerDept());
         productFeatureMetrics.setName(cmdb.getCommonName());
@@ -280,10 +280,10 @@ public class FeatureMetricServiceImpl implements FeatureMetricsService {
         ProductFeatureMetrics productFeatureMetrics = new ProductFeatureMetrics();
         List<Double> percentages = new ArrayList<>();
         List<String> components = cmdb.getComponents();
-        List<FeatureMetrics> productComponent = new ArrayList<>();
+        List<ComponentFeatureMetrics> productComponent = new ArrayList<>();
         Optional.ofNullable(components).orElseGet(Collections::emptyList)
                 .stream().forEach(component -> {
-                    FeatureMetrics featureMetrics = getFeatureMetricsByType(component,type);
+                    ComponentFeatureMetrics featureMetrics = getComponentFeatureMetricByType(component,type);
                     productComponent.add(featureMetrics);
                     Optional.ofNullable(featureMetrics.getMetrics()).orElseGet(Collections ::emptyList).stream().forEach(metric-> {
                         if(metric.containsKey(type)){

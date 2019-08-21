@@ -4,7 +4,7 @@ import com.capitalone.dashboard.common.TestUtils;
 import com.capitalone.dashboard.config.FongoConfig;
 import com.capitalone.dashboard.config.TestConfig;
 import com.capitalone.dashboard.model.ExecutiveFeatureMetrics;
-import com.capitalone.dashboard.model.FeatureMetrics;
+import com.capitalone.dashboard.model.ComponentFeatureMetrics;
 import com.capitalone.dashboard.model.LobFeatureMetrics;
 import com.capitalone.dashboard.model.ProductFeatureMetrics;
 import com.capitalone.dashboard.repository.*;
@@ -76,7 +76,7 @@ public class FeatureMetricsServiceTest {
 
     @Test
     public void getFeatureMetrics(){
-        FeatureMetrics featureMetrics = featureMetricsService.getFeatureMetrics("TestSSA");
+        ComponentFeatureMetrics featureMetrics = featureMetricsService.getComponentFeatureMetrics("TestSSA");
 
         Assert.assertEquals("TestSSA", featureMetrics.getId());
         Assert.assertEquals("Component", featureMetrics.getType());
@@ -87,7 +87,7 @@ public class FeatureMetricsServiceTest {
 
     @Test
     public void getFetatureMetricsByType(){
-        FeatureMetrics featureMetrics = featureMetricsService.getFeatureMetricsByType("TestSSA","FEATURE_TEST_PASS");
+        ComponentFeatureMetrics featureMetrics = featureMetricsService.getComponentFeatureMetricByType("TestSSA","FEATURE_TEST_PASS");
         Assert.assertEquals("TestSSA", featureMetrics.getId());
         Assert.assertEquals("Component", featureMetrics.getType());
         Assert.assertEquals("TestAudit", featureMetrics.getName());

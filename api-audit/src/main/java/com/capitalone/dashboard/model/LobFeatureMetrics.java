@@ -3,6 +3,10 @@ package com.capitalone.dashboard.model;
 
 import java.util.List;
 
+/**
+ * Quality metrics data model of an line of business
+ */
+
 public class LobFeatureMetrics {
 
     private String name;

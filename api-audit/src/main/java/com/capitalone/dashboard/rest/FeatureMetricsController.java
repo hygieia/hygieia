@@ -1,7 +1,7 @@
 package com.capitalone.dashboard.rest;
 
 import com.capitalone.dashboard.model.ExecutiveFeatureMetrics;
-import com.capitalone.dashboard.model.FeatureMetrics;
+import com.capitalone.dashboard.model.ComponentFeatureMetrics;
 import com.capitalone.dashboard.model.LobFeatureMetrics;
 import com.capitalone.dashboard.model.ProductFeatureMetrics;
 import com.capitalone.dashboard.service.FeatureMetricsService;
@@ -27,16 +27,16 @@ public class FeatureMetricsController {
     }
 
     @RequestMapping(value = "/metrics/component/{componentName}", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<FeatureMetrics> getAuditResultsAll(@Valid @PathVariable String componentName) {
-        FeatureMetrics featureMetrics = featureMetricsService.getFeatureMetrics(componentName);
+    public ResponseEntity<ComponentFeatureMetrics> getComponentMetrics(@Valid @PathVariable String componentName) {
+        ComponentFeatureMetrics featureMetrics = featureMetricsService.getComponentFeatureMetrics(componentName);
         return ResponseEntity.ok().body(featureMetrics);
     }
 
 
     @RequestMapping(value = "/metrics/component/{componentName}/metric/{metricName}", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<FeatureMetrics> getFeatureMetricByType(@Valid @PathVariable String componentName,
-                                                                  @Valid @PathVariable String metricName){
-        FeatureMetrics featureMetrics = featureMetricsService.getFeatureMetricsByType(componentName, metricName);
+    public ResponseEntity<ComponentFeatureMetrics> getComponentMetricByType(@Valid @PathVariable String componentName,
+                                                                            @Valid @PathVariable String metricName){
+        ComponentFeatureMetrics featureMetrics = featureMetricsService.getComponentFeatureMetricByType(componentName, metricName);
 
         return ResponseEntity.ok().body(featureMetrics);
     }

@@ -1,16 +1,16 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.ExecutiveFeatureMetrics;
-import com.capitalone.dashboard.model.FeatureMetrics;
+import com.capitalone.dashboard.model.ComponentFeatureMetrics;
 import com.capitalone.dashboard.model.LobFeatureMetrics;
 import com.capitalone.dashboard.model.ProductFeatureMetrics;
 
 
 public interface FeatureMetricsService {
 
-    FeatureMetrics getFeatureMetrics(String name);
+    ComponentFeatureMetrics getComponentFeatureMetrics(String name);
 
-    FeatureMetrics getFeatureMetricsByType(String name,String type);
+    ComponentFeatureMetrics getComponentFeatureMetricByType(String name, String type);
 
     ProductFeatureMetrics getProductFeatureMetrics(String name);
 

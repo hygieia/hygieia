@@ -4,6 +4,10 @@ package com.capitalone.dashboard.model;
 
 import java.util.List;
 
+/**
+ * Quality metrics data model of an application
+ */
+
 public class ProductFeatureMetrics {
     
     private String id;
@@ -27,7 +31,7 @@ public class ProductFeatureMetrics {
 
     public void setId(String id) { this.id = id; }
     
-    private List<FeatureMetrics> components;
+    private List<ComponentFeatureMetrics> components;
 
     public String getName() {
         return name;
@@ -83,11 +87,11 @@ public class ProductFeatureMetrics {
     }
     
 
-    public List<FeatureMetrics> getComponents() {
+    public List<ComponentFeatureMetrics> getComponents() {
         return components;
     }
 
-    public void setComponents(List<FeatureMetrics> components) {
+    public void setComponents(List<ComponentFeatureMetrics> components) {
         this.components = components;
     }
 

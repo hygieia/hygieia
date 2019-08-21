@@ -2,6 +2,10 @@ package com.capitalone.dashboard.model;
 
 import java.util.List;
 
+/**
+ * Quality metrics data model of an executive
+ */
+
 public class ExecutiveFeatureMetrics {
 
     private String name;
