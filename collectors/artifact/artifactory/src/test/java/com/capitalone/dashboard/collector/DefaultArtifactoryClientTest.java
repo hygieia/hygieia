@@ -3,12 +3,14 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.model.ArtifactoryRepo;
 import com.capitalone.dashboard.model.BaseArtifact;
 import com.capitalone.dashboard.model.BinaryArtifact;
+import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.RepoAndPattern;
 import com.capitalone.dashboard.model.ServerSetting;
 import com.capitalone.dashboard.repository.BinaryArtifactRepository;
 import com.capitalone.dashboard.util.ArtifactUtilTest;
 import com.capitalone.dashboard.util.Supplier;
 import org.apache.commons.io.IOUtils;
+import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
@@ -100,6 +103,8 @@ public class DefaultArtifactoryClientTest {
 
 		when(rest.exchange(eq(aqlUrl), eq(HttpMethod.POST), Matchers.any(HttpEntity.class), eq(String.class)))
 				.thenReturn(new ResponseEntity<>(artifactItemsJson, HttpStatus.OK));
+		when(binaryArtifactRepository.findByArtifactNameAndArtifactVersion("test-dev","1")).thenReturn(null);
+		when(binaryArtifactRepository.findByArtifactNameAndArtifactVersion("test-dev","1")).thenReturn(binaryArtifactIterable(true));
 		List<BaseArtifact> baseArtifacts = defaultArtifactoryClient.getArtifactItems(instanceUrl, repoName, ArtifactUtilTest.ARTIFACT_PATTERN,0);
 		assertThat(baseArtifacts.size(), is(1));
 		assertThat(baseArtifacts.get(0).getArtifactItem().getArtifactName(),is("test-dev"));
@@ -108,8 +113,8 @@ public class DefaultArtifactoryClientTest {
 		assertThat(baseArtifacts.get(0).getArtifactItem().getPath(),is("dummy/test-dev"));
 		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getCanonicalName(),is("manifest.json"));
 		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getArtifactGroupId(),is("dummy"));
-		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getActual_md5(),is("111aadc11ed11b1111df111d16d6c8d821112f1"));
-		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getActual_sha1(),is("111aadc11ed11b1111df111d16d6c8d821112f1"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getActual_md5(),is("111aadc11ed11b1111df111d16d6c8d821112f3"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getActual_sha1(),is("111aadc11ed11b1111df111d16d6c8d821112f3"));
 		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getArtifactExtension(),is("json"));
 		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getArtifactName(),is("test-dev"));
 		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getType(),is("file"));
@@ -120,6 +125,45 @@ public class DefaultArtifactoryClientTest {
 		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getArtifactVersion(),is("1"));
 
 	}
+
+	@Test
+	public void testGetArtifactItemsWithBuildInfo() throws Exception {
+		String artifactItemsJson = getJson("artifactItems.json");
+
+		String instanceUrl = "http://localhost:8081/artifactory/";
+		String aqlUrl = "http://localhost:8081/artifactory/api/search/aql";
+		String repoName = "release";
+
+		when(rest.exchange(eq(aqlUrl), eq(HttpMethod.POST), Matchers.any(HttpEntity.class), eq(String.class)))
+				.thenReturn(new ResponseEntity<>(artifactItemsJson, HttpStatus.OK));
+		when(binaryArtifactRepository.findByArtifactNameAndArtifactVersion("test-dev","1"))
+				.thenReturn(binaryArtifactIterable(true));
+
+		List<BaseArtifact> baseArtifacts = defaultArtifactoryClient.getArtifactItems(instanceUrl, repoName, ArtifactUtilTest.ARTIFACT_PATTERN,0);
+		assertThat(baseArtifacts.size(), is(1));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().size(), is(1));
+		assertThat(baseArtifacts.get(0).getArtifactItem().getArtifactName(),is("test-dev"));
+		assertThat(baseArtifacts.get(0).getArtifactItem().getInstanceUrl(),is("http://localhost:8081/artifactory/"));
+		assertThat(baseArtifacts.get(0).getArtifactItem().getRepoName(),is("repoName"));
+		assertThat(baseArtifacts.get(0).getArtifactItem().getPath(),is("dummy/test-dev"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getCanonicalName(),is("manifest.json"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getArtifactGroupId(),is("dummy"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getActual_md5(),is("111aadc11ed11b1111df111d16d6c8d821112f3"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getActual_sha1(),is("111aadc11ed11b1111df111d16d6c8d821112f3"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getArtifactExtension(),is("json"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getArtifactName(),is("test-dev"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getType(),is("file"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getModifiedBy(),is("robot"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getModifiedTimeStamp(),is(new Long("1539268736471")));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getCreatedBy(),is("robot"));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getCreatedTimeStamp(),is(new Long("1539268036031")));
+		assertThat(baseArtifacts.get(0).getBinaryArtifacts().get(0).getArtifactVersion(),is("1"));
+		assertNotNull(baseArtifacts.get(0).getBinaryArtifacts().get(0).getCollectorItemId());
+		assertNotNull(baseArtifacts.get(0).getBinaryArtifacts().get(0).getBuildInfos());
+
+	}
+
+
 
 
 	@Test
@@ -188,4 +232,47 @@ public class DefaultArtifactoryClientTest {
         InputStream inputStream = DefaultArtifactoryClient.class.getResourceAsStream(fileName);
         return IOUtils.toString(inputStream);
     }
+
+    private Iterable<BinaryArtifact> binaryArtifactIterable(boolean buildInfo){
+    	BinaryArtifact b = new BinaryArtifact();
+		b.setType("file");
+		b.setCreatedTimeStamp(new Long("1539268036031"));
+		b.setCreatedBy("auto");
+		b.setModifiedTimeStamp(new Long("1539268036031"));
+		b.setModifiedBy("auto");
+		b.setActual_md5("111aadc11ed11b1111df111d16d6c8d821112f1");
+		b.setActual_sha1("111aadc11ed11b1111df111d16d6c8d821112f1");
+		b.setCanonicalName("name");
+		b.setTimestamp(new Long("1539268036031"));
+		b.setCollectorItemId(ObjectId.get());
+		if(buildInfo){
+			b.setBuildInfos(buildInfo());
+		}
+
+
+		BinaryArtifact b_1 = new BinaryArtifact();
+		b_1.setType("file");
+		b_1.setCreatedTimeStamp(new Long("1539268036031"));
+		b_1.setCreatedBy("auto");
+		b_1.setModifiedTimeStamp(new Long("1539268036031"));
+		b_1.setModifiedBy("auto");
+		b_1.setActual_md5("111aadc11ed11b1111df111d16d6c8d821112f1");
+		b_1.setActual_sha1("111aadc11ed11b1111df111d16d6c8d821112f1");
+		b_1.setCanonicalName("name");
+		b_1.setTimestamp(new Long("1539268036031"));
+		b_1.setCollectorItemId(ObjectId.get());
+
+
+		return Arrays.asList(b,b_1);
+	}
+
+	private List<Build> buildInfo(){
+    	Build build = new Build();
+    	build.setBuildUrl("http://localhost:8082/generic/test/job");
+    	build.setNumber("773");
+    	build.setTimestamp(new Long("1539268036031"));
+    	build.setStartedBy("auto");
+    	build.setCollectorItemId(ObjectId.get());
+    	return Arrays.asList(build);
+	}
 }

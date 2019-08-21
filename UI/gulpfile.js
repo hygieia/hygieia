@@ -258,11 +258,12 @@ gulp.task('html', function() {
         .pipe(filter(['index.html']))
 
         // wiredep replaces bower:js with references to all bower dependencies
-        .pipe(inject(gulp.src(wiredep({
-                                  directory: 'node_modules',
-                                  exclude: [/bootstrap\.js/, /bootstrap\.css/, /bootstrap\.css/, /foundation\.css/, /bin\.js/, /strip-json-comments\/cli\.js/]
-                                      }).js)
-                          .pipe(gulp.dest(hygieia.dist + 'node_modules')),
+        .pipe(inject(gulp.src(
+            wiredep({
+                directory: 'node_modules',
+                exclude: [/bootstrap\.js/, /bootstrap\.css/, /bootstrap\.css/, /foundation\.css/, /bin\.js/, /strip-json-comments\/cli\.js/]
+            }).js)
+                .pipe(gulp.dest(hygieia.dist + 'node_modules')),
             { name: 'bower', ignorePath: hygieia.dist, addRootSlash: false })
         )
         .pipe(gulp.dest(hygieia.dist))

@@ -85,7 +85,7 @@ public class ArtifactEvaluatorTest {
 
     @Test
     public void test_Evaluate_ART_SYS_ACCT_BUILD_AUTO() {
-        when(binaryArtifactRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class), any(Long.class), any(Long.class))).thenReturn(Stream.of(getBinaryArtifact(true)).collect(Collectors.toList()));
+        when(binaryArtifactRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class), any(Long.class), any(Long.class))).thenReturn(Stream.of(getBinaryArtifact(true,1565479975000L),getBinaryArtifact(true,1565393575000L)).collect(Collectors.toList()));
         when(apiSettings.getServiceAccountRegEx()).thenReturn("/./g");
         response = artifactEvaluator.evaluate(getCollectorItem("artifact", "/test", "repo", false), 125634536, 6235263, null);
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("ART_SYS_ACCT_BUILD_AUTO"));
@@ -96,7 +96,7 @@ public class ArtifactEvaluatorTest {
 
     @Test
     public void test_Evaluate_ART_SYS_ACCT_BUILD_USER() {
-        when(binaryArtifactRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class), any(Long.class), any(Long.class))).thenReturn(Stream.of(getBinaryArtifact(false)).collect(Collectors.toList()));
+        when(binaryArtifactRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class), any(Long.class), any(Long.class))).thenReturn(Stream.of(getBinaryArtifact(false,1565393575000L),getBinaryArtifact(false,1565479975000L)).collect(Collectors.toList()));
         when(apiSettings.getServiceAccountRegEx()).thenReturn("/./g");
         response = artifactEvaluator.evaluate(getCollectorItem("artifact", "/test", "repo", false), 125634536, 6235263, null);
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("ART_SYS_ACCT_BUILD_USER"));
@@ -108,7 +108,7 @@ public class ArtifactEvaluatorTest {
 
     @Test
     public void test_Evaluate_ART_DOCK_IMG_FOUND() {
-        when(binaryArtifactRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class), any(Long.class), any(Long.class))).thenReturn(Stream.of(getBinaryArtifact(false)).collect(Collectors.toList()));
+        when(binaryArtifactRepository.findByCollectorItemIdAndTimestampIsBetweenOrderByTimestampDesc(any(ObjectId.class), any(Long.class), any(Long.class))).thenReturn(Stream.of(getBinaryArtifact(false,1565393575000L),getBinaryArtifact(true,1565479975000L)).collect(Collectors.toList()));
         when(apiSettings.getServiceAccountRegEx()).thenReturn("/./g");
         response = artifactEvaluator.evaluate(getCollectorItem("artifact", "/test", "repo", false), 125634536, 6235263, null);
         Assert.assertEquals(true, response.getAuditStatuses().toString().contains("ART_DOCK_IMG_FOUND"));
@@ -129,7 +129,7 @@ public class ArtifactEvaluatorTest {
         return ci;
     }
 
-    private BinaryArtifact getBinaryArtifact(boolean isBuild) {
+    private BinaryArtifact getBinaryArtifact(boolean isBuild,long timestamp) {
         BinaryArtifact ba = new BinaryArtifact();
         ba.setTimestamp(123456789);
         ba.setCanonicalName("canonicalName");
@@ -137,7 +137,7 @@ public class ArtifactEvaluatorTest {
         ba.setArtifactVersion("1.0.0");
         ba.setArtifactName("artifactName");
         ba.setType("file");
-        ba.setCreatedTimeStamp(1234567);
+        ba.setCreatedTimeStamp(timestamp);
         ba.setCreatedBy("testuser");
         ba.setVirtualRepos(Arrays.asList("docker", "public"));
         if (isBuild) {

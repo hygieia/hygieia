@@ -37,24 +37,6 @@ services:
     depends_on:
       - db-setup
 
-  gitlab-feature-collector:
-    build: collectors/feature/gitlab
-    image: hygieia-gitlab-feature-collector
-    depends_on:
-      - db-setup
-
-  jira-collector:
-    build: collectors/feature/jira
-    image: hygieia-jira-feature-collector
-    depends_on:
-      - db-setup
-
-  versionone-collector:
-    build: collectors/feature/versionone
-    image: hygieia-versionone-collector
-    depends_on:
-      - db-setup
-
 volumes:
   db-data:
   certs:

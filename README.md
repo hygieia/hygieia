@@ -4,7 +4,7 @@
 <col width="100%" />
 </colgroup>
 <tbody><tr><td>
-<h1><b>We are excited to announce the transfer of Hygieia Project to its own <a href="https://github.com/Hygieia">Github Organization.</a> This move is being made to allow for us to manage the individual collectors in their own repositories which renders for better product management.</p></b></h1>
+<h1><b>We are excited to announce the transfer of Hygieia Project to its own <a href="https://github.com/Hygieia">Github Organization.</a> This move is being made to allow for us to manage the apis and individual collectors in their own repositories which renders for better product management. Currently api and some of the collectors have been migrated to their own repositories, Please check the Module Breakout section of <a href="https://github.com/Hygieia/Hygieia/wiki/Hygieia-2019-Roadmap-(draft,-work-in-progress)">wiki link</a> for the status.</p></b></h1>
 </td> </tr> </tbody> </table>
 </div>
 <div align="center">
@@ -16,7 +16,7 @@
 
 <div align="center">
   <!-- Build Status -->
-  <a href="https://api.travis-ci.com/Hygieia/Hygieia.svg?branch=master"><img src="https://api.travis-ci.com/Hygieia/Hygieia.svg?branch=master" alt="Build Status"/></a>
+  <a href="https://travis-ci.com/Hygieia/Hygieia?branch=master"><img src="https://api.travis-ci.com/Hygieia/Hygieia.svg?branch=master" alt="Build Status"/></a>
   <!-- Codacy Badge -->
   <a href="https://www.codacy.com/app/amit-mawkin/Hygieia"><img src="https://api.codacy.com/project/badge/grade/de1a2a557f8e458e9a959be8c2e7fcba"
       alt="Codacy Badge"/></a>
