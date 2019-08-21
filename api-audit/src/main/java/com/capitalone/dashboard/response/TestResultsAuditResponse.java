@@ -15,6 +15,7 @@ public class TestResultsAuditResponse extends AuditReviewResponse<TestResultAudi
     private String type;
     private Map featureTestResult = new HashMap();
     public Traceability traceability;
+    public Object buildArtifact;
 
     public Collection<TestCapability> getTestCapabilities() { return testCapabilities; }
 
@@ -47,4 +48,12 @@ public class TestResultsAuditResponse extends AuditReviewResponse<TestResultAudi
     public Traceability getTraceability() { return traceability; }
 
     public void setTraceability(Traceability traceability) { this.traceability = traceability; }
+
+    public Object getBuildArtifact() {
+        return buildArtifact;
+    }
+
+    public void setBuildArtifact(Object buildArtifact) {
+        this.buildArtifact = buildArtifact;
+    }
 }

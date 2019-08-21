@@ -72,6 +72,7 @@ public class PerformanceTestResultEvaluator extends Evaluator<PerformanceTestAud
         if (!CollectionUtils.isEmpty(testResults)){
             testResults.sort(Comparator.comparing(TestResult::getTimestamp).reversed());
             TestResult testResult = testResults.iterator().next();
+            perfReviewResponse.setBuildArtifact(testResult.getBuildArtifact());
             if (TestSuiteType.Performance.toString().equalsIgnoreCase(testResult.getType().name())) {
                 Collection<TestCapability> testCapabilities = testResult.getTestCapabilities();
 
