@@ -1,0 +1,39 @@
+[{
+    "_id" : "5d1f889f62148a1785f523e0",
+    "_class" : "",
+    "collectorItemId" : "5caf4be154904f5a95cd8dfd",
+    "timestamp" : 156234767985,
+    "number" : "1417",
+    "buildUrl" : "https://mybuild.com/",
+    "startTime" : 1562346283380,
+    "endTime" : 1562347679394,
+    "duration" : 1396014,
+    "buildStatus" : "Success",
+    "startedBy" : "anonymous",
+    "codeRepos" : [
+      {
+        "url" : "https://github.com/",
+        "branch" : "",
+        "type" : "GIT"
+      }
+    ],
+    "sourceChangeSet" : [
+
+    ],
+    "stages" : [
+      {
+        "_id" : "5d1f889f62148a1785f523d2",
+        "stageId" : "132",
+        "name" : "Checkout Code",
+        "status" : "NOT_EXECUTED",
+        "startTimeMillis" : "0",
+        "durationMillis" : "0",
+        "_links" : {
+          "self" : {
+            "href" : "/job"
+          }
+        }
+      }
+    ]
+  }
+]

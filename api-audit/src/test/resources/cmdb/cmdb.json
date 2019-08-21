@@ -1,0 +1,23 @@
+[
+  {
+    "_id" : "5d10f364930f703aa01f5d82",
+    "collectorItemId" : "5be9a46ce4b0389bb3653541",
+    "timestamp" : 1555708859798,
+    "configurationItem" : "product1",
+    "configurationItemSubType" : "Business",
+    "configurationItemType" : "Application",
+    "assignmentGroup" : "I",
+    "appServiceOwner" : "",
+    "businessOwner" : "chow",
+    "developmentOwner" : "",
+    "ownerDept" : "Tech",
+    "ownerSubDept" : "Small Business",
+    "commonName" : "TestAudit",
+    "itemType" : "app",
+    "validConfigItem" : true,
+    "components" : [
+      "TestSSA"
+    ]
+  }
+
+]
