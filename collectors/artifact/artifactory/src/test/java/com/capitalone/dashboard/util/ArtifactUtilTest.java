@@ -12,25 +12,22 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.capitalone.dashboard.model.BinaryArtifact;
 
 @RunWith(MockitoJUnitRunner.class)
-
 public class ArtifactUtilTest {
     public static final String IVY_PATTERN1 = "(?<group>.+)/(?<module>[^/]+)/(?<version>[^/]+)/(?<artifact>ivy)-\\k<version>(-(?<classifier>[^\\.]+))?\\.(?<ext>xml)";
-
     public static final String IVY_ARTIFACT_PATTERN1 = "(?<group>.+)/(?<module>[^/]+)/(?<version>[^/]+)/(?<type>[^/]+)/(?<artifact>[^\\.-/]+)-\\k<version>(-(?<classifier>[^\\.]+))?(\\.(?<ext>.+))?";
 
     public static final String MAVEN_PATTERN1 = "(?<group>.+)/(?<module>[^/]+)/(?<version>[^/]+)/(?<artifact>\\k<module>)-\\k<version>(-(?<classifier>[^\\.]+))?(\\.(?<ext>.+))?";
 
     public static final String MISC_PATTERN1 = "(?<group>.+)/([^/]+)/(?<artifact>[^\\.-/]+)-(?<version>[^/]+)\\.(?<ext>zip)";
-
     public static final String MISC_PATTERN2 = "(?<group>.+)/(?<buildnumber>\\d+)/([^/]+/)*(?<artifact>[^\\./]+)-(?<version>[^/]+)\\.(?<ext>zip)";
 
     public static final String ARTIFACT_PATTERN = "(?<group>.+)[\\/](?<artifact>.+)\\/(?<version>.+)\\/(?<filename>.+)\\.(?<ext>.+)";
 
     public static final String APACHE2_PATTERN = "(?<group>.+)/(?<artifact>.+)/(?<version>.+)/(?<filename>.+)\\.?(?<ext>tar.gz)";
 
-    public static final String BOWER_PATTERN = "(?<group>.+)/(?<module>[^/]+)/(?<artifact>.+)/([^/]+)/(?<version>.+)/(?<filename>.+)\\.?(?<ext>tar.gz)";
+    public static final String BOWER_PATTERN = "(?<group>.+)/(?<module>[^/]+)/([^/]+)/(?<version>.+)/(?<filename>.+)\\.?(?<ext>tar.gz)";
 
-    public static final String CHEF_PATTERN = "(?<group>.+)/(?<artifact>.+)/(?<version>.+)/(?<filename>.+)\\.(?<ext>.+)" ;
+    public static final String CHEF_PATTERN = "(?<artifact>.+)/(?<version>.+)/(?<filename>.+)\\.(?<ext>.+)" ;
 
     public static final String CONDA_PATTERN = "(?<group>.+)/(?<artifact>[^\\.-/]+)(-(?<version>[^/]+))?\\.(?<ext>(tar.bz2|json))";
 
@@ -40,7 +37,7 @@ public class ArtifactUtilTest {
 
     public static final String CRAN_PATTERN2 = "(?<group>.+)/([^/]+)/(?<artifact>.+)/(?<filename>.+)\\.?(?<ext>tar.gz)";
 
-    public static final String CRAN_PATTERN3 = "(?<group>.+)/([^/]+)/(?<module>[^/]+)/(?<artifact>.+)/(?<version>.+)/(?<filename>.+)\\.(?<ext>.+)";
+    public static final String CRAN_PATTERN3 = "(?<module>[^/]+)/(?<artifact>.+)/(?<version>.+)/(?<filename>.+)\\.(?<ext>.+)";
 
     public static final String GEMS_INTERNAL_PATTERN ="(?<group>.+)/(?<filename>.+)\\.(?<ext>.+)?";
 
@@ -66,7 +63,7 @@ public class ArtifactUtilTest {
 
     public static final String NPM_PATTERN = "(?<group>[^@|/|.]+)/((@.+)\\/)?((?<artifact>[^\\/]+)/-/\\k<artifact>-)?(?<version>\\d[^/]+)\\.(?<ext>t.*gz)";
 
-    public static final String NUGET_PATTERN = "(?<group>[^/]+)/([^/]+/)?(?<artifact>\\D+)\\.(?<version>\\d+\\.[\\d\\.]+)(-(?<classifier>\\w+))?\\.(?<ext>nupkg)";
+    public static final String NUGET_PATTERN = "(?<artifact>\\D+)\\.(?<version>\\d+\\.[\\d\\.]+)(-(?<classifier>\\w+))?\\.(?<ext>nupkg)";
 
     public static final String PIPY_PATTERN = "(?<group>[^/]+)/([^/]+/)*(?<artifact>\\w+)-(?<version>\\d[\\d\\.]+)(-(?<classifier>[^.]+))?\\.(?<ext>\\w{2,3}(.\\w{2,3})?)";
 
@@ -75,6 +72,8 @@ public class ArtifactUtilTest {
     public static final String PIPY_PUB_PATTERN = "(?<group>[^/]+)/(?<artifact>[^/]+)/(?<version>\\d[\\d\\.]+)/\\k<artifact>-\\k<version>(-(?<classifier>[^.]+))?\\.(?<ext>\\w{2,3}(.\\w{2,3})?)";
 
     public static final String REMOTEKEYS_PATTERN = "(?<group>.+)/(?<artifact>.+)\\.(?<ext>key)";
+
+    public static final String RPM_INT_PATTERN1 = "(?<module>[^/]+)/(?<filename>.+)\\.(?<ext>rpm)";
 
     public static final String RPM_INT_PATTERN = "(?<group>.+)/\\d/(?<module>[^/]+)/(?<artifact>[^/]+)/\\w/(?<classifier>[^\\d]+)-(?<version>.+)\\.(?<ext>rpm)";
 
@@ -274,24 +273,24 @@ public class ArtifactUtilTest {
     @Test
     public void testNugetInt() {
         String patternStr = NUGET_PATTERN;
-        String path = "nuget-internalfacing/myArtifactName.1.0.11119.0.nupkg";
+        String path = "myArtifactName.1.0.11119.0.nupkg";
 
         Pattern pattern = Pattern.compile(patternStr);
         BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
         assertNotNull(ba);
-        assertEquals("nuget-internalfacing", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactGroupId());
         assertEquals(null, ba.getArtifactModule());
         assertEquals("1.0.11119.0", ba.getArtifactVersion());
         assertEquals("myArtifactName", ba.getArtifactName());
         assertEquals(null, ba.getArtifactClassifier());
         assertEquals("nupkg", ba.getArtifactExtension());
 
-        path = "dummyGroup/myArtifactName.1.0.0-prerelease0021.nupkg";
+        path = "myArtifactName.1.0.0-prerelease0021.nupkg";
 
         pattern = Pattern.compile(patternStr);
         ba = ArtifactUtil.parse(pattern, path);
         assertNotNull(ba);
-        assertEquals("dummyGroup", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactGroupId());
         assertEquals(null, ba.getArtifactModule());
         assertEquals("1.0.0", ba.getArtifactVersion());
         assertEquals("myArtifactName", ba.getArtifactName());
@@ -302,24 +301,24 @@ public class ArtifactUtilTest {
     @Test
     public void testNugetPub() {
         String patternStr = NUGET_PATTERN;
-        String path = "nuget-publicfacing/myArtifactName.18.1.1.nupkg";
+        String path = "myArtifactName.18.1.1.nupkg";
 
         Pattern pattern = Pattern.compile(patternStr);
         BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
         assertNotNull(ba);
-        assertEquals("nuget-publicfacing", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactGroupId());
         assertEquals(null, ba.getArtifactModule());
         assertEquals("18.1.1", ba.getArtifactVersion());
         assertEquals("myArtifactName", ba.getArtifactName());
         assertEquals(null, ba.getArtifactClassifier());
         assertEquals("nupkg", ba.getArtifactExtension());
 
-        path = "dummyGroup/dummyArtifactName.5.14.5506.26202.nupkg";
+        path = "dummyArtifactName.5.14.5506.26202.nupkg";
 
         pattern = Pattern.compile(patternStr);
         ba = ArtifactUtil.parse(pattern, path);
         assertNotNull(ba);
-        assertEquals("dummyGroup", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactGroupId());
         assertEquals(null, ba.getArtifactModule());
         assertEquals("5.14.5506.26202", ba.getArtifactVersion());
         assertEquals("dummyArtifactName", ba.getArtifactName());
@@ -353,7 +352,7 @@ public class ArtifactUtilTest {
         assertEquals("dummyArtifactName", ba.getArtifactName());
         assertEquals("my36-classifier-1_2_3", ba.getArtifactClassifier());
         assertEquals("whl", ba.getArtifactExtension());
-        
+
         path = "dummyGroup/dummyApp/1.0.3/dummyApp-1.0.3.tar.gz";
         pattern = Pattern.compile(patternStr);
         ba = ArtifactUtil.parse(pattern, path);
@@ -766,12 +765,12 @@ public class ArtifactUtilTest {
     @Test
     public void testCRAN_WithDiffEXT() {
         String patternStr = CRAN_PATTERN3;
-        String path = "artifact-repo/bin/myModule/artifactname/3.4/data.table_1.12.0.tgz";
+        String path = "bin/artifactname/3.4/data.table_1.12.0.tgz";
         Pattern pattern = Pattern.compile(patternStr);
         BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
         assertNotNull(ba);
-        assertEquals("artifact-repo", ba.getArtifactGroupId());
-        assertEquals("myModule", ba.getArtifactModule());
+        assertEquals(null, ba.getArtifactGroupId());
+        assertEquals("bin", ba.getArtifactModule());
         assertEquals("3.4", ba.getArtifactVersion());
         assertEquals("artifactname", ba.getArtifactName());
         assertEquals(null, ba.getArtifactClassifier());
@@ -798,14 +797,14 @@ public class ArtifactUtilTest {
     @Test
     public void testBower() {
         String patternStr = BOWER_PATTERN;
-        String path = "artifact-repo/module/abc-builds/tags/v1.2.7/abc-builds-v1.2.7.tar.gz";
+        String path = "artifact-repo/module/tags/v1.2.7/abc-builds-v1.2.7.tar.gz";
         Pattern pattern = Pattern.compile(patternStr);
         BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
         assertNotNull(ba);
         assertEquals("artifact-repo", ba.getArtifactGroupId());
         assertEquals("module", ba.getArtifactModule());
         assertEquals("v1.2.7", ba.getArtifactVersion());
-        assertEquals("abc-builds", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactName());
         assertEquals(null, ba.getArtifactClassifier());
         assertEquals("tar.gz", ba.getArtifactExtension());
     }
@@ -895,14 +894,14 @@ public class ArtifactUtilTest {
     @Test
     public void test_Bower_Publicfacing() {
         String patternStr = BOWER_PATTERN;
-        String path = "artifact-repo/abc-module/abc-artifact/tags/v1.18.4/abc-v1.18.4.tar.gz";
+        String path = "groupname/abc-module/tags/v1.18.4/abc-v1.18.4.tar.gz";
         Pattern pattern = Pattern.compile(patternStr);
         BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
         assertNotNull(ba);
-        assertEquals("artifact-repo", ba.getArtifactGroupId());
+        assertEquals("groupname", ba.getArtifactGroupId());
         assertEquals("abc-module", ba.getArtifactModule());
         assertEquals("v1.18.4", ba.getArtifactVersion());
-        assertEquals("abc-artifact", ba.getArtifactName());
+        assertEquals(null, ba.getArtifactName());
         assertEquals(null, ba.getArtifactClassifier());
         assertEquals("tar.gz", ba.getArtifactExtension());
     }
@@ -913,11 +912,11 @@ public class ArtifactUtilTest {
     @Test
     public void testChef() {
         String patternStr = CHEF_PATTERN;
-        String path = "artifact-repo/007_abc_artifact_Instance/1.0.0/007_abc_artifact_Instance-1.0.0.tgz";
+        String path = "007_abc_artifact_Instance/1.0.0/007_abc_artifact_Instance-1.0.0.tgz";
         Pattern pattern = Pattern.compile(patternStr);
         BinaryArtifact ba = ArtifactUtil.parse(pattern, path);
         assertNotNull(ba);
-        assertEquals("artifact-repo", ba.getArtifactGroupId());
+        assertEquals(null, ba.getArtifactGroupId());
         assertEquals(null, ba.getArtifactModule());
         assertEquals("1.0.0", ba.getArtifactVersion());
         assertEquals("007_abc_artifact_Instance", ba.getArtifactName());
@@ -1223,4 +1222,5 @@ public class ArtifactUtilTest {
 
 
 }
+
 
