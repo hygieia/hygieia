@@ -72,7 +72,7 @@ public class ArtifactEvaluator extends Evaluator<ArtifactAuditResponse> {
         }
         artifactAuditResponse.setBinaryArtifacts(binaryArtifacts);
         binaryArtifacts.sort(Comparator.comparing(BinaryArtifact::getCreatedTimeStamp));
-        artifactAuditResponse.setLastUpdated(CollectionUtils.isNotEmpty(binaryArtifacts)?binaryArtifacts.get(0).getModifiedTimeStamp():0);
+        artifactAuditResponse.setLastUpdated(CollectionUtils.isNotEmpty(binaryArtifacts)?binaryArtifacts.get(0).getCreatedTimeStamp():0);
         boolean isBuild = binaryArtifacts.stream().anyMatch(ba-> CollectionUtils.isNotEmpty(ba.getBuildInfos()));
         boolean isServiceAccount = binaryArtifacts.stream().anyMatch(ba-> isServiceAccount(ba.getCreatedBy()));
         boolean isDocker = binaryArtifacts.stream().anyMatch(ba-> ba.getVirtualRepos().stream().anyMatch(repo -> repo.contains(DOCKER)));
