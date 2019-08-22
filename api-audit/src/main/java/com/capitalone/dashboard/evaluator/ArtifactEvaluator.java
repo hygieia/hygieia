@@ -11,6 +11,7 @@ import com.capitalone.dashboard.response.ArtifactAuditResponse;
 import com.capitalone.dashboard.status.ArtifactAuditStatus;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -72,7 +73,7 @@ public class ArtifactEvaluator extends Evaluator<ArtifactAuditResponse> {
         }
         artifactAuditResponse.setBinaryArtifacts(binaryArtifacts);
         binaryArtifacts.sort(Comparator.comparing(BinaryArtifact::getCreatedTimeStamp));
-        artifactAuditResponse.setLastUpdated(CollectionUtils.isNotEmpty(binaryArtifacts)?binaryArtifacts.get(0).getModifiedTimeStamp():0);
+        artifactAuditResponse.setLastUpdated(getLastUpdated(binaryArtifacts));
         boolean isBuild = binaryArtifacts.stream().anyMatch(ba-> CollectionUtils.isNotEmpty(ba.getBuildInfos()));
         boolean isServiceAccount = binaryArtifacts.stream().anyMatch(ba-> isServiceAccount(ba.getCreatedBy()));
         boolean isDocker = binaryArtifacts.stream().anyMatch(ba-> ba.getVirtualRepos().stream().anyMatch(repo -> repo.contains(DOCKER)));
@@ -83,6 +84,19 @@ public class ArtifactEvaluator extends Evaluator<ArtifactAuditResponse> {
             artifactAuditResponse.addAuditStatus(ArtifactAuditStatus.ART_DOCK_IMG_FOUND);
         }
         return artifactAuditResponse;
+    }
+
+    private long getLastUpdated(List<BinaryArtifact> binaryArtifacts) {
+        BinaryArtifact createdTime = getBinaryArtifactWithMaxTimestamp(binaryArtifacts, Comparator.comparing(BinaryArtifact::getCreatedTimeStamp));
+        BinaryArtifact modifiedTime = getBinaryArtifactWithMaxTimestamp(binaryArtifacts, Comparator.comparing(BinaryArtifact::getModifiedTimeStamp));
+        return NumberUtils.max(createdTime.getCreatedTimeStamp(),modifiedTime.getModifiedTimeStamp());
+    }
+
+    private BinaryArtifact getBinaryArtifactWithMaxTimestamp(List<BinaryArtifact> binaryArtifacts, Comparator<BinaryArtifact> comparing) {
+        if(CollectionUtils.isNotEmpty(binaryArtifacts)){
+            return binaryArtifacts.stream().max(comparing).get();
+        }
+      return new BinaryArtifact();
     }
 
     private String getValue(CollectorItem collectorItem, String attribute) {
