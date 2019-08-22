@@ -120,7 +120,7 @@ public class RegressionTestResultEvaluator extends Evaluator<TestResultsAuditRes
             return testResultsAuditResponse;
         }
         TestResult testResult = testResults.stream().sorted(Comparator.comparing(TestResult::getTimestamp).reversed()).findFirst().get();
-
+        testResultsAuditResponse.setBuildArtifact(testResult.getBuildArtifact());
         testResultsAuditResponse.setLastExecutionTime(testResult.getStartTime());
         testResultsAuditResponse.setType(testResult.getType().toString());
         testResultsAuditResponse.setFeatureTestResult(getFeatureTestResult(testResult));

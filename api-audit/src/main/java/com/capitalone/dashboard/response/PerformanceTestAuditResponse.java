@@ -11,6 +11,7 @@ public class PerformanceTestAuditResponse extends AuditReviewResponse<Performanc
     private long lastExecutionTime;
 
     private Collection<PerfTest> result = new ArrayList<>();
+    private Object buildArtifact;
 
     public Collection<PerfTest> getResult() {
         return result;
@@ -34,5 +35,13 @@ public class PerformanceTestAuditResponse extends AuditReviewResponse<Performanc
 
     public void setLastExecutionTime(long lastExecutionTime) {
         this.lastExecutionTime = lastExecutionTime;
+    }
+
+    public Object getBuildArtifact() {
+        return buildArtifact;
+    }
+
+    public void setBuildArtifact(Object buildArtifact) {
+        this.buildArtifact = buildArtifact;
     }
 }
