@@ -15,14 +15,6 @@ services:
     depends_on:
       - db
 
-  api-audit:
-    build: api-audit
-    image: hygieia-api-audit
-    depends_on:
-      - db-setup
-    ports:
-      - "8081:8080"
-
   ui:
     build: UI
     image: hygieia-ui
