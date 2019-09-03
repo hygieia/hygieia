@@ -3,6 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>UI</artifactId>
     <packaging>pom</packaging>
+    <version>3.0.3-SNAPSHOT</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Hygieia UI module</description>
     <url>https://github.com/capitalone/Hygieia</url>
@@ -10,8 +11,9 @@
     <parent>
         <groupId>com.capitalone.dashboard</groupId>
         <artifactId>Hygieia</artifactId>
-        <version>3.0.1</version>
+        <version>3.0.2-SNAPSHOT</version>
     </parent>
+
 
     <properties>
         <frontend-maven-plugin.skip>false</frontend-maven-plugin.skip>
@@ -92,34 +94,13 @@
                     </execution>
 
                     <execution>
-                        <id>bower install</id>
-                        <goals>
-                            <goal>bower</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>install</arguments>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>jasmine tests</id>
-                        <goals>
-                            <goal>karma</goal>
-                        </goals>
-                        <configuration>
-                            <karmaConfPath>karma.conf.js</karmaConfPath>
-                        </configuration>
-                    </execution>
-
-                    <execution>
                         <id>gulp build</id>
                         <goals>
                             <goal>gulp</goal>
                         </goals>
 
-                        <!-- optional: the default phase is "generate-resources"
-                               move it to after the tests have run so that we only package if it works-->
-                        <phase>prepare-package</phase>
+                        <!-- optional: the default phase is "generate-resources" -->
+                        <phase>generate-resources</phase>
 
                         <configuration>
                             <!-- optional: if not specified, it will run gulp's default
