@@ -10,4 +10,4 @@ shred keys.gpg
 
 sed -i 's|-SNAPSHOT||g' pom.xml
 
-mvn deploy -q -P release -pl '!hygieia-jenkins-plugin'
+mvn deploy -q -P release
