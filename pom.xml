@@ -5,7 +5,7 @@
     <groupId>com.capitalone.dashboard</groupId>
     <artifactId>Hygieia</artifactId>
     <version>3.0.2-SNAPSHOT</version>
-  <name>${project.groupId}:${project.artifactId}</name>
+    <name>${project.groupId}:${project.artifactId}</name>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -28,7 +28,7 @@
         <spring.version>4.2.5.RELEASE</spring.version>
         <spring.cloud.version>1.3.1.RELEASE</spring.cloud.version>
         <jackson.version>2.5.0</jackson.version>
-      <guava.version>18.0</guava.version>
+        <guava.version>18.0</guava.version>
         <pmd.version>3.6</pmd.version>
         <jacoco.version>0.7.6.201602180812</jacoco.version>
         <joda-time.version>2.7</joda-time.version>
@@ -87,9 +87,9 @@
   </developers>
 
   <scm>
-    <connection>scm:git:https://github.com/capitalone/Hygieia.git/</connection>
-    <developerConnection>scm:git:https://github.com/capitalone/Hygieia.git/</developerConnection>
-    <url>https://github.com/capitalone/Hygieia.git</url>
+    <connection>scm:git:https://github.com/Hygieia/Hygieia.git/</connection>
+    <developerConnection>scm:git:https://github.com/Hygieia/Hygieia.git/</developerConnection>
+    <url>https://github.com/Hygieia/Hygieia.git</url>
     <tag>HEAD</tag>
   </scm>
 
