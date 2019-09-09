@@ -4,7 +4,7 @@
     <packaging>pom</packaging>
     <groupId>com.capitalone.dashboard</groupId>
     <artifactId>Hygieia</artifactId>
-    <version>3.0.2-SNAPSHOT</version>
+  <version>3.1.0</version>
     <name>${project.groupId}:${project.artifactId}</name>
 
     <parent>
@@ -21,7 +21,7 @@
     </licenses>
 
     <properties>
-      <hygieia.core.version>3.1.4</hygieia.core.version>
+      <hygieia.core.version>3.1.5</hygieia.core.version>
         <spring-data-releasetrain.version>Gosling-RELEASE</spring-data-releasetrain.version>
         <mongodb.version>3.0.2</mongodb.version>
         <mongo>3.0.2</mongo>
