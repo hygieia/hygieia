@@ -1,0 +1,5 @@
+jenkins-master:
+  build: .
+  container_name: jenkins-master
+  ports:
+  - 9100:8080

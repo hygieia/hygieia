@@ -1,0 +1,6 @@
+
+sonarqube:
+  image: sonarqube:5.3
+  ports:
+   - "9000:9000"
+   - "9092:9092"
