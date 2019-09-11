@@ -3,21 +3,19 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>UI</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.3-SNAPSHOT</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Hygieia UI module</description>
-    <url>https://github.com/capitalone/Hygieia</url>
+    <url>https://github.com/Hygieia/Hygieia</url>
 
-    <parent>
-        <groupId>com.capitalone.dashboard</groupId>
-        <artifactId>Hygieia</artifactId>
-        <version>3.0.2-SNAPSHOT</version>
-    </parent>
-
-
-    <properties>
-        <frontend-maven-plugin.skip>false</frontend-maven-plugin.skip>
-    </properties>
+  <parent>
+    <groupId>com.capitalone.dashboard</groupId>
+    <artifactId>Hygieia</artifactId>
+      <version>3.1.1-SNAPSHOT</version>
+  </parent>
+  
+  <properties>
+  	<frontend-maven-plugin.skip>false</frontend-maven-plugin.skip>
+  </properties>
 
     <build>
         <plugins>
