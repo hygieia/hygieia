@@ -1,0 +1,38 @@
+{
+  "name": "UI-protractor-tests",
+  "version": "1.0.0",
+  "description": "Serenity reports with classic Protractor and Cucumber setup",
+  "main": "index.js",
+  "scripts": {
+    "preprotractor": "webdriver-manager update --standalone --versions.chrome=2.37",
+    "protractor": "protractor ./protractor.conf.js",
+    "test": "npm run protractor --silent",
+    "pretest": "serenity update",
+    "report": "serenity run"
+  },
+  "repository": {
+    "type": "git"
+  },
+  "keywords": [
+    "serenity-js",
+    "protractor",
+    "cucumber"
+  ],
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "chai": "4.0.2",
+    "chai-as-promised": "7.0.0",
+    "chai-smoothie": "^0.2.0",
+    "cucumber": "1.3.2",
+    "loglevel": "1.5.0",
+    "npm-failsafe": "^0.1.0",
+    "protractor": "5.2.0",
+    "protractor-cucumber-framework": "3.1.2",
+    "rimraf": "2.5.4",
+    "serenity-cli": "^0.7.1",
+    "serenity-js": ">= 1.7.0"
+  },
+  "dependencies": {
+    "ssl-root-cas": "^1.2.4"
+  }
+}
