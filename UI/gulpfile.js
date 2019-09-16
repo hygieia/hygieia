@@ -237,7 +237,8 @@ gulp.task('views', function() {
 gulp.task('fonts', function() {
     return gulp
         .src([
-            'node_modules/**/*'
+            'node_modules/components-font-awesome/**/*',
+            ''
         ])
         .pipe(filter('**/*.{eot,ttf,woff,woff2}'))
         .pipe(flatten())
@@ -267,6 +268,13 @@ gulp.task('html', function() {
             { name: 'bower', ignorePath: hygieia.dist, addRootSlash: false })
         )
         .pipe(gulp.dest(hygieia.dist))
+
+        // wiredep for css as well
+        .pipe(inject(gulp.src(
+            wiredep({
+                directory: 'node_modules'
+            }).css
+        ).pipe(gulp.dest(hygieia.dist+ 'node_modules')), { name: 'bower', ignorePath: hygieia.dist, addRootSlash: false})).pipe(gulp.dest(hygieia.dist))
 
         // replace inject:js with script references to all the files in the following sources
         .pipe(inject(gulp.src(
