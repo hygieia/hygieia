@@ -1,23 +1,47 @@
-<div class="dashboard-widgets container-fluid" widget-container dashboard="ctrl.dashboard">
-    <div ng-if="ctrl.scoreHeaderEnabled">
-        <score-view-header dashboard-id="{{ctrl.dashboard.id}}" rate-it-options="ctrl.scoreRateItOptionsHeader"></score-view-header>
-    </div>
-    <div class="row">
-        <div class="col-sm-5">
-            <div ng-if="ctrl.scoreWidgetEnabled">
-                <score-view-widget dashboard-id="{{ctrl.dashboard.id}}" rate-it-options="ctrl.scoreRateItOptionsWidget"></score-view-widget>
-            </div>
-            <widget title="build" widget-type="build"></widget>
-            <widget title="repo" widget-type="repo"></widget>
-        </div>
+<div ng-controller="CapOneTemplateController as template">
+    <div id="header">
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container-fluid">
 
-        <div class="col-sm-6">
-            <widget title="codeanalysis" widget-type="codeanalysis"></widget>
-            <div class="col-sm-6">
-                <widget title="Monitor" widget-type="monitor"></widget>
+                <a ng-href="#/" class="dashboard-logo"></a>
+
+                <h4 title="{{::ctrl.dashboard.title }}">{{::ctrl.dashboard.title | trunText:50}}</h4>
+
+                <div class="pipeline-toggle btn-group">
+
+                    <span class="btn" ng-repeat="tab in template.tabs" ng-click="template.toggleView($index)"
+                          ng-class="tab.name == template.widgetView ? 'btn-primary' : 'btn-default'">
+                        <span ng-class="tab.name === 'Widget' ? 'fa fa-th' : tab.name === 'Pipeline' ? 'fa fa-task' : 'fa fa-cloud'"></span>
+                        {{tab.name}}
+                    </span>
+
+                </div>
             </div>
+        </nav>
+    </div>
+    <div class="dashboard-widgets container-fluid" widget-container dashboard="ctrl.dashboard">
+        <div ng-if="ctrl.scoreHeaderEnabled">
+            <score-view-header dashboard-id="{{ctrl.dashboard.id}}"
+                               rate-it-options="ctrl.scoreRateItOptionsHeader"></score-view-header>
+        </div>
+        <div class="row">
+            <div class="col-sm-5">
+                <div ng-if="ctrl.scoreWidgetEnabled">
+                    <score-view-widget dashboard-id="{{ctrl.dashboard.id}}"
+                                       rate-it-options="ctrl.scoreRateItOptionsWidget"></score-view-widget>
+                </div>
+                <widget title="build" widget-type="build"></widget>
+                <widget title="repo" widget-type="repo"></widget>
+            </div>
+
             <div class="col-sm-6">
-                <widget title="deploy" widget-type="deploy"></widget>
+                <widget title="codeanalysis" widget-type="codeanalysis"></widget>
+                <div class="col-sm-6">
+                    <widget title="Monitor" widget-type="monitor"></widget>
+                </div>
+                <div class="col-sm-6">
+                    <widget title="deploy" widget-type="deploy"></widget>
+                </div>
             </div>
         </div>
     </div>
