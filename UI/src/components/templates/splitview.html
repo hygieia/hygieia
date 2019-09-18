@@ -7,17 +7,17 @@
             <div ng-if="ctrl.scoreWidgetEnabled">
                 <score-view-widget dashboard-id="{{ctrl.dashboard.id}}" rate-it-options="ctrl.scoreRateItOptionsWidget"></score-view-widget>
             </div>
-            <widget name="build"></widget>
-            <widget name="repo"></widget>
+            <widget title="build" widget-type="build"></widget>
+            <widget title="repo" widget-type="repo"></widget>
         </div>
 
         <div class="col-sm-6">
-            <widget name="codeanalysis"></widget>
+            <widget title="codeanalysis" widget-type="codeanalysis"></widget>
             <div class="col-sm-6">
-                <widget name="Monitor"></widget>
+                <widget title="Monitor" widget-type="monitor"></widget>
             </div>
             <div class="col-sm-6">
-                <widget name="deploy"></widget>
+                <widget title="deploy" widget-type="deploy"></widget>
             </div>
         </div>
     </div>
