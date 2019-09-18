@@ -88,9 +88,9 @@
         function processDashboardDetail(response){
             var data = response;
           // collection to hold selected widgets
-          ctrl.widgetSelections={};
+          ctrl.widgetSelections=[];
           // collection to hold active widgets
-          ctrl.activeWidgets={};
+          ctrl.activeWidgets=[];
           ctrl.widgets = widgetManager.getWidgets();
           ctrl.maxActiveCounter=0;
           if(response.template =='widgets'){
@@ -109,9 +109,10 @@
                   }
                 })
             }else{
-              // not sure what this is for
+              // this section is for template dashboards. Should we allow this to be edited?
               ctrl.selectWidgetsDisabled = true;
               _.map(ctrl.widgets, function (value, key) {
+                  // this isn't true. Not all widgets are active!
                     ctrl.activeWidgets.push(key);
                 });
             }
