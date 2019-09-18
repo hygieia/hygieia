@@ -7,15 +7,6 @@
 
                 <h4 title="{{::ctrl.dashboard.title }}">{{::ctrl.dashboard.title | trunText:50}}</h4>
 
-                <div class="pipeline-toggle btn-group">
-
-                    <span class="btn" ng-repeat="tab in template.tabs" ng-click="template.toggleView($index)"
-                          ng-class="tab.name == template.widgetView ? 'btn-primary' : 'btn-default'">
-                        <span ng-class="tab.name === 'Widget' ? 'fa fa-th' : tab.name === 'Pipeline' ? 'fa fa-task' : 'fa fa-cloud'"></span>
-                        {{tab.name}}
-                    </span>
-
-                </div>
             </div>
         </nav>
     </div>
