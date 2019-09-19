@@ -15,7 +15,8 @@ describe('CapOneTemplateController', function () {
 
 
         scope = $rootScope.$new();
-        controller = $controller('CapOneTemplateController', {$scope: scope});
+        var stateModels = [{}, {}, {}];
+        controller = $controller('CapOneTemplateController', {$scope: scope, stateModels: stateModels});
     }));
 
 

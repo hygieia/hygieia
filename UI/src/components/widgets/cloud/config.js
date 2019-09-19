@@ -37,7 +37,8 @@
         function passDataToView() {
 
             var postObj = {
-                name: 'cloud',
+                name: modalData.title,
+                type: 'cloud',
                 options: {
                     id: widgetConfig.options.id,
                     accountNumber: ctrl.accountNumber,

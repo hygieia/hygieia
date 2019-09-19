@@ -36,7 +36,8 @@
                 var projectId = ctrl.rallyProject.options.projectId;
                 var projectName = ctrl.rallyProject.options.projectName;
                 var postObj = {
-                    name: 'AgileTool',
+                    name: modalData.title,
+                    type: 'AgileTool',
                     options: {
                         id: widgetConfig.options.id,
                         projectId: projectId,

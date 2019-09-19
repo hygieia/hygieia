@@ -23,22 +23,22 @@
         <div class="row">
             <div ng-repeat="widgetChunk in template.widgetsOrder">
                 <div class="row">
-                    <div class="col-md-4" ng-repeat="widgetName in widgetChunk track by $index">
-                        <div class="col-sm-4 col-md-12" ng-if="$index==0 && widgetName=='score'">
+                    <div class="col-md-4" ng-repeat="widget in widgetChunk track by $index">
+                        <div class="col-sm-4 col-md-12" ng-if="$index==0 && widget.type=='score'">
                             <score-view-widget dashboard-id="{{ctrl.dashboard.id}}" rate-it-options="ctrl.scoreRateItOptionsWidget">
                             </score-view-widget>
                         </div>
-                        <div class="col-sm-4 col-md-12" ng-if="$index==0 && widgetName!=='score'">
-                            <widget name="{{widgetName}}"
-                                    widget-title="{{template.widgetDisplay[widgetName.toLowerCase()]}}"></widget>
+                        <div class="col-sm-4 col-md-12" ng-if="$index==0 && widget.type!=='score'">
+                            <widget title="{{widget.title}}"
+                                    widget-type="{{widget.type}}"></widget>
                         </div>
                         <div class="col-sm-4 col-md-12" ng-if="$index==1">
-                            <widget name="{{widgetName}}"
-                                    widget-title="{{template.widgetDisplay[widgetName.toLowerCase()]}}"></widget>
+                            <widget title="{{widget.title}}"
+                                    widget-type="{{widget.type}}"></widget>
                         </div>
                         <div class="col-sm-4  col-md-12" ng-if="$index==2">
-                            <widget name="{{widgetName}}"
-                                    widget-title="{{template.widgetDisplay[widgetName.toLowerCase()]}}"></widget>
+                            <widget title="{{widget.title}}"
+                                    widget-type="{{widget.type}}"></widget>
                         </div>
                     </div>
                 </div>
@@ -49,7 +49,7 @@
     <div class="container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.widgetView == 'Pipeline' && template.pipelineInd">
         <div class="row">
             <div class="col-xs-12">
-                <widget name="pipeline" widget-title="Delivery Pipeline"></widget>
+                <widget title="Delivery Pipeline" widget-type="pipeline"></widget>
             </div>
         </div>
     </div>
@@ -57,16 +57,9 @@
     <div class="container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.widgetView == 'Cloud' && template.cloudInd">
         <div class="row">
             <div class="col-xs-12">
-                <widget name="cloud" widget-title="Cloud"></widget>
+                <widget title="Cloud" widget-type="cloud"></widget>
             </div>
         </div>
     </div>
 
-    <div class="container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.widgetView == 'Log' && template.cloudInd">
-        <div class="row">
-            <div class="col-xs-12">
-                <widget name="log" widget-title="Log"></widget>
-            </div>
-        </div>
-    </div>
 </div>

@@ -24,8 +24,8 @@
 
         // method implementations
         function loadSavedTeam(){
-            var teamCollector = modalData.dashboard.application.components[0].collectorItems.TEAM,
-                savedCollectorItem = teamCollector ? teamCollector[0].id : null;
+            var teamCollectors = modalData.dashboard.application.components[0].collectorItems.TEAM;
+            var savedCollectorItem = collectorData.findCollectorForWidget(teamCollectors,widgetConfig);
 
             if(savedCollectorItem) {
 
@@ -57,7 +57,8 @@
             var teamId= ctrl.selectedTeamObject.teamId;
             var teamName= ctrl.selectedTeamObject.teamName;
                 var postObj = {
-                    name: 'TEAM',
+                    name: $scope.title,
+                    type: 'TEAM',
                     options: {
                         id: widgetConfig.options.id,
                         teamId:teamId,

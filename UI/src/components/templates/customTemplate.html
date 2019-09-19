@@ -29,16 +29,16 @@
                             </score-view-widget>
                         </div>
                         <div class="col-sm-4 col-md-12" ng-if="$index==0 && widgetName!=='score'">
-                            <widget name="{{widgetName}}"
-                                    widget-title="{{template.widgetDisplay[widgetName]}}"></widget>
+                            <widget title="{{widgetName}}"
+                                    widget-type="{{template.widgetDisplay[widgetName]}}"></widget>
                         </div>
                         <div class="col-sm-4 col-md-12" ng-if="$index==1">
-                            <widget name="{{widgetName}}"
-                                    widget-title="{{template.widgetDisplay[widgetName]}}"></widget>
+                            <widget title="{{widgetName}}"
+                                    widget-type="{{template.widgetDisplay[widgetName]}}"></widget>
                         </div>
                         <div class="col-sm-4  col-md-12" ng-if="$index==2">
-                            <widget name="{{widgetName}}"
-                                    widget-title="{{template.widgetDisplay[widgetName]}}"></widget>
+                            <widget title="{{widgetName}}"
+                                    widget-type="{{template.widgetDisplay[widgetName]}}"></widget>
                         </div>
                     </div>
                 </div>
@@ -49,7 +49,7 @@
     <div class="container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.widgetView == 'Pipeline'">
         <div class="row">
             <div class="col-xs-12">
-                <widget name="pipeline" widget-title="Delivery Pipeline"></widget>
+                <widget widget-type="pipeline" title="Delivery Pipeline"></widget>
             </div>
         </div>
     </div>
@@ -57,7 +57,7 @@
     <div class="container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.widgetView == 'Cloud'">
         <div class="row">
             <div class="col-xs-12">
-                <widget name="cloud" widget-title="Cloud"></widget>
+                <widget widget-type="cloud" title="Cloud"></widget>
             </div>
         </div>
     </div>

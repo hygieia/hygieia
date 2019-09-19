@@ -32,6 +32,11 @@
     function EditDashboardController($uibModalInstance, dashboardData, userData, userService, dashboardItem, $scope, $q, cmdbData, dashboardService,widgetManager) {
 
         var ctrl = this;
+        // setup cell heights
+        $scope.options = {
+            cellHeight: 200,
+            verticalMargin: 10
+        };
 
         // public variables
         ctrl.dashboardType = dashboardItem.type;
@@ -46,7 +51,6 @@
 
         ];
         ctrl.tabView = ctrl.tabs[0].name;
-        ctrl.activeWidgets = [];
         ctrl.scoreSettings = {
             scoreEnabled : !!dashboardItem.scoreEnabled,
             scoreDisplay : dashboardItem.scoreDisplay
@@ -66,6 +70,8 @@
         ctrl.saveWidgets = saveWidgets;
         ctrl.onConfigurationItemBusAppSelect = onConfigurationItemBusAppSelect;
         ctrl.submitScoreSettings = submitScoreSettings;
+        ctrl.removeWidget = removeWidget;
+        ctrl.addWidget = addWidget;
 
         ctrl.validBusServName = isValidBusServName();
         ctrl.validBusAppName = isValidBusAppName();
@@ -81,32 +87,35 @@
 
         function processDashboardDetail(response){
             var data = response;
-            ctrl.activeWidgets=[];
-            ctrl.widgets = widgetManager.getWidgets();
-            if(response.template =='widgets'){
-                ctrl.selectWidgetsDisabled = false;
-                ctrl.activeWidgets = response.activeWidgets;
+          // collection to hold selected widgets
+          ctrl.widgetSelections=[];
+          // collection to hold active widgets
+          ctrl.activeWidgets=[];
+          ctrl.widgets = widgetManager.getWidgets();
+          ctrl.maxActiveCounter=0;
+          if(response.template =='widgets'){
+              ctrl.selectWidgetsDisabled = false;
+              response.activeWidgets.forEach(function(activeWidget, index){
+                  activeWidget.width=4;
+                  activeWidget.height=1;
+                  activeWidget.order=index;
+                  ctrl.maxActiveCounter= Math.max(ctrl.maxActiveCounter,activeWidget.title.match(/\d+$/)[0]);
+                  ctrl.activeWidgets[activeWidget.title]=activeWidget;
+                });
+              response.widgets.forEach(function(widgetConfig){
+                  // not sure we need to track this do we?
+                  if (widgetConfig.name) {
+                      ctrl.widgetSelections[widgetConfig.name] = widgetConfig;
+                  }
+                })
             }else{
-                ctrl.selectWidgetsDisabled = true;
-                _.map(ctrl.widgets, function (value, key) {
+              // this section is for template dashboards. Should we allow this to be edited?
+              ctrl.selectWidgetsDisabled = true;
+              _.map(ctrl.widgets, function (value, key) {
+                  // this isn't true. Not all widgets are active!
                     ctrl.activeWidgets.push(key);
                 });
             }
-            // collection to hold selected widgets
-            ctrl.widgetSelections={};
-            // iterate through widgets and add existing widgets for dashboard
-            _.map(ctrl.widgets, function (value, key) {
-                if(key!='')
-                    if(ctrl.activeWidgets.indexOf(key)>-1){
-                        ctrl.widgetSelections[key] = true;
-                    }else{
-                        ctrl.widgetSelections[key] = false;
-                    }
-            });
-            _(ctrl.widgets).forEach(function (widget) {
-                var wd = widget;
-                ctrl.widgetSelections[widget.title]= false;
-            });
         }
 
         function processUserResponse(response) {
@@ -251,12 +260,27 @@
             return valid;
         }
 
+        function removeWidget(title) {
+            delete ctrl.activeWidgets[title];
+            delete ctrl.widgetSelections[title];
+        }
+
+        function addWidget(type) {
+            ctrl.maxActiveCounter++;
+            var title = type+ctrl.maxActiveCounter;
+            ctrl.activeWidgets[title] = {type:type, title: title, width: 4, height: 1, order: ctrl.maxActiveCounter}
+        }
+
         // Save template - after edit
         function saveWidgets(form) {
             findSelectedWidgets();
             if(form.$valid ){
+                var active = [];
+                Object.values(ctrl.activeWidgets).forEach(function(widget){
+                   active.push({title:widget.title,type:widget.type});
+                });
                 var submitData = {
-                    activeWidgets: ctrl.selectedWidgets
+                    activeWidgets: active
                 };
                 dashboardData
                     .updateDashboardWidgets(dashboardItem.id,submitData)

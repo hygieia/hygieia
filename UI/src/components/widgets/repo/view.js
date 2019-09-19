@@ -50,10 +50,12 @@
         ctrl.issues = [];
 
         ctrl.showDetail = showDetail;
+        // TODO figure out what the `collectorItem` is used for
         ctrl.load = function() {
             var deferred = $q.defer();
             var params = {
                 componentId: $scope.widgetConfig.componentId,
+                collectorItemId: $scope.widgetConfig.collectorItemIds[0],
                 numberOfDays: 14
             };
 

@@ -59,8 +59,9 @@
         loadSavedTestJobs();
 
         function loadSavedCodeQualityJob(){
-        	var codeQualityCollectorItems = component.collectorItems.CodeQuality,
-            savedCodeQualityJob = codeQualityCollectorItems ? codeQualityCollectorItems[0] : null;
+        	var codeQualityCollectorItems = component.collectorItems.CodeQuality;
+            // match the collector that has the collector item in it.
+            var savedCodeQualityJob = collectorData.findCollectorForWidget(codeQualityCollectorItems,widgetConfig);
 
             if(savedCodeQualityJob){
                 $scope.getJobsById(savedCodeQualityJob.id).then(getCodeQualityCollectorsCallback)
@@ -125,7 +126,8 @@
             }
             var form = document.configForm;
             var postObj = {
-                name: 'codeanalysis',
+                name: modalData.title,
+                type: 'codeanalysis',
                 options: {
                     id: widgetConfig.options.id
                   },

@@ -15,7 +15,7 @@
             transclude: true,
             scope: true,
             link: function ($scope, $element, $attributes) {
-
+                $scope.type = $attributes.widgetType
                 $scope.title = $attributes.widgetModalTitle;
                 $scope.close = $attributes.widgetModalClose != 'false';
             },

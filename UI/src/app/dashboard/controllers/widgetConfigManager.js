@@ -23,6 +23,7 @@
         ctrl.admin = admin;
         ctrl.toggleWidget = toggleWidget;
         ctrl.removeWidget = removeWidget;
+        ctrl.addWidget = addWidget;
         ctrl.onChange = onChange;
         ctrl.onDragStart = onDragStart;
         ctrl.onResizeStart = onResizeStart;
@@ -39,6 +40,7 @@
         }
 
         $scope.widgets = {};
+        $scope.widgetCountByType={};
         ctrl.widgets = widgetManager.getWidgets();
 
         $scope.options = {
@@ -52,34 +54,40 @@
             }else{
                 addWidget(widget);
             }
-
-            $event.target.classList.toggle("added");
         }
 
-        function addWidget(widgetTitle) {
-            var newWidget = { x:0, y:0, width:4, height:1,order :ctrl.count++ };
-            $scope.widgets[widgetTitle] = newWidget;
+        function addWidget(widgetType, $event) {
+            var newWidget = { x:0, y:0, width:4, height:1,order :ctrl.count++, type: widgetType };
+            var title;
+            if (widgetType === 'cloud' || widgetType === 'pipeline') {
+                // restrict these to 1!
+                title = widgetType;
+                $scope.widgetCountByType[widgetType]=1;
+            } else if ($scope.widgetCountByType[widgetType]) {
+                var count =$scope.widgetCountByType[widgetType]+1;
+                $scope.widgetCountByType[widgetType]=count;
+                title=widgetType+count;
+            } else {
+                $scope.widgetCountByType[widgetType]=1;
+                var count=1;
+                title=widgetType+count;
+            }
+            $scope.widgets[title] = newWidget;
         };
 
         function removeWidget(title, $event) {
-            if ($event != null) document.getElementById(title + '-button').classList.remove('added');
             delete $scope.widgets[title];
-            ctrl.count--;
         };
 
         function saveDashboard($event,form) {
             var widgets = [];
             var order=[];
-            _($scope.widgets).forEach(function(widget){
-                var title = widget.title;
-
+            _($scope.widgets).forEach(function(widget, title){
+                var activeWidget = {title:title, type: widget.type};
+                widgets.push(activeWidget);
+                removeWidget(activeWidget.title, $event);
+                order[widget.order] = activeWidget.title;
             });
-            for (var title in $scope.widgets) {
-                widgets.push(title);
-                var obj = $scope.widgets[title];
-                removeWidget(title, $event);
-                order[obj.order] = title;
-            }
 
             var submitData = {
                 template: ctrl.createDashboardData.template,

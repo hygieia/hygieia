@@ -45,11 +45,11 @@
 
             // add a new widget
             function registerWidget(widget) {
-                if(!widget.attrs.name) {
-                    throw new Error('Widget name not defined');
+                if(!widget.attrs.title) {
+                    throw new Error('Widget title not defined');
                 }
 
-                var name = widget.attrs.name = widget.attrs.name.toLowerCase();
+                var name = widget.attrs.title = widget.attrs.title.toLowerCase();
 
                 if(!$scope.registeredWidgets[name]) {
                     $scope.registeredWidgets[name] = [];

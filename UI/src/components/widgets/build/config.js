@@ -42,11 +42,13 @@
         // method implementations
         function loadSavedBuildJob(){
             ctrl.buildId ="";
-        	var buildCollector = modalData.dashboard.application.components[0].collectorItems.Build,
-            savedCollectorBuildJob = buildCollector ? buildCollector[0].description : null;
+        	var buildCollectors = modalData.dashboard.application.components[0].collectorItems.Build;
+        	// match the collector that has the collector item in it.
+            var buildCollector = collectorData.findCollectorForWidget(buildCollectors, widgetConfig);
+            var savedCollectorBuildJob = buildCollector ? buildCollector[0].description : null;
 
             if(savedCollectorBuildJob) {
-                ctrl.buildId = buildCollector[0].id;
+                ctrl.buildId = buildCollector.id;
             	$scope.getJobsById(ctrl.buildId).then(getBuildsCallback)
             }
         }
@@ -59,7 +61,8 @@
             if (valid) {
                 var form = document.buildConfigForm;
                 var postObj = {
-                    name: 'build',
+                    name: modalData.title,
+                    type: 'build',
                     options: {
                     	id: widgetConfig.options.id,
                         buildDurationThreshold: parseFloat(form.buildDurationThreshold.value),

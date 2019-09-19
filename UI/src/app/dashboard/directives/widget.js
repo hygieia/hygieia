@@ -34,18 +34,16 @@
             controller: controller,
             scope: {
                 widget: '=',
-                title: '@widgetTitle'
+                title: '@widgetTitle',
+                widgetType: '@widgetType'
             },
             link: link
         };
 
         function link(scope, element, attrs, containerController) {
-            // make it so name is not case sensitive
-            attrs.name = attrs.name.toLowerCase();
-
             scope.$widgetEl = element;
             scope.container = containerController;
-            scope.widgetDefinition = widgetManager.getWidget(attrs.name);
+            scope.widgetDefinition = widgetManager.getWidget(attrs.widgetType);
             scope.title = attrs.title || scope.widgetDefinition.view.defaults.title;
             scope.header = attrs.header ? attrs.header != 'false' : true;
 
@@ -123,6 +121,7 @@
                         modalData: function () {
                             return {
                                 dashboard: $scope.dashboard,
+                                title: $scope.title,
                                 widgetConfig: $scope.widgetConfig
                             };
                         }
@@ -266,6 +265,8 @@
 
             // prevent intervals from continuing to be called when changing pages
             $scope.$on('$routeChangeStart', stopInterval);
+
+            $scope.$on("$destroy", stopInterval);
         }
     }
 })();

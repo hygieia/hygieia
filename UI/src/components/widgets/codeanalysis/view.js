@@ -45,11 +45,13 @@
         ctrl.load = function () {
             var caRequest = {
                 componentId: $scope.widgetConfig.componentId,
+                collectorItemIds: $scope.widgetConfig.collectorItemIds,
                 max: 1
             };
             var testRequest = {
                 componentId: $scope.widgetConfig.componentId,
-                types: ['Functional', 'Manual'],
+                collectorItemIds: $scope.widgetConfig.collectorItemIds,
+                types: ['Functional','Manual'],
                 max: 1
             };
             var performanceRequest = {
@@ -59,10 +61,12 @@
             };
             var saRequest = {
                 componentId: $scope.widgetConfig.componentId,
+                collectorItemIds: $scope.widgetConfig.collectorItemIds,
                 max: 1
             };
             var libraryPolicyRequest = {
                 componentId: $scope.widgetConfig.componentId,
+                collectorItemIds: $scope.widgetConfig.collectorItemIds,
                 max: 1
             };
 

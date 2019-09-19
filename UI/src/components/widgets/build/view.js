@@ -75,6 +75,7 @@
             var deferred = $q.defer();
             var params = {
                 componentId: $scope.widgetConfig.componentId,
+                collectorItemId: $scope.widgetConfig.collectorItemIds[0],
                 numberOfDays: 15
             };
             buildData.details(params).then(function(data) {

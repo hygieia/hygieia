@@ -31,14 +31,14 @@
                         <div ng-if="ctrl.scoreWidgetEnabled">
                             <score-view-widget dashboard-id="{{ctrl.dashboard.id}}" rate-it-options="ctrl.scoreRateItOptionsWidget"></score-view-widget>
                         </div>
-                        <widget name="feature" widget-title="Feature"></widget>
-                        <widget name="repo"></widget>
+                        <widget widget-type="feature" title="Feature"></widget>
+                        <widget widget-type="repo" title="repo"></widget>
                         </div>
                 </div>
              </div>
 
             <div class="col-md-6">
-                <widget name="build"></widget>
+                <widget title="build" widget-type="build"></widget>
                 <div class="container-fluid">
                     <ul class="nav nav-tabs">
                         <li class="text-lg auth-modal-tab" ng-repeat="tab in template.minitabs" ng-click="template.miniToggleView($index)"
@@ -46,7 +46,6 @@
                             <a class="textColor-Performance" data-toggle="tab" >{{tab.name}}</a>
 
                         </li>
-                        </span>
                     </ul>
 
                 </div>
@@ -54,7 +53,7 @@
                 <div class="container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.miniWidgetView == 'Quality'">
                     <div class="row">
                         <div class="col-xs-12">
-                            <widget name="codeanalysis" widget-title="Quality"></widget>
+                            <widget widget-type="codeanalysis" title="Quality"></widget>
                         </div>
                     </div>
                 </div>
@@ -62,7 +61,7 @@
                 <div class="container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.miniWidgetView == 'Performance'">
                     <div class="row">
                         <div class="col-xs-12">
-                            <widget name="Performance" widget-title="Performance"></widget>
+                            <widget widget-type="Performance" title="Performance"></widget>
                         </div>
                     </div>
                 </div>
@@ -72,11 +71,11 @@
 
                 <div class="row">
                     <div class="col-sm-6 col-md-12">
-                        <widget name="Monitor"></widget>
+                        <widget widget-type="Monitor" title="Monitor"></widget>
                     </div>
 
                     <div class="col-sm-6 col-md-12">
-                        <widget name="deploy"></widget>
+                        <widget widget-type="deploy" title="deploy"></widget>
                     </div>
                 </div>
 
@@ -87,7 +86,7 @@
     <div class="container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.widgetView == 'Pipeline'">
         <div class="row">
             <div class="col-xs-12">
-                <widget name="pipeline" widget-title="Delivery Pipeline"></widget>
+                <widget widget-type="pipeline" title="Delivery Pipeline"></widget>
             </div>
         </div>
     </div>
@@ -96,7 +95,7 @@
     <div class="container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.widgetView == 'Cloud'">
         <div class="row">
             <div class="col-xs-12">
-                <widget name="cloud" widget-title="Cloud"></widget>
+                <widget widget-type="cloud" title="Cloud"></widget>
             </div>
         </div>
     </div>

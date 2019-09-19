@@ -28,20 +28,13 @@
             var widgetObj = {};
             ctrl.widgets = dashboard.activeWidgets;
             _(ctrl.widgets).forEach(function (widget) {
-                if (widget == 'pipeline') {
+                if (widget.type == 'pipeline') {
                     ctrl.pipelineInd = true;
-                } else if (widget == 'cloud') {
+                } else if (widget.type == 'cloud') {
                     ctrl.cloudInd = true;
                 } else {
-                    if (widget == 'codeanalysis') {
-                        widgetObj[widget] = 'Code Analysis';
-                    } else if (widget === 'performance') {
-                        widgetObj[widget] = 'Performance Analysis';
-                    } else {
-                        widgetObj[widget] = getDisplayName(widget);
-                    }
+                    widgetObj[widget.title] = widget;
                 }
-
             });
             //Check in parent controller if score is enabled
             //Push to the top of display
@@ -51,7 +44,7 @@
 
             ctrl.widgetDisplay = widgetObj;
             _.each(ctrl.widgetDisplay, function (val, key) {
-                ctrl.sortOrder.push(key);
+                ctrl.sortOrder.push(val);
             });
             ctrl.widgetsOrder = chunk(ctrl.sortOrder, 3);
             if (ctrl.pipelineInd === false) {
@@ -79,8 +72,8 @@
         }
 
         //get display name in camel case
-        function getDisplayName(title) {
-            return title.charAt(0).toUpperCase() + title.slice(1);
+        function getDisplayName(widget) {
+            return widget.title.charAt(0).toUpperCase() + title.slice(1);
         }
     }
 })();
