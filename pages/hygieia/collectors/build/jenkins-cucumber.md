@@ -60,16 +60,20 @@ To archive your root directory, select the Post-build action as 'Archive the art
 
 ### Setup Instructions
 
+## Fork and Clone the Collector 
+
+Fork and clone the Jenkins-Cucumber Collector from the [GitHub repo](https://github.com/Hygieia/hygieia-jenkins-cucumber-collector). 
+
 To configure the Jenkins-Cucumber Collector, execute the following steps:
 
 *   **Step 1: Change Directory**
 
-Change the current working directory to the `jenkins-cucumber` directory of your Hygieia source code installation.
+Change the current working directory to the `hygieia-jenkins-cucumber-collector` directory of your Hygieia source code installation.
 
 For example, in the Windows command prompt, run the following command:
 
 ```
-cd C:\Users\[usernname]\hygieia\collectors\artifact\jenkins-cucumber
+cd C:\Users\[usernname]\hygieia-jenkins-cucumber-collector
 ```
 
 *   **Step 2: Run Maven Build**
@@ -80,7 +84,7 @@ Run the maven build to package the collector into an executable JAR file:
  mvn install
 ```
 
-The output file `jenkins-cucumber.jar` is generated in the `jenkins-cucumber\target` folder.
+The output file `[collector name].jar` is generated in the `hygieia-jenkins-cucumber-collector\target` folder.
 
 Once the build is run, the code quality artefacts(for example, test.exec) should be available at the following path:
 
@@ -98,10 +102,10 @@ For information about sourcing the application properties file, refer to the [Sp
 
 *   **Step 4: Deploy the Executable File**
 
-To deploy the `jenkins-cucumber.jar` file, change directory to `jenkins-cucumber\target`, and then execute the following from the command prompt:
+To deploy the `[collector name].jar` file, change directory to `hygieia-jenkins-cucumber-collector\target`, and then execute the following from the command prompt:
 
 ```bash
-java -jar jenkins-cucumber-test-collector.jar --spring.config.name=jenkins-cucumber --spring.config.location=[path to application.properties file]
+java -jar [collector name].jar --spring.config.name=jenkins-cucumber --spring.config.location=[path to application.properties file]
 ```
 
 ### Sample Application Properties File

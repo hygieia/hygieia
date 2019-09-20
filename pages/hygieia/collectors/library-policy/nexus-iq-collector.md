@@ -11,16 +11,20 @@ Configure the Nexus IQ Collector to display and monitor information (related to 
 
 ### Setup Instructions
 
+## Fork and Clone the Collector 
+
+Fork and clone the Nexus IQ Collector from the [GitHub repo](https://github.com/Hygieia/hygieia-oss-nexusiq-collector). 
+
 To configure the Nexus IQ Collector, execute the following steps:
 
 *   **Step 1: Change Directory**
 
-Change the current working directory to the `nexusiq` directory of your Hygieia source code installation.
+Change the current working directory to the `hygieia-oss-nexusiq-collector` directory of your Hygieia source code installation.
 
 For example, in the Windows command prompt, run the following command:
 
 ```
-cd C:\Users\[username]\hygieia\collectors\library-policy\nexusiq
+cd C:\Users\[username]\hygieia-oss-nexusiq-collector
 ```
 
 *   **Step 2: Run Maven Build**
@@ -31,7 +35,7 @@ Run the maven build to package the collector into an executable JAR file:
 mvn install
 ```
 
-The output file `nexusiq-collector.jar` is generated in the `nexusiq\target` folder.
+The output file `[collector name].jar` is generated in the `hygieia-oss-nexusiq-collector\target` folder.
 
 *   **Step 3: Set Parameters in Application Properties File**
 
@@ -43,10 +47,10 @@ For information about sourcing the application properties file, refer to the [Sp
 
 *   **Step 4: Deploy the Executable File**
 
-To deploy the `nexusiq-collector.jar` file, change directory to `nexusiq\target`, and then execute the following from the command prompt:
+To deploy the `[collector name].jar` file, change directory to `hygieia-oss-nexusiq-collector\target`, and then execute the following from the command prompt:
 
 ```bash
-java -jar nexus-iq-collector.jar --spring.config.name=nexusiq --spring.config.location=[path to application.properties file]
+java -jar [collector name].jar --spring.config.name=nexusiq --spring.config.location=[path to application.properties file]
 ```
 
 ### Sample Application Properties File

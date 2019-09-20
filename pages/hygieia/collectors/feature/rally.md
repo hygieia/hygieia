@@ -11,16 +11,20 @@ Configure the Rally Collector to display the details of the current iteration of
 
 ### Setup Instructions
 
+## Fork and Clone the Collector 
+
+Fork and clone the Rally Collector from the [GitHub repo](https://github.com/Hygieia/hygieia-feature-rally-collector). 
+
 To configure the Rally Collector, execute the following steps:
 
 *   **Step 1: Change Directory**
 
-Change the current working directory to the `rally` directory of your Hygieia source code installation.
+Change the current working directory to the `hygieia-feature-rally-collector` directory of your Hygieia source code installation.
 
 For example, in the Windows command prompt, run the following command:
 
 ```
-cd C:\Users\[username]\hygieia\collectors\feature\rally
+cd C:\Users\[username]\hygieia-feature-rally-collector
 ```
 
 *   **Step 2: Run Maven Build**
@@ -31,7 +35,7 @@ Run the maven build to package the collector into an executable JAR file:
 mvn install
 ```
 
-The output file `rally-collector.jar` is generated in the `rally\target` folder.
+The output file `[collector name].jar` is generated in the `hygieia-feature-rally-collector\target` folder.
 
 *   **Step 3: Set Parameters in Application Properties File**
 
@@ -43,10 +47,10 @@ For information about sourcing the application properties file, refer to the [Sp
 
 *   **Step 4: Deploy the Executable File**
 
-To deploy the `rally-collector.jar` file, change directory to `rally\target`, and then execute the following from the command prompt:
+To deploy the `[collector name].jar` file, change directory to `hygieia-feature-rally-collector\target`, and then execute the following from the command prompt:
 
 ```bash
-java -jar rally-collector.jar --spring.config.name=rally --spring.config.location=[path to application.properties file]
+java -jar [collector name].jar --spring.config.name=rally --spring.config.location=[path to application.properties file]
 ```
 
 ### Sample Application Properties File

@@ -14,16 +14,20 @@ Hygieia uses Spring Boot to package the collector as an executable JAR file with
 
 ### Setup Instructions
 
+## Fork and Clone the Collector 
+
+Fork and clone the GitHub Collector from the [GitHub repo](https://github.com/Hygieia/hygieia-scm-github-collector). 
+
 To configure the GitHub Collector, execute the following steps:
 
 *   **Step 1: Change Directory**
 
-Change the current working directory to the `github` directory of your Hygieia source code installation.
+Change the current working directory to the `hygieia-scm-github-collector` directory of your Hygieia source code installation.
 
 For example, in the Windows command prompt, run the following command:
 
 ```bash
-cd C:\Users\[username]\hygieia\collectors\scm\github
+cd C:\Users\[username]\hygieia-scm-github-collector
 ```
 
 *   **Step 2: Run Maven Build**
@@ -34,7 +38,7 @@ Run the maven build to package the collector into an executable jar file:
 mvn install
 ```
 
-The output file `github-collector.jar` is generated in the `github\target` folder.
+The output file `[collector name].jar` is generated in the `hygieia-scm-github-collector\target` folder.
 
 *   **Step 3: Set Parameters in Application Properties File**
 
@@ -46,10 +50,10 @@ To configure parameters for the GitHub Collector, refer to the sample [applicati
 
 *   **Step 4: Deploy the Executable File**
 
-To deploy the `github-collector.jar` file, change directory to `github\target`, and then execute the following from the command prompt:
+To deploy the `[collector name].jar` file, change directory to `hygieia-scm-github-collector\target`, and then execute the following from the command prompt:
 
 ```
-java -jar github-collector.jar --spring.config.name=github --spring.config.location=[path to application.properties file]
+java -jar [collector name].jar --spring.config.name=github --spring.config.location=[path to application.properties file]
 ```
 
 ### Sample Application Properties File

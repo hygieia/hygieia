@@ -15,7 +15,7 @@ Hygieia supports proxy authentication to work around corporate firewalls. You ma
 
 ## Developer Settings
 
-Update the following properties in your Maven `\.m2\settings.xml` file:
+Update the following properties in your Maven `\.m2\settings.xml` file within the proxies tags.  This xml file could be found in `${user.home}\.m2`.   
 
 ```bash
 ...
@@ -36,6 +36,7 @@ Update the following properties in your Maven `\.m2\settings.xml` file:
  </proxies>
 ...
 ```
+Edit the credentials as needed (ex: id, host, port, username, and password).  
 
 In addition, set the export variables from the terminal/command prompt:
 
