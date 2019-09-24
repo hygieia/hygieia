@@ -15,6 +15,10 @@
         var collectorsByTypeRoute = '/api/collector/type/';
         var encryptRoute = "/api/encrypt/";
         var collectorByIdRoute = "/api/collector/collectorId/";
+        var testitemsByTypeRoute = 'test-data/collector-item-type.json';
+        var testitemByComponentRoute = 'test-data/collector-item-component.json';
+        var caStaticDetailsRoute = '/api/quality/static-analysis';
+        var caSecDetailsRoute = '/api/quality/security-analysis';
 
         return {
             itemsByType: itemsByType,
@@ -34,7 +38,7 @@
         }
 
         function itemsByType(type, params) {
-            return $http.get(itemsByTypeRoute + type, {params: params}).then(function (response) {
+            return $http.get(HygieiaConfig.local ? testitemsByTypeRoute : itemsByTypeRoute + type, {params: params}).then(function (response) {
                 return response.data;
             });
         }
@@ -45,7 +49,7 @@
 
 
         function getCollectorItem(item, type) {
-            return $http.get(itemByComponentRoute + item + '?type=' + type).then(function (response) {
+            return $http.get(HygieiaConfig.local ? testitemByComponentRoute : itemByComponentRoute + item + '?type=' + type).then(function (response) {
                 return response.data;
             });
         }

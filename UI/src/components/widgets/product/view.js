@@ -459,7 +459,7 @@
             });
 
             // if we already have all the teams, don't make the call
-            if (!update) {
+            if (!update) {  
                 return false;
             }
 

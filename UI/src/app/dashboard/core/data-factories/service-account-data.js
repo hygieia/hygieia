@@ -6,7 +6,7 @@
         .factory('serviceAccountData', serviceAccountData);
 
     function serviceAccountData($http) {
-        var testDetailRoute = 'test-data/signup_detail.json';
+        var testServiceAccounts = 'test-data/all_service_accounts.json';
         var adminRoute = '/api/admin';
 
         return {
@@ -27,16 +27,8 @@
 
       function getAllServiceAccounts(){
           var route = adminRoute + "/allServiceAccounts";
-          if(HygieiaConfig.local)
-          {
-            console.log("In local testing");
-            return getPromise(testDetailRoute);
-          }
-          else
-          {
-        return $http.get(route);
+          return $http.get(HygieiaConfig.local ? testServiceAccounts : route);
       }
-    }
 
 
         function createAccount(account) {

@@ -28,6 +28,10 @@
             ninetyDaysAgo = now.add(-90, 'days').valueOf(),
             dateBegins = ninetyDaysAgo;
 
+        if (HygieiaConfig.local) {
+            ninetyDaysAgo = moment("2012-01-01").valueOf();
+            dateBegins = ninetyDaysAgo;
+        }
         db.lastRequest.where('[type+id]').equals(['build-data', componentId]).first().then(processLastRequestResponse);
 
         function processLastRequestResponse(lastRequest) {

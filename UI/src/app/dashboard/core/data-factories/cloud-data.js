@@ -12,7 +12,7 @@
         .factory('cloudHistoryData',cloudHistoryData);
 
     function cloudHistoryData($http, $q) {
-        var testDataRoute='instance_history.json';
+        var testDataRoute='test-data/instance_history.json';
 
         function getInstanceHistoryDataByAccount(accountNumber){
 
@@ -40,7 +40,7 @@
 
     function cloudData($http, $q) {
 
-        var testDataRoute = 'asv_data.json';
+        var testDataRoute = 'test-data/asv_data.json';
 
         function getDataByAccount(type, accountNumber) {
 

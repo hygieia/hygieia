@@ -1,8 +1,37 @@
 {
-    "_id" : "590733c34f941f8a1adf9574",
-    "username" : "someuser",
-    "authorities" : [
-        "ROLE_USER"
-    ],
-    "authType" : "STANDARD"
+    "data":[
+        {
+            "_id" : "590733c34f941f8a1adf9574",
+            "username" : "JOHNNY BRAVO",
+            "authorities" : [
+                "ROLE_USER",
+                "ROLE_ADMIN"
+            ],
+            "authType" : "STANDARD"
+        },
+        {
+            "_id" : "590733c34f941f8a1adf9574",
+            "username" : "User 1",
+            "authorities" : [
+                "ROLE_USER"
+            ],
+            "authType" : "STANDARD"
+        },
+        {
+            "_id" : "590733c34f941f8a1adf9574",
+            "username" : "User 2",
+            "authorities" : [
+                "ROLE_USER"
+            ],
+            "authType" : "STANDARD"
+        },
+        {
+            "_id" : "590733c34f941f8a1adf9574",
+            "username" : "User 3",
+            "authorities" : [
+                "ROLE_USER"
+            ],
+            "authType" : "LDAP"
+        }
+    ]
 }

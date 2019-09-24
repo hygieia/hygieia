@@ -1,0 +1,25 @@
+[
+    {
+        "name": "F 1",
+        "description": "Feature flag for ....",
+        "flags": {
+            "f1": "Flag one",
+            "f2": "Flag two"
+        }
+    },
+    {
+        "name": "F 2",
+        "description": "Feature flag for ....",
+        "flags": {
+            "f1": "Flag one",
+            "f2": "Flag two"
+        }
+    },
+    {
+        "name": "F 2",
+        "description": "Feature flag for ....",
+        "flags": [
+            
+        ]
+    }
+]

@@ -1,6 +1,7 @@
 {
   "profile": "test",
-  "rules": "[{
+  "rules": [
+    {
       "exhibitAs": "Version Control",
       "source": {
         "api": "dashboardData",
@@ -198,5 +199,5 @@
         "api": "NA"
       }
     }
-  ]"
+  ]
 }

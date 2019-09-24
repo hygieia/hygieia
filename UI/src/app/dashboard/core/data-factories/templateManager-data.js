@@ -9,6 +9,9 @@
         .factory('templateMangerData', templateMangerData);
 
     function templateMangerData($http) {
+
+        var testTemplatesRoute = 'test-data/templates.json';
+        var testTemplatesSearchRoute = 'test-data/templatesSearch.json';
         var createTemplateRoute = '/api/template/';
         var getTemplatesRoute = '/api/templates';
 
@@ -21,14 +24,14 @@
         };
 
         function search(template) {
-            return $http.get(createTemplateRoute + template)
+            return $http.get(HygieiaConfig.local ? testTemplatesSearchRoute : createTemplateRoute + template)
                 .then(function (response) {
                     return response.data;
                 });
         }
 
         function getAllTemplates() {
-            return $http.get(getTemplatesRoute)
+            return $http.get(HygieiaConfig.local ? testTemplatesRoute : getTemplatesRoute)
                 .then(function (response) {
                     return response.data;
                 });

@@ -14,9 +14,14 @@
 
     function dashboardData($http) {
         var testSearchRoute = 'test-data/dashboard_search.json';
-        var testDetailRoute = 'test-data/dashboard_detail.json';
+        var testDetailCaponeRoute = 'test-data/dashboard_detail_capone.json';
+        var testDetailCaponechatopsRoute = 'test-data/dashboard_detail_caponechatops.json';
+        var testDetailCloudRoute = 'test-data/dashboard_detail_cloud.json';
+        var testDetailSplitviewRoute = 'test-data/dashboard_detail_splitview.json';
+        var testDetailProductRoute = 'test-data/dashboard_detail_product_dashboard.json';
         var testOwnedRoute='test-data/dashboard_owned.json';
         var testAllUsersRoute= 'test-data/all_users.json';
+        var testGeneralConfigRoute= 'test-data/general_config.json';
         var testOwnersRoute = 'test-data/owners.json';
 
         var dashboardRoute = '/api/dashboard';
@@ -105,7 +110,31 @@
 
         // gets info for a single dashboard including available widgets
         function detail(id) {
-            return getPromise(HygieiaConfig.local ? testDetailRoute : dashboardRoute + '/' + id);
+            if (HygieiaConfig.local) {
+                var testDetailUrl = 123;
+                switch(id) {
+                    case '01b819e203643678fd9343f8':
+                        testDetailUrl = testDetailCaponeRoute;
+                        break;
+                    case '02b819e203643138fd9343f8':
+                        testDetailUrl = testDetailCaponechatopsRoute;
+                        break;
+                    case '03b819e203643138fd9343f8':
+                        testDetailUrl = testDetailCloudRoute;
+                        break;
+                    case '04b819e203643138fd934af8':
+                        testDetailUrl = testDetailSplitviewRoute;
+                        break;
+                    case '05b819e20b643138fd9343f8':
+                        testDetailUrl = testDetailProductRoute;
+                        break;
+                    default:
+                        testDetailUrl = testDetailProductRoute;
+                        break;
+                }
+                return getPromise(testDetailUrl);
+            }
+            return getPromise(dashboardRoute + '/' + id);
         }
 
         // creates a new dashboard
@@ -279,7 +308,7 @@
 
         //get List of all configurations
         function getGeneralConfig(id) {
-            return getPromise(HygieiaConfig.local ? dashboardGenconfigRoute+'/fetch' : dashboardGenconfigRoute+'/fetch');
+            return getPromise(HygieiaConfig.local ? testGeneralConfigRoute : dashboardGenconfigRoute+'/fetch');
         }
         //To save the general config datas
         function generalConfigSave(obj){

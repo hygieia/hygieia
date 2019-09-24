@@ -1,41 +1,41 @@
 [
     {
-        "id": "54b819e203643678fd9343f8",
+        "id": "01b819e203643678fd9343f8",
         "template": "capone",
-        "title": "Topo's Dashboard",
+        "title": "A  - Capone - Dashboard",
         "applicationName": "DevOps Dashboard",
         "componentName": "API"
     },
     {
-        "id": "62b819e203643138fd9343f8",
-        "template": "capone",
-        "title": "A Product Dashboard",
+        "id": "02b819e203643138fd9343f8",
+        "template": "caponechatops",
+        "title": "A  - Caponechatops - Dashboard",
         "applicationName": "product",
         "componentName": "API"
     },
     {
-        "id": "62b819e203643138fd9343f8",
-        "template": "capone",
-        "title": "Capital One",
+        "id": "03b819e203643138fd9343f8",
+        "template": "cloud",
+        "title": "A  - Cloud - Dashboard",
         "applicationName": "Cap One Dashboard",
         "componentName": "API"
     },
     {
-        "id": "62b819e203643138fd934af8",
-        "template": "capone",
-        "title": "Samuel L Jackson",
+        "id": "04b819e203643138fd934af8",
+        "template": "splitview",
+        "title": "A  - splitview - Dashboard",
         "applicationName": "Cap One Dashboard",
         "componentName": "API"
     },
     {
-        "id": "62b819e20b643138fd9343f8",
-        "template": "capone",
-        "title": "Vikings",
+        "id": "05b819e20b643138fd9343f8",
+        "template": "product-dashboard",
+        "title": "A  - product-dashboard - Dashboard",
         "applicationName": "Cap One Dashboard",
         "componentName": "API"
     },
     {
-        "id": "62b819e203643e38fd9343f8",
+        "id": "06b819e203643e38fd9343f8",
         "template": "capone",
         "title": "Erik the Red Product",
         "applicationName": "product",

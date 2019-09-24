@@ -6,7 +6,7 @@
         .factory('featureFlagsData', featureFlagsData);
 
     function featureFlagsData($http) {
-        var testDetailRoute = 'test-data/signup_detail.json';
+        var testFeatureFlagsRoute = 'test-data/feature_flags.json';
         var adminRoute = '/api/admin';
 
         return {
@@ -25,16 +25,9 @@
         }
 
       function getFeatureFlagsData(){
-          var route = adminRoute + "/featureFlags";
-          if(HygieiaConfig.local)
-          {
-            console.log("In local testing");
-            return getPromise(testDetailRoute);
-          }
-          else
-          {
-        return $http.get(route);
-      }
+        var route = adminRoute + "/featureFlags";
+        return $http.get(HygieiaConfig.local ? testFeatureFlagsRoute : route);
+      
     }
 
 

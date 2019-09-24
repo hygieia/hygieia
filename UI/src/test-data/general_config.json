@@ -1,0 +1,32 @@
+[
+    {
+        "collectorName": "Config_1",
+        "info": [
+            {
+                "userName": "Johnny Bravo",
+                "password": "Johnny",
+                "url": "Https://hygieia.com"
+            },
+            {
+                "userName": "Johnny Bravo",
+                "password": "Johnny",
+                "url": "Https://hygieia.com"
+            }
+        ]
+    },
+    {
+        "collectorName": "Config_2",
+        "info": [
+            {
+                "userName": "admin",
+                "password": "admin",
+                "url": "Https://hygieia.com"
+            },
+            {
+                "userName": "admin1",
+                "password": "admin1",
+                "url": "Https://hygieia.com"
+            }
+        ]
+    }
+]

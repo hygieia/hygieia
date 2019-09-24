@@ -201,8 +201,7 @@
         return $http.get(HygieiaConfig.local ? testDetailRoute : detailRoute + '/' + profileId)
           .then(function(response) {
             var data = response.data.rules;
-            var jsonObj = JSON.parse(data);
-            return fillDetails(jsonObj, $q, name, dashboardId, collectorItemId, componentId).then(function(d) {
+            return fillDetails(data, $q, name, dashboardId, collectorItemId, componentId).then(function(d) {
               return d;
             });
           });

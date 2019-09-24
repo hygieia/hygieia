@@ -10,19 +10,31 @@
             restrict: 'E',
             templateUrl: 'app/dashboard/views/api-status.html',
             controller: ['$scope', '$http', function ApiStatusController($scope, $http) {
-              function getAppVersion(){
-                  var url = '/api/appinfo';
-                  $http.get(url, {skipAuthorization: true}).success(function (data, status) {
-                      console.log("appinfo:"+data);
-                      $scope.appVersion=data;
-                      $scope.apiup = (status == 200);
-                  }).error(function(data,status){
-                      console.log("appInfo:"+data);
-                      $scope.appVersion="0.0";
-                      $scope.apiup = false;
-                  });
-              }
-              getAppVersion();
+                function getAppVersion() {
+                    var url = '/api/appinfo';
+                    var testUrl = 'test-data/appinfo.json';
+
+                    if (HygieiaConfig.local) {
+                        return $http.get(testUrl).then(function (response) {
+                            console.log("appInfo:" + response);
+                            $scope.appVersion = response.version;
+                            $scope.apiup = (response.status == 200);
+                        });
+                    } else {
+                        $http.get(url, {
+                            skipAuthorization: true
+                        }).success(function (data, status) {
+                            console.log("appinfo:" + data);
+                            $scope.appVersion = data;
+                            $scope.apiup = (status == 200);
+                        }).error(function (data, status) {
+                            console.log("appInfo:" + data);
+                            $scope.appVersion = "0.0";
+                            $scope.apiup = false;
+                        });
+                    }
+                }
+                getAppVersion();
             }]
         };
     }

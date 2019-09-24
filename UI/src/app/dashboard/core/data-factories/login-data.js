@@ -2,81 +2,95 @@
  * Gets build related data
  */
 (function () {
-    'use strict';
+  'use strict';
 
-    angular
-        .module(HygieiaConfig.module + '.core')
-        .factory('loginData', loginData);
+  angular
+    .module(HygieiaConfig.module + '.core')
+    .factory('loginData', loginData);
 
-    function loginData($http) {
-        var testDetailRoute = 'test-data/login_detail.json';
-        var LoginDetailRoute = '/api/login';
-        var LdapLoginDetailRoute = '/api/login/ldap';
-        var authenticationProvidersRoute = '/api/authenticationProviders';
+  function loginData($http) {
+    var testDetailRoute = 'test-data/login_detail.json';
+    var testAuthenticationProvidersRoute = 'test-data/authentication_providers.json';
+    var LoginDetailRoute = '/api/login';
+    var LdapLoginDetailRoute = '/api/login/ldap';
+    var authenticationProvidersRoute = '/api/authenticationProviders';
 
-        return {
-            login: login,
-            loginLdap: loginLdap,
-            getAuthenticationProviders: getAuthenticationProviders
-        };
+    return {
+      login: login,
+      loginLdap: loginLdap,
+      getAuthenticationProviders: getAuthenticationProviders
+    };
 
 
-        // reusable helper
-        function getPromise(id,passwd,route) {
-          var postData={
-              'id': id,
-              'passwd': passwd
-            };
-            return $http.get(route).then(function (response) {
-                return response.data;
-            });
-        }
-
-      function login(id, password) {
-        return callLogin(LoginDetailRoute, id, password);
-      }
-
-      function loginLdap(id, password) {
-        return callLogin(LdapLoginDetailRoute, id, password);
-      }
-
-      function callLogin(route, id, passwd){
-        var postData={
-    				'username': id,
-    				'password': passwd
-    			};
-          if(HygieiaConfig.local)
-          {
-            return getPromise(id,passwd,testDetailRoute);
+    // reusable helper
+    function getPromise(id, passwd, route) {
+      var postData = {
+        'id': id,
+        'passwd': passwd
+      };
+      return $http.get(route).then(function (response) {
+        const auth = {
+          headers: () => {
+            return {
+              'x-authentication-token': response.data.authToken
+            }
           }
-          else
-          {
+        }
+        return auth;
+      });
+    }
+
+    function login(id, password) {
+      return callLogin(LoginDetailRoute, id, password);
+    }
+
+    function loginLdap(id, password) {
+      return callLogin(LdapLoginDetailRoute, id, password);
+    }
+
+    function callLogin(route, id, passwd) {
+      var postData = {
+        'username': id,
+        'password': passwd
+      };
+      if (HygieiaConfig.local) {
+        return getPromise(id, passwd, testDetailRoute);
+      } else {
 
         return $http({
           method: 'POST',
           url: route,
-          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
           data: postData,
-          transformRequest: function(data) {
-              var str = [];
-              for(var p in data)
+          transformRequest: function (data) {
+            var str = [];
+            for (var p in data)
               str.push(encodeURIComponent(p) + "=" + encodeURIComponent(data[p]));
-              return str.join("&");
+            return str.join("&");
           }
-        }).then(function(response) {
-          return response;
-        },
-          function(response) {
+        }).then(function (response) {
             return response;
-        })
+          },
+          function (response) {
+            return response;
+          })
       }
     }
 
     function getAuthenticationProviders() {
-      return $http({
-      	  method: 'GET',
-      	  url: authenticationProvidersRoute
-      	});
+
+      if (HygieiaConfig.local) {
+        return $http.get(testAuthenticationProvidersRoute).then(function (response) {
+          return response;
+        });
+      } else {
+        return $http({
+          method: 'GET',
+          url: authenticationProvidersRoute
+        });
+      }
     }
 
   }

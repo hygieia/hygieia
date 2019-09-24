@@ -7,6 +7,8 @@
 
     function userData($http) {
         var testDetailRoute = 'test-data/signup_detail.json';
+        var testAllUsersRoute = 'test-data/all_users.json'
+        var testApitokens = 'test-data/apitokens.json';
         var adminRoute = '/api/admin';
         var userRoute = '/api/users';
 
@@ -34,12 +36,12 @@
           if(HygieiaConfig.local)
           {
             console.log("In local testing");
-            return getPromise(testDetailRoute);
+            return getPromise(testAllUsersRoute);
+            // return getPromise(testDetailRoute);
+          } else
+          {  
+            return $http.get(userRoute);
           }
-          else
-          {
-        return $http.get(userRoute);
-      }
     }
 
     function promoteUserToAdmin(user) {
@@ -58,8 +60,13 @@
     }
 
     function apitokens() {
+      if(HygieiaConfig.local) {
+        console.log("In local testing");
+        return getPromise(testApitokens);
+      } else {
         var route = adminRoute + "/apitokens";
         return $http.get(route);
+      }
     }
 
     function deleteToken(id) {
