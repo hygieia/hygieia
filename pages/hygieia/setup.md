@@ -13,15 +13,24 @@ folder: hygieia
 
 The following are the prerequisites to set up Hygieia:
 
-- Install Git - Install Git for your platform. For installation steps, see the [**Installing Git**](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) section of Git's documentation.
+- Install Git - For installation steps, see the [**Installing Git**](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) section of Git's documentation.
 - Install Java - Version 1.8 is recommended
 - Install Maven - Version 3.3.9 and above are recommended
+- Install Node - Version 8 is recommended. 
+
+If you're using a Mac and don't have node already installed, run: 
+
+```bash 
+brew install node@8 
+```
+
+- Install npm - Version 5 or higher. 
 
 ## Download or Clone Hygieia
 
-If you do not already have Hygieia installed, you can download or clone Hygieia from the [GitHub repo](https://github.com/capitalone/Hygieia). Make sure that you also download the [hygieia-core](https://github.com/Hygieia/hygieia-core) as well. **Hygieia will not run if you do not also download and run the core.** 
+If you do not already have Hygieia installed, you can fork and clone Hygieia from the [GitHub repo](https://github.com/capitalone/Hygieia). Make sure that you also download the [hygieia-core](https://github.com/Hygieia/hygieia-core) and [api] (https://github.com/Hygieia/api).
 
-For information on cloning a repository, see the [**Cloning a Repository**](https://help.github.com/articles/cloning-a-repository/) section of GitHub's Documentation.
+For information on forking a repository, see the [**Fork a repo**] (https://help.github.com/en/articles/fork-a-repo) section of GitHub's Documentation.  For information on cloning a repository, see the [**Cloning a Repository**](https://help.github.com/articles/cloning-a-repository/) section of GitHub's Documentation.
  
 ## Build Hygieia
 
@@ -39,18 +48,25 @@ To configure Hygieia, execute the following steps:
 	First you must build the Hygieia core. In the command line/terminal, run the following command from the `\hygieia-core` directory:
 	
 	```bash 
-	mvn clean install package
+	mvn clean install 
 	```
+	Once you have built the Hygieia core, navigate to `\Hygieia\UI` and run: 
+
+	```bash 
+	npm install
+	```  
+	Installing npm ensures that you have the necessary dependencies.  
+	
 	Next you must build the api. In the command line/terminal, run the following command from the `\api` directory:
 	
 	```bash 
-	mvn clean install package
+	mvn clean install 
 	```
 	
 	After the core and api are successfully built, you will be able to build the Hygieia project. In the command line/terminal, run the following command from the `\Hygieia` directory of your source code installation:
 	 
 	```bash
-	mvn clean install package
+	mvn clean install 
 	```
 
 	This will build all the following components:
@@ -84,10 +100,16 @@ To configure Hygieia, execute the following steps:
 	To run the executable file for API module, change directory to 'api\target' and then execute the following command from the command prompt:
 
 	```bash
-	java -jar api.jar --spring.config.location=C:\[path to]\api\dashboard.properties -Djasypt.encryptor.password=hygieiasecret
+	java -jar api.jar --spring.config.location=C:\[path to api.properties file] -Djasypt.encryptor.password=hygieiasecret
+	```
+
+	To run the UI module, in the command prompt, navigate to `\Hygieia\UI`.  If you do not have gulp already installed, run the following command: 
+
+	```bash
+	npm install gulp@3.9.1
 	```
 	
-	To run the UI module, in the command prompt, navigate to `\Hygieia\UI`, and then execute the following command:
+	Then execute the following command:
 
 	```bash
 	gulp serve

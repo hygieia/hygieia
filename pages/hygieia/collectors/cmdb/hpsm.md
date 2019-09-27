@@ -10,16 +10,20 @@ Configure the HPSM Collector to display and monitor information (related to conf
 
 ### Setup Instructions
 
+## Fork and Clone the Collector 
+
+Fork and clone the HPSM Collector from the [GitHub repo](https://github.com/Hygieia/hygieia-cmdb-hpsm-collector). 
+
 To configure the HPSM Collector, execute the following steps:
 
 *   **Step 1: Change Directory**
 
-	Change the current working directory to the `hpsm` directory of your Hygieia source code installation.
+	Change the current working directory to the `hygieia-cmdb-hpsm-collector` directory of your Hygieia source code installation.
 
 	For example, in the Windows command prompt, run the following command:
 
 	```
-	cd C:\Users\[username]\hygieia\collectors\cmdb\hpsm
+	cd C:\Users\[username]\hygieia-cmdb-hpsm-collector
 	```
 
 *   **Step 2: Run Maven Build**
@@ -30,7 +34,7 @@ To configure the HPSM Collector, execute the following steps:
 	mvn install
 	```
 
-	The output file `hpsm-collector.jar` is generated in the `hpsm\target` folder.
+	The output file `[collector name].jar` is generated in the `hygieia-cmdb-hpsm-collector\target` folder.
 
 *   **Step 3: Set Parameters in Application Properties File**
 
@@ -42,10 +46,10 @@ To configure the HPSM Collector, execute the following steps:
 
 *   **Step 4: Deploy the Executable File**
 
-	To deploy the `hpsm-collector.jar` file, change directory to `hpsm\target`, and then execute the following from the command prompt:
+	To deploy the `[collector name].jar` file, change directory to `hygieia-cmdb-hpsm-collector\target`, and then execute the following from the command prompt:
 
 	```bash
-	java -Dcollector.action=[action] -jar hpsm-collector.jar --spring.config.name=hpsm --spring.config.location=[path to application.properties file]
+	java -Dcollector.action=[action] -jar [collector name].jar --spring.config.name=hpsm --spring.config.location=[path to application.properties file]
 	```
 	
 	Note: ```[action]``` is either ```Hpsm```, ```HpsmIncident``` or ```HpsmChange``` and defaults to ```Hpsm``` if ```-Dcollector.action``` is not specified.

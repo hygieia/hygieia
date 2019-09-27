@@ -11,16 +11,20 @@ Configure the Subversion Collector to display and monitor information (related t
 
 ### Setup Instructions
 
+## Fork and Clone the Collector 
+
+Fork and clone the Subversion Collector from the [GitHub repo](https://github.com/Hygieia/hygieia-scm-subversion-collector). 
+
 To configure the Subversion Collector, execute the following steps:
 
 *   **Step 1: Change Directory**
 
-Change the current working directory to the `subversion` directory of your Hygieia source code installation.
+Change the current working directory to the `hygieia-scm-subversion-collector` directory of your Hygieia source code installation.
 
 For example, in the Windows command prompt, run the following command:
 
 ```
-cd C:\Users\[username]\hygieia\collectors\scm\subversion
+cd C:\Users\[username]\hygieia-scm-subversion-collector
 ```
 
 *   **Step 2: Run Maven Build**
@@ -31,7 +35,7 @@ Run the maven build to package the collector into an executable jar file:
  mvn install
 ```
 
-The output file `subversion-collector.jar` is generated in the `subversion\target` folder.
+The output file `[collector name].jar` is generated in the `hygieia-scm-subversion-collector\target` folder.
 
 *   **Step 3: Set Parameters in Application Properties File**
 
@@ -43,10 +47,10 @@ To configure parameters for the Subversion Collector, refer to the sample [appli
 
 *   **Step 4: Deploy the Executable File**
 
-To deploy the `subversion-collector.jar` file, change directory to `subversion\target`, and then execute the following from the command prompt:
+To deploy the `[collector name].jar` file, change directory to `hygieia-scm-subversion-collector\target`, and then execute the following from the command prompt:
 
 ```bash
-java -jar subversion-collector.jar --spring.config.name=subversion --spring.config.location=[path to application.properties file]
+java -jar [collector name].jar --spring.config.name=subversion --spring.config.location=[path to application.properties file]
 ```
 
 ### Sample Application Properties File

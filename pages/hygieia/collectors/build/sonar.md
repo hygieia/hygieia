@@ -11,16 +11,20 @@ Hygieia uses Spring Boot to package the collector as an executable JAR file with
 
 ### Setup Instructions
 
+## Fork and Clone the Collector 
+
+Fork and clone the Sonar Collector from the [GitHub repo](https://github.com/Hygieia/hygieia-codequality-sonar-collector). 
+
 To configure the Sonar Collector, execute the following steps:
 
 *   **Step 1: Change Directory**
 
-Change the current working directory to the `sonar` directory of your Hygieia source code installation.
+Change the current working directory to the `hygieia-codequality-sonar-collector` directory of your Hygieia source code installation.
 
 For example, in the Windows command prompt, run the following command:
 
 ```
-cd C:\Users\[usernname]\hygieia\collectors\build\sonar
+cd C:\Users\[username]\hygieia-codequality-sonar-collector
 ```
 
 *   **Step 2: Run Maven Build**
@@ -31,7 +35,7 @@ Run the maven build to package the collector into an executable JAR file:
  mvn install
 ```
 
-The output file `sonar-collector.jar` is generated in the `sonar\target` folder.
+The output file `[collector name].jar` is generated in the `hygieia-codequality-sonar-collector\target` folder.
 
 *   **Step 3: Set Parameters in Application Properties File**
 
@@ -43,10 +47,10 @@ For information about sourcing the application properties file, refer to the [Sp
 
 *   **Step 4: Deploy the Executable File**
 
-To deploy the `sonar-collector.jar` file, change directory to `sonar\target`, and then execute the following from the command prompt:
+To deploy the `[collector name].jar` file, change directory to `hygieia-codequality-sonar-collector\target`, and then execute the following from the command prompt:
 
 ```
-java -jar sonar-collector.jar --spring.config.name=sonar --spring.config.location=[path to application.properties file]
+java -jar [collector name].jar --spring.config.name=sonar --spring.config.location=[path to application.properties file]
 ```
 
 ### Sample Application Properties File
