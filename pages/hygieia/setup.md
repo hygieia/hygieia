@@ -28,9 +28,9 @@ brew install node@8
 
 ## Download or Clone Hygieia
 
-If you do not already have Hygieia installed, you can fork and clone Hygieia from the [GitHub repo](https://github.com/capitalone/Hygieia). Make sure that you also download the [hygieia-core](https://github.com/Hygieia/hygieia-core) and [api] (https://github.com/Hygieia/api).
+If you do not already have Hygieia installed, you can fork and clone Hygieia from the [GitHub repo](https://github.com/capitalone/Hygieia). Make sure that you also download the [hygieia-core](https://github.com/Hygieia/hygieia-core) and [api](https://github.com/Hygieia/api).
 
-For information on forking a repository, see the [**Fork a repo**] (https://help.github.com/en/articles/fork-a-repo) section of GitHub's Documentation.  For information on cloning a repository, see the [**Cloning a Repository**](https://help.github.com/articles/cloning-a-repository/) section of GitHub's Documentation.
+For information on forking a repository, see the [**Fork a repo**](https://help.github.com/en/articles/fork-a-repo) section of GitHub's Documentation.  For information on cloning a repository, see the [**Cloning a Repository**](https://help.github.com/articles/cloning-a-repository/) section of GitHub's Documentation.
  
 ## Build Hygieia
 
@@ -116,6 +116,10 @@ To configure Hygieia, execute the following steps:
 	```
 	
 	The dashboard will serve up on port 3000.
+
+	Tip: If there are difficulities loading your UI: 
+	1. Clean up your cookies
+	2. Open up your local dashboard in incognito mode
 	
 	In general, all the collectors can be run using the following command:
 	
