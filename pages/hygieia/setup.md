@@ -117,7 +117,9 @@ To configure Hygieia, execute the following steps:
 	
 	The dashboard will serve up on port 3000.
 
-	Tip: If there are difficulities loading your UI, try cleaning up your cookies by opening up your local dashboard in incognito mode.  
+	Tip: If there are difficulities loading your UI: 
+	1. Clean up your cookies
+	2. Open up your local dashboard in incognito mode
 	
 	In general, all the collectors can be run using the following command:
 	
