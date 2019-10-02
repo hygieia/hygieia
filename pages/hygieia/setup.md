@@ -69,27 +69,27 @@ To configure Hygieia, execute the following steps:
 	mvn clean install 
 	```
 
-	This will build all the following components:
+	These steps will build all the following components:
 
 	~~~
+	└── hygieia-core (https://github.com/Hygieia/hygieia-core)
+	└── api (https://github.com/Hygieia/api)
 	└── Hygieia (https://github.com/Hygieia/Hygieia)
 		├── UI
-		├── AuditAPI
-		└── Collectors
-			├─ Feature
-			│    ├── JIRA
-			│    └── VersionOne
-			└─ Repos
-			'     ├── GitHub
-			'     ├── GitLab
-			'     ├── Subversion 
-			'     └── Bitbucket
-			'
-			'
-			and so on. 		   
 	~~~
 	
 	The output `.jar` file is generated in the `\target` folder for each component of Hygieia, including collectors.
+
+	In the future, you could also build collectors: 
+	~~~
+	└── Jira (https://github.com/Hygieia/hygieia-feature-jira-collector)
+	└── Sonar (https://github.com/Hygieia/hygieia-codequality-sonar-collector)
+	└── NFRR (https://github.com/Hygieia/hygieia-audit-nfrr-collector)
+	└── Score (https://github.com/Hygieia/hygieia-misc-score-collector)
+	└── Github (https://github.com/Hygieia/hygieia-scm-github-collector)
+	
+	and so on. 	
+	~~~
 
 *	**Step 2: Set Parameters in the Properties File**
 	
