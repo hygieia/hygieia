@@ -237,7 +237,7 @@ gulp.task('views', function() {
 gulp.task('fonts', function() {
     return gulp
         .src([
-            'node_modules/**/*'
+            'node_modules/components-font-awesome/**/*',
         ])
         .pipe(filter('**/*.{eot,ttf,woff,woff2}'))
         .pipe(flatten())
