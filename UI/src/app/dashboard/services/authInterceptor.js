@@ -6,7 +6,7 @@
 
     angular
         .module(HygieiaConfig.module)
-        .factory('authInterceptor', authInterceptor)
+        .factory('authInterceptor', authInterceptor);
 
     authInterceptor.$inject = ['$q', '$location', 'tokenService'];
     function authInterceptor($q, $location, tokenService) {
