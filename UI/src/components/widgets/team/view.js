@@ -22,7 +22,7 @@
                     processResponse(data);
                 })
                 .then(function() {
-                    collectorData.getCollectorItem($scope.widgetConfig.componentId, 'TIR')
+                    collectorData.getCollectorItem($scope.widgetConfig.componentId, 'TEAM')
                         .then(function(data) {
                             deferred.resolve({
                                 lastUpdated: ctrl.lastUpdated,
