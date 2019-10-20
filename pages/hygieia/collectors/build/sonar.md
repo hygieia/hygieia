@@ -88,6 +88,9 @@ The sample `application.properties` file lists parameters with sample values to 
 		
 		# Sonar Metrics - Required. 
 		#Sonar versions lesser than 6.3
+		
+		# Sonar tokens to connect to authenticated url 
+		sonar.tokens[0]-<api token>
 		sonar.metrics[0]=ncloc,line_coverage,violations,critical_violations,major_violations,blocker_violations,violations_density,sqale_index,test_success_density,test_failures,test_errors,tests
 		
 		# For Sonar version 6.3 and above
