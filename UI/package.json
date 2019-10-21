@@ -76,7 +76,7 @@
     "jquery-ui": "~1.12.1",
     "jquery-ui-dist": "^1.12.1",
     "jquery-ui-bundle": "^1.11.4",
-    "angular": "~1.5.9",
+    "angular": "~1.7.8",
     "angular-animate": "~1.5.9",
     "angular-chart.js": "^1.1.1",
     "chartist": "~0.9.5",
