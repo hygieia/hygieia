@@ -294,14 +294,14 @@
                         lastDayPullContributors.push(pull.userId);
                     }
                 }
-                else if(pull.timestamp >= sevenDays.getTime()) {
+                if(pull.timestamp >= sevenDays.getTime()) {
                     lastsevenDayPullCount++;
 
                     if(lastsevenDaysPullContributors.indexOf(pull.userId) == -1) {
                         lastsevenDaysPullContributors.push(pull.userId);
                     }
                 }
-                else if(pull.timestamp >= fourteenDays.getTime()) {
+                if(pull.timestamp >= fourteenDays.getTime()) {
                     lastfourteenDayPullCount++;
                     ctrl.pulls.push(pull);
                     if(lastfourteenDaysPullContributors.indexOf(pull.userId) == -1) {
@@ -397,14 +397,14 @@
                         lastDayIssueContributors.push(issue.userId);
                     }
                 }
-                else if(issue.timestamp >= sevenDays.getTime()) {
+                if(issue.timestamp >= sevenDays.getTime()) {
                     lastsevenDayIssueCount++;
 
                     if(lastsevenDaysIssueContributors.indexOf(issue.userId) == -1) {
                         lastsevenDaysIssueContributors.push(issue.userId);
                     }
                 }
-                else if(issue.timestamp >= fourteenDays.getTime()) {
+                if(issue.timestamp >= fourteenDays.getTime()) {
                     lastfourteenDayIssueCount++;
                     ctrl.issues.push(issue);
                     if(lastfourteenDaysIssueContributors.indexOf(issue.userId) == -1) {
