@@ -116,6 +116,24 @@ auth.userFirstName=[name of the header containing user's first name]
 auth.userLastName=[name of the header containing user's last name]
 auth.userMiddelInitials=[name of the header containing user's middle name]
 auth.userDisplayName=[name of the header containing user's display name]
+
+# Github sync api settings 
+
+# List of not built commits
+githubSyncSettings.notBuiltCommits;
+
+# Maximum history of days to sync from current time. Default to 60 days
+githubSyncSettings.firstRunHistoryDays;
+
+# Offset time from last updated // 10 mins default
+githubSyncSettings.offsetMinutes;
+
+# Total fetch count // Default to 100
+githubSyncSettings.fetchCount;
+
+# Commits and pull sync time // Default to 86400000ms - 1 day in milliseconds
+githubSyncSettings.commitPullSyncTime;
+
 ```
 
 All values in the `api.properties` file are optional. For instance, if you have MongoDB installed with no authorization, you must be able to run the API even without the properties file.
