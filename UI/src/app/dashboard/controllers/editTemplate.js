@@ -86,7 +86,7 @@
                      }
                     swal({
                         title: 'Template used in existing dashboards',
-                        text: dash,
+                        //text: dash,
                         html: true,
                         type: "warning",
                         showCancelButton: true,
