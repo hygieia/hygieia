@@ -82,6 +82,7 @@
                 removeWidget(title, $event);
                 order[obj.order] = title;
             }
+
             var submitData = {
                 template: ctrl.templateName,
                 widgets: widgets,

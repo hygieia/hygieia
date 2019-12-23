@@ -73,7 +73,7 @@
             };
 
             var dashboardsList = [];
-            dashboardData.search().then(function (response) {
+            dashboardData.searchTemplate(submitData.template).then(function (response) {
                 _(response).forEach(function(dashboard){
                     if(dashboard.template ==ctrl.templateName){
                         dashboardsList.push(dashboard.title);

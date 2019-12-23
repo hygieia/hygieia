@@ -37,6 +37,7 @@
         var updateDashboardScoreSettingsRoute = '/api/dashboard/updateScoreSettings';
         return {
             search: search,
+            searchTemplate: searchTemplate,
             mydashboard: mydashboard,
             myowner: myowner,
             owners: owners,
@@ -75,6 +76,11 @@
         // gets list of dashboards
         function search() {
             return getPromise(HygieiaConfig.local ? testSearchRoute : dashboardRoute);
+        }
+
+        function searchTemplate(template){
+            console.log("here in searchTemplate");
+            return getPromise(HygieiaConfig.local ? testSearchRoute : dashboardRoute  + "/template/" + template);
         }
 
         //gets list of owned dashboard
