@@ -74,15 +74,6 @@
                 order:ctrl.adjustedOrder
             };
 
-            var foundId;
-            templateMangerData.getAllTemplates().then(function(response){
-                _(response).forEach(function(dashboard){
-                    if(dashboard.template == ctrl.templateName){
-                        foundId = dashboard.id;
-                    }
-                });
-            });
-
             var dashboardsList = [];
             dashboardData.searchTemplate(submitData.template).then(function (response) {
                 _(response).forEach(function(dashboard){
@@ -91,7 +82,7 @@
                     }
                 });
 
-                if(dashboardsList.length > 0 && foundId == undefined){
+                if(dashboardsList.length > 0){
                     var dash ='';
                     for(var dashboardTitle in dashboardsList){
                          dash = dash+'\n'+dashboardsList[dashboardTitle];
@@ -126,7 +117,6 @@
                             }
                     });
                 }else{
-                    // If form is valid and templateManagerData has templateName
                     if(form.$valid){
                         templateMangerData.updateTemplate(ctrl.templateId,submitData) .then(function (data) {
                             var result = data;
