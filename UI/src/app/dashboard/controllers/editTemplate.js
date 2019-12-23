@@ -66,11 +66,22 @@
             findSelectedWidgets();
             findOrder();
             ctrl.adjustedOrder = cleanArray(ctrl.order);
+
+            var id;
             var submitData = {
                 template: ctrl.templateName,
                 widgets: ctrl.selectedWidgets,
                 order:ctrl.adjustedOrder
             };
+
+            var foundId;
+            templateMangerData.getAllTemplates().then(function(response){
+                _(response).forEach(function(dashboard){
+                    if(dashboard.template == ctrl.templateName){
+                        foundId = dashboard.id;
+                    }
+                });
+            });
 
             var dashboardsList = [];
             dashboardData.searchTemplate(submitData.template).then(function (response) {
@@ -79,7 +90,8 @@
                         dashboardsList.push(dashboard.title);
                     }
                 });
-                if(dashboardsList.length>0){
+
+                if(dashboardsList.length > 0 && foundId == undefined){
                     var dash ='';
                     for(var dashboardTitle in dashboardsList){
                          dash = dash+'\n'+dashboardsList[dashboardTitle];
@@ -114,7 +126,8 @@
                             }
                     });
                 }else{
-                    if(form.$valid ){
+                    // If form is valid and templateManagerData has templateName
+                    if(form.$valid){
                         templateMangerData.updateTemplate(ctrl.templateId,submitData) .then(function (data) {
                             var result = data;
                             var res = result;
