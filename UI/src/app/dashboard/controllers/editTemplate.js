@@ -67,7 +67,6 @@
             findOrder();
             ctrl.adjustedOrder = cleanArray(ctrl.order);
 
-            var id;
             var submitData = {
                 template: ctrl.templateName,
                 widgets: ctrl.selectedWidgets,
@@ -89,7 +88,7 @@
                      }
                     swal({
                         title: 'Template used in existing dashboards',
-                        //text: dash,
+                        text: dash,
                         html: true,
                         type: "warning",
                         showCancelButton: true,
