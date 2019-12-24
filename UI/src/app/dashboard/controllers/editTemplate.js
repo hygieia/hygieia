@@ -66,7 +66,6 @@
             findSelectedWidgets();
             findOrder();
             ctrl.adjustedOrder = cleanArray(ctrl.order);
-
             var submitData = {
                 template: ctrl.templateName,
                 widgets: ctrl.selectedWidgets,
@@ -88,7 +87,6 @@
                      }
                     swal({
                         title: 'Template used in existing dashboards',
-                        text: dash,
                         html: true,
                         type: "warning",
                         showCancelButton: true,
@@ -98,7 +96,6 @@
                         function(){
                             if(form.$valid ){
                                 templateMangerData.updateTemplate(ctrl.templateId,submitData) .then(function (data) {
-
                                     // redirect to the new dashboard
                                     var result = data;
                                     var res = result;
@@ -108,7 +105,6 @@
                                         tabName: 'templates'
                                     };
                                     $uibModalInstance.close(obj);
-
                                 }, function(response) {
                                     var msg = 'An error occurred while editing the Template';
                                     swal(msg);

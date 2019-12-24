@@ -362,7 +362,6 @@
         function deleteTemplate(item) {
             var id = item.id;
             var dashboardsList = [];
-
             dashboardData.searchTemplate(item.template).then(function (response) {
                 _(response).forEach(function (dashboard) {
                     if (dashboard.template == item.template) {
@@ -376,7 +375,6 @@
                     }
                     swal({
                         title: 'Template used in existing dashboards',
-                        //text: dash,
                         html: true,
                         type: "warning",
                         showConfirmButton: true,
