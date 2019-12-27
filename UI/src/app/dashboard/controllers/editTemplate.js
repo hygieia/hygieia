@@ -73,20 +73,20 @@
             };
 
             var dashboardsList = [];
-            dashboardData.search().then(function (response) {
+            dashboardData.searchTemplate(submitData.template).then(function (response) {
                 _(response).forEach(function(dashboard){
                     if(dashboard.template ==ctrl.templateName){
                         dashboardsList.push(dashboard.title);
                     }
                 });
-                if(dashboardsList.length>0){
+
+                if(dashboardsList.length > 0){
                     var dash ='';
                     for(var dashboardTitle in dashboardsList){
                          dash = dash+'\n'+dashboardsList[dashboardTitle];
                      }
                     swal({
                         title: 'Template used in existing dashboards',
-                        text: dash,
                         html: true,
                         type: "warning",
                         showCancelButton: true,
@@ -96,7 +96,6 @@
                         function(){
                             if(form.$valid ){
                                 templateMangerData.updateTemplate(ctrl.templateId,submitData) .then(function (data) {
-
                                     // redirect to the new dashboard
                                     var result = data;
                                     var res = result;
@@ -106,7 +105,6 @@
                                         tabName: 'templates'
                                     };
                                     $uibModalInstance.close(obj);
-
                                 }, function(response) {
                                     var msg = 'An error occurred while editing the Template';
                                     swal(msg);
@@ -114,7 +112,7 @@
                             }
                     });
                 }else{
-                    if(form.$valid ){
+                    if(form.$valid){
                         templateMangerData.updateTemplate(ctrl.templateId,submitData) .then(function (data) {
                             var result = data;
                             var res = result;
