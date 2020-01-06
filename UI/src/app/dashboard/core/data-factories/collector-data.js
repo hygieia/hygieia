@@ -17,8 +17,6 @@
         var collectorByIdRoute = "/api/collector/collectorId/";
         var testitemsByTypeRoute = 'test-data/collector-item-type.json';
         var testitemByComponentRoute = 'test-data/collector-item-component.json';
-        var caStaticDetailsRoute = '/api/quality/static-analysis';
-        var caSecDetailsRoute = '/api/quality/security-analysis';
 
         return {
             itemsByType: itemsByType,

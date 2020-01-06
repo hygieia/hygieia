@@ -6,7 +6,6 @@
         .factory('userData', userData);
 
     function userData($http) {
-        var testDetailRoute = 'test-data/signup_detail.json';
         var testAllUsersRoute = 'test-data/all_users.json'
         var testApitokens = 'test-data/apitokens.json';
         var adminRoute = '/api/admin';

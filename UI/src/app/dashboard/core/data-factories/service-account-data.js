@@ -16,15 +16,6 @@
             deleteAccount : deleteAccount
          };
 
-
-        // reusable helper
-        function getPromise(route) {
-            return $http.get(route).then(function (response) {
-              console.log("Data="+ JSON.stringify(response.data));
-                return response.data;
-            });
-        }
-
       function getAllServiceAccounts(){
           var route = adminRoute + "/allServiceAccounts";
           return $http.get(HygieiaConfig.local ? testServiceAccounts : route);

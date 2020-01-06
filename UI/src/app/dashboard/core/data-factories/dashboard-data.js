@@ -111,7 +111,7 @@
         // gets info for a single dashboard including available widgets
         function detail(id) {
             if (HygieiaConfig.local) {
-                var testDetailUrl = 123;
+                var testDetailUrl;
                 switch(id) {
                     case '01b819e203643678fd9343f8':
                         testDetailUrl = testDetailCaponeRoute;
