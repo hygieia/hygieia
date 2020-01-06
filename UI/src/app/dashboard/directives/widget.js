@@ -266,6 +266,8 @@
 
             // prevent intervals from continuing to be called when changing pages
             $scope.$on('$routeChangeStart', stopInterval);
+
+            $scope.$on("$destroy", stopInterval);
         }
     }
 })();
