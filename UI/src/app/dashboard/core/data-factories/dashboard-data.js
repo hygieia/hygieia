@@ -79,7 +79,6 @@
         }
 
         function searchTemplate(template){
-            console.log("here in searchTemplate");
             return getPromise(HygieiaConfig.local ? testSearchRoute : dashboardRoute  + "/template/" + template);
         }
 

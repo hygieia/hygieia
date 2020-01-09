@@ -14,12 +14,14 @@
         ctrl.environments = [];
         ctrl.statuses = DashStatus;
         ctrl.ignoreEnvironmentFailuresRegex=/^$/;
+        ctrl.listingNum = 1;
         if ($scope.widgetConfig.options.ignoreRegex !== undefined && $scope.widgetConfig.options.ignoreRegex !== null && $scope.widgetConfig.options.ignoreRegex !== '') {
             ctrl.ignoreEnvironmentFailuresRegex=new RegExp($scope.widgetConfig.options.ignoreRegex.replace(/^"(.*)"$/, '$1'));
         }
 
         ctrl.load = load;
         ctrl.showDetail = showDetail;
+        ctrl.getChoice = getChoice;
 
         function load() {
             var deferred = $q.defer();
@@ -47,6 +49,13 @@
                         return $scope.dashboard.application.components[0].collectorItems.Deployment[0].niceName;
                     }
                 }
+            });
+        }
+
+        function getChoice(val){
+            ctrl.listingNum = val;
+            deployData.details($scope.widgetConfig.componentId).then(function(data) {
+                processResponse(data.result);
             });
         }
 
@@ -78,7 +87,6 @@
 
             function getEnvironments(data, cb) {
                 var environments = _(data).map(function (item) {
-
                     return {
                         name: item.name,
                         url: item.url,
@@ -129,7 +137,17 @@
 
         function environmentsCallback(data) {
             //$scope.$apply(function () {
-                ctrl.environments = data.environments;
+                var dataList = [];
+                var length = data.environments.length;
+                // Collect last 5 or 10 listings in deploy widget
+                if(length > ctrl.listingNum){
+                    for(var i = length - ctrl.listingNum; i <= length -1; i ++){
+                        dataList.push(data.environments[i]);
+                    }
+                    ctrl.environments = dataList;
+                } else{
+                    ctrl.environments = data.environments;
+                }
             //});
         }
     }
