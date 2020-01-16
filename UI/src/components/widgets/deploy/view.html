@@ -1,19 +1,5 @@
 <div class="deploy-view">
     <div hide-empty="['{{ deployView.environments[0] }}']">
-        <style>
-            .tab {
-                background-color: white;
-                color:black;
-            }
-            .tab button {
-                float: left;
-                cursor: pointer;
-                transition: 0.3s;
-            }
-            .tab button:hover {
-                background-color: #ddd;
-            }
-        </style>
         Total Deployments: {{deployView.getTotalListingCount()}} </br></br>
         <div class="tab">
             <button class="tablink" id = "defaultOpen" onclick="openPage('five', this, '#bfbfbf')" ng-click="deployView.getChoice(5)">Last 5 Deployments</button>
