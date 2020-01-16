@@ -14,7 +14,8 @@
         ctrl.environments = [];
         ctrl.statuses = DashStatus;
         ctrl.ignoreEnvironmentFailuresRegex=/^$/;
-        ctrl.listingNum = 1;
+        ctrl.listingNum = 5;
+
         if ($scope.widgetConfig.options.ignoreRegex !== undefined && $scope.widgetConfig.options.ignoreRegex !== null && $scope.widgetConfig.options.ignoreRegex !== '') {
             ctrl.ignoreEnvironmentFailuresRegex=new RegExp($scope.widgetConfig.options.ignoreRegex.replace(/^"(.*)"$/, '$1'));
         }
@@ -22,6 +23,7 @@
         ctrl.load = load;
         ctrl.showDetail = showDetail;
         ctrl.getChoice = getChoice;
+        ctrl.getTotalListingCount = getTotalListingCount;
 
         function load() {
             var deferred = $q.defer();
@@ -50,6 +52,10 @@
                     }
                 }
             });
+        }
+
+        function getTotalListingCount(){
+            return ctrl.totalListingCount;
         }
 
         function getChoice(val){
@@ -138,10 +144,10 @@
         function environmentsCallback(data) {
             //$scope.$apply(function () {
                 var dataList = [];
-                var length = data.environments.length;
+                ctrl.totalListingCount = data.environments.length;
                 // Collect last 5 or 10 listings in deploy widget
-                if(length > ctrl.listingNum){
-                    for(var i = length - ctrl.listingNum; i <= length -1; i ++){
+                if(ctrl.totalListingCount > ctrl.listingNum){
+                    for(var i = ctrl.totalListingCount - ctrl.listingNum; i <= ctrl.totalListingCount -1; i ++){
                         dataList.push(data.environments[i]);
                     }
                     ctrl.environments = dataList;
