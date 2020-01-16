@@ -51,7 +51,8 @@
 
         <script>
             function openPage(pageName,elmnt,color) {
-                var tablinks = document.getElementsByClassName("tablink");
+                var tablinks;
+                tablinks = document.getElementsByClassName("tablink");
                 for (i = 0; i < tablinks.length; i++) {
                     tablinks[i].style.backgroundColor = "";
                 }
