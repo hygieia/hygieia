@@ -142,7 +142,6 @@
         }
 
         function environmentsCallback(data) {
-            //$scope.$apply(function () {
                 var dataList = [];
                 ctrl.totalListingCount = data.environments.length;
                 // Collect last 5 or 10 listings in deploy widget
@@ -154,7 +153,6 @@
                 } else{
                     ctrl.environments = data.environments;
                 }
-            //});
         }
     }
 })();
