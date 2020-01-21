@@ -24,6 +24,16 @@
         ctrl.showDetail = showDetail;
         ctrl.getChoice = getChoice;
         ctrl.getTotalListingCount = getTotalListingCount;
+        ctrl.environmentsFilter = [];
+        ctrl.minitabs = [
+            {name: "Last 5 Deployments"},
+            {name: "Last 10 Deployments"},
+        ];
+
+        ctrl.miniWidgetView = ctrl.minitabs[0].name;
+        ctrl.miniToggleView = function (index) {
+            ctrl.miniWidgetView = typeof ctrl.minitabs[index] === 'undefined' ? ctrl.minitabs[0].name : ctrl.minitabs[index].name;
+        };
 
         function load() {
             var deferred = $q.defer();
@@ -59,10 +69,11 @@
         }
 
         function getChoice(val){
-            ctrl.listingNum = val;
-            deployData.details($scope.widgetConfig.componentId).then(function(data) {
-                processResponse(data.result);
-            });
+            var size = -5;
+            if(val !== "Last 5 Deployments"){
+                size = -10;
+            }
+            ctrl.environmentsFilter = ctrl.environments.slice(size);
         }
 
         function processResponse(data) {
@@ -142,17 +153,9 @@
         }
 
         function environmentsCallback(data) {
-                var dataList = [];
-                ctrl.totalListingCount = data.environments.length;
-                // Collect last 5 or 10 listings in deploy widget
-                if(ctrl.totalListingCount > ctrl.listingNum){
-                    for(var i = ctrl.totalListingCount - ctrl.listingNum; i <= ctrl.totalListingCount -1; i ++){
-                        dataList.push(data.environments[i]);
-                    }
-                    ctrl.environments = dataList;
-                } else{
-                    ctrl.environments = data.environments;
-                }
+            ctrl.totalListingCount = data.environments.length;
+            ctrl.environments = data.environments;
+            ctrl.environmentsFilter = data.environments.slice(-5);
         }
     }
 })();

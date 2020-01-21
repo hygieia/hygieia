@@ -1,16 +1,17 @@
 <div class="deploy-view">
     <div hide-empty="['{{ deployView.environments[0] }}']">
         Total Deployments: {{deployView.getTotalListingCount()}} </br></br>
-        <div class="tab">
-            <button class="tablink" id = "defaultOpen" onclick="openPage('five', this, '#bfbfbf')" ng-click="deployView.getChoice(5)">Last 5 Deployments</button>
-            <button class="tablink" onclick="openPage('ten', this, '#bfbfbf')"ng-click="deployView.getChoice(10)">Last 10 Deployments</button>
-        </div>
-        <div id = "five" class ="tabcontent">
-        </div>
-        <div id = "ten" class ="tabcontent">
+        <div id="tab">
+            <ul class="nav nav-tabs">
+                <li class="text-standard auth-modal-tab" ng-repeat="tab in deployView.minitabs"
+                    ng-click="deployView.miniToggleView($index); deployView.getChoice(tab.name)"
+                    ng-class="tab.name == deployView.miniWidgetView ? 'active' : ''">
+                    <a class="textColor-Performance" data-toggle="tab">{{tab.name}}</a>
+                </li>
+            </ul>
         </div>
         <table class="table">
-            <tr class="dash-row clickable" ng-repeat="environment in deployView.environments | orderBy:['name']" ng-click="deployView.showDetail(environment)">
+            <tr class="dash-row clickable" ng-repeat="environment in deployView.environmentsFilter | orderBy:['name']" ng-click="deployView.showDetail(environment)">
                 <td>
                     <span
                             dash-status="{{environment.failedComponents > 0 ?
@@ -34,18 +35,5 @@
                 </td>
             </tr>
         </table>
-
-        <script>
-            function openPage(pageName,elmnt,color) {
-                var tablinks;
-                tablinks = document.getElementsByClassName("tablink");
-                for (i = 0; i < tablinks.length; i++) {
-                    tablinks[i].style.backgroundColor = "";
-                }
-                elmnt.style.backgroundColor = color;
-            }
-            document.getElementById("defaultOpen").click();
-        </script>
-
     </div>
 </div>
