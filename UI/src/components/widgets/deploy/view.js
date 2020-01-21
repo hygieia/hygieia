@@ -14,7 +14,6 @@
         ctrl.environments = [];
         ctrl.statuses = DashStatus;
         ctrl.ignoreEnvironmentFailuresRegex=/^$/;
-        ctrl.listingNum = 5;
 
         if ($scope.widgetConfig.options.ignoreRegex !== undefined && $scope.widgetConfig.options.ignoreRegex !== null && $scope.widgetConfig.options.ignoreRegex !== '') {
             ctrl.ignoreEnvironmentFailuresRegex=new RegExp($scope.widgetConfig.options.ignoreRegex.replace(/^"(.*)"$/, '$1'));

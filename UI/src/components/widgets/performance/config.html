@@ -1,11 +1,8 @@
 <widget-modal widget-modal-title="Configure Performance Widget" class="pa-config">
     <form name="configForm" role="form"
           ng-submit="performanceConfig.submit(performanceConfig.paCollectorItem)">
-
         <form-group input="paCollectorItem" class="text-center">
-
             <div class="text-center modal-label">Performance Analysis Job:</div>
-
             <input type = "text" name = "paCollectorItem" class="form-control" placeholder="Search a performance job in format <Name> - <Description>"
                    ng-model="performanceConfig.paCollectorItem"
                    uib-typeahead="item as item.collector.name + ' - ' + item.description for item in performanceConfig.paJobs | filter: $viewValue | limitTo:20" typeahead-focus
@@ -14,7 +11,6 @@
                    autocomplete="off"
                    typeahead-no-results="noResults"
                    required>
-
             <div class="form-control" ng-show="noResults">
                 No Results Found
             </div>
