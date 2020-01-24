@@ -14,12 +14,25 @@
         ctrl.environments = [];
         ctrl.statuses = DashStatus;
         ctrl.ignoreEnvironmentFailuresRegex=/^$/;
+
         if ($scope.widgetConfig.options.ignoreRegex !== undefined && $scope.widgetConfig.options.ignoreRegex !== null && $scope.widgetConfig.options.ignoreRegex !== '') {
             ctrl.ignoreEnvironmentFailuresRegex=new RegExp($scope.widgetConfig.options.ignoreRegex.replace(/^"(.*)"$/, '$1'));
         }
 
         ctrl.load = load;
         ctrl.showDetail = showDetail;
+        ctrl.getChoice = getChoice;
+        ctrl.getTotalListingCount = getTotalListingCount;
+        ctrl.environmentsFilter = [];
+        ctrl.minitabs = [
+            {name: "Last 5 Deployments"},
+            {name: "Last 10 Deployments"},
+        ];
+
+        ctrl.miniWidgetView = ctrl.minitabs[0].name;
+        ctrl.miniToggleView = function (index) {
+            ctrl.miniWidgetView = typeof ctrl.minitabs[index] === 'undefined' ? ctrl.minitabs[0].name : ctrl.minitabs[index].name;
+        };
 
         function load() {
             var deferred = $q.defer();
@@ -50,6 +63,18 @@
             });
         }
 
+        function getTotalListingCount(){
+            return ctrl.totalListingCount;
+        }
+
+        function getChoice(val){
+            var size = -5;
+            if(val !== "Last 5 Deployments"){
+                size = -10;
+            }
+            ctrl.environmentsFilter = ctrl.environments.slice(size);
+        }
+
         function processResponse(data) {
             var worker = {
                 getEnvironments: getEnvironments,
@@ -78,7 +103,6 @@
 
             function getEnvironments(data, cb) {
                 var environments = _(data).map(function (item) {
-
                     return {
                         name: item.name,
                         url: item.url,
@@ -128,9 +152,9 @@
         }
 
         function environmentsCallback(data) {
-            //$scope.$apply(function () {
-                ctrl.environments = data.environments;
-            //});
+            ctrl.totalListingCount = data.environments.length;
+            ctrl.environments = data.environments;
+            ctrl.environmentsFilter = data.environments.slice(-5);
         }
     }
 })();

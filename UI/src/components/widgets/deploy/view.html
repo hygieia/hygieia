@@ -1,7 +1,17 @@
 <div class="deploy-view">
     <div hide-empty="['{{ deployView.environments[0] }}']">
+        Total Deployments: {{deployView.getTotalListingCount()}} </br></br>
+        <div id="tab">
+            <ul class="nav nav-tabs">
+                <li class="text-standard auth-modal-tab" ng-repeat="tab in deployView.minitabs"
+                    ng-click="deployView.miniToggleView($index); deployView.getChoice(tab.name)"
+                    ng-class="tab.name == deployView.miniWidgetView ? 'active' : ''">
+                    <a class="textColor-Performance" data-toggle="tab">{{tab.name}}</a>
+                </li>
+            </ul>
+        </div>
         <table class="table">
-            <tr class="dash-row clickable" ng-repeat="environment in deployView.environments | orderBy:['name']" ng-click="deployView.showDetail(environment)">
+            <tr class="dash-row clickable" ng-repeat="environment in deployView.environmentsFilter | orderBy:['name']" ng-click="deployView.showDetail(environment)">
                 <td>
                     <span
                             dash-status="{{environment.failedComponents > 0 ?

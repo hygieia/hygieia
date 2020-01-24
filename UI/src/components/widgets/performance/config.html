@@ -1,23 +1,23 @@
 <widget-modal widget-modal-title="Configure Performance Widget" class="pa-config">
-<form name="configForm" role="form"
-	ng-submit="performanceConfig.submit(performanceConfig.paCollectorItem)"
-	novalidate="novalidate">
+    <form name="configForm" role="form"
+          ng-submit="performanceConfig.submit(performanceConfig.paCollectorItem)">
+        <form-group input="paCollectorItem" class="text-center">
+            <div class="text-center modal-label">Performance Analysis Job:</div>
+            <input type = "text" name = "paCollectorItem" class="form-control" placeholder="Search a performance job in format <Name> - <Description>"
+                   ng-model="performanceConfig.paCollectorItem"
+                   uib-typeahead="item as item.collector.name + ' - ' + item.description for item in performanceConfig.paJobs | filter: $viewValue | limitTo:20" typeahead-focus
+                   typeahead-min-length="0"
+                   typeahead-wait-ms="250"
+                   autocomplete="off"
+                   typeahead-no-results="noResults"
+                   required>
+            <div class="form-control" ng-show="noResults">
+                No Results Found
+            </div>
+        </form-group>
 
-    <form-group input="paCollectorItem" class="text-center">
-
-        <div class="text-center modal-label">Performance Analysis Job:</div>
-
-        <select name="paCollectorItem"
-                class="form-control"
-                ng-model="performanceConfig.paCollectorItem"
-                ng-options="(item.collector.name + ' - ' + item.description) for item in performanceConfig.paJobs | orderBy:['collector.name','description'] track by item.id"
-                ng-disabled="performanceConfig.paJobs.length === 0">
-            <option value="" disabled>{{performanceConfig.paToolsDropdownPlaceholder}}</option>
-        </select>
-    </form-group>
-
-	<div class="button-row row text-center">
-		<button type="submit" class="btn btn-primary btn-wide">Save</button>
-	</div>
-</form>
+        <div class="button-row row text-center">
+            <button type="submit" class="btn btn-primary btn-wide">Save</button>
+        </div>
+    </form>
 </widget-modal>
