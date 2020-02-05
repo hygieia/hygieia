@@ -13,7 +13,7 @@ var localStorageSupported = (function () {
     'use strict';
 
     // set default theme
-    var theme = 'dash';
+    var theme = 'citiustech-theme';
 
     // get theme from storage
     if (localStorageSupported) {

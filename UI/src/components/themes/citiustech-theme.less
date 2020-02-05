@@ -1,0 +1,50 @@
+@import 'dash.less';
+/** insert:widgets **/
+
+/*
+ A custom theme that should size better for tv monitors
+ */
+
+html {
+    font-size: 13px;
+}
+
+@dash-text-standard-size: 1;
+@dash-text-standard-line-height: 1.2;
+
+#dashboard {
+    .ct-label {
+        font-size: .7rem !important;
+    }
+
+    .average-build-duration {
+        margin-bottom: 0 !important;
+    }
+
+    #header {
+        line-height: 65px;
+        font-size: 40px;
+    }
+
+    .dash-row {
+        @line-height: 2.75rem;
+        line-height: @line-height !important;
+
+        td {
+            line-height: @line-height !important;
+        }
+    }
+
+    .widget {
+        //    padding: 1.5rem 2.5rem 2.5rem 2.5rem;
+        padding-top: 2rem;
+
+        .widget {
+            padding: 0;
+
+            .widget-heading {
+                margin-bottom: .5rem;
+            }
+        }
+    }
+}
