@@ -70,7 +70,12 @@
             {
                 name: 'BS Slate',
                 filename: 'slate'
-            }];
+            },
+            {
+                name: 'Citiustech',
+                filename: 'citiustech-theme'
+            }
+        ];
 
         // used to only show themes option if local storage is available
         if (localStorageSupported) {
