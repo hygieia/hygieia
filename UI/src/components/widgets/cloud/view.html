@@ -198,7 +198,7 @@
     </div>
 
     <div class="container-fluid" ng-if="cloudView.toggledView == 'Detail'">
-        <h3>Account Detail<p class="small">Account Number: {{ cloudView.accountNumber }}, Tag Name: {{cloudView.tagName}}, Tag Value: {{cloudView.tagValue}}</p></h3>
+        <h3>Account Detail<p class="small">Account Number: {{ cloudView.accountNumber }},&nbsp&nbsp Tag Name: {{cloudView.tagName}},&nbsp&nbsp Tag Value: {{cloudView.tagValue}}</p></h3>
         <hr>
 
         <div class="row">
@@ -206,27 +206,27 @@
             <div class="col-md-3">
                 <div class="progress progress-headers">
                     <div class="progress-bar progress-bar-info" style="width: 20%;"><span class="fa fa-tasks header-icon"></span></div>
-                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbspInstance Count {{cloudView.filteredInstancesByAccount.length}}</h3>
+                    <h5 class="info-icon-label text-primary">&nbsp&nbsp&nbspInstance Count {{cloudView.filteredInstancesByAccount.length}}</h5>
                 </div>
             </div>
 
             <div class="col-md-3">
                 <div class="progress progress-headers">
                     <div class="progress-bar progress-bar-success" style="width: 20%;"><span class="fa fa-database header-icon"></span></div>
-                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbspStorage {{
+                    <h5 class="info-icon-label text-primary">&nbsp&nbsp&nbspStorage {{
 
                         cloudView.formatVolume(
                         cloudView.calculateVolumeInBytes(cloudView.filteredVolumesByAccount)
                         )
 
-                        }}</h3>
+                        }}</h5>
                 </div>
             </div>
 
             <div class="col-md-3">
                 <div class="progress progress-headers">
                     <div class="progress-bar progress-bar-danger" style="width: 20%;"><span class="fa fa-line-chart header-icon"></span></div>
-                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbspUtilization {{cloudView.calculateUtilization(cloudView.filteredInstancesByAccount) | number:1}}%</h3>
+                    <h5 class="info-icon-label text-primary">&nbsp&nbsp&nbspUtilization {{cloudView.calculateUtilization(cloudView.filteredInstancesByAccount) | number:1}}%</h5>
                 </div>
             </div>
 
