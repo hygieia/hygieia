@@ -53,7 +53,7 @@
         <div class="row">
             <div class="col-md-4">
                 <div class="well override-panel-background-color">
-                    <h3>Running/Stopped</h3>
+                    <h5>Running/Stopped</h5>
                     <div class="row">
                         <div class="col-lg-6">
                             <div id="canvas-holder-1">
@@ -81,7 +81,7 @@
 
             <div class="col-md-4">
                 <div class="well override-panel-background-color">
-                    <h3>Instances By Age</h3>
+                    <h5>Instances By Age</h5>
                     <div class="row">
                         <div class="col-lg-6">
                             <div id="canvas-holder-2">
@@ -110,10 +110,10 @@
 
             <div class="col-md-4">
                 <div class="well override-panel-background-color">
-                    <h3>Instance Usage - Monthly</h3>
+                    <h5>Instance Usage - Monthly</h5>
                     <div class="row">
                         <div class="col-lg-6">
-                            <div id="canvas-holder-3">
+                            <div id="canvas-holder-3" style="margin-left: -2em;">
                                 <chartist
                                         class="ct-chart ct-series-d ct-point ct-line"
                                         chartist-data="cloudView.instanceUsageMonthly"
@@ -127,7 +127,7 @@
             </div>
 
 
-            <div class="col-md-6">
+            <!-- <div class="col-md-6">
                 <div id="iptutildiv" class="well override-panel-background-color" ng-controller="subnetController" ng-init="getSubnets()">
                     <div class="row" ng-init="getIpUtilizations()" >
                         <div class="col-lg-5"><h3>IP Utilization</h3>
@@ -169,11 +169,12 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
             <div class="col-lg-6">
+         
                 <div class="well override-panel-background-color">
-                    <h3>Instance Usage - Hourly</h3>
+                    <h5>Instance Usage - Hourly</h5>
                     <div class="row">
                         <div class="col-lg-6">
                             <div id="canvas-holder-4">
