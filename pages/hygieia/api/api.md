@@ -42,7 +42,7 @@ To configure the Hygieia API layer, first fork and clone the [api repo](https://
 	To run the executable file, change directory to 'api\target' and then execute the following command from the command prompt:
 
 	```bash
-	java -jar api.jar --spring.config.location=C:\[path to]\Hygieia\api\api.properties -Djasypt.encryptor.password=hygieiasecret
+	java -jar api.jar --spring.config.location=C:\[path to api.properties file] -Djasypt.encryptor.password=hygieiasecret
 	```
 
 	Verify API access from the web browser using the url: http://localhost:8080/api/ping.
