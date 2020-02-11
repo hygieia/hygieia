@@ -19,11 +19,11 @@ Hygieia uses Spring Boot to package the API as an executable JAR file with depen
 
 ## Setup Instructions
 
-To configure the Hygieia API layer, execute the following steps:
+To configure the Hygieia API layer, first fork and clone the [api repo](https://github.com/Hygieia/api).  Then, execute the following steps:
 
 *	**Step 1: Run Maven Build**
 
-	To package the API source code into an executable JAR file, run the Maven build from the `\Hygieia` directory of your source code installation:
+	To package the API source code into an executable JAR file, run the Maven build from the `\api` directory of your source code installation:
 
 	```bash
 	mvn install
