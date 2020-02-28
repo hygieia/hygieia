@@ -1,6 +1,5 @@
 import { ChangeDetectorRef, Component, ComponentFactoryResolver, Input, OnInit, Type, ViewChild } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-
 import { DetailModalDirective } from './detail-modal.directive';
 
 @Component({
@@ -9,9 +8,6 @@ import { DetailModalDirective } from './detail-modal.directive';
   styleUrls: ['./detail-modal.component.scss']
 })
 export class DetailModalComponent implements OnInit {
-
-
-  @Input() Title;
   @Input() detailView: Type<any>;
   @ViewChild(DetailModalDirective, {static: true}) modalTypeTag: DetailModalDirective;
 
@@ -24,9 +20,11 @@ export class DetailModalComponent implements OnInit {
   ngOnInit() {
     if (this.detailView) {
       const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.detailView);
-      const viewContainerRef = this.modalTypeTag.viewContainerRef;
-      viewContainerRef.clear();
-      const componentRef = viewContainerRef.createComponent(componentFactory);
+      if (this.modalTypeTag !== undefined) {
+        const viewContainerRef = this.modalTypeTag.viewContainerRef;
+        viewContainerRef.clear();
+        const componentRef = viewContainerRef.createComponent(componentFactory);
+      }
       this.cdr.detectChanges();
     }
   }

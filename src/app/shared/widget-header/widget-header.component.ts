@@ -3,15 +3,12 @@ import {map, switchMap} from 'rxjs/operators';
 import {zip} from 'rxjs';
 import { extend } from 'lodash';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-
 import {IWidgetConfigResponse} from '../interfaces';
 import {ConfirmationModalComponent} from '../modals/confirmation-modal/confirmation-modal.component';
 import {FormModalComponent} from '../modals/form-modal/form-modal.component';
 import {WidgetComponent} from '../widget/widget.component';
 import {WidgetDirective} from '../widget/widget.directive';
 import {DashboardService} from '../dashboard.service';
-
-
 
 @Component({
   selector: 'app-widget-header',

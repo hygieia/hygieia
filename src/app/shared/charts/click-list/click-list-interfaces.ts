@@ -15,10 +15,16 @@ export interface IClickListItem {
   statusText: string;
   title: string;
   subtitles: any[];
+  url: string;
 }
 
 export interface IClickListData {
   items: IClickListItem[];
   clickableContent: Type<any>;
   clickableHeader: Type<any>;
+  title: string;
+  version: string;
+  name: string;
+  lastUpdated: string;
+  obj: any;
 }

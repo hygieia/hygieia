@@ -11,5 +11,4 @@ export class BuildDetailComponent implements OnInit {
 
   ngOnInit() {
   }
-
 }

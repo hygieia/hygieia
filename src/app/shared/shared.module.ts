@@ -40,9 +40,14 @@ import { WidgetHeaderComponent } from './widget-header/widget-header.component';
 import { PlaceholderWidgetComponent } from './widget/placeholder-widget/placeholder-widget.component';
 import { WidgetComponent } from './widget/widget.component';
 import { WidgetDirective } from './widget/widget.directive';
+import { DeployWidgetComponent } from '../widget_modules/deploy/deploy-widget/deploy-widget.component';
+import { DeployDetailComponent } from '../widget_modules/deploy/deploy-detail/deploy-detail.component';
+import { OneChartLayoutComponent } from './layouts/one-chart-layout/one-chart-layout.component';
+import { DeployConfigFormComponent } from '../widget_modules/deploy/deploy-config-form/deploy-config-form.component';
 
 @NgModule({
   declarations: [
+    DeployConfigFormComponent,
     BaseTemplateComponent,
     BuildConfigFormComponent,
     BuildDetailComponent,
@@ -75,9 +80,15 @@ import { WidgetDirective } from './widget/widget.directive';
     WidgetHeaderComponent,
     DashStatusComponent,
     PlainTextChartComponent,
-    GaugeChartComponent
+    DeployDetailComponent,
+    DeployWidgetComponent,
+    OneChartLayoutComponent,
+    GaugeChartComponent,
+    DeployConfigFormComponent
   ],
   entryComponents: [
+    DeployDetailComponent,
+    DeployWidgetComponent,
     BuildConfigFormComponent,
     BuildDetailComponent,
     BuildWidgetComponent,
@@ -93,7 +104,9 @@ import { WidgetDirective } from './widget/widget.directive';
     PlaceholderWidgetComponent,
     PlainTextChartComponent,
     TwoByTwoLayoutComponent,
-    GaugeChartComponent
+    OneChartLayoutComponent,
+    GaugeChartComponent,
+    DeployConfigFormComponent
   ],
   imports: [
     CommonModule,

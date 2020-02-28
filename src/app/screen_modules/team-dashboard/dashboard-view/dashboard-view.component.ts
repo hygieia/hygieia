@@ -5,12 +5,12 @@ import { DashboardComponent } from 'src/app/shared/dashboard/dashboard.component
 import { TemplatesDirective } from 'src/app/shared/templates/templates.directive';
 import { PlaceholderWidgetComponent } from 'src/app/shared/widget/placeholder-widget/placeholder-widget.component';
 import { BuildWidgetComponent } from 'src/app/widget_modules/build/build-widget/build-widget.component';
-
+import { DeployWidgetComponent } from 'src/app/widget_modules/deploy/deploy-widget/deploy-widget.component';
 import { CaponeTemplateComponent } from '../capone-template/capone-template.component';
 import { ITemplate } from './dashboard-view';
 import {Placeholder} from '@angular/compiler/src/i18n/i18n_ast';
 import {BuildConfigFormComponent} from '../../../widget_modules/build/build-config-form/build-config-form.component';
-
+import {DeployConfigFormComponent} from 'src/app/widget_modules/deploy/deploy-config-form/deploy-config-form.component';
 @Component({
   selector: 'app-dashboard-view',
   templateUrl: './dashboard-view.component.html',
@@ -20,7 +20,7 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
 
   teamDashboard: ITemplate;
   dashboardId: string;
-  @ViewChild(TemplatesDirective , {static: false}) childTemplateTag: TemplatesDirective;
+  @ViewChild(TemplatesDirective, {static: false}) childTemplateTag: TemplatesDirective;
 
   constructor(componentFactoryResolver: ComponentFactoryResolver,
               cdr: ChangeDetectorRef,
@@ -53,11 +53,11 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
       }
       ,
       {
-        title: 'Placeholder',
-        component: PlaceholderWidgetComponent,
+        title: 'Deploy',
+        component: DeployWidgetComponent,
         status: 'Success',
         widgetSize: 'col-xl-3',
-        configForm: BuildConfigFormComponent
+        configForm: DeployConfigFormComponent
       },
       {
         title: 'Placeholder',
@@ -88,5 +88,4 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
   }
 
 }
-
 

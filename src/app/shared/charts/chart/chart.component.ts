@@ -5,10 +5,8 @@ import { Component, Input, OnInit } from '@angular/core';
   styleUrls: ['./chart.component.scss']
 })
 export class ChartComponent implements OnInit {
-
-  @Input() title: string;
-
   @Input() view: any[];
+  @Input() title: any;
   @Input() data: any;
   xAxisLabel: string;
   yAxisLabel: string;
