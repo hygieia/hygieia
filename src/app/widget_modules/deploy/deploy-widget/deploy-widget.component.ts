@@ -1,7 +1,11 @@
 import {Component, OnInit, ChangeDetectorRef, ViewChild, Input, AfterViewInit, OnDestroy} from '@angular/core';
-import { IClickListData, IClickListItem } from 'src/app/shared/charts/click-list/click-list-interfaces';
+import {
+  IClickListData,
+  IClickListItem,
+  IClickListItemDeploy
+} from 'src/app/shared/charts/click-list/click-list-interfaces';
 import { DeployService } from 'src/app/widget_modules/deploy/deploy.service';
-import { from, of, Subscription } from 'rxjs';
+import { of, Subscription } from 'rxjs';
 import { DEPLOY_CHARTS } from 'src/app/widget_modules/deploy/deploy-detail/deploy-charts';
 import { IDeploy } from 'src/app/widget_modules/deploy/interfaces';
 import { DashStatus } from 'src/app/shared/dash-status/DashStatus';
@@ -21,7 +25,6 @@ import { OneChartLayoutComponent } from 'src/app/shared/layouts/one-chart-layout
 })
 
 export class DeployWidgetComponent extends WidgetComponent implements OnInit {
-
   constructor(ComponentFactoryResolver: ComponentFactoryResolver,
               cdr: ChangeDetectorRef,
               dashboardService: DashboardService,
@@ -61,7 +64,7 @@ export class DeployWidgetComponent extends WidgetComponent implements OnInit {
         if (!widgetConfig) {
           return of([]);
         }
-        this.TimeThreshold = 1000 * 60 * widgetConfig.options.buildDurationThreshold;
+        this.TimeThreshold = 1000 * 60 * widgetConfig.options.deployDurationThreshold;
         return this.deployService.fetchDetails(widgetConfig.componentId);
       })).subscribe(result => {
       if (result) {
@@ -82,19 +85,9 @@ export class DeployWidgetComponent extends WidgetComponent implements OnInit {
   }
 
   public generateLatestDeployData(result: IDeploy[]) {
-    const titleList = [];
-    const nameList = [];
-    const versionList = [];
-    const lastUpList = [];
-    const urlList = [];
     const sorted = result.sort((a: IDeploy, b: IDeploy): number => {
       return a.units[0].lastUpdated - b.units[0].lastUpdated;
     }).reverse().slice(0, 5);
-
-    const deployedStatusTable = {
-      true : DashStatus.PASS,
-      false : DashStatus.FAIL
-    };
     const latestDeployData = sorted.map(deploy => {
       let deployStatusText = '';
       const deployStatus = deploy.units[0].deployed ?
@@ -107,33 +100,19 @@ export class DeployWidgetComponent extends WidgetComponent implements OnInit {
         status: deployStatus,
         statusText: deployStatusText,
         title: deploy.name,
-          subtitles: [
-            new Date(deploy.units[0].lastUpdated)
-          ],
-          url: deploy.url
-        } as IClickListItem;
+        subtitles: [],
+        url: deploy.url,
+        version: deploy.units[0].version,
+        name: deploy.units[0].name,
+        lastUpdated: deploy.units[0].lastUpdated
+        } as IClickListItemDeploy;
       }
     );
-
-    result.forEach(currResult => {
-      titleList.push(currResult.name);
-      nameList.push(currResult.units[0].name);
-      versionList.push(currResult.units[0].version);
-      lastUpList.push(String(new Date(currResult.units[0].lastUpdated)));
-      urlList.push(currResult.url);
-    });
 
     this.charts[0].data = {
       items: latestDeployData,
       clickableContent: DeployDetailComponent,
-      clickableHeader: null,
-      obj : {
-        title: titleList,
-        name: nameList,
-        version: versionList,
-        lastUpdated: lastUpList,
-        url: urlList
-      }
+      clickableHeader: null
     } as IClickListData;
   }
 }

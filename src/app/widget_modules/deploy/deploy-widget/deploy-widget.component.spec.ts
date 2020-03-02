@@ -2,26 +2,93 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { DeployWidgetComponent } from './deploy-widget.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterModule } from '@angular/router';
+import {SharedModule} from '../../../shared/shared.module';
+import {CommonModule} from '@angular/common';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {NgbModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {DeployService} from '../deploy.service';
+import {DashboardService} from '../../../shared/dashboard.service';
+import {NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
+import {Observable, of, Subscription} from 'rxjs';
+
+class MockDeployService {
+  mockDeployData = {
+    result: [
+      {
+        name : 'QA',
+        url : 'mydeployurl.com/something/something',
+        units : [
+          {
+            name : 'api.jar',
+            version : '2.0.5',
+            jobURL: 'mydeployurl.com/something/something',
+            deployed : true,
+            lastUpdated : 1529001705028,
+            servers : [
+              {
+                name : "msp_tetris_dws_04",
+                online : false,
+              }
+            ],
+          }
+        ],
+        lastUpdated : 1560280286912
+      }
+    ]
+  };
+
+  fetchDetails(): Observable<{ lastUpdated: number; name: string; units: { lastUpdated: number; servers: { name: string; online: boolean }[]; name: string; jobURL: string; deployed: boolean; version: string }[]; url: string }[]> {
+    return of(this.mockDeployData.result);
+  }
+}
+
+@NgModule({
+  declarations: [],
+  imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([]), NgbModule],
+  entryComponents: []
+})
+class TestModule { }
 
 describe('DeployWidgetComponent', () => {
   let component: DeployWidgetComponent;
+  let deployService: DeployService;
+  let dashboardService: DashboardService;
+  let modalService: NgbModule;
   let fixture: ComponentFixture<DeployWidgetComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,RouterModule.forRoot([])],
-      declarations: [ DeployWidgetComponent ]
+      providers: [
+        { provide: DeployService, useClass: MockDeployService}
+      ],
+      imports: [TestModule, HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([])],
+      declarations: [],
+      schemas: [NO_ERRORS_SCHEMA]
     })
       .compileComponents();
+
+    fixture = TestBed.createComponent(DeployWidgetComponent);
+    component = fixture.componentInstance;
+    deployService = TestBed.get(DeployService);
+    dashboardService = TestBed.get(DashboardService);
+    modalService = TestBed.get(NgbModal);
   }));
+
+  it('should hit stopRefreshInterval', () => {
+    component.stopRefreshInterval();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+    expect(deployService).toBeTruthy();
+    expect(dashboardService).toBeTruthy();
+    expect(modalService).toBeTruthy();
+    expect(fixture).toBeTruthy();
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(DeployWidgetComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
   });
 });

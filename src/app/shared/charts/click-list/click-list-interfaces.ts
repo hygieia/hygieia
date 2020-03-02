@@ -16,15 +16,16 @@ export interface IClickListItem {
   title: string;
   subtitles: any[];
   url: string;
+  lastUpdated: number;
+}
+
+export interface IClickListItemDeploy extends IClickListItem {
+  version: string;
+  name: string;
 }
 
 export interface IClickListData {
   items: IClickListItem[];
   clickableContent: Type<any>;
   clickableHeader: Type<any>;
-  title: string;
-  version: string;
-  name: string;
-  lastUpdated: string;
-  obj: any;
 }
