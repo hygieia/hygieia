@@ -31,15 +31,17 @@ describe('DeployService', () => {
             result: [
               {
                 name : 'QA',
+                url : 'mydeployurl.com/something/something',
                 units : [
                   {
                     name : 'api.jar',
                     version : '2.0.5',
+                    jobURL: 'mydeployurl.com/something/something',
                     deployed : true,
                     lastUpdated : 1529001705028,
                     servers : [
                       {
-                        name : 'msp_tetris_dws_04',
+                        name : "msp_tetris_dws_04",
                         online : false,
                       }
                     ],

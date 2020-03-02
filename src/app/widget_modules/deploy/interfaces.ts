@@ -11,7 +11,7 @@ export interface IDeploy {
 
 export interface IUnits {
   name: string;
-  version: number;
+  version: string;
   jobUrl: string;
   deployed: boolean;
   lastUpdated: number;
