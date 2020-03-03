@@ -1,13 +1,12 @@
-import { Component, NgModule } from '@angular/core';
+import {Component, NgModule, Pipe} from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TimeAgoPipe } from 'time-ago-pipe';
-
 import { DashStatusComponent } from '../../dash-status/dash-status.component';
-import { DashStatus } from '../../dash-status/DashStatus';
 import { DetailModalComponent } from '../../modals/detail-modal/detail-modal.component';
-import { IClickListData, IClickListItem } from './click-list-interfaces';
 import { ClickListComponent } from './click-list.component';
+import {CommonModule } from '@angular/common';
+import {DashStatus, IClickListData, IClickListItem} from './click-list-interfaces';
 
 @Component({
   selector: 'app-test-detail-view',
@@ -17,7 +16,8 @@ export class TestDetailViewComponent {}
 
 @NgModule({
   declarations: [TestDetailViewComponent, DetailModalComponent],
-  imports: [],
+  imports: [CommonModule],
+  providers: [],
   entryComponents: [TestDetailViewComponent, DetailModalComponent]
 })
 class TestModule { }
@@ -29,7 +29,7 @@ describe('ClickListComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ClickListComponent, TimeAgoPipe, DashStatusComponent],
-      imports: [TestModule, NgbModule]
+      imports: [TestModule, NgbModule ]
     })
       .compileComponents();
   }));
@@ -54,6 +54,8 @@ describe('ClickListComponent', () => {
           subtitles: [
             'Test'
           ],
+          url: 'testurl.com',
+          lastUpdated: 12345
         } as IClickListItem
       ],
       clickableContent: TestDetailViewComponent,

@@ -37,18 +37,14 @@ export class DeployConfigFormComponent implements OnInit {
 
   @Input()
   set widgetConfig(widgetConfig) {
-    console.log('setting');
     this.widgetConfigId = widgetConfig.options.id;
 
     if (widgetConfig.options.deployRegex !== undefined && widgetConfig.options.deployRegex !== null) {
-      console.log('if');
       this.deployConfigForm.get('deployRegex').setValue(widgetConfig.options.deployRegex);
     }
     if (widgetConfig.options.deployAggregateServer) {
-      console.log('if 2');
       this.deployConfigForm.get('deployAggregateServer').setValue(widgetConfig.options.deployAggregateServer);
     } else {
-      console.log('else');
       this.deployConfigForm.get('deployAggregateServer').setValue(false);
     }
   }
@@ -146,12 +142,9 @@ export class DeployConfigFormComponent implements OnInit {
   }
 
   private getDeploymentJobsRecursive(arr: any[], filter, nameAndIdToCheck, pageNumber) {
-    console.log('getDeploymentJobsRecursive');
     return this.collectorService.getItemsByType('deployment',
       {search: filter, size: 20, sort: 'description', page: pageNumber}).toPromise().then(response => {
-        console.log(response);
-      if (response.length > 0) {
-        console.log('1');
+        if (response.length > 0) {
         arr.push((response as any[]).filter(item => nameAndIdToCheck === null ||
           nameAndIdToCheck === item.options.applicationName + '#' + item.options.applicationId));
         arr.push.apply(arr, _.chain(response).filter(function(d) {
@@ -159,30 +152,25 @@ export class DeployConfigFormComponent implements OnInit {
         }).value());
       }
 
-      if ( this.deployConfigForm.value.deployRegex && response.length > 0) {
-        console.log('2');
+        if ( this.deployConfigForm.value.deployRegex && response.length > 0) {
         // The last item could have additional deployments with the same name but different servers
         const lastItem = response.slice(-1)[0];
 
         const checkKey = lastItem.options.applicationName + '#' + lastItem.options.applicationId;
         if (nameAndIdToCheck === null || checkKey === nameAndIdToCheck) {
-          console.log('3');
           // We should check to see if the next page has the same item for our grouping
           return this.getDeploymentJobsRecursive(arr, filter, checkKey, pageNumber + 1);
         }
       }
-      return arr;
+        return arr;
     });
   }
   private loadSavedDeployment() {
-    console.log("Inside loadSavedDeployment");
     this.dashboardService.dashboardConfig$.pipe(take(1),
       map(dashboard => {
         const deployCollector = dashboard.application.components[0].collectorItems.Deployment;
         const savedCollectorDeploymentJob = deployCollector ? deployCollector[0].description : null;
-        console.log('Saved info: ' + savedCollectorDeploymentJob);
         if (savedCollectorDeploymentJob) {
-          console.log('Inside savedCollectorDeploymentJob');
           this.getDeploymentJobs(savedCollectorDeploymentJob).then(this.getDeploysCallback);
         }
       })).subscribe();

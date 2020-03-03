@@ -33,12 +33,14 @@ export class OneChartLayoutComponent extends LayoutComponent implements AfterVie
   resize() {
     const chartContainerArray = this.chartContainers.toArray();
     chartContainerArray.forEach((currChartContainer, index) => {
-      const currChartComponent = this.chartComponents[index];
-      const width = currChartContainer.nativeElement.getBoundingClientRect().width;
-      if (currChartComponent.scaleFactor) {
-        currChartComponent.view = [width, width * currChartComponent.scaleFactor];
-      } else {
-        currChartComponent.view = [width, width * .4];
+      if (this.chartComponents[index] !== undefined) {
+        const currChartComponent = this.chartComponents[index];
+        const width = currChartContainer.nativeElement.getBoundingClientRect().width;
+        if (currChartComponent.scaleFactor && currChartComponent !== undefined) {
+          currChartComponent.view = [width, width * currChartComponent.scaleFactor];
+        } else {
+          currChartComponent.view = [width, width * .4];
+        }
       }
     });
 

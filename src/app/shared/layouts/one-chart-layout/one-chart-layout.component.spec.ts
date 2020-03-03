@@ -15,13 +15,10 @@ describe('OneChartLayoutComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(OneChartLayoutComponent);
     component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
-  if (fixture !== undefined) {
-    fixture.detectChanges();
-  }
 });

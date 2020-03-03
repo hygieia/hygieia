@@ -19,11 +19,10 @@ export class ClickListComponent extends ChartComponent {
   }
 
   openDetailView(clickListItem: IClickListItemDeploy) {
-    if (this.data && (this.data as IClickListData).clickableContent && clickListItem !== undefined && this.data !== undefined) {
-      let pos = 0;
+    if (this.data && (this.data as IClickListData).clickableContent && clickListItem !== undefined && clickListItem != null && this.data !== undefined) {
       const currentDeploy = this.data.items.find(item => item.title === clickListItem.title);
       const modalRef = this.modalService.open(DetailModalComponent);
-      if (modalRef !== undefined) {
+      if (modalRef !== undefined && modalRef != null) {
         modalRef.componentInstance.title = currentDeploy.title;
         modalRef.componentInstance.name = currentDeploy.name;
         modalRef.componentInstance.lastUpdated = currentDeploy.lastUpdated;
