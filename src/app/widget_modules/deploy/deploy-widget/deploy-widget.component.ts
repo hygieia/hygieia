@@ -63,16 +63,14 @@ export class DeployWidgetComponent extends WidgetComponent implements OnInit {
       switchMap(_ => this.getCurrentWidgetConfig()),
       switchMap(widgetConfig => {
         if (!widgetConfig) {
-          console.log('startRefresh widgetConfig');
           return of([]);
         }
         this.TimeThreshold = 1000 * 60 * widgetConfig.options.deployDurationThreshold;
         return this.deployService.fetchDetails(widgetConfig.componentId);
       })).subscribe(result => {
-      if (result) {
-        console.log('has result');
-        this.loadCharts(result);
-      }
+        if (result) {
+          this.loadCharts(result);
+        }
     });
   }
   // Unsubscribe from the widget refresh observable, which stops widget updating.

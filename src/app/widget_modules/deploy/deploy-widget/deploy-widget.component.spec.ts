@@ -117,12 +117,17 @@ describe('DeployWidgetComponent', () => {
     modalService = TestBed.get(NgbModal);
   }));
 
-  it('should hit start/stopRefreshInterval', () => {
+  it('should hit stopRefreshInterval', () => {
     component.stopRefreshInterval();
   });
 
   it('should makes use of result inside loadCharts', () => {
     component.loadCharts([IDeploy1, IDeploy2]);
+  });
+
+  it('should hit generateLatestDeployData and startRefreshInterval', () => {
+    component.generateLatestDeployData([IDeploy1, IDeploy2]);
+    component.startRefreshInterval();
   });
 
   it('should create', () => {

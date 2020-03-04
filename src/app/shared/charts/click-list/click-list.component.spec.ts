@@ -1,4 +1,4 @@
-import {Component, NgModule, Pipe} from '@angular/core';
+import {Component, NgModule} from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TimeAgoPipe } from 'time-ago-pipe';
@@ -44,12 +44,29 @@ describe('ClickListComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should open detail views', () => {
+  it('should open detail view and header view', () => {
+    component.data = {
+      items: [
+        {
+          status: DashStatus.PASS,
+          statusText: 'Passing',
+          title: 'Test title',
+          subtitles: [
+            'Test'
+          ],
+          url: 'firstTestUrl.com',
+          lastUpdated: 11111
+        } as IClickListItem,
+      ],
+      clickableContent: TestDetailViewComponent,
+      clickableHeader: TestDetailViewComponent
+    } as IClickListData;
+
     component.openDetailView(null);
     component.openHeaderView();
   });
 
-  it('should open detail views and set values', () => {
+  it('should open detail view and set values', () => {
     component.data = {
       items: [
         {
@@ -76,5 +93,8 @@ describe('ClickListComponent', () => {
       clickableContent: TestDetailViewComponent,
       clickableHeader: TestDetailViewComponent
     } as IClickListData;
+
+    component.data.items.title = 'secondTest';
+    component.openDetailView(component.data.items);
   });
 });
