@@ -3,7 +3,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DashStatus } from '../../dash-status/DashStatus';
 import { DetailModalComponent } from '../../modals/detail-modal/detail-modal.component';
 import { ChartComponent } from '../chart/chart.component';
-import {IClickListData, IClickListItem, IClickListItemDeploy} from './click-list-interfaces';
+import {IClickListData, IClickListItemDeploy} from './click-list-interfaces';
 
 @Component({
   selector: 'app-click-list',
@@ -19,6 +19,7 @@ export class ClickListComponent extends ChartComponent {
   }
 
   openDetailView(clickListItem: IClickListItemDeploy) {
+    // tslint:disable-next-line:max-line-length
     if (this.data && (this.data as IClickListData).clickableContent && clickListItem !== undefined && clickListItem != null && this.data !== undefined) {
       const currentDeploy = this.data.items.find(item => item.title === clickListItem.title);
       const modalRef = this.modalService.open(DetailModalComponent);

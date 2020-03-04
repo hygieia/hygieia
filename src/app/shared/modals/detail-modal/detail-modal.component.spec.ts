@@ -23,4 +23,8 @@ describe('DetailModalComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should check detailView and modalTypeTag', () => {
+    component.ngOnInit();
+  });
 });

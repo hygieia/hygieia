@@ -45,23 +45,36 @@ describe('ClickListComponent', () => {
   });
 
   it('should open detail views', () => {
+    component.openDetailView(null);
+    component.openHeaderView();
+  });
+
+  it('should open detail views and set values', () => {
     component.data = {
       items: [
         {
           status: DashStatus.PASS,
           statusText: 'Passing',
-          title: 'Test',
+          title: 'firstTest',
           subtitles: [
             'Test'
           ],
-          url: 'testurl.com',
+          url: 'firstTestUrl.com',
           lastUpdated: 12345
-        } as IClickListItem
+        } as IClickListItem,
+        {
+          status: DashStatus.PASS,
+          statusText: 'Passing',
+          title: 'secondTest',
+          subtitles: [
+            'Test'
+          ],
+          url: 'secondTestUrl.com',
+          lastUpdated: 54321
+        } as IClickListItem,
       ],
       clickableContent: TestDetailViewComponent,
       clickableHeader: TestDetailViewComponent
     } as IClickListData;
-    component.openDetailView(null);
-    component.openHeaderView();
   });
 });

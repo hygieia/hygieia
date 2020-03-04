@@ -9,7 +9,8 @@ import {NgbModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {DeployService} from '../deploy.service';
 import {DashboardService} from '../../../shared/dashboard.service';
 import {NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
-import {Observable, of, Subscription} from 'rxjs';
+import {Observable, of} from 'rxjs';
+import {IDeploy, IServers, IUnits} from '../interfaces';
 
 class MockDeployService {
   mockDeployData = {
@@ -37,6 +38,7 @@ class MockDeployService {
     ]
   };
 
+  // tslint:disable-next-line:max-line-length
   fetchDetails(): Observable<{ lastUpdated: number; name: string; units: { lastUpdated: number; servers: { name: string; online: boolean }[]; name: string; jobURL: string; deployed: boolean; version: string }[]; url: string }[]> {
     return of(this.mockDeployData.result);
   }
@@ -56,10 +58,51 @@ describe('DeployWidgetComponent', () => {
   let modalService: NgbModule;
   let fixture: ComponentFixture<DeployWidgetComponent>;
 
+  const IDeploy1 = {
+    name: 'Test',
+    url: 'testUrl.com',
+    units: [
+      {
+        name: 'unitName',
+        version: 'unitVersion',
+        jobUrl: 'unitJobUrl',
+        deployed: true,
+        lastUpdated: 1232,
+        servers: [
+          {
+            name: 'serverName',
+            online: true
+          } as IServers,
+        ],
+      } as IUnits,
+    ],
+  } as IDeploy;
+
+  const IDeploy2 = {
+    name: 'Test2',
+    url: 'testUrl2.com',
+    units: [
+      {
+        name: 'unitName2',
+        version: 'unitVersion2',
+        jobUrl: 'unitJobUrl2',
+        deployed: true,
+        lastUpdated: 1232,
+        servers: [
+          {
+            name: 'serverName2',
+            online: true
+          } as IServers,
+        ],
+      } as IUnits,
+    ],
+  } as IDeploy;
+
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       providers: [
-        { provide: DeployService, useClass: MockDeployService}
+        {provide: DeployService, useClass: MockDeployService}
       ],
       imports: [TestModule, HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([])],
       declarations: [],
@@ -74,8 +117,12 @@ describe('DeployWidgetComponent', () => {
     modalService = TestBed.get(NgbModal);
   }));
 
-  it('should hit stopRefreshInterval', () => {
+  it('should hit start/stopRefreshInterval', () => {
     component.stopRefreshInterval();
+  });
+
+  it('should makes use of result inside loadCharts', () => {
+    component.loadCharts([IDeploy1, IDeploy2]);
   });
 
   it('should create', () => {

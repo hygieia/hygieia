@@ -36,7 +36,7 @@ export class OneChartLayoutComponent extends LayoutComponent implements AfterVie
       if (this.chartComponents[index] !== undefined) {
         const currChartComponent = this.chartComponents[index];
         const width = currChartContainer.nativeElement.getBoundingClientRect().width;
-        if (currChartComponent.scaleFactor && currChartComponent !== undefined) {
+        if (currChartComponent.scaleFactor) {
           currChartComponent.view = [width, width * currChartComponent.scaleFactor];
         } else {
           currChartComponent.view = [width, width * .4];

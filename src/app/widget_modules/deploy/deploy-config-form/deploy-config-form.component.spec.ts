@@ -26,4 +26,9 @@ describe('DeployConfigFormComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should pass through getDeploymentJobs, getDashboardComponent, and loadSavedDeployment', () => {
+    component.getDeploymentJobs(null);
+    component.ngOnInit();
+  });
 });
