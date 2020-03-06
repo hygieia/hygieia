@@ -2,10 +2,11 @@ import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable, of, from } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, switchMap, take, tap } from 'rxjs/operators';
+import {debounceTime, distinctUntilChanged, last, map, switchMap, take, tap} from 'rxjs/operators';
 import { CollectorService } from 'src/app/shared/collector.service';
 import { DashboardService } from 'src/app/shared/dashboard.service';
 import * as _ from 'lodash';
+import {runFilenameOrFn_} from 'protractor/built/util';
 
 @Component({
   selector: 'app-deploy-config-form',
@@ -24,7 +25,6 @@ export class DeployConfigFormComponent implements OnInit {
 
   getDeploysCallback = (data) => {
     this.deployConfigForm.value.deployJob = data[0];
-    console.log(this);
     this.deployConfigForm.get('deployJob').setValue(data[0]);
   }
 
@@ -90,11 +90,11 @@ export class DeployConfigFormComponent implements OnInit {
 
   private processResponse(data: any[]) {
     const dataGrouped = _.chain(data[0]).groupBy(function (d) {
+      // tslint:disable-next-line:forin
       return ('') + d.options.applicationName + d.options.applicationId;
     }).map(function (d) {
       return d;
     }).value();
-
     const deploys = _.chain(dataGrouped).map(function (deploys, idx) {
       const firstDeploy = deploys[0];
       const name = firstDeploy.options.applicationName;
@@ -115,9 +115,7 @@ export class DeployConfigFormComponent implements OnInit {
         group: group
       };
     }).value();
-
     return deploys;
-
   }
 
   private getDashboardComponent() {
@@ -141,30 +139,22 @@ export class DeployConfigFormComponent implements OnInit {
     this.activeModal.close(newConfig);
   }
 
-  private getDeploymentJobsRecursive(arr: any[], filter, nameAndIdToCheck, pageNumber) {
-    return this.collectorService.getItemsByType('deployment',
-      {search: filter, size: 20, sort: 'description', page: pageNumber}).toPromise().then(response => {
-        if (response.length > 0) {
-        arr.push((response as any[]).filter(item => nameAndIdToCheck === null ||
-          nameAndIdToCheck === item.options.applicationName + '#' + item.options.applicationId));
-        arr.push.apply(arr, _.chain(response).filter(function(d) {
-          return nameAndIdToCheck === null || nameAndIdToCheck === d.options.applicationName + '#' + d.options.applicationId;
-        }).value());
-      }
-
-        if ( this.deployConfigForm.value.deployRegex && response.length > 0) {
-        // The last item could have additional deployments with the same name but different servers
-        const lastItem = response.slice(-1)[0];
-
-        const checkKey = lastItem.options.applicationName + '#' + lastItem.options.applicationId;
-        if (nameAndIdToCheck === null || checkKey === nameAndIdToCheck) {
-          // We should check to see if the next page has the same item for our grouping
-          return this.getDeploymentJobsRecursive(arr, filter, checkKey, pageNumber + 1);
-        }
-      }
-        return arr;
-    });
+  private testResponse(arr, response, nameAndIdToCheck) {
+    if (response !== undefined && response !== null) {
+      arr.push(response as any[]);
+      arr.push.apply(arr, _.chain(response).filter((d) => {
+        return nameAndIdToCheck === null;
+      }).value());
+    }
+    return arr;
   }
+
+  private getDeploymentJobsRecursive(arr: any[], filter, nameAndIdToCheck, pageNumber) {
+    const params = {search: filter, size: 20, sort: 'description', page: pageNumber};
+    const responsePromise = this.collectorService.getItemsByType('deployment', params).toPromise();
+    return responsePromise.then(this.testResponse(arr, responsePromise, nameAndIdToCheck));
+  }
+
   private loadSavedDeployment() {
     this.dashboardService.dashboardConfig$.pipe(take(1),
       map(dashboard => {
