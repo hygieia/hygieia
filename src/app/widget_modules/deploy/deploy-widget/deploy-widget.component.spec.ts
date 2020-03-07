@@ -27,7 +27,7 @@ class MockDeployService {
             lastUpdated : 1529001705028,
             servers : [
               {
-                name : "msp_tetris_dws_04",
+                name : 'msp_tetris_dws_04',
                 online : false,
               }
             ],

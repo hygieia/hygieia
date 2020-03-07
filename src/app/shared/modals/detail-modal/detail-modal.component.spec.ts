@@ -1,8 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { DetailModalComponent } from './detail-modal.component';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import {DetailModalDirective} from './detail-modal.directive';
-import {ViewContainerRef} from '@angular/core';
 
 describe('DetailModalComponent', () => {
   let component: DetailModalComponent;

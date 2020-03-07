@@ -1,7 +1,6 @@
-import {Component, OnInit, ChangeDetectorRef, ViewChild, Input, AfterViewInit, OnDestroy} from '@angular/core';
+import {Component, OnInit, ChangeDetectorRef, ViewChild} from '@angular/core';
 import {
   IClickListData,
-  IClickListItem,
   IClickListItemDeploy
 } from 'src/app/shared/charts/click-list/click-list-interfaces';
 import { DeployService } from 'src/app/widget_modules/deploy/deploy.service';
@@ -25,6 +24,7 @@ import { OneChartLayoutComponent } from 'src/app/shared/layouts/one-chart-layout
 })
 
 export class DeployWidgetComponent extends WidgetComponent implements OnInit {
+  // tslint:disable-next-line:no-shadowed-variable
   constructor(ComponentFactoryResolver: ComponentFactoryResolver,
               cdr: ChangeDetectorRef,
               dashboardService: DashboardService,
@@ -52,6 +52,7 @@ export class DeployWidgetComponent extends WidgetComponent implements OnInit {
     this.init();
   }
 
+  // tslint:disable-next-line:use-lifecycle-interface
   ngAfterViewInit() {
     this.startRefreshInterval();
   }
