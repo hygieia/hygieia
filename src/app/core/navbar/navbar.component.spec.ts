@@ -35,4 +35,7 @@ describe('NavbarComponent', () => {
     component.loginOrOut();
     expect(navigateSpy).toHaveBeenCalledWith(['/user/login']);
   });
+  it('should get userName', () => {
+    const userTest = component.userName;
+  });
 });

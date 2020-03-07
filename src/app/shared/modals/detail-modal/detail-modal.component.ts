@@ -20,19 +20,21 @@ export class DetailModalComponent implements OnInit {
   ngOnInit() {
     if (this.detailView) {
       const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.detailView);
-      if (this.modalTypeTag !== undefined) {
-        const viewContainerRef = this.modalTypeTag.viewContainerRef;
-        viewContainerRef.clear();
-        const componentRef = viewContainerRef.createComponent(componentFactory);
-      }
+      const viewContainerRef = this.modalTypeTag.viewContainerRef;
+      viewContainerRef.clear();
+      const componentRef = viewContainerRef.createComponent(componentFactory);
       this.cdr.detectChanges();
     }
   }
   onSubmit() {
-    this.activeModal.close();
+    if (this.activeModal) {
+      this.activeModal.close();
+    }
   }
   closeModal() {
-    this.activeModal.close('Modal Closed');
+    if (this.activeModal) {
+      this.activeModal.close('Modal Closed');
+    }
   }
 
 }

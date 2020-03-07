@@ -1,12 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { Observable, of, from } from 'rxjs';
-import {debounceTime, distinctUntilChanged, last, map, switchMap, take, tap} from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import {catchError, debounceTime, distinctUntilChanged, map, switchMap, take, tap} from 'rxjs/operators';
 import { CollectorService } from 'src/app/shared/collector.service';
 import { DashboardService } from 'src/app/shared/dashboard.service';
-import * as _ from 'lodash';
-import {runFilenameOrFn_} from 'protractor/built/util';
 
 @Component({
   selector: 'app-deploy-config-form',
@@ -23,16 +21,12 @@ export class DeployConfigFormComponent implements OnInit {
   searchFailed = false;
   typeAheadResults: (text$: Observable<string>) => Observable<any>;
 
-  getDeploysCallback = (data) => {
-    this.deployConfigForm.value.deployJob = data[0];
-    this.deployConfigForm.get('deployJob').setValue(data[0]);
-  }
-
-  getDeployTitle = (deployJob: any) => {
-    if (!deployJob) {
+  getDeployTitle = (deployItem: any) => {
+    if (!deployItem) {
       return '';
     }
-    return deployJob.name;
+    const description = (deployItem.description as string);
+    return deployItem.niceName + ' : ' + description;
   }
 
   @Input()
@@ -66,63 +60,27 @@ export class DeployConfigFormComponent implements OnInit {
         tap(() => this.searching = true),
         switchMap(term => {
           return term.length < 2 ? of([]) :
-            from(this.getDeploymentJobs(term));
+            this.collectorService.searchItems('build', term).pipe(
+              tap(() => this.searchFailed = false),
+              catchError(() => {
+                this.searchFailed = true;
+                return of([]);
+              }));
         }),
         tap(() => this.searching = false)
       );
 
+    this.loadSavedDeployJobs();
     this.getDashboardComponent();
-    this.loadSavedDeployment();
   }
   private createForm() {
     this.deployConfigForm = this.formBuilder.group({
       deployDurationThreshold: ['', Validators.required],
       consecutiveFailureThreshold: '',
       deployRegex: [''],
-      deployJob: ['', Validators.required],
+      deployJob: [''],
       deployAggregateServer: Boolean
     });
-  }
-
-  public getDeploymentJobs(filter) {
-    return this.getDeploymentJobsRecursive([], filter, null, 0).then(this.processResponse);
-  }
-
-  private processResponse(data: any[]) {
-    const dataGrouped = _.chain(data[0]).groupBy(function (d) {
-      // tslint:disable-next-line:forin
-      return ('') + d.options.applicationName + d.options.applicationId;
-    }).map(function (d) {
-      return d;
-    }).value();
-    const deploys = _.chain(dataGrouped).map(function (deploys, idx) {
-      const firstDeploy = deploys[0];
-      const name = firstDeploy.options.applicationName;
-      let group = '';
-      const ids = new Array(deploys.length);
-      deploys.forEach ((deploy) => {
-        ids.push(deploy.id);
-        if (group !== '') {
-          group += '\n';
-        }
-        group += ((deploy.niceName !== null) && (deploy.niceName !== '') ? deploy.niceName : deploy.collector.name) +
-          ' (' + deploy.options.instanceUrl + ')';
-      });
-
-      return {
-        value: ids,
-        name: name,
-        group: group
-      };
-    }).value();
-    return deploys;
-  }
-
-  private getDashboardComponent() {
-    this.dashboardService.dashboardConfig$.pipe(take(1),
-      map(dashboard => {
-        return dashboard.application.components[0].id;
-      })).subscribe(componentId => this.componentId = componentId);
   }
 
   private submitForm() {
@@ -139,30 +97,31 @@ export class DeployConfigFormComponent implements OnInit {
     this.activeModal.close(newConfig);
   }
 
-  private testResponse(arr, response, nameAndIdToCheck) {
-    if (response !== undefined && response !== null) {
-      arr.push(response as any[]);
-      arr.push.apply(arr, _.chain(response).filter((d) => {
-        return nameAndIdToCheck === null;
-      }).value());
-    }
-    return arr;
-  }
-
-  private getDeploymentJobsRecursive(arr: any[], filter, nameAndIdToCheck, pageNumber) {
-    const params = {search: filter, size: 20, sort: 'description', page: pageNumber};
-    const responsePromise = this.collectorService.getItemsByType('deployment', params).toPromise();
-    return responsePromise.then(this.testResponse(arr, responsePromise, nameAndIdToCheck));
-  }
-
-  private loadSavedDeployment() {
+  private loadSavedDeployJobs() {
     this.dashboardService.dashboardConfig$.pipe(take(1),
       map(dashboard => {
         const deployCollector = dashboard.application.components[0].collectorItems.Deployment;
         const savedCollectorDeploymentJob = deployCollector ? deployCollector[0].description : null;
         if (savedCollectorDeploymentJob) {
-          this.getDeploymentJobs(savedCollectorDeploymentJob).then(this.getDeploysCallback);
+          const deployId = deployCollector[0].id;
+          return deployId;
         }
-      })).subscribe();
+        return null;
+      }),
+      switchMap(deployId => {
+        if (deployId) {
+          return this.collectorService.getItemsById(deployId);
+        }
+        return of(null);
+      })).subscribe(collectorData => {
+        this.deployConfigForm.get('deployJob').setValue(collectorData);
+    });
+  }
+  private getDashboardComponent() {
+    this.dashboardService.dashboardConfig$.pipe(take(1),
+      map(dashboard => {
+        return dashboard.application.components[0].id;
+      })).subscribe(componentId => this.componentId = componentId);
   }
 }
+

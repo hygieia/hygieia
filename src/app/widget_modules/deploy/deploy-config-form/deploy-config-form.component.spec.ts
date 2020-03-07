@@ -36,13 +36,7 @@ describe('DeployConfigFormComponent', () => {
   });
 
   it('should pass through getDeploymentJobs, getDashboardComponent, and loadSavedDeployment', () => {
-    component.getDeploymentJobs(null);
-    component.searching = true;
     component.ngOnInit();
-  });
-
-  it('should make use of filter', () => {
-    component.getDeploymentJobs('123');
   });
 
   it('should set widgetConfig', () => {
@@ -63,10 +57,5 @@ describe('DeployConfigFormComponent', () => {
       }
     };
     component.widgetConfig = widgetConfigDataNoAggregate;
-  });
-
-  it('should hit getDeploysCallback and getDeployTitle', () => {
-    const data = [1];
-    component.getDeploysCallback(data);
   });
 });

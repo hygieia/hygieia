@@ -91,8 +91,7 @@ export class AuthService {
 
   public isAdmin(): boolean {
     const user = this.getUser();
-    if (user.roles && user.roles.indexOf('ROLE_ADMIN') > -1) { return true; }
-    return false;
+    return user.roles && user.roles.indexOf('ROLE_ADMIN') > -1;
   }
 
   public getAuthType(): string {
