@@ -1,24 +1,14 @@
-<div style="padding: 0px">
-  <div class="modal-content-main">
-    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
-      <span aria-hidden="true">&times;</span>
-    </button>
-    <div class ="title-main">
+<div>
+  <div class="modal-content">
+    <div class="modal-header">
       <h4 class="modal-title">{{title}}</h4>
+      <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
     </div>
-    <table class ="table-content">
-      <tr>
-        <th>Component</th>
-        <th>Time</th>
-        <th>Version</th>
-        <th>Deployment Agent Name</th>
-      </tr>
-      <tr>
-        <td class="tableName">{{name}}</td>
-        <td>{{lastUpdated | date : 'medium'}}</td>
-        <td>{{version}}</td>
-        <td><a href="{{url}}">{{regex}}</a></td>
-      </tr>
-    </table>
+    <ng-template appDetailModal></ng-template>
+    <div class="modal-footer">
+
+    </div>
   </div>
 </div>
