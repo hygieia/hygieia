@@ -15,6 +15,13 @@ export interface IClickListItem {
   statusText: string;
   title: string;
   subtitles: any[];
+  url: string;
+  lastUpdated: number;
+}
+
+export interface IClickListItemDeploy extends IClickListItem {
+  version: string;
+  name: string;
 }
 
 export interface IClickListData {

@@ -3,7 +3,6 @@ import {map, switchMap} from 'rxjs/operators';
 import {zip} from 'rxjs';
 import { extend } from 'lodash';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-
 import {IWidgetConfigResponse} from '../interfaces';
 import {ConfirmationModalComponent} from '../modals/confirmation-modal/confirmation-modal.component';
 import {FormModalComponent} from '../modals/form-modal/form-modal.component';
@@ -11,13 +10,12 @@ import {WidgetComponent} from '../widget/widget.component';
 import {WidgetDirective} from '../widget/widget.directive';
 import {DashboardService} from '../dashboard.service';
 
-
-
 @Component({
   selector: 'app-widget-header',
   templateUrl: './widget-header.component.html',
   styleUrls: ['./widget-header.component.scss']
 })
+
 export class WidgetHeaderComponent implements OnInit {
 
   @Input() widgetType: Type<any>;
@@ -39,11 +37,13 @@ export class WidgetHeaderComponent implements OnInit {
 
   loadComponent() {
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.widgetType);
-    const viewContainerRef = this.appWidget.viewContainerRef;
-    viewContainerRef.clear();
-    const componentRef = viewContainerRef.createComponent(componentFactory);
-    this.widgetComponent = ( componentRef.instance as WidgetComponent);
-    this.widgetComponent.status = status;
+    if (this.appWidget !== undefined) {
+      const viewContainerRef = this.appWidget.viewContainerRef;
+      viewContainerRef.clear();
+      const componentRef = viewContainerRef.createComponent(componentFactory);
+      this.widgetComponent = (componentRef.instance as WidgetComponent);
+      this.widgetComponent.status = status;
+    }
     this.cdr.detectChanges();
   }
 
@@ -54,21 +54,20 @@ export class WidgetHeaderComponent implements OnInit {
     modalRef.componentInstance.form = this.configForm;
     modalRef.componentInstance.id = 1;
 
-    this.widgetComponent.getCurrentWidgetConfig().subscribe(result => {
-      console.log(result);
-      modalRef.componentInstance.widgetConfig = result;
-    });
-    // Take form data, combine with widget config, and pass to update function
-    modalRef.result.then((newConfig) => {
-      if (!newConfig) {
-        return;
-      }
-      this.widgetComponent.stopRefreshInterval();
-      console.log(newConfig);
-      this.updateWidgetConfig(newConfig);
-    }).catch((error) => {
-      console.log(error);
-    });
+    if (this.widgetComponent !== undefined) {
+      this.widgetComponent.getCurrentWidgetConfig().subscribe(result => {
+        modalRef.componentInstance.widgetConfig = result;
+      });
+      // Take form data, combine with widget config, and pass to update function
+      modalRef.result.then((newConfig) => {
+        if (!newConfig) {
+          return;
+        }
+        this.widgetComponent.stopRefreshInterval();
+        this.updateWidgetConfig(newConfig);
+      }).catch((error) => {
+      });
+    }
   }
 
   updateWidgetConfig(newWidgetConfig: any): void {
@@ -120,7 +119,7 @@ export class WidgetHeaderComponent implements OnInit {
   openConfirm() {
     const modalRef = this.modalService.open(ConfirmationModalComponent);
     modalRef.componentInstance.title = 'Are you sure want to delete this widget from your dashboard?';
-    // modalRef.componentInstance.modalType = ConfirmationModalComponent;
+    modalRef.componentInstance.modalType = ConfirmationModalComponent;
   }
 
 }

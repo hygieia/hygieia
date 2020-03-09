@@ -1,10 +1,13 @@
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {TestBed} from '@angular/core/testing';
 import { AuthService } from './auth.service';
+import {IUserLogin} from '../../shared/interfaces';
 
 describe('AuthService', () => {
   let service: AuthService;
   let token: string;
+  let userLogin: IUserLogin;
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [AuthService],
@@ -17,6 +20,10 @@ describe('AuthService', () => {
       'RG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTYyMzkwMjJ9.Ab4-2LjNKuJciqFfeTy5shRajqlOg91BgJijckd5cck';
     service = TestBed.get(AuthService);
     localStorage.setItem('access_token', token);
+    userLogin = {
+      password: 'passTest',
+      username: 'userTest',
+    };
   });
   afterEach(() => {
     localStorage.clear();
@@ -36,5 +43,16 @@ describe('AuthService', () => {
   });
   it('should be authenticated', () => {
     expect(service.isAuthenticated()).toBe(true);
+  });
+  it('should login', () => {
+    service.loginLdap(userLogin);
+    service.login(userLogin);
+  });
+  it('should check admin and authType', () => {
+    service.isAdmin();
+    service.getAuthType();
+  });
+  it('should register login', () => {
+    service.register(userLogin);
   });
 });
