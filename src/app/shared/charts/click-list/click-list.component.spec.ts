@@ -7,6 +7,7 @@ import { DetailModalComponent } from '../../modals/detail-modal/detail-modal.com
 import { ClickListComponent } from './click-list.component';
 import {CommonModule } from '@angular/common';
 import {DashStatus, IClickListData, IClickListItem} from './click-list-interfaces';
+import {DeployDetailComponent} from '../../../widget_modules/deploy/deploy-detail/deploy-detail.component';
 
 @Component({
   selector: 'app-test-detail-view',
@@ -15,10 +16,10 @@ import {DashStatus, IClickListData, IClickListItem} from './click-list-interface
 export class TestDetailViewComponent {}
 
 @NgModule({
-  declarations: [TestDetailViewComponent, DetailModalComponent],
+  declarations: [TestDetailViewComponent, DetailModalComponent, DeployDetailComponent],
   imports: [CommonModule],
   providers: [],
-  entryComponents: [TestDetailViewComponent, DetailModalComponent]
+  entryComponents: [TestDetailViewComponent, DetailModalComponent, DeployDetailComponent],
 })
 class TestModule { }
 
@@ -29,7 +30,7 @@ describe('ClickListComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ClickListComponent, TimeAgoPipe, DashStatusComponent],
-      imports: [TestModule, NgbModule ]
+      imports: [TestModule, NgbModule ],
     })
       .compileComponents();
   }));

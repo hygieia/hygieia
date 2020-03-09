@@ -1,5 +1,4 @@
-import {ChangeDetectorRef, Component, ComponentFactoryResolver, Input, OnInit, Type} from '@angular/core';
-import {DetailModalComponent} from '../../../shared/modals/detail-modal/detail-modal.component';
+import {Component, Input, OnInit, Type} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -15,11 +14,5 @@ export class DeployDetailComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-  }
-
-  closeModal() {
-    if (this.activeModal) {
-      this.activeModal.close('Modal Closed');
-    }
   }
 }

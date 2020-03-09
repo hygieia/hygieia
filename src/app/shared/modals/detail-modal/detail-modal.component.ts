@@ -19,10 +19,8 @@ export class DetailModalComponent implements OnInit {
 
   ngOnInit() {
     if (this.detailView) {
-      const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.detailView);
       const viewContainerRef = this.modalTypeTag.viewContainerRef;
       viewContainerRef.clear();
-      const componentRef = viewContainerRef.createComponent(componentFactory);
       this.cdr.detectChanges();
     }
   }
