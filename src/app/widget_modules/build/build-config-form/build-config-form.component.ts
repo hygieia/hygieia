@@ -17,11 +17,8 @@ export class BuildConfigFormComponent implements OnInit {
   private componentId: string;
 
   buildConfigForm: FormGroup;
-
-  model: any;
   searching = false;
   searchFailed = false;
-
   typeAheadResults: (text$: Observable<string>) => Observable<any>;
 
   getBuildTitle = (collectorItem: any) => {
@@ -34,6 +31,9 @@ export class BuildConfigFormComponent implements OnInit {
 
   @Input()
   set widgetConfig(widgetConfig: any) {
+    if (!widgetConfig) {
+      return;
+    }
     this.widgetConfigId = widgetConfig.options.id;
     this.buildConfigForm.get('buildDurationThreshold').setValue(widgetConfig.options.buildDurationThreshold);
     this.buildConfigForm.get('consecutiveFailureThreshold').setValue(widgetConfig.options.consecutiveFailureThreshold);

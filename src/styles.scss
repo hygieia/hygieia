@@ -48,3 +48,28 @@ body,
   width: 60%;
   margin: 1.75rem auto;
 }
+
+.modal-header {
+  background-color: #2D2D2D;
+  padding: 20px;
+  table-layout: auto;
+  color: white;
+}
+
+.close{
+  color: white;
+}
+
+.modal-footer {
+  background-color: #565859;
+  color: #fafafa;
+}
+
+button {
+  color: white;
+  background-color: #7f7f7f;
+  padding: 15px;
+  text-align: center;
+  position:relative;
+}
+

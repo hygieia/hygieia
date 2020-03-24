@@ -17,7 +17,6 @@ import { BuildWidgetComponent } from './build-widget/build-widget.component';
     NgbModule,
     SharedModule
   ],
-  exports: [
-  ]
+  exports: []
 })
 export class BuildModule { }

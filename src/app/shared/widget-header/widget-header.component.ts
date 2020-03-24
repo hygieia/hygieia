@@ -44,12 +44,15 @@ export class WidgetHeaderComponent implements OnInit {
       this.widgetComponent = (componentRef.instance as WidgetComponent);
       this.widgetComponent.status = status;
     }
-    this.cdr.detectChanges();
+    this.detectChanges();
   }
 
   // Open the config modal and pass it necessary data. When it is closed pass the results to update them.
   openConfig() {
     const modalRef = this.modalService.open(FormModalComponent);
+    if (!modalRef) {
+      return;
+    }
     modalRef.componentInstance.title = 'Configure';
     modalRef.componentInstance.form = this.configForm;
     modalRef.componentInstance.id = 1;
@@ -120,6 +123,13 @@ export class WidgetHeaderComponent implements OnInit {
     const modalRef = this.modalService.open(ConfirmationModalComponent);
     modalRef.componentInstance.title = 'Are you sure want to delete this widget from your dashboard?';
     modalRef.componentInstance.modalType = ConfirmationModalComponent;
+  }
+
+  private detectChanges(): void {
+    const destroyed = 'destroyed';
+    if (!this.cdr[destroyed]) {
+      this.cdr.detectChanges();
+    }
   }
 
 }

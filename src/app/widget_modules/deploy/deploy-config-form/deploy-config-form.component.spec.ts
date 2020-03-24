@@ -40,7 +40,7 @@ describe('DeployConfigFormComponent', () => {
   });
 
   it('should set widgetConfig', () => {
-    const widgetConfigData = {
+    let widgetConfigData = {
       options: {
         id: 1232,
         deployRegex: [''],
@@ -57,5 +57,8 @@ describe('DeployConfigFormComponent', () => {
       }
     };
     component.widgetConfig = widgetConfigDataNoAggregate;
+
+    widgetConfigData = null;
+    component.widgetConfig = widgetConfigData;
   });
 });

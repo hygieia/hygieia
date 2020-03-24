@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable, of } from 'rxjs';
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, take, tap} from 'rxjs/operators';
@@ -21,21 +21,21 @@ export class DeployConfigFormComponent implements OnInit {
   searchFailed = false;
   typeAheadResults: (text$: Observable<string>) => Observable<any>;
 
-  getDeployTitle = (deployItem: any) => {
+  getDeployJob = (deployItem: any) => {
     if (!deployItem) {
       return '';
     }
     const description = (deployItem.description as string);
-    return deployItem.niceName + ' : ' + description;
+    return description;
   }
 
   @Input()
   set widgetConfig(widgetConfig) {
-    this.widgetConfigId = widgetConfig.options.id;
-
-    if (widgetConfig.options.deployRegex !== undefined && widgetConfig.options.deployRegex !== null) {
-      this.deployConfigForm.get('deployRegex').setValue(widgetConfig.options.deployRegex);
+    if (!widgetConfig) {
+      return;
     }
+    this.widgetConfigId = widgetConfig.options.id;
+    this.deployConfigForm.get('deployRegex').setValue(this.deployConfigForm.value.deployRegex);
     if (widgetConfig.options.deployAggregateServer) {
       this.deployConfigForm.get('deployAggregateServer').setValue(widgetConfig.options.deployAggregateServer);
     } else {
@@ -60,7 +60,7 @@ export class DeployConfigFormComponent implements OnInit {
         tap(() => this.searching = true),
         switchMap(term => {
           return term.length < 2 ? of([]) :
-            this.collectorService.searchItems('build', term).pipe(
+            this.collectorService.searchItems('deploy', term).pipe(
               tap(() => this.searchFailed = false),
               catchError(() => {
                 this.searchFailed = true;
@@ -75,8 +75,6 @@ export class DeployConfigFormComponent implements OnInit {
   }
   private createForm() {
     this.deployConfigForm = this.formBuilder.group({
-      deployDurationThreshold: ['', Validators.required],
-      consecutiveFailureThreshold: '',
       deployRegex: [''],
       deployJob: [''],
       deployAggregateServer: Boolean
@@ -88,7 +86,7 @@ export class DeployConfigFormComponent implements OnInit {
       name: 'deploy',
       options: {
         id: this.widgetConfigId,
-        deployRegex: this.deployConfigForm.value.deployRegex,
+        deployRegex: this.deployConfigForm.controls.deployRegex.value,
         deployAggregateServer: this.deployConfigForm.value.deployAggregateServer
       },
       componentId: this.componentId,
@@ -114,7 +112,7 @@ export class DeployConfigFormComponent implements OnInit {
         }
         return of(null);
       })).subscribe(collectorData => {
-        this.deployConfigForm.get('deployJob').setValue(collectorData);
+      this.deployConfigForm.get('deployJob').setValue(collectorData);
     });
   }
   private getDashboardComponent() {
@@ -124,4 +122,3 @@ export class DeployConfigFormComponent implements OnInit {
       })).subscribe(componentId => this.componentId = componentId);
   }
 }
-

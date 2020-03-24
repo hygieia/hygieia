@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { BuildDetailComponent } from './build-detail.component';
 
 describe('BuildDetailComponent', () => {

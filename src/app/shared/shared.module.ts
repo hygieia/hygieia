@@ -44,6 +44,9 @@ import { DeployWidgetComponent } from '../widget_modules/deploy/deploy-widget/de
 import { DeployDetailComponent } from '../widget_modules/deploy/deploy-detail/deploy-detail.component';
 import { OneChartLayoutComponent } from './layouts/one-chart-layout/one-chart-layout.component';
 import { DeployConfigFormComponent } from '../widget_modules/deploy/deploy-config-form/deploy-config-form.component';
+import {RepoConfigFormComponent} from '../widget_modules/repo/repo-config-form/repo-config-form.component';
+import {RepoDetailComponent} from '../widget_modules/repo/repo-detail/repo-detail.component';
+import {RepoWidgetComponent} from '../widget_modules/repo/repo-widget/repo-widget.component';
 
 @NgModule({
   declarations: [
@@ -72,6 +75,9 @@ import { DeployConfigFormComponent } from '../widget_modules/deploy/deploy-confi
     NumberCardChartComponent,
     PaginationComponent,
     PlaceholderWidgetComponent,
+    RepoConfigFormComponent,
+    RepoDetailComponent,
+    RepoWidgetComponent,
     TemplatesDirective,
     TimeAgoPipe,
     TwoByTwoLayoutComponent,
@@ -83,12 +89,12 @@ import { DeployConfigFormComponent } from '../widget_modules/deploy/deploy-confi
     DeployDetailComponent,
     DeployWidgetComponent,
     OneChartLayoutComponent,
-    GaugeChartComponent,
-    DeployConfigFormComponent
+    GaugeChartComponent
   ],
   entryComponents: [
     DeployDetailComponent,
     DeployWidgetComponent,
+    DeployConfigFormComponent,
     BuildConfigFormComponent,
     BuildDetailComponent,
     BuildWidgetComponent,
@@ -98,15 +104,17 @@ import { DeployConfigFormComponent } from '../widget_modules/deploy/deploy-confi
     ConfirmationModalComponent,
     DetailModalComponent,
     FormModalComponent,
+    GaugeChartComponent,
     LineAndBarChartComponent,
     LineChartComponent,
     NumberCardChartComponent,
+    OneChartLayoutComponent,
     PlaceholderWidgetComponent,
     PlainTextChartComponent,
-    TwoByTwoLayoutComponent,
-    OneChartLayoutComponent,
-    GaugeChartComponent,
-    DeployConfigFormComponent
+    RepoDetailComponent,
+    RepoWidgetComponent,
+    RepoConfigFormComponent,
+    TwoByTwoLayoutComponent
   ],
   imports: [
     CommonModule,

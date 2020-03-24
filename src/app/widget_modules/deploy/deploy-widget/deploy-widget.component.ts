@@ -5,7 +5,7 @@ import {
 } from 'src/app/shared/charts/click-list/click-list-interfaces';
 import { DeployService } from 'src/app/widget_modules/deploy/deploy.service';
 import { of, Subscription } from 'rxjs';
-import { DEPLOY_CHARTS } from 'src/app/widget_modules/deploy/deploy-detail/deploy-charts';
+import { DEPLOY_CHARTS } from 'src/app/widget_modules/deploy/deploy-widget/deploy-charts';
 import { IDeploy } from 'src/app/widget_modules/deploy/interfaces';
 import { DashStatus } from 'src/app/shared/dash-status/DashStatus';
 import { DashboardService } from 'src/app/shared/dashboard.service';
@@ -69,9 +69,9 @@ export class DeployWidgetComponent extends WidgetComponent implements OnInit {
         this.TimeThreshold = 1000 * 60 * widgetConfig.options.deployDurationThreshold;
         return this.deployService.fetchDetails(widgetConfig.componentId);
       })).subscribe(result => {
-        if (result) {
-          this.loadCharts(result);
-        }
+      if (result) {
+        this.loadCharts(result);
+      }
     });
   }
   // Unsubscribe from the widget refresh observable, which stops widget updating.
@@ -91,22 +91,28 @@ export class DeployWidgetComponent extends WidgetComponent implements OnInit {
       return a.units[0].lastUpdated - b.units[0].lastUpdated;
     }).reverse().slice(0, 5);
     const latestDeployData = sorted.map(deploy => {
-      let deployStatusText = '';
-      const deployStatus = deploy.units[0].deployed ?
-        DashStatus.PASS : DashStatus.FAIL;
-      if ( deployStatus === DashStatus.FAIL) {
-        deployStatusText = '!';
-      }
+        let deployStatusText = '';
+        let regexText = '';
+        const deployStatus = deploy.units[0].deployed ?
+          DashStatus.PASS : DashStatus.FAIL;
+        if ( deployStatus === DashStatus.FAIL) {
+          deployStatusText = '!';
+        }
 
-      return {
-        status: deployStatus,
-        statusText: deployStatusText,
-        title: deploy.name,
-        subtitles: [],
-        url: deploy.url,
-        version: deploy.units[0].version,
-        name: deploy.units[0].name,
-        lastUpdated: deploy.units[0].lastUpdated
+        if (deploy.url) {
+          regexText = deploy.url.match(new RegExp('^(https?:\/\/)?(?:www.)?([^\/]+)'))[0];
+        }
+
+        return {
+          status: deployStatus,
+          statusText: deployStatusText,
+          title: deploy.name,
+          subtitles: [],
+          url: deploy.url,
+          version: deploy.units[0].version,
+          name: deploy.units[0].name,
+          lastUpdated: deploy.units[0].lastUpdated,
+          regex: regexText
         } as IClickListItemDeploy;
       }
     );

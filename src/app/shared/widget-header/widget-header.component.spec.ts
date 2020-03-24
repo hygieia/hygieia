@@ -9,7 +9,6 @@ import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/tes
 import {HttpClientModule} from '@angular/common/http';
 import {FormModalComponent} from '../modals/form-modal/form-modal.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
-import {WidgetComponent} from '../widget/widget.component';
 import {WidgetDirective} from '../widget/widget.directive';
 import {ConfirmationModalComponent} from '../modals/confirmation-modal/confirmation-modal.component';
 
@@ -64,12 +63,7 @@ describe('WidgetHeaderComponent', () => {
     component.ngOnInit();
     expect(component.widgetType).toBeDefined();
   });
-  // it('should load a component type in based on the specified widget', () => {
-  //
-  // });
-  // it('should open the configuration form when clicked', () => {
-  //
-  // });
+
   it('should open the delete confirmation when delete icon is clicked', () => {
     component.openConfirm();
   });

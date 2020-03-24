@@ -10,6 +10,7 @@ import { DetailModalDirective } from './detail-modal.directive';
 export class DetailModalComponent implements OnInit {
   @Input() detailView: Type<any>;
   @ViewChild(DetailModalDirective, {static: true}) modalTypeTag: DetailModalDirective;
+  public detailData: any;
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -19,8 +20,11 @@ export class DetailModalComponent implements OnInit {
 
   ngOnInit() {
     if (this.detailView) {
+      const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.detailView);
       const viewContainerRef = this.modalTypeTag.viewContainerRef;
       viewContainerRef.clear();
+      const componentRef = viewContainerRef.createComponent(componentFactory);
+      componentRef.instance.detailData = this.detailData;
       this.cdr.detectChanges();
     }
   }
@@ -34,5 +38,4 @@ export class DetailModalComponent implements OnInit {
       this.activeModal.close('Modal Closed');
     }
   }
-
 }

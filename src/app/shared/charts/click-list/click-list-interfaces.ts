@@ -10,22 +10,23 @@ export enum DashStatus {
   CRITICAL
 }
 
+export interface IClickListData {
+  items: IClickListItem[];
+  clickableContent: Type<any>;
+  clickableHeader: Type<any>;
+}
+
 export interface IClickListItem {
   status: DashStatus;
   statusText: string;
   title: string;
   subtitles: any[];
-  url: string;
-  lastUpdated: number;
 }
 
 export interface IClickListItemDeploy extends IClickListItem {
   version: string;
   name: string;
-}
-
-export interface IClickListData {
-  items: IClickListItem[];
-  clickableContent: Type<any>;
-  clickableHeader: Type<any>;
+  url: string;
+  lastUpdated: number;
+  regex: string;
 }
