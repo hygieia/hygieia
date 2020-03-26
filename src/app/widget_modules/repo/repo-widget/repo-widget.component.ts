@@ -12,7 +12,6 @@ import {forkJoin, of, Subscription} from 'rxjs';
 import {catchError, distinctUntilChanged, startWith, switchMap } from 'rxjs/operators';
 import { DashboardService } from 'src/app/shared/dashboard.service';
 import { LayoutDirective } from 'src/app/shared/layouts/layout.directive';
-import { TwoByTwoLayoutComponent } from 'src/app/shared/layouts/two-by-two-layout/two-by-two-layout.component';
 import { WidgetComponent } from 'src/app/shared/widget/widget.component';
 import { RepoService } from '../repo.service';
 import { REPO_CHARTS} from './repo-charts';
@@ -21,6 +20,7 @@ import {CollectorService} from '../../../shared/collector.service';
 // @ts-ignore
 import moment from 'moment';
 import * as _ from 'lodash';
+import {OneByTwoLayoutComponent} from '../../../shared/layouts/one-by-two-layout/one-by-two-layout.component';
 
 @Component({
   selector: 'app-repo-widget',
@@ -47,7 +47,7 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
   // Initialize the widget and set layout and charts.
   ngOnInit() {
     this.widgetId = 'repo0';
-    this.layout = TwoByTwoLayoutComponent;
+    this.layout = OneByTwoLayoutComponent;
     this.charts = REPO_CHARTS;
     this.init();
   }
@@ -177,15 +177,15 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
     const issueBucketOneCount = issueResult.filter(repo => this.checkRepoAfterDate(repo.timestamp, bucketOneStartDate)).length;
     const issueBucketTwoCount = issueResult.filter(repo => this.checkRepoAfterDate(repo.timestamp, bucketTwoStartDate)).length;
 
-    this.charts[2].data[0].value = commitTodayCount;
-    this.charts[2].data[1].value = commitBucketOneCount;
-    this.charts[2].data[2].value = commitBucketTwoCount;
-    this.charts[2].data[3].value = pullTodayCount;
-    this.charts[2].data[4].value = pullBucketOneCount;
-    this.charts[2].data[5].value = pullBucketTwoCount;
-    this.charts[2].data[6].value = issueTodayCount;
-    this.charts[2].data[7].value = issueBucketOneCount;
-    this.charts[2].data[8].value = issueBucketTwoCount;
+    this.charts[1].data[0].value = commitTodayCount;
+    this.charts[1].data[1].value = commitBucketOneCount;
+    this.charts[1].data[2].value = commitBucketTwoCount;
+    this.charts[1].data[3].value = pullTodayCount;
+    this.charts[1].data[4].value = pullBucketOneCount;
+    this.charts[1].data[5].value = pullBucketTwoCount;
+    this.charts[1].data[6].value = issueTodayCount;
+    this.charts[1].data[7].value = issueBucketOneCount;
+    this.charts[1].data[8].value = issueBucketTwoCount;
   }
 
   //// *********************** HELPER UTILS *********************

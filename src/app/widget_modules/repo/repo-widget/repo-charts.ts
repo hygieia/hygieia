@@ -32,15 +32,6 @@ export let REPO_CHARTS: IChart[] = [
     }
   },
   {
-    title: '',
-    component: NumberCardChartComponent,
-    data: [
-    ],
-    xAxisLabel: '',
-    yAxisLabel: '',
-    colorScheme: 'vivid'
-  },
-  {
     title: 'Commits, Pull Requests, and Issues Summary',
     component: NumberCardChartComponent,
     data: [

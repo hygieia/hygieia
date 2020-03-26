@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { Observable, of } from 'rxjs';
+import { of } from 'rxjs';
 import { map, switchMap, take } from 'rxjs/operators';
 import { CollectorService } from 'src/app/shared/collector.service';
 import { DashboardService } from 'src/app/shared/dashboard.service';
@@ -17,10 +17,6 @@ export class RepoConfigFormComponent implements OnInit {
   private componentId: string;
 
   repoConfigForm: FormGroup;
-  searching = false;
-  searchFailed = false;
-
-  typeAheadResults: (text$: Observable<string>) => Observable<any>;
 
   @Input()
   set widgetConfig(widgetConfig: any) {
