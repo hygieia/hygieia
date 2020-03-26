@@ -3,13 +3,11 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SharedModule } from 'src/app/shared/shared.module';
+import {RepoConfigFormComponent} from './repo-config-form.component';
 
-import { BuildConfigFormComponent } from './build-config-form.component';
-import {DashboardService} from '../../../shared/dashboard.service';
-
-describe('BuildConfigFormComponent', () => {
-  let component: BuildConfigFormComponent;
-  let fixture: ComponentFixture<BuildConfigFormComponent>;
+describe('RepoConfigFormComponent', () => {
+  let component: RepoConfigFormComponent;
+  let fixture: ComponentFixture<RepoConfigFormComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -17,11 +15,11 @@ describe('BuildConfigFormComponent', () => {
       declarations: [ ],
       providers: [NgbActiveModal]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BuildConfigFormComponent);
+    fixture = TestBed.createComponent(RepoConfigFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -31,20 +29,25 @@ describe('BuildConfigFormComponent', () => {
   });
 
   it('should set widgetConfig', () => {
-    let widgetConfigData = {
+    let widgetConfigData = null;
+    component.widgetConfig = widgetConfigData;
+
+    widgetConfigData = {
       options: {
-        id: 1232,
-        buildDurationThreshold: '',
-        consecutiveFailureThreshold: '',
+        id: 'testId',
+        type: 'testType',
+        url: 'testUrl',
+        branch: 'testBranch',
+        username: 'testUser',
+        password: 'testPass',
+        personalAccessToken: 'testPersonalAccess',
       }
     };
     component.widgetConfig = widgetConfigData;
-
-    widgetConfigData = null;
-    component.widgetConfig = widgetConfigData;
   });
 
-  it('should call ngOnInit()', () => {
+  it('should loadSavedRepoJobs', () => {
     component.ngOnInit();
   });
+
 });

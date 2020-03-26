@@ -11,6 +11,9 @@ import { ITemplate } from './dashboard-view';
 import {Placeholder} from '@angular/compiler/src/i18n/i18n_ast';
 import {BuildConfigFormComponent} from '../../../widget_modules/build/build-config-form/build-config-form.component';
 import {DeployConfigFormComponent} from 'src/app/widget_modules/deploy/deploy-config-form/deploy-config-form.component';
+import {RepoConfigFormComponent} from '../../../widget_modules/repo/repo-config-form/repo-config-form.component';
+import {RepoWidgetComponent} from '../../../widget_modules/repo/repo-widget/repo-widget.component';
+
 @Component({
   selector: 'app-dashboard-view',
   templateUrl: './dashboard-view.component.html',
@@ -60,11 +63,11 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
         configForm: DeployConfigFormComponent
       },
       {
-        title: 'Placeholder',
-        component: PlaceholderWidgetComponent,
+        title: 'Repo',
+        component: RepoWidgetComponent,
         status: 'Success',
         widgetSize: 'col-xl-4',
-        configForm: BuildConfigFormComponent
+        configForm: RepoConfigFormComponent
       },
       {
         title: 'Placeholder',

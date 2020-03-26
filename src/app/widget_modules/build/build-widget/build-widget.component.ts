@@ -16,7 +16,6 @@ import { DashboardService } from 'src/app/shared/dashboard.service';
 import { LayoutDirective } from 'src/app/shared/layouts/layout.directive';
 import { TwoByTwoLayoutComponent } from 'src/app/shared/layouts/two-by-two-layout/two-by-two-layout.component';
 import { WidgetComponent } from 'src/app/shared/widget/widget.component';
-
 import { BuildDetailComponent } from '../build-detail/build-detail.component';
 import { BuildService } from '../build.service';
 import { IBuild } from '../interfaces';
@@ -104,6 +103,7 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
   }
 
   // *********************** BUILDS PER DAY ****************************
+
   private generateBuildsPerDay(result: IBuild[]) {
     const startDate = this.toMidnight(new Date());
     startDate.setDate(startDate.getDate() - this.BUILDS_PER_DAY_TIME_RANGE + 1);
@@ -266,7 +266,6 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
 
   //// *********************** HELPER UTILS *********************
 
-
   private toMidnight(date: Date): Date {
     date.setHours(0, 0, 0, 0);
     return date;
@@ -280,5 +279,3 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
     return build.buildStatus === status;
   }
 }
-
-

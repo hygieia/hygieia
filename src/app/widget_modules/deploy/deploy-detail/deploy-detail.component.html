@@ -1,24 +1,18 @@
-<div style="padding: 0px">
-  <div class="modal-content-main">
-    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
-      <span aria-hidden="true">&times;</span>
-    </button>
-    <div class ="title-main">
-      <h4 class="modal-title">{{title}}</h4>
-    </div>
-    <table class ="table-content">
-      <tr>
-        <th>Component</th>
-        <th>Time</th>
-        <th>Version</th>
-        <th>Deployment Agent Name</th>
-      </tr>
-      <tr>
-        <td class="tableName">{{name}}</td>
-        <td>{{lastUpdated | date : 'medium'}}</td>
-        <td>{{version}}</td>
-        <td><a href="{{url}}">{{regex}}</a></td>
-      </tr>
-    </table>
-  </div>
+<div>
+  <!--  <div class="modal-content-main">-->
+  <table class ="table-content" modalTypeTag>
+    <tr>
+      <th>Component</th>
+      <th>Time</th>
+      <th>Version</th>
+      <th>Deployment Agent Name</th>
+    </tr>
+    <tr>
+      <td class="tableName">{{data?.name}}</td>
+      <td>{{data?.lastUpdated | date : 'medium'}}</td>
+      <td>{{data?.version}}</td>
+      <td><a href="{{data?.url}}">{{data?.regex}}</a></td>
+    </tr>
+  </table>
+  <!--  </div>-->
 </div>

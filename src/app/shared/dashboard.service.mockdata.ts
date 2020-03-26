@@ -10,7 +10,10 @@ export let GET_DASHBOARD_MOCK = {
       options: {
         name: 'repo',
         id: 'repo0',
+        type: 'GitHub',
         personalAccessToken: '123',
+        username: 'user',
+        password: 'pass',
         scm: {
           name: 'GitHub',
           value: 'GitHub'

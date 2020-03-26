@@ -47,7 +47,7 @@ export class WidgetComponent {
     viewContainerRef.clear();
     const componentRef = viewContainerRef.createComponent(componentFactory);
     (componentRef.instance as LayoutComponent).charts = this.charts;
-    this.cdr.detectChanges();
+    this.detectChanges();
   }
 
   // Pipe the widget config observable to limit
@@ -83,6 +83,13 @@ export class WidgetComponent {
   // Find the widget config from the list of widgets
   findWidget(widgets: any[]): any {
     return widgets.find(widget => widget.options && widget.options.id === this.widgetId);
+  }
+
+  private detectChanges(): void {
+    const destroyed = 'destroyed';
+    if (!this.cdr[destroyed]) {
+      this.cdr.detectChanges();
+    }
   }
 }
 

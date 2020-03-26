@@ -4,7 +4,7 @@
       <div class="form-group">
         <label class="modal-label" for="deployJob">Deployment Application:</label>
         <input id="deployJob" type="search" class="form-control" [class.is-invalid]="searchFailed" formControlName="deployJob"
-               [ngbTypeahead]="typeAheadResults" [inputFormatter]="getDeployTitle" [resultFormatter]="getDeployTitle" placeholder="Search for a deployment application" />
+               [ngbTypeahead]="typeAheadResults" [inputFormatter]="getDeployJob" [resultFormatter]="getDeployJob" placeholder="Search for a deployment application" />
         <span *ngIf="searching">searching...</span>
         <div class="invalid-feedback" *ngIf="searchFailed">Sorry, suggestions could not be loaded.</div>
       </div>
@@ -17,8 +17,7 @@
       </div>
       <div class="form-group checkbox">
         <label title="If true deployments with the same name and ID that processed in different servers will grouped together">
-          <input type="checkbox" name="deployAggregateServer" ng-model="deployConfig.deployAggregateServer" ng-change="reload()"
-                 formControlName="deployAggregateServer">
+          <input id = "deployAggregateServer" type="checkbox" name="deployAggregateServer" ng-model="deployConfig.deployAggregateServer" ng-change="reload()" formControlName="deployAggregateServer">
           Aggregate Servers
         </label>
       </div>
@@ -28,7 +27,7 @@
     <div class="container">
       <div class="row">
         <div class="col text-center">
-          <button class="btn btn-primary btn-lg" [disabled]="!deployConfigForm.valid">
+          <button [disabled]="!deployConfigForm.valid">
             Save
           </button>
         </div>

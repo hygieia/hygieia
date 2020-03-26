@@ -32,4 +32,12 @@ describe('LineChartComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should hit onSelect with event data', () => {
+    const event = {
+      series: 'testSeries',
+      name: 'testName'
+    };
+    component.onSelect(event);
+  });
 });

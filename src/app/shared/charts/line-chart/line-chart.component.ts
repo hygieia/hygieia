@@ -1,9 +1,8 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-
 import { DetailModalComponent } from '../../modals/detail-modal/detail-modal.component';
 import { ChartComponent } from '../chart/chart.component';
-import { ILineChartData } from './ILineChartData';
+import {ILineChartData} from './line-chart-interfaces';
 
 @Component({
   selector: 'app-line-chart',
@@ -18,10 +17,10 @@ export class LineChartComponent extends ChartComponent {
   // options
   showXAxis = true;
   showYAxis = true;
-  gradient = false;
+  gradient = true;
   showLegend = false;
   tooltipDisabled = false;
-  showXAxisLabel = false;
+  showXAxisLabel = true;
   showYAxisLabel = false;
   trimYAxisTicks = false;
   timeline = false;
@@ -42,7 +41,9 @@ export class LineChartComponent extends ChartComponent {
   onSelect(event) {
     if (this.data && (this.data as ILineChartData).detailComponent) {
       const modalRef = this.modalService.open(DetailModalComponent);
-      modalRef.componentInstance.title = 'Details';
+      modalRef.componentInstance.title = (event && event.series) ? event.series : 'Details';
+      const dataset = this.data.dataPoints.find(i => i.name === event.series);
+      modalRef.componentInstance.detailData = dataset.series.find(i => i.name === event.name);
       (modalRef.componentInstance as DetailModalComponent).detailView = this.data.detailComponent;
     }
   }
