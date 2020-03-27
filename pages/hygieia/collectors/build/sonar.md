@@ -97,7 +97,7 @@ The sample `application.properties` file lists parameters with sample values to 
 		sonar.metrics[0]=ncloc,violations,new_vulnerabilities,critical_violations,major_violations,blocker_violations,tests,test_success_density,test_errors,test_failures,coverage,line_coverage,sqale_index,alert_status,quality_gate_details
 		
 		# Sonar login credentials
-		sonar.username=
-        sonar.password=
+		sonar.usernames=
+        sonar.passwords=
 
 ```
