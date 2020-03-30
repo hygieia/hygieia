@@ -26,28 +26,9 @@ export class OneChartLayoutComponent extends LayoutComponent implements AfterVie
     super.loadComponent(this.childChartTags);
     this.resizeObservable$ = fromEvent(window, 'resize');
     this.resizeSubscription$ = this.resizeObservable$.pipe(debounceTime(50)).subscribe(_ => {
-      this.resize();
+      super.resize(this.chartContainers.toArray());
     });
-    this.resize();
-  }
-
-  resize() {
-    const chartContainerArray = this.chartContainers.toArray();
-    chartContainerArray.forEach((currChartContainer, index) => {
-      if (this.chartComponents[index] !== undefined) {
-        const currChartComponent = this.chartComponents[index];
-        const width = currChartContainer.nativeElement.getBoundingClientRect().width;
-        if (currChartComponent.scaleFactor) {
-          currChartComponent.view = [width, width * currChartComponent.scaleFactor];
-        } else {
-          currChartComponent.view = [width, width * .4];
-        }
-      }
-    });
-
-    if (!(this.cdr as ViewRef).destroyed && this.cdr !== undefined) {
-      this.cdr.detectChanges();
-    }
+    super.resize(this.chartContainers.toArray());
   }
 }
 

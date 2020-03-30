@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ComponentFactoryResolver, QueryList } from '@angular/core';
+import {ChangeDetectorRef, Component, ComponentFactoryResolver, QueryList, ViewRef} from '@angular/core';
 
 import { ChartDirective } from '../../charts/chart.directive';
 import { ChartComponent } from '../../charts/chart/chart.component';
@@ -15,6 +15,23 @@ export class LayoutComponent {
   chartComponents: ChartComponent[] = [];
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver, protected cdr: ChangeDetectorRef) { }
+
+  resize(chartContainerArray) {
+    chartContainerArray.forEach((currChartContainer, index) => {
+      if (this.chartComponents[index] !== undefined) {
+        const currChartComponent = this.chartComponents[index];
+        const width = currChartContainer.nativeElement.getBoundingClientRect().width;
+        if (currChartComponent.scaleFactor) {
+          currChartComponent.view = [width, width * currChartComponent.scaleFactor];
+        } else {
+          currChartComponent.view = [width, width * .4];
+        }
+      }
+    });
+    if (!(this.cdr as ViewRef).destroyed && this.cdr !== undefined) {
+      this.cdr.detectChanges();
+    }
+  }
 
   loadComponent(chartTags: QueryList<ChartDirective>) {
     if (!chartTags) {
@@ -39,3 +56,4 @@ export class LayoutComponent {
   }
 
 }
+
