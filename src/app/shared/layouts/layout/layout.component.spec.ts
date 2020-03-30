@@ -24,6 +24,6 @@ describe('LayoutComponent', () => {
   });
 
   it('should resize', () => {
-    component.resize(['arr1','arr2']);
+    component.resize(['arr1', 'arr2']);
   });
 });
