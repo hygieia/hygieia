@@ -6,7 +6,6 @@ import {
   ElementRef,
   QueryList,
   ViewChildren,
-  ViewRef,
 } from '@angular/core';
 import { fromEvent, Observable, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
