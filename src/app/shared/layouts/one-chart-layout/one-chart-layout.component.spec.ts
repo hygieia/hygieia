@@ -21,8 +21,4 @@ describe('OneChartLayoutComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
-  it('should resize', () => {
-    component.resize();
-  });
 });

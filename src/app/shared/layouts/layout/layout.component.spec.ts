@@ -23,5 +23,7 @@ describe('LayoutComponent', () => {
     expect(component).toBeTruthy();
   });
 
-
+  it('should resize', () => {
+    component.resize(['arr1','arr2']);
+  });
 });
