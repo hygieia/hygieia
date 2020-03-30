@@ -36,28 +36,8 @@ export class OneByTwoLayoutComponent extends LayoutComponent implements AfterVie
     super.loadComponent(this.childChartTags);
     this.resizeObservable$ = fromEvent(window, 'resize');
     this.resizeSubscription$ = this.resizeObservable$.pipe(debounceTime(50)).subscribe(_ => {
-      this.resize();
+      super.resize(this.chartContainers.toArray());
     });
-    this.resize();
+    super.resize(this.chartContainers.toArray());
   }
-
-  // Support chart resizing based on parent containers.
-  // Size height based on ratio with width of chart.
-  resize() {
-    const chartContainerArray = this.chartContainers.toArray();
-    for (let i = 0; i < chartContainerArray.length && i < this.chartComponents.length; i++) {
-      const width = chartContainerArray[i].nativeElement.getBoundingClientRect().width;
-      if (this.chartComponents[i].scaleFactor) {
-        this.chartComponents[i].view = [width, width * this.chartComponents[i].scaleFactor];
-      } else {
-        this.chartComponents[i].view = [width, width * .4];
-      }
-    }
-    if (!(this.cdr as ViewRef).destroyed) {
-      this.cdr.detectChanges();
-    }
-  }
-
-
-
 }

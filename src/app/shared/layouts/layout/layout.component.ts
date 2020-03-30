@@ -54,6 +54,4 @@ export class LayoutComponent {
 
     this.cdr.detectChanges();
   }
-
 }
-
