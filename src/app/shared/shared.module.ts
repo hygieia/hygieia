@@ -47,6 +47,7 @@ import { DeployConfigFormComponent } from '../widget_modules/deploy/deploy-confi
 import {RepoConfigFormComponent} from '../widget_modules/repo/repo-config-form/repo-config-form.component';
 import {RepoDetailComponent} from '../widget_modules/repo/repo-detail/repo-detail.component';
 import {RepoWidgetComponent} from '../widget_modules/repo/repo-widget/repo-widget.component';
+import {OneByTwoLayoutComponent} from './layouts/one-by-two-layout/one-by-two-layout.component';
 
 @NgModule({
   declarations: [
@@ -73,6 +74,7 @@ import {RepoWidgetComponent} from '../widget_modules/repo/repo-widget/repo-widge
     LineChartComponent,
     MinutesPipe,
     NumberCardChartComponent,
+    OneByTwoLayoutComponent,
     PaginationComponent,
     PlaceholderWidgetComponent,
     RepoConfigFormComponent,
@@ -108,6 +110,7 @@ import {RepoWidgetComponent} from '../widget_modules/repo/repo-widget/repo-widge
     LineAndBarChartComponent,
     LineChartComponent,
     NumberCardChartComponent,
+    OneByTwoLayoutComponent,
     OneChartLayoutComponent,
     PlaceholderWidgetComponent,
     PlainTextChartComponent,
@@ -138,6 +141,7 @@ import {RepoWidgetComponent} from '../widget_modules/repo/repo-widget/repo-widge
     LineAndBarChartComponent,
     LineChartComponent,
     NumberCardChartComponent,
+    OneByTwoLayoutComponent,
     PaginationComponent,
     ReactiveFormsModule,
     TemplatesDirective,

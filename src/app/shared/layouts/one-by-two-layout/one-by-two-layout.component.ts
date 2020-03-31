@@ -9,16 +9,15 @@ import {
 } from '@angular/core';
 import { fromEvent, Observable, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-
 import { ChartDirective } from '../../charts/chart.directive';
 import { LayoutComponent } from '../layout/layout.component';
 
 @Component({
-  selector: 'app-two-by-two-layout',
-  templateUrl: './two-by-two-layout.component.html',
-  styleUrls: ['./two-by-two-layout.component.scss']
+  selector: 'app-one-by-two-layout',
+  templateUrl: './one-by-two-layout.component.html',
+  styleUrls: ['./one-by-two-layout.component.scss']
 })
-export class TwoByTwoLayoutComponent extends LayoutComponent implements AfterViewInit {
+export class OneByTwoLayoutComponent extends LayoutComponent implements AfterViewInit {
 
   @ViewChildren(ChartDirective) childChartTags: QueryList<ChartDirective>;
 
