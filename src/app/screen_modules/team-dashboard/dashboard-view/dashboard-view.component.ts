@@ -13,6 +13,8 @@ import {BuildConfigFormComponent} from '../../../widget_modules/build/build-conf
 import {DeployConfigFormComponent} from 'src/app/widget_modules/deploy/deploy-config-form/deploy-config-form.component';
 import {RepoConfigFormComponent} from '../../../widget_modules/repo/repo-config-form/repo-config-form.component';
 import {RepoWidgetComponent} from '../../../widget_modules/repo/repo-widget/repo-widget.component';
+import {FeatureWidgetComponent} from '../../../widget_modules/feature/feature-widget/feature-widget.component';
+import {FeatureConfigFormComponent} from '../../../widget_modules/feature/feature-config-form/feature-config-form.component';
 
 @Component({
   selector: 'app-dashboard-view',
@@ -41,11 +43,11 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
 
     this.widgets = [
       {
-        title: 'Placeholder',
-        component: PlaceholderWidgetComponent,
+        title: 'Feature',
+        component: FeatureWidgetComponent,
         status: 'Success',
         widgetSize: 'col-xl-3',
-        configForm: BuildConfigFormComponent
+        configForm: FeatureConfigFormComponent
       },
       {
         title: 'Build',
