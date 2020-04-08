@@ -87,12 +87,19 @@ The sample `application.properties` file lists parameters with sample values to 
 
 		# Mandatory parameters (comma separated, if multiple)
 		git.host=https://mybitbucketrepo.com,https://mybitbucketrepo2.com
+		
+		#If using Bitbucket Cloud then go for below parameter for git.host
+		git.host=api.bitbucket.org/
+
 		git.username=user_for_git.host1,user_for_git.host2
 		
 		#convert password to base64
 		git.password=password_for_git.host1,password_for_git.host2
 		
-		git.api=/rest/api/1.0/
+		#Since the older api version is now depreciated so current api is given below for Bitbucket Cloud
+		#(REF:https://confluence.atlassian.com/bitbucket/rest-apis-222724129.html)
+		git.api=/api/2.0/repositories/
+		
 
 		# Maximum number of days to go back in time when fetching commits
 		git.commitThresholdDays=15
