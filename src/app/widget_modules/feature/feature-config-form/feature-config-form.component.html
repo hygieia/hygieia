@@ -11,14 +11,15 @@
       <div class="form-group">
         <label class="modal-label" for="projectName">Project Name</label>
         <input id="projectName" type="search" class="form-control" [class.is-invalid]="searchFailed" formControlName="projectName"
-               [ngbTypeahead]="typeAheadResults" [inputFormatter]="getProjectName" [resultFormatter]="getProjectName" placeholder="Project Name" required/>
+               [ngbTypeahead]="typeAheadResultsProject" [inputFormatter]="getProjectName" [resultFormatter]="getProjectName" placeholder="Project Name" required/>
         <span *ngIf="searching">searching...</span>
         <div class="invalid-feedback" *ngIf="searchFailed">Sorry, suggestions could not be loaded.</div>
       </div>
+
       <div class="form-group">
         <label class="modal-label" for="teamName">Team Name</label>
         <input id="teamName" type="search" class="form-control" [class.is-invalid]="searchFailed" formControlName="teamName"
-               [ngbTypeahead]="typeAheadResults" [inputFormatter]="getTeamName" [resultFormatter]="getTeamName" placeholder="Team Name" required/>
+               [ngbTypeahead]="typeAheadResultsTeam" [inputFormatter]="getTeamName" [resultFormatter]="getTeamName" placeholder="Team Name" required/>
         <span *ngIf="searching">searching...</span>
         <div class="invalid-feedback" *ngIf="searchFailed">Sorry, suggestions could not be loaded.</div>
       </div>
@@ -34,6 +35,13 @@
         <label class="modal-label" for="listType">List Type: epics or issues (Required):</label>
         <div class="input-group mb-3">
           <input id="listType" type="text" class="form-control" placeholder="Enter list Type (epics or issues)" aria-label="listType" formControlName="listType" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="modal-label" for="estimateMetricType">Estimate Metric Type: storypoints or count (Required):</label>
+        <div class="input-group mb-3">
+          <input id="estimateMetricType" type="text" class="form-control" placeholder="Enter Estimate Metric Type (storypoints or count)" aria-label="estimateMetricType" formControlName="estimateMetricType" required>
         </div>
       </div>
     </div>

@@ -73,19 +73,17 @@ export class FeatureWidgetComponent extends WidgetComponent implements OnInit, A
         if (!widgetConfig) {
           return of([]);
         }
-
         this.params = {
           id: widgetConfig.options.id,
           featureTool: widgetConfig.options.featureTool,
-          teamName: widgetConfig.options.teamName.options.teamName,
-          projectName: widgetConfig.options.projectName.options.projectName,
+          teamName: widgetConfig.options.teamName,
+          projectName: widgetConfig.options.projectName,
           component: widgetConfig.componentId,
-          teamId: widgetConfig.options.teamName.options.teamId,
-          projectId: widgetConfig.options.projectName.options.projectId,
+          teamId: widgetConfig.options.teamId,
+          projectId: widgetConfig.options.projectId,
           agileType: widgetConfig.options.sprintType,
           listType: widgetConfig.options.listType,
         };
-
         return forkJoin(
           this.featureService.fetchFeatureWip(this.params.component, this.params.teamId, this.params.projectId,
             this.params.agileType).pipe(catchError(err => of(err))),
@@ -101,7 +99,7 @@ export class FeatureWidgetComponent extends WidgetComponent implements OnInit, A
         }
         this.generateIterationSummary(estimates);
         super.loadComponent(this.childLayoutTag);
-      });
+    });
   }
 
   // Unsubscribe from the widget refresh observable, which stops widget updating.
