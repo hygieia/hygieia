@@ -10,6 +10,7 @@ export class CollectorService {
   // URL for items by type
   private itemsByTypeRoute = '/api/collector/item/type/';
 
+  private itemsByTypeRouteBySearchField = '/api/collector/item/type/searchField/';
   // URL for items by id
   private itemRoute = '/api/collector/item/';
 
@@ -19,8 +20,16 @@ export class CollectorService {
     return this.http.get(this.itemsByTypeRoute + type, {params});
   }
 
+  getItemsByTypeBySearchField(type: string, params: any): Observable<any> {
+    return this.http.get(this.itemsByTypeRouteBySearchField + type, {params});
+  }
+
   searchItems(type: string, filter: string): Observable<any> {
     return this.getItemsByType(type, {search: filter, size: 20});
+  }
+
+  searchItemsBySearchField(type: string, filter: string, searchFieldInput: string): Observable<any> {
+    return this.getItemsByTypeBySearchField(type, {search: filter, searchField: searchFieldInput, size: 20 });
   }
 
   getItemsById(id: string): Observable<any> {

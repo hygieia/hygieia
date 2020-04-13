@@ -35,7 +35,7 @@ export class DeployConfigFormComponent implements OnInit {
       return;
     }
     this.widgetConfigId = widgetConfig.options.id;
-    this.deployConfigForm.get('deployRegex').setValue(this.deployConfigForm.value.deployRegex);
+    this.deployConfigForm.get('deployRegex').setValue(widgetConfig.options.deployRegex);
     if (widgetConfig.options.deployAggregateServer) {
       this.deployConfigForm.get('deployAggregateServer').setValue(widgetConfig.options.deployAggregateServer);
     } else {
@@ -60,7 +60,7 @@ export class DeployConfigFormComponent implements OnInit {
         tap(() => this.searching = true),
         switchMap(term => {
           return term.length < 2 ? of([]) :
-            this.collectorService.searchItems('deploy', term).pipe(
+            this.collectorService.searchItemsBySearchField('Deployment', term, 'description').pipe(
               tap(() => this.searchFailed = false),
               catchError(() => {
                 this.searchFailed = true;
@@ -86,7 +86,7 @@ export class DeployConfigFormComponent implements OnInit {
       name: 'deploy',
       options: {
         id: this.widgetConfigId,
-        deployRegex: this.deployConfigForm.controls.deployRegex.value,
+        deployRegex: this.deployConfigForm.value.deployRegex,
         deployAggregateServer: this.deployConfigForm.value.deployAggregateServer
       },
       componentId: this.componentId,
