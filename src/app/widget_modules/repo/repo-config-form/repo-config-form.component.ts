@@ -1,8 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { of } from 'rxjs';
-import { map, switchMap, take } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import { CollectorService } from 'src/app/shared/collector.service';
 import { DashboardService } from 'src/app/shared/dashboard.service';
 
@@ -24,10 +23,10 @@ export class RepoConfigFormComponent implements OnInit {
       return;
     }
     this.widgetConfigId = widgetConfig.options.id;
-    this.repoConfigForm.get('type').setValue(widgetConfig.options.type);
+    this.repoConfigForm.get('scm').setValue(widgetConfig.options.scm);
     this.repoConfigForm.get('url').setValue(widgetConfig.options.url);
     this.repoConfigForm.get('branch').setValue(widgetConfig.options.branch);
-    this.repoConfigForm.get('username').setValue(widgetConfig.options.username);
+    this.repoConfigForm.get('userID').setValue(widgetConfig.options.userID);
     this.repoConfigForm.get('password').setValue(widgetConfig.options.password);
     this.repoConfigForm.get('personalAccessToken').setValue(widgetConfig.options.personalAccessToken);
   }
@@ -42,16 +41,15 @@ export class RepoConfigFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loadSavedRepoJob();
     this.getDashboardComponent();
   }
 
   private createForm() {
     this.repoConfigForm = this.formBuilder.group({
-      type: '',
+      scm: '',
       url: '',
       branch: '',
-      username: '',
+      userID: '',
       password: '',
       personalAccessToken: ''
     });
@@ -63,41 +61,15 @@ export class RepoConfigFormComponent implements OnInit {
       componentId: this.componentId,
       options: {
         id: this.widgetConfigId,
-        type: this.repoConfigForm.value.type,
+        scm: this.repoConfigForm.value.scm,
         url: this.repoConfigForm.value.url,
         branch: this.repoConfigForm.value.branch,
-        username: this.repoConfigForm.value.username,
+        userID: this.repoConfigForm.value.userID,
         password: this.repoConfigForm.value.password,
         personalAccessToken: this.repoConfigForm.value.personalAccessToken
       },
     };
     this.activeModal.close(newConfig);
-  }
-
-  private loadSavedRepoJob() {
-    this.dashboardService.dashboardConfig$.pipe(take(1),
-      map(dashboard => {
-        const repoCollector = dashboard.application.components[0].collectorItems.SCM;
-
-        if (repoCollector[0].id) {
-          const repoId = repoCollector[0].id;
-          return repoId;
-        }
-        return null;
-      }),
-      switchMap(repoId => {
-        if (repoId) {
-          return this.collectorService.getItemsById(repoId);
-        }
-        return of(null);
-      })).subscribe(collectorData => {
-      this.repoConfigForm.get('type').setValue(collectorData.collector.name);
-      this.repoConfigForm.get('url').setValue(collectorData.options.url);
-      this.repoConfigForm.get('branch').setValue(collectorData.options.branch);
-      this.repoConfigForm.get('username').setValue(collectorData.options.userId);
-      this.repoConfigForm.get('password').setValue(collectorData.options.password);
-      this.repoConfigForm.get('personalAccessToken').setValue(collectorData.options.personalAccessToken);
-    });
   }
 
   private getDashboardComponent() {

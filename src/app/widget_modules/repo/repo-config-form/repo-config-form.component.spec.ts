@@ -35,10 +35,10 @@ describe('RepoConfigFormComponent', () => {
     widgetConfigData = {
       options: {
         id: 'testId',
-        type: 'testType',
+        scm: 'testScm',
         url: 'testUrl',
         branch: 'testBranch',
-        username: 'testUser',
+        userID: 'testUser',
         password: 'testPass',
         personalAccessToken: 'testPersonalAccess',
       }
@@ -46,7 +46,7 @@ describe('RepoConfigFormComponent', () => {
     component.widgetConfig = widgetConfigData;
   });
 
-  it('should loadSavedRepoJobs', () => {
+  it('should getDashboardComponents', () => {
     component.ngOnInit();
   });
 

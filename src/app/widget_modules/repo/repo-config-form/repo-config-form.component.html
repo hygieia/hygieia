@@ -2,9 +2,9 @@
   <div class="modal-body">
     <div class="container">
       <div class="form-group">
-        <label class="modal-label" for="type">Repo Type (Required):</label>
+        <label class="modal-label" for="scm">Repo Type (Required):</label>
         <div class="input-group mb-3">
-          <input id="type" type="text" class="form-control" placeholder="Enter repo Type (GitHub or Subversion)" aria-label="type" formControlName="type" required>
+          <input id="scm" type="text" class="form-control" placeholder="Enter repo Type (GitHub or Subversion)" aria-label="scm" formControlName="scm" required>
         </div>
       </div>
 
@@ -24,16 +24,16 @@
 
       <h5>Credentials (Optional, required for private repos)</h5>
       <div class="form-group">
-        <label class="modal-label" for="username">Username:</label>
+        <label class="modal-label" for="userID">Username:</label>
         <div class="input-group mb-3">
-          <input id="username" type="text" class="form-control" placeholder="Enter your repo username" aria-label="username" formControlName="username" >
+          <input id="userID" type="text" class="form-control" placeholder="Enter your repo username" aria-label="userID" formControlName="userID" >
         </div>
       </div>
 
       <div class="form-group">
         <label class="modal-label" for="password">Password:</label>
         <div class="input-group mb-3">
-          <input id="password" type="text" class="form-control" placeholder="Enter your repo password" aria-label="password" formControlName="password" >
+          <input id="password" type="password" class="form-control" placeholder="Enter your repo password" aria-label="password" formControlName="password" >
         </div>
       </div>
 
