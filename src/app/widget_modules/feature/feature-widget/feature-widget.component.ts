@@ -181,17 +181,19 @@ export class FeatureWidgetComponent extends WidgetComponent implements OnInit, A
           number: curr.sEpicNumber,
           progressStatus: '-',
           type: 'Epic',
+          date: '-',
           time: curr.sEstimate
         } as IClickListItemFeature;
       } else {
         const regexText = curr.changeDate.match(new RegExp('^([^T]*);*'))[0];
         return {
-          title: curr.sName + ': ' + regexText,
+          title: curr.sName,
           name: curr.sName,
           url: curr.sUrl,
           number: curr.sNumber,
           progressStatus: curr.sStatus,
           type: 'Issue',
+          date: regexText,
           time: curr.sEstimateTime
         } as IClickListItemFeature;
       }
