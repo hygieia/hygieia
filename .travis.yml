@@ -27,12 +27,7 @@ notifications:
     recipients:
     - tapabrata.pal@capitalone.com
     - ragha.vema@capitalone.com
-    - nireesh.thiruveedula@capitalone.com
-    - Stephen.Hughes@capitalone.com
-    - jiyang.xu@capitalone.com
-    - brian.shriver@capitalone.com
-    - kaitlyn.heinzmann@capitalone.com
-    - Justin.Hoelscher@capitalone.com
+    - hygieia2@capitalone.com
     on_success: always
     on_failure: always
 after_failure:
