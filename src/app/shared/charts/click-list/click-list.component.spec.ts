@@ -64,7 +64,7 @@ describe('ClickListComponent', () => {
     } as IClickListData;
 
     component.openDetailView(null);
-    component.openHeaderView();
+    component.openHeaderView(null);
   });
 
   it('should open detail view and set values', () => {

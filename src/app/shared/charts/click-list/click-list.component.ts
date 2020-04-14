@@ -3,7 +3,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DashStatus } from '../../dash-status/DashStatus';
 import { DetailModalComponent } from '../../modals/detail-modal/detail-modal.component';
 import { ChartComponent } from '../chart/chart.component';
-import { IClickListData, IClickListItem } from './click-list-interfaces';
+import {IClickListData, IClickListItem} from './click-list-interfaces';
 
 @Component({
   selector: 'app-click-list',
@@ -27,11 +27,12 @@ export class ClickListComponent extends ChartComponent {
     }
   }
 
-  openHeaderView() {
+  openHeaderView(items: IClickListItem[]) {
     if (this.data && (this.data as IClickListData).clickableHeader) {
       const modalRef = this.modalService.open(DetailModalComponent);
       modalRef.componentInstance.title = 'Details';
-      (modalRef.componentInstance as DetailModalComponent).detailView = this.data.clickableContent;
+      modalRef.componentInstance.detailData = items;
+      (modalRef.componentInstance as DetailModalComponent).detailView = this.data.clickableHeader;
     }
   }
 

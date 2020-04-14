@@ -15,6 +15,12 @@ import {RepoConfigFormComponent} from '../../../widget_modules/repo/repo-config-
 import {RepoWidgetComponent} from '../../../widget_modules/repo/repo-widget/repo-widget.component';
 import {FeatureWidgetComponent} from '../../../widget_modules/feature/feature-widget/feature-widget.component';
 import {FeatureConfigFormComponent} from '../../../widget_modules/feature/feature-config-form/feature-config-form.component';
+import {
+  StaticAnalysisWidgetComponent
+} from '../../../widget_modules/static-analysis/static-analysis-widget/static-analysis-widget.component';
+import {
+  StaticAnalysisConfigFormComponent
+} from '../../../widget_modules/static-analysis/static-anaylsis-config-form/static-analysis-config-form.component';
 
 @Component({
   selector: 'app-dashboard-view',
@@ -55,8 +61,7 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
         status: 'Success',
         widgetSize: 'col-xl-6',
         configForm: BuildConfigFormComponent
-      }
-      ,
+      },
       {
         title: 'Deploy',
         component: DeployWidgetComponent,
@@ -72,11 +77,11 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
         configForm: RepoConfigFormComponent
       },
       {
-        title: 'Placeholder',
-        component: PlaceholderWidgetComponent,
+        title: 'Static Code Analysis',
+        component: StaticAnalysisWidgetComponent,
         status: 'Success',
         widgetSize: 'col-xl-4',
-        configForm: BuildConfigFormComponent
+        configForm: StaticAnalysisConfigFormComponent
       },
       {
         title: 'Placeholder',

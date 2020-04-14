@@ -1,0 +1,24 @@
+<form [formGroup]="staticAnalysisConfigForm" (ngSubmit)="submitForm()">
+  <div class="modal-body">
+    <div class="container">
+      <div class="form-group">
+        <label class="modal-label" for="staticAnalysisJob">Static Analysis (Sonar) Url</label>
+        <input id="staticAnalysisJob" type="search" class="form-control" [class.is-invalid]="searchFailed" formControlName="staticAnalysisJob"
+       [ngbTypeahead]="typeAheadResults" [inputFormatter]="getStaticAnalysisTitle" [resultFormatter]="getStaticAnalysisTitle" placeholder="Enter Sonar Project" required/>
+        <span *ngIf="searching">searching...</span>
+        <div class="invalid-feedback" *ngIf="searchFailed">Sorry, suggestions could not be loaded.</div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col text-center">
+          <button [disabled]="!staticAnalysisConfigForm.valid">
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

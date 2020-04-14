@@ -1,0 +1,23 @@
+<div style="padding: 0px">
+  <div class="modal-content-main">
+    <table class ="table-content">
+      <tr>
+        <th>Project Name</th>
+        <th>Last Activity</th>
+        <th>Link</th>
+      </tr>
+      <tr>
+        <td>{{data?.name}}</td>
+        <td>
+          <ng-container *ngIf="isDate(data?.timestamp); else elseBlock">
+            <span class="list-item-subtitle">{{data?.timestamp.getTime() | timeAgo}}</span>
+          </ng-container>
+          <ng-template #elseBlock>
+            <span class="list-item-subtitle">{{data?.timestamp.toString()}}</span>
+          </ng-template>
+        </td>
+        <td><a href="{{data?.url}}" target="_blank" rel="noopener noreferrer">View in Sonar</a></td>
+      </tr>
+    </table>
+  </div>
+</div>

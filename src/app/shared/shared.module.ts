@@ -51,6 +51,11 @@ import { OneByTwoLayoutComponent } from './layouts/one-by-two-layout/one-by-two-
 import { FeatureConfigFormComponent } from '../widget_modules/feature/feature-config-form/feature-config-form.component';
 import { FeatureWidgetComponent } from '../widget_modules/feature/feature-widget/feature-widget.component';
 import {FeatureDetailComponent} from '../widget_modules/feature/feature-detail/feature-detail.component';
+import {
+  StaticAnalysisConfigFormComponent
+} from '../widget_modules/static-analysis/static-anaylsis-config-form/static-analysis-config-form.component';
+import {StaticAnalysisDetailComponent} from '../widget_modules/static-analysis/static-analysis-detail/static-analysis-detail.component';
+import {StaticAnalysisWidgetComponent} from '../widget_modules/static-analysis/static-analysis-widget/static-analysis-widget.component';
 
 @NgModule({
   declarations: [
@@ -97,7 +102,10 @@ import {FeatureDetailComponent} from '../widget_modules/feature/feature-detail/f
     DeployDetailComponent,
     DeployWidgetComponent,
     OneChartLayoutComponent,
-    GaugeChartComponent
+    GaugeChartComponent,
+    StaticAnalysisConfigFormComponent,
+    StaticAnalysisDetailComponent,
+    StaticAnalysisWidgetComponent
   ],
   entryComponents: [
     DeployDetailComponent,
@@ -126,7 +134,10 @@ import {FeatureDetailComponent} from '../widget_modules/feature/feature-detail/f
     RepoDetailComponent,
     RepoWidgetComponent,
     RepoConfigFormComponent,
-    TwoByTwoLayoutComponent
+    TwoByTwoLayoutComponent,
+    StaticAnalysisConfigFormComponent,
+    StaticAnalysisDetailComponent,
+    StaticAnalysisWidgetComponent
   ],
   imports: [
     CommonModule,
