@@ -160,12 +160,8 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
       inprogress: DashStatus.IN_PROGRESS
     };
     const latestBuildData = sorted.map(build => {
-      let buildStatusText = '';
       const buildStatus = buildStatusTable[build.buildStatus.toLowerCase()] ?
         buildStatusTable[build.buildStatus.toLowerCase()] : DashStatus.FAIL;
-      if (buildStatus === DashStatus.FAIL) {
-        buildStatusText = '!';
-      }
       return {
         status: buildStatus,
         statusText: build.buildStatus,
