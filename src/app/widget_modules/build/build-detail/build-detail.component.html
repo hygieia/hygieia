@@ -1,3 +1,12 @@
-<p>
-  build-detail works!
-</p>
+<div class = "table-content">
+  <div class = "table-heading">
+      <p>Build Job</p>
+      <p>Status</p>
+      <p>Date</p>
+  </div>
+  <div class="table-row" *ngFor="let item of this.data">
+      <p class="table-name"><a href="{{item?.url}}">{{item?.number}}</a></p>
+      <p>{{item?.statusText}}</p>
+      <p>{{item?.subtitles | date: 'yyyy-MM-dd HH:mm:ss'}}</p>
+  </div>
+</div>

@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit, Type} from '@angular/core';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-build-detail',
@@ -7,8 +8,23 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BuildDetailComponent implements OnInit {
 
-  constructor() { }
+  @Input() detailView: Type<any>;
+
+  public data: any[];
+
+  constructor(
+    public activeModal: NgbActiveModal,
+  ) { }
 
   ngOnInit() {
+  }
+
+  @Input()
+  set detailData(data: any) {
+    if (data.data) {
+      this.data = data.data;
+    } else {
+      this.data = [data];
+    }
   }
 }

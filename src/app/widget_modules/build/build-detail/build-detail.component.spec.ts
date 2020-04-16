@@ -1,5 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { BuildDetailComponent } from './build-detail.component';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
 describe('BuildDetailComponent', () => {
   let component: BuildDetailComponent;
@@ -7,7 +8,8 @@ describe('BuildDetailComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ BuildDetailComponent ]
+      declarations: [ BuildDetailComponent ],
+      providers: [ NgbActiveModal ]
     })
     .compileComponents();
   }));

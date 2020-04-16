@@ -1,0 +1,37 @@
+.table-content {
+  width: 100%;
+  display: table;
+}
+
+button {
+  color: white;
+}
+
+.table-heading {
+  background-color: #565859;
+  color: lightgrey;
+  display: table-row;
+  margin: 0px;
+  padding: 0px;
+}
+
+.table-row {
+  background-color: #444648;
+  color: lightgrey;
+  display: table-row;
+}
+
+a {
+  color: lightgrey;
+  text-decoration: underline;
+}
+
+.table-name {
+  color: white;
+}
+
+p {
+  display: table-cell;
+  padding: 12px;
+  padding-left: 50px;
+}
