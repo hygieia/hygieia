@@ -50,6 +50,9 @@ export class LayoutComponent {
       chartComponent.xAxisLabel = this.charts[i].xAxisLabel;
       chartComponent.yAxisLabel = this.charts[i].yAxisLabel;
       chartComponent.colorScheme = this.charts[i].colorScheme;
+      if (this.charts[i].scaleFactor) {
+        chartComponent.scaleFactor = this.charts[i].scaleFactor;
+      }
     }
 
     this.cdr.detectChanges();

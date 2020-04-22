@@ -87,6 +87,7 @@ describe('FeatureWidgetComponent', () => {
 
   it('should generateIterationSummary', () => {
     component.generateIterationSummary(IFeatureTest);
+    component.generateIterationSummary(null);
   });
 
   it('should generateFeatureSummary with issues', () => {
@@ -124,6 +125,7 @@ describe('FeatureWidgetComponent', () => {
       }];
 
     component.generateFeatureSummary(iterations, params);
+    component.generateFeatureSummary(null, params);
   });
 
   it('should generateFeatureSummary with epics', () => {
@@ -149,6 +151,7 @@ describe('FeatureWidgetComponent', () => {
       }];
 
     component.generateFeatureSummary(wip, params);
+    component.generateFeatureSummary(null, params);
   });
 });
 

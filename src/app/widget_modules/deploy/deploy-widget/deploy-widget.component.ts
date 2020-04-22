@@ -87,6 +87,10 @@ export class DeployWidgetComponent extends WidgetComponent implements OnInit {
   }
 
   generateLatestDeployData(result: IDeploy[]) {
+    if (!result) {
+      return;
+    }
+
     const sorted = result.sort((a: IDeploy, b: IDeploy): number => {
       return a.units[0].lastUpdated - b.units[0].lastUpdated;
     }).reverse().slice(0, 5);

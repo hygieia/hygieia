@@ -4,30 +4,28 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxUIModule } from '@swimlane/ngx-ui';
 
-import { MinutesPipe } from '../../pipes/minutes.pipe';
-import { ComboSeriesVerticalComponent } from '../combo-series-vertical/combo-series-vertical.component';
-import { LineAndBarChartComponent } from '../../ngx-charts/line-and-bar-chart/line-and-bar-chart.component';
-import { ComboChartComponent } from './combo-chart.component';
+import { PieGridChartComponent } from './pie-grid-chart.component';
+import {PieGridComponent} from '../../ngx-charts/pie-grid/pie-grid.component';
 
-describe('ComboChartComponent', () => {
-  let component: ComboChartComponent;
-  let fixture: ComponentFixture<ComboChartComponent>;
+describe('PieGridChartComponent', () => {
+  let component: PieGridChartComponent;
+  let fixture: ComponentFixture<PieGridChartComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ComboChartComponent, LineAndBarChartComponent, ComboSeriesVerticalComponent, MinutesPipe],
+      declarations: [PieGridChartComponent, PieGridComponent],
       imports: [CommonModule, NgxChartsModule, BrowserAnimationsModule, NgxUIModule]
     })
       .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ComboChartComponent);
+    fixture = TestBed.createComponent(PieGridChartComponent);
     component = fixture.componentInstance;
     component.colorScheme = 'vivid';
     component.xAxisLabel = 'Test';
     component.yAxisLabel = 'Test';
-    component.data = [{}, []];
+    component.data = {};
     fixture.detectChanges();
   });
 

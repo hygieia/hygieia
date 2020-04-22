@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -12,6 +12,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { StaticAnalysisService } from '../static-analysis.service';
 import { IStaticAnalysis } from '../interfaces';
 import { StaticAnalysisWidgetComponent} from './static-analysis-widget.component';
+import {GET_DASHBOARD_MOCK} from '../../../shared/dashboard.service.mockdata';
 
 class MockStaticAnalysisService {
 
@@ -172,6 +173,10 @@ describe('StaticAnalysisWidgetComponent', () => {
   });
 
   it('should hit stopRefreshInterval', () => {
+    // should go into if statement
+    component.stopRefreshInterval();
+    // if statement resolves to false
+    dashboardService.dashboardConfig$ = null;
     component.stopRefreshInterval();
   });
 
@@ -179,8 +184,28 @@ describe('StaticAnalysisWidgetComponent', () => {
     component.ngAfterViewInit();
   });
 
-  it('should hit startRefreshInterval', () => {
-    component.startRefreshInterval();
+  it('should hit startRefreshInterval with results', () => {
+    inject([HttpTestingController, StaticAnalysisWidgetComponent],
+      (httpMock: HttpTestingController, staticComponent: StaticAnalysisWidgetComponent) => {
+        const widgetConfig = {
+          name: 'codeAnalysis',
+          options: {
+            id: this.widgetConfigId,
+          },
+          componentId: this.componentId,
+          collectorItemId: this.staticAnalysisConfigForm.value.staticAnalysisJob.id
+        };
+        staticComponent.ngOnInit();
+        staticComponent.startRefreshInterval();
+
+        const request = httpMock.expectOne(req => req.method === 'GET');
+        request.flush(GET_DASHBOARD_MOCK);
+
+        dashboardService.dashboardConfig$.subscribe(dashboard => {
+          expect(dashboard).toBeTruthy();
+        });
+      });
+
   });
 
   it('should loadEmptyChart', () => {
@@ -205,24 +230,24 @@ describe('StaticAnalysisWidgetComponent', () => {
     component.generateProjectDetails(null);
   });
 
-  it('should generateViolations', () => {
-    component.generateViolations(staticAnalysisTestData);
-    expect(component.charts[1].data[0].value).toEqual('1');
-    expect(component.charts[1].data[1].value).toEqual('1');
-    expect(component.charts[1].data[2].value).toEqual('1');
-    expect(component.charts[1].data[3].value).toEqual('3');
-
-    // data is null
-    component.generateViolations(null);
-  });
-
   it('should generateCoverage', () => {
     component.generateCoverage(staticAnalysisTestData);
-    expect(component.charts[2].data.dataPoints[0].value).toEqual(55.5);
-    expect(component.charts[2].data.units).toEqual('123 lines of code');
+    expect(component.charts[1].data.results[0].value).toEqual(55.5);
+    expect(component.charts[1].data.customLabelValue).toEqual(123);
 
     // data is null
     component.generateCoverage(null);
+  });
+
+  it('should generateViolations', () => {
+    component.generateViolations(staticAnalysisTestData);
+    expect(component.charts[2].data[0].value).toEqual(1);
+    expect(component.charts[2].data[1].value).toEqual(1);
+    expect(component.charts[2].data[2].value).toEqual(1);
+    expect(component.charts[2].data[3].value).toEqual(3);
+
+    // data is null
+    component.generateViolations(null);
   });
 
   it('should generateUnitTestMetrics', () => {

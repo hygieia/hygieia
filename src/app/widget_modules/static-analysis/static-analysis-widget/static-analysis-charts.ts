@@ -1,9 +1,10 @@
 import { IChart } from 'src/app/shared/interfaces';
 
-import {GaugeChartComponent} from '../../../shared/charts/gauge-chart/gauge-chart.component';
-import {IGaugeChartData} from '../../../shared/charts/gauge-chart/gauge-chart-interfaces';
 import {NumberCardChartComponent} from '../../../shared/charts/number-card-chart/number-card-chart.component';
 import {ClickListComponent} from '../../../shared/charts/click-list/click-list.component';
+import {PieGridChartComponent} from '../../../shared/charts/pie-grid-chart/pie-grid-chart.component';
+import {IPieGridData} from '../../../shared/charts/pie-grid-chart/pie-grid-interfaces';
+import {DataItem} from '../../../shared/ngx-charts/pie-grid/data-item.interfaces';
 
 export let STATICANALYSIS_CHARTS: IChart[] = [
   {
@@ -13,6 +14,26 @@ export let STATICANALYSIS_CHARTS: IChart[] = [
     xAxisLabel: '',
     yAxisLabel: '',
     colorScheme: '',
+  },
+  {
+    title: 'Coverage',
+    component: PieGridChartComponent,
+    data: {
+      results: [
+        {
+          name: 'Code Coverage',
+          value: 0,
+        }
+      ] as DataItem[],
+      designatedTotal: 100.0,
+      label: 'Lines of Code',
+      useCustomLabelValue: true,
+      customLabelValue: 0,
+    } as IPieGridData,
+    xAxisLabel: '',
+    yAxisLabel: '',
+    scaleFactor: 0.85,
+    colorScheme: 'forest',
   },
   {
     title: 'Issues',
@@ -37,25 +58,8 @@ export let STATICANALYSIS_CHARTS: IChart[] = [
     ],
     xAxisLabel: '',
     yAxisLabel: '',
+    scaleFactor: 0.55,
     colorScheme: 'flame',
-  },
-  {
-    title: 'Coverage',
-    component: GaugeChartComponent,
-    data: {
-      dataPoints: [
-        {
-          name: 'Code Coverage',
-          value: 0,
-        },
-      ],
-      units: '',
-      min: 0,
-      max: 100,
-    } as IGaugeChartData,
-    xAxisLabel: '',
-    yAxisLabel: '',
-    colorScheme: 'forest',
   },
   {
     title: 'Unit Test Metrics',

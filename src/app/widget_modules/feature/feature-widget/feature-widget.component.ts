@@ -112,6 +112,10 @@ export class FeatureWidgetComponent extends WidgetComponent implements OnInit, A
   // ********************** FEATURE SUMMARY ***************************
 
   generateFeatureSummary(content, params) {
+    if (!content) {
+      return;
+    }
+
     const items: IClickListItem[] = [];
     items[0] = {
       title: 'Feature Tool: ' + params.featureTool
@@ -151,6 +155,10 @@ export class FeatureWidgetComponent extends WidgetComponent implements OnInit, A
 
   // Displays Sprint information for Open, WIP, Done
   generateIterationSummary(result: IFeature) {
+    if (!result) {
+      return;
+    }
+
     this.charts[1].data[0].value = result.openEstimate;
     this.charts[1].data[1].value = result.inProgressEstimate;
     this.charts[1].data[2].value = result.completeEstimate;

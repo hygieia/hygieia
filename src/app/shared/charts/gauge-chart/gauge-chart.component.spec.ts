@@ -26,4 +26,9 @@ describe('GaugeChartComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should format append percent', () => {
+    expect(component.formatAppendPercent(50)).toEqual('50%');
+    expect(component.formatting(75)).toEqual('75%');
+  });
 });

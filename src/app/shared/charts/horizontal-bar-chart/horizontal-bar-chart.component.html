@@ -1,0 +1,25 @@
+<div class="widget dark-chart-theme">
+  <div class="chart-heading">
+    {{title}}
+  </div>
+  <app-bar-horizontal-chart
+    [view]="view"
+    [scheme]="colorScheme"
+    [results]="data"
+    [gradient]="gradient"
+    [xAxis]="showXAxis"
+    [yAxis]="showYAxis"
+    [legend]="showLegend"
+    [xAxisLabel]="xAxisLabel"
+    [yAxisLabel]="yAxisLabel"
+    [showXAxisLabel]="showXAxisLabel"
+    [showYAxisLabel]="showYAxisLabel"
+    [trimXAxisTicks]='trimXAxisTicks'
+    [trimYAxisTicks]='trimYAxisTicks'
+    [noBarWhenZero]="noBarWhenZero"
+    [animations]='false'
+    (select)="onSelect($event)"
+    (activate)="onActivate($event)"
+    (deactivate)="onDeactivate($event)">
+  </app-bar-horizontal-chart>
+</div>

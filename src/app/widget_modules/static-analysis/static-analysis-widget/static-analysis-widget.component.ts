@@ -15,7 +15,6 @@ import {
   IClickListItem,
   IClickListItemStaticAnalysis
 } from 'src/app/shared/charts/click-list/click-list-interfaces';
-import {DashStatus} from 'src/app/shared/dash-status/DashStatus';
 import {DashboardService} from 'src/app/shared/dashboard.service';
 import {LayoutDirective} from 'src/app/shared/layouts/layout.directive';
 import {TwoByTwoLayoutComponent} from 'src/app/shared/layouts/two-by-two-layout/two-by-two-layout.component';
@@ -143,31 +142,27 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
       return;
     }
 
-    const qualityGateStatus = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.alertStatus).value;
-    const displayStatus = (qualityGateStatus === this.qualityGateStatuses.OK) ? DashStatus.PASS :
-      (qualityGateStatus === this.qualityGateStatuses.FAILED) ? DashStatus.FAIL : DashStatus.WARN;
-
     const latestDetails = [
       {
-        status: DashStatus.IN_PROGRESS,
+        status: null,
         statusText: '',
         title: 'Name',
         subtitles: [result.name],
       },
       {
-        status: DashStatus.IN_PROGRESS,
+        status: null,
         statusText: '',
         title: 'Version',
         subtitles: [result.version],
       },
       {
-        status: displayStatus,
-        statusText: displayStatus === DashStatus.PASS ? '' : '!',
+        status: null,
+        statusText: '',
         title: 'Quality Gate',
         subtitles: [result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.alertStatus).value],
       },
       {
-        status: DashStatus.IN_PROGRESS,
+        status: null,
         statusText: '',
         title: 'Technical Debt',
         subtitles: [result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.techDebt).formattedValue],
@@ -186,6 +181,22 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
 
   }
 
+  // *********************** COVERAGE (CODE) ****************************
+
+  generateCoverage(result: IStaticAnalysis) {
+
+    if (!result) {
+      return;
+    }
+
+    const coverage = parseFloat(result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.codeCoverage).value);
+    const loc = parseFloat(result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.numCodeLines).value);
+
+    this.charts[1].data.results[0].value = coverage;
+    this.charts[1].data.customLabelValue = loc;
+
+  }
+
   // *********************** VIOLATIONS *****************************
 
   generateViolations(result: IStaticAnalysis) {
@@ -194,27 +205,15 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
       return;
     }
 
-    this.charts[1].data[0].value = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.blockerViolations).value;
-    this.charts[1].data[1].value = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.criticalViolations).value;
-    this.charts[1].data[2].value = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.majorViolations).value;
-    this.charts[1].data[3].value = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.totalIssues).value;
+    const blocker = parseFloat(result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.blockerViolations).value);
+    const critical = parseFloat(result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.criticalViolations).value);
+    const major = parseFloat(result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.majorViolations).value);
+    const total = parseFloat(result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.totalIssues).value);
 
-  }
-
-  // *********************** COVERAGE (CODE, LINE) ****************************
-
-  generateCoverage(result: IStaticAnalysis) {
-
-    if (!result) {
-      return;
-    }
-
-    const coverage = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.codeCoverage);
-    // code coverage %
-    this.charts[2].data.dataPoints[0].value = parseFloat(coverage.value);
-    // lines of code
-    const loc = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.numCodeLines);
-    this.charts[2].data.units = loc.value + ' lines of code';
+    this.charts[2].data[0].value = blocker;
+    this.charts[2].data[1].value = critical;
+    this.charts[2].data[2].value = major;
+    this.charts[2].data[3].value = total;
 
   }
 

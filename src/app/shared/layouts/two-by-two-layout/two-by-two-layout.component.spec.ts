@@ -22,7 +22,9 @@ class TestModule { }
 
 describe('TwoByTwoLayoutComponent', () => {
   let component: TwoByTwoLayoutComponent;
+  let componentBase: LayoutComponent;
   let fixture: ComponentFixture<TwoByTwoLayoutComponent>;
+  let fixtureBase: ComponentFixture<LayoutComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -33,7 +35,9 @@ describe('TwoByTwoLayoutComponent', () => {
   }));
 
   beforeEach(() => {
+    fixtureBase = TestBed.createComponent(LayoutComponent);
     fixture = TestBed.createComponent(TwoByTwoLayoutComponent);
+    componentBase = fixtureBase.componentInstance;
     component = fixture.componentInstance;
   });
 
@@ -55,5 +59,23 @@ describe('TwoByTwoLayoutComponent', () => {
     expect(fixture.componentInstance.chartContainers).toBeDefined();
     const childDebugElement = fixture.debugElement.query(By.directive(LineChartComponent));
     expect(childDebugElement).toBeTruthy();
+  });
+
+  it('should load components', () => {
+    component.charts = [];
+    component.charts.push({
+      component: LineChartComponent,
+      data: {},
+      xAxisLabel: 'Test',
+      yAxisLabel: 'Test',
+      colorScheme: 'vivid',
+      title: 'Test'
+    });
+    fixture.detectChanges();
+    expect(fixture.componentInstance.childChartTags).toBeDefined();
+    expect(fixture.componentInstance.chartContainers).toBeDefined();
+    component.ngAfterViewInit();
+    expect(component.chartComponents).toBeDefined();
+
   });
 });

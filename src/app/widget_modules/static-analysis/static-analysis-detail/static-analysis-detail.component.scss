@@ -1,45 +1,31 @@
-.modal-content-main {
-  background-color: #2D2D2D;
-  padding: 20px;
-  table-layout: auto;
-  color: white;
-}
-
 .table-content {
   width: 100%;
-  word-break: break-all;
+  display: table;
 }
-
-.title-main {
-  padding: 5px;
-}
-
 button {
   color: white;
 }
-
-h4 {
-  color: lightgrey;
-}
-
-table, tr, th {
+.table-heading {
   background-color: #565859;
-  padding: 15px;
   color: lightgrey;
-  font-weight: normal;
+  display: table-row;
+  margin: 0px;
+  padding: 0px;
 }
-
-table, tr, td {
-  padding: 15px;
+.table-row {
   background-color: #444648;
   color: lightgrey;
+  display: table-row;
 }
-
 a {
   color: lightgrey;
   text-decoration: underline;
 }
-
-.tableName {
+.table-name {
   color: white;
+}
+p {
+  display: table-cell;
+  padding: 12px;
+  padding-left: 50px;
 }

@@ -22,6 +22,7 @@ export interface IChart {
   xAxisLabel: string;
   yAxisLabel: string;
   colorScheme: any;
+  scaleFactor?: number;
 }
 
 export interface IWidget {

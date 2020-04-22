@@ -18,7 +18,7 @@ import { ClickListComponent } from './charts/click-list/click-list.component';
 import { ComboChartComponent } from './charts/combo-chart/combo-chart.component';
 import { ComboSeriesVerticalComponent } from './charts/combo-series-vertical/combo-series-vertical.component';
 import { GaugeChartComponent } from './charts/gauge-chart/gauge-chart.component';
-import { LineAndBarChartComponent } from './charts/line-and-bar-chart/line-and-bar-chart.component';
+import { LineAndBarChartComponent } from './ngx-charts/line-and-bar-chart/line-and-bar-chart.component';
 import { LineChartComponent } from './charts/line-chart/line-chart.component';
 import { NumberCardChartComponent } from './charts/number-card-chart/number-card-chart.component';
 import { PlainTextChartComponent } from './charts/plain-text-chart/plain-text-chart.component';
@@ -56,10 +56,15 @@ import {
 } from '../widget_modules/static-analysis/static-anaylsis-config-form/static-analysis-config-form.component';
 import {StaticAnalysisDetailComponent} from '../widget_modules/static-analysis/static-analysis-detail/static-analysis-detail.component';
 import {StaticAnalysisWidgetComponent} from '../widget_modules/static-analysis/static-analysis-widget/static-analysis-widget.component';
+import { HorizontalBarChartComponent } from './charts/horizontal-bar-chart/horizontal-bar-chart.component';
+import {BarHorizontalComponent} from './ngx-charts/bar-horizontal/bar-horizontal.component';
+import {PieGridChartComponent} from './charts/pie-grid-chart/pie-grid-chart.component';
+import {PieGridComponent} from './ngx-charts/pie-grid/pie-grid.component';
 
 @NgModule({
   declarations: [
     DeployConfigFormComponent,
+    BarHorizontalComponent,
     BaseTemplateComponent,
     BuildConfigFormComponent,
     BuildDetailComponent,
@@ -79,6 +84,7 @@ import {StaticAnalysisWidgetComponent} from '../widget_modules/static-analysis/s
     FeatureWidgetComponent,
     FormModalComponent,
     FormModalDirective,
+    HorizontalBarChartComponent,
     LayoutComponent,
     LayoutDirective,
     LineAndBarChartComponent,
@@ -87,6 +93,8 @@ import {StaticAnalysisWidgetComponent} from '../widget_modules/static-analysis/s
     NumberCardChartComponent,
     OneByTwoLayoutComponent,
     PaginationComponent,
+    PieGridComponent,
+    PieGridChartComponent,
     PlaceholderWidgetComponent,
     RepoConfigFormComponent,
     RepoDetailComponent,
@@ -111,6 +119,7 @@ import {StaticAnalysisWidgetComponent} from '../widget_modules/static-analysis/s
     DeployDetailComponent,
     DeployWidgetComponent,
     DeployConfigFormComponent,
+    BarHorizontalComponent,
     BuildConfigFormComponent,
     BuildDetailComponent,
     BuildWidgetComponent,
@@ -124,11 +133,14 @@ import {StaticAnalysisWidgetComponent} from '../widget_modules/static-analysis/s
     FeatureWidgetComponent,
     FormModalComponent,
     GaugeChartComponent,
+    HorizontalBarChartComponent,
     LineAndBarChartComponent,
     LineChartComponent,
     NumberCardChartComponent,
     OneByTwoLayoutComponent,
     OneChartLayoutComponent,
+    PieGridComponent,
+    PieGridChartComponent,
     PlaceholderWidgetComponent,
     PlainTextChartComponent,
     RepoDetailComponent,
@@ -149,6 +161,7 @@ import {StaticAnalysisWidgetComponent} from '../widget_modules/static-analysis/s
     ReactiveFormsModule
   ],
   exports: [
+    BarHorizontalComponent,
     BuildWidgetComponent,
     CaponeTemplateComponent,
     ChartComponent,
@@ -156,6 +169,7 @@ import {StaticAnalysisWidgetComponent} from '../widget_modules/static-analysis/s
     ComboChartComponent,
     ComboSeriesVerticalComponent,
     CommonModule,
+    HorizontalBarChartComponent,
     LayoutComponent,
     LayoutDirective,
     LineAndBarChartComponent,
@@ -163,6 +177,8 @@ import {StaticAnalysisWidgetComponent} from '../widget_modules/static-analysis/s
     NumberCardChartComponent,
     OneByTwoLayoutComponent,
     PaginationComponent,
+    PieGridComponent,
+    PieGridChartComponent,
     ReactiveFormsModule,
     TemplatesDirective,
     TwoByTwoLayoutComponent,

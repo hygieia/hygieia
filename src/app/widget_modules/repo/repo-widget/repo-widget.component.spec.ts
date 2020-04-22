@@ -114,10 +114,18 @@ describe('RepoWidgetComponent', () => {
 
   it('should hit generateRepoPerDay', () => {
     component.generateRepoPerDay([IRepo1], [IRepo2], [IRepo3]);
+    component.generateRepoPerDay(null, [IRepo2], [IRepo3]);
+    component.generateRepoPerDay([IRepo1], null, [IRepo3]);
+    component.generateRepoPerDay([IRepo1], [IRepo2], null);
+    component.generateRepoPerDay(null, null, null);
   });
 
   it('should hit generateTotalRepoCounts', () => {
     component.generateTotalRepoCounts([IRepo1], [IRepo2], [IRepo3]);
+    component.generateTotalRepoCounts(null, [IRepo2], [IRepo3]);
+    component.generateTotalRepoCounts([IRepo1], null, [IRepo3]);
+    component.generateTotalRepoCounts([IRepo1], [IRepo2], null);
+    component.generateTotalRepoCounts(null, null, null);
   });
 
   it('should hit collectRepoCommits, Pulls, and Issues', () => {

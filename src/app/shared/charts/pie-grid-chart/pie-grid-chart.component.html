@@ -1,0 +1,15 @@
+<div class="widget dark-chart-theme">
+  <div class="chart-heading">
+    {{title}}
+  </div>
+  <app-pie-grid
+    [view]="view"
+    [scheme]="colorScheme"
+    [results]="data?.results"
+    [designatedTotal]="data?.designatedTotal"
+    [customLabelValue]="data?.customLabelValue"
+    [useCustomLabelValue]="data?.useCustomLabelValue"
+    [label]="data?.label"
+    [animations]='true'>
+  </app-pie-grid>
+</div>

@@ -95,6 +95,10 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
 
   // *********************** REPO STATS PER DAY ************************
   generateRepoPerDay(commitResult: IRepo[], pullResult: IRepo[], issueResult: IRepo[]) {
+    if (!commitResult || !pullResult || !issueResult) {
+      return;
+    }
+
     const startDate = this.toMidnight(new Date());
     startDate.setDate(startDate.getDate() - this.REPO_PER_DAY_TIME_RANGE + 1);
     const allCommits = commitResult.filter(repo => this.checkRepoAfterDate(repo.scmCommitTimestamp, startDate));
@@ -159,6 +163,10 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
 
   // *********************** TOTAL REPO COUNTS ************************
   generateTotalRepoCounts(commitResult: IRepo[], pullResult: IRepo[], issueResult: IRepo[]) {
+    if (!commitResult || !pullResult || !issueResult) {
+      return;
+    }
+
     const today = this.toMidnight(new Date());
     const bucketOneStartDate = this.toMidnight(new Date());
     const bucketTwoStartDate = this.toMidnight(new Date());
