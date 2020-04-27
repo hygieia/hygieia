@@ -1,5 +1,5 @@
 <div class="widget dark-chart-theme">
-  <div [ngClass]="{'clickable-title': data?.clickableHeader, 'chart-heading': !data?.clickableHeader}" (click)="openHeaderView(data)">
+  <div [ngClass]="{'clickable-title': data?.clickableHeader, 'chart-heading': !data?.clickableHeader}" (click)="openHeaderView(data, title)">
     {{title}}
     <ng-container *ngIf="data?.clickableHeader">
       <span class="header-arrow fa fa-arrow-right"></span>

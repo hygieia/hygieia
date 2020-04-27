@@ -27,10 +27,10 @@ export class ClickListComponent extends ChartComponent {
     }
   }
 
-  openHeaderView(items: IClickListItem[]) {
+  openHeaderView(items: IClickListItem[], title: string) {
     if (this.data && (this.data as IClickListData).clickableHeader) {
       const modalRef = this.modalService.open(DetailModalComponent);
-      modalRef.componentInstance.title = 'Project Details';
+      modalRef.componentInstance.title = (title) ? title : 'Details';
       modalRef.componentInstance.detailData = items;
       (modalRef.componentInstance as DetailModalComponent).detailView = this.data.clickableHeader;
     }

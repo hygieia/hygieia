@@ -1,0 +1,24 @@
+<form [formGroup]="ossConfigForm" (ngSubmit)="submitForm()">
+  <div class="modal-body">
+    <div class="container">
+      <div class="form-group">
+        <label class="modal-label" for="ossJob">Open Source Scan Url</label>
+        <input id="ossJob" type="search" class="form-control" [class.is-invalid]="searchFailed" formControlName="ossJob"
+               [ngbTypeahead]="typeAheadResults" [inputFormatter]="getOssTitle" [resultFormatter]="getOssTitle" placeholder="Enter Open Source Library" required/>
+        <span *ngIf="searching">searching...</span>
+        <div class="invalid-feedback" *ngIf="searchFailed">Sorry, suggestions could not be loaded.</div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col text-center">
+          <button [disabled]="!ossConfigForm.valid">
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

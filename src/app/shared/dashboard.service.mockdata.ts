@@ -97,6 +97,14 @@ export let GET_DASHBOARD_MOCK = {
       }
     },
     {
+      id: '5d029d59c809261db2bba332',
+      name: 'oss',
+      componentId: '59f88f5e6a3cf205f312c62e',
+      options: {
+        id: 'oss0'
+      }
+    },
+    {
       id: '5c37a6de40b65d55fde3ddaf',
       name: 'build',
       componentId: '59f88f5e6a3cf205f312c62e',

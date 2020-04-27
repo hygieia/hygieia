@@ -60,6 +60,11 @@ import { HorizontalBarChartComponent } from './charts/horizontal-bar-chart/horiz
 import {BarHorizontalComponent} from './ngx-charts/bar-horizontal/bar-horizontal.component';
 import {PieGridChartComponent} from './charts/pie-grid-chart/pie-grid-chart.component';
 import {PieGridComponent} from './ngx-charts/pie-grid/pie-grid.component';
+import {OSSWidgetComponent} from '../widget_modules/opensource-scan/oss-widget/oss-widget.component';
+import {OSSDetailComponent} from '../widget_modules/opensource-scan/oss-detail/oss-detail.component';
+import { TwoByOneLayoutComponent } from './layouts/two-by-one-layout/two-by-one-layout.component';
+import {OSSConfigFormComponent} from '../widget_modules/opensource-scan/oss-config-form/oss-config-form.component';
+import {OSSDetailAllComponent} from '../widget_modules/opensource-scan/oss-detail-all/oss-detail-all.component';
 
 @NgModule({
   declarations: [
@@ -109,11 +114,17 @@ import {PieGridComponent} from './ngx-charts/pie-grid/pie-grid.component';
     PlainTextChartComponent,
     DeployDetailComponent,
     DeployWidgetComponent,
+    TwoByOneLayoutComponent,
+    OSSWidgetComponent,
+    OSSDetailComponent,
+    OSSDetailAllComponent,
+    OSSConfigFormComponent,
     OneChartLayoutComponent,
     GaugeChartComponent,
     StaticAnalysisConfigFormComponent,
     StaticAnalysisDetailComponent,
-    StaticAnalysisWidgetComponent
+    StaticAnalysisWidgetComponent,
+    TwoByOneLayoutComponent
   ],
   entryComponents: [
     DeployDetailComponent,
@@ -143,6 +154,11 @@ import {PieGridComponent} from './ngx-charts/pie-grid/pie-grid.component';
     PieGridChartComponent,
     PlaceholderWidgetComponent,
     PlainTextChartComponent,
+    TwoByOneLayoutComponent,
+    OSSWidgetComponent,
+    OSSDetailComponent,
+    OSSDetailAllComponent,
+    OSSConfigFormComponent,
     RepoDetailComponent,
     RepoWidgetComponent,
     RepoConfigFormComponent,
@@ -182,6 +198,7 @@ import {PieGridComponent} from './ngx-charts/pie-grid/pie-grid.component';
     ReactiveFormsModule,
     TemplatesDirective,
     TwoByTwoLayoutComponent,
+    TwoByOneLayoutComponent,
     WidgetComponent,
     WidgetDirective,
     WidgetHeaderComponent,
