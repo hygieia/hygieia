@@ -26,6 +26,7 @@
     "@ng-bootstrap/ng-bootstrap": "^4.2.1",
     "@swimlane/ngx-charts": "^11.2.0",
     "@swimlane/ngx-ui": "^26.0.1",
+    "@types/jest": "^25.2.1",
     "@types/lodash": "^4.14.135",
     "bootstrap": "^4.2.1",
     "codemirror": "^5.48.0",

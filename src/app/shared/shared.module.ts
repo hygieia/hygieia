@@ -69,6 +69,10 @@ import { TwoByOneLayoutComponent } from './layouts/two-by-one-layout/two-by-one-
 import {OSSConfigFormComponent} from '../widget_modules/opensource-scan/oss-config-form/oss-config-form.component';
 import {OSSDetailAllComponent} from '../widget_modules/opensource-scan/oss-detail-all/oss-detail-all.component';
 
+import { TestConfigFormComponent } from '../widget_modules/test/test-config-form/test-config-form.component';
+import { TestDetailComponent } from '../widget_modules/test/test-detail/test-detail.component';
+import { TestWidgetComponent } from '../widget_modules/test/test-widget/test-widget.component';
+
 @NgModule({
   declarations: [
     DeployConfigFormComponent,
@@ -127,6 +131,9 @@ import {OSSDetailAllComponent} from '../widget_modules/opensource-scan/oss-detai
     StaticAnalysisConfigFormComponent,
     StaticAnalysisDetailComponent,
     StaticAnalysisWidgetComponent,
+    TestConfigFormComponent,
+    TestDetailComponent,
+    TestWidgetComponent,
     SecurityScanConfigComponent,
     SecurityScanWidgetComponent,
     AuditModalComponent,
@@ -172,6 +179,10 @@ import {OSSDetailAllComponent} from '../widget_modules/opensource-scan/oss-detai
     StaticAnalysisConfigFormComponent,
     StaticAnalysisDetailComponent,
     StaticAnalysisWidgetComponent,
+    TwoByTwoLayoutComponent,
+    TestConfigFormComponent,
+    TestDetailComponent,
+    TestWidgetComponent,
     SecurityScanConfigComponent,
     SecurityScanWidgetComponent,
     AuditModalComponent

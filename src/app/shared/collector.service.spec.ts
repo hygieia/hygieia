@@ -39,4 +39,16 @@ describe('CollectorService', () => {
       })
   );
 
+  it('should fetch item by search field',
+    inject([HttpTestingController, CollectorService],
+      (httpMock: HttpTestingController, service: CollectorService) => {
+        service.getItemsByTypeBySearchField('type', 'filter').subscribe(data => {
+          expect(data).toBeTruthy();
+        });
+
+        const request = httpMock.expectOne(req => req.method === 'GET');
+        request.flush(SEARCH_MOCK);
+      })
+  );
+
 });

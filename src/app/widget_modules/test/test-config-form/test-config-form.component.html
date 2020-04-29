@@ -1,0 +1,63 @@
+<form [formGroup]="testConfigForm" (ngSubmit)="submitForm()">
+  <div class="modal-body">
+    <div class="container">
+
+      <!-- Functional tests -->
+      <div class="form-group">
+        <label class="modal-label" for="functionalTest">Functional Test</label>
+        <div formArrayName="functionalTests">
+          <div *ngFor="let test of functionalTests.controls; let i=index" [formGroupName]="i">
+            <div class="input-group mb-3">
+              <input id="test" type="search" class="form-control" [class.is-invalid]="searchFailed" formControlName="test"
+              [ngbTypeahead]="typeAheadResults" [inputFormatter]="getTestResultTitle" [resultFormatter]="getTestResultTitle"
+              required>
+              <div class="input-group-append">
+                <button class="btn btn-secondary fa fa-trash " type="button" (click)="deleteFunctionalTest(i)"></button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col text-center">
+              <button type="button" class="fa fa-plus-circle fa-2x btn btn-secondary btn-sm" (click)="addFunctionalTest(i)"></button>
+            </div>
+          </div>
+        </div>
+      </div>  
+
+      <!-- Performance tests -->
+      <div class="form-group">
+        <label class="modal-label" for="performanceTest">Performance Test</label>
+        <div formArrayName="performanceTests">
+          <div *ngFor="let test of performanceTests.controls; let i=index" [formGroupName]="i">
+            <div class="input-group mb-3">
+              <input id="test" type="search" class="form-control" [class.is-invalid]="searchFailed" formControlName="test"
+              [ngbTypeahead]="typeAheadResults" [inputFormatter]="getTestResultTitle" [resultFormatter]="getTestResultTitle"
+              required>
+              <div class="input-group-append">
+                <button class="btn btn-secondary fa fa-trash" type="button" (click)="deletePerformanceTest(i)"></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col text-center">
+              <button type="button" class="fa fa-plus-circle fa-2x btn btn-secondary btn-sm" (click)="addPerformanceTest(i)"></button>
+            </div>
+          </div>        
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Save -->
+  <div class="modal-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col text-center">
+          <button>Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
