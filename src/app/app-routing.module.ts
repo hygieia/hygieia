@@ -9,7 +9,9 @@ const routes: Routes = [
   { path: 'build', loadChildren: () =>
       import('./widget_modules/build/build.module').then(m => m.BuildModule) },
   { path: 'dashboard', loadChildren: () =>
-      import('./screen_modules/team-dashboard/team-dashboard.module').then(m => m.TeamDashboardModule) }
+      import('./screen_modules/team-dashboard/team-dashboard.module').then(m => m.TeamDashboardModule) },
+  { path: 'admin', loadChildren: () =>
+      import('./admin_modules/admin_dashboard/admin-dashboard-modules').then(m => m.AdminDashboardModule) }
 ];
 
 @NgModule({

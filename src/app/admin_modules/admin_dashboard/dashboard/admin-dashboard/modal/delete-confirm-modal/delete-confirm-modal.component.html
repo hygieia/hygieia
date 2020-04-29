@@ -1,0 +1,18 @@
+<div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h4 class="modal-title">{{title}}</h4>
+      <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      {{message}}
+    </div>
+    <div class="modal-footer text-center">
+      <button type="button" class="btn btn-secondary btn-wide"
+        (click)="activeModal.dismiss('dismiss')">{{cancel}}</button>
+      <button type="button" class="btn btn-primary btn-wide" (click)="activeModal.close('close')">{{confirm}}</button>
+    </div>
+  </div>
+</div>

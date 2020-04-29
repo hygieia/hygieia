@@ -1,0 +1,48 @@
+<div id="admin">
+        <div class="col-md-2 dash">
+                <ul class="nav nav-pills flex-column">
+                        <li class="nav-item"><a class="nav-link" [ngClass]="{active:tab === 'editDashboards'}"
+                                        (click)="navigateToTab('editDashboards')">Edit
+                                        Dashboards</a></li>
+                        <li class="nav-item"><a class="nav-link" [ngClass]="{active:tab === 'users'}"
+                                        (click)="navigateToTab('users')">Manage
+                                        Admins</a></li>
+                        <li class="nav-item"><a class="nav-link" [ngClass]="{active:tab === 'apitokens'}"
+                                        (click)="navigateToTab('apitokens')">Generate
+                                        ApiTokens</a></li>
+                        <li class="nav-item"><a class="nav-link" [ngClass]="{active:tab === 'templates'}"
+                                        (click)="navigateToTab('templates')">Manage
+                                        Templates</a></li>
+                        <li class="nav-item"><a class="nav-link" [ngClass]="{active:tab === 'configurations'}"
+                                        (click)="navigateToTab('configurations')">General Configurations</a></li>
+                        <li class="nav-item"><a class="nav-link" [ngClass]="{active:tab === 'auditconfig'}"
+                                        (click)="navigateToTab('auditconfig')">Audit
+                                        Configurations</a></li>
+                        <li class="nav-item"><a class="nav-link" [ngClass]="{active:tab === 'featureflags'}"
+                                        (click)="navigateToTab('featureflags')">Feature Flags</a></li>
+                </ul>
+
+        </div>
+
+        <div class="container-fluid">
+                <div class="col-md-9 dashcon">
+                        <div *ngIf="tab === 'editDashboards'">
+                        </div>
+                        <div *ngIf="tab === 'templates'">
+                        </div>
+                        <div *ngIf="tab === 'users'">
+                                <app-manage-admins></app-manage-admins>
+                        </div>
+                        <div *ngIf="tab === 'apitokens'">
+                                <app-generate-tokens></app-generate-tokens>
+                        </div>
+                        <div *ngIf="tab === 'configurations'">
+                        </div>
+                        <div *ngIf="tab === 'auditconfig'">
+                        </div>
+                        <div *ngIf="tab === 'featureflags'">
+                        </div>
+                </div>
+        </div>
+
+</div>

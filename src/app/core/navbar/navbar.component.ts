@@ -10,8 +10,12 @@ import { AuthService } from '../services/auth.service';
 })
 export class NavbarComponent implements OnInit {
 
+  myadmin = false;
+
   constructor(private router: Router,
-              private auth: AuthService) { }
+              private auth: AuthService) {
+                this.myadmin = auth.isAdmin();
+               }
 
   ngOnInit() {
   }
@@ -35,5 +39,9 @@ export class NavbarComponent implements OnInit {
 
   redirectToLogin() {
     this.router.navigate(['/user/login']);
+  }
+
+  admin() {
+    this.router.navigate(['/admin/dashboard']);
   }
 }

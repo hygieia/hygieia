@@ -13,7 +13,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
     AppRoutingModule,
@@ -23,7 +23,8 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
     NgbModule,
     SharedModule
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  exports: []
 })
 export class AppModule {
 }

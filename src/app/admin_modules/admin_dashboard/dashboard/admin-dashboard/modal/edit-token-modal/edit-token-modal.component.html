@@ -1,0 +1,42 @@
+<div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h4 class="modal-title ">Administer Api Token</h4>
+      <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="token-from">
+      <form name="cdf" [formGroup]="apiEditForm" class="form" novalidate>
+        <label class="modal-label">Api User</label>
+        <input type="text" name="apiUser" class="form-control" placeholder="Api User" formControlName="apiUser"
+          [ngClass]="{ 'is-invalid': f.apiUser.touched && f.apiUser.errors }" autocomplete="off" />
+        <div *ngIf="f.apiUser.touched && f.apiUser.errors" class="invalid-feedback">
+          <div *ngIf="f.apiUser.errors.required">Api user name is required</div>
+          <div *ngIf="f.apiUser.errors.minlength">Min length of 6 characters</div>
+          <div *ngIf="f.apiUser.errors.maxlength">Max length of 50 characters</div>
+          <div *ngIf="f.apiUser.errors.pattern">Special character(s) found. Please enter only letters, numbers or
+            spaces.
+          </div>
+        </div>
+        <div *ngIf="apiTokenError" class="invalid-feedback">Error updating api token.</div>
+        <br />
+        <label class="modal-label" id="dtLabel">Expiration Date</label>
+
+        <div class="input-group">
+          <input type="text" name="expDt" placeholder="yyyy-mm-dd" #d="ngbDatepicker" ngbDatepicker
+            formControlName="date" />
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"><i
+                class="fa fa-calendar"></i></button>
+          </div>
+        </div>
+        <div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer text-center">
+      <button type="button" class="btn btn-primary btn-wide" (click)="submit()">Save</button>
+    </div>
+  </div>
+</div>
