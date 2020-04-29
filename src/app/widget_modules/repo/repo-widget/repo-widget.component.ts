@@ -49,6 +49,7 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
     this.widgetId = 'repo0';
     this.layout = OneByTwoLayoutComponent;
     this.charts = REPO_CHARTS;
+    this.auditType = 'CODE_REVIEW';
     this.init();
   }
 

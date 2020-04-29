@@ -51,6 +51,7 @@ export class OSSWidgetComponent extends WidgetComponent implements OnInit, After
     this.widgetId = 'oss0';
     this.layout = TwoByOneLayoutComponent;
     this.charts = OSS_CHARTS;
+    this.auditType = 'LIBRARY_POLICY';
     this.init();
   }
 

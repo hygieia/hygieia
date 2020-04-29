@@ -36,3 +36,22 @@ export interface IWidgetConfigResponse {
   widgetConfig: any;
   upsertWidgetResponse: any;
 }
+
+export interface IAuditResult {
+  id: string;
+  dashboardId: string;
+  dashboardTitle: string;
+  lineOfBusiness: string;
+  configItemBusServName: string;
+  configItemBusAppName: string;
+  configItemBusServOwner: string;
+  configItemBusAppOwner: string;
+  collectorItemId: string;
+  auditType: string;
+  auditTypeStatus: string;
+  auditStatus: string;
+  url: string;
+  auditDetails: string;
+  timestamp: number;
+  options: any;
+}

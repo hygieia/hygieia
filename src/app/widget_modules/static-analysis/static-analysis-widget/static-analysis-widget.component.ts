@@ -81,6 +81,7 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
     this.widgetId = 'codeanalysis0';
     this.layout = TwoByTwoLayoutComponent;
     this.charts = STATICANALYSIS_CHARTS;
+    this.auditType = 'CODE_QUALITY';
     this.init();
   }
 

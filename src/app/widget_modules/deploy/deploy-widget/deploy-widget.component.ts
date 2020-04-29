@@ -49,6 +49,7 @@ export class DeployWidgetComponent extends WidgetComponent implements OnInit {
     this.layout = OneChartLayoutComponent;
     // Chart configuration moved to external file
     this.charts = DEPLOY_CHARTS;
+    this.auditType = 'DEPLOY';
     this.init();
   }
 

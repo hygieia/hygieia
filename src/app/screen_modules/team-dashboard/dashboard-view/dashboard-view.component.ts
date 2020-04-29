@@ -8,7 +8,6 @@ import { BuildWidgetComponent } from 'src/app/widget_modules/build/build-widget/
 import { DeployWidgetComponent } from 'src/app/widget_modules/deploy/deploy-widget/deploy-widget.component';
 import { CaponeTemplateComponent } from '../capone-template/capone-template.component';
 import { ITemplate } from './dashboard-view';
-import {Placeholder} from '@angular/compiler/src/i18n/i18n_ast';
 import {BuildConfigFormComponent} from '../../../widget_modules/build/build-config-form/build-config-form.component';
 import {DeployConfigFormComponent} from 'src/app/widget_modules/deploy/deploy-config-form/deploy-config-form.component';
 import {RepoConfigFormComponent} from '../../../widget_modules/repo/repo-config-form/repo-config-form.component';
@@ -20,6 +19,8 @@ import {
 import {
   StaticAnalysisConfigFormComponent
 } from '../../../widget_modules/static-analysis/static-anaylsis-config-form/static-analysis-config-form.component';
+import {SecurityScanWidgetComponent} from '../../../widget_modules/security-scan/security-scan-widget/security-scan-widget.component';
+import {SecurityScanConfigComponent} from '../../../widget_modules/security-scan/security-scan-config/security-scan-config.component';
 import {RepoWidgetComponent} from '../../../widget_modules/repo/repo-widget/repo-widget.component';
 import {OSSWidgetComponent} from '../../../widget_modules/opensource-scan/oss-widget/oss-widget.component';
 import {OSSConfigFormComponent} from '../../../widget_modules/opensource-scan/oss-config-form/oss-config-form.component';
@@ -84,6 +85,13 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
         status: 'Success',
         widgetSize: 'col-xl-6',
         configForm: StaticAnalysisConfigFormComponent
+      },
+      {
+        title: 'Security Analysis',
+        component: SecurityScanWidgetComponent,
+        status: 'Success',
+        widgetSize: 'col-xl-4',
+        configForm: SecurityScanConfigComponent
       },
       {
         title: 'Placeholder',

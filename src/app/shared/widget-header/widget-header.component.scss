@@ -40,6 +40,16 @@
         color: $dash-dashboard-text-hover;
       }
     }
+    .widget-settings-icon.fa-lightbulb-o.audit-ok {
+      color: $dash-widget-pass;
+    }
+    .widget-settings-icon.fa-lightbulb-o.audit-fail {
+      color: $dash-widget-fail;
+    }
+    .widget-settings-icon.fa-lightbulb-o:hover {
+      color: $dash-dashboard-text-hover;
+    }
+
 
     .last-updated {
       font-size: 1.1em;

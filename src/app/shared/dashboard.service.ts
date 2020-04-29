@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { cloneDeep, extend } from 'lodash';
 import { interval, Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
 import { filter, map, startWith, take } from 'rxjs/operators';
+import {IAuditResult} from './interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,11 @@ export class DashboardService {
 
   private dashboardRoute = '/api/dashboard/';
 
+  private dashboardAuditRoute = '/apiaudit/auditresult/dashboard/title/';
+
   private dashboardSubject = new ReplaySubject<any>(1);
+
+  private dashboardAuditSubject = new ReplaySubject<any>(1);
 
   private dashboardRefreshSubject = new Subject<any>();
 
@@ -23,6 +28,8 @@ export class DashboardService {
 
   public dashboardConfig$ = this.dashboardSubject.asObservable().pipe(filter(result => result));
 
+  public dashboardAuditConfig$ = this.dashboardAuditSubject.asObservable().pipe(filter(result => result));
+
   public dashboardRefresh$ = this.dashboardRefreshSubject.asObservable();
 
   constructor(private http: HttpClient) { }
@@ -31,6 +38,9 @@ export class DashboardService {
   loadDashboard(dashboardId: string) {
     this.dashboardId = dashboardId;
     this.http.get(this.dashboardRoute + dashboardId).subscribe(res => this.dashboardSubject.next(res));
+    this.dashboardConfig$.pipe(map(dashboard => dashboard)).subscribe(dashboard => {
+      this.http.get<IAuditResult[]>(this.dashboardAuditRoute + dashboard.title).subscribe(res => this.dashboardAuditSubject.next(res));
+    });
     this.dashboardRefreshSubscription = interval(1000 * this.REFRESH_INTERVAL_SECONDS).pipe(
       startWith(-1)).subscribe(res => this.dashboardRefreshSubject.next(res));
   }

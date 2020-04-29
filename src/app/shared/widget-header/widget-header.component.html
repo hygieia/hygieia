@@ -2,6 +2,8 @@
   <div class="widget">
     <div class="widget-heading">
       <span>{{title}}</span>
+      <span class="widget-settings-icon clickable pull-right fa fa-lightbulb-o" *ngIf="auditStatus"
+            [ngClass]="{'audit-ok': auditStatus==='OK', 'audit-fail': auditStatus==='FAIL'}" (click)="openAudit()"></span>
       <span class="widget-settings-icon clickable pull-right fa fa-trash"
             (click)="openConfirm()"></span>
       <span class="widget-settings-icon clickable pull-right fa fa-cog"

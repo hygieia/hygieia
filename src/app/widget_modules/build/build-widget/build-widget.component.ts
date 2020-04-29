@@ -58,6 +58,7 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
     this.layout = TwoByTwoLayoutComponent;
     // Chart configuration moved to external file
     this.charts = BUILD_CHARTS;
+    this.auditType = '';
     this.init();
   }
 

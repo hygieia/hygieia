@@ -1,14 +1,15 @@
 import {ChangeDetectorRef, Component, ComponentFactoryResolver, Input, OnInit, Type, ViewChild} from '@angular/core';
-import {map, switchMap} from 'rxjs/operators';
+import {map, switchMap, take} from 'rxjs/operators';
 import {zip} from 'rxjs';
 import { extend } from 'lodash';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {IWidgetConfigResponse} from '../interfaces';
+import {IAuditResult, IWidgetConfigResponse} from '../interfaces';
 import {ConfirmationModalComponent} from '../modals/confirmation-modal/confirmation-modal.component';
 import {FormModalComponent} from '../modals/form-modal/form-modal.component';
 import {WidgetComponent} from '../widget/widget.component';
 import {WidgetDirective} from '../widget/widget.directive';
 import {DashboardService} from '../dashboard.service';
+import {AuditModalComponent} from '../modals/audit-modal/audit-modal.component';
 
 @Component({
   selector: 'app-widget-header',
@@ -24,6 +25,8 @@ export class WidgetHeaderComponent implements OnInit {
   @Input() configForm: Type<any>;
   @ViewChild(WidgetDirective, {static: true}) appWidget: WidgetDirective;
   private widgetComponent;
+  private auditStatus: string;
+  private auditResult: IAuditResult;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver,
               private cdr: ChangeDetectorRef,
@@ -45,6 +48,9 @@ export class WidgetHeaderComponent implements OnInit {
       this.widgetComponent.status = status;
     }
     this.detectChanges();
+    if (this.widgetComponent) {
+      this.findWidgetAuditStatus(this.widgetComponent.auditType);
+    }
   }
 
   // Open the config modal and pass it necessary data. When it is closed pass the results to update them.
@@ -125,6 +131,11 @@ export class WidgetHeaderComponent implements OnInit {
     modalRef.componentInstance.modalType = ConfirmationModalComponent;
   }
 
+  openAudit() {
+    const modalRef = this.modalService.open(AuditModalComponent);
+    modalRef.componentInstance.auditResult = this.auditResult;
+  }
+
   private detectChanges(): void {
     const destroyed = 'destroyed';
     if (!this.cdr[destroyed]) {
@@ -132,5 +143,12 @@ export class WidgetHeaderComponent implements OnInit {
     }
   }
 
+  private findWidgetAuditStatus(auditType: string) {
+    this.dashboardService.dashboardAuditConfig$.pipe(map(result => result))
+      .subscribe((auditResults: IAuditResult[]) => {
+        this.auditResult = auditResults.find(auditResult => auditResult.auditType === auditType);
+        this.auditStatus = this.auditResult ? this.auditResult.auditStatus : '';
+    });
+  }
 }
 

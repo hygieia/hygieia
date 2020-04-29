@@ -50,6 +50,7 @@ export class FeatureWidgetComponent extends WidgetComponent implements OnInit, A
     this.layout = TwoByTwoLayoutComponent;
     // Chart configuration moved to external file
     this.charts = FEATURE_CHARTS;
+    this.auditType = '';
     this.init();
   }
 

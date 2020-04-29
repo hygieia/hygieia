@@ -1,0 +1,40 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h4 class="modal-title">Audit</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body" *ngIf="type; else nodata">
+    <table class="table table-sm table-striped">
+      <tbody>
+        <tr>
+          <th>Type</th>
+          <td>{{type}}</td>
+        </tr>
+        <tr>
+          <th>Status</th>
+          <td>{{status}}</td>
+        </tr>
+        <tr>
+          <th>Reason</th>
+          <td style="word-wrap: break-word; max-width: 160px">{{reason}}</td>
+        </tr>
+        <tr>
+          <th>Last Audited</th>
+          <td>{{lastAudited}}</td>
+        </tr>
+        <tr>
+          <th>Url</th>
+          <td><a href="{{url}}" target="_blank">{{url}}</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <ng-template #nodata>
+    <div class="modal-body" ><p>No Audit Data</p></div>
+  </ng-template>
+<div class="modal-footer">
+  <button type="button" (click)="activeModal.close('Close click')">Close</button>
+</div>
+</div>

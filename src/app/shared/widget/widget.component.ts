@@ -21,6 +21,7 @@ export class WidgetComponent {
   @Input() widgetId: string;
   @Input() layout: Type<any>;
   @Input() status: string;
+  @Input() auditType: string;
 
   public charts: IChart[];
 

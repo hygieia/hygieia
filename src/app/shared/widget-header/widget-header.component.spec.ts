@@ -3,7 +3,7 @@ import { WidgetHeaderComponent } from './widget-header.component';
 import {
   Component,
   ComponentFactoryResolver,
-  NO_ERRORS_SCHEMA, ViewContainerRef,
+  NO_ERRORS_SCHEMA,
 } from '@angular/core';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 import {HttpClientModule} from '@angular/common/http';
@@ -15,7 +15,6 @@ import {ConfirmationModalComponent} from '../modals/confirmation-modal/confirmat
 describe('WidgetHeaderComponent', () => {
   let component: WidgetHeaderComponent;
   let fixture: ComponentFixture<WidgetHeaderComponent>;
-  let componentFactoryResolver: ComponentFactoryResolver;
 
   @Component({
     template: ''
@@ -43,7 +42,7 @@ describe('WidgetHeaderComponent', () => {
     fixture = TestBed.createComponent(WidgetHeaderComponent);
     component = fixture.componentInstance;
     component.widgetType = TestWidgetTypeComponent;
-    componentFactoryResolver = fixture.debugElement.injector.get(ComponentFactoryResolver);
+    fixture.detectChanges();
   });
 
   it('should create', () => {
