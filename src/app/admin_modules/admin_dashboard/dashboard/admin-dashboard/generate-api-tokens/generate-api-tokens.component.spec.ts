@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GenerateApiTokensComponent } from './generate-api-tokens.component';
 import { EditTokenModalComponent } from '../modal/edit-token-modal/edit-token-modal.component';
-import { DeleteConfirmModalComponent } from '../modal/delete-confirm-modal/delete-confirm-modal.component';
+import { DeleteConfirmModalComponent } from '../../../../../shared/modals/delete-confirm-modal/delete-confirm-modal.component';
 import { DashEditComponent } from '../dash-edit/dash-edit.component';
 import { DashTrashComponent } from '../dash-trash/dash-trash.component';
 import { GenerateApiTokenModalComponent } from '../modal/generate-api-token-modal/generate-api-token-modal.component';

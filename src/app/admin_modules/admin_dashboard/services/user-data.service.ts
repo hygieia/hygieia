@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class UserDataService {
 
   adminRoute = '/api/admin';
@@ -26,7 +24,23 @@ export class UserDataService {
     return this.http.post(route, apitoken);
   }
 
+  getFeatureFlagsData() {
+    const featureFlagRoute = this.adminRoute + '/featureFlags';
+    return this.http.get(featureFlagRoute);
+  }
 
+  createOrUpdateFeatureFlags(flags) {
+    const featureFlagAddUpdateRoute = this.adminRoute + '/addOrUpdateFeatureFlags';
+    const json = {
+      json: (flags)
+    };
+    return this.http.post(featureFlagAddUpdateRoute, json);
+  }
+
+  deleteFeatureFlags(id) {
+    const featureFlagsDeleteRoute = this.adminRoute + '/deleteFeatureFlags/';
+    return this.http.delete(featureFlagsDeleteRoute + id);
+  }
 
   deleteToken(id) {
     const route = this.adminRoute + '/deleteToken';
@@ -47,5 +61,4 @@ export class UserDataService {
     const route = this.adminRoute + '/users/removeAdmin';
     return this.http.post(route, user);
   }
-
 }

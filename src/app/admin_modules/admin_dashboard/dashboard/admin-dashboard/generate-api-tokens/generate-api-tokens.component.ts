@@ -3,7 +3,7 @@ import { UserDataService } from '../../../services/user-data.service';
 import { NgbModal, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 import { EditTokenModalComponent } from '../modal/edit-token-modal/edit-token-modal.component';
 import { GenerateApiTokenModalComponent } from '../modal/generate-api-token-modal/generate-api-token-modal.component';
-import { DeleteConfirmModalComponent } from '../modal/delete-confirm-modal/delete-confirm-modal.component';
+import { DeleteConfirmModalComponent } from '../../../../../shared/modals/delete-confirm-modal/delete-confirm-modal.component';
 import { ViewEncapsulation } from '@angular/core';
 
 @Component({

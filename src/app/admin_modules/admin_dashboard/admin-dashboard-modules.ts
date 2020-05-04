@@ -16,8 +16,12 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { GenerateApiTokenModalComponent } from './dashboard/admin-dashboard/modal/generate-api-token-modal/generate-api-token-modal.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DashTrashComponent } from './dashboard/admin-dashboard/dash-trash/dash-trash.component';
-import { DeleteConfirmModalComponent } from './dashboard/admin-dashboard/modal/delete-confirm-modal/delete-confirm-modal.component';
-
+// tslint:disable-next-line:max-line-length
+import {CreateOrUpdateFeatureFlagsComponent} from './dashboard/admin-dashboard/modal/create-or-update-feature-flags/create-or-update-feature-flags.component';
+import {UpdateJsonComponent} from './dashboard/admin-dashboard/modal/update-json/update-json.component';
+import {ViewJsonComponent} from './dashboard/admin-dashboard/modal/view-json/view-json.component';
+import {FeatureFlagsComponent} from './dashboard/admin-dashboard/feature-flags/feature-flags.component';
+import {SharedModule} from '../../shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -25,18 +29,22 @@ import { DeleteConfirmModalComponent } from './dashboard/admin-dashboard/modal/d
     GenerateApiTokensComponent,
     AdminFilterPipe,
     AdminOrderByPipe,
+    CreateOrUpdateFeatureFlagsComponent,
     DashEditComponent,
     ManageAdminsComponent,
     EditTokenModalComponent,
     GenerateApiTokenModalComponent,
     DashTrashComponent,
-    DeleteConfirmModalComponent,
+    FeatureFlagsComponent,
+    UpdateJsonComponent,
+    ViewJsonComponent
   ],
 
   providers: [UserDataService],
 
   imports: [
     AdminDashboardRoutingModule,
+    SharedModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -45,9 +53,11 @@ import { DeleteConfirmModalComponent } from './dashboard/admin-dashboard/modal/d
     ReactiveFormsModule
   ],
   entryComponents: [
+    CreateOrUpdateFeatureFlagsComponent,
     EditTokenModalComponent,
     GenerateApiTokenModalComponent,
-    DeleteConfirmModalComponent
+    UpdateJsonComponent,
+    ViewJsonComponent
   ]
 })
 export class AdminDashboardModule { }

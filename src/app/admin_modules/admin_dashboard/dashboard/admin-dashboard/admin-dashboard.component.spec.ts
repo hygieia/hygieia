@@ -9,6 +9,7 @@ import { AdminFilterPipe } from '../../pipes/filter.pipe';
 import { DashEditComponent } from './dash-edit/dash-edit.component';
 import { DashTrashComponent } from './dash-trash/dash-trash.component';
 import { AdminOrderByPipe } from '../../pipes/order-by.pipe';
+import {FeatureFlagsComponent} from './feature-flags/feature-flags.component';
 
 describe('AdminDashboardComponent', () => {
     let component: AdminDashboardComponent;
@@ -17,9 +18,8 @@ describe('AdminDashboardComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [AdminDashboardComponent, GenerateApiTokensComponent, ManageAdminsComponent,
-                 AdminOrderByPipe, AdminFilterPipe, DashTrashComponent, DashEditComponent],
+                 AdminOrderByPipe, AdminFilterPipe, DashTrashComponent, DashEditComponent, FeatureFlagsComponent],
             imports: [FormsModule, CommonModule, ReactiveFormsModule]
-
         })
             .compileComponents();
     }));

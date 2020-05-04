@@ -1,0 +1,25 @@
+<div class = "table-content">
+  <span class="col-xs-6"><button type="button" class="btn btn-primary btn-wide pull-right" (click)="addFile()">Input Raw Feature Flags</button></span>
+  <span class="col-xs-6"><button type="button" class="btn btn-primary btn-wide pull-right" (click)="exportJSON()">Get Feature Flags Raw Data</button></span>
+  <span class="col-xs-6"><button type="button" class="btn btn-primary btn-wide pull-right" (click)="addNewFeatureFlag()">New</button></span>
+  <div class="table-heading" *ngFor="let item of this.featureFlags">
+    <div class="each-result">
+      <div ng-hide="!ctrl.featureFlags">
+        <a  (click)="deleteFeatureFlag(item?.id)">
+          <app-dash-trash class="clickable pull-right"></app-dash-trash>
+        </a>
+        <app-dash-edit class="clickable pull-right" (click)="editFeatureFlag(item)"></app-dash-edit>
+      </div>
+      <h6>Name: {{item?.name}}</h6>
+      <h6>Description: {{item?.description}}</h6>
+      <div class="flags">
+        <h6>Flags: </h6>
+        <div class="table-row" *ngFor="let currFlag of flagKeys(item?.flags)">
+          <div class="individual">
+            <p>{{currFlag}}: {{item?.flags[currFlag]}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
