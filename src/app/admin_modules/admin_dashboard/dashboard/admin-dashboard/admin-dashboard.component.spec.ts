@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { AdminDashboardComponent } from './admin-dashboard.component';
 import { GenerateApiTokensComponent } from './generate-api-tokens/generate-api-tokens.component';
 import { ManageAdminsComponent } from './manage-admins/manage-admins.component';
@@ -10,6 +9,9 @@ import { DashEditComponent } from './dash-edit/dash-edit.component';
 import { DashTrashComponent } from './dash-trash/dash-trash.component';
 import { AdminOrderByPipe } from '../../pipes/order-by.pipe';
 import {FeatureFlagsComponent} from './feature-flags/feature-flags.component';
+import {ServiceAccountsComponent} from './service-accounts/service-accounts.component';
+import {UserDataService} from '../../services/user-data.service';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 describe('AdminDashboardComponent', () => {
     let component: AdminDashboardComponent;
@@ -17,9 +19,17 @@ describe('AdminDashboardComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [AdminDashboardComponent, GenerateApiTokensComponent, ManageAdminsComponent,
-                 AdminOrderByPipe, AdminFilterPipe, DashTrashComponent, DashEditComponent, FeatureFlagsComponent],
-            imports: [FormsModule, CommonModule, ReactiveFormsModule]
+          declarations: [AdminDashboardComponent,
+            GenerateApiTokensComponent,
+            ManageAdminsComponent,
+            AdminOrderByPipe,
+            AdminFilterPipe,
+            DashTrashComponent,
+            DashEditComponent,
+            FeatureFlagsComponent,
+            ServiceAccountsComponent],
+          providers: [UserDataService, NgbModal],
+          imports: [FormsModule, CommonModule, ReactiveFormsModule]
         })
             .compileComponents();
     }));

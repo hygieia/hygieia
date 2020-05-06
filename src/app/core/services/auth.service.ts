@@ -1,7 +1,7 @@
 import { Injectable, Output, EventEmitter } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpParams, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
 // 3rd party import
 import { JwtHelperService } from '@auth0/angular-jwt';
@@ -34,7 +34,7 @@ export class AuthService {
   register(userLogin: IUserLogin): Observable<boolean> {
     return this.http.post(`/api/registerUser`, userLogin,
       { observe: 'response'})
-    .pipe(
+      .pipe(
         map(loggedIn => {
           const token = loggedIn.headers.get('x-authentication-token');
           localStorage.setItem('access_token', token);
