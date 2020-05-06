@@ -42,6 +42,26 @@ export class UserDataService {
     return this.http.delete(featureFlagsDeleteRoute + id);
   }
 
+  getServiceAccounts() {
+    const serviceAccountsRoute = this.adminRoute + '/allServiceAccounts';
+    return this.http.get(serviceAccountsRoute);
+  }
+
+  createAccount(accountObj) {
+    const serviceAccountCreateRoute = this.adminRoute + '/createAccount';
+    return this.http.post(serviceAccountCreateRoute, accountObj);
+  }
+
+  updateAccount(accountObj, id) {
+    const serviceAccountUpdateRoute = this.adminRoute + '/updateAccount/';
+    return this.http.post(serviceAccountUpdateRoute + id, accountObj);
+  }
+
+  deleteServiceAccount(id) {
+    const serviceAccountDeleteRoute = this.adminRoute + '/deleteAccount/';
+    return this.http.delete(serviceAccountDeleteRoute + id);
+  }
+
   deleteToken(id) {
     const route = this.adminRoute + '/deleteToken';
     return this.http.delete(route + '/' + id);

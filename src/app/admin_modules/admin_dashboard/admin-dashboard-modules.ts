@@ -22,6 +22,9 @@ import {UpdateJsonComponent} from './dashboard/admin-dashboard/modal/update-json
 import {ViewJsonComponent} from './dashboard/admin-dashboard/modal/view-json/view-json.component';
 import {FeatureFlagsComponent} from './dashboard/admin-dashboard/feature-flags/feature-flags.component';
 import {SharedModule} from '../../shared/shared.module';
+import {ServiceAccountsComponent} from './dashboard/admin-dashboard/service-accounts/service-accounts.component';
+// tslint:disable-next-line:max-line-length
+import {CreateOrUpdateServiceAccountComponent} from './dashboard/admin-dashboard/modal/create-or-update-service-account/create-or-update-service-account.component';
 
 @NgModule({
   declarations: [
@@ -30,12 +33,14 @@ import {SharedModule} from '../../shared/shared.module';
     AdminFilterPipe,
     AdminOrderByPipe,
     CreateOrUpdateFeatureFlagsComponent,
+    CreateOrUpdateServiceAccountComponent,
     DashEditComponent,
     ManageAdminsComponent,
     EditTokenModalComponent,
     GenerateApiTokenModalComponent,
     DashTrashComponent,
     FeatureFlagsComponent,
+    ServiceAccountsComponent,
     UpdateJsonComponent,
     ViewJsonComponent
   ],
@@ -54,6 +59,7 @@ import {SharedModule} from '../../shared/shared.module';
   ],
   entryComponents: [
     CreateOrUpdateFeatureFlagsComponent,
+    CreateOrUpdateServiceAccountComponent,
     EditTokenModalComponent,
     GenerateApiTokenModalComponent,
     UpdateJsonComponent,
