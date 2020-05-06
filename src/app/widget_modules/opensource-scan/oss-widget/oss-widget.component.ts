@@ -48,7 +48,7 @@ export class OSSWidgetComponent extends WidgetComponent implements OnInit, After
   }
 
   ngOnInit() {
-    this.widgetId = 'oss0';
+    this.widgetId = 'codeanalysis0';
     this.layout = TwoByOneLayoutComponent;
     this.charts = OSS_CHARTS;
     this.auditType = 'LIBRARY_POLICY';

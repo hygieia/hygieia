@@ -74,6 +74,7 @@ import { TestDetailComponent } from '../widget_modules/test/test-detail/test-det
 import { TestWidgetComponent } from '../widget_modules/test/test-widget/test-widget.component';
 // tslint:disable-next-line:max-line-length
 import {DeleteConfirmModalComponent} from './modals/delete-confirm-modal/delete-confirm-modal.component';
+import {TabsModule} from './ngx-ui/tabs/tabs.module';
 
 @NgModule({
   declarations: [
@@ -198,7 +199,8 @@ import {DeleteConfirmModalComponent} from './modals/delete-confirm-modal/delete-
     NgbModule,
     NgxChartsModule,
     NgxUIModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    TabsModule
   ],
   exports: [
     BarHorizontalComponent,

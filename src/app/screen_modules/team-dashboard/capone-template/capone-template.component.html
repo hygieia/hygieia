@@ -3,12 +3,27 @@
 <div class="container">
   <div class="row" >
     <div *ngFor="let widget of widgets;" [ngClass]="widget.widgetSize">
-    <app-widget-header
-      [title]="widget.title"
-      [widgetType]="widget.component"
-      [status]="widget.status"
-      [configForm]="widget.configForm">
-    </app-widget-header>
+      <div *ngIf="widget.component.length > 1; else elseblock">
+        <app-tabs>
+          <app-tab *ngFor="let component of widget.component; let i = index;" [label]="widget.title[i]"
+                   [active]="i === 0">
+            <app-widget-header
+              [title]="widget.title[i]"
+              [widgetType]="component"
+              [status]="widget.status"
+              [configForm]="widget.configForm[i]">
+            </app-widget-header>
+          </app-tab>
+        </app-tabs>
+      </div>
+      <ng-template #elseblock>
+        <app-widget-header
+          [title]="widget.title[0]"
+          [widgetType]="widget.component[0]"
+          [status]="widget.status"
+          [configForm]="widget.configForm[0]">
+        </app-widget-header>
+      </ng-template>
   </div>
 </div>
 </div>

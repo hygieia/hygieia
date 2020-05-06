@@ -1,0 +1,21 @@
+<app-tabs #tabs>
+  <app-tab #tab1 [title]="'Tab 1'">
+    Tab 1 Contents
+  </app-tab>
+  <app-tab #tab2 [label]="'Tab 2'">
+    Tab 2 Content
+  </app-tab>
+  <app-tab #tab3 [label]="'Tab 3'" [disabled]="true">
+    Tab 3 Content, Disabled
+  </app-tab>
+  <app-tab #tab4 [label]="labelTmpl" [active]="true">
+    <div *appIfTabActive>
+      Tab 4 Content
+    </div>
+  </app-tab>
+</app-tabs>
+
+
+<ng-template #labelTmpl>
+  templated label
+</ng-template>

@@ -82,7 +82,6 @@ export class SecurityScanConfigComponent implements OnInit {
       collectorItemId: this.securityConfigForm.value.sJob.id,
       options: {
         id: this.widgetConfigId,
-        sJob: this.securityConfigForm.value.sJob,
       },
     };
     this.activeModal.close(newConfig);

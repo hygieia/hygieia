@@ -62,11 +62,11 @@ describe('DashboardViewComponent', () => {
 
   it('should create template', () => {
     component.widgets = [{
-      title: 'Test Title',
-      component: TestWidgetComponent,
+      title: ['Test Title'],
+      component: [TestWidgetComponent],
       status: 'Success',
       widgetSize: 'col-lg-6',
-      configForm: TestFormComponent
+      configForm: [TestFormComponent]
     }];
     component.ngOnInit();
     component.ngAfterViewInit();

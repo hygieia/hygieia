@@ -78,7 +78,7 @@ export class OSSConfigFormComponent implements OnInit {
 
   private submitForm() {
     const newConfig = {
-      name: 'oss',
+      name: 'codeanalysis',
       options: {
         id: this.widgetConfigId,
       },

@@ -5,6 +5,7 @@ import { DashboardComponent } from 'src/app/shared/dashboard/dashboard.component
 import { TemplatesDirective } from 'src/app/shared/templates/templates.directive';
 import { BuildWidgetComponent } from 'src/app/widget_modules/build/build-widget/build-widget.component';
 import { DeployWidgetComponent } from 'src/app/widget_modules/deploy/deploy-widget/deploy-widget.component';
+import {RepoWidgetComponent} from '../../../widget_modules/repo/repo-widget/repo-widget.component';
 import { CaponeTemplateComponent } from '../capone-template/capone-template.component';
 import { ITemplate } from './dashboard-view';
 import {BuildConfigFormComponent} from '../../../widget_modules/build/build-config-form/build-config-form.component';
@@ -22,9 +23,9 @@ import { TestWidgetComponent } from 'src/app/widget_modules/test/test-widget/tes
 import { TestConfigFormComponent } from 'src/app/widget_modules/test/test-config-form/test-config-form.component';
 import {SecurityScanWidgetComponent} from '../../../widget_modules/security-scan/security-scan-widget/security-scan-widget.component';
 import {SecurityScanConfigComponent} from '../../../widget_modules/security-scan/security-scan-config/security-scan-config.component';
-import {RepoWidgetComponent} from '../../../widget_modules/repo/repo-widget/repo-widget.component';
 import {OSSWidgetComponent} from '../../../widget_modules/opensource-scan/oss-widget/oss-widget.component';
 import {OSSConfigFormComponent} from '../../../widget_modules/opensource-scan/oss-config-form/oss-config-form.component';
+import {PlaceholderWidgetComponent} from '../../../shared/widget/placeholder-widget/placeholder-widget.component';
 
 @Component({
   selector: 'app-dashboard-view',
@@ -53,61 +54,48 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
 
     this.widgets = [
       {
-        title: 'Feature',
-        component: FeatureWidgetComponent,
+        title: ['Feature'],
+        component: [FeatureWidgetComponent],
         status: 'Success',
         widgetSize: 'col-xl-4',
-        configForm: FeatureConfigFormComponent
+        configForm: [FeatureConfigFormComponent]
       },
       {
-        title: 'Build',
-        component: BuildWidgetComponent,
+        title: ['Build'],
+        component: [BuildWidgetComponent],
         status: 'Success',
         widgetSize: 'col-xl-6',
-        configForm: BuildConfigFormComponent
+        configForm: [BuildConfigFormComponent]
       },
       {
-        title: 'Deploy',
-        component: DeployWidgetComponent,
+        title: ['Deploy'],
+        component: [DeployWidgetComponent],
         status: 'Success',
         widgetSize: 'col-xl-2',
-        configForm: DeployConfigFormComponent
+        configForm: [DeployConfigFormComponent]
       },
       {
-        title: 'Repo',
-        component: RepoWidgetComponent,
+        title: ['Repo'],
+        component: [RepoWidgetComponent],
         status: 'Success',
         widgetSize: 'col-xl-4',
-        configForm: RepoConfigFormComponent
+        configForm: [RepoConfigFormComponent]
       },
+      // Quality Widget
       {
-        title: 'Static Code Analysis',
-        component: StaticAnalysisWidgetComponent,
+        title: ['Static Code Analysis', 'Security Analysis', 'Open Source', 'Test'],
+        component: [StaticAnalysisWidgetComponent, SecurityScanWidgetComponent, OSSWidgetComponent, TestWidgetComponent],
         status: 'Success',
         widgetSize: 'col-xl-6',
-        configForm: StaticAnalysisConfigFormComponent
+        configForm: [StaticAnalysisConfigFormComponent, SecurityScanConfigComponent, OSSConfigFormComponent, TestConfigFormComponent]
       },
       {
-        title: 'Security Analysis',
-        component: SecurityScanWidgetComponent,
-        status: 'Success',
-        widgetSize: 'col-xl-4',
-        configForm: SecurityScanConfigComponent
-      },
-      {
-        title: 'Test',
-        component: TestWidgetComponent,
+        title: ['Placeholder'],
+        component: [PlaceholderWidgetComponent],
         status: 'Success',
         widgetSize: 'col-xl-2',
-        configForm: TestConfigFormComponent
+        configForm: [BuildConfigFormComponent]
       },
-      {
-        title: 'OSS',
-        component: OSSWidgetComponent,
-        status: 'Success',
-        widgetSize: 'col-xl-4',
-        configForm: OSSConfigFormComponent
-      }
     ];
   }
 

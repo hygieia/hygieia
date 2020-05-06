@@ -78,7 +78,7 @@ export class StaticAnalysisConfigFormComponent implements OnInit {
 
   private submitForm() {
     const newConfig = {
-      name: 'codeAnalysis',
+      name: 'codeanalysis',
       options: {
         id: this.widgetConfigId,
       },

@@ -12,6 +12,8 @@ export class DashboardService {
 
   private dashboardRoute = '/api/dashboard/';
 
+  private dashboardV2Route = '/api/v2/dashboard/';
+
   private dashboardAuditRoute = '/apiaudit/auditresult/dashboard/title/';
 
   private dashboardSubject = new ReplaySubject<any>(1);
@@ -63,8 +65,8 @@ export class DashboardService {
     }
 
     const apiCall = widgetId ?
-      this.http.put(this.dashboardRoute + this.dashboardId + '/widget/' + widgetId, widgetConfig) :
-      this.http.post(this.dashboardRoute + this.dashboardId + '/widget', widgetConfig);
+      this.http.put(this.dashboardV2Route + this.dashboardId + '/widget/' + widgetId, widgetConfig) :
+      this.http.post(this.dashboardV2Route + this.dashboardId + '/widget', widgetConfig);
 
     return apiCall;
   }

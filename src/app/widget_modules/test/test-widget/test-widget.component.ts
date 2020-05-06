@@ -49,7 +49,7 @@ export class TestWidgetComponent extends WidgetComponent implements OnInit, Afte
   }
 
   ngOnInit() {
-    this.widgetId = 'test0',
+    this.widgetId = 'codeanalysis0',
     this.layout = OneByTwoLayoutComponent;
     this.charts = TEST_CHARTS;
     this.init();

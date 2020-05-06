@@ -26,11 +26,11 @@ export interface IChart {
 }
 
 export interface IWidget {
-  title: string;
-  component: Type<any>;
+  title: string[];
+  component: Type<any>[];
   status: string;
   widgetSize: string;
-  configForm: Type<any>;
+  configForm: Type<any>[];
 }
 export interface IWidgetConfigResponse {
   widgetConfig: any;

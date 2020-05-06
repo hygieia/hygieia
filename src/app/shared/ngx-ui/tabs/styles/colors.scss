@@ -1,0 +1,161 @@
+// Base
+$color-white: #FFF;
+$color-black: #000;
+
+// Blue
+$color-blue: #1483ff;
+$color-blue-100: lighten($color-blue, 30%);
+$color-blue-200: lighten($color-blue, 25%);
+$color-blue-300: lighten($color-blue, 20%);
+$color-blue-400: lighten($color-blue, 10%);
+$color-blue-500: $color-blue;
+$color-blue-600: darken($color-blue, 10%);
+$color-blue-700: darken($color-blue, 20%);
+$color-blue-800: darken($color-blue, 30%);
+$color-blue-900: darken($color-blue, 35%);
+
+// Light Blue
+$color-light-blue: #22befb;
+$color-light-blue-100: lighten($color-light-blue, 30%);
+$color-light-blue-200: lighten($color-light-blue, 25%);
+$color-light-blue-300: lighten($color-light-blue, 20%);
+$color-light-blue-400: lighten($color-light-blue, 10%);
+$color-light-blue-500: $color-light-blue;
+$color-light-blue-600: darken($color-light-blue, 10%);
+$color-light-blue-700: darken($color-light-blue, 20%);
+$color-light-blue-800: darken($color-light-blue, 30%);
+$color-light-blue-900: darken($color-light-blue, 35%);
+
+// Green
+$color-green: #1ddeb6;
+$color-green-100: lighten($color-green, 30%);
+$color-green-200: lighten($color-green, 25%);
+$color-green-300: lighten($color-green, 20%);
+$color-green-400: lighten($color-green, 10%);
+$color-green-500: $color-green;
+$color-green-600: darken($color-green, 10%);
+$color-green-700: darken($color-green, 20%);
+$color-green-800: darken($color-green, 30%);
+$color-green-900: darken($color-green, 35%);
+
+// Red
+$color-red: #ff4514;
+$color-red-100: lighten($color-red, 30%);
+$color-red-200: lighten($color-red, 25%);
+$color-red-300: lighten($color-red, 20%);
+$color-red-400: lighten($color-red, 10%);
+$color-red-500: $color-red;
+$color-red-600: darken($color-red, 10%);
+$color-red-700: darken($color-red, 20%);
+$color-red-800: darken($color-red, 30%);
+$color-red-900: darken($color-red, 35%);
+
+// Orange
+$color-orange: #ffa814;
+$color-orange-100: lighten($color-orange, 30%);
+$color-orange-200: lighten($color-orange, 25%);
+$color-orange-300: lighten($color-orange, 20%);
+$color-orange-400: lighten($color-orange, 10%);
+$color-orange-500: $color-orange;
+$color-orange-600: darken($color-orange, 10%);
+$color-orange-700: darken($color-orange, 20%);
+$color-orange-800: darken($color-orange, 30%);
+$color-orange-900: darken($color-orange, 35%);
+
+// Purple
+$color-purple: #8a65e8;
+$color-purple-100: lighten($color-purple, 30%);
+$color-purple-200: lighten($color-purple, 25%);
+$color-purple-300: lighten($color-purple, 20%);
+$color-purple-400: lighten($color-purple, 10%);
+$color-purple-500: $color-purple;
+$color-purple-600: darken($color-purple, 10%);
+$color-purple-700: darken($color-purple, 20%);
+$color-purple-800: darken($color-purple, 30%);
+$color-purple-900: darken($color-purple, 35%);
+
+// Blue Grey
+$color-blue-grey: #5A6884;
+$color-blue-grey-050: lighten($color-blue-grey, 50%);
+$color-blue-grey-100: lighten($color-blue-grey, 40%);
+$color-blue-grey-150: lighten($color-blue-grey, 35%);
+$color-blue-grey-200: lighten($color-blue-grey, 30%);
+$color-blue-grey-250: lighten($color-blue-grey, 25%);
+$color-blue-grey-300: lighten($color-blue-grey, 20%);
+$color-blue-grey-350: lighten($color-blue-grey, 15%);
+$color-blue-grey-400: lighten($color-blue-grey, 10%);
+$color-blue-grey-450: lighten($color-blue-grey, 5%);
+$color-blue-grey-500: $color-blue-grey;
+$color-blue-grey-550: darken($color-blue-grey, 5%);
+$color-blue-grey-600: darken($color-blue-grey, 10%);
+$color-blue-grey-650: darken($color-blue-grey, 15%);
+$color-blue-grey-700: darken($color-blue-grey, 20%);
+$color-blue-grey-725: darken($color-blue-grey, 22.5%);
+$color-blue-grey-750: darken($color-blue-grey, 25%);
+$color-blue-grey-775: darken($color-blue-grey, 27.5%);
+$color-blue-grey-800: darken($color-blue-grey, 30%);
+$color-blue-grey-825: darken($color-blue-grey, 32.5%);
+$color-blue-grey-850: darken($color-blue-grey, 35%);
+$color-blue-grey-875: darken($color-blue-grey, 37.5%);
+$color-blue-grey-900: darken($color-blue-grey, 40%);
+
+// Light Grey
+$color-grey: #696969;
+$color-grey-050: lighten($color-grey, 50%);
+$color-grey-100: lighten($color-grey, 40%);
+$color-grey-150: lighten($color-grey, 35%);
+$color-grey-200: lighten($color-grey, 30%);
+$color-grey-250: lighten($color-grey, 25%);
+$color-grey-300: lighten($color-grey, 20%);
+$color-grey-350: lighten($color-grey, 15%);
+$color-grey-400: lighten($color-grey, 10%);
+$color-grey-450: lighten($color-grey, 5%);
+$color-grey-500: $color-grey;
+$color-grey-550: darken($color-grey, 5%);
+$color-grey-600: darken($color-grey, 10%);
+$color-grey-650: darken($color-grey, 15%);
+$color-grey-700: darken($color-grey, 20%);
+$color-grey-725: darken($color-grey, 22.5%);
+$color-grey-750: darken($color-grey, 25%);
+$color-grey-775: darken($color-grey, 27.5%);
+$color-grey-800: darken($color-grey, 30%);
+$color-grey-825: darken($color-grey, 32.5%);
+$color-grey-850: darken($color-grey, 35%);
+$color-grey-875: darken($color-grey, 37.5%);
+$color-grey-900: darken($color-grey, 40%);
+
+$colors : (
+  "blue" : $color-blue,
+  "light-blue" : $color-light-blue,
+  "green" : $color-green,
+  "orange" : $color-orange,
+  "red": $color-red,
+  "purple": $color-purple,
+  "blue-grey": $color-blue-grey,
+  "grey": $color-grey
+);
+
+$palette : (
+  050 : 50%,
+  100 : 40%,
+  150 : 35%,
+  200 : 30%,
+  250 : 25%,
+  300 : 20%,
+  350 : 15%,
+  400 : 10%,
+  450 : 5%,
+  500 : 0,
+  550 : 5%,
+  600 : 10%,
+  650 : 15%,
+  700 : 20%,
+  725 : 22.5%,
+  750 : 25%,
+  775 : 27.5%,
+  800 : 30%,
+  825 : 32.5%,
+  850 : 35%,
+  875 : 37.5%,
+  900 : 40%
+);

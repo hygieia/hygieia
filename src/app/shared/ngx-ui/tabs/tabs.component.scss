@@ -1,0 +1,85 @@
+@import 'styles/colors';
+@import 'styles/gradient-colors';
+@import 'styles/shadow-variables';
+
+$tabs-border-fill: $color-blue-grey-700;
+$tabs-active-border-fill: $color-purple;
+$tabs-text-color: $color-blue-grey-100;
+$tabs-active-text-color: $color-grey-100;
+
+.app-tabs {
+  margin-bottom: 2em;
+  display: block;
+
+  .app-tabs-list {
+    display: block;
+    border-bottom: solid 2px $tabs-border-fill;
+
+    li {
+      display: inline-block;
+
+      &.active {
+        button,
+        button:focus,
+        button:hover {
+          color: $tabs-active-text-color;
+        }
+      }
+
+      &.active,
+      &:hover {
+        button:not([disabled])::after {
+          transform: scale(1);
+        }
+      }
+
+      button {
+        border-width: 0 2px 0 0;
+        border-right: solid 2px $tabs-border-fill;
+        color: $tabs-text-color;
+        background: transparent;
+        outline: none;
+        box-shadow: none;
+        font-size: 1.1rem;
+        box-sizing: border-box;
+        display: inline-block;
+        margin: 0;
+        padding: 0.35em 0.75em;
+        position: relative;
+        text-align: center;
+        user-select: none;
+        font: inherit;
+        font-size: 1em;
+        outline: none;
+        bottom: -1px;
+
+        &:not([disabled]) {
+          &:hover {
+            border-right: solid 2px $tabs-border-fill;
+            color: $tabs-active-text-color;
+            background: transparent;
+            opacity: 1;
+          }
+        }
+
+        &::after {
+          content: '';
+          background: $tabs-active-border-fill;
+          height: 2px;
+          position: absolute;
+          width: 100%;
+          left: 0;
+          bottom: -1px;
+          transition: all 250ms ease 0s;
+          transform: scale(0);
+          background: $tabs-active-border-fill none repeat scroll 0 0;
+          color: $tabs-active-text-color;
+        }
+      }
+    }
+  }
+
+  .app-tab-content {
+    padding: 10px;
+  }
+}
