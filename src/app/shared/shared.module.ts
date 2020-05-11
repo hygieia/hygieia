@@ -75,6 +75,7 @@ import { TestWidgetComponent } from '../widget_modules/test/test-widget/test-wid
 // tslint:disable-next-line:max-line-length
 import {DeleteConfirmModalComponent} from './modals/delete-confirm-modal/delete-confirm-modal.component';
 import {TabsModule} from './ngx-ui/tabs/tabs.module';
+import {OneByTwoLayoutTableChartComponent} from './layouts/one-by-two-layout-table-chart/one-by-two-layout-table-chart.component';
 
 @NgModule({
   declarations: [
@@ -108,6 +109,7 @@ import {TabsModule} from './ngx-ui/tabs/tabs.module';
     MinutesPipe,
     NumberCardChartComponent,
     OneByTwoLayoutComponent,
+    OneByTwoLayoutTableChartComponent,
     PaginationComponent,
     PieGridComponent,
     PieGridChartComponent,
@@ -167,6 +169,7 @@ import {TabsModule} from './ngx-ui/tabs/tabs.module';
     LineChartComponent,
     NumberCardChartComponent,
     OneByTwoLayoutComponent,
+    OneByTwoLayoutTableChartComponent,
     OneChartLayoutComponent,
     PieGridComponent,
     PieGridChartComponent,
@@ -218,6 +221,7 @@ import {TabsModule} from './ngx-ui/tabs/tabs.module';
     LineChartComponent,
     NumberCardChartComponent,
     OneByTwoLayoutComponent,
+    OneByTwoLayoutTableChartComponent,
     PaginationComponent,
     PieGridComponent,
     PieGridChartComponent,

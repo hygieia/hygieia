@@ -20,7 +20,8 @@ import {CollectorService} from '../../../shared/collector.service';
 // @ts-ignore
 import moment from 'moment';
 import * as _ from 'lodash';
-import {OneByTwoLayoutComponent} from '../../../shared/layouts/one-by-two-layout/one-by-two-layout.component';
+// tslint:disable-next-line:max-line-length
+import {OneByTwoLayoutTableChartComponent} from '../../../shared/layouts/one-by-two-layout-table-chart/one-by-two-layout-table-chart.component';
 
 @Component({
   selector: 'app-repo-widget',
@@ -47,7 +48,7 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
   // Initialize the widget and set layout and charts.
   ngOnInit() {
     this.widgetId = 'repo0';
-    this.layout = OneByTwoLayoutComponent;
+    this.layout = OneByTwoLayoutTableChartComponent;
     this.charts = REPO_CHARTS;
     this.auditType = 'CODE_REVIEW';
     this.init();
@@ -174,27 +175,27 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
     bucketOneStartDate.setDate(bucketOneStartDate.getDate() - this.TOTAL_REPO_COUNTS_TIME_RANGES[0] + 1);
     bucketTwoStartDate.setDate(bucketTwoStartDate.getDate() - this.TOTAL_REPO_COUNTS_TIME_RANGES[1] + 1);
 
-    const commitTodayCount = commitResult.filter(repo => this.checkRepoAfterDate(repo.scmCommitTimestamp, today)).length;
-    const commitBucketOneCount = commitResult.filter(repo => this.checkRepoAfterDate(repo.scmCommitTimestamp, bucketOneStartDate)).length;
-    const commitBucketTwoCount = commitResult.filter(repo => this.checkRepoAfterDate(repo.scmCommitTimestamp, bucketTwoStartDate)).length;
+    const commitToday = commitResult.filter(repo => this.checkRepoAfterDate(repo.scmCommitTimestamp, today)).length;
+    const commit7 = commitResult.filter(repo => this.checkRepoAfterDate(repo.scmCommitTimestamp, bucketOneStartDate)).length;
+    const commit14 = commitResult.filter(repo => this.checkRepoAfterDate(repo.scmCommitTimestamp, bucketTwoStartDate)).length;
 
-    const pullTodayCount = pullResult.filter(repo => this.checkRepoAfterDate(repo.timestamp, today)).length;
-    const pullBucketOneCount = pullResult.filter(repo => this.checkRepoAfterDate(repo.timestamp, bucketOneStartDate)).length;
-    const pullBucketTwoCount = pullResult.filter(repo => this.checkRepoAfterDate(repo.timestamp, bucketTwoStartDate)).length;
+    const pullToday = pullResult.filter(repo => this.checkRepoAfterDate(repo.timestamp, today)).length;
+    const pull7 = pullResult.filter(repo => this.checkRepoAfterDate(repo.timestamp, bucketOneStartDate)).length;
+    const pull14 = pullResult.filter(repo => this.checkRepoAfterDate(repo.timestamp, bucketTwoStartDate)).length;
 
-    const issueTodayCount = issueResult.filter(repo => this.checkRepoAfterDate(repo.timestamp, today)).length;
-    const issueBucketOneCount = issueResult.filter(repo => this.checkRepoAfterDate(repo.timestamp, bucketOneStartDate)).length;
-    const issueBucketTwoCount = issueResult.filter(repo => this.checkRepoAfterDate(repo.timestamp, bucketTwoStartDate)).length;
+    const issueToday = issueResult.filter(repo => this.checkRepoAfterDate(repo.timestamp, today)).length;
+    const issue7 = issueResult.filter(repo => this.checkRepoAfterDate(repo.timestamp, bucketOneStartDate)).length;
+    const issue14 = issueResult.filter(repo => this.checkRepoAfterDate(repo.timestamp, bucketTwoStartDate)).length;
 
-    this.charts[1].data[0].value = commitTodayCount;
-    this.charts[1].data[1].value = commitBucketOneCount;
-    this.charts[1].data[2].value = commitBucketTwoCount;
-    this.charts[1].data[3].value = pullTodayCount;
-    this.charts[1].data[4].value = pullBucketOneCount;
-    this.charts[1].data[5].value = pullBucketTwoCount;
-    this.charts[1].data[6].value = issueTodayCount;
-    this.charts[1].data[7].value = issueBucketOneCount;
-    this.charts[1].data[8].value = issueBucketTwoCount;
+    this.charts[1].data = commitToday.toString();
+    this.charts[2].data = commit7.toString();
+    this.charts[3].data = commit14.toString();
+    this.charts[4].data = pullToday.toString();
+    this.charts[5].data = pull7.toString();
+    this.charts[6].data = pull14.toString();
+    this.charts[7].data = issueToday.toString();
+    this.charts[8].data = issue7.toString();
+    this.charts[9].data = issue14.toString();
   }
 
   //// *********************** HELPER UTILS *********************

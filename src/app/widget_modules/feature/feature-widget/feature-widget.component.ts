@@ -117,30 +117,47 @@ export class FeatureWidgetComponent extends WidgetComponent implements OnInit, A
       return;
     }
 
-    const items: IClickListItem[] = [];
-    items[0] = {
-      title: 'Feature Tool: ' + params.featureTool
-    } as IClickListItem;
-
-    items[1] = {
-      title: 'Project Name: ' + params.projectName
-    } as IClickListItem;
-
-    items[2] = {
-      title: 'Team Name: ' + params.teamName
-    } as IClickListItem;
+    const items = [
+      {
+        status: null,
+        statusText: '',
+        title: 'Feature Tool',
+        subtitles: [params.featureTool],
+      },
+      {
+        status: null,
+        statusText: '',
+        title: 'Project Name',
+        subtitles: [params.projectName],
+      },
+      {
+        status: null,
+        statusText: '',
+        title: 'Team Name',
+        subtitles: [params.teamName],
+      },
+    ] as IClickListItem[];
 
     if (params.listType === 'issues') {
       items[3] = {
-        title: 'Backlog items: ' + content.filter(curr => curr.sStatus === 'Backlog').length
+        status: null,
+        statusText: '',
+        title: 'Backlog items',
+        subtitles: [content.filter(curr => curr.sStatus === 'Backlog').length]
       } as IClickListItem;
 
       items[4] = {
-        title: 'In Progress items: ' + content.filter(curr => curr.sStatus === 'In Progress').length
+        status: null,
+        statusText: '',
+        title: 'In Progress items',
+        subtitles: [content.filter(curr => curr.sStatus === 'In Progress').length]
       } as IClickListItem;
 
       items[5] = {
-        title: 'Done items: ' + content.filter(curr => curr.sStatus === 'Done').length
+        status: null,
+        statusText: '',
+        title: 'Done items',
+        subtitles: [content.filter(curr => curr.sStatus === 'Done').length]
       } as IClickListItem;
     }
 
