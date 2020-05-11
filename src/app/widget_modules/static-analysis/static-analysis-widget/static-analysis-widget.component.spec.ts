@@ -208,10 +208,6 @@ describe('StaticAnalysisWidgetComponent', () => {
 
   });
 
-  it('should loadEmptyChart', () => {
-    component.loadEmptyChart();
-  });
-
   beforeEach(() => {
     fixture = TestBed.createComponent(StaticAnalysisWidgetComponent);
     component = fixture.componentInstance;
@@ -219,7 +215,7 @@ describe('StaticAnalysisWidgetComponent', () => {
   });
 
   it('should generateProjectDetails', () => {
-    component.generateProjectDetails(staticAnalysisTestData);
+    component.generateProjectDetails(staticAnalysisTestData, true);
     expect(component.charts[0].data.items.length).toEqual(4);
     expect(component.charts[0].data.url).toEqual('https://sonar.com');
     expect(component.charts[0].data.version).toEqual('0.0.1');
@@ -227,35 +223,43 @@ describe('StaticAnalysisWidgetComponent', () => {
     expect(component.charts[0].data.timestamp).toEqual(new Date(1552590574305));
 
     // data is null
-    component.generateProjectDetails(null);
+    component.generateProjectDetails(null, false);
+    expect(component.charts[0].data).toEqual([]);
   });
 
   it('should generateCoverage', () => {
-    component.generateCoverage(staticAnalysisTestData);
+    component.generateCoverage(staticAnalysisTestData, true);
     expect(component.charts[1].data.results[0].value).toEqual(55.5);
     expect(component.charts[1].data.customLabelValue).toEqual(123);
 
     // data is null
-    component.generateCoverage(null);
+    component.generateCoverage(null, false);
+    expect(component.charts[1].data.results[0].value).toEqual(0);
+    expect(component.charts[1].data.customLabelValue).toEqual(0);
   });
 
   it('should generateViolations', () => {
-    component.generateViolations(staticAnalysisTestData);
+    component.generateViolations(staticAnalysisTestData, true);
     expect(component.charts[2].data[0].value).toEqual(1);
     expect(component.charts[2].data[1].value).toEqual(1);
     expect(component.charts[2].data[2].value).toEqual(1);
     expect(component.charts[2].data[3].value).toEqual(3);
 
     // data is null
-    component.generateViolations(null);
+    component.generateViolations(null, false);
+    expect(component.charts[2].data[0].value).toEqual(0);
+    expect(component.charts[2].data[1].value).toEqual(0);
+    expect(component.charts[2].data[2].value).toEqual(0);
+    expect(component.charts[2].data[3].value).toEqual(0);
   });
 
   it('should generateUnitTestMetrics', () => {
-    component.generateUnitTestMetrics(staticAnalysisTestData);
+    component.generateUnitTestMetrics(staticAnalysisTestData, true);
     expect(component.charts[3].data.items.length).toEqual(4);
 
     // data is null
-    component.generateUnitTestMetrics(null);
+    component.generateUnitTestMetrics(null, false);
+    expect(component.charts[3].data).toEqual([]);
   });
 
 });

@@ -108,10 +108,10 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
         return this.staticAnalysisService.fetchStaticAnalysis(widgetConfig.componentId, 1);
       })).subscribe(result => {
         if (result && result.length > 0) {
-          this.loadCharts(result[0]);
+          this.loadCharts(result[0], true);
         } else {
-          // code quality item could not be found
-          this.loadEmptyChart();
+          // code quality collector item could not be found
+          this.loadCharts(null, false);
         }
       });
   }
@@ -123,25 +123,26 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
     }
   }
 
-  loadCharts(result: IStaticAnalysis) {
-    this.generateProjectDetails(result);
-    this.generateViolations(result);
-    this.generateCoverage(result);
-    this.generateUnitTestMetrics(result);
-    super.loadComponent(this.childLayoutTag);
-  }
-
-  loadEmptyChart() {
+  loadCharts(result: IStaticAnalysis, found: boolean) {
+    this.generateProjectDetails(result, found);
+    this.generateViolations(result, found);
+    this.generateCoverage(result, found);
+    this.generateUnitTestMetrics(result, found);
     super.loadComponent(this.childLayoutTag);
   }
 
   // *********************** DETAILS/QUALITY *********************
 
-  generateProjectDetails(result: IStaticAnalysis) {
+  generateProjectDetails(result: IStaticAnalysis, found: boolean) {
 
-    if (!result) {
+    // collector item was not found, reset widget
+    if (!found) {
+      this.charts[0].data = [];
       return;
     }
+
+    const qualityGate = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.alertStatus);
+    const techDebt = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.techDebt);
 
     const latestDetails = [
       {
@@ -160,13 +161,13 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
         status: null,
         statusText: '',
         title: 'Quality Gate',
-        subtitles: [result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.alertStatus).value],
+        subtitles: [isUndefined(qualityGate) ? '' : qualityGate.value],
       },
       {
         status: null,
         statusText: '',
         title: 'Technical Debt',
-        subtitles: [result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.techDebt).formattedValue],
+        subtitles: [isUndefined(techDebt) ? '' : techDebt.formattedValue],
       },
     ] as IClickListItem[];
 
@@ -184,45 +185,54 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
 
   // *********************** COVERAGE (CODE) ****************************
 
-  generateCoverage(result: IStaticAnalysis) {
+  generateCoverage(result: IStaticAnalysis, found: boolean) {
 
-    if (!result) {
+    // collector item was not found, reset widget
+    if (!found) {
+      this.charts[1].data.results[0].value = 0;
+      this.charts[1].data.customLabelValue = 0;
       return;
     }
 
-    const coverage = parseFloat(result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.codeCoverage).value);
-    const loc = parseFloat(result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.numCodeLines).value);
+    const coverage = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.codeCoverage);
+    const loc = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.numCodeLines);
 
-    this.charts[1].data.results[0].value = coverage;
-    this.charts[1].data.customLabelValue = loc;
-
+    this.charts[1].data.results[0].value = isUndefined(coverage) ? 0 : parseFloat(coverage.value);
+    this.charts[1].data.customLabelValue = isUndefined(loc) ? 0 : parseFloat(loc.value);
   }
 
   // *********************** VIOLATIONS *****************************
 
-  generateViolations(result: IStaticAnalysis) {
+  generateViolations(result: IStaticAnalysis, found: boolean) {
 
-    if (!result) {
+    // collector item was not found, reset widget
+    if (!found) {
+      this.charts[2].data[0].value = 0;
+      this.charts[2].data[1].value = 0;
+      this.charts[2].data[2].value = 0;
+      this.charts[2].data[3].value = 0;
       return;
     }
 
-    const blocker = parseFloat(result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.blockerViolations).value);
-    const critical = parseFloat(result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.criticalViolations).value);
-    const major = parseFloat(result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.majorViolations).value);
-    const total = parseFloat(result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.totalIssues).value);
+    const blocker = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.blockerViolations);
+    const critical = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.criticalViolations);
+    const major = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.majorViolations);
+    const total = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.totalIssues);
 
-    this.charts[2].data[0].value = blocker;
-    this.charts[2].data[1].value = critical;
-    this.charts[2].data[2].value = major;
-    this.charts[2].data[3].value = total;
+    this.charts[2].data[0].value = isUndefined(blocker) ? 0 : parseFloat(blocker.value);
+    this.charts[2].data[1].value = isUndefined(critical) ? 0 : parseFloat(critical.value);
+    this.charts[2].data[2].value = isUndefined(major) ? 0 : parseFloat(major.value);
+    this.charts[2].data[3].value = isUndefined(total) ? 0 : parseFloat(total.value);
 
   }
 
   // *********************** UNIT TEST METRICS ****************************
 
-  generateUnitTestMetrics(result: IStaticAnalysis) {
+  generateUnitTestMetrics(result: IStaticAnalysis, found: boolean) {
 
-    if (!result) {
+    // collector item was not found, reset widget
+    if (!found) {
+      this.charts[3].data = [];
       return;
     }
 
