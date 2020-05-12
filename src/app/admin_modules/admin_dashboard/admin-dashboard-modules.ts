@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { GenerateApiTokensComponent } from './dashboard/admin-dashboard/generate-api-tokens/generate-api-tokens.component';
 import { FormsModule } from '@angular/forms';
 import { UserDataService } from './services/user-data.service';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AdminFilterPipe } from './pipes/filter.pipe';
 import { AdminOrderByPipe } from './pipes/order-by.pipe';
 import { DashEditComponent } from './dashboard/admin-dashboard/dash-edit/dash-edit.component';
@@ -25,6 +25,13 @@ import {SharedModule} from '../../shared/shared.module';
 import {ServiceAccountsComponent} from './dashboard/admin-dashboard/service-accounts/service-accounts.component';
 // tslint:disable-next-line:max-line-length
 import {CreateOrUpdateServiceAccountComponent} from './dashboard/admin-dashboard/modal/create-or-update-service-account/create-or-update-service-account.component';
+import { DashboardDataService } from './services/dashboard-data.service';
+import { PaginationWrapperService } from './services/pagination-wrapper.service';
+import { AdminDashboardService } from './services/dashboard.service';
+import { EditDashboardComponent } from './dashboard/admin-dashboard/edit-dashboard/edit-dashboard.component';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { AuthInterceptor } from 'src/app/core/interceptors/auth.interceptor';
+import { EditDashboardModalComponent } from './dashboard/admin-dashboard/modal/edit-dashboard-modal /edit-dashboard-modal.component';
 
 @NgModule({
   declarations: [
@@ -42,10 +49,19 @@ import {CreateOrUpdateServiceAccountComponent} from './dashboard/admin-dashboard
     FeatureFlagsComponent,
     ServiceAccountsComponent,
     UpdateJsonComponent,
-    ViewJsonComponent
+    ViewJsonComponent,
+    EditDashboardComponent,
+    EditDashboardModalComponent,
+
   ],
 
-  providers: [UserDataService],
+  providers: [UserDataService, DashboardDataService, PaginationWrapperService, AdminDashboardService,
+    AuthService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true,
+    }],
 
   imports: [
     AdminDashboardRoutingModule,
@@ -63,7 +79,10 @@ import {CreateOrUpdateServiceAccountComponent} from './dashboard/admin-dashboard
     EditTokenModalComponent,
     GenerateApiTokenModalComponent,
     UpdateJsonComponent,
-    ViewJsonComponent
+    ViewJsonComponent,
+    EditDashboardModalComponent
+
   ]
 })
+
 export class AdminDashboardModule { }

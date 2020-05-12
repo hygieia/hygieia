@@ -1,3 +1,4 @@
+
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { CreateOrUpdateFeatureFlagsComponent } from './create-or-update-feature-flags.component';
 import {UserDataService} from '../../../../services/user-data.service';
@@ -5,23 +6,9 @@ import {NgbActiveModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
-
 describe('CreateOrUpdateFeatureFlagsComponent', () => {
   let component: CreateOrUpdateFeatureFlagsComponent;
   let fixture: ComponentFixture<CreateOrUpdateFeatureFlagsComponent>;
-  const flags = {
-    agileTool: 'false',
-    artifact: 'false',
-    build: 'false',
-    codeQuality: 'false',
-    deployment: 'false',
-    libraryPolicy: 'false',
-    scm: 'false',
-    staticSecurityScan: 'false',
-    test: 'false',
-  };
-  const id = '123';
-
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ CreateOrUpdateFeatureFlagsComponent ],
@@ -30,33 +17,44 @@ describe('CreateOrUpdateFeatureFlagsComponent', () => {
     })
       .compileComponents();
   }));
-
   beforeEach(() => {
     fixture = TestBed.createComponent(CreateOrUpdateFeatureFlagsComponent);
     component = fixture.componentInstance;
-    component.id = id;
-    component.flags = flags;
     fixture.detectChanges();
   });
-
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
   it('should create a from ', () => {
     component.ngOnInit();
     expect(component.featureFlagForm).toBeTruthy();
   });
-
-  it('should hit flags if statements', () => {
+  it('should hit flags edit statements', () => {
+    const flags = {
+      agileTool: 'false',
+      artifact: 'false',
+      build: 'false',
+      codeQuality: 'false',
+      deployment: 'false',
+      libraryPolicy: 'false',
+      scm: 'false',
+      staticSecurityScan: 'false',
+      test: 'false',
+    };
+    const submitTest = {
+      name: 'name',
+      description: 'description',
+      flags
+    };
     setTimeout(() => {
-      component.ngOnInit();
-      expect(component.featureFlagForm).toBeTruthy();
+      component.featureFlagForm.get('name').setValue(submitTest.name);
+      component.featureFlagForm.get('description').setValue(submitTest.description);
+      component.id = '123';
       component.submit();
+      expect(component.featureFlagForm.valid).toBeTruthy();
     }, 500);
   });
-
-  it('should hit flags else statements', () => {
+  it('should hit flags post statements', () => {
     const flags1 = {
       agileTool: undefined,
       artifact: undefined,
@@ -68,12 +66,16 @@ describe('CreateOrUpdateFeatureFlagsComponent', () => {
       staticSecurityScan: undefined,
       test: undefined,
     };
+    const submitTest = {
+      name: 'name',
+      description: 'description',
+      flags: flags1
+    };
     setTimeout(() => {
-      component.flags = flags1;
-      component.ngOnInit();
-      expect(component.featureFlagForm).toBeTruthy();
-      component.id = '123';
+      component.featureFlagForm.get('name').setValue(submitTest.name);
+      component.featureFlagForm.get('description').setValue(submitTest.description);
       component.submit();
+      expect(component.featureFlagForm.valid).toBeTruthy();
     }, 500);
   });
 });

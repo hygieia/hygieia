@@ -4,13 +4,11 @@ import { NgbModal, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 import { EditTokenModalComponent } from '../modal/edit-token-modal/edit-token-modal.component';
 import { GenerateApiTokenModalComponent } from '../modal/generate-api-token-modal/generate-api-token-modal.component';
 import { DeleteConfirmModalComponent } from '../../../../../shared/modals/delete-confirm-modal/delete-confirm-modal.component';
-import { ViewEncapsulation } from '@angular/core';
 
 @Component({
   selector: 'app-generate-tokens',
   templateUrl: './generate-api-tokens.component.html',
   styleUrls: ['./generate-api-tokens.component.scss'],
-  encapsulation: ViewEncapsulation.None
 })
 export class GenerateApiTokensComponent implements OnInit {
 

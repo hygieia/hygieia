@@ -33,7 +33,7 @@
             <div class="col-push col-md-5">
               <h3>Admins</h3>
               <div class="dash-modal-row delete-dashboard-row clearfix"
-                *ngFor="let user of users | adminfilter:{authorities:'ROLE_ADMIN'} as filteredAdmins  ">
+                *ngFor="let user of users | adminfilter:{authorities:'ROLE_ADMIN'} | adminOrderBy:'username' as filteredAdmins  ">
                 <div class="btn-block">
                   <span class="badge badge-primary" [hidden]="!(user.authType === authType && user.username === username)">You</span>
                   {{user.username}}
