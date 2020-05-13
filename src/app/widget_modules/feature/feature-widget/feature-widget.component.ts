@@ -93,13 +93,13 @@ export class FeatureWidgetComponent extends WidgetComponent implements OnInit, A
           this.featureService.fetchIterations(this.params.component, this.params.teamId, this.params.projectId,
             this.params.agileType).pipe(catchError(err => of(err))));
       })).subscribe(([wip, estimates, iterations]) => {
-        if (this.params.listType === 'epics') {
-          this.generateFeatureSummary(wip, this.params);
-        } else {
-          this.generateFeatureSummary(iterations, this.params);
-        }
-        this.generateIterationSummary(estimates);
-        super.loadComponent(this.childLayoutTag);
+      if (this.params.listType === 'epics') {
+        this.generateFeatureSummary(wip, this.params);
+      } else {
+        this.generateFeatureSummary(iterations, this.params);
+      }
+      this.generateIterationSummary(estimates);
+      super.loadComponent(this.childLayoutTag);
     });
   }
 
@@ -177,9 +177,32 @@ export class FeatureWidgetComponent extends WidgetComponent implements OnInit, A
       return;
     }
 
-    this.charts[1].data[0].value = result.openEstimate;
-    this.charts[1].data[1].value = result.inProgressEstimate;
-    this.charts[1].data[2].value = result.completeEstimate;
+    const items = [
+      {
+        status: null,
+        statusText: '',
+        title: 'OPEN',
+        subtitles: [result.openEstimate],
+      },
+      {
+        status: null,
+        statusText: '',
+        title: 'WIP',
+        subtitles: [result.inProgressEstimate],
+      },
+      {
+        status: null,
+        statusText: '',
+        title: 'DONE',
+        subtitles: [result.completeEstimate],
+      },
+    ] as IClickListItem[];
+
+    this.charts[1].data = {
+      items,
+      clickableContent: null,
+      clickableHeader: null
+    } as IClickListData;
   }
 
   // **************************** EPICS/ISSUES *******************************
