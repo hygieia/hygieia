@@ -10,11 +10,10 @@ import { AuthService } from '../services/auth.service';
 })
 export class NavbarComponent implements OnInit {
 
-  myadmin = false;
+  isAdminLoad = true;
 
   constructor(private router: Router,
               private auth: AuthService) {
-                this.myadmin = auth.isAdmin();
                }
 
   ngOnInit() {
@@ -38,11 +37,17 @@ export class NavbarComponent implements OnInit {
   }
 
   redirectToLogin() {
+    this.isAdminLoad = true;
     this.router.navigate(['/user/login']);
   }
 
+  get isAdmin(): boolean {
+     return this.auth.isAdmin();
+  }
+
   admin() {
-    this.myadmin = false;
+
+    this.isAdminLoad = false;
     this.router.navigate(['/admin/dashboard']);
   }
 }

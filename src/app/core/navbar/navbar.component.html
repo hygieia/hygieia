@@ -6,7 +6,7 @@
     <li class="nav-item">
       <span class="welcome-header" *ngIf="isAuthenticated">
       Welcome {{ userName }}
-      <span class="fa-stack fa-lg" *ngIf="myadmin"  (click)="admin()"> 
+      <span class="fa-stack fa-lg" *ngIf="isAdmin && isAdminLoad"  (click)="admin()"> 
         <i class="fa fa-circle fa-stack-2x"></i>
         <i class="fa fa-cog fa-stack-1x"></i>
     </span>
