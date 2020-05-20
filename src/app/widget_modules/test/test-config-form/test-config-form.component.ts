@@ -79,6 +79,7 @@ export class TestConfigFormComponent implements OnInit {
   private loadSavedTestResults() {
     this.dashboardService.dashboardConfig$.pipe(take(1)).subscribe(dashboard => {
       const testCollectorItems = dashboard.application.components[0].collectorItems.Test;
+      if (!testCollectorItems) { return; }
       let functionalTestCount = 0;
       let performanceTestCount = 0;
       for (const testCollectorItem of testCollectorItems) {

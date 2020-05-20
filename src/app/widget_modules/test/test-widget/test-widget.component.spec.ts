@@ -129,10 +129,6 @@ describe('TestWidgetComponent', () => {
     component.ngOnDestroy();
   });
 
-  it('should hit stopRefreshInterval', () => {
-    component.stopRefreshInterval();
-  });
-
   it('should call ngAfterViewInit', () => {
     component.ngAfterViewInit();
   });
@@ -157,5 +153,8 @@ describe('TestWidgetComponent', () => {
     expect(component.formatTitle('123456789', 8)).toBe('12345...');
   });
 
+  it('should hit stopRefreshInterval', () => {
+    component.stopRefreshInterval();
+  });
 
 });

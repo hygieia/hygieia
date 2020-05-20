@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, ComponentFactoryResolver, Input, OnInit, Type, ViewChild} from '@angular/core';
-import {map, switchMap, take} from 'rxjs/operators';
+import {map, switchMap} from 'rxjs/operators';
 import {zip} from 'rxjs';
 import { extend } from 'lodash';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
@@ -27,6 +27,9 @@ export class WidgetHeaderComponent implements OnInit {
   private widgetComponent;
   private auditStatus: string;
   private auditResult: IAuditResult;
+
+  // This only applies for test widget since it has both func & perf tests at once
+  private auditResultOptional: IAuditResult;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver,
               private cdr: ChangeDetectorRef,
@@ -133,7 +136,12 @@ export class WidgetHeaderComponent implements OnInit {
 
   openAudit() {
     const modalRef = this.modalService.open(AuditModalComponent);
-    modalRef.componentInstance.auditResult = this.auditResult;
+    const auditResults: IAuditResult[] = [];
+    auditResults.push(this.auditResult);
+    if (this.auditResultOptional) {
+      auditResults.push(this.auditResultOptional);
+    }
+    modalRef.componentInstance.auditResults = auditResults;
   }
 
   private detectChanges(): void {
@@ -143,11 +151,32 @@ export class WidgetHeaderComponent implements OnInit {
     }
   }
 
-  private findWidgetAuditStatus(auditType: string) {
+  private findWidgetAuditStatus(auditType: any) {
+    if (!auditType) {
+      return;
+    }
+    let auditTypePrimary = auditType;
+    let auditTypeOptional;
+    if (auditType instanceof Array && Array.from(auditType).length > 1) {
+      auditTypePrimary = auditType[0];
+      auditTypeOptional = auditType[1];
+    }
     this.dashboardService.dashboardAuditConfig$.pipe(map(result => result))
       .subscribe((auditResults: IAuditResult[]) => {
-        this.auditResult = auditResults.find(auditResult => auditResult.auditType === auditType);
-        this.auditStatus = this.auditResult ? this.auditResult.auditStatus : '';
+        this.auditResult = auditResults.find(auditResult => auditResult.auditType === auditTypePrimary);
+        if (auditTypeOptional) {
+          this.auditResultOptional = auditResults.find(auditResult => auditResult.auditType === auditTypeOptional);
+        }
+        const auditResultOpt: IAuditResult = this.auditResultOptional;
+        if (this.auditResult) {
+          if (this.auditResult.auditStatus === 'OK' && (!auditResultOpt || auditResultOpt.auditStatus === 'OK')) {
+            this.auditStatus = 'OK';
+          } else if (this.auditResult.auditStatus === 'FAIL' || (auditResultOpt && auditResultOpt.auditStatus === 'FAIL')) {
+            this.auditStatus = 'FAIL';
+          } else {
+            this.auditStatus = this.auditResult.auditStatus;
+          }
+        }
     });
   }
 }

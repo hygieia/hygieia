@@ -1,5 +1,6 @@
-import {Component, ComponentFactoryResolver, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {IAuditResult} from '../../interfaces';
 
 @Component({
   selector: 'app-audit-modal',
@@ -9,24 +10,13 @@ import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 export class AuditModalComponent implements OnInit {
 
   constructor(public activeModal: NgbActiveModal) { }
-  private type: string;
-  private status: string;
-  private reason: string;
-  private lastAudited: number;
-  private url: string;
+  private auditResultsArr: IAuditResult[];
 
   ngOnInit() {
   }
 
   @Input()
-  set auditResult(auditResult) {
-    if (auditResult) {
-      this.type = auditResult.auditType;
-      this.status = auditResult.auditStatus === 'NA' ?
-        'COLLECTOR ' + auditResult.auditTypeStatus : auditResult.auditStatus;
-      this.reason = auditResult.auditDetails;
-      this.lastAudited = auditResult.timestamp;
-      this.url = auditResult.url;
-    }
+  set auditResults(auditResults) {
+    this.auditResultsArr = auditResults;
   }
 }
