@@ -15,7 +15,7 @@ import { BuildWidgetComponent } from './build-widget/build-widget.component';
     BuildRoutingModule,
     CommonModule,
     NgbModule,
-    SharedModule
+    SharedModule,
   ],
   exports: []
 })

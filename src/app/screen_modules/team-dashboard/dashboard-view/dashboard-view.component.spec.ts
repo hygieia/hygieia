@@ -8,6 +8,7 @@ import { RouterModule } from '@angular/router';
 import { SharedModule } from '../../../shared/shared.module';
 import { CaponeTemplateComponent } from '../capone-template/capone-template.component';
 import { DashboardViewComponent } from './dashboard-view.component';
+import { DasboardNavbarComponent } from 'src/app/core/dasboard-navbar/dasboard-navbar.component';
 
 @Component({
   selector: 'app-test-widget',
@@ -26,7 +27,7 @@ class TestFormComponent {}
 @NgModule({
   declarations: [
     TestWidgetComponent,
-    TestFormComponent
+    TestFormComponent,
   ],
   entryComponents: [
     TestWidgetComponent,
@@ -43,7 +44,7 @@ describe('DashboardViewComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [  DashboardViewComponent ],
+      declarations: [  DashboardViewComponent, DasboardNavbarComponent ],
       imports: [TestModule, HttpClientTestingModule, SharedModule, CommonModule, RouterModule.forRoot([])]
     })
     .compileComponents();

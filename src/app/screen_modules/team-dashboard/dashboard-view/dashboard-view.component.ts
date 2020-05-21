@@ -34,6 +34,7 @@ import {PlaceholderWidgetComponent} from '../../../shared/widget/placeholder-wid
 })
 export class DashboardViewComponent extends DashboardComponent implements OnInit, AfterViewInit {
 
+  dashboardTitle = '';
   teamDashboard: ITemplate;
   dashboardId: string;
   @ViewChild(TemplatesDirective, {static: false}) childTemplateTag: TemplatesDirective;
@@ -49,6 +50,9 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
     this.dashboardService.clearDashboard();
     this.dashboardId = this.route.snapshot.paramMap.get('id');
     this.dashboardService.loadDashboard(this.dashboardId);
+    this.dashboardService.loadDashboardTitle(this.dashboardId).subscribe((response: any) => {
+    this.dashboardTitle = response.title + ' ' + response.type;
+    });
 
     this.baseTemplate = CaponeTemplateComponent;
 

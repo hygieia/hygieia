@@ -6,7 +6,7 @@ import { SharedModule } from '../shared/shared.module';
   declarations: [UserRoutingModule.components],
   imports: [
     UserRoutingModule,
-    SharedModule
+    SharedModule,
   ]
 })
 export class UserModule { }

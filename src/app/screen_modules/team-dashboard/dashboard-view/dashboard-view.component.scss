@@ -4,8 +4,6 @@
   background: $dash-dashboard-bg;
   color: $dash-dashboard-text;
   background-image: url('../../../../#{$dash-image-path}bg-forest.jpg');
-  // background: linear-gradient(rgba(255, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-  // url('#{$dash-image-path}bg-forest.jpg');
   background-size: cover;
 
   .dashboard-widgets {

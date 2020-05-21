@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
 
 // local imports
@@ -10,7 +10,7 @@ import { AuthService } from '../services/auth.service';
 })
 export class NavbarComponent implements OnInit {
 
-  isAdminLoad = true;
+  @Input() isAdminLoad = true;
 
   constructor(private router: Router,
               private auth: AuthService) {

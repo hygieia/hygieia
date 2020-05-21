@@ -76,6 +76,7 @@ import { TestWidgetComponent } from '../widget_modules/test/test-widget/test-wid
 import {DeleteConfirmModalComponent} from './modals/delete-confirm-modal/delete-confirm-modal.component';
 import {TabsModule} from './ngx-ui/tabs/tabs.module';
 import {OneByTwoLayoutTableChartComponent} from './layouts/one-by-two-layout-table-chart/one-by-two-layout-table-chart.component';
+import { NavbarComponent } from '../core/navbar/navbar.component';
 
 @NgModule({
   declarations: [
@@ -143,7 +144,8 @@ import {OneByTwoLayoutTableChartComponent} from './layouts/one-by-two-layout-tab
     SecurityScanConfigComponent,
     SecurityScanWidgetComponent,
     AuditModalComponent,
-    TwoByOneLayoutComponent
+    TwoByOneLayoutComponent,
+    NavbarComponent
   ],
   entryComponents: [
     DeleteConfirmModalComponent,
@@ -234,7 +236,8 @@ import {OneByTwoLayoutTableChartComponent} from './layouts/one-by-two-layout-tab
     WidgetHeaderComponent,
     GaugeChartComponent,
     SecurityScanConfigComponent,
-    SecurityScanWidgetComponent
+    SecurityScanWidgetComponent,
+    NavbarComponent
   ]
 })
 export class SharedModule { }

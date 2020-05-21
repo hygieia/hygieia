@@ -9,11 +9,13 @@ import { DashboardListComponent } from './dashboard-list/dashboard-list.componen
 @NgModule({
   declarations: [
     LandingPageRoutingModule.components,
-    DashboardListComponent
+    DashboardListComponent,
+
   ],
   imports: [
     SharedModule,
-    LandingPageRoutingModule
+    LandingPageRoutingModule,
+
   ],
   providers: [ DashboardListService ]
 })

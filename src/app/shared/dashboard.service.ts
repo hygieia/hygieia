@@ -47,6 +47,11 @@ export class DashboardService {
       startWith(-1)).subscribe(res => this.dashboardRefreshSubject.next(res));
   }
 
+  loadDashboardTitle(dashboardId: string) {
+    this.dashboardId = dashboardId;
+    return this.http.get(this.dashboardRoute + dashboardId);
+  }
+
   clearDashboard() {
     this.dashboardId = null;
     this.dashboardSubject.next(null);

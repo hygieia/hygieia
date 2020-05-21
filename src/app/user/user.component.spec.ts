@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { UserComponent } from './user.component';
+import { SharedModule } from '../shared/shared.module';
 
 describe('UserComponent', () => {
   let component: UserComponent;
@@ -14,7 +15,8 @@ describe('UserComponent', () => {
       imports: [
         ReactiveFormsModule,
         RouterTestingModule,
-        HttpClientTestingModule
+        HttpClientTestingModule,
+        SharedModule
       ],
       declarations: [ UserComponent ]
     })

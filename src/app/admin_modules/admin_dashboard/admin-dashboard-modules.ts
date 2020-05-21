@@ -51,8 +51,7 @@ import { EditDashboardModalComponent } from './dashboard/admin-dashboard/modal/e
     UpdateJsonComponent,
     ViewJsonComponent,
     EditDashboardComponent,
-    EditDashboardModalComponent,
-
+    EditDashboardModalComponent
   ],
 
   providers: [UserDataService, DashboardDataService, PaginationWrapperService, AdminDashboardService,
@@ -71,7 +70,7 @@ import { EditDashboardModalComponent } from './dashboard/admin-dashboard/modal/e
     ReactiveFormsModule,
     HttpClientModule,
     NgbModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   entryComponents: [
     CreateOrUpdateFeatureFlagsComponent,
