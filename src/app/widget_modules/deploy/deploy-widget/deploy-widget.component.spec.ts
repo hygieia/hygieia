@@ -51,7 +51,7 @@ class MockDeployService {
 })
 class TestModule { }
 
-fdescribe('DeployWidgetComponent', () => {
+describe('DeployWidgetComponent', () => {
   let component: DeployWidgetComponent;
   let deployService: DeployService;
   let dashboardService: DashboardService;
