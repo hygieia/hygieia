@@ -26,7 +26,7 @@ import {APP_BASE_HREF} from '@angular/common';
   ],
   bootstrap: [AppComponent],
   exports: [],
-  providers: [{provide: APP_BASE_HREF, useValue: '/dashboard-ui/'}]
+  providers: [{provide: APP_BASE_HREF, useValue: '/dashboard-ui/'}],
 })
 export class AppModule {
 }
