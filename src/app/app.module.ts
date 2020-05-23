@@ -10,7 +10,6 @@ import {AppComponent} from './app.component';
 import {CoreModule} from './core/core.module';
 import {SharedModule} from './shared/shared.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {APP_BASE_HREF} from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -25,8 +24,7 @@ import {APP_BASE_HREF} from '@angular/common';
     SharedModule
   ],
   bootstrap: [AppComponent],
-  exports: [],
-  providers: [{provide: APP_BASE_HREF, useValue: '/dashboard-ui/'}],
+  exports: []
 })
 export class AppModule {
 }
