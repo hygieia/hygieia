@@ -128,8 +128,7 @@ describe('DeployWidgetComponent', () => {
   it('should hit generateLatestDeployData and startRefreshInterval', () => {
     component.generateLatestDeployData([IDeploy1, IDeploy2]);
     component.startRefreshInterval();
-
-    component.generateLatestDeployData(null);
+    component.generateLatestDeployData([IDeploy1]);
   });
 
   it('should create', () => {

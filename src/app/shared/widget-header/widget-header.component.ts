@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, ComponentFactoryResolver, Input, OnInit, Type, ViewChild} from '@angular/core';
 import {map, switchMap} from 'rxjs/operators';
-import {zip} from 'rxjs';
+import {Observable, zip} from 'rxjs';
 import { extend } from 'lodash';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {IAuditResult, IWidgetConfigResponse} from '../interfaces';
@@ -25,7 +25,7 @@ export class WidgetHeaderComponent implements OnInit {
   @Input() configForm: Type<any>;
   @ViewChild(WidgetDirective, {static: true}) appWidget: WidgetDirective;
   private widgetComponent;
-  private auditStatus: string;
+  auditStatus: string;
   private auditResult: IAuditResult;
 
   // This only applies for test widget since it has both func & perf tests at once
@@ -151,7 +151,7 @@ export class WidgetHeaderComponent implements OnInit {
     }
   }
 
-  private findWidgetAuditStatus(auditType: any) {
+  findWidgetAuditStatus(auditType: any) {
     if (!auditType) {
       return;
     }
@@ -178,6 +178,9 @@ export class WidgetHeaderComponent implements OnInit {
           }
         }
     });
+  }
+  setAuditData(data: Observable<any>) {
+    this.dashboardService.dashboardAuditConfig$ = data;
   }
 }
 

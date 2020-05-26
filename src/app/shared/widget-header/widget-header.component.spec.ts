@@ -11,6 +11,8 @@ import {FormModalComponent} from '../modals/form-modal/form-modal.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {WidgetDirective} from '../widget/widget.directive';
 import {ConfirmationModalComponent} from '../modals/confirmation-modal/confirmation-modal.component';
+import {of} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 describe('WidgetHeaderComponent', () => {
   let component: WidgetHeaderComponent;
@@ -65,5 +67,11 @@ describe('WidgetHeaderComponent', () => {
 
   it('should open the delete confirmation when delete icon is clicked', () => {
     component.openConfirm();
+  });
+  it('should find audit status of widget', () => {
+    component.setAuditData(of([{auditType: 'TEST_RESULT', auditStatus: 'OK', auditTypeStatus: 'OK'},
+      {auditType: 'PERF_TEST', auditStatus: 'OK', auditTypeStatus: 'OK'}]).pipe(map(result => result)));
+    component.findWidgetAuditStatus(['TEST_RESULT', 'PERF_TEST']);
+    expect(component.auditStatus).toEqual('OK');
   });
 });
