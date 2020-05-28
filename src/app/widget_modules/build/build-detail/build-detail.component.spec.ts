@@ -1,7 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { BuildDetailComponent } from './build-detail.component';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {DashStatus} from "../../../shared/dash-status/DashStatus";
 
 describe('BuildDetailComponent', () => {
   let component: BuildDetailComponent;
