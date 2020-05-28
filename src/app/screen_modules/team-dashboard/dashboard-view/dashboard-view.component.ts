@@ -26,6 +26,18 @@ import {SecurityScanConfigComponent} from '../../../widget_modules/security-scan
 import {OSSWidgetComponent} from '../../../widget_modules/opensource-scan/oss-widget/oss-widget.component';
 import {OSSConfigFormComponent} from '../../../widget_modules/opensource-scan/oss-config-form/oss-config-form.component';
 import {PlaceholderWidgetComponent} from '../../../shared/widget/placeholder-widget/placeholder-widget.component';
+import {BuildDeleteFormComponent} from '../../../widget_modules/build/build-delete-form/build-delete-form.component';
+import {DeployDeleteFormComponent} from '../../../widget_modules/deploy/deploy-delete-form/deploy-delete-form.component';
+import {FeatureDeleteFormComponent} from '../../../widget_modules/feature/feature-delete-form/feature-delete-form.component';
+import {RepoDeleteFormComponent} from '../../../widget_modules/repo/repo-delete-form/repo-delete-form.component';
+import {
+  SecurityScanDeleteFormComponent
+} from '../../../widget_modules/security-scan/security-scan-delete-form/security-scan-delete-form.component';
+import {OSSDeleteFormComponent} from '../../../widget_modules/opensource-scan/oss-delete-form/oss-delete-form.component';
+import {
+  StaticAnalysisDeleteFormComponent
+} from '../../../widget_modules/static-analysis/static-analysis-delete-form/static-analysis-delete-form.component';
+import {TestDeleteFormComponent} from '../../../widget_modules/test/test-delete-form/test-delete-form.component';
 
 @Component({
   selector: 'app-dashboard-view',
@@ -62,28 +74,32 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
         component: [FeatureWidgetComponent],
         status: 'Success',
         widgetSize: 'col-xl-4',
-        configForm: [FeatureConfigFormComponent]
+        configForm: [FeatureConfigFormComponent],
+        deleteForm: [FeatureDeleteFormComponent]
       },
       {
         title: ['Build'],
         component: [BuildWidgetComponent],
         status: 'Success',
         widgetSize: 'col-xl-6',
-        configForm: [BuildConfigFormComponent]
+        configForm: [BuildConfigFormComponent],
+        deleteForm: [BuildDeleteFormComponent],
       },
       {
         title: ['Deploy'],
         component: [DeployWidgetComponent],
         status: 'Success',
         widgetSize: 'col-xl-2',
-        configForm: [DeployConfigFormComponent]
+        configForm: [DeployConfigFormComponent],
+        deleteForm: [DeployDeleteFormComponent]
       },
       {
         title: ['Repo'],
         component: [RepoWidgetComponent],
         status: 'Success',
         widgetSize: 'col-xl-4',
-        configForm: [RepoConfigFormComponent]
+        configForm: [RepoConfigFormComponent],
+        deleteForm: [RepoDeleteFormComponent]
       },
       // Quality Widget
       {
@@ -91,14 +107,16 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
         component: [StaticAnalysisWidgetComponent, SecurityScanWidgetComponent, OSSWidgetComponent, TestWidgetComponent],
         status: 'Success',
         widgetSize: 'col-xl-6',
-        configForm: [StaticAnalysisConfigFormComponent, SecurityScanConfigComponent, OSSConfigFormComponent, TestConfigFormComponent]
+        configForm: [StaticAnalysisConfigFormComponent, SecurityScanConfigComponent, OSSConfigFormComponent, TestConfigFormComponent],
+        deleteForm: [StaticAnalysisDeleteFormComponent, SecurityScanDeleteFormComponent, OSSDeleteFormComponent, TestDeleteFormComponent]
       },
       {
         title: ['Placeholder'],
         component: [PlaceholderWidgetComponent],
         status: 'Success',
         widgetSize: 'col-xl-2',
-        configForm: [BuildConfigFormComponent]
+        configForm: [BuildConfigFormComponent],
+        deleteForm: [BuildDeleteFormComponent]
       },
     ];
   }

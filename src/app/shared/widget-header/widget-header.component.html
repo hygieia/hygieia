@@ -5,7 +5,7 @@
       <span class="widget-settings-icon clickable pull-right fa fa-lightbulb-o" *ngIf="auditStatus"
             [ngClass]="{'audit-ok': auditStatus==='OK', 'audit-fail': auditStatus==='FAIL'}" (click)="openAudit()"></span>
       <span class="widget-settings-icon clickable pull-right fa fa-trash"
-            (click)="openConfirm()"></span>
+            (click)="openDeleteConfirm()"></span>
       <span class="widget-settings-icon clickable pull-right fa fa-cog"
             (click)="openConfig()"></span>
     </div>

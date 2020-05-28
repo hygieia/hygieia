@@ -11,7 +11,8 @@
               [title]="widget.title[i]"
               [widgetType]="component"
               [status]="widget.status"
-              [configForm]="widget.configForm[i]">
+              [configForm]="widget.configForm[i]"
+              [deleteForm]="widget.deleteForm[i]">
             </app-widget-header>
           </app-tab>
         </app-tabs>
@@ -21,7 +22,8 @@
           [title]="widget.title[0]"
           [widgetType]="widget.component[0]"
           [status]="widget.status"
-          [configForm]="widget.configForm[0]">
+          [configForm]="widget.configForm[0]"
+          [deleteForm]="widget.deleteForm[0]">
         </app-widget-header>
       </ng-template>
   </div>

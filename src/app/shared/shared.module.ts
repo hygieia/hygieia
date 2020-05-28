@@ -77,12 +77,27 @@ import {DeleteConfirmModalComponent} from './modals/delete-confirm-modal/delete-
 import {TabsModule} from './ngx-ui/tabs/tabs.module';
 import {OneByTwoLayoutTableChartComponent} from './layouts/one-by-two-layout-table-chart/one-by-two-layout-table-chart.component';
 import { NavbarComponent } from '../core/navbar/navbar.component';
+import {BuildDeleteFormComponent} from '../widget_modules/build/build-delete-form/build-delete-form.component';
+import {DeleteConfirmModalDirective} from './modals/delete-confirm-modal/delete-confirm-modal.directive';
+import {DeployDeleteFormComponent} from '../widget_modules/deploy/deploy-delete-form/deploy-delete-form.component';
+import {FeatureDeleteFormComponent} from '../widget_modules/feature/feature-delete-form/feature-delete-form.component';
+import {RepoDeleteFormComponent} from '../widget_modules/repo/repo-delete-form/repo-delete-form.component';
+import {OSSDeleteFormComponent} from '../widget_modules/opensource-scan/oss-delete-form/oss-delete-form.component';
+import {
+  SecurityScanDeleteFormComponent
+} from '../widget_modules/security-scan/security-scan-delete-form/security-scan-delete-form.component';
+import {
+  StaticAnalysisDeleteFormComponent
+} from '../widget_modules/static-analysis/static-analysis-delete-form/static-analysis-delete-form.component';
+import {TestDeleteFormComponent} from '../widget_modules/test/test-delete-form/test-delete-form.component';
 
 @NgModule({
   declarations: [
     DeployConfigFormComponent,
+    DeployDeleteFormComponent,
     BarHorizontalComponent,
     BaseTemplateComponent,
+    BuildDeleteFormComponent,
     BuildConfigFormComponent,
     BuildDetailComponent,
     BuildWidgetComponent,
@@ -95,9 +110,11 @@ import { NavbarComponent } from '../core/navbar/navbar.component';
     ConfirmationModalComponent,
     DashboardComponent,
     DeleteConfirmModalComponent,
+    DeleteConfirmModalDirective,
     DetailModalComponent,
     DetailModalDirective,
     FeatureConfigFormComponent,
+    FeatureDeleteFormComponent,
     FeatureDetailComponent,
     FeatureWidgetComponent,
     FormModalComponent,
@@ -116,6 +133,7 @@ import { NavbarComponent } from '../core/navbar/navbar.component';
     PieGridChartComponent,
     PlaceholderWidgetComponent,
     RepoConfigFormComponent,
+    RepoDeleteFormComponent,
     RepoDetailComponent,
     RepoWidgetComponent,
     TemplatesDirective,
@@ -133,15 +151,19 @@ import { NavbarComponent } from '../core/navbar/navbar.component';
     OSSDetailComponent,
     OSSDetailAllComponent,
     OSSConfigFormComponent,
+    OSSDeleteFormComponent,
     OneChartLayoutComponent,
     GaugeChartComponent,
     StaticAnalysisConfigFormComponent,
+    StaticAnalysisDeleteFormComponent,
     StaticAnalysisDetailComponent,
     StaticAnalysisWidgetComponent,
     TestConfigFormComponent,
+    TestDeleteFormComponent,
     TestDetailComponent,
     TestWidgetComponent,
     SecurityScanConfigComponent,
+    SecurityScanDeleteFormComponent,
     SecurityScanWidgetComponent,
     AuditModalComponent,
     TwoByOneLayoutComponent,
@@ -152,7 +174,9 @@ import { NavbarComponent } from '../core/navbar/navbar.component';
     DeployDetailComponent,
     DeployWidgetComponent,
     DeployConfigFormComponent,
+    DeployDeleteFormComponent,
     BarHorizontalComponent,
+    BuildDeleteFormComponent,
     BuildConfigFormComponent,
     BuildDetailComponent,
     BuildWidgetComponent,
@@ -162,6 +186,7 @@ import { NavbarComponent } from '../core/navbar/navbar.component';
     ConfirmationModalComponent,
     DetailModalComponent,
     FeatureConfigFormComponent,
+    FeatureDeleteFormComponent,
     FeatureDetailComponent,
     FeatureWidgetComponent,
     FormModalComponent,
@@ -182,18 +207,23 @@ import { NavbarComponent } from '../core/navbar/navbar.component';
     OSSDetailComponent,
     OSSDetailAllComponent,
     OSSConfigFormComponent,
+    OSSDeleteFormComponent,
     RepoDetailComponent,
     RepoWidgetComponent,
     RepoConfigFormComponent,
+    RepoDeleteFormComponent,
     TwoByTwoLayoutComponent,
     StaticAnalysisConfigFormComponent,
+    StaticAnalysisDeleteFormComponent,
     StaticAnalysisDetailComponent,
     StaticAnalysisWidgetComponent,
     TwoByTwoLayoutComponent,
     TestConfigFormComponent,
+    TestDeleteFormComponent,
     TestDetailComponent,
     TestWidgetComponent,
     SecurityScanConfigComponent,
+    SecurityScanDeleteFormComponent,
     SecurityScanWidgetComponent,
     AuditModalComponent
   ],

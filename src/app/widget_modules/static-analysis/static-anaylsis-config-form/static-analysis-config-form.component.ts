@@ -41,9 +41,9 @@ export class StaticAnalysisConfigFormComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-    private formBuilder: FormBuilder,
-    private collectorService: CollectorService,
-    private dashboardService: DashboardService,
+    public formBuilder: FormBuilder,
+    public collectorService: CollectorService,
+    public dashboardService: DashboardService,
   ) {
     this.createForm();
   }
@@ -70,13 +70,13 @@ export class StaticAnalysisConfigFormComponent implements OnInit {
     this.getDashboardComponent();
   }
 
-  private createForm() {
+  public createForm() {
     this.staticAnalysisConfigForm = this.formBuilder.group({
       staticAnalysisJob: ['', Validators.required]
     });
   }
 
-  private submitForm() {
+  public submitForm() {
     const newConfig = {
       name: 'codeanalysis',
       options: {
@@ -88,7 +88,7 @@ export class StaticAnalysisConfigFormComponent implements OnInit {
     this.activeModal.close(newConfig);
   }
 
-  private loadSavedCodeQualityJob() {
+  public loadSavedCodeQualityJob() {
     this.dashboardService.dashboardConfig$.pipe(take(1),
       map(dashboard => {
         const sonarCollector = dashboard.application.components[0].collectorItems.CodeQuality;

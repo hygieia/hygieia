@@ -105,12 +105,16 @@ describe('RepoWidgetComponent', () => {
     })
       .compileComponents();
 
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(RepoWidgetComponent);
     component = fixture.componentInstance;
     repoService = TestBed.get(RepoService);
     dashboardService = TestBed.get(DashboardService);
     modalService = TestBed.get(NgbModal);
-  }));
+    fixture.detectChanges();
+  });
 
   it('should hit generateRepoPerDay', () => {
     component.generateRepoPerDay([IRepo1], [IRepo2], [IRepo3]);
@@ -142,11 +146,5 @@ describe('RepoWidgetComponent', () => {
     expect(dashboardService).toBeTruthy();
     expect(modalService).toBeTruthy();
     expect(fixture).toBeTruthy();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(RepoWidgetComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 });

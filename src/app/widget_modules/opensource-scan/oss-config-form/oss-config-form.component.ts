@@ -41,9 +41,9 @@ export class OSSConfigFormComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-    private formBuilder: FormBuilder,
-    private collectorService: CollectorService,
-    private dashboardService: DashboardService,
+    public formBuilder: FormBuilder,
+    public collectorService: CollectorService,
+    public dashboardService: DashboardService,
   ) {
     this.createForm();
   }
@@ -70,13 +70,13 @@ export class OSSConfigFormComponent implements OnInit {
     this.getDashboardComponent();
   }
 
-  private createForm() {
+  public createForm() {
     this.ossConfigForm = this.formBuilder.group({
       ossJob: ['', Validators.required]
     });
   }
 
-  private submitForm() {
+  public submitForm() {
     const newConfig = {
       name: 'codeanalysis',
       options: {
@@ -88,7 +88,7 @@ export class OSSConfigFormComponent implements OnInit {
     this.activeModal.close(newConfig);
   }
 
-  private loadSavedOssJob() {
+  public loadSavedOssJob() {
     this.dashboardService.dashboardConfig$.pipe(take(1),
       map(dashboard => {
         const ossCollector = dashboard.application.components[0].collectorItems.LibraryPolicy;

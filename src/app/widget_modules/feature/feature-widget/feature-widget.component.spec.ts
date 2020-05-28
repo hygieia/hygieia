@@ -63,11 +63,6 @@ describe('FeatureWidgetComponent', () => {
     })
       .compileComponents();
 
-    fixture = TestBed.createComponent(FeatureWidgetComponent);
-    component = fixture.componentInstance;
-    featureService = TestBed.get(FeatureService);
-    dashboardService = TestBed.get(DashboardService);
-    modalService = TestBed.get(NgbModal);
   }));
 
   it('should create', () => {
@@ -82,6 +77,9 @@ describe('FeatureWidgetComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FeatureWidgetComponent);
     component = fixture.componentInstance;
+    featureService = TestBed.get(FeatureService);
+    dashboardService = TestBed.get(DashboardService);
+    modalService = TestBed.get(NgbModal);
     fixture.detectChanges();
   });
 

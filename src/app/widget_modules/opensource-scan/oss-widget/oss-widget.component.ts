@@ -79,15 +79,8 @@ export class OSSWidgetComponent extends WidgetComponent implements OnInit, After
       })).subscribe(result => {
         if (result && result.length > 0) {
           this.loadCharts(result[0]);
-        } else {
-          // code quality item could not be found
-          this.loadEmptyChart();
         }
       });
-  }
-
-  loadEmptyChart() {
-    super.loadComponent(this.childLayoutTag);
   }
 
   // Unsubscribe from the widget refresh observable, which stops widget updating.
@@ -105,6 +98,7 @@ export class OSSWidgetComponent extends WidgetComponent implements OnInit, After
 
   generateLicenseDetails(result: IOpensourceScan) {
     if (!result || !result.threats || !result.threats.License) {
+      this.charts[0].data = [];
       return;
     }
 
@@ -145,6 +139,7 @@ export class OSSWidgetComponent extends WidgetComponent implements OnInit, After
 
   generateSecurityDetails(result: IOpensourceScan) {
     if (!result || !result.threats || !result.threats.Security) {
+      this.charts[1].data = [];
       return;
     }
 

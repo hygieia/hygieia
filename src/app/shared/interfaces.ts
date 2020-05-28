@@ -31,10 +31,12 @@ export interface IWidget {
   status: string;
   widgetSize: string;
   configForm: Type<any>[];
+  deleteForm: Type<any>[];
 }
 export interface IWidgetConfigResponse {
   widgetConfig: any;
-  upsertWidgetResponse: any;
+  upsertWidgetResponse?: any;
+  deleteWidgetResponse?: any;
 }
 
 export interface IAuditResult {

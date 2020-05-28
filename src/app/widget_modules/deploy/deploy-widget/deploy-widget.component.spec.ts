@@ -110,12 +110,16 @@ describe('DeployWidgetComponent', () => {
     })
       .compileComponents();
 
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(DeployWidgetComponent);
     component = fixture.componentInstance;
     deployService = TestBed.get(DeployService);
     dashboardService = TestBed.get(DashboardService);
     modalService = TestBed.get(NgbModal);
-  }));
+    fixture.detectChanges();
+  });
 
   it('should hit stopRefreshInterval', () => {
     component.stopRefreshInterval();
@@ -137,11 +141,5 @@ describe('DeployWidgetComponent', () => {
     expect(dashboardService).toBeTruthy();
     expect(modalService).toBeTruthy();
     expect(fixture).toBeTruthy();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(DeployWidgetComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 });

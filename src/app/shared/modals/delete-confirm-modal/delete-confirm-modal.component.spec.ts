@@ -1,7 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { DeleteConfirmModalComponent } from './delete-confirm-modal.component';
-import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import { Directive } from '@angular/core';
+
+@Directive({selector: '[appDeleteConfirmModal]'})
+class DeleteConfirmModalStubsDirective { }
 
 describe('DeleteConfirmModalComponent', () => {
   let component: DeleteConfirmModalComponent;
@@ -9,17 +12,14 @@ describe('DeleteConfirmModalComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [DeleteConfirmModalComponent],
-      providers: [NgbActiveModal],
-      imports: [NgbModule]
-    })
-      .compileComponents();
+      declarations: [ DeleteConfirmModalComponent, DeleteConfirmModalStubsDirective ],
+      providers: [ NgbActiveModal ]
+    });
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(DeleteConfirmModalComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {

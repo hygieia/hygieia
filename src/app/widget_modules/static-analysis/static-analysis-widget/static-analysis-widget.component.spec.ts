@@ -64,12 +64,6 @@ describe('StaticAnalysisWidgetComponent', () => {
     })
       .compileComponents();
 
-    fixture = TestBed.createComponent(StaticAnalysisWidgetComponent);
-    component = fixture.componentInstance;
-    staticAnalysisService = TestBed.get(StaticAnalysisService);
-    dashboardService = TestBed.get(DashboardService);
-    modalService = TestBed.get(NgbModal);
-
     staticAnalysisTestData = {
       id: '123',
       collectorItemId: '123',
@@ -79,62 +73,62 @@ describe('StaticAnalysisWidgetComponent', () => {
       version: '0.0.1',
       metrics: [
         {
-          name: component.staticAnalysisMetrics.blockerViolations,
+          name: 'blocker_violations',
           value: '1',
           formattedValue: '1',
         },
         {
-          name: component.staticAnalysisMetrics.criticalViolations,
+          name: 'critical_violations',
           value: '1',
           formattedValue: '1',
         },
         {
-          name: component.staticAnalysisMetrics.majorViolations,
+          name: 'major_violations',
           value: '1',
           formattedValue: '1',
         },
         {
-          name: component.staticAnalysisMetrics.totalIssues,
+          name: 'violations',
           value: '3',
           formattedValue: '3',
         },
         {
-          name: component.staticAnalysisMetrics.codeCoverage,
+          name: 'coverage',
           value: '55.5',
           formattedValue: '55.5%',
         },
         {
-          name : component.staticAnalysisMetrics.numCodeLines,
+          name : 'ncloc',
           value : '123',
           formattedValue : '123',
         },
         {
-          name : component.staticAnalysisMetrics.alertStatus,
+          name : 'alert_status',
           value : 'OK',
           formattedValue : 'OK',
         },
         {
-          name : component.staticAnalysisMetrics.techDebt,
+          name : 'sqale_index',
           value : '60',
           formattedValue : '60min'
         },
         {
-          name : component.staticAnalysisMetrics.totalTests,
+          name : 'tests',
           value : '10',
           formattedValue : '10'
         },
         {
-          name : component.staticAnalysisMetrics.testSuccesses,
+          name : 'test_success_density',
           value : '10',
           formattedValue : '10'
         },
         {
-          name : component.staticAnalysisMetrics.testFailures,
+          name : 'test_failures',
           value : '0',
           formattedValue : '0'
         },
         {
-          name : component.staticAnalysisMetrics.testErrors,
+          name : 'test_errors',
           value : '0',
           formattedValue : '0'
         },
@@ -142,8 +136,16 @@ describe('StaticAnalysisWidgetComponent', () => {
     } as IStaticAnalysis;
   }));
 
-  it('should create', () => {
+  beforeEach(() => {
+    fixture = TestBed.createComponent(StaticAnalysisWidgetComponent);
+    component = fixture.componentInstance;
+    staticAnalysisService = TestBed.get(StaticAnalysisService);
+    dashboardService = TestBed.get(DashboardService);
+    modalService = TestBed.get(NgbModal);
     fixture.detectChanges();
+  });
+
+  it('should create', () => {
     expect(component).toBeTruthy();
     expect(staticAnalysisService).toBeTruthy();
     expect(dashboardService).toBeTruthy();
@@ -206,12 +208,6 @@ describe('StaticAnalysisWidgetComponent', () => {
         });
       });
 
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(StaticAnalysisWidgetComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should generateProjectDetails', () => {

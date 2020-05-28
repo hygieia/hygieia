@@ -77,7 +77,7 @@ export class DashboardService {
   }
 
   // Take a new component and config returned by the API, and update the data locally.
-  // Push this new version to subscibers.
+  // Push this new version to subscribers.
   upsertLocally(newComponent: any, newConfig: any) {
     // Find and update component
     let tempDashboard$ = this.dashboardConfig$.pipe(take(1), map(dashboard => {
@@ -108,6 +108,54 @@ export class DashboardService {
       if (!foundMatch) {
         dashboard.widgets.push(newConfig);
       }
+      return dashboard;
+    }));
+
+    tempDashboard$.subscribe(dashboard => this.dashboardSubject.next(dashboard));
+  }
+
+  // Clone the passed widget config, and post the deleted widget to the API
+  deleteWidget(widgetConfig: any): Observable<any> {
+    widgetConfig = cloneDeep(widgetConfig);
+
+    const widgetId = widgetConfig.id;
+    if (widgetId) {
+      delete widgetConfig.id;
+    }
+
+    const apiCall = widgetId ?
+      this.http.put(this.dashboardV2Route + this.dashboardId + '/deleteWidget/' + widgetId, widgetConfig) : null;
+    return apiCall;
+  }
+
+  // Take updated component sans deleted widget and config returned by the API, and update the data locally.
+  deleteLocally(responseComponent: any, configToDelete: any) {
+    // Find and update component
+    let tempDashboard$ = this.dashboardConfig$.pipe(take(1), map(dashboard => {
+      if (responseComponent == null) {
+        return dashboard;
+      }
+      let foundComponent = false;
+      dashboard.application.components.forEach((component: any, index: number) => {
+        if (component.id === responseComponent.id) {
+          foundComponent = true;
+          dashboard.application.components[index] = responseComponent;
+        }
+      });
+      if (!foundComponent) {
+        dashboard.application.components.push(responseComponent);
+      }
+      console.log(dashboard);
+      return dashboard;
+    }));
+
+    // Find and remove widget config
+    tempDashboard$ = tempDashboard$.pipe(map(dashboard => {
+      const filteredWidgets = dashboard.widgets.filter((config: any) => config.options.id === configToDelete.options.id);
+      filteredWidgets.forEach((config: any, index: number) => {
+        delete dashboard.widgets[index];
+      });
+
       return dashboard;
     }));
 

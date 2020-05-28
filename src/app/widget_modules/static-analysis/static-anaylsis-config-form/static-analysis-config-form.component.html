@@ -2,7 +2,7 @@
   <div class="modal-body">
     <div class="container">
       <div class="form-group">
-        <label class="modal-label" for="staticAnalysisJob">Static Analysis (Sonar) Url</label>
+        <label class="modal-label" for="staticAnalysisJob">Static Analysis (Sonar) Project</label>
         <input id="staticAnalysisJob" type="search" class="form-control" [class.is-invalid]="searchFailed" formControlName="staticAnalysisJob"
        [ngbTypeahead]="typeAheadResults" [inputFormatter]="getStaticAnalysisTitle" [resultFormatter]="getStaticAnalysisTitle" placeholder="Enter Sonar Project" required/>
         <span *ngIf="searching">searching...</span>

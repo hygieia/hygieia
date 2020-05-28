@@ -1,7 +1,6 @@
-import { ChangeDetectorRef, Component, ComponentFactoryResolver, Input, OnInit, ViewChild } from '@angular/core';
+import {ChangeDetectorRef, Component, ComponentFactoryResolver, Input, OnInit, Type, ViewChild} from '@angular/core';
 import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import {DetailModalComponent} from '../detail-modal/detail-modal.component';
-import {FormModalDirective} from '../form-modal/form-modal.directive';
+import {ConfirmationModalDirective} from './confirmation-modal.directive';
 
 @Component({
   selector: 'app-confirmation-modal',
@@ -11,20 +10,23 @@ import {FormModalDirective} from '../form-modal/form-modal.directive';
 export class ConfirmationModalComponent implements OnInit {
 
   @Input() message = 'Would you like to confirm?';
-  @Input() form = DetailModalComponent;
-  // @ViewChild(FormModalDirective) modalTypeTag: FormModalDirective;
+  @Input() form: Type<any>;
+  @Input() widgetConfig: Type<any>;
+  @ViewChild(ConfirmationModalDirective, { static: true }) modalTypeTag: ConfirmationModalDirective;
 
   constructor(
-    public activeModal: NgbActiveModal, private componentFactoryResolver: ComponentFactoryResolver
+    public activeModal: NgbActiveModal,
+    private componentFactoryResolver: ComponentFactoryResolver,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
-    // let componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.form);
-    //
-    // let viewContainerRef = this.modalTypeTag.viewContainerRef;
-    // viewContainerRef.clear();
-    //
-    // let componentRef = viewContainerRef.createComponent(componentFactory);
+    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.form);
+    const viewContainerRef = this.modalTypeTag.viewContainerRef;
+    viewContainerRef.clear();
+    const componentRef = viewContainerRef.createComponent(componentFactory);
+    (componentRef.instance as ConfirmationModalComponent).widgetConfig = this.widgetConfig;
+    this.cdr.detectChanges();
   }
 
 

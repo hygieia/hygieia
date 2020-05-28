@@ -83,7 +83,7 @@ export class WidgetComponent {
 
   // Find the widget config from the list of widgets
   findWidget(widgets: any[]): any {
-    return widgets.find(widget => widget.options && widget.options.id === this.widgetId);
+    return widgets.find(widget => widget && widget.options && widget.options.id === this.widgetId);
   }
 
   private detectChanges(): void {

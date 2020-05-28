@@ -1,0 +1,12 @@
+<form [formGroup]="testDeleteForm" (ngSubmit)="submitDeleteForm()">
+  <div class="modal-body">
+    {{message}}
+  </div>
+  <div class="modal-footer">
+    <div class="col text-center">
+      <button class="btn btn-primary btn-block btn-warning" [disabled]="!testDeleteForm.valid || !widgetConfigId">
+        {{confirm}}
+      </button>
+    </div>
+  </div>
+</form>

@@ -1,28 +1,25 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { ConfirmationModalComponent } from './confirmation-modal.component';
-import {NgbActiveModal, NgbTypeahead} from '@ng-bootstrap/ng-bootstrap';
-import {DetailModalComponent} from '../detail-modal/detail-modal.component';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import { Directive } from '@angular/core';
+
+@Directive({selector: '[appConfirmationModal]'})
+class ConfirmationModalStubsDirective { }
 
 describe('ConfirmationModalComponent', () => {
   let component: ConfirmationModalComponent;
   let fixture: ComponentFixture<ConfirmationModalComponent>;
-  // const modalService: NgbActiveModal;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ConfirmationModalComponent ],
+      declarations: [ ConfirmationModalComponent, ConfirmationModalStubsDirective ],
       providers: [ NgbActiveModal ]
-    })
-    .compileComponents();
+    });
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ConfirmationModalComponent);
     component = fixture.componentInstance;
-    component.message = 'test message';
-    // component.form = DetailModalComponent;
-    fixture.detectChanges();
   });
 
   it('should create', () => {

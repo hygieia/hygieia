@@ -23,4 +23,28 @@ describe('BuildDetailComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should set detailData', () => {
+    const detailData = [{
+      title: 'buildTitle',
+      url: 'buildUrl',
+      lastUpdated: 1587131351,
+      data: [{
+        name: 'name',
+        items: [],
+      }],
+    }];
+
+    component.detailData = detailData;
+    expect(component.data.length).toEqual(1);
+
+    const noData = [{
+      title: 'buildTitle',
+      url: 'buildUrl',
+      lastUpdated: 1587131351,
+    }];
+
+    component.detailData = noData;
+    expect(component.data[0]).toEqual(noData);
+  });
 });

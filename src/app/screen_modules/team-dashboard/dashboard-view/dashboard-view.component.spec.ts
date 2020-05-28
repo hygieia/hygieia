@@ -23,15 +23,22 @@ class TestWidgetComponent {}
 })
 class TestFormComponent {}
 
+@Component({
+  selector: 'app-test-delete-form',
+  template: '<form></form>'
+})
+class TestDeleteFormComponent {}
 
 @NgModule({
   declarations: [
     TestWidgetComponent,
     TestFormComponent,
+    TestDeleteFormComponent,
   ],
   entryComponents: [
     TestWidgetComponent,
-    TestFormComponent
+    TestFormComponent,
+    TestDeleteFormComponent,
   ]
 })
 class TestModule { }
@@ -67,7 +74,8 @@ describe('DashboardViewComponent', () => {
       component: [TestWidgetComponent],
       status: 'Success',
       widgetSize: 'col-lg-6',
-      configForm: [TestFormComponent]
+      configForm: [TestFormComponent],
+      deleteForm: [TestDeleteFormComponent]
     }];
     component.ngOnInit();
     component.ngAfterViewInit();
