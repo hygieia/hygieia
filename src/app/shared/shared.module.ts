@@ -77,6 +77,7 @@ import {DeleteConfirmModalComponent} from './modals/delete-confirm-modal/delete-
 import {TabsModule} from './ngx-ui/tabs/tabs.module';
 import {OneByTwoLayoutTableChartComponent} from './layouts/one-by-two-layout-table-chart/one-by-two-layout-table-chart.component';
 import { NavbarComponent } from '../core/navbar/navbar.component';
+import {RouterModule} from '@angular/router';
 import {BuildDeleteFormComponent} from '../widget_modules/build/build-delete-form/build-delete-form.component';
 import {DeleteConfirmModalDirective} from './modals/delete-confirm-modal/delete-confirm-modal.directive';
 import {DeployDeleteFormComponent} from '../widget_modules/deploy/deploy-delete-form/deploy-delete-form.component';
@@ -235,7 +236,8 @@ import {TestDeleteFormComponent} from '../widget_modules/test/test-delete-form/t
     NgxChartsModule,
     NgxUIModule,
     ReactiveFormsModule,
-    TabsModule
+    TabsModule,
+    RouterModule,
   ],
   exports: [
     BarHorizontalComponent,

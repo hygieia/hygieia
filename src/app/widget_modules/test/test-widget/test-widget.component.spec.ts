@@ -120,16 +120,8 @@ describe('TestWidgetComponent', () => {
     component.ngOnInit();
   });
 
-  it('should call ngOnDestroy', () => {
-    component.ngOnDestroy();
-  });
-
   it('should call ngAfterViewInit', () => {
     component.ngAfterViewInit();
-  });
-
-  it('should hit startRefreshInterval', () => {
-    component.startRefreshInterval();
   });
 
   it('should generate chart', () => {

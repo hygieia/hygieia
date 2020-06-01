@@ -58,9 +58,18 @@
                   (pageChange)="getNextPage($event, false)"></app-pagination>
               </div>
             </ng-container>
+            <ng-container *ngIf="dashboardType">
+              <div class="gap">
+                <h3>Reports</h3>
+                <table class="table table-hover orders-table">
+                  <tr class="table-row">
+                    <td><a routerLink="/dashboard/nfrr" target="_blank">NFRR - No Fear Release Report</a></td>
+                  </tr>
+                </table>
+              </div>
+            </ng-container>
           </div>
           <div class="col-sm-4">
-
           </div>
         </div>
 

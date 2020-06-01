@@ -12,11 +12,16 @@ export class AuditModalComponent implements OnInit {
   constructor(public activeModal: NgbActiveModal) { }
   private auditResultsArr: IAuditResult[];
 
+
   ngOnInit() {
   }
 
   @Input()
   set auditResults(auditResults) {
     this.auditResultsArr = auditResults;
+  }
+
+  toDate(timestamp: number) {
+    return new Date(timestamp).toDateString();
   }
 }

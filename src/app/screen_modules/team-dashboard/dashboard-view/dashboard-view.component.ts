@@ -63,7 +63,7 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
     this.dashboardId = this.route.snapshot.paramMap.get('id');
     this.dashboardService.loadDashboard(this.dashboardId);
     this.dashboardService.loadDashboardTitle(this.dashboardId).subscribe((response: any) => {
-    this.dashboardTitle = response.title + ' ' + response.type;
+      this.dashboardTitle = response.title + ' ' + response.type;
     });
 
     this.baseTemplate = CaponeTemplateComponent;
@@ -110,14 +110,14 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
         configForm: [StaticAnalysisConfigFormComponent, SecurityScanConfigComponent, OSSConfigFormComponent, TestConfigFormComponent],
         deleteForm: [StaticAnalysisDeleteFormComponent, SecurityScanDeleteFormComponent, OSSDeleteFormComponent, TestDeleteFormComponent]
       },
-      {
+      /*{
         title: ['Placeholder'],
         component: [PlaceholderWidgetComponent],
         status: 'Success',
         widgetSize: 'col-xl-2',
         configForm: [BuildConfigFormComponent],
         deleteForm: [BuildDeleteFormComponent]
-      },
+      },*/
     ];
   }
 
@@ -126,4 +126,3 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
   }
 
 }
-

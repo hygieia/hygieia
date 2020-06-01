@@ -57,3 +57,22 @@ export interface IAuditResult {
   timestamp: number;
   options: any;
 }
+
+export interface IAuditResponsePage {
+  content: IAuditResult[];
+  totalElements: number;
+  totalPages: number;
+  last: boolean;
+  size: number;
+  number: number;
+  first: true;
+  numberOfElements: number;
+}
+
+export interface IAudit {
+  lineOfBusiness: string;
+  auditType: string;
+  auditStatus: string;
+  auditTypeStatus: string;
+  timestamp: number;
+}

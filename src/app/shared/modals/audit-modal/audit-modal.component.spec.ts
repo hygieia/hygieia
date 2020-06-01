@@ -24,4 +24,8 @@ describe('AuditModalComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should get valid date', () => {
+    expect(component.toDate(1590760603000) === 'Fri May 29 2020');
+  });
 });
