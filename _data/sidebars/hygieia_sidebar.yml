@@ -29,7 +29,10 @@ entries:
   - title: Installing Hygieia
     output: web, pdf
     folderitems:
-    - title: Setup Instructions
+    - title: New UI Setup Instructions
+      url: /newUI.html
+      output: web, pdf
+    - title: Old UI Setup Instructions
       url: /setup.html
       output: web, pdf
     - title: Database 

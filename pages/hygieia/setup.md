@@ -1,5 +1,5 @@
 ---
-title: Initial Setup of Hygieia
+title: Old UI Setup Instructions
 tags:
 keywords:
 summary: Instructions to install all components of Hygieia
