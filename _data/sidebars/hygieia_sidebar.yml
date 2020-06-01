@@ -2,8 +2,8 @@
 
 entries:
 - title: sidebar
-  #product: 
-  #version: 
+  #product:
+  #version:
   folders:
   - title:
     output: pdf
@@ -25,36 +25,40 @@ entries:
       url: /getting_started.html
       output: web, pdf
       type: homepage
-      
-  - title: Installing Hygieia
+
+  - title: Installing the New Hygieia UI
     output: web, pdf
     folderitems:
     - title: New UI Setup Instructions
       url: /newUI.html
       output: web, pdf
+
+  - title: Installing the Old Hygieia UI
+    output: web, pdf
+    folderitems:
     - title: Old UI Setup Instructions
       url: /setup.html
       output: web, pdf
-    - title: Database 
+    - title: Database
       url: /database.html
       output: web, pdf
-    - title: API 
+    - title: API
       url: /api.html
       output: web, pdf
-    - title: Audit API 
+    - title: Audit API
       url: /api-audit.html
       output: web, pdf
-    - title: UI 
+    - title: UI
       url: /ui.html
-      output: web, pdf    
-   
-  - title: Configuration 
+      output: web, pdf
+
+  - title: Configuration
     output: web, pdf
     folderitems:
     - title: Collectors' Configuration
       url: /collectors.html
       output: web, pdf
-      
+
       subfolders:
       - title: Additional Configuration
         output: web, pdf
@@ -64,32 +68,32 @@ entries:
              output: web, pdf
            - title: GitHub Webhook
              url: /webhook.html
-             output: web, pdf  
+             output: web, pdf
            - title: Proxy Authentication
              url: /proxyauthentication.html
-             output: web, pdf 
-             
-  - title: Building Docker Image 
+             output: web, pdf
+
+  - title: Building Docker Image
     output: web, pdf
     folderitems:
     - title: Setup Instructions
       url: /builddocker.html
       output: web, pdf
-      
+
   - title: Testing the Installation
     output: web, pdf
     folderitems:
     - title: How to Test the Installation?
       url: /gitsetup.html
       output: web, pdf
-  
+
   - title: Configuring Dashboards
     output: web, pdf
     folderitems:
     - title: What are the Different Dashboards?
       url: /Introduction.html
       output: web, pdf
-              
+
       subfolders:
       - title: Signup and Login
         output: web, pdf
@@ -105,7 +109,7 @@ entries:
         subfolderitems:
            - title: Selecting Dashboards
              url: /select_dashboard.html
-             output: web, pdf      
+             output: web, pdf
       - title: The Team Dashboard
         output: web, pdf
         subfolderitems:
@@ -126,64 +130,64 @@ entries:
              output: web, pdf
            - title: Cloud View
              url: /cloud_view.html
-             output: web, pdf    
+             output: web, pdf
       - title: The Product Dashboard
         output: web, pdf
         subfolderitems:
            - title: Introduction
              url: /product_dashboard_intro.html
-             output: web, pdf  
+             output: web, pdf
            - title: Create a Product Dashboard
              url: /product_view.html
              output: web, pdf
-    
+
     - title: The Executive Dashboard
       external_url: https://hygieia.github.io/ExecDashboard/Introduction.html
-      output: web, pdf    
+      output: web, pdf
     - title: Dashboard Administration
       url: /dashboard_administration.html
       output: web, pdf
-    
+
   - title: Audit APIs
     output: web, pdf
     folderitems:
     - title: About Audit APIs
       url: /audit_apis.html
       output: web, pdf
-  
+
   - title: Database Schema
     output: web, pdf
     folderitems:
     - title: Database Collections
       url: /dbschema.html
       output: web, pdf
-      
+
   - title: Architecture
     output: web, pdf
     folderitems:
     - title: A Diagram of Hygieia
       url: /architecture.html
       output: web, pdf
-    
+
   - title: Troubleshooting
     output: web, pdf
     folderitems:
     - title: FAQs
       url: /troubleshoot.html
       output: web, pdf
-  
+
   - title: Contribution Guidelines
     output: web, pdf
     folderitems:
     - title: Contribute Custom Collectors
       url: /create_collector.html
-      output: web, pdf  
+      output: web, pdf
     - title: Contribute Widgets
       url: /create_widget.html
-      output: web, pdf 
+      output: web, pdf
     - title: Contribute to the Documentation
       url: /documentation.html
-      output: web, pdf    
+      output: web, pdf
     - title: Contribution Agreement
       url: /contribute.html
-      output: web, pdf           
+      output: web, pdf
