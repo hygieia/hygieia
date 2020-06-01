@@ -88,6 +88,7 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
   // After the view is ready start the refresh interval.
   ngAfterViewInit() {
     this.startRefreshInterval();
+    this.setDefaultIfNoData();
   }
 
   ngOnDestroy() {
@@ -107,7 +108,8 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
         }
         return this.staticAnalysisService.fetchStaticAnalysis(widgetConfig.componentId, 1);
       })).subscribe(result => {
-        if (result && result.length > 0) {
+        this.hasData = result && result.length > 0;
+        if (this.hasData) {
           this.loadCharts(result[0], true);
         } else {
           // code quality collector item could not be found
@@ -274,6 +276,17 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
       clickableHeader: null,
     } as IClickListData;
 
+  }
+
+  setDefaultIfNoData() {
+    if (!this.hasData) {
+      this.charts[0].data = { items: [{ title: 'No Data Found' }]};
+      this.charts[1].data.results[0].value = 0;
+      this.charts[1].data.customLabelValue = 0;
+      this.charts[2].data[1].value = 0;
+      this.charts[3].data = { items: [{ title: 'No Data Found' }]};
+    }
+    super.loadComponent(this.childLayoutTag);
   }
 
 }

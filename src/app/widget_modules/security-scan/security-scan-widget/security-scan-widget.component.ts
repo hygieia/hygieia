@@ -51,6 +51,7 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
   }
   ngAfterViewInit() {
     this.startRefreshInterval();
+    this.setDefaultIfNoData();
   }
 
   ngOnDestroy() {
@@ -75,11 +76,12 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
           .pipe(catchError(err => of(err)));
         // );
       })).subscribe(result => {
-      if (result && result.length > 0) {
-        this.loadCharts(result);
-      }
-      super.loadComponent(this.childLayoutTag);
-    });
+        this.hasData = (result && result.length > 0);
+        if (this.hasData) {
+          this.loadCharts(result);
+        }
+        super.loadComponent(this.childLayoutTag);
+      });
   }
 
   stopRefreshInterval() {
@@ -109,5 +111,12 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
       clickableContent: null,
       clickableHeader: null
     } as IClickListData;
+  }
+
+  setDefaultIfNoData() {
+    if (!this.hasData) {
+      this.charts[0].data = { items: [{ title: 'No Data Found' }]};
+    }
+    super.loadComponent(this.childLayoutTag);
   }
 }

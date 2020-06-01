@@ -58,6 +58,7 @@ export class OSSWidgetComponent extends WidgetComponent implements OnInit, After
   // After the view is ready start the refresh interval.
   ngAfterViewInit() {
     this.startRefreshInterval();
+    this.setDefaultIfNoData();
   }
 
   ngOnDestroy() {
@@ -77,7 +78,8 @@ export class OSSWidgetComponent extends WidgetComponent implements OnInit, After
         }
         return this.ossService.fetchDetails(widgetConfig.componentId, this.OSS_MAX_CNT);
       })).subscribe(result => {
-        if (result && result.length > 0) {
+        this.hasData = result && result.length > 0;
+        if (this.hasData) {
           this.loadCharts(result[0]);
         }
       });
@@ -190,5 +192,13 @@ export class OSSWidgetComponent extends WidgetComponent implements OnInit, After
       default:
         return DashStatus.PASS;
     }
+  }
+
+  setDefaultIfNoData() {
+    if (!this.hasData) {
+      this.charts[0].data = { items: [{ title: 'No Data Found' }]};
+      this.charts[1].data = { items: [{ title: 'No Data Found' }]};
+    }
+    super.loadComponent(this.childLayoutTag);
   }
 }

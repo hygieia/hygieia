@@ -56,6 +56,7 @@ export class DeployWidgetComponent extends WidgetComponent implements OnInit {
   // tslint:disable-next-line:use-lifecycle-interface
   ngAfterViewInit() {
     this.startRefreshInterval();
+    this.setDefaultIfNoData();
   }
 
   startRefreshInterval() {
@@ -70,9 +71,10 @@ export class DeployWidgetComponent extends WidgetComponent implements OnInit {
         this.TimeThreshold = 1000 * 60 * widgetConfig.options.deployDurationThreshold;
         return this.deployService.fetchDetails(widgetConfig.componentId);
       })).subscribe(result => {
-      if (result) {
-        this.loadCharts(result);
-      }
+        this.hasData = (result && result.length > 0);
+        if (this.hasData) {
+          this.loadCharts(result);
+        }
     });
   }
   // Unsubscribe from the widget refresh observable, which stops widget updating.
@@ -127,5 +129,12 @@ export class DeployWidgetComponent extends WidgetComponent implements OnInit {
       clickableContent: DeployDetailComponent,
       clickableHeader: null
     } as IClickListData;
+  }
+
+  setDefaultIfNoData() {
+    if (!this.hasData) {
+      this.charts[0].data = { items: [{ title: 'No Data Found' }]};
+    }
+    super.loadComponent(this.childLayoutTag);
   }
 }

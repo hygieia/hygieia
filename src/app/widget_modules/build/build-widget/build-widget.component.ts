@@ -65,6 +65,7 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
   // After the view is ready start the refresh interval.
   ngAfterViewInit() {
     this.startRefreshInterval();
+    this.setDefaultIfNoData();
   }
 
   ngOnDestroy() {
@@ -85,7 +86,8 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
         this.buildTimeThreshold = 1000 * 60 * widgetConfig.options.buildDurationThreshold;
         return this.buildService.fetchDetails(widgetConfig.componentId, this.BUILDS_PER_DAY_TIME_RANGE);
       })).subscribe(result => {
-        if (result) {
+        this.hasData = (result && result.length > 0);
+        if (this.hasData) {
           this.loadCharts(result);
         }
       });
@@ -284,5 +286,20 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
 
   private checkBuildStatus(build: IBuild, status: string): boolean {
     return build.buildStatus === status;
+  }
+
+  setDefaultIfNoData() {
+    if (!this.hasData) {
+      this.charts[0].data.dataPoints[0].series = [{name: new Date(), value: 0, data: 'All Builds'}];
+      this.charts[0].data.dataPoints[1].series = [{name: new Date(), value: 0, data: 'Failed Builds'}];
+      this.charts[1].data = { items: [{ title: 'No Data Found' }]};
+      this.charts[2].data[0] = [{name: new Date(), value: 0}];
+      this.charts[2].colorScheme.domain = ['red'];
+      this.charts[2].data[1][0].series = [{name: 'No Data Found', value: 0}];
+      this.charts[3].data[0].value = 0;
+      this.charts[3].data[1].value = 0;
+      this.charts[3].data[2].value = 0;
+    }
+    super.loadComponent(this.childLayoutTag);
   }
 }

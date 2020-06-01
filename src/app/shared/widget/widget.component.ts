@@ -24,6 +24,7 @@ export class WidgetComponent {
   @Input() auditType: any;
 
   public charts: IChart[];
+  public hasData: boolean;
 
   // Subjects can subscribe and emit. This allows us
   // to subscribe to updates from the upstream dashboard

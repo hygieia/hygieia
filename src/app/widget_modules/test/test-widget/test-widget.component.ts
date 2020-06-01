@@ -58,6 +58,7 @@ export class TestWidgetComponent extends WidgetComponent implements OnInit, Afte
 
   ngAfterViewInit() {
     this.startRefreshInterval();
+    this.setDefaultIfNoData();
   }
 
   ngOnDestroy() {
@@ -79,7 +80,10 @@ export class TestWidgetComponent extends WidgetComponent implements OnInit, Afte
           currentTime, 4, [TestType.Functional, TestType.Performance]);
         return tests$;
       })).subscribe( tests => {
-        this.loadCharts(tests);
+        this.hasData = (tests && tests.length > 0);
+        if (this.hasData) {
+          this.loadCharts(tests);
+        }
       });
   }
 
@@ -149,6 +153,14 @@ export class TestWidgetComponent extends WidgetComponent implements OnInit, Afte
   formatTitle(title: string, length: number): string {
     const fit = title.length < length;
     return fit ? title : title.slice(0, length - 3) + '...';
+  }
+
+  setDefaultIfNoData() {
+    if (!this.hasData) {
+      this.charts[0].data = { items: [{ title: 'No Data Found' }]};
+      this.charts[1].data = { items: [{ title: 'No Data Found' }]};
+    }
+    super.loadComponent(this.childLayoutTag);
   }
 }
 
