@@ -25,13 +25,17 @@ entries:
       url: /getting_started.html
       output: web, pdf
       type: homepage
-      
-  - title: Installing Hygieia
+
+  - title: Installing the New Hygieia UI
     output: web, pdf
     folderitems:
     - title: New UI Setup Instructions
       url: /newUI.html
       output: web, pdf
+
+  - title: Installing the Old Hygieia UI
+    output: web, pdf
+    folderitems:
     - title: Old UI Setup Instructions
       url: /setup.html
       output: web, pdf
@@ -44,7 +48,7 @@ entries:
     - title: Audit API 
       url: /api-audit.html
       output: web, pdf
-    - title: UI 
+    - title: UI
       url: /ui.html
       output: web, pdf    
    
