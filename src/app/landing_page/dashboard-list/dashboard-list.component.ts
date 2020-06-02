@@ -99,4 +99,8 @@ export class DashboardListComponent implements OnInit {
       .set('search', query)
       .set('type', this.dashboardType);
   }
+
+  goToAuditReport() {
+    window.open('/audits', '_blank');
+  }
 }

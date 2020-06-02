@@ -94,8 +94,6 @@ export class NfrrViewComponent implements OnInit, OnDestroy {
       this.isLoading = false;
       return;
     }
-    // peer review and open source metrics not shown in report
-    audits = audits.filter(a => (a.auditType !== 'CODE_REVIEW' && a.auditType !== 'LIBRARY_POLICY'));
     const allAudits$ = from(audits).pipe(
       groupBy(audit => audit.auditType, a => ({ auditStatus: a.auditStatus, auditTypeStatus: a.auditTypeStatus})),
       mergeMap(group => zip(of(group.key), group.pipe(toArray()))),
