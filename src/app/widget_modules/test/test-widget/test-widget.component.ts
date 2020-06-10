@@ -80,10 +80,7 @@ export class TestWidgetComponent extends WidgetComponent implements OnInit, Afte
           currentTime, 4, [TestType.Functional, TestType.Performance]);
         return tests$;
       })).subscribe( tests => {
-        this.hasData = (tests && tests.length > 0);
-        if (this.hasData) {
           this.loadCharts(tests);
-        }
       });
   }
 
