@@ -96,7 +96,7 @@ export class DeployWidgetComponent extends WidgetComponent implements OnInit {
 
     const sorted = result.sort((a: IDeploy, b: IDeploy): number => {
       return a.units[0].lastUpdated - b.units[0].lastUpdated;
-    }).reverse().slice(0, 5);
+    }).reverse().slice(0, 10);
     const latestDeployData = sorted.map(deploy => {
         let deployStatusText = '';
         let regexText = '';

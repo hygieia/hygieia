@@ -72,9 +72,9 @@ import {OSSDetailAllComponent} from '../widget_modules/opensource-scan/oss-detai
 import { TestConfigFormComponent } from '../widget_modules/test/test-config-form/test-config-form.component';
 import { TestDetailComponent } from '../widget_modules/test/test-detail/test-detail.component';
 import { TestWidgetComponent } from '../widget_modules/test/test-widget/test-widget.component';
-// tslint:disable-next-line:max-line-length
 import {DeleteConfirmModalComponent} from './modals/delete-confirm-modal/delete-confirm-modal.component';
 import {TabsModule} from './ngx-ui/tabs/tabs.module';
+// tslint:disable-next-line:max-line-length
 import {OneByTwoLayoutTableChartComponent} from './layouts/one-by-two-layout-table-chart/one-by-two-layout-table-chart.component';
 import { NavbarComponent } from '../core/navbar/navbar.component';
 import {RouterModule} from '@angular/router';
@@ -185,6 +185,7 @@ import {TestDeleteFormComponent} from '../widget_modules/test/test-delete-form/t
     ClickListComponent,
     ComboChartComponent,
     ConfirmationModalComponent,
+    DeleteConfirmModalComponent,
     DetailModalComponent,
     FeatureConfigFormComponent,
     FeatureDeleteFormComponent,

@@ -28,8 +28,80 @@ export let REPO_CHARTS: IChart[] = [
     xAxisLabel: 'Date',
     yAxisLabel: 'Commits, Pull Requests, and Issues',
     colorScheme: {
-      domain: ['blue', 'green', 'red', 'grey', 'grey', 'grey']
+      domain: []
     }
+  },
+  {
+    title: '',
+    component: PlainTextChartComponent,
+    data: [],
+    xAxisLabel: '',
+    yAxisLabel: '',
+    colorScheme: {}
+  },
+  {
+    title: '',
+    component: PlainTextChartComponent,
+    data: [],
+    xAxisLabel: '',
+    yAxisLabel: '',
+    colorScheme: {}
+  },
+  {
+    title: '',
+    component: PlainTextChartComponent,
+    data: [],
+    xAxisLabel: '',
+    yAxisLabel: '',
+    colorScheme: {}
+  },
+  {
+    title: '',
+    component: PlainTextChartComponent,
+    data: [],
+    xAxisLabel: '',
+    yAxisLabel: '',
+    colorScheme: {}
+  },
+  {
+    title: '',
+    component: PlainTextChartComponent,
+    data: [],
+    xAxisLabel: '',
+    yAxisLabel: '',
+    colorScheme: {}
+  },
+  {
+    title: '',
+    component: PlainTextChartComponent,
+    data: [],
+    xAxisLabel: '',
+    yAxisLabel: '',
+    colorScheme: {}
+  },
+  {
+    title: '',
+    component: PlainTextChartComponent,
+    data: [],
+    xAxisLabel: '',
+    yAxisLabel: '',
+    colorScheme: {}
+  },
+  {
+    title: '',
+    component: PlainTextChartComponent,
+    data: [],
+    xAxisLabel: '',
+    yAxisLabel: '',
+    colorScheme: {}
+  },
+  {
+    title: '',
+    component: PlainTextChartComponent,
+    data: [],
+    xAxisLabel: '',
+    yAxisLabel: '',
+    colorScheme: {}
   },
   {
     title: '',

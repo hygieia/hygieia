@@ -3,7 +3,7 @@ import { IChart } from 'src/app/shared/interfaces';
 
 export let DEPLOY_CHARTS: IChart[] = [
   {
-    title: 'Latest Deployments',
+    title: 'Last 10 Deployments',
     component: ClickListComponent,
     data: [],
     xAxisLabel: '',

@@ -94,7 +94,7 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
         deleteForm: [DeployDeleteFormComponent]
       },
       {
-        title: ['Repo'],
+        title: ['Code Repo'],
         component: [RepoWidgetComponent],
         status: 'Success',
         widgetSize: 'col-xl-4',
