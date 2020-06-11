@@ -1,6 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 // tslint:disable-next-line:max-line-length
-import { DeleteConfirmModalComponent } from '../../../../../shared/modals/delete-confirm-modal/delete-confirm-modal.component';
 import { DashEditComponent } from '../dash-edit/dash-edit.component';
 import { DashTrashComponent } from '../dash-trash/dash-trash.component';
 import { UserDataService } from '../../../services/user-data.service';
@@ -14,11 +13,12 @@ import {ServiceAccountsComponent} from './service-accounts.component';
 import {NgModule} from '@angular/core';
 // tslint:disable-next-line:max-line-length
 import {CreateOrUpdateServiceAccountComponent} from '../modal/create-or-update-service-account/create-or-update-service-account.component';
+import { AdminDeleteComponent } from '../modal/admin-delete/admin-delete.component';
 
 @NgModule({
   declarations: [ServiceAccountsComponent, DashEditComponent, DashTrashComponent, AdminFilterPipe,
     AdminOrderByPipe, CreateOrUpdateServiceAccountComponent,
-    DeleteConfirmModalComponent],
+    AdminDeleteComponent],
   providers: [UserDataService, NgbModal],
   imports: [FormsModule, CommonModule, ReactiveFormsModule, NgbModule, HttpClientTestingModule],
   exports: [
@@ -28,7 +28,7 @@ import {CreateOrUpdateServiceAccountComponent} from '../modal/create-or-update-s
   entryComponents: [
     ServiceAccountsComponent,
     CreateOrUpdateServiceAccountComponent,
-    DeleteConfirmModalComponent
+    AdminDeleteComponent
   ]
 })
 class TestModule { }
@@ -46,7 +46,7 @@ describe('ServiceAccountsComponent', () => {
         CreateOrUpdateServiceAccountComponent,
         AdminFilterPipe,
         AdminOrderByPipe,
-        DeleteConfirmModalComponent],
+        AdminDeleteComponent],
       providers: [UserDataService, FormBuilder, NgbActiveModal],
       imports: [FormsModule, NgbModule, CommonModule, ReactiveFormsModule, HttpClientTestingModule]
     })

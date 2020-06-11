@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { UserDataService } from '../../../services/user-data.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { DeleteConfirmModalComponent } from '../../../../../shared/modals/delete-confirm-modal/delete-confirm-modal.component';
 import {CreateOrUpdateServiceAccountComponent} from '../modal/create-or-update-service-account/create-or-update-service-account.component';
+import { AdminDeleteComponent } from '../modal/admin-delete/admin-delete.component';
 
 @Component({
   selector: 'app-service-accounts',
@@ -47,7 +47,7 @@ export class ServiceAccountsComponent implements OnInit {
   }
 
   deleteServiceAccount(id) {
-    const modalRef = this.modalService.open(DeleteConfirmModalComponent);
+    const modalRef = this.modalService.open(AdminDeleteComponent);
     modalRef.componentInstance.title = 'Are you sure you want to delete?';
     modalRef.result.then((newConfig) => {
       this.userData.deleteServiceAccount(id).subscribe(response => {
