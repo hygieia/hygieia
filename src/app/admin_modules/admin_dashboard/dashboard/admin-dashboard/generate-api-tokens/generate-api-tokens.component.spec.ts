@@ -2,7 +2,6 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GenerateApiTokensComponent } from './generate-api-tokens.component';
 import { EditTokenModalComponent } from '../modal/edit-token-modal/edit-token-modal.component';
-import { DeleteConfirmModalComponent } from '../../../../../shared/modals/delete-confirm-modal/delete-confirm-modal.component';
 import { DashEditComponent } from '../dash-edit/dash-edit.component';
 import { DashTrashComponent } from '../dash-trash/dash-trash.component';
 import { GenerateApiTokenModalComponent } from '../modal/generate-api-token-modal/generate-api-token-modal.component';
@@ -15,18 +14,19 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { API_TOKEN_LIST } from '../../../services/user-data.service.mockdata';
 import { NgModule } from '@angular/core';
 import { AdminOrderByPipe } from '../../../pipes/order-by.pipe';
+import { AdminDeleteComponent } from '../modal/admin-delete/admin-delete.component';
 
 @NgModule({
   declarations: [GenerateApiTokensComponent, DashEditComponent, DashTrashComponent, AdminFilterPipe,
           AdminOrderByPipe, EditTokenModalComponent,
     GenerateApiTokenModalComponent,
-    DeleteConfirmModalComponent],
+    AdminDeleteComponent],
   providers: [UserDataService, NgbModal],
   imports: [FormsModule, CommonModule, ReactiveFormsModule, NgbModule, HttpClientTestingModule],
   entryComponents: [
     EditTokenModalComponent,
     GenerateApiTokenModalComponent,
-    DeleteConfirmModalComponent
+    AdminDeleteComponent
   ]
 })
 class TestModule { }

@@ -6,6 +6,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DashboardItem } from '../model/dashboard-item';
 import { DeleteConfirmModalComponent } from '../../../../../shared/modals/delete-confirm-modal/delete-confirm-modal.component';
 import { EditDashboardModalComponent } from '../modal/edit-dashboard-modal /edit-dashboard-modal.component';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-edit-dashboard',
@@ -92,5 +93,13 @@ export class EditDashboardComponent implements OnInit {
       console.log('delete error newConfig :' + error);
     });
   }
+
+  filterByTitle(title) {
+    const promises = this.paginationWrapperService.filterByTitle(title, this.dashboardType);
+    forkJoin(promises).subscribe((response: any) => {
+        this.dashboards = this.paginationWrapperService.getDashboards();
+        this.totalItems = this.paginationWrapperService.getTotalItems();
+    });
+}
 
 }

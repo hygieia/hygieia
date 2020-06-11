@@ -7,7 +7,7 @@
             <div class="row">
                 <div class="col-md-12 ">
                     <input type="search" name="collectorItemId" class="form-control"
-                        placeholder="Type to find dashboard" [(ngModel)]="searchDashboard" required>
+                        placeholder="Type to find dashboard" [(ngModel)]="searchDashboard" (change)="filterByTitle(searchDashboard)" required>
                 </div>
                 <div class="col-md-8 col-push ">
                     <div class="text-center" [hidden]="dashboards">Loading Dashboards...</div>
