@@ -12,7 +12,6 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { StaticAnalysisService } from '../static-analysis.service';
 import { IStaticAnalysis } from '../interfaces';
 import { StaticAnalysisWidgetComponent} from './static-analysis-widget.component';
-import {GET_DASHBOARD_MOCK} from '../../../shared/dashboard.service.mockdata';
 
 class MockStaticAnalysisService {
 
