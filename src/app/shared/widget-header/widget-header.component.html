@@ -1,17 +1,23 @@
 <div class="widget-container-small">
-  <div class="widget">
-    <div class="widget-heading">
+<div class="widget" [ngClass]="{'configure': this.widgetComponent?.state === widgetState().CONFIGURE}">
+  <div class="widget-heading">
       <span>{{title}}</span>
-      <span class="widget-settings-icon clickable pull-right fa fa-lightbulb-o" *ngIf="auditStatus"
-            [ngClass]="{'audit-ok': auditStatus==='OK', 'audit-fail': auditStatus==='FAIL'}" (click)="openAudit()"></span>
-      <span class="widget-settings-icon clickable pull-right fa fa-trash"
-            (click)="openDeleteConfirm()"></span>
-      <span class="widget-settings-icon clickable pull-right fa fa-cog"
-            (click)="openConfig()"></span>
+      <span *ngIf="this.widgetComponent?.state === widgetState().READY">
+        <span class="widget-settings-icon clickable pull-right fa fa-lightbulb-o" *ngIf="auditStatus"
+              [ngClass]="{'audit-ok': auditStatus==='OK', 'audit-fail': auditStatus==='FAIL'}" (click)="openAudit()"></span>
+        <span class="widget-settings-icon clickable pull-right fa fa-trash"
+              (click)="openDeleteConfirm()"></span>
+        <span class="widget-settings-icon clickable pull-right fa fa-cog"
+              (click)="openConfig()"></span>
+      </span>
     </div>
     <div class="widget-body">
-      <div class="build-view">
-        <!-- widget content -->
+      <div class="widget-body-config clickable" (click)="openConfig()">
+        <div class="fa fa-cog fa-lg"></div>
+        <div>Configure<br/>widget</div>
+      </div>
+      <div class="widget-body-main">
+      <!-- widget content -->
         <ng-template appWidget></ng-template>
       </div>
     </div>

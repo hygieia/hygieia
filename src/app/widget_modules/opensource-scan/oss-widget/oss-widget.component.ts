@@ -24,6 +24,7 @@ import {OSSDetailComponent} from '../oss-detail/oss-detail.component';
 import {TwoByOneLayoutComponent} from '../../../shared/layouts/two-by-one-layout/two-by-one-layout.component';
 import {IOpensourceScan, IThreat} from '../interfaces';
 import {OSSDetailAllComponent} from '../oss-detail-all/oss-detail-all.component';
+import {WidgetState} from '../../../shared/widget-header/widget-state';
 
 @Component({
   selector: 'app-oss-widget',
@@ -58,7 +59,6 @@ export class OSSWidgetComponent extends WidgetComponent implements OnInit, After
   // After the view is ready start the refresh interval.
   ngAfterViewInit() {
     this.startRefreshInterval();
-    this.setDefaultIfNoData();
   }
 
   ngOnDestroy() {
@@ -76,11 +76,19 @@ export class OSSWidgetComponent extends WidgetComponent implements OnInit, After
         if (!widgetConfig) {
           return of([]);
         }
+        this.widgetConfigExists = true;
+        // check if collector item type is tied to dashboard
+        // if true, set state to READY, otherwise keep at default CONFIGURE
+        if (this.dashboardService.checkCollectorItemTypeExist('LibraryPolicy')) {
+          this.state = WidgetState.READY;
+        }
         return this.ossService.fetchDetails(widgetConfig.componentId, this.OSS_MAX_CNT);
       })).subscribe(result => {
         this.hasData = result && result.length > 0;
         if (this.hasData) {
           this.loadCharts(result[0]);
+        } else {
+          this.setDefaultIfNoData();
         }
       });
   }

@@ -41,7 +41,7 @@ export class BuildConfigFormComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-    private formBuilder: FormBuilder,
+    public formBuilder: FormBuilder,
     private collectorService: CollectorService,
     private dashboardService: DashboardService
   ) {
@@ -70,7 +70,7 @@ export class BuildConfigFormComponent implements OnInit {
     this.getDashboardComponent();
   }
 
-  private createForm() {
+  public createForm() {
     this.buildConfigForm = this.formBuilder.group({
       buildDurationThreshold: ['', Validators.required],
       consecutiveFailureThreshold: '',
@@ -78,11 +78,11 @@ export class BuildConfigFormComponent implements OnInit {
     });
   }
 
-  private submitForm() {
+  public submitForm() {
     const newConfig = {
       name: 'build',
       options: {
-        id: this.widgetConfigId,
+        id: this.widgetConfigId ? this.widgetConfigId : 'build0',
         buildDurationThreshold: +this.buildConfigForm.value.buildDurationThreshold,
         consecutiveFailureThreshold: +this.buildConfigForm.value.consecutiveFailureThreshold
       },
@@ -92,7 +92,7 @@ export class BuildConfigFormComponent implements OnInit {
     this.activeModal.close(newConfig);
   }
 
-  private loadSavedBuildJob() {
+  public loadSavedBuildJob() {
     this.dashboardService.dashboardConfig$.pipe(take(1),
       map(dashboard => {
         const buildCollector = dashboard.application.components[0].collectorItems.Build;

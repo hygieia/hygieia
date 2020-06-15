@@ -138,7 +138,7 @@ export class TestConfigFormComponent implements OnInit {
     const newConfig = {
       name: 'codeanalysis',
       options: {
-        id: this.widgetConfigId
+        id: this.widgetConfigId ? this.widgetConfigId : 'codeanalysis0'
       },
       componentId: this.componentId,
       collectorItemIds : []

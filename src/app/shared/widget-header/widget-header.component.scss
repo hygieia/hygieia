@@ -94,7 +94,7 @@
   // when widget hasn't yet been configured
   .widget-body-config {
     background: $dash-widget-section-highlight;
-    border: .5em dashed $dash-state-config-text;
+    border: .2em $dash-state-config-text;
     border-radius: 1em;
     color: $dash-state-config-text;
     display: none;
@@ -107,14 +107,19 @@
     .fa {
       border: 2px solid $dash-state-config-text;
       margin-bottom: .75em;
-      padding: .6em .5em;
+      padding: .45em .4em;
       @include border-radius(50%);
 
       @include transition(border-color 300ms linear);
     }
 
-
     @include transition(#{"all 300ms linear"});
+
+    &:hover {
+      background-color: $dash-state-config-bg-hover;
+      border-color: $dash-state-config-text-hover;
+      color: $dash-state-config-text-hover;
+    }
   }
 
   // changes when not yet configured

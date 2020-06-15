@@ -45,7 +45,7 @@ export class DeployConfigFormComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-    private formBuilder: FormBuilder,
+    public formBuilder: FormBuilder,
     private collectorService: CollectorService,
     private dashboardService: DashboardService
   ) {
@@ -73,7 +73,7 @@ export class DeployConfigFormComponent implements OnInit {
     this.loadSavedDeployJobs();
     this.getDashboardComponent();
   }
-  private createForm() {
+  public createForm() {
     this.deployConfigForm = this.formBuilder.group({
       deployRegex: [''],
       deployJob: [''],
@@ -81,11 +81,11 @@ export class DeployConfigFormComponent implements OnInit {
     });
   }
 
-  private submitForm() {
+  public submitForm() {
     const newConfig = {
       name: 'deploy',
       options: {
-        id: this.widgetConfigId,
+        id: this.widgetConfigId ? this.widgetConfigId : 'deploy0',
         deployRegex: this.deployConfigForm.value.deployRegex,
         deployAggregateServer: this.deployConfigForm.value.deployAggregateServer
       },
@@ -95,7 +95,7 @@ export class DeployConfigFormComponent implements OnInit {
     this.activeModal.close(newConfig);
   }
 
-  private loadSavedDeployJobs() {
+  public loadSavedDeployJobs() {
     this.dashboardService.dashboardConfig$.pipe(take(1),
       map(dashboard => {
         const deployCollector = dashboard.application.components[0].collectorItems.Deployment;

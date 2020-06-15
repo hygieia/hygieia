@@ -2,12 +2,13 @@ import { ChangeDetectorRef, Component, ComponentFactoryResolver, Input, Type } f
 import { ActivatedRoute } from '@angular/router';
 import { extend } from 'lodash';
 import { Observable, ReplaySubject, zip } from 'rxjs';
-import { map, switchMap, take } from 'rxjs/operators';
+import {isEmpty, map, switchMap, take} from 'rxjs/operators';
 
 import { DashboardService } from '../dashboard.service';
 import { IChart } from '../interfaces';
 import { LayoutDirective } from '../layouts/layout.directive';
 import { LayoutComponent } from '../layouts/layout/layout.component';
+import {WidgetState} from '../widget-header/widget-state';
 
 
 @Component({
@@ -25,6 +26,10 @@ export class WidgetComponent {
 
   public charts: IChart[];
   public hasData: boolean;
+  // flag for determining whether or not to display widget header icon options
+  public widgetConfigExists = false;
+  // default config state
+  public state = WidgetState.CONFIGURE;
 
   // Subjects can subscribe and emit. This allows us
   // to subscribe to updates from the upstream dashboard

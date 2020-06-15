@@ -33,7 +33,7 @@ export class RepoConfigFormComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-    private formBuilder: FormBuilder,
+    public formBuilder: FormBuilder,
     private collectorService: CollectorService,
     private dashboardService: DashboardService
   ) {
@@ -44,7 +44,7 @@ export class RepoConfigFormComponent implements OnInit {
     this.getDashboardComponent();
   }
 
-  private createForm() {
+  public createForm() {
     this.repoConfigForm = this.formBuilder.group({
       scm: '',
       url: '',
@@ -55,12 +55,12 @@ export class RepoConfigFormComponent implements OnInit {
     });
   }
 
-  private submitForm() {
+  public submitForm() {
     const newConfig = {
       name: 'repo',
       componentId: this.componentId,
       options: {
-        id: this.widgetConfigId,
+        id: this.widgetConfigId ? this.widgetConfigId : 'repo0',
         scm: {
           name: this.repoConfigForm.value.scm,
           value: this.repoConfigForm.value.scm,
