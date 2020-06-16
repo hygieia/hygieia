@@ -46,6 +46,10 @@
     .widget-settings-icon.fa-lightbulb-o.audit-fail {
       color: $dash-widget-fail;
     }
+    .widget-settings-icon.last-updated {
+      font-size: 0.6em;
+      color: $dash-dashboard-text-light;
+    }
     .widget-settings-icon.fa-lightbulb-o:hover {
       color: $dash-dashboard-text-hover;
     }

@@ -62,8 +62,9 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
     this.dashboardService.clearDashboard();
     this.dashboardId = this.route.snapshot.paramMap.get('id');
     this.dashboardService.loadDashboard(this.dashboardId);
-    this.dashboardService.loadDashboardTitle(this.dashboardId).subscribe((response: any) => {
-      this.dashboardTitle = response.title + ' ' + response.type;
+    this.dashboardService.dashboardConfig$.subscribe(dashboard => {
+      this.dashboardTitle = [dashboard.title, dashboard.configurationItemBusAppName, dashboard.configurationItemBusServName]
+        .filter(Boolean).join(' - ');
     });
 
     this.baseTemplate = CaponeTemplateComponent;

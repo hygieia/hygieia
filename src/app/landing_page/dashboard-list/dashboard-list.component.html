@@ -4,7 +4,7 @@
     <div class="row">
       <div class="col-sm-8 offset-sm-2">
         <div class="widget-modal-heading">
-          Select Your Dashboard
+          Select your Dashboard
         </div>
         <div class="btn-group dashboard-type-list">
           <button type="button" class="btn btn-secondary" [ngClass]="{'active': dashboardType===''}"
@@ -27,8 +27,9 @@
                   <tr *ngFor="let dashboard of myDashboards" class="table-row table"
                     routerLink="/dashboard/dashboardview/{{dashboard.id}}">
                     <td>
-                      <span class="fa fa-lg left-icon" [ngClass]="{'fa-cubes' : dashboard.type === 'Product'}"></span>
-                      {{ dashboard.title }} {{ dashboard.type }}
+                      <span class="fa fa-lg left-icon"
+                            [ngClass]="{'fa-cubes' : dashboard.type === 'Product','fa-slideshare': dashboard.type === 'Team'}"></span>
+                      {{dashboardName(dashboard)}}
                     </td>
                   </tr>
                 </table>
@@ -46,8 +47,9 @@
                   <tr *ngFor="let dashboard of allDashboards" class="table-row"
                     routerLink="/dashboard/dashboardview/{{dashboard.id}}">
                     <td>
-                      <span class="fa fa-lg left-icon" [ngClass]="{'fa-cubes' : dashboard.type === 'Product'}"></span>
-                      {{ dashboard.title }}{{dashboard.id}}
+                      <span class="fa fa-lg left-icon"
+                            [ngClass]="{'fa-cubes' : dashboard.type === 'Product','fa-slideshare': dashboard.type === 'Team'}"></span>
+                      {{dashboardName(dashboard)}}
                     </td>
                   </tr>
                 </table>
@@ -63,7 +65,10 @@
                 <h3>Reports</h3>
                 <table class="table table-hover orders-table">
                   <tr class="table-row">
-                    <td><a (click)="goToAuditReport()">Application Audit Metrics Report</a></td>
+                    <td>
+                      <span class="fa fa-bar-chart-o fa-lg left-icon" style="margin-right: 2px"></span>
+                      <a (click)="goToAuditReport()">Application Audit Metrics Report</a>
+                    </td>
                   </tr>
                 </table>
               </div>

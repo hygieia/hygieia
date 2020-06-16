@@ -26,6 +26,9 @@
 }
 .table-row{
   cursor:pointer;
+  :hover {
+    background-color: #e6e6e6;
+  }
 }
 table td{
   padding: .5rem;

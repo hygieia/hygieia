@@ -1,6 +1,8 @@
 import {Type} from '@angular/compiler/src/core';
 
 export interface IDashboards {
+  id: string;
+  type: string;
   title: string;
   configurationItemBusServName: string;
   configurationItemBusAppName: string;

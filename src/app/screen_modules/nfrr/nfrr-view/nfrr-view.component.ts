@@ -47,16 +47,17 @@ export class NfrrViewComponent implements OnInit, OnDestroy {
   lastAudited: Date;
   isLoading = true;
   isEmpty = false;
+  auditAll: IAudit[] = [];
 
   dataLabelFormatting(value: any) {
     return value;
   }
 
   constructor(private nfrrService: NfrrService, private route: ActivatedRoute) {
+    route.params.subscribe(value => this.getAuditMetricsAll());
   }
 
   ngOnInit() {
-    this.route.params.subscribe(value => this.getAuditMetricsAll());
   }
 
   onOptionsSelected($event) {
@@ -67,21 +68,27 @@ export class NfrrViewComponent implements OnInit, OnDestroy {
   }
 
   getAuditMetricsAll() {
+    if (this.auditAll.length > 0) {
+      this.transformToChartData(this.auditAll);
+      return;
+    }
     this.nfrrService.getAuditMetricsAll().pipe(takeUntil(this.destroyed$)).subscribe(result => {
       this.lastAudited = new Date(result[0].timestamp);
+      const lobs = new Set<string>();
       result.forEach(r => {
         if (r.lineOfBusiness && r.lineOfBusiness.trim() !== '' && r.lineOfBusiness !== 'All') {
-          this.lobs.add(r.lineOfBusiness);
+          lobs.add(r.lineOfBusiness);
         }
       });
+      this.lobs = lobs;
+      this.auditAll = result;
       this.transformToChartData(result as IAudit[]);
     });
   }
 
   getAuditMetricsByLob(lob: string) {
-    this.nfrrService.getAuditMetricsByLob(lob).pipe(takeUntil(this.destroyed$)).subscribe(result => {
-      this.transformToChartData(result as IAudit[]);
-    });
+    const audits = this.auditAll.filter(audit => audit.lineOfBusiness === lob);
+    this.transformToChartData(audits);
   }
 
   onSelect(event) {
