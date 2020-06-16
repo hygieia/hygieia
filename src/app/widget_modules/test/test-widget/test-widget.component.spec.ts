@@ -14,12 +14,28 @@ import { DashboardService } from 'src/app/shared/dashboard.service';
 
 class MockTestService {
   mockTestData = {
-    results: [
+    result: [
+      {
+        collectorItemId: 'testCollItemId',
+        timestamp: 1234,
+        type: TestType.Performance,
+        description: 'Success',
+        result: 'Success',
+        executionId: '1111',
+        duration: 100,
+        totalCount: 1,
+        successCount: 1,
+        failureCount: 0,
+        startTime: 1547880494000,
+        endTime: 1547880495000,
+        url: 'testUrl',
+        testCapabilities: [],
+      }
     ]
   };
 
   fetchTestResults(): Observable<ITest[]> {
-    return of(this.mockTestData.results);
+    return of(this.mockTestData.result);
   }
 }
 
@@ -39,6 +55,48 @@ describe('TestWidgetComponent', () => {
   let dashboardService: DashboardService;
   let testResultData: ITest[];
   let testCollectorItem: any;
+
+  const mockTest: ITest = {
+    collectorItemId: 'testCollItemId',
+    timestamp: 1234,
+    type: TestType.Performance,
+    description: 'Success',
+    result: 'Success',
+    executionId: '1111',
+    duration: 100,
+    totalCount: 1,
+    successCount: 1,
+    failureCount: 0,
+    startTime: 1547880494000,
+    endTime: 1547880495000,
+    url: 'testUrl',
+    testCapabilities: [],
+  };
+
+  const mockDashboard = {
+    title: 'dashboard1',
+    application: {
+      components: [{
+        collectorItems: {
+          Test: [{
+            id : 'id123',
+            description : 'Testtool : 123',
+            niceName : 'Testtool',
+            enabled : true,
+            errors : [],
+            pushed : true,
+            collectorId : '1234',
+            lastUpdated : 1586901809977,
+            options : {
+              jobName : 'testpipeline1234',
+              instanceUrl : 'url',
+              testType : TestType.Functional,
+            }
+          }]
+        }
+      }]
+    }
+  };
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -71,7 +129,7 @@ describe('TestWidgetComponent', () => {
     }] as ITest[];
 
     testCollectorItem = {
-      _id : 'id1234',
+      id : 'id123',
       description : 'Testtool : 123',
       niceName : 'Testtool',
       enabled : true,
@@ -125,6 +183,7 @@ describe('TestWidgetComponent', () => {
   });
 
   it('should generate chart', () => {
+    dashboardService.dashboardConfig$ = of(mockDashboard);
     component.generateTestChart(testResultData);
     expect(component.charts[0]).toBeTruthy();
   });
@@ -133,6 +192,10 @@ describe('TestWidgetComponent', () => {
     const clickItem = component.generateTestClickListChartItem(testResultData, 'title');
     expect(clickItem.title).toBe('title');
     expect(clickItem.subtitles[0]).toBe('100%');
+
+    const clickItemNoData = component.generateTestClickListChartItem([], 'title');
+    expect(clickItemNoData.title).toBe(component.formatTitle('title', 100));
+    expect(clickItemNoData.subtitles[0]).toBe('No data found.');
   });
 
   it('should format title correctly', () => {
@@ -148,6 +211,28 @@ describe('TestWidgetComponent', () => {
     component.hasData = false;
     component.setDefaultIfNoData();
     expect(component.charts[0].data.items[0].title).toEqual('No Data Found');
+  });
+
+  it('should hit startRefreshInterval', () => {
+    const mockConfig = {
+      name: 'codeanalysis',
+      options: {
+        id: 'codeanalysis0',
+      },
+      componentId: '1234',
+      collectorItemId: '5678'
+    };
+
+    spyOn(component, 'getCurrentWidgetConfig').and.returnValues(of(mockConfig), of(mockConfig), of(null));
+    spyOn(testService, 'fetchTestResults').and.returnValues(of([mockTest]), of([]));
+    spyOn(dashboardService, 'checkCollectorItemTypeExist').and.returnValues(true, false);
+    component.startRefreshInterval();
+    component.startRefreshInterval();
+    component.startRefreshInterval();
+  });
+
+  it('should loadCharts', () => {
+    component.loadCharts([mockTest]);
   });
 
 });

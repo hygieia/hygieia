@@ -13,19 +13,73 @@ import { IFeature } from '../interfaces';
 import { FeatureWidgetComponent } from './feature-widget.component';
 
 class MockFeatureService {
-  mockFeatureData = {
-    result: [
+  mockFeatureDataEstimates = {
+    result:
       {
         id: 'id',
         openEstimate: 1,
         inProgressEstimate: 2,
         completeEstimate: 3,
-      },
-    ],
+      }
   };
 
-  fetchDetails(): Observable<IFeature[]> {
-    return of(this.mockFeatureData.result);
+  mockFeatureDataIterations = {
+    result: [
+      {
+        sName: 'name',
+        changeDate: 'date',
+        sUrl: 'url',
+        sNumber: 'num',
+        sEstimateTime: 'time',
+        sStatus: 'Backlog',
+      },
+      {
+        sStatus: 'In Progress',
+        changeDate: 'date',
+        sName: 'name',
+        sUrl: 'url',
+        sNumber: 'num',
+        sEstimateTime: 'time',
+      },
+      {
+        sStatus: 'Done',
+        changeDate: 'date',
+        sName: 'name',
+        sUrl: 'url',
+        sNumber: 'num',
+        sEstimateTime: 'time',
+      }
+    ]
+  };
+
+  mockFeatureDataWip = {
+    result: [
+      {
+        sEpicName: 'name',
+        sEpicUrl: 'url',
+        sEpicNumber: 'num',
+        sEstimate: 'time',
+      },
+      {
+        sEpicName: 'name',
+        sEpicUrl: 'url',
+        sEpicNumber: 'num',
+        sEstimate: 'time',
+      }
+    ]
+  };
+
+  fetchAggregateSprintEstimates(): Observable<IFeature> {
+    return of(this.mockFeatureDataEstimates.result);
+  }
+
+  fetchFeatureWip(): Observable<{ sEpicName: string; sEpicUrl: string; sEpicNumber: string; sEstimate: string}[]> {
+    return of(this.mockFeatureDataWip.result);
+  }
+
+  fetchIterations(): Observable<{
+    sName: string; changeDate: string; sUrl: string; sNumber: string; sEstimateTime: string; sStatus: string}[]> {
+    return of(this.mockFeatureDataIterations.result);
   }
 }
 
@@ -43,12 +97,88 @@ describe('FeatureWidgetComponent', () => {
   let modalService: NgbModal;
   let fixture: ComponentFixture<FeatureWidgetComponent>;
 
-  const IFeatureTest = {
+  const mockConfigEpics = {
+    name: 'feature',
+    options: {
+      id: 'feature0',
+      featureTool: 'feature',
+      teamName: 'team',
+      teamId: '1111',
+      projectName: 'someProject',
+      projectId: '2222',
+      estimateMetricType: 'metric',
+      sprintType: 'sprint',
+      listType: 'epics',
+    },
+    componentId: '1234',
+    collectorItemId: '5678'
+  };
+
+  const mockConfigIssues = {
+    name: 'feature',
+    options: {
+      id: 'feature0',
+      featureTool: 'feature',
+      teamName: 'team',
+      teamId: '1111',
+      projectName: 'someProject',
+      projectId: '2222',
+      estimateMetricType: 'metric',
+      sprintType: 'sprint',
+      listType: 'issues',
+    },
+    componentId: '1234',
+    collectorItemId: '5678'
+  };
+
+  const estimates = {
     id: '123',
     openEstimate: 1,
     inProgressEstimate: 2,
     completeEstimate: 3
   } as IFeature;
+
+  const iterations = [
+    {
+      sName: 'name',
+      changeDate: 'date',
+      sUrl: 'url',
+      sNumber: 'num',
+      sEstimateTime: 'time',
+      sStatus: 'Backlog',
+    },
+    {
+      sStatus: 'In Progress',
+      changeDate: 'date',
+      sName: 'name',
+      sUrl: 'url',
+      sNumber: 'num',
+      sEstimateTime: 'time',
+    },
+    {
+      sStatus: 'Done',
+      changeDate: 'date',
+      sName: 'name',
+      sUrl: 'url',
+      sNumber: 'num',
+      sEstimateTime: 'time',
+    }
+  ];
+
+  const wip = [
+    {
+      sEpicName: 'name',
+      sEpicUrl: 'url',
+      sEpicNumber: 'num',
+      sEstimate: 'time',
+    },
+    {
+      sEpicName: 'name',
+      sEpicUrl: 'url',
+      sEpicNumber: 'num',
+      sEstimate: 'time',
+    }
+  ];
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -83,8 +213,32 @@ describe('FeatureWidgetComponent', () => {
     fixture.detectChanges();
   });
 
+  it('should call ngOnInit', () => {
+    component.ngOnInit();
+  });
+
+  it('should call ngAfterViewInit', () => {
+    component.ngAfterViewInit();
+  });
+
+  it('should call startRefreshInterval', () => {
+    spyOn(component, 'getCurrentWidgetConfig').and.returnValues(of(mockConfigEpics), of(mockConfigIssues), of(mockConfigIssues), of(null));
+    spyOn(featureService, 'fetchFeatureWip').and.returnValues(of(wip), of(wip), of([]));
+    spyOn(featureService, 'fetchAggregateSprintEstimates').and.returnValues(of(estimates), of(estimates), of([]));
+    spyOn(featureService, 'fetchIterations').and.returnValues(of(iterations), of(iterations), of([]));
+
+    component.startRefreshInterval();
+    component.startRefreshInterval();
+    component.startRefreshInterval();
+    component.startRefreshInterval();
+  });
+
+  it('should hit stopRefreshInterval', () => {
+    component.stopRefreshInterval();
+  });
+
   it('should generateIterationSummary', () => {
-    component.generateIterationSummary(IFeatureTest);
+    component.generateIterationSummary(estimates);
     component.generateIterationSummary(null);
   });
 
@@ -95,32 +249,6 @@ describe('FeatureWidgetComponent', () => {
       projectName: 'projectName',
       teamName: 'teamName'
     };
-
-    const iterations = [
-      {
-        sName: 'name',
-        changeDate: 'date',
-        sUrl: 'url',
-        sNumber: 'num',
-        sEstimateTime: 'time',
-        sStatus: 'Backlog',
-      },
-      {
-        sStatus: 'In Progress',
-        changeDate: 'date',
-        sName: 'name',
-        sUrl: 'url',
-        sNumber: 'num',
-        sEstimateTime: 'time',
-      },
-      {
-        sStatus: 'Done',
-        changeDate: 'date',
-        sName: 'name',
-        sUrl: 'url',
-        sNumber: 'num',
-        sEstimateTime: 'time',
-      }];
 
     component.generateFeatureSummary(iterations, params);
     component.generateFeatureSummary(null, params);
@@ -133,20 +261,6 @@ describe('FeatureWidgetComponent', () => {
       projectName: 'projectName',
       teamName: 'teamName'
     };
-
-    const wip = [
-      {
-        sEpicName: 'name',
-        sEpicUrl: 'url',
-        sEpicNumber: 'num',
-        sEstimate: 'time',
-      },
-      {
-        sEpicName: 'name',
-        sEpicUrl: 'url',
-        sEpicNumber: 'num',
-        sEstimate: 'time',
-      }];
 
     component.generateFeatureSummary(wip, params);
     component.generateFeatureSummary(null, params);

@@ -166,6 +166,19 @@ describe('OSSWidgetComponent', () => {
   });
 
   it('should hit startRefreshInterval', () => {
+    const mockConfig = {
+      name: 'codeanalysis',
+      options: {
+        id: 'codeanalysis0',
+      },
+      componentId: '1234',
+      collectorItemId: '5678'
+    };
+
+    spyOn(component, 'getCurrentWidgetConfig').and.returnValues(of(mockConfig), of(null));
+    spyOn(ossService, 'fetchDetails').and.returnValues(of([ossTestData]), of([]));
+    spyOn(dashboardService, 'checkCollectorItemTypeExist').and.returnValues(true, false);
+    component.startRefreshInterval();
     component.startRefreshInterval();
   });
 

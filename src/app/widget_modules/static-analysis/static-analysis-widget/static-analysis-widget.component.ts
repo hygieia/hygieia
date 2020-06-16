@@ -24,6 +24,7 @@ import {STATICANALYSIS_CHARTS} from './static-analysis-charts';
 import {IStaticAnalysis} from '../interfaces';
 import {StaticAnalysisDetailComponent} from '../static-analysis-detail/static-analysis-detail.component';
 import {isUndefined} from 'util';
+import {WidgetState} from '../../../shared/widget-header/widget-state';
 
 @Component({
   selector: 'app-static-analysis-widget',
@@ -88,7 +89,6 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
   // After the view is ready start the refresh interval.
   ngAfterViewInit() {
     this.startRefreshInterval();
-    this.setDefaultIfNoData();
   }
 
   ngOnDestroy() {
@@ -106,14 +106,20 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
         if (!widgetConfig) {
           return of([]);
         }
+        this.widgetConfigExists = true;
+        // check if collector item type is tied to dashboard
+        // if true, set state to READY, otherwise keep at default CONFIGURE
+        if (this.dashboardService.checkCollectorItemTypeExist('CodeQuality')) {
+          this.state = WidgetState.READY;
+        }
         return this.staticAnalysisService.fetchStaticAnalysis(widgetConfig.componentId, 1);
       })).subscribe(result => {
         this.hasData = result && result.length > 0;
         if (this.hasData) {
-          this.loadCharts(result[0], true);
+          this.loadCharts(result[0]);
         } else {
           // code quality collector item could not be found
-          this.loadCharts(null, false);
+          this.setDefaultIfNoData();
         }
       });
   }
@@ -125,23 +131,17 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
     }
   }
 
-  loadCharts(result: IStaticAnalysis, found: boolean) {
-    this.generateProjectDetails(result, found);
-    this.generateViolations(result, found);
-    this.generateCoverage(result, found);
-    this.generateUnitTestMetrics(result, found);
+  loadCharts(result: IStaticAnalysis) {
+    this.generateProjectDetails(result);
+    this.generateViolations(result);
+    this.generateCoverage(result);
+    this.generateUnitTestMetrics(result);
     super.loadComponent(this.childLayoutTag);
   }
 
   // *********************** DETAILS/QUALITY *********************
 
-  generateProjectDetails(result: IStaticAnalysis, found: boolean) {
-
-    // collector item was not found, reset widget
-    if (!found) {
-      this.charts[0].data = [];
-      return;
-    }
+  generateProjectDetails(result: IStaticAnalysis) {
 
     const qualityGate = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.alertStatus);
     const techDebt = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.techDebt);
@@ -187,14 +187,7 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
 
   // *********************** COVERAGE (CODE) ****************************
 
-  generateCoverage(result: IStaticAnalysis, found: boolean) {
-
-    // collector item was not found, reset widget
-    if (!found) {
-      this.charts[1].data.results[0].value = 0;
-      this.charts[1].data.customLabelValue = 0;
-      return;
-    }
+  generateCoverage(result: IStaticAnalysis) {
 
     const coverage = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.codeCoverage);
     const loc = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.numCodeLines);
@@ -205,16 +198,7 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
 
   // *********************** VIOLATIONS *****************************
 
-  generateViolations(result: IStaticAnalysis, found: boolean) {
-
-    // collector item was not found, reset widget
-    if (!found) {
-      this.charts[2].data[0].value = 0;
-      this.charts[2].data[1].value = 0;
-      this.charts[2].data[2].value = 0;
-      this.charts[2].data[3].value = 0;
-      return;
-    }
+  generateViolations(result: IStaticAnalysis) {
 
     const blocker = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.blockerViolations);
     const critical = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.criticalViolations);
@@ -230,13 +214,7 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
 
   // *********************** UNIT TEST METRICS ****************************
 
-  generateUnitTestMetrics(result: IStaticAnalysis, found: boolean) {
-
-    // collector item was not found, reset widget
-    if (!found) {
-      this.charts[3].data = [];
-      return;
-    }
+  generateUnitTestMetrics(result: IStaticAnalysis) {
 
     const testSuccesses = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.testSuccesses);
     const testFailures = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.testFailures);
@@ -283,7 +261,10 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
       this.charts[0].data = { items: [{ title: 'No Data Found' }]};
       this.charts[1].data.results[0].value = 0;
       this.charts[1].data.customLabelValue = 0;
+      this.charts[2].data[0].value = 0;
       this.charts[2].data[1].value = 0;
+      this.charts[2].data[2].value = 0;
+      this.charts[2].data[3].value = 0;
       this.charts[3].data = { items: [{ title: 'No Data Found' }]};
     }
     super.loadComponent(this.childLayoutTag);

@@ -31,9 +31,18 @@ class MockRepoService {
     ]
   };
 
-  fetchDetails(): Observable<IRepo[]> {
+  fetchCommits(): Observable<IRepo[]> {
     return of(this.mockRepoData.result);
   }
+
+  fetchPullRequests(): Observable<IRepo[]> {
+    return of(this.mockRepoData.result);
+  }
+
+  fetchIssues(): Observable<IRepo[]> {
+    return of(this.mockRepoData.result);
+  }
+
 }
 
 @NgModule({
@@ -49,6 +58,22 @@ describe('RepoWidgetComponent', () => {
   let dashboardService: DashboardService;
   let modalService: NgbModal;
   let fixture: ComponentFixture<RepoWidgetComponent>;
+
+  const mockConfig = {
+    name: 'repo',
+    componentId: '1234',
+    options: {
+      options: {
+        id: 'testId',
+        scm: 'testScm',
+        url: 'testUrl',
+        branch: 'testBranch',
+        userID: 'testUser',
+        password: 'testPass',
+        personalAccessToken: 'testPersonalAccess',
+      }
+    },
+  };
 
   const IRepo1 = {
     id: 'testId',
@@ -146,5 +171,67 @@ describe('RepoWidgetComponent', () => {
     expect(dashboardService).toBeTruthy();
     expect(modalService).toBeTruthy();
     expect(fixture).toBeTruthy();
+  });
+
+  it('should call ngOnInit', () => {
+    component.ngOnInit();
+  });
+
+  it('should call ngAfterViewInit', () => {
+    component.ngAfterViewInit();
+  });
+
+  it('should call startRefreshInterval', () => {
+    spyOn(component, 'getCurrentWidgetConfig').and.returnValues(
+      of(mockConfig),
+      of(mockConfig),
+      of(mockConfig),
+      of(mockConfig),
+      of(null));
+    spyOn(repoService, 'fetchCommits').and.returnValues(
+      of([IRepo1]),
+      of([IRepo1]),
+      of([]),
+      of([]),
+    );
+    spyOn(repoService, 'fetchPullRequests').and.returnValues(
+      of([IRepo2]),
+      of([]),
+      of([IRepo2]),
+      of([]),
+    );
+    spyOn(repoService, 'fetchIssues').and.returnValues(
+      of([IRepo3]),
+      of([]),
+      of([]),
+      of([IRepo3]),
+    );
+
+    component.startRefreshInterval();
+    component.startRefreshInterval();
+    component.startRefreshInterval();
+    component.startRefreshInterval();
+    component.startRefreshInterval();
+  });
+
+  it('should hit stopRefreshInterval', () => {
+    component.stopRefreshInterval();
+  });
+
+  it('should assign default if no data', () => {
+    component.hasData = false;
+    component.setDefaultIfNoData();
+    expect(component.charts[0].data.dataPoints[0].series).toEqual([]);
+    expect(component.charts[0].data.dataPoints[1].series).toEqual([]);
+    expect(component.charts[0].data.dataPoints[2].series).toEqual([]);
+    expect(component.charts[1].data).toEqual([]);
+    expect(component.charts[2].data).toEqual([]);
+    expect(component.charts[3].data).toEqual([]);
+    expect(component.charts[4].data).toEqual([]);
+    expect(component.charts[5].data).toEqual([]);
+    expect(component.charts[6].data).toEqual([]);
+    expect(component.charts[7].data).toEqual([]);
+    expect(component.charts[8].data).toEqual([]);
+    expect(component.charts[9].data).toEqual([]);
   });
 });

@@ -1,21 +1,18 @@
-import {Component, OnInit, ChangeDetectorRef, ViewChild} from '@angular/core';
-import {
-  IClickListData,
-  IClickListItemDeploy
-} from 'src/app/shared/charts/click-list/click-list-interfaces';
-import { DeployService } from 'src/app/widget_modules/deploy/deploy.service';
-import { of, Subscription } from 'rxjs';
-import { DEPLOY_CHARTS } from 'src/app/widget_modules/deploy/deploy-widget/deploy-charts';
-import { IDeploy } from 'src/app/widget_modules/deploy/interfaces';
-import { DashStatus } from 'src/app/shared/dash-status/DashStatus';
-import { DashboardService } from 'src/app/shared/dashboard.service';
-import { DeployDetailComponent } from 'src/app/widget_modules/deploy/deploy-detail/deploy-detail.component';
-import { WidgetComponent } from 'src/app/shared/widget/widget.component';
-import { ActivatedRoute } from '@angular/router';
-import { ComponentFactoryResolver } from '@angular/core';
-import { startWith, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import { LayoutDirective } from 'src/app/shared/layouts/layout.directive';
-import { OneChartLayoutComponent } from 'src/app/shared/layouts/one-chart-layout/one-chart-layout.component';
+import {ChangeDetectorRef, Component, ComponentFactoryResolver, OnInit, ViewChild} from '@angular/core';
+import {IClickListData, IClickListItemDeploy} from 'src/app/shared/charts/click-list/click-list-interfaces';
+import {DeployService} from 'src/app/widget_modules/deploy/deploy.service';
+import {of, Subscription} from 'rxjs';
+import {DEPLOY_CHARTS} from 'src/app/widget_modules/deploy/deploy-widget/deploy-charts';
+import {IDeploy} from 'src/app/widget_modules/deploy/interfaces';
+import {DashStatus} from 'src/app/shared/dash-status/DashStatus';
+import {DashboardService} from 'src/app/shared/dashboard.service';
+import {DeployDetailComponent} from 'src/app/widget_modules/deploy/deploy-detail/deploy-detail.component';
+import {WidgetComponent} from 'src/app/shared/widget/widget.component';
+import {ActivatedRoute} from '@angular/router';
+import {distinctUntilChanged, startWith, switchMap} from 'rxjs/operators';
+import {LayoutDirective} from 'src/app/shared/layouts/layout.directive';
+import {OneChartLayoutComponent} from 'src/app/shared/layouts/one-chart-layout/one-chart-layout.component';
+import {WidgetState} from '../../../shared/widget-header/widget-state';
 
 @Component({
   selector: 'app-deploy-widget',
@@ -56,7 +53,6 @@ export class DeployWidgetComponent extends WidgetComponent implements OnInit {
   // tslint:disable-next-line:use-lifecycle-interface
   ngAfterViewInit() {
     this.startRefreshInterval();
-    this.setDefaultIfNoData();
   }
 
   startRefreshInterval() {
@@ -68,12 +64,16 @@ export class DeployWidgetComponent extends WidgetComponent implements OnInit {
         if (!widgetConfig) {
           return of([]);
         }
+        this.widgetConfigExists = true;
+        this.state = WidgetState.READY;
         this.TimeThreshold = 1000 * 60 * widgetConfig.options.deployDurationThreshold;
         return this.deployService.fetchDetails(widgetConfig.componentId);
       })).subscribe(result => {
         this.hasData = (result && result.length > 0);
         if (this.hasData) {
           this.loadCharts(result);
+        } else {
+          this.setDefaultIfNoData();
         }
     });
   }
@@ -90,10 +90,6 @@ export class DeployWidgetComponent extends WidgetComponent implements OnInit {
   }
 
   generateLatestDeployData(result: IDeploy[]) {
-    if (!result) {
-      return;
-    }
-
     const sorted = result.sort((a: IDeploy, b: IDeploy): number => {
       return a.units[0].lastUpdated - b.units[0].lastUpdated;
     }).reverse().slice(0, 10);
@@ -137,4 +133,5 @@ export class DeployWidgetComponent extends WidgetComponent implements OnInit {
     }
     super.loadComponent(this.childLayoutTag);
   }
+
 }
