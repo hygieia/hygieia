@@ -7,21 +7,22 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {forkJoin, of, Subscription} from 'rxjs';
-import {catchError, distinctUntilChanged, startWith, switchMap } from 'rxjs/operators';
-import { DashboardService } from 'src/app/shared/dashboard.service';
-import { LayoutDirective } from 'src/app/shared/layouts/layout.directive';
-import { WidgetComponent } from 'src/app/shared/widget/widget.component';
-import { RepoService } from '../repo.service';
-import { REPO_CHARTS} from './repo-charts';
-import { IRepo } from '../interfaces';
+import {catchError, distinctUntilChanged, startWith, switchMap} from 'rxjs/operators';
+import {DashboardService} from 'src/app/shared/dashboard.service';
+import {LayoutDirective} from 'src/app/shared/layouts/layout.directive';
+import {WidgetComponent} from 'src/app/shared/widget/widget.component';
+import {RepoService} from '../repo.service';
+import {REPO_CHARTS} from './repo-charts';
+import {IRepo} from '../interfaces';
 import {CollectorService} from '../../../shared/collector.service';
 // @ts-ignore
 import moment from 'moment';
 import * as _ from 'lodash';
 // tslint:disable-next-line:max-line-length
 import {OneByTwoLayoutTableChartComponent} from '../../../shared/layouts/one-by-two-layout-table-chart/one-by-two-layout-table-chart.component';
+import {WidgetState} from '../../../shared/widget-header/widget-state';
 
 @Component({
   selector: 'app-repo-widget',
@@ -34,6 +35,7 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
   // Reference to the subscription used to refresh the widget
   private intervalRefreshSubscription: Subscription;
   private params;
+
   @ViewChild(LayoutDirective, {static: false}) childLayoutTag: LayoutDirective;
 
   constructor(componentFactoryResolver: ComponentFactoryResolver,
@@ -73,6 +75,8 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
         if (!widgetConfig) {
           return of([]);
         }
+        this.widgetConfigExists = true;
+        this.state = WidgetState.READY;
         this.params = {
           componentId: widgetConfig.componentId,
           numberOfDays: 14
@@ -82,10 +86,19 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
           this.repoService.fetchPullRequests(this.params.componentId, this.params.numberOfDays).pipe(catchError(err => of(err))),
           this.repoService.fetchIssues(this.params.componentId, this.params.numberOfDays).pipe(catchError(err => of(err))));
       })).subscribe(([commits, pulls, issues]) => {
-      this.generateRepoPerDay(commits, pulls, issues);
-      this.generateTotalRepoCounts(commits, pulls, issues);
-      super.loadComponent(this.childLayoutTag);
+        this.hasData = (commits && commits.length > 0 && pulls && pulls.length > 0 && issues && issues.length > 0);
+        if (this.hasData) {
+          this.loadCharts(commits, pulls, issues);
+        } else {
+          this.setDefaultIfNoData();
+        }
     });
+  }
+
+  loadCharts(commits: IRepo[], pulls: IRepo[], issues: IRepo[]) {
+    this.generateRepoPerDay(commits, pulls, issues);
+    this.generateTotalRepoCounts(commits, pulls, issues);
+    super.loadComponent(this.childLayoutTag);
   }
 
   // Unsubscribe from the widget refresh observable, which stops widget updating.
@@ -267,6 +280,24 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
 
   private checkRepoAfterDate(repoTime: string, date: Date): boolean {
     return new Date(repoTime) >= date;
+  }
+
+  setDefaultIfNoData() {
+    if (!this.hasData) {
+      this.charts[0].data.dataPoints[0].series = [];
+      this.charts[0].data.dataPoints[1].series = [];
+      this.charts[0].data.dataPoints[2].series = [];
+      this.charts[1].data = [];
+      this.charts[2].data = [];
+      this.charts[3].data = [];
+      this.charts[4].data = [];
+      this.charts[5].data = [];
+      this.charts[6].data = [];
+      this.charts[7].data = [];
+      this.charts[8].data = [];
+      this.charts[9].data = [];
+    }
+    super.loadComponent(this.childLayoutTag);
   }
 }
 

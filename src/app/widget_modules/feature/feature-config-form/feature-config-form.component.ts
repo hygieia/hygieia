@@ -15,8 +15,8 @@ export class FeatureConfigFormComponent implements OnInit {
 
   private widgetConfigId: string;
   private componentId: string;
-  private teamId: string;
-  private projectId: string;
+  public teamId: string;
+  public projectId: string;
 
   featureConfigForm: FormGroup;
   searching = false;
@@ -54,7 +54,7 @@ export class FeatureConfigFormComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-    private formBuilder: FormBuilder,
+    public formBuilder: FormBuilder,
     private collectorService: CollectorService,
     private dashboardService: DashboardService
   ) {
@@ -98,7 +98,7 @@ export class FeatureConfigFormComponent implements OnInit {
     this.getDashboardComponent();
   }
 
-  private createForm() {
+  public createForm() {
     this.featureConfigForm = this.formBuilder.group({
       featureTool: '',
       projectName: '',
@@ -109,11 +109,11 @@ export class FeatureConfigFormComponent implements OnInit {
     });
   }
 
-  private submitForm() {
+  public submitForm() {
     const newConfig = {
       name: 'feature',
       options: {
-        id: this.widgetConfigId,
+        id: this.widgetConfigId ? this.widgetConfigId : 'feature0',
         featureTool: this.featureConfigForm.value.featureTool,
         teamName: this.featureConfigForm.value.teamName.options.teamName,
         teamId: this.teamId,
@@ -129,7 +129,7 @@ export class FeatureConfigFormComponent implements OnInit {
     this.activeModal.close(newConfig);
   }
 
-  private loadSavedFeatures() {
+  public loadSavedFeatures() {
     this.dashboardService.dashboardConfig$.pipe(take(1),
       map(dashboard => {
         const featureCollector = dashboard.application.components[0].collectorItems.AgileTool;

@@ -25,6 +25,7 @@ import { Subscription, of } from 'rxjs';
 import { ITest, TestType } from '../interfaces';
 import { IClickListItemTest, IClickListData } from 'src/app/shared/charts/click-list/click-list-interfaces';
 import { TestDetailComponent } from '../test-detail/test-detail.component';
+import {WidgetState} from '../../../shared/widget-header/widget-state';
 
 @Component({
   selector: 'app-test-widget',
@@ -58,7 +59,6 @@ export class TestWidgetComponent extends WidgetComponent implements OnInit, Afte
 
   ngAfterViewInit() {
     this.startRefreshInterval();
-    this.setDefaultIfNoData();
   }
 
   ngOnDestroy() {
@@ -73,15 +73,35 @@ export class TestWidgetComponent extends WidgetComponent implements OnInit, Afte
       switchMap( _ => this.getCurrentWidgetConfig()),
       switchMap( widgetConfig => {
         if (!widgetConfig) {
+          this.widgetConfigExists = false;
           return of([]);
+        }
+        this.widgetConfigExists = true;
+        // check if collector item type is tied to dashboard
+        // if true, set state to READY, otherwise keep at default CONFIGURE
+        if (this.dashboardService.checkCollectorItemTypeExist('Test')) {
+          this.state = WidgetState.READY;
         }
         const currentTime: number = new Date().getTime();
         const tests$ = this.testService.fetchTestResults(widgetConfig.componentId, currentTime - this.TEST_TIME_RANGE,
           currentTime, 4, [TestType.Functional, TestType.Performance]);
         return tests$;
       })).subscribe( tests => {
+        if (this.hasData) {
           this.loadCharts(tests);
+        } else {
+          this.setDefaultIfNoData();
+        }
       });
+
+    // for quality widget, subscribe to updates from other quality components
+    this.dashboardService.dashboardQualityConfig$.subscribe(result => {
+      if (result) {
+        this.widgetConfigSubject.next(result);
+      } else {
+        this.widgetConfigSubject.next();
+      }
+    });
   }
 
   stopRefreshInterval() {
@@ -159,6 +179,7 @@ export class TestWidgetComponent extends WidgetComponent implements OnInit, Afte
     }
     super.loadComponent(this.childLayoutTag);
   }
+
 }
 
 

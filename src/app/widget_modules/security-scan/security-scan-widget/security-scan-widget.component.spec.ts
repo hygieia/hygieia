@@ -58,6 +58,7 @@ describe('SecurityScanWidgetComponent', () => {
   let dashboardService: DashboardService;
   let modalService: NgbModule;
   let fixture: ComponentFixture<SecurityScanWidgetComponent>;
+
   const mockSecurityScan: ISecurityScan = {
     id: 'testId',
     collectorItemId: 'testCollItemId',
@@ -119,5 +120,43 @@ describe('SecurityScanWidgetComponent', () => {
     component.hasData = false;
     component.setDefaultIfNoData();
     expect(component.charts[0].data.items[0].title).toEqual('No Data Found');
+  });
+
+  it('should call ngOnInit()', () => {
+    component.ngOnInit();
+  });
+
+  it('should call ngOnDestroy', () => {
+    component.ngOnDestroy();
+  });
+
+  it('should hit stopRefreshInterval', () => {
+    component.stopRefreshInterval();
+  });
+
+  it('should call ngAfterViewInit', () => {
+    component.ngAfterViewInit();
+  });
+
+  it('should hit startRefreshInterval', () => {
+    const mockConfig = {
+      name: 'codeanalysis',
+      options: {
+        id: 'codeanalysis0',
+      },
+      componentId: '1234',
+      collectorItemId: '5678'
+    };
+
+    spyOn(component, 'getCurrentWidgetConfig').and.returnValues(of(mockConfig), of(mockConfig), of(null));
+    spyOn(securityScanService, 'getSecurityScanDetails').and.returnValues(of([mockSecurityScan]), of([]));
+    spyOn(dashboardService, 'checkCollectorItemTypeExist').and.returnValues(true, false);
+    component.startRefreshInterval();
+    component.startRefreshInterval();
+    component.startRefreshInterval();
+  });
+
+  it('should loadCharts', () => {
+    component.loadCharts([mockSecurityScan]);
   });
 });

@@ -80,7 +80,7 @@ export class OSSConfigFormComponent implements OnInit {
     const newConfig = {
       name: 'codeanalysis',
       options: {
-        id: this.widgetConfigId,
+        id: this.widgetConfigId ? this.widgetConfigId : 'codeanalysis0',
       },
       componentId: this.componentId,
       collectorItemId: this.ossConfigForm.value.ossJob.id

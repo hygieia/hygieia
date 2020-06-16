@@ -22,6 +22,7 @@ import {FeatureService} from '../feature.service';
 import {IFeature} from '../interfaces';
 import {FEATURE_CHARTS} from './feature-charts';
 import {FeatureDetailComponent} from '../feature-detail/feature-detail.component';
+import {WidgetState} from '../../../shared/widget-header/widget-state';
 
 @Component({
   selector: 'app-feature-widget',
@@ -57,7 +58,6 @@ export class FeatureWidgetComponent extends WidgetComponent implements OnInit, A
   // After the view is ready start the refresh interval.
   ngAfterViewInit() {
     this.startRefreshInterval();
-    this.setDefaultIfNoData();
   }
 
   ngOnDestroy() {
@@ -75,6 +75,8 @@ export class FeatureWidgetComponent extends WidgetComponent implements OnInit, A
         if (!widgetConfig) {
           return of([]);
         }
+        this.widgetConfigExists = true;
+        this.state = WidgetState.READY;
         this.params = {
           id: widgetConfig.options.id,
           featureTool: widgetConfig.options.featureTool,
@@ -94,15 +96,25 @@ export class FeatureWidgetComponent extends WidgetComponent implements OnInit, A
           this.featureService.fetchIterations(this.params.component, this.params.teamId, this.params.projectId,
             this.params.agileType).pipe(catchError(err => of(err))));
       })).subscribe(([wip, estimates, iterations]) => {
-        this.hasData = ((wip as []).length > 0 || (estimates as []).length > 0 || (iterations as []).length > 0);
-        if (this.params.listType === 'epics') {
-          this.generateFeatureSummary(wip, this.params);
+        this.hasData = ((wip && (wip as []).length > 0) ||
+          (estimates && (estimates as []).length > 0) ||
+          (iterations && (iterations as []).length > 0));
+        if (this.hasData) {
+          this.loadCharts(wip, estimates, iterations);
         } else {
-          this.generateFeatureSummary(iterations, this.params);
+          this.setDefaultIfNoData();
         }
-        this.generateIterationSummary(estimates);
-        super.loadComponent(this.childLayoutTag);
       });
+  }
+
+  loadCharts(wip, estimates: IFeature, iterations) {
+    if (this.params.listType === 'epics') {
+      this.generateFeatureSummary(wip, this.params);
+    } else {
+      this.generateFeatureSummary(iterations, this.params);
+    }
+    this.generateIterationSummary(estimates);
+    super.loadComponent(this.childLayoutTag);
   }
 
   // Unsubscribe from the widget refresh observable, which stops widget updating.
@@ -265,4 +277,5 @@ export class FeatureWidgetComponent extends WidgetComponent implements OnInit, A
     }
     super.loadComponent(this.childLayoutTag);
   }
+
 }

@@ -10,6 +10,7 @@ import {WidgetDirective} from '../widget/widget.directive';
 import {DashboardService} from '../dashboard.service';
 import {AuditModalComponent} from '../modals/audit-modal/audit-modal.component';
 import {DeleteConfirmModalComponent} from '../modals/delete-confirm-modal/delete-confirm-modal.component';
+import {WidgetState} from './widget-state';
 
 @Component({
   selector: 'app-widget-header',
@@ -25,7 +26,7 @@ export class WidgetHeaderComponent implements OnInit {
   @Input() configForm: Type<any>;
   @Input() deleteForm: Type<any>;
   @ViewChild(WidgetDirective, {static: true}) appWidget: WidgetDirective;
-  private widgetComponent;
+  public widgetComponent;
   auditStatus: string;
   private auditResult: IAuditResult;
 
@@ -76,9 +77,15 @@ export class WidgetHeaderComponent implements OnInit {
         if (!newConfig) {
           return;
         }
+        // if widget config doesn't exist, set with new config
+        if (!this.widgetComponent.widgetConfigExists) {
+          this.widgetComponent.widgetConfigSubject.next(newConfig);
+        }
+
         this.widgetComponent.stopRefreshInterval();
         this.updateWidgetConfig(newConfig);
       }).catch((error) => {
+        console.log(error);
       });
     }
   }
@@ -92,6 +99,7 @@ export class WidgetHeaderComponent implements OnInit {
     const newWidgetConfig$ = this.widgetComponent.getCurrentWidgetConfig().pipe(
       map( widgetConfig => {
         extend(widgetConfig, newWidgetConfig);
+        console.log(widgetConfig);
         return widgetConfig;
       }),
       map((widgetConfig: any) => {
@@ -102,7 +110,6 @@ export class WidgetHeaderComponent implements OnInit {
         return widgetConfig;
       })
     );
-
     // Take the modified widgetConfig and upsert it.
     const upsertDashboardResult$ = newWidgetConfig$.pipe(
       switchMap(widgetConfig => {
@@ -120,11 +127,16 @@ export class WidgetHeaderComponent implements OnInit {
       }
 
       this.dashboardService.upsertLocally(result.upsertWidgetResponse.component, result.widgetConfig);
-
+      this.widgetComponent.state = WidgetState.READY;
       // Push the new config to the widget, which
       // will trigger whatever is subscribed to
       // widgetConfig$
       this.widgetComponent.widgetConfigSubject.next(result.widgetConfig);
+      // if quality widget, send widget config to other quality components to update widgetConfigExists
+      if (this.widgetComponent.widgetId === 'codeanalysis0') {
+        this.dashboardService.dashboardQualitySubject.next(result.widgetConfig);
+      }
+      // if quality widget, startRefreshInterval for other quality components to update widgetConfigExists
       this.widgetComponent.startRefreshInterval();
     });
   }
@@ -191,11 +203,24 @@ export class WidgetHeaderComponent implements OnInit {
       }
 
       this.dashboardService.deleteLocally(result.deleteWidgetResponse.component, result.widgetConfig);
-
+      this.widgetComponent.state = WidgetState.CONFIGURE;
+      // set widgetConfigExists to false for quality only if no other quality collector item exists
+      if (this.widgetComponent.widgetId !== 'codeanalysis0' ||
+        (!this.dashboardService.checkCollectorItemTypeExist('CodeQuality') &&
+        !this.dashboardService.checkCollectorItemTypeExist('StaticSecurityScan') &&
+        !this.dashboardService.checkCollectorItemTypeExist('LibraryPolicy') &&
+        !this.dashboardService.checkCollectorItemTypeExist('Test'))
+      ) {
+        this.widgetComponent.widgetConfigExists = false;
+      }
       // Push the new config to the widget, which
       // will trigger whatever is subscribed to
       // widgetConfig$
-      this.widgetComponent.widgetConfigSubject.next(result.widgetConfig);
+      this.widgetComponent.widgetConfigSubject.next();
+      // if quality widget, send empty widget config to other quality components to update widgetConfigExists
+      if (this.widgetComponent.widgetId === 'codeanalysis0') {
+        this.dashboardService.dashboardQualitySubject.next();
+      }
       this.widgetComponent.startRefreshInterval();
     });
   }
@@ -247,6 +272,10 @@ export class WidgetHeaderComponent implements OnInit {
   }
   setAuditData(data: Observable<any>) {
     this.dashboardService.dashboardAuditConfig$ = data;
+  }
+
+  widgetState() {
+    return WidgetState;
   }
 }
 

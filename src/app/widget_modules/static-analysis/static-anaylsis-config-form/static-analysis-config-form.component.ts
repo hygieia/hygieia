@@ -80,7 +80,7 @@ export class StaticAnalysisConfigFormComponent implements OnInit {
     const newConfig = {
       name: 'codeanalysis',
       options: {
-        id: this.widgetConfigId,
+        id: this.widgetConfigId ? this.widgetConfigId : 'codeanalysis0',
       },
       componentId: this.componentId,
       collectorItemId: this.staticAnalysisConfigForm.value.staticAnalysisJob.id

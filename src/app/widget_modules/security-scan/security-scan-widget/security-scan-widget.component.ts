@@ -22,6 +22,7 @@ import {
 } from '../../../shared/charts/click-list/click-list-interfaces';
 import {OneChartLayoutComponent} from '../../../shared/layouts/one-chart-layout/one-chart-layout.component';
 import {DashStatus} from '../../../shared/dash-status/DashStatus';
+import {WidgetState} from '../../../shared/widget-header/widget-state';
 
 @Component({
   selector: 'app-security-scan-widget',
@@ -32,6 +33,7 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
 
   private intervalRefreshSubscription: Subscription;
   private params;
+
   @ViewChild(LayoutDirective, {static: true}) childLayoutTag: LayoutDirective;
 
   constructor(componentFactoryResolver: ComponentFactoryResolver,
@@ -51,7 +53,6 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
   }
   ngAfterViewInit() {
     this.startRefreshInterval();
-    this.setDefaultIfNoData();
   }
 
   ngOnDestroy() {
@@ -66,7 +67,14 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
       switchMap(_ => this.getCurrentWidgetConfig()),
       switchMap(widgetConfig => {
         if (!widgetConfig) {
+          this.widgetConfigExists = false;
           return of([]);
+        }
+        this.widgetConfigExists = true;
+        // check if collector item type is tied to dashboard
+        // if true, set state to READY, otherwise keep at default CONFIGURE
+        if (this.dashboardService.checkCollectorItemTypeExist('StaticSecurityScan')) {
+          this.state = WidgetState.READY;
         }
         this.params = {
           componentId: widgetConfig.componentId,
@@ -79,9 +87,20 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
         this.hasData = (result && result.length > 0);
         if (this.hasData) {
           this.loadCharts(result);
+        } else {
+          this.setDefaultIfNoData();
         }
         super.loadComponent(this.childLayoutTag);
       });
+
+    // for quality widget, subscribe to updates from other quality components
+    this.dashboardService.dashboardQualityConfig$.subscribe(result => {
+      if (result) {
+        this.widgetConfigSubject.next(result);
+      } else {
+        this.widgetConfigSubject.next();
+      }
+    });
   }
 
   stopRefreshInterval() {
@@ -119,4 +138,5 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
     }
     super.loadComponent(this.childLayoutTag);
   }
+
 }

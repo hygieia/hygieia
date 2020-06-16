@@ -20,6 +20,8 @@ export class DashboardService {
 
   private dashboardAuditSubject = new ReplaySubject<any>(1);
 
+  public dashboardQualitySubject = new ReplaySubject<any>(1);
+
   private dashboardRefreshSubject = new Subject<any>();
 
   private dashboardRefreshSubscription: Subscription;
@@ -31,6 +33,8 @@ export class DashboardService {
   public dashboardConfig$ = this.dashboardSubject.asObservable().pipe(filter(result => result));
 
   public dashboardAuditConfig$ = this.dashboardAuditSubject.asObservable().pipe(filter(result => result));
+
+  public dashboardQualityConfig$ = this.dashboardQualitySubject.asObservable().pipe(filter(result => result));
 
   public dashboardRefresh$ = this.dashboardRefreshSubject.asObservable();
 
@@ -151,15 +155,28 @@ export class DashboardService {
 
     // Find and remove widget config
     tempDashboard$ = tempDashboard$.pipe(map(dashboard => {
-      const filteredWidgets = dashboard.widgets.filter((config: any) => config.options.id === configToDelete.options.id);
-      filteredWidgets.forEach((config: any, index: number) => {
-        delete dashboard.widgets[index];
-      });
-
+      dashboard.widgets = dashboard.widgets.filter((config: any) => config.options.id !== configToDelete.options.id);
       return dashboard;
     }));
 
     tempDashboard$.subscribe(dashboard => this.dashboardSubject.next(dashboard));
+  }
+
+  checkCollectorItemTypeExist(ciType: string) {
+    let collectorItems;
+    let exists = false;
+    this.dashboardConfig$.pipe(take(1), map(dashboard => dashboard)).subscribe(dashboard => {
+      dashboard.application.components.forEach((component: any, index: number) => {
+        collectorItems = dashboard.application.components[index].collectorItems;
+        for (const key in collectorItems) {
+          if (key === ciType) {
+            exists = true;
+          }
+        }
+      });
+    });
+
+    return exists;
   }
 
 }

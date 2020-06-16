@@ -82,7 +82,6 @@ describe('SecurityScanDeleteFormComponent', () => {
       schemas: [NO_ERRORS_SCHEMA]
     })
       .compileComponents();
-
   }));
 
   beforeEach(() => {
