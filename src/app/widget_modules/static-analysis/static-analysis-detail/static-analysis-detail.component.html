@@ -10,7 +10,7 @@
         <p>{{data?.name}}</p>
         <p>
           <ng-container *ngIf="isDate(data?.timestamp); else elseBlock">
-            <span class="list-item-subtitle">{{data?.timestamp.getTime() | timeAgo}}</span>
+            <span class="list-item-subtitle">{{formatDate(data?.timestamp.getTime())}}</span>
           </ng-container>
           <ng-template #elseBlock>
             <span class="list-item-subtitle">{{data?.timestamp.toString()}}</span>
