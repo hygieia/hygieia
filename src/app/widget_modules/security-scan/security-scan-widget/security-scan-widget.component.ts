@@ -67,6 +67,7 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
       switchMap(_ => this.getCurrentWidgetConfig()),
       switchMap(widgetConfig => {
         if (!widgetConfig) {
+          this.widgetConfigExists = false;
           return of([]);
         }
         this.widgetConfigExists = true;
@@ -91,6 +92,15 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
         }
         super.loadComponent(this.childLayoutTag);
       });
+
+    // for quality widget, subscribe to updates from other quality components
+    this.dashboardService.dashboardQualityConfig$.subscribe(result => {
+      if (result) {
+        this.widgetConfigSubject.next(result);
+      } else {
+        this.widgetConfigSubject.next();
+      }
+    });
   }
 
   stopRefreshInterval() {

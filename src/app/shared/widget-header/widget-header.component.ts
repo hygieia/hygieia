@@ -132,6 +132,11 @@ export class WidgetHeaderComponent implements OnInit {
       // will trigger whatever is subscribed to
       // widgetConfig$
       this.widgetComponent.widgetConfigSubject.next(result.widgetConfig);
+      // if quality widget, send widget config to other quality components to update widgetConfigExists
+      if (this.widgetComponent.widgetId === 'codeanalysis0') {
+        this.dashboardService.dashboardQualitySubject.next(result.widgetConfig);
+      }
+      // if quality widget, startRefreshInterval for other quality components to update widgetConfigExists
       this.widgetComponent.startRefreshInterval();
     });
   }
@@ -199,11 +204,23 @@ export class WidgetHeaderComponent implements OnInit {
 
       this.dashboardService.deleteLocally(result.deleteWidgetResponse.component, result.widgetConfig);
       this.widgetComponent.state = WidgetState.CONFIGURE;
-      this.widgetComponent.widgetConfigExists = false;
+      // set widgetConfigExists to false for quality only if no other quality collector item exists
+      if (this.widgetComponent.widgetId !== 'codeanalysis0' ||
+        (!this.dashboardService.checkCollectorItemTypeExist('CodeQuality') &&
+        !this.dashboardService.checkCollectorItemTypeExist('StaticSecurityScan') &&
+        !this.dashboardService.checkCollectorItemTypeExist('LibraryPolicy') &&
+        !this.dashboardService.checkCollectorItemTypeExist('Test'))
+      ) {
+        this.widgetComponent.widgetConfigExists = false;
+      }
       // Push the new config to the widget, which
       // will trigger whatever is subscribed to
       // widgetConfig$
       this.widgetComponent.widgetConfigSubject.next();
+      // if quality widget, send empty widget config to other quality components to update widgetConfigExists
+      if (this.widgetComponent.widgetId === 'codeanalysis0') {
+        this.dashboardService.dashboardQualitySubject.next();
+      }
       this.widgetComponent.startRefreshInterval();
     });
   }
