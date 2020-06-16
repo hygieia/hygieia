@@ -2,7 +2,8 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "outDir": "../out-tsc/app",
-    "types": []
+    "types": [],
+    "allowSyntheticDefaultImports": true
   },
   "exclude": [
     "test.ts",
