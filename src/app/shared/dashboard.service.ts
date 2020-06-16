@@ -20,6 +20,8 @@ export class DashboardService {
 
   private dashboardAuditSubject = new ReplaySubject<any>(1);
 
+  public dashboardQualitySubject = new ReplaySubject<any>(1);
+
   private dashboardRefreshSubject = new Subject<any>();
 
   private dashboardRefreshSubscription: Subscription;
@@ -31,6 +33,8 @@ export class DashboardService {
   public dashboardConfig$ = this.dashboardSubject.asObservable().pipe(filter(result => result));
 
   public dashboardAuditConfig$ = this.dashboardAuditSubject.asObservable().pipe(filter(result => result));
+
+  public dashboardQualityConfig$ = this.dashboardQualitySubject.asObservable().pipe(filter(result => result));
 
   public dashboardRefresh$ = this.dashboardRefreshSubject.asObservable();
 

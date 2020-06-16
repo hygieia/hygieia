@@ -74,6 +74,7 @@ export class OSSWidgetComponent extends WidgetComponent implements OnInit, After
       switchMap(_ => this.getCurrentWidgetConfig()),
       switchMap(widgetConfig => {
         if (!widgetConfig) {
+          this.widgetConfigExists = false;
           return of([]);
         }
         this.widgetConfigExists = true;
@@ -91,6 +92,16 @@ export class OSSWidgetComponent extends WidgetComponent implements OnInit, After
           this.setDefaultIfNoData();
         }
       });
+
+    // for quality widget, subscribe to updates from other quality components
+    this.dashboardService.dashboardQualityConfig$.subscribe(result => {
+      if (result) {
+        this.widgetConfigSubject.next(result);
+      } else {
+        this.widgetConfigSubject.next();
+      }
+    });
+
   }
 
   // Unsubscribe from the widget refresh observable, which stops widget updating.

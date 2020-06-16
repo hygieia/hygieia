@@ -104,6 +104,7 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
       switchMap(_ => this.getCurrentWidgetConfig()),
       switchMap(widgetConfig => {
         if (!widgetConfig) {
+          this.widgetConfigExists = false;
           return of([]);
         }
         this.widgetConfigExists = true;
@@ -122,6 +123,15 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
           this.setDefaultIfNoData();
         }
       });
+
+    // for quality widget, subscribe to updates from other quality components
+    this.dashboardService.dashboardQualityConfig$.subscribe(result => {
+      if (result) {
+        this.widgetConfigSubject.next(result);
+      } else {
+        this.widgetConfigSubject.next();
+      }
+    });
   }
 
   // Unsubscribe from the widget refresh observable, which stops widget updating.

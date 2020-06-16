@@ -73,6 +73,7 @@ export class TestWidgetComponent extends WidgetComponent implements OnInit, Afte
       switchMap( _ => this.getCurrentWidgetConfig()),
       switchMap( widgetConfig => {
         if (!widgetConfig) {
+          this.widgetConfigExists = false;
           return of([]);
         }
         this.widgetConfigExists = true;
@@ -92,6 +93,15 @@ export class TestWidgetComponent extends WidgetComponent implements OnInit, Afte
           this.setDefaultIfNoData();
         }
       });
+
+    // for quality widget, subscribe to updates from other quality components
+    this.dashboardService.dashboardQualityConfig$.subscribe(result => {
+      if (result) {
+        this.widgetConfigSubject.next(result);
+      } else {
+        this.widgetConfigSubject.next();
+      }
+    });
   }
 
   stopRefreshInterval() {
