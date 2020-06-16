@@ -103,4 +103,10 @@ export class DashboardListComponent implements OnInit {
   goToAuditReport() {
     window.open('/audits', '_blank');
   }
+
+  dashboardName(dashboard: IDashboards): string {
+    const dName = [dashboard.title, dashboard.configurationItemBusAppName, dashboard.configurationItemBusServName]
+      .filter(Boolean).join(' - ');
+    return dName;
+  }
 }

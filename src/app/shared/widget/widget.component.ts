@@ -23,6 +23,7 @@ export class WidgetComponent {
   @Input() layout: Type<any>;
   @Input() status: string;
   @Input() auditType: any;
+  @Input() lastUpdated: any;
 
   public charts: IChart[];
   public hasData: boolean;
