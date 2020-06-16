@@ -58,8 +58,16 @@ import { DataItem } from './data-item.interfaces';
             [countTo]="series.percent"
             [countSuffix]="'%'"
             text-anchor="middle"
+            alignment-baseline="central"
           ></svg:text>
-          <svg:text *ngIf="!animations" class="label percent-label" dy="-0.5em" x="0" y="5" text-anchor="middle">
+          <svg:text
+            *ngIf="!animations"
+            class="label percent-label"
+            dy="-0.5em"
+            x="0"
+            y="5"
+            text-anchor="middle"
+            alignment-baseline="central">
             {{ series.percent.toLocaleString() }}
           </svg:text>
           <svg:text class="label" dy="0.5em" x="0" y="5" text-anchor="middle">

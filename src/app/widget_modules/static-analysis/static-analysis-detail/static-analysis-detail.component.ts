@@ -26,4 +26,8 @@ export class StaticAnalysisDetailComponent implements OnInit {
   isDate(obj): boolean {
     return obj instanceof Date;
   }
+
+  formatDate(date: Date) {
+    return new Date(date).toUTCString();
+  }
 }

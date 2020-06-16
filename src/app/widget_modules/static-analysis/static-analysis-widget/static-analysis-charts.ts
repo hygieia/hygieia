@@ -21,7 +21,7 @@ export let STATICANALYSIS_CHARTS: IChart[] = [
     data: {
       results: [
         {
-          name: 'Code Coverage',
+          name: '',
           value: 0,
         }
       ] as DataItem[],
