@@ -133,7 +133,7 @@ export class WidgetHeaderComponent implements OnInit {
       // widgetConfig$
       this.widgetComponent.widgetConfigSubject.next(result.widgetConfig);
       // if quality widget, send widget config to other quality components to update widgetConfigExists
-      if(this.widgetComponent.widgetId === 'codeanalysis0') {
+      if (this.widgetComponent.widgetId === 'codeanalysis0') {
         this.dashboardService.dashboardQualitySubject.next(result.widgetConfig);
       }
       // if quality widget, startRefreshInterval for other quality components to update widgetConfigExists
@@ -218,7 +218,7 @@ export class WidgetHeaderComponent implements OnInit {
       // widgetConfig$
       this.widgetComponent.widgetConfigSubject.next();
       // if quality widget, send empty widget config to other quality components to update widgetConfigExists
-      if(this.widgetComponent.widgetId === 'codeanalysis0') {
+      if (this.widgetComponent.widgetId === 'codeanalysis0') {
         this.dashboardService.dashboardQualitySubject.next();
       }
       this.widgetComponent.startRefreshInterval();
