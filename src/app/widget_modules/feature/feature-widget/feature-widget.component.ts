@@ -85,16 +85,17 @@ export class FeatureWidgetComponent extends WidgetComponent implements OnInit, A
           component: widgetConfig.componentId,
           teamId: widgetConfig.options.teamId,
           projectId: widgetConfig.options.projectId,
-          agileType: widgetConfig.options.sprintType,
+          sprintType: widgetConfig.options.sprintType,
           listType: widgetConfig.options.listType,
         };
+
         return forkJoin(
           this.featureService.fetchFeatureWip(this.params.component, this.params.teamId, this.params.projectId,
-            this.params.agileType).pipe(catchError(err => of(err))),
+            this.params.sprintType).pipe(catchError(err => of(err))),
           this.featureService.fetchAggregateSprintEstimates(this.params.component, this.params.teamId,
-            this.params.projectId, this.params.agileType).pipe(catchError(err => of(err))),
+            this.params.projectId, this.params.sprintType).pipe(catchError(err => of(err))),
           this.featureService.fetchIterations(this.params.component, this.params.teamId, this.params.projectId,
-            this.params.agileType).pipe(catchError(err => of(err))));
+            this.params.sprintType).pipe(catchError(err => of(err))));
       })).subscribe(([wip, estimates, iterations]) => {
         this.hasData = ((wip && (wip as []).length > 0) ||
           (estimates && (estimates as []).length > 0) ||
@@ -187,30 +188,48 @@ export class FeatureWidgetComponent extends WidgetComponent implements OnInit, A
 
   // Displays Sprint information for Open, WIP, Done
   generateIterationSummary(result: IFeature) {
+    let items;
     if (!result) {
       return;
     }
 
-    const items = [
-      {
-        status: null,
-        statusText: '',
-        title: 'OPEN',
-        subtitles: [result.openEstimate],
-      },
-      {
-        status: null,
-        statusText: '',
-        title: 'WIP',
-        subtitles: [result.inProgressEstimate],
-      },
-      {
-        status: null,
-        statusText: '',
-        title: 'DONE',
-        subtitles: [result.completeEstimate],
-      },
-    ] as IClickListItem[];
+    if (this.params.sprintType === 'scrum' || this.params.sprintType === 'both') {
+      items = [
+        {
+          status: null,
+          statusText: '',
+          title: 'OPEN',
+          subtitles: [result.openEstimate],
+        },
+        {
+          status: null,
+          statusText: '',
+          title: 'WIP',
+          subtitles: [result.inProgressEstimate],
+        },
+        {
+          status: null,
+          statusText: '',
+          title: 'DONE',
+          subtitles: [result.completeEstimate],
+        },
+      ] as IClickListItem[];
+    } else if (this.params.sprintType === 'kanban') {
+      items = [
+        {
+          status: null,
+          statusText: '',
+          title: 'OPEN',
+          subtitles: [result.openEstimate],
+        },
+        {
+          status: null,
+          statusText: '',
+          title: 'WIP',
+          subtitles: [result.inProgressEstimate],
+        }
+      ] as IClickListItem[];
+    }
 
     this.charts[1].data = {
       items,

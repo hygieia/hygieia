@@ -14,6 +14,8 @@ export class CollectorService {
   // URL for items by id
   private itemRoute = '/api/collector/item/';
 
+  private collectorsByTypeRoute = '/api/collector/type/';
+
   constructor(private http: HttpClient) { }
 
   getItemsByType(type: string, params: any): Observable<any> {
@@ -36,4 +38,7 @@ export class CollectorService {
     return this.http.get(this.itemRoute + id);
   }
 
+  collectorsByType(collectorType): Observable<any> {
+    return this.http.get(this.collectorsByTypeRoute + collectorType);
+  }
 }

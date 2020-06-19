@@ -24,8 +24,14 @@ class MockCollectorService {
     }
   };
 
+  mockCollectorType = [{name: 'test', collectorType: 'SCM'}];
+
   getItemsById(id: string): Observable<any> {
     return of(this.mockCollectorData);
+  }
+
+  collectorsByType(collectorType): Observable<any> {
+    return of(this.mockCollectorType);
   }
 }
 
@@ -136,5 +142,4 @@ describe('RepoConfigFormComponent', () => {
     component.widgetConfig = widgetConfigDataNoId;
     component.submitForm();
   });
-
 });

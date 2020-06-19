@@ -24,9 +24,14 @@ class MockCollectorService {
       teamId : '1111'
     }
   };
+  mockCollectorType = [{name: 'test', collectorType: 'AgileTool'}];
 
   getItemsById(id: string): Observable<any> {
     return of(this.mockCollectorData);
+  }
+
+  collectorsByType(collectorType): Observable<any> {
+    return of(this.mockCollectorType);
   }
 }
 

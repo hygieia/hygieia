@@ -238,7 +238,6 @@ describe('FeatureWidgetComponent', () => {
   });
 
   it('should generateIterationSummary', () => {
-    component.generateIterationSummary(estimates);
     component.generateIterationSummary(null);
   });
 

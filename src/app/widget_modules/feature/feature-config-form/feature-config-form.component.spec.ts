@@ -1,5 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import {NgbActiveModal, NgbModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { SharedModule } from 'src/app/shared/shared.module';
@@ -25,8 +25,16 @@ class MockCollectorService {
     }
   };
 
+  mockCollectorType = [{
+    name: 'test',
+    collectorType: 'AgileTool'}];
+
   getItemsById(id: string): Observable<any> {
     return of(this.mockCollectorData);
+  }
+
+  collectorsByType(collectorType): Observable<any> {
+    return of(this.mockCollectorType);
   }
 }
 
@@ -56,7 +64,7 @@ class MockDashboardService {
 @NgModule({
   declarations: [],
   imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([]), NgbModule],
-  entryComponents: []
+  entryComponents: [],
 })
 class TestModule { }
 
@@ -128,6 +136,7 @@ describe('FeatureConfigFormComponent', () => {
         featureTool: 'featureTool',
         sprintType: 'sprint',
         listType: 'listType',
+        estimateMetricType: 'estimate'
       }
     };
     component.widgetConfig = widgetConfigData;

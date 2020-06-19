@@ -252,9 +252,9 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
     const contributors = this.collectContributorCount(pullResult, 'pull');
     const ideators = this.collectContributorCount(issueResult, 'issue');
 
-    this.charts[1].data = commitToday;
-    this.charts[2].data = commit7;
-    this.charts[3].data = commit14;
+    this.charts[1].data = commitToday.toString();
+    this.charts[2].data = commit7.toString();
+    this.charts[3].data = commit14.toString();
     this.charts[4].data = pullToday.toString();
     this.charts[5].data = pull7.toString();
     this.charts[6].data = pull14.toString();

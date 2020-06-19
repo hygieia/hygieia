@@ -1,23 +1,30 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import {Component, Input, OnInit} from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { Observable, of } from 'rxjs';
-import { catchError, debounceTime, distinctUntilChanged, map, switchMap, take, tap } from 'rxjs/operators';
+import {Observable, of} from 'rxjs';
+import {catchError, debounceTime, distinctUntilChanged, map, switchMap, take, tap} from 'rxjs/operators';
 import { CollectorService } from 'src/app/shared/collector.service';
 import { DashboardService } from 'src/app/shared/dashboard.service';
 
 @Component({
   selector: 'app-feature-config-form',
   templateUrl: './feature-config-form.component.html',
-  styleUrls: ['./feature-config-form.component.scss']
+  styleUrls: ['./feature-config-form.component.scss'],
 })
+
 export class FeatureConfigFormComponent implements OnInit {
 
   private widgetConfigId: string;
   private componentId: string;
+  private dashboard: any;
+  featureTool = [];
+  estimateMetricType = [];
+  sprintType = [];
+  listType = [];
   public teamId: string;
   public projectId: string;
 
+  submitted = false;
   featureConfigForm: FormGroup;
   searching = false;
   searchFailed = false;
@@ -100,16 +107,35 @@ export class FeatureConfigFormComponent implements OnInit {
 
   public createForm() {
     this.featureConfigForm = this.formBuilder.group({
-      featureTool: '',
-      projectName: '',
-      teamName: '',
-      sprintType: '',
-      listType: '',
-      estimateMetricType: '',
+      featureTool: ['', Validators.required],
+      projectName: ['', Validators.required],
+      teamName: ['', Validators.required],
+      sprintType: ['', Validators.required],
+      listType: ['', Validators.required],
+      estimateMetricType: ['', Validators.required],
+    });
+    this.getAgileTools();
+    this.estimateMetricType = this.getEstimateMetricTypes();
+    this.listType = this.getListTypes();
+    this.sprintType = this.getSprintTypes();
+  }
+
+  private getAgileTools() {
+    this.collectorService.collectorsByType('AgileTool').subscribe(agileCollectors => {
+      const featureTools = agileCollectors.map(currAgileTool => currAgileTool.name);
+      const result = [];
+      for (const currTool of featureTools) {
+        result.push({type: currTool});
+      }
+      this.featureTool = result;
     });
   }
 
   public submitForm() {
+    this.submitted = true;
+    if (this.featureConfigForm.invalid) {
+      return;
+    }
     const newConfig = {
       name: 'feature',
       options: {
@@ -127,6 +153,21 @@ export class FeatureConfigFormComponent implements OnInit {
       collectorItemId: this.featureConfigForm.value.projectName.id
     };
     this.activeModal.close(newConfig);
+  }
+
+  public getEstimateMetricTypes() {
+      return [
+        {type: 'hours', value: 'Hours'},
+        {type: 'storypoints', value: 'Story Points' },
+        {type: 'count', value: 'Issue Count' }];
+  }
+
+  public getListTypes() {
+      return [{type: 'epics', value: 'Epics'}, {type: 'issues', value: 'Issues'}];
+  }
+
+  public getSprintTypes() {
+    return [{type: 'scrum', value: 'Scrum'}, {type: 'kanban', value: 'Kanban'}, {type: 'scrumkanban', value: 'Both'}];
   }
 
   public loadSavedFeatures() {
@@ -154,9 +195,10 @@ export class FeatureConfigFormComponent implements OnInit {
   }
 
   private getDashboardComponent() {
-    this.dashboardService.dashboardConfig$.pipe(take(1),
-      map(dashboard => {
-        return dashboard.application.components[0].id;
-      })).subscribe(componentId => this.componentId = componentId);
+      this.dashboardService.dashboardConfig$.pipe(take(1),
+        map(dashboard => {
+          this.dashboard = dashboard;
+          return dashboard.application.components[0].id;
+        })).subscribe(componentId => this.componentId = componentId);
+    }
   }
-}
