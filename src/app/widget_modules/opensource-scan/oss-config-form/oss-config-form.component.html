@@ -3,7 +3,7 @@
     <div class="container">
       <div class="form-group">
         <label class="modal-label" for="ossJob">Open Source Scan Url</label>
-        <span style="color:#E94B3CFF"> (*Required)</span>
+        <span class="required-text"> (*Required)</span>
         <input id="ossJob" type="search" class="form-control"
                [class.is-invalid]="((configForm.ossJob.dirty || configForm.ossJob.touched) && configForm.ossJob.errors) || searchFailed"
                formControlName="ossJob"

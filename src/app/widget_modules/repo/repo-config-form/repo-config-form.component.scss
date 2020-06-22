@@ -13,3 +13,7 @@ select {
   padding: 7px;
   border-radius: 4px;
 }
+
+.invalid-feedback, .required-text {
+  color:orangered;
+}

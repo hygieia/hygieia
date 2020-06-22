@@ -9,7 +9,7 @@ import {Observable, of} from 'rxjs';
 @Component({
   selector: 'app-security-scan-config',
   templateUrl: './security-scan-config.component.html',
-  styleUrls: ['./security-scan-config.component.sass']
+  styleUrls: ['./security-scan-config.component.scss']
 })
 export class SecurityScanConfigComponent implements OnInit {
   private componentId: string;

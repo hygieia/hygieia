@@ -1,5 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {Component, Input, OnInit} from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import {Observable, of} from 'rxjs';
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, take, tap} from 'rxjs/operators';
@@ -26,8 +26,10 @@ export class FeatureConfigFormComponent implements OnInit {
 
   submitted = false;
   featureConfigForm: FormGroup;
-  searching = false;
-  searchFailed = false;
+  searchingProject = false;
+  searchingTeam = false;
+  searchProjectFailed = false;
+  searchTeamFailed = false;
   typeAheadResultsProject: (text$: Observable<string>) => Observable<any>;
   typeAheadResultsTeam: (text$: Observable<string>) => Observable<any>;
 
@@ -73,45 +75,45 @@ export class FeatureConfigFormComponent implements OnInit {
       text$.pipe(
         debounceTime(300),
         distinctUntilChanged(),
-        tap(() => this.searching = true),
+        tap(() => this.searchingProject = true),
         switchMap(term => {
           return term.length < 2 ? of([]) :
             this.collectorService.searchItemsBySearchField('AgileTool', term, 'options.projectName').pipe(
               tap(val => {
                 if (!val || val.length === 0) {
-                  this.searchFailed = true;
+                  this.searchProjectFailed = true;
                   return of([]);
                 }
-                this.searchFailed = false;
+                this.searchProjectFailed = false;
               }),
               catchError(() => {
-                this.searchFailed = true;
+                this.searchProjectFailed = true;
                 return of([]);
               }));
         }),
-        tap(() => this.searching = false)
+        tap(() => this.searchingProject = false)
       );
     this.typeAheadResultsTeam = (text$: Observable<string>) =>
       text$.pipe(
         debounceTime(300),
         distinctUntilChanged(),
-        tap(() => this.searching = true),
+        tap(() => this.searchingTeam = true),
         switchMap(term => {
           return term.length < 2 ? of([]) :
             this.collectorService.searchItemsBySearchField('AgileTool', term, 'options.teamName').pipe(
               tap(val => {
                 if (!val || val.length === 0) {
-                  this.searchFailed = true;
+                  this.searchTeamFailed = true;
                   return of([]);
                 }
-                this.searchFailed = false;
+                this.searchTeamFailed = false;
               }),
               catchError(() => {
-                this.searchFailed = true;
+                this.searchTeamFailed = true;
                 return of([]);
               }));
         }),
-        tap(() => this.searching = false)
+        tap(() => this.searchingTeam = false)
       );
     this.loadSavedFeatures();
     this.getDashboardComponent();
@@ -168,14 +170,14 @@ export class FeatureConfigFormComponent implements OnInit {
   }
 
   public getEstimateMetricTypes() {
-      return [
-        {type: 'hours', value: 'Hours'},
-        {type: 'storypoints', value: 'Story Points' },
-        {type: 'count', value: 'Issue Count' }];
+    return [
+      {type: 'hours', value: 'Hours'},
+      {type: 'storypoints', value: 'Story Points' },
+      {type: 'count', value: 'Issue Count' }];
   }
 
   public getListTypes() {
-      return [{type: 'epics', value: 'Epics'}, {type: 'issues', value: 'Issues'}];
+    return [{type: 'epics', value: 'Epics'}, {type: 'issues', value: 'Issues'}];
   }
 
   public getSprintTypes() {
@@ -207,12 +209,11 @@ export class FeatureConfigFormComponent implements OnInit {
   }
 
   private getDashboardComponent() {
-      this.dashboardService.dashboardConfig$.pipe(take(1),
-        map(dashboard => {
-          this.dashboard = dashboard;
-          return dashboard.application.components[0].id;
-        })).subscribe(componentId => this.componentId = componentId);
-    }
+    this.dashboardService.dashboardConfig$.pipe(take(1),
+      map(dashboard => {
+        this.dashboard = dashboard;
+        return dashboard.application.components[0].id;
+      })).subscribe(componentId => this.componentId = componentId);
   }
 
   // convenience getter for easy access to form fields

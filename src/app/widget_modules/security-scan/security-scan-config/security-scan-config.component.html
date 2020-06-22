@@ -3,7 +3,7 @@
     <div class="container">
       <div class="form-group">
         <label class="modal-label" for="sJob">Security Scan</label>
-        <span style="color:#E94B3CFF"> (*Required)</span>
+        <span class="required-text"> (*Required)</span>
         <input id="sJob" type="search" class="form-control"
                [class.is-invalid]="((configForm.sJob.dirty || configForm.sJob.touched) && configForm.sJob.errors) || searchFailed"
                formControlName="sJob"

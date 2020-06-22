@@ -3,8 +3,7 @@
     <div class="container">
       <div class="form-group">
         <label class="modal-label" for="deployJob">Deployment Application:</label>
-<!--        <span *ngIf="configForm.deployJob.untouched" style="color:#dc3545"> (*Required)</span>-->
-        <span style="color:#E94B3CFF"> (*Required)</span>
+        <span class="required-text"> (*Required)</span>
         <input id="deployJob" type="search" class="form-control"
                [class.is-invalid]="((configForm.deployJob.dirty || configForm.deployJob.touched) && configForm.deployJob.errors) || searchFailed"
                formControlName="deployJob"
@@ -12,23 +11,9 @@
                [inputFormatter]="getDeployJob"
                [resultFormatter]="getDeployJob"
                placeholder="Search for a deployment application" />
+        <span *ngIf="searching">searching...</span>
         <div class="invalid-feedback" *ngIf="!searchFailed || configForm.deployJob.value === ''">Please provide a deploy job.</div>
         <div class="invalid-feedback" *ngIf="searchFailed && !searching && configForm.deployJob.value !== ''">Sorry, suggestions could not be loaded.</div>
-<!--        <span class="valid-feedback" *ngIf="!searchFailed">Looks good!</span>-->
-        <span *ngIf="searching">searching...</span>
-        <!--               [ngClass]="{ 'is-invalid': submitted && configForm.deployJob.errors }"-->
-<!--        [class.is-invalid]="searchFailed"-->
-        <!--               [class.is-valid]="configForm.deployJob.valid"-->
-        <!--        <div *ngIf="submitted && configForm.deployJob.errors" class="invalid-feedback">-->
-<!--          <div *ngIf="configForm.deployJob.errors.required">Deploy Job is required</div>-->
-<!--        </div>-->
-<!--        <div *ngIf="configForm.deployJob.invalid && (configForm.deployJob.dirty || configForm.deployJob.touched)"-->
-<!--             class="alert alert-danger">-->
-<!--          <div *ngIf="configForm.deployJob.errors.required">-->
-<!--            Deploy Job is required.-->
-<!--          </div>-->
-<!--        </div>-->
-
       </div>
       <div class="form-group">
         <label class="modal-label">Ignore Environment Failures Pattern:</label>

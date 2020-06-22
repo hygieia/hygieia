@@ -3,7 +3,7 @@
     <div class="container">
       <div class="form-group">
         <label class="modal-label" for="buildJob">Build Job</label>
-        <span style="color:#E94B3CFF"> (*Required)</span>
+        <span class="required-text"> (*Required)</span>
         <input id="buildJob" type="search" class="form-control"
                [class.is-invalid]="((configForm.buildJob.dirty || configForm.buildJob.touched) && configForm.buildJob.errors) || searchFailed"
                formControlName="buildJob"
@@ -17,7 +17,7 @@
       </div>
       <div class="form-group">
         <label class="modal-label" for="buildDurationThreshold">Build Duration Threshold</label>
-        <span style="color:#E94B3CFF"> (*Required)</span>
+        <span class="required-text"> (*Required)</span>
         <div class="input-group mb-3">
           <input id="buildDurationThreshold" type="text" class="form-control" placeholder="Build Duration Threshold" aria-label="Build Duration Threshold"
             aria-describedby="minutes-label" formControlName="buildDurationThreshold"
@@ -31,7 +31,7 @@
       </div>
       <div class="form-group">
         <label class="modal-label" for="consecutive-failure-threshold">Alert Takeover Criteria</label>
-        <span style="color:#E94B3CFF"> (*Required)</span>
+        <span class="required-text"> (*Required)</span>
         <div class="input-group mb-3">
           <input id="consecutive-failure-threshold" type="text" class="form-control" placeholder="Alert Takeover Criteria" aria-label="Alert Takeover Criteria"
             aria-describedby="consecutive-build-fails" formControlName="consecutiveFailureThreshold"
