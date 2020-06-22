@@ -1,5 +1,5 @@
-import {Component, Input, OnInit} from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, Input, OnInit } from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import {Observable, of} from 'rxjs';
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, take, tap} from 'rxjs/operators';
@@ -77,7 +77,13 @@ export class FeatureConfigFormComponent implements OnInit {
         switchMap(term => {
           return term.length < 2 ? of([]) :
             this.collectorService.searchItemsBySearchField('AgileTool', term, 'options.projectName').pipe(
-              tap(() => this.searchFailed = false),
+              tap(val => {
+                if (!val || val.length === 0) {
+                  this.searchFailed = true;
+                  return of([]);
+                }
+                this.searchFailed = false;
+              }),
               catchError(() => {
                 this.searchFailed = true;
                 return of([]);
@@ -93,7 +99,13 @@ export class FeatureConfigFormComponent implements OnInit {
         switchMap(term => {
           return term.length < 2 ? of([]) :
             this.collectorService.searchItemsBySearchField('AgileTool', term, 'options.teamName').pipe(
-              tap(() => this.searchFailed = false),
+              tap(val => {
+                if (!val || val.length === 0) {
+                  this.searchFailed = true;
+                  return of([]);
+                }
+                this.searchFailed = false;
+              }),
               catchError(() => {
                 this.searchFailed = true;
                 return of([]);
@@ -202,3 +214,7 @@ export class FeatureConfigFormComponent implements OnInit {
         })).subscribe(componentId => this.componentId = componentId);
     }
   }
+
+  // convenience getter for easy access to form fields
+  get configForm() { return this.featureConfigForm.controls; }
+}

@@ -3,10 +3,17 @@
     <div class="container">
       <div class="form-group">
         <label class="modal-label" for="ossJob">Open Source Scan Url</label>
-        <input id="ossJob" type="search" class="form-control" [class.is-invalid]="searchFailed" formControlName="ossJob"
-               [ngbTypeahead]="typeAheadResults" [inputFormatter]="getOssTitle" [resultFormatter]="getOssTitle" placeholder="Enter Open Source Library" required/>
+        <span style="color:#E94B3CFF"> (*Required)</span>
+        <input id="ossJob" type="search" class="form-control"
+               [class.is-invalid]="((configForm.ossJob.dirty || configForm.ossJob.touched) && configForm.ossJob.errors) || searchFailed"
+               formControlName="ossJob"
+               [ngbTypeahead]="typeAheadResults"
+               [inputFormatter]="getOssTitle"
+               [resultFormatter]="getOssTitle"
+               placeholder="Enter Open Source Library" required/>
         <span *ngIf="searching">searching...</span>
-        <div class="invalid-feedback" *ngIf="searchFailed">Sorry, suggestions could not be loaded.</div>
+        <div class="invalid-feedback" *ngIf="!searchFailed || configForm.ossJob.value === ''">Please provide an oss job.</div>
+        <div class="invalid-feedback" *ngIf="searchFailed && !searching && configForm.ossJob.value !== ''">Sorry, suggestions could not be loaded.</div>
       </div>
     </div>
   </div>

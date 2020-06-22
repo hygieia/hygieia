@@ -8,19 +8,32 @@
             {{currSCM.type}}
           </option>
         </select>
+<!--        <label class="modal-label" for="scm">Repo Type: GitHub or Subversion:</label>-->
+<!--        <span style="color:#E94B3CFF"> (*Required)</span>-->
+<!--        <div class="input-group mb-3">-->
+<!--          <input id="scm" type="text" class="form-control" placeholder="Enter repo Type (GitHub or Subversion)" aria-label="scm" formControlName="scm"-->
+<!--                 [class.is-invalid]="((configForm.scm.dirty || configForm.scm.touched) && configForm.scm.errors)" required>-->
+<!--          <div class="invalid-feedback" *ngIf="configForm.scm.value === ''">Please provide a repo type.</div>-->
+<!--        </div>-->
       </div>
 
       <div class="form-group">
-        <label class="modal-label" for="url">Repo URL (Required):</label>
+        <label class="modal-label" for="url">Repo URL:</label>
+        <span style="color:#E94B3CFF"> (*Required)</span>
         <div class="input-group mb-3">
-          <input id="url" type="text" class="form-control" placeholder="Enter repo URL" aria-label="url" formControlName="url" required>
+          <input id="url" type="text" class="form-control" placeholder="Enter repo URL" aria-label="url" formControlName="url"
+                 [class.is-invalid]="((configForm.url.dirty || configForm.url.touched) && configForm.url.errors)" required>
+          <div class="invalid-feedback" *ngIf="configForm.url.value === ''">Please provide a repo url.</div>
         </div>
       </div>
 
       <div class="form-group">
-        <label class="modal-label" for="branch">Branch (Required):</label>
+        <label class="modal-label" for="branch">Branch:</label>
+        <span style="color:#E94B3CFF"> (*Required)</span>
         <div class="input-group mb-3">
-          <input id="branch" type="text" class="form-control" placeholder="Enter Branch" aria-label="branch" formControlName="branch" required>
+          <input id="branch" type="text" class="form-control" placeholder="Enter Branch" aria-label="branch" formControlName="branch"
+                 [class.is-invalid]="((configForm.branch.dirty || configForm.branch.touched) && configForm.branch.errors)" required>
+          <div class="invalid-feedback" *ngIf="configForm.branch.value === ''">Please provide a branch.</div>
         </div>
       </div>
 

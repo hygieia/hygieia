@@ -62,7 +62,13 @@ export class SecurityScanConfigComponent implements OnInit {
         switchMap(term => {
           return term.length < 2 ? of([]) :
             this.collectorService.searchItems('StaticSecurityScan', term).pipe(
-              tap(() => this.searchFailed = false),
+              tap(val => {
+                if (!val || val.length === 0) {
+                  this.searchFailed = true;
+                  return of([]);
+                }
+                this.searchFailed = false;
+              }),
               catchError(() => {
                 this.searchFailed = true;
                 return of([]);
@@ -117,4 +123,7 @@ export class SecurityScanConfigComponent implements OnInit {
         return dashboard.application.components[0].id;
       })).subscribe(componentId => this.componentId = componentId);
   }
+
+  // convenience getter for easy access to form fields
+  get configForm() { return this.securityConfigForm.controls; }
 }

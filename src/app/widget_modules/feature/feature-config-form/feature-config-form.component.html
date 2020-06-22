@@ -11,20 +11,49 @@
         </select>
       </div>
 
+<!--      <div class="form-group">-->
+<!--        <label class="modal-label" for="projectName">Project Name: </label>-->
+<!--        <input id="projectName" type="search" class="form-control" [class.is-invalid]="searchFailed" formControlName="projectName"-->
+<!--               [ngbTypeahead]="typeAheadResultsProject" [inputFormatter]="getProjectName" [resultFormatter]="getProjectName" placeholder="Project Name" required/>-->
+
+<!--        <label class="modal-label" for="featureTool">Tool Type: Jira or VersionOne:</label>-->
+<!--        <span style="color:#E94B3CFF"> (*Required)</span>-->
+<!--        <div class="input-group mb-3">-->
+<!--          <input id="featureTool" type="text" class="form-control" placeholder="Enter Tool Type (Jira or VersionOne)" aria-label="featureTool" formControlName="featureTool"-->
+<!--                 [class.is-invalid]="((configForm.featureTool.dirty || configForm.featureTool.touched) && configForm.featureTool.errors)"-->
+<!--                 required>-->
+<!--          <div class="invalid-feedback" *ngIf="configForm.featureTool.value === ''">Please provide a feature tool.</div>-->
+<!--        </div>-->
+<!--      </div>-->
+
       <div class="form-group">
-        <label class="modal-label" for="projectName">Project Name: </label>
-        <input id="projectName" type="search" class="form-control" [class.is-invalid]="searchFailed" formControlName="projectName"
-               [ngbTypeahead]="typeAheadResultsProject" [inputFormatter]="getProjectName" [resultFormatter]="getProjectName" placeholder="Project Name" required/>
+        <label class="modal-label" for="projectName">Project Name</label>
+        <span style="color:#E94B3CFF"> (*Required)</span>
+        <input id="projectName" type="search" class="form-control"
+               [class.is-invalid]="((configForm.projectName.dirty || configForm.projectName.touched) && configForm.projectName.errors) || searchFailed"
+               formControlName="projectName"
+               [ngbTypeahead]="typeAheadResultsProject"
+               [inputFormatter]="getProjectName"
+               [resultFormatter]="getProjectName"
+               placeholder="Project Name" required/>
         <span *ngIf="searching">searching...</span>
-        <div class="invalid-feedback" *ngIf="searchFailed">Sorry, suggestions could not be loaded.</div>
+        <div class="invalid-feedback" *ngIf="!searchFailed || configForm.projectName.value === ''">Please provide a project name.</div>
+        <div class="invalid-feedback" *ngIf="searchFailed && !searching && configForm.projectName.value !== ''">Sorry, suggestions could not be loaded.</div>
       </div>
 
       <div class="form-group">
-        <label class="modal-label" for="teamName">Team Name: </label>
-        <input id="teamName" type="search" class="form-control" [class.is-invalid]="searchFailed" formControlName="teamName"
-               [ngbTypeahead]="typeAheadResultsTeam" [inputFormatter]="getTeamName" [resultFormatter]="getTeamName" placeholder="Team Name" required/>
+        <label class="modal-label" for="teamName">Team Name</label>
+        <span style="color:#E94B3CFF"> (*Required)</span>
+        <input id="teamName" type="search" class="form-control"
+               [class.is-invalid]="((configForm.teamName.dirty || configForm.teamName.touched) && configForm.teamName.errors) || searchFailed"
+               formControlName="teamName"
+               [ngbTypeahead]="typeAheadResultsTeam"
+               [inputFormatter]="getTeamName"
+               [resultFormatter]="getTeamName"
+               placeholder="Team Name" required/>
         <span *ngIf="searching">searching...</span>
-        <div class="invalid-feedback" *ngIf="searchFailed">Sorry, suggestions could not be loaded.</div>
+        <div class="invalid-feedback" *ngIf="!searchFailed || configForm.teamName.value === ''">Please provide a team name.</div>
+        <div class="invalid-feedback" *ngIf="searchFailed && !searching && configForm.teamName.value !== ''">Sorry, suggestions could not be loaded.</div>
       </div>
 
       <div class="form-group">
@@ -52,6 +81,36 @@
             {{currEstimateMetric.value}}
           </option>
         </select>
+<!--        <label class="modal-label" for="sprintType">Sprint Type: scrum or kanban:</label>-->
+<!--        <span style="color:#E94B3CFF"> (*Required)</span>-->
+<!--        <div class="input-group mb-3">-->
+<!--          <input id="sprintType" type="text" class="form-control" placeholder="Enter sprint Type (scrum or kanban)" aria-label="sprintType" formControlName="sprintType"-->
+<!--                 [class.is-invalid]="((configForm.sprintType.dirty || configForm.sprintType.touched) && configForm.sprintType.errors)"-->
+<!--                 required>-->
+<!--          <div class="invalid-feedback" *ngIf="configForm.sprintType.value === ''">Please provide a sprint type.</div>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      <div class="form-group">-->
+<!--        <label class="modal-label" for="listType">List Type: epics or issues:</label>-->
+<!--        <span style="color:#E94B3CFF"> (*Required)</span>-->
+<!--        <div class="input-group mb-3">-->
+<!--          <input id="listType" type="text" class="form-control" placeholder="Enter list Type (epics or issues)" aria-label="listType" formControlName="listType"-->
+<!--                 [class.is-invalid]="((configForm.listType.dirty || configForm.listType.touched) && configForm.listType.errors)"-->
+<!--                 required>-->
+<!--          <div class="invalid-feedback" *ngIf="configForm.listType.value === ''">Please provide a list type.</div>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      <div class="form-group">-->
+<!--        <label class="modal-label" for="estimateMetricType">Estimate Metric Type: storypoints or count:</label>-->
+<!--        <span style="color:#E94B3CFF"> (*Required)</span>-->
+<!--        <div class="input-group mb-3">-->
+<!--          <input id="estimateMetricType" type="text" class="form-control" placeholder="Enter Estimate Metric Type (storypoints or count)" aria-label="estimateMetricType" formControlName="estimateMetricType"-->
+<!--                 [class.is-invalid]="((configForm.estimateMetricType.dirty || configForm.estimateMetricType.touched) && configForm.estimateMetricType.errors)"-->
+<!--                 required>-->
+<!--          <div class="invalid-feedback" *ngIf="configForm.estimateMetricType.value === ''">Please provide an estimate metric type.</div>-->
+<!--        </div>-->
       </div>
     </div>
   </div>

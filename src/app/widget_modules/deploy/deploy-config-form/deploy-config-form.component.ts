@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable, of } from 'rxjs';
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, take, tap} from 'rxjs/operators';
@@ -61,11 +61,18 @@ export class DeployConfigFormComponent implements OnInit {
         switchMap(term => {
           return term.length < 2 ? of([]) :
             this.collectorService.searchItemsBySearchField('Deployment', term, 'description').pipe(
-              tap(() => this.searchFailed = false),
+              tap(val => {
+                if (!val || val.length === 0) {
+                  this.searchFailed = true;
+                  return of([]);
+                }
+                this.searchFailed = false;
+              }),
               catchError(() => {
                 this.searchFailed = true;
                 return of([]);
-              }));
+              })
+            );
         }),
         tap(() => this.searching = false)
       );
@@ -76,12 +83,16 @@ export class DeployConfigFormComponent implements OnInit {
   public createForm() {
     this.deployConfigForm = this.formBuilder.group({
       deployRegex: [''],
-      deployJob: [''],
+      deployJob: ['', Validators.required],
       deployAggregateServer: Boolean
     });
   }
 
   public submitForm() {
+    if (this.deployConfigForm.invalid) {
+      return;
+    }
+
     const newConfig = {
       name: 'deploy',
       options: {
@@ -115,10 +126,14 @@ export class DeployConfigFormComponent implements OnInit {
       this.deployConfigForm.get('deployJob').setValue(collectorData);
     });
   }
+
   private getDashboardComponent() {
     this.dashboardService.dashboardConfig$.pipe(take(1),
       map(dashboard => {
         return dashboard.application.components[0].id;
       })).subscribe(componentId => this.componentId = componentId);
   }
+
+  // convenience getter for easy access to form fields
+  get configForm() { return this.deployConfigForm.controls; }
 }

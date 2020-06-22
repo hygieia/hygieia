@@ -57,7 +57,13 @@ export class TestConfigFormComponent implements OnInit {
         switchMap(term => {
           return term.length < 1 ? of([]) :
             this.collectorService.searchItems(this.COLLECTOR_ITEM_TYPE, term).pipe(
-              tap(() => this.searchFailed = false),
+              tap(val => {
+                if (!val || val.length === 0) {
+                  this.searchFailed = true;
+                  return of([]);
+                }
+                this.searchFailed = false;
+              }),
               catchError(() => {
                 this.searchFailed = true;
                 return of([]);
@@ -156,4 +162,6 @@ export class TestConfigFormComponent implements OnInit {
     this.activeModal.close(newConfig);
   }
 
+  // convenience getter for easy access to form fields
+  get configForm() { return this.testConfigForm.controls; }
 }
