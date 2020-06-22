@@ -65,6 +65,7 @@ export class EditDashboardComponent implements OnInit {
     modalRef.result.then((newConfig) => {
       this.loadData();
     }).catch((error) => {
+      this.loadData();
       console.log('edit error newConfig :' + error);
     });
 

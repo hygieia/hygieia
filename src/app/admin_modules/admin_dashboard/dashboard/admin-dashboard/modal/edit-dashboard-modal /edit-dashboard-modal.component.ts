@@ -49,6 +49,7 @@ export class EditDashboardModalComponent implements OnInit {
     selectHeaderOrWidgetToolTip = 'Dashboard score can either be displayed in header or as a widget.';
     searchconfigItemBus: any;
     allWidgets: unknown[];
+    searchconfigItemBusComponent: any;
 
 
 
@@ -87,6 +88,7 @@ export class EditDashboardModalComponent implements OnInit {
         });
 
         this.getConfigItem('app', '');
+        this.getConfigItemComponent('', '');
         setTimeout(() => {
             console.log('dashboardItem' + JSON.stringify(this.dashboardItem));
             this.cdfForm.get('dashboardTitle').setValue(this.getDashboardTitle());
@@ -111,13 +113,13 @@ export class EditDashboardModalComponent implements OnInit {
             debounceTime(200),
             distinctUntilChanged(),
             map(term => term.length < 1 ? []
-                : this.searchconfigItemBus.filter(v => {
-                    const x = v.commonName;
+                : this.searchconfigItemBusComponent.filter(v => {
+                    const x = v.configurationItem;
                     const y = v.commonName;
                     return x.toLowerCase().indexOf(term.toLowerCase()) > -1 || y.toLowerCase().indexOf(term.toLowerCase()) > -1;
                 }).slice(0, 10))
         )
-    formatterConfigItemBusApp = (x: { commonName: string }) => x.commonName;
+    formatterConfigItemBusApp = (x: { configurationItem: string }) => x.configurationItem;
 
     get f() { return this.cdfForm.controls; }
 
@@ -280,10 +282,20 @@ export class EditDashboardModalComponent implements OnInit {
     }
 
     getConfigItem(type, filter) {
+        console.log('getConfigItem', type, filter);
         return this.cmdbData.getConfigItemList(type, { search: filter, size: 20 })
             .subscribe((response) => {
                 console.log('getConfigItem', response);
                 this.searchconfigItemBus = response;
+            });
+    }
+
+    getConfigItemComponent(type, filter) {
+        console.log('getConfigItem', type, filter);
+        return this.cmdbData.getConfigItemList('component', { search: filter, size: 20 })
+            .subscribe((response) => {
+                console.log('getConfigItem', response);
+                this.searchconfigItemBusComponent = response;
             });
     }
     getDashboardTitle() {
