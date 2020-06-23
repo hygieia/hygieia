@@ -4,6 +4,7 @@
 
       <div class="form-group">
         <label for="featureTool">Feature Tool: </label>
+        <span class="required-text"> (*Required)</span>
         <br><select formControlName="featureTool" id="featureTool">
           <option *ngFor="let currFeature of featureTool" [value]="currFeature.type">
             {{currFeature.type}}
@@ -12,23 +13,38 @@
       </div>
 
       <div class="form-group">
-        <label class="modal-label" for="projectName">Project Name: </label>
-        <input id="projectName" type="search" class="form-control" [class.is-invalid]="searchFailed" formControlName="projectName"
-               [ngbTypeahead]="typeAheadResultsProject" [inputFormatter]="getProjectName" [resultFormatter]="getProjectName" placeholder="Project Name" required/>
-        <span *ngIf="searching">searching...</span>
-        <div class="invalid-feedback" *ngIf="searchFailed">Sorry, suggestions could not be loaded.</div>
+        <label class="modal-label" for="projectName">Project Name</label>
+        <span class="required-text"> (*Required)</span>
+        <input id="projectName" type="search" class="form-control"
+               [class.is-invalid]="((configForm.projectName.dirty || configForm.projectName.touched) && configForm.projectName.errors) || searchProjectFailed"
+               formControlName="projectName"
+               [ngbTypeahead]="typeAheadResultsProject"
+               [inputFormatter]="getProjectName"
+               [resultFormatter]="getProjectName"
+               placeholder="Project Name" required/>
+        <span *ngIf="searchingProject">searching...</span>
+        <div class="invalid-feedback" *ngIf="!searchProjectFailed || configForm.projectName.value === ''">Please provide a project name.</div>
+        <div class="invalid-feedback" *ngIf="searchProjectFailed && !searchingProject && configForm.projectName.value !== ''">Sorry, suggestions could not be loaded.</div>
       </div>
 
       <div class="form-group">
-        <label class="modal-label" for="teamName">Team Name: </label>
-        <input id="teamName" type="search" class="form-control" [class.is-invalid]="searchFailed" formControlName="teamName"
-               [ngbTypeahead]="typeAheadResultsTeam" [inputFormatter]="getTeamName" [resultFormatter]="getTeamName" placeholder="Team Name" required/>
-        <span *ngIf="searching">searching...</span>
-        <div class="invalid-feedback" *ngIf="searchFailed">Sorry, suggestions could not be loaded.</div>
+        <label class="modal-label" for="teamName">Team Name</label>
+        <span class="required-text"> (*Required)</span>
+        <input id="teamName" type="search" class="form-control"
+               [class.is-invalid]="((configForm.teamName.dirty || configForm.teamName.touched) && configForm.teamName.errors) || searchTeamFailed"
+               formControlName="teamName"
+               [ngbTypeahead]="typeAheadResultsTeam"
+               [inputFormatter]="getTeamName"
+               [resultFormatter]="getTeamName"
+               placeholder="Team Name" required/>
+        <span *ngIf="searchingTeam">searching...</span>
+        <div class="invalid-feedback" *ngIf="!searchTeamFailed || configForm.teamName.value === ''">Please provide a team name.</div>
+        <div class="invalid-feedback" *ngIf="searchTeamFailed && !searchingTeam && configForm.teamName.value !== ''">Sorry, suggestions could not be loaded.</div>
       </div>
 
       <div class="form-group">
         <label for="sprintType">Sprint Type: </label>
+        <span class="required-text"> (*Required)</span>
         <br><select formControlName="sprintType" id="sprintType">
           <option *ngFor="let currSprint of sprintType" [value]="currSprint.type">
             {{currSprint.value}}
@@ -38,6 +54,7 @@
 
       <div class="form-group">
         <label for="listType">List Type: </label>
+        <span class="required-text"> (*Required)</span>
         <br><select formControlName="listType" id="listType">
           <option *ngFor="let currList of listType" [value]="currList.type">
             {{currList.value}}
@@ -47,6 +64,7 @@
 
       <div class="form-group">
         <label for="estimateMetricType">Estimate Metric Type: </label>
+        <span class="required-text"> (*Required)</span>
         <br><select formControlName="estimateMetricType" id="estimateMetricType">
           <option *ngFor="let currEstimateMetric of estimateMetricType" [value]="currEstimateMetric.type">
             {{currEstimateMetric.value}}
