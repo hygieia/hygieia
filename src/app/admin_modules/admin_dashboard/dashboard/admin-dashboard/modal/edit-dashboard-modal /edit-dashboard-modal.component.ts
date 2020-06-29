@@ -6,11 +6,11 @@ import * as _ from 'lodash';
 import { UserDataService } from 'src/app/admin_modules/admin_dashboard/services/user-data.service';
 import { CmdbDataService } from 'src/app/admin_modules/admin_dashboard/services/cmdb-data.service';
 import { AdminDashboardService } from 'src/app/admin_modules/admin_dashboard/services/dashboard.service';
-import { map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { map, debounceTime, distinctUntilChanged, switchMap, catchError, tap } from 'rxjs/operators';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { DashboardItem } from '../../model/dashboard-item';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 @Component({
     selector: 'app-edit-dashboard-modal',
@@ -50,8 +50,8 @@ export class EditDashboardModalComponent implements OnInit {
     searchconfigItemBus: any;
     allWidgets: unknown[];
     searchconfigItemBusComponent: any;
-
-
+    noResults = false;
+    noResultsCom = false;
 
     constructor(private dashboardData: DashboardDataService, private authService: AuthService,
                 private widgetManager: WidgetManagerService, private userData: UserDataService,
@@ -96,29 +96,48 @@ export class EditDashboardModalComponent implements OnInit {
 
     }
 
-    searchconfigItemBusServ = (text$: Observable<string>) =>
+
+        searchconfigItemBusServ = (text$: Observable<string>) =>
         text$.pipe(
-            debounceTime(200),
-            distinctUntilChanged(),
-            map(term => term.length < 1 ? []
-                : this.searchconfigItemBus.filter(v => {
-                    const x = v.configurationItem;
-                    const y = v.commonName;
-                    return x.toLowerCase().indexOf(term.toLowerCase()) > -1 || y.toLowerCase().indexOf(term.toLowerCase()) > -1;
-                }).slice(0, 10))
+          debounceTime(200),
+          distinctUntilChanged(),
+          tap(() => this.noResults = false),
+          switchMap(term =>
+            this.cmdbData.getConfigItemList('app', { search: term, size: 20 })
+            .pipe(
+                map( (result: any) => {
+                    if (!result || result.length === 0) {
+                        this.noResults = true;
+                    }
+                    return result;
+                } ),
+              catchError(() => {
+                  return of([]);
+              }))
+          ),
         )
+
     formatter = (x: { configurationItem: string }) => x.configurationItem;
-    searchconfigItemBusApp = (text$: Observable<string>) =>
+        searchconfigItemBusApp = (text$: Observable<string>) =>
         text$.pipe(
-            debounceTime(200),
-            distinctUntilChanged(),
-            map(term => term.length < 1 ? []
-                : this.searchconfigItemBusComponent.filter(v => {
-                    const x = v.configurationItem;
-                    const y = v.commonName;
-                    return x.toLowerCase().indexOf(term.toLowerCase()) > -1 || y.toLowerCase().indexOf(term.toLowerCase()) > -1;
-                }).slice(0, 10))
+          debounceTime(200),
+          distinctUntilChanged(),
+          tap(() => this.noResultsCom = false),
+          switchMap(term =>
+            this.cmdbData.getConfigItemList('component', { search: term, size: 20 })
+            .pipe(
+                map( (result: any) => {
+                    if (!result || result.length === 0) {
+                        this.noResultsCom = true;
+                    }
+                    return result;
+                } ),
+              catchError(() => {
+                  return of([]);
+              }))
+          ),
         )
+
     formatterConfigItemBusApp = (x: { configurationItem: string }) => x.configurationItem;
 
     get f() { return this.cdfForm.controls; }
