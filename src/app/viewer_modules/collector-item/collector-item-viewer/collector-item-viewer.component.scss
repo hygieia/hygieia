@@ -1,0 +1,29 @@
+.gap {
+  margin-top: 2.5rem;
+}
+.table-row{
+    cursor:pointer;
+}
+table th td{
+    padding: .5rem;
+    background: #fff;
+    color: #666;
+}
+
+H3[ng-reflect-router-link] {
+  color: blue;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+td[ng-reflect-router-link] {
+  color: blue;
+  cursor: pointer;
+}
+
+
+.popupWin {
+  color: blue;
+  cursor: pointer;
+  text-decoration: underline;
+}

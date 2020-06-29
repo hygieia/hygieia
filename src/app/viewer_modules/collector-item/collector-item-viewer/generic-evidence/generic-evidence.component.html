@@ -1,0 +1,19 @@
+<app-navbar></app-navbar>
+<div class="main-content">
+  <div class="container">
+    <div *ngIf="collectorEvidenceDetails && collectorEvidenceDetails.length;then foundEvidence else noEvidence"></div>
+    <ng-template #foundEvidence>
+      <H3 class="gap">{{collector}} results for Dashboard {{dashboardTitle}}</H3>
+
+      <div *ngFor="let ci of collectorEvidenceDetails">
+        <em class="fa fa-list-alt"> {{collector}} Collector Item: {{ci.id}}</em>
+        <pre>{{getJsonHtml( ci )}}</pre>
+      </div>
+
+    </ng-template>
+    <ng-template #noEvidence>
+      <H4 class="gap">No {{collector}} details found for </H4>
+      <H4 class="indent">Dashboard {{dashboardTitle}}</H4>
+    </ng-template>
+  </div>
+</div>

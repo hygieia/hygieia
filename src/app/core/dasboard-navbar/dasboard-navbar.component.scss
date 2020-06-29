@@ -1,10 +1,9 @@
 .divNavBar{
-  width: 100%; text-align: center;
+  width: 100%; text-align: center; margin: 10px;
 }
 #header {
   text-align: center;
   position: relative;
-  margin-bottom: 15px;
 
   .dashboard-logo {
     background: url("../../../assets/img/Hygieia_Logo.png") no-repeat center center;
@@ -12,7 +11,8 @@
     display: inline-block;
     position: absolute;
     left: 10px;
-    top: 8px;
+    top: 50%;
+    transform: translateY(-50%);
     width: 135px;
     height: 35px;
     &.dashboard-logo-inverse {
@@ -20,6 +20,21 @@
     }
   }
 }
+
+h4.dash-title {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  display: inline-block;
+}
+
+a.viewer {
+  display: inline-block;
+  color: #08b;
+  float: right;
+}
+
 .navbar-default .nav > li > a,
 .navbar-default .nav > li > a:focus {
   color: #08b;

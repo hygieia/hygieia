@@ -1,0 +1,30 @@
+<app-navbar></app-navbar>
+<div class="main-content">
+  <div class="container">
+    <H3 class="gap">{{collector}} results for Dashboard {{dashboardTitle}}</H3>
+
+    <div class="mat-header">
+      <mat-form-field>
+        <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+      </mat-form-field>
+    </div>
+
+    <div class="mat-container mat-elevation-z8">
+      <mat-table [dataSource]="dataSource" matSort>
+        <ng-container matColumnDef="name">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> name </mat-header-cell>
+          <mat-cell *matCellDef="let row" class="popupWin" (click)="openDetails(row)"> {{row.name}} </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="url">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> URL </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{row.url}} </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;">
+        </mat-row>
+      </mat-table>
+
+      <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]"></mat-paginator>
+    </div>
+  </div>
+</div>
