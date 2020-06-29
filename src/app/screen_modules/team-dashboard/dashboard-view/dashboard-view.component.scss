@@ -1,9 +1,7 @@
 @import '../../../../styles/css/dashvariables.scss';
 
 #dashboard {
-  background: $dash-dashboard-bg;
   color: $dash-dashboard-text;
-  background-image: url('../../../../#{$dash-image-path}bg-forest.jpg');
   background-size: cover;
 
   .dashboard-widgets {

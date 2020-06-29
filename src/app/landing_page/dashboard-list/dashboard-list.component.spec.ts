@@ -8,6 +8,10 @@ import { IPaginationParams } from '../../shared/interfaces';
 import { SharedModule } from '../../shared/shared.module';
 import { DashboardListComponent } from './dashboard-list.component';
 import { DashboardListService } from './dashboard-list.service';
+import {NbDialogService, NbThemeModule} from '@nebular/theme';
+import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+
+class MockDialogService {}
 
 describe('DashboardListComponent', () => {
   let component: DashboardListComponent;
@@ -16,9 +20,10 @@ describe('DashboardListComponent', () => {
   let dashboardListService;
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, SharedModule, HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+      imports: [ReactiveFormsModule, SharedModule, NbThemeModule.forRoot(), HttpClientTestingModule, RouterTestingModule.withRoutes([])],
       declarations: [ DashboardListComponent ],
-      providers: [ DashboardListService ]
+      providers: [ DashboardListService, {provide: NbDialogService, useClass: MockDialogService} ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
     .compileComponents();
   }));

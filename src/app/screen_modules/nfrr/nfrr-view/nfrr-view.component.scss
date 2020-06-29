@@ -1,11 +1,11 @@
 
 .jumbotron {
-  background-color: black;
+  background-color: transparent;
   color: lightgray;
   margin: 0;
   padding-top: 0;
   .container {
-    background-color: black;
+    background-color: transparent;
   }
   h1 {
     text-align: center;
@@ -27,7 +27,7 @@
 .select {
   display:flex;
   flex-direction: row;
-  background-color: black;
+  background-color: transparent;
   justify-content: center;
   p {
     justify-self: center;
@@ -67,6 +67,7 @@
   display: flex;
   justify-content: space-around;
   .row-in {
+    background-color: lightgray;
     box-shadow: 2px 4px 8px rgba(0,0,0,0.3);
   }
 }
