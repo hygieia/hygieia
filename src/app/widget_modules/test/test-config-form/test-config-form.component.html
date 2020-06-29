@@ -8,22 +8,26 @@
         <div formArrayName="functionalTests">
           <div *ngFor="let test of functionalTests.controls; let i=index" [formGroupName]="i">
             <div class="input-group mb-3">
-              <input id="test" type="search" class="form-control" [class.is-invalid]="searchFailed" formControlName="test"
-              [ngbTypeahead]="typeAheadResults" [inputFormatter]="getTestResultTitle" [resultFormatter]="getTestResultTitle"
-              required>
+              <input id="test" type="search" class="form-control"
+                     [class.is-invalid]="((test.dirty || test.touched) && test.errors) || searchFunctionalFailed"
+                     formControlName="test"
+              [ngbTypeahead]="typeAheadResultsFunctional" [inputFormatter]="getTestResultTitle" [resultFormatter]="getTestResultTitle"
+                     placeholder="Search for a functional test" required>
               <div class="input-group-append">
                 <button class="btn btn-secondary fa fa-trash " type="button" (click)="deleteFunctionalTest(i)"></button>
               </div>
+              <div class="invalid-feedback" *ngIf="!searchFunctionalFailed || test.value === ''">Please provide a functional test.</div>
+              <div class="invalid-feedback" *ngIf="searchFunctionalFailed && !searchingFunctional && test.value !== ''">Sorry, suggestions could not be loaded.</div>
             </div>
           </div>
-          
+
           <div class="row">
             <div class="col text-center">
               <button type="button" class="fa fa-plus-circle fa-2x btn btn-secondary btn-sm" (click)="addFunctionalTest(i)"></button>
             </div>
           </div>
         </div>
-      </div>  
+      </div>
 
       <!-- Performance tests -->
       <div class="form-group">
@@ -31,12 +35,16 @@
         <div formArrayName="performanceTests">
           <div *ngFor="let test of performanceTests.controls; let i=index" [formGroupName]="i">
             <div class="input-group mb-3">
-              <input id="test" type="search" class="form-control" [class.is-invalid]="searchFailed" formControlName="test"
-              [ngbTypeahead]="typeAheadResults" [inputFormatter]="getTestResultTitle" [resultFormatter]="getTestResultTitle"
-              required>
+              <input id="test" type="search" class="form-control"
+                     [class.is-invalid]="((test.dirty || test.touched) && test.errors) || searchPerformanceFailed"
+                     formControlName="test"
+              [ngbTypeahead]="typeAheadResultsPerformance" [inputFormatter]="getTestResultTitle" [resultFormatter]="getTestResultTitle"
+                     placeholder="Search for a performance test" required>
               <div class="input-group-append">
                 <button class="btn btn-secondary fa fa-trash" type="button" (click)="deletePerformanceTest(i)"></button>
               </div>
+              <div class="invalid-feedback" *ngIf="!searchPerformanceFailed || test.value === ''">Please provide a performance test.</div>
+              <div class="invalid-feedback" *ngIf="searchPerformanceFailed && !searchingPerformance && test.value !== ''">Sorry, suggestions could not be loaded.</div>
             </div>
           </div>
 
@@ -44,12 +52,12 @@
             <div class="col text-center">
               <button type="button" class="fa fa-plus-circle fa-2x btn btn-secondary btn-sm" (click)="addPerformanceTest(i)"></button>
             </div>
-          </div>        
+          </div>
         </div>
       </div>
     </div>
   </div>
-  
+
   <!-- Save -->
   <div class="modal-footer">
     <div class="container">

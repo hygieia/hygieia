@@ -9,7 +9,7 @@ import {Observable, of} from 'rxjs';
 @Component({
   selector: 'app-security-scan-config',
   templateUrl: './security-scan-config.component.html',
-  styleUrls: ['./security-scan-config.component.sass']
+  styleUrls: ['./security-scan-config.component.scss']
 })
 export class SecurityScanConfigComponent implements OnInit {
   private componentId: string;
@@ -62,7 +62,13 @@ export class SecurityScanConfigComponent implements OnInit {
         switchMap(term => {
           return term.length < 2 ? of([]) :
             this.collectorService.searchItems('StaticSecurityScan', term).pipe(
-              tap(() => this.searchFailed = false),
+              tap(val => {
+                if (!val || val.length === 0) {
+                  this.searchFailed = true;
+                  return of([]);
+                }
+                this.searchFailed = false;
+              }),
               catchError(() => {
                 this.searchFailed = true;
                 return of([]);
@@ -117,4 +123,7 @@ export class SecurityScanConfigComponent implements OnInit {
         return dashboard.application.components[0].id;
       })).subscribe(componentId => this.componentId = componentId);
   }
+
+  // convenience getter for easy access to form fields
+  get configForm() { return this.securityConfigForm.controls; }
 }

@@ -97,14 +97,7 @@ export class FeatureWidgetComponent extends WidgetComponent implements OnInit, A
           this.featureService.fetchIterations(this.params.component, this.params.teamId, this.params.projectId,
             this.params.sprintType).pipe(catchError(err => of(err))));
       })).subscribe(([wip, estimates, iterations]) => {
-        this.hasData = ((wip && (wip as []).length > 0) ||
-          (estimates && (estimates as []).length > 0) ||
-          (iterations && (iterations as []).length > 0));
-        if (this.hasData) {
-          this.loadCharts(wip, estimates, iterations);
-        } else {
-          this.setDefaultIfNoData();
-        }
+        this.loadCharts(wip, estimates, iterations);
       });
   }
 
@@ -193,7 +186,7 @@ export class FeatureWidgetComponent extends WidgetComponent implements OnInit, A
       return;
     }
 
-    if (this.params.sprintType === 'scrum' || this.params.sprintType === 'both') {
+    if (this.params.sprintType === 'scrum' || this.params.sprintType === 'scrumkanban') {
       items = [
         {
           status: null,
@@ -281,20 +274,14 @@ export class FeatureWidgetComponent extends WidgetComponent implements OnInit, A
       }
     });
 
-    this.charts[2].data = {
-      items,
-      clickableContent: FeatureDetailComponent,
-      clickableHeader: null
-    } as IClickListData;
-  }
-
-  setDefaultIfNoData() {
-    if (!this.hasData) {
-      this.charts[0].data = { items: [{ title: 'No Data Found' }]};
-      this.charts[1].data = { items: [{ title: 'No Data Found' }]};
+    if (items.length === 0) {
       this.charts[2].data = { items: [{ title: 'No Data Found' }]};
+    } else {
+      this.charts[2].data = {
+        items,
+        clickableContent: FeatureDetailComponent,
+        clickableHeader: null
+      } as IClickListData;
     }
-    super.loadComponent(this.childLayoutTag);
   }
-
 }
