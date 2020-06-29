@@ -1,6 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 
@@ -20,7 +20,8 @@ describe('DashboardListComponent', () => {
   let dashboardListService;
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, SharedModule, NbThemeModule.forRoot(), HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+      imports: [ReactiveFormsModule, SharedModule, NbThemeModule.forRoot(), HttpClientTestingModule,
+        RouterTestingModule.withRoutes([]), FormsModule],
       declarations: [ DashboardListComponent ],
       providers: [ DashboardListService, {provide: NbDialogService, useClass: MockDialogService} ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
