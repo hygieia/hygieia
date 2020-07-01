@@ -20,7 +20,7 @@ import { DashboardItem } from '../model/dashboard-item';
 import { UserDataService } from '../../../services/user-data.service';
 import { MockDashboardDataService } from '../../../services/mock-dashboard-data.service';
 import { MockPaginationWrapperService } from '../../../services/mock-pagination-wrapper.service';
-import { EditDashboardModalComponent } from '../modal/edit-dashboard-modal /edit-dashboard-modal.component';
+import { EditDashboardModalComponent } from '../modal/edit-dashboard-modal/edit-dashboard-modal.component';
 import { AdminDeleteComponent } from '../modal/admin-delete/admin-delete.component';
 
 
