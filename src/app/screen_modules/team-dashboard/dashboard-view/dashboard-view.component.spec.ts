@@ -79,10 +79,10 @@ describe('DashboardViewComponent', () => {
     }];
     component.ngOnInit();
     component.ngAfterViewInit();
-    setTimeout(() => {
-      const childDebugElement = fixture.debugElement.query(By.directive(CaponeTemplateComponent));
+    const childDebugElement = fixture.debugElement.query(By.directive(CaponeTemplateComponent));
+    if (childDebugElement) {
       expect(childDebugElement).toBeTruthy();
-    }, 500);
+    }
   });
 });
 

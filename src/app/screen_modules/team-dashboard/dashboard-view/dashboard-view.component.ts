@@ -12,7 +12,7 @@ import { DashboardService } from 'src/app/shared/dashboard.service';
 import { DashboardComponent } from 'src/app/shared/dashboard/dashboard.component';
 import { TemplatesDirective } from 'src/app/shared/templates/templates.directive';
 import { CaponeTemplateComponent } from '../capone-template/capone-template.component';
-import { ITemplate, widgetsAll } from './dashboard-view';
+import { widgetsAll } from './dashboard-view';
 import {IWidget} from '../../../shared/interfaces';
 
 @Component({
@@ -24,7 +24,6 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
 
   @Output() title = new EventEmitter(true);
   dashboardTitle = '';
-  teamDashboard: ITemplate;
   dashboardId: string;
   widgetsAll: IWidget[] = widgetsAll;
   @ViewChild(TemplatesDirective, {static: false}) childTemplateTag: TemplatesDirective;
@@ -40,17 +39,14 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
     this.dashboardService.clearDashboard();
     this.dashboardId = this.route.snapshot.paramMap.get('id');
     this.dashboardService.loadDashboard(this.dashboardId);
-    this.loadWidgets();
+    this.baseTemplate = CaponeTemplateComponent;
   }
 
   ngAfterViewInit() {
-    setTimeout(() => {
-      super.loadComponent(this.childTemplateTag);
-    }, 500);
+    this.loadWidgets();
   }
 
   private loadWidgets() {
-    this.baseTemplate = CaponeTemplateComponent;
     this.dashboardService.dashboardConfig$.subscribe(dashboard => {
       this.dashboardTitle = [dashboard.title, dashboard.configurationItemBusAppName, dashboard.configurationItemBusServName]
         .filter(Boolean).join(' - ');
@@ -69,6 +65,7 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
         }
       });
       this.widgets = widgets;
+      super.loadComponent(this.childTemplateTag);
     });
   }
 }
