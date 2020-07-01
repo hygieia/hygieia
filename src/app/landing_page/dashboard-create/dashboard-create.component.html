@@ -6,17 +6,17 @@
           <div>
             <form (ngSubmit)="onSubmit()" #myForm="ngForm">
               <div class="form-group">
-                <nb-select fullWidth placeholder="Select Dashboard type" [(ngModel)]="dType" required [(selected)]="selDType"
+                <nb-select fullWidth placeholder="Select type" required [(selected)]="dType"
                            [status]="isValidType(dType) ? 'basic' : 'danger'" name="dType" id="dType">
-                  <nb-option>Select dashboard type</nb-option>
+                  <nb-option disabled>Select type</nb-option>
                   <nb-option value="Team">Team</nb-option>
                   <nb-option value="Product" disabled>Product</nb-option>
                 </nb-select></div>
               <div class="form-group">
-                <nb-select fullWidth status="basic" placeholder="Select Dashboard layout" [(ngModel)]="dLayout" [(selected)]="selDTemplate"
-                           [status]="isValidTemplate(dLayout) ? 'basic' : 'danger'" name="dTemplate" id="dTemplate" required>
-                  <nb-option>Select dashboard layout</nb-option>
-                  <nb-option value="capone">Widgets</nb-option>
+                <nb-select fullWidth status="basic" placeholder="Select layout" [(selected)]="dLayout"
+                           [status]="isValidTemplate(dLayout) ? 'basic' : 'danger'" name="dLayout" id="dLayout" required>
+                  <nb-option disabled>Select layout</nb-option>
+                  <nb-option value="Widgets">Widgets</nb-option>
                   <nb-option value="Templates" disabled>Templates</nb-option>
                 </nb-select></div>
               <div class="form-group">
@@ -26,10 +26,10 @@
                 <input class="form-control" type="text" nbInput fullWidth status="basic" placeholder="Application Name"
                        [(ngModel)]="appName" [status]="isValidAppName(appName) ? 'basic' : 'danger'" name="appName" required minlength="6"></div>
               <div class="form-group">
-                <input class="form-control" type="text" nbInput fullWidth status="basic" placeholder="Select Business Service (Optional)"
+                <input class="form-control" type="text" nbInput fullWidth status="basic" placeholder="Business Service (Optional)"
                        [(ngModel)]="busService" name="busService"></div>
               <div class="form-group">
-                <input class="form-control" type="text" nbInput fullWidth status="basic" placeholder="Select Business Application (Optional)"
+                <input class="form-control" type="text" nbInput fullWidth status="basic" placeholder="Business Application (Optional)"
                        [(ngModel)]="busApp" name="busApp"></div>
               <button nbButton nbStepperNext type="submit" [disabled]="!myForm.form.valid">Next</button>
             </form>

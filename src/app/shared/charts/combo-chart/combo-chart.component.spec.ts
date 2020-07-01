@@ -8,6 +8,7 @@ import { MinutesPipe } from '../../pipes/minutes.pipe';
 import { ComboSeriesVerticalComponent } from '../combo-series-vertical/combo-series-vertical.component';
 import { LineAndBarChartComponent } from '../../ngx-charts/line-and-bar-chart/line-and-bar-chart.component';
 import { ComboChartComponent } from './combo-chart.component';
+import {ViewRef} from '@angular/core';
 
 describe('ComboChartComponent', () => {
   let component: ComboChartComponent;
@@ -28,7 +29,9 @@ describe('ComboChartComponent', () => {
     component.xAxisLabel = 'Test';
     component.yAxisLabel = 'Test';
     component.data = [{}, []];
-    fixture.detectChanges();
+    if (!(fixture.changeDetectorRef as ViewRef).destroyed) {
+      fixture.detectChanges();
+    }
   });
 
   it('should create', () => {

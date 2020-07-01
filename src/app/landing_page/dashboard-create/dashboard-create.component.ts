@@ -20,9 +20,6 @@ class Widget {
 })
 export class DashboardCreateComponent implements OnInit {
 
-  dType: any;
-  dLayout: any;
-
   selectedWidgets: string[] = [];
   @Output() title: string;
   appName: string;
@@ -30,8 +27,8 @@ export class DashboardCreateComponent implements OnInit {
   busApp: string;
   next: any;
   createErrorMsg: string;
-  selDType = 'Team';
-  selDTemplate = '1';
+  dType = 'Team';
+  dLayout = 'Widgets';
   widgetNames: Array<string> = ['build', 'codeanalysis', 'deploy', 'feature', 'repo'];
   widgets: Widget[] = [];
 
