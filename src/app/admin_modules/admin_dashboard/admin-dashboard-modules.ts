@@ -29,7 +29,7 @@ import { AdminDashboardService } from './services/dashboard.service';
 import { EditDashboardComponent } from './dashboard/admin-dashboard/edit-dashboard/edit-dashboard.component';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { AuthInterceptor } from 'src/app/core/interceptors/auth.interceptor';
-import { EditDashboardModalComponent } from './dashboard/admin-dashboard/modal/edit-dashboard-modal /edit-dashboard-modal.component';
+import { EditDashboardModalComponent } from './dashboard/admin-dashboard/modal/edit-dashboard-modal/edit-dashboard-modal.component';
 import { AdminDeleteComponent } from './dashboard/admin-dashboard/modal/admin-delete/admin-delete.component';
 
 @NgModule({
