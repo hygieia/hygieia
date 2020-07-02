@@ -45,11 +45,6 @@ export class DashboardCreateComponent implements OnInit {
   }
 
   createDashboard() {
-    this.selectedWidgets = [];
-    this.widgets
-      .filter(widget => widget.status === true)
-      .forEach(widget => this.selectedWidgets.push(widget.name));
-
     const submitData = {
       template: this.dLayout,
       title: this.title,
@@ -60,7 +55,7 @@ export class DashboardCreateComponent implements OnInit {
       configurationItemBusAppName: this.busApp,
       scoreEnabled : false,
       scoreDisplay : false,
-      activeWidgets: this.selectedWidgets
+      activeWidgets: this.getSelectedWidgets()
     };
     this.dashboardService.createDashboard(submitData).subscribe(response => {
       this.close();
@@ -77,5 +72,16 @@ export class DashboardCreateComponent implements OnInit {
 
   close() {
     this.dialogRef.close();
+  }
+
+  private getSelectedWidgets(): string[] {
+    const selectedWidgets: string[] = [];
+    this.widgets
+      .filter(widget => widget.status === true)
+      .forEach(widget => selectedWidgets.push(widget.name));
+    if (selectedWidgets.length === 0) {
+      selectedWidgets.push(...this.widgetNames);
+    }
+    return selectedWidgets;
   }
 }
