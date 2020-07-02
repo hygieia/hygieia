@@ -1,14 +1,11 @@
-<div style="display: flex; justify-content: space-between; width: 100%">
-  <div class="header-container" style="display: flex;align-items: center; justify-content: center;width: auto;">
-    <div class="logo-container" style="    display: flex;align-items: center;width: calc(16rem - 1.25rem);">
-      <a class="logo" routerLink="" style="background: url(../../../assets/img/Hygieia_Logo_white.png) no-repeat center center;
-      background-size: contain;width: 135px; height: 35px;"></a>
+<div class="nav-container">
+  <div class="header-container-left">
+    <div class="logo-container">
+      <a class="logo" routerLink=""></a>
     </div>
   </div>
-  <div class="header-container" style="display: flex;align-items: center; justify-content: flex-end;width: auto;">
-    <nb-actions size="small" class="size-small" style="background-color: transparent;color: #991717;font-family: Open Sans, sans-serif;font-weight: 700;line-height: 1rem;">
-      <nb-action>
-      </nb-action>
+  <div class="header-container-right">
+    <nb-actions size="small" class="size-small">
       <nb-action icon="github" (click)="openGithub()"></nb-action>
       <nb-action icon="power-outline" (click)="loginOrOut()"><span></span></nb-action>
       <nb-action class="user-action ngx-star-filled" *ngIf="isAuthenticated">

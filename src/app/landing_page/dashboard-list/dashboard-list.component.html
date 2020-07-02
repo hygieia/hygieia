@@ -3,8 +3,8 @@
     <div class="row justify-content-md-center">
       <div class="col-8">
         <div class="col">
-          <div class="col search-i">
-            <input style="background: black; border: dimgrey solid 0.1em" nbInput type="search" name="dashboardSearch" placeholder="Search dashboard by title or application component name" shape="round" fieldSize="large"
+          <div class="col">
+            <input nbInput type="search" id="dSearch" name="dSearch" placeholder="Search dashboard by title or application component name" shape="round" fieldSize="large"
                    fullWidth [formControl]="queryField">
           </div>
           <div class="col">
@@ -46,7 +46,7 @@
                 <nb-card size="giant">
                   <nb-card-header>
                     <h4> My {{ dashboardType }} Dashboards
-                      <button nbButton outline shape="round" size="small" style="float: right;" (click)="createDashboard()"><nb-icon size="large" icon="plus-circle"></nb-icon>Create</button></h4>
+                      <button id="bCreate" nbButton outline shape="round" size="small" (click)="createDashboard()"><nb-icon size="large" icon="plus-circle"></nb-icon>Create</button></h4>
                     <ng-template></ng-template>
                   </nb-card-header>
                     <nb-list>

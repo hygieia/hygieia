@@ -10,46 +10,19 @@
   line-height: 1.5;
   color: #ffffff;
 }
-
-.btn-secondary {
-  color: #666;
-  background-color: #e6e6e6;
-  border-color: #b6b9be;
-}
-.dashboard-type-list {
-  width: 100%;
-
-  .btn {
-    width: 33.333%;
-    text-overflow: ellipsis;
-    overflow: hidden;
-  }
-}
-.widget-modal-heading {
-  border-bottom: 1px solid #7f7f7f;
-  color: #152131;
-  font-size: 1.5rem;
-  margin-bottom: 3rem;
-  padding: 1rem;
-  text-align: center;
-}
 .gap {
   margin-top: 3.5rem;
 }
-.table-row{
-  cursor:pointer;
-  :hover {
-    background-color: #e6e6e6;
-  }
+
+#dSearch {
+  background: black;
+  border: dimgrey solid 0.1em;
 }
-table td{
-  padding: .5rem;
-  background: #fff;
-  color: #666;
-  a {
-    color: #666;
-  }
+
+#bCreate {
+  float: right;
 }
+
 nb-card-header {
   @include font-style
 }
@@ -73,8 +46,4 @@ nb-card {
 
 h4 {
   color: dimgrey;
-}
-
-input:focus {
-  background-color: #00a33c;
 }
