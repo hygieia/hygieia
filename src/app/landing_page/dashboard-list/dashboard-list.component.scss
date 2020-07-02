@@ -8,7 +8,7 @@
   font-family: 'Lucida Grande';
   font-weight: 600;
   line-height: 1.5;
-  color: #ffffff;
+  color: lightgray;
 }
 .gap {
   margin-top: 3.5rem;
@@ -27,6 +27,7 @@ nb-card-header {
   @include font-style
 }
 nb-list-item {
+  color: dimgrey;
   .d-name {
     margin-left: 1em;
     @include font-style

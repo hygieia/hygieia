@@ -13,6 +13,15 @@ class Widget {
   }
 }
 
+class CTemplate {
+  name: string;
+  status: boolean;
+  constructor(name: string, status: boolean) {
+    this.name = name;
+    this.status = status;
+  }
+}
+
 @Component({
   selector: 'app-dashboard-create',
   templateUrl: './dashboard-create.component.html',
@@ -20,7 +29,7 @@ class Widget {
 })
 export class DashboardCreateComponent implements OnInit {
 
-  selectedWidgets: string[] = [];
+  selectedLayoutItems: string[] = [];
   @Output() title: string;
   appName: string;
   busService: string;
@@ -28,9 +37,11 @@ export class DashboardCreateComponent implements OnInit {
   next: any;
   createErrorMsg: string;
   dType = 'Team';
-  dLayout = 'Widgets';
+  dLayout = 'Templates';
   widgetNames: Array<string> = ['build', 'codeanalysis', 'deploy', 'feature', 'repo'];
+  templateNames: Array<string> = ['CapOne'];
   widgets: Widget[] = [];
+  templates: CTemplate[] = [];
 
   constructor(private dashboardService: DashboardService, private router: Router,
               private dialogRef: NbDialogRef<any>) {}
@@ -42,9 +53,11 @@ export class DashboardCreateComponent implements OnInit {
 
   ngOnInit() {
     this.widgetNames.forEach(name => this.widgets.push(new Widget(name, false)));
+    this.templateNames.forEach(name => this.templates.push(new CTemplate(name, false)));
   }
 
   createDashboard() {
+    this.selectedLayoutItems = this.getSelectedLayoutItems();
     const submitData = {
       template: this.dLayout,
       title: this.title,
@@ -55,7 +68,7 @@ export class DashboardCreateComponent implements OnInit {
       configurationItemBusAppName: this.busApp,
       scoreEnabled : false,
       scoreDisplay : false,
-      activeWidgets: this.getSelectedWidgets()
+      activeWidgets: this.selectedLayoutItems
     };
     this.dashboardService.createDashboard(submitData).subscribe(response => {
       this.close();
@@ -63,7 +76,7 @@ export class DashboardCreateComponent implements OnInit {
         this.createErrorMsg = response.message;
         return;
       }
-      this.router.navigate([`dashboard/dashboardview/${response.id}`, { activeWidgets: this.selectedWidgets}]);
+      this.router.navigate([`dashboard/dashboardview/${response.id}`, { activeWidgets: this.selectedLayoutItems}]);
     });
   }
 
@@ -74,14 +87,27 @@ export class DashboardCreateComponent implements OnInit {
     this.dialogRef.close();
   }
 
+  private getSelectedLayoutItems(): string[] {
+    if (this.dLayout === 'Widgets') {
+      return this.getSelectedWidgets();
+    }
+    if (this.dLayout === 'Templates') {
+      return this.getSelectedTemplate();
+    }
+  }
+
   private getSelectedWidgets(): string[] {
-    const selectedWidgets: string[] = [];
-    this.widgets
-      .filter(widget => widget.status === true)
-      .forEach(widget => selectedWidgets.push(widget.name));
-    if (selectedWidgets.length === 0) {
+    const selectedWidgets: string[] = this.widgets.filter(widget => widget.status === true).map(widget => widget.name);
+    if (!selectedWidgets || selectedWidgets.length === 0) {
       selectedWidgets.push(...this.widgetNames);
     }
     return selectedWidgets;
+  }
+
+  private getSelectedTemplate(): string[] {
+    const selectedTemplate: CTemplate = this.templates.find(template => template.status === true);
+    if (selectedTemplate.name === 'CapOne') {
+      return this.widgetNames;
+    }
   }
 }
