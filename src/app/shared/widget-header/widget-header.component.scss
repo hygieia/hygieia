@@ -23,8 +23,8 @@
 
   // heading in a widget
   .widget-heading {
-    border-bottom: 1px solid $dash-widget-heading-border;
-    color: $dash-widget-heading-text;
+    //border-bottom: 1px solid $dash-widget-heading-border;
+    //color: $dash-widget-heading-text;
     letter-spacing: .1em;
     padding-bottom: .5em;
     margin-bottom: 1em;
@@ -103,14 +103,14 @@
     color: $dash-state-config-text;
     display: none;
     font-size: 2em;
-    line-height: 2.4em;
-    margin: 1em 0;
-    padding: 2em;
+    //line-height: 2.4em;
+    margin: 0.5em 0;
+    padding: 0.5em;
     text-align: center;
 
     .fa {
       border: 2px solid $dash-state-config-text;
-      margin-bottom: .75em;
+      //margin-bottom: .75em;
       padding: .45em .4em;
       @include border-radius(50%);
 

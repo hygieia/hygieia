@@ -1,4 +1,4 @@
-import { Component, Input, Type, ComponentFactoryResolver, ChangeDetectorRef } from '@angular/core';
+import {Component, Input, Type, ComponentFactoryResolver, ChangeDetectorRef, ViewRef} from '@angular/core';
 import { IWidget } from '../interfaces';
 import { BaseTemplateComponent } from '../templates/base-template/base-template.component';
 import { TemplatesDirective } from '../templates/templates.directive';
@@ -21,6 +21,8 @@ export class DashboardComponent {
     viewContainerRef.clear();
     const componentRef = viewContainerRef.createComponent(componentFactory);
     (componentRef.instance as BaseTemplateComponent).widgets = this.widgets;
-    this.cdr.detectChanges();
+    if (!(this.cdr as ViewRef).destroyed && this.cdr !== undefined) {
+      this.cdr.detectChanges();
+    }
   }
 }

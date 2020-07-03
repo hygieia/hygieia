@@ -4,18 +4,22 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './core/navbar/navbar.component';
+import {NbThemeModule} from '@nebular/theme';
+import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 
 describe('AppComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
         RouterTestingModule,
-        HttpClientModule
+        HttpClientModule,
+        NbThemeModule.forRoot()
       ],
       declarations: [
         AppComponent,
         NavbarComponent
       ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   }));
 

@@ -1,34 +1,16 @@
-<div id="header">
-  <nav class="navbar navbar-inverse navbar-expand-lg fixed-top">
-
-  <a class="dashboard-logo dashboard-logo-inverse" id="hygieiaLogo" routerLink="/"></a>
-  <ul class="navbar-nav ml-auto">
-    <li class="nav-item">
-      <span class="welcome-header" *ngIf="isAuthenticated">
-      Welcome {{ userName }} 
-      <span class="fa-stack fa-lg" *ngIf="isAdmin && isAdminLoad"  (click)="admin()"> 
-        <i class="fa fa-circle fa-stack-2x"></i>
-        <i class="fa fa-cog fa-stack-1x"></i>
-    </span>
-      <span class="fa-stack fa-lg" (click)="loginOrOut()">
-         <i class="fa fa-circle fa-stack-2x"></i>
-         <i class="fa fa-sign-out fa-stack-1x"></i>
-      </span>
-
-      <div class="divider"></div>
-      </span>
-
-      <span class="welcome-header" *ngIf="!isAuthenticated">
-      Login
-      <span class="fa-stack fa-lg" (click)="loginOrOut()">
-         <i class="fa fa-circle fa-stack-2x"></i>
-         <i class="fa fa-sign-in fa-stack-1x"></i>
-      </span>
-
-      <div class="divider"></div>
-      </span>
-    </li>
-  </ul>
-
-  </nav>
+<div class="nav-container">
+  <div class="header-container-left">
+    <div class="logo-container">
+      <a class="logo" routerLink=""></a>
+    </div>
+  </div>
+  <div class="header-container-right">
+    <nb-actions size="small" class="size-small">
+      <nb-action icon="github" (click)="openGithub()"></nb-action>
+      <nb-action icon="power-outline" (click)="loginOrOut()"><span></span></nb-action>
+      <nb-action class="user-action ngx-star-filled" *ngIf="isAuthenticated">
+        <nb-user class="size-medium shape-round context-menu-host ngx-star" name="{{userName}}"></nb-user>
+      </nb-action>
+    </nb-actions>
+  </div>
 </div>

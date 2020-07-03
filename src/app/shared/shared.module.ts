@@ -91,6 +91,7 @@ import {
   StaticAnalysisDeleteFormComponent
 } from '../widget_modules/static-analysis/static-analysis-delete-form/static-analysis-delete-form.component';
 import {TestDeleteFormComponent} from '../widget_modules/test/test-delete-form/test-delete-form.component';
+import {NbActionsModule, NbCardModule, NbSearchModule, NbTabsetModule, NbUserModule} from '@nebular/theme';
 
 @NgModule({
   declarations: [
@@ -239,6 +240,11 @@ import {TestDeleteFormComponent} from '../widget_modules/test/test-delete-form/t
     ReactiveFormsModule,
     TabsModule,
     RouterModule,
+    NbActionsModule,
+    NbUserModule,
+    NbSearchModule,
+    NbCardModule,
+    NbTabsetModule,
   ],
   exports: [
     BarHorizontalComponent,

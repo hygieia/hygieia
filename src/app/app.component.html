@@ -1,3 +1,10 @@
-<div id="container">
-  <router-outlet></router-outlet>
-</div>
+<nb-layout>
+  <nb-layout-header fixed>
+    <app-navbar></app-navbar>
+  </nb-layout-header>
+  <nb-layout-column>
+    <div id="container">
+      <router-outlet></router-outlet>
+    </div>
+  </nb-layout-column>
+</nb-layout>

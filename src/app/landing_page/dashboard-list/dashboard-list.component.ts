@@ -1,5 +1,5 @@
 import { HttpParams } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
@@ -7,6 +7,8 @@ import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { IPaginationParams } from '../../shared/interfaces';
 import { IDashboards } from './dashboard-list';
 import { DashboardListService } from './dashboard-list.service';
+import {NbDialogService} from '@nebular/theme';
+import {DashboardCreateComponent} from '../dashboard-create/dashboard-create.component';
 
 @Component({
   selector: 'app-dashboard-list',
@@ -14,6 +16,9 @@ import { DashboardListService } from './dashboard-list.service';
   styleUrls: ['./dashboard-list.component.scss']
 })
 export class DashboardListComponent implements OnInit {
+
+  constructor(private landingPageService: DashboardListService, private router: Router,
+              private dialogService: NbDialogService) { }
   dashboardType = '';
   queryField: FormControl = new FormControl();
   myDashboards: IDashboards[] = [];
@@ -21,8 +26,6 @@ export class DashboardListComponent implements OnInit {
   dashboardCollectionSize: string;
   myDashboardCollectionSize: string;
   defaultPageSize = '10';
-
-  constructor(private landingPageService: DashboardListService, private router: Router) { }
 
   ngOnInit() {
     this.findMyDashboards(this.paramBuilder(0, this.defaultPageSize));
@@ -60,8 +63,6 @@ export class DashboardListComponent implements OnInit {
       error => console.log(error)
     );
   }
-
-  // Default function call for pulling all dashboards
   findAllDashboards(params: HttpParams): void {
     this.landingPageService.getAllDashboards(params).subscribe(
       response => {
@@ -71,8 +72,6 @@ export class DashboardListComponent implements OnInit {
       error => console.log(error)
     );
   }
-
-  // Pagination page change function call
   getNextPage(params: IPaginationParams, isMyDashboard: boolean) {
     if ( isMyDashboard ) {
       this.findMyDashboards( this.paramBuilder(params.page - 1, params.pageSize) );
@@ -108,5 +107,13 @@ export class DashboardListComponent implements OnInit {
     const dName = [dashboard.title, dashboard.configurationItemBusAppName, dashboard.configurationItemBusServName]
       .filter(Boolean).join(' - ');
     return dName;
+  }
+
+  tabChange($event) {
+    this.setDashboardType($event.tabId);
+  }
+
+  createDashboard() {
+    this.dialogService.open(DashboardCreateComponent);
   }
 }

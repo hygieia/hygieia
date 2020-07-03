@@ -13,8 +13,7 @@ export class NavbarComponent implements OnInit {
   @Input() isAdminLoad = true;
 
   constructor(private router: Router,
-              private auth: AuthService) {
-               }
+              private auth: AuthService) {}
 
   ngOnInit() {
   }
@@ -49,5 +48,9 @@ export class NavbarComponent implements OnInit {
 
     this.isAdminLoad = false;
     this.router.navigate(['/admin/dashboard']);
+  }
+
+  openGithub() {
+    window.open('https://hygieia.github.io/Hygieia/getting_started.html', '_blank');
   }
 }

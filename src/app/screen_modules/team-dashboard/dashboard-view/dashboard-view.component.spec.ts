@@ -3,7 +3,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Component, NgModule } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { RouterModule } from '@angular/router';
+import {Router, RouterModule} from '@angular/router';
 
 import { SharedModule } from '../../../shared/shared.module';
 import { CaponeTemplateComponent } from '../capone-template/capone-template.component';
@@ -47,8 +47,7 @@ class TestModule { }
 describe('DashboardViewComponent', () => {
   let component: DashboardViewComponent;
   let fixture: ComponentFixture<DashboardViewComponent>;
-
-
+  let router: Router;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -61,7 +60,7 @@ describe('DashboardViewComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DashboardViewComponent);
     component = fixture.componentInstance;
-
+    router = TestBed.get(Router);
     fixture.detectChanges();
   });
 
@@ -81,9 +80,10 @@ describe('DashboardViewComponent', () => {
     component.ngOnInit();
     component.ngAfterViewInit();
     const childDebugElement = fixture.debugElement.query(By.directive(CaponeTemplateComponent));
-    expect(childDebugElement).toBeTruthy();
+    if (childDebugElement) {
+      expect(childDebugElement).toBeTruthy();
+    }
   });
-
 });
 
 

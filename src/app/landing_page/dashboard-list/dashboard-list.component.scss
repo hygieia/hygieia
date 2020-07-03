@@ -1,40 +1,50 @@
-.btn-secondary {
-  color: #666;
-  background-color: #e6e6e6;
-  border-color: #b6b9be;
+@mixin box-shadow ($v1, $v2, $v3, $v4, $v5){
+  -moz-box-shadow: $v1 $v2 $v3 $v4 $v5;
+  -webkit-box-shadow: $v1 $v2 $v3 $v4 $v5;
+  box-shadow: $v1 $v2 $v3 $v4 $v5;
 }
-.dashboard-type-list {
-  width: 100%;
 
-  .btn {
-    width: 33.333%;
-    text-overflow: ellipsis;
-    overflow: hidden;
-
-  }
-}
-.widget-modal-heading {
-  border-bottom: 1px solid #7f7f7f;
-  color: #152131;
-  font-size: 1.5rem;
-  margin-bottom: 3rem;
-  padding: 1rem;
-  text-align: center;
+@mixin font-style {
+  font-family: 'Lucida Grande';
+  font-weight: 600;
+  line-height: 1.5;
+  color: lightgray;
 }
 .gap {
   margin-top: 3.5rem;
 }
-.table-row{
-  cursor:pointer;
-  :hover {
-    background-color: #e6e6e6;
+
+#dSearch {
+  background: black;
+  border: dimgrey solid 0.1em;
+}
+
+#bCreate {
+  float: right;
+}
+
+nb-card-header {
+  @include font-style
+}
+nb-list-item {
+  color: dimgrey;
+  .d-name {
+    margin-left: 1em;
+    @include font-style
   }
 }
-table td{
-  padding: .5rem;
-  background: #fff;
-  color: #666;
-  a {
-    color: #666;
-  }
+
+nb-list-item:hover {
+  cursor: pointer;
+  line-height: 2;
+  font-size: 18px;
+  color: #3366ff;
+  @include box-shadow(10px,0px,15px,4px,grey);
+}
+nb-card {
+  background-color: black;
+}
+
+h4 {
+  color: dimgrey;
 }

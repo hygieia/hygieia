@@ -1,0 +1,63 @@
+  <nb-card size="large">
+    <nb-card-header><h4>New Dashboard</h4></nb-card-header>
+    <nb-card-body>
+      <nb-stepper disableStepNavigation="true" orientation="vertical" [linear]="true">
+        <nb-step label="Dashboard">
+          <div>
+            <form (ngSubmit)="onSubmit()" #myForm="ngForm">
+              <div class="form-group">
+                <nb-select fullWidth placeholder="Select type" required [(selected)]="dType"
+                           [status]="isValidType(dType) ? 'basic' : 'danger'" name="dType" id="dType">
+                  <nb-option disabled>Select type</nb-option>
+                  <nb-option value="Team">Team</nb-option>
+                  <nb-option value="Product" disabled>Product</nb-option>
+                </nb-select></div>
+              <div class="form-group">
+                <nb-select fullWidth status="basic" placeholder="Select layout" [(selected)]="dLayout"
+                           [status]="isValidTemplate(dLayout) ? 'basic' : 'danger'" name="dLayout" id="dLayout" required>
+                  <nb-option disabled>Select layout</nb-option>
+                  <nb-option value="Widgets">Widgets</nb-option>
+                  <nb-option value="Templates">Templates</nb-option>
+                </nb-select></div>
+              <div class="form-group">
+                <input class="form-control" type="text" nbInput fullWidth placeholder="Dashboard Title"
+                       [(ngModel)]="title" [status]="isValidTitle(title) ? 'basic' : 'danger'" name="title" required minlength="6"></div>
+              <div class="form-group">
+                <input class="form-control" type="text" nbInput fullWidth status="basic" placeholder="Application Name"
+                       [(ngModel)]="appName" [status]="isValidAppName(appName) ? 'basic' : 'danger'" name="appName" required minlength="6"></div>
+              <div class="form-group">
+                <input class="form-control" type="text" nbInput fullWidth status="basic" placeholder="Business Service (Optional)"
+                       [(ngModel)]="busService" name="busService"></div>
+              <div class="form-group">
+                <input class="form-control" type="text" nbInput fullWidth status="basic" placeholder="Business Application (Optional)"
+                       [(ngModel)]="busApp" name="busApp"></div>
+              <button nbButton nbStepperNext outline type="submit" [disabled]="!myForm.form.valid">Next</button>
+            </form>
+          </div>
+        </nb-step>
+        <nb-step label="Widgets / Templates">
+          <nb-card>
+            <nb-card-header>Select {{dLayout}}</nb-card-header>
+            <nb-card-body>
+              <div *ngIf="dLayout === 'Widgets'" style="display: grid; grid-template-columns: 1fr 1fr 1fr; grid-gap: 1em">
+                <button name="widget" status="basic" nbButton size="medium" *ngFor="let widget of widgets"
+                        (click)="widget.status = !widget.status" [appearance]="widget.status ? 'filled' : 'outline'">{{widget.name}}</button>
+              </div>
+              <div *ngIf="dLayout === 'Templates'" style="display: grid; grid-template-columns: 1fr 1fr 1fr; grid-gap: 1em">
+                <button name="template" status="basic" nbButton size="medium" *ngFor="let template of templates"
+                        (click)="template.status = !template.status" [appearance]="template.status ? 'filled' : 'outline'">{{template.name}}</button>
+              </div>
+            </nb-card-body>
+            <nb-card-footer>
+              <button style="float: left" nbButton outline nbStepperPrevious>prev</button>
+              <button style="float: right" hero nbButton (click)="createDashboard()">Create Dashboard</button>
+            </nb-card-footer>
+          </nb-card>
+        </nb-step>
+      </nb-stepper>
+    </nb-card-body>
+    <nb-card-footer style="text-align: end">
+      <button nbButton size="small" status="warning" outline (click)="close()">Close</button>
+    </nb-card-footer>
+  </nb-card>
+

@@ -1,86 +1,89 @@
 <div class="main-content">
-
   <div class="container">
-    <div class="row">
-      <div class="col-sm-8 offset-sm-2">
-        <div class="widget-modal-heading">
-          Select your Dashboard
-        </div>
-        <div class="btn-group dashboard-type-list">
-          <button type="button" class="btn btn-secondary" [ngClass]="{'active': dashboardType===''}"
-            (click)="setDashboardType('')"> All Dashboards </button>
-          <button type="button" class="btn btn-secondary" [ngClass]="{'active': dashboardType==='Team'}"
-            (click)="setDashboardType('Team')"> Team Dashboards </button>
-          <button type="button" class="btn btn-secondary" [ngClass]="{'active': dashboardType==='Product'}"
-            (click)="setDashboardType('Product')"> Product Dashboards </button>
-        </div>
-        <div class="gap">
-          <input type="search" name="dashboardSearch" class="form-control" [formControl]="queryField"
-            placeholder="Type to find dashboard">
+    <div class="row justify-content-md-center">
+      <div class="col-8">
+        <div class="col">
+          <div class="col">
+            <input nbInput type="search" id="dSearch" name="dSearch" placeholder="Search dashboard by title or application component name" shape="round" fieldSize="large"
+                   fullWidth [formControl]="queryField">
+          </div>
+          <div class="col">
+            <nb-tabset fullWidth (changeTab)="tabChange($event)">
+              <nb-tab tabTitle="All" tabId=""></nb-tab>
+              <nb-tab tabTitle="Team" tabId="Team"></nb-tab>
+              <nb-tab tabTitle="Product" tabId="Product"></nb-tab>
+            </nb-tabset>
+          </div>
         </div>
         <div class="row">
-          <div class="col-sm-8">
-            <ng-container *ngIf="myDashboards">
-              <div class="gap">
-                <h3> My {{ dashboardType }} Dashboards</h3>
-                <table class="table table-hover orders-table">
-                  <tr *ngFor="let dashboard of myDashboards" class="table-row table"
-                    routerLink="/dashboard/dashboardview/{{dashboard.id}}">
-                    <td>
-                      <span class="fa fa-lg left-icon"
-                            [ngClass]="{'fa-cubes' : dashboard.type === 'Product','fa-slideshare': dashboard.type === 'Team'}"></span>
-                      {{dashboardName(dashboard)}}
-                    </td>
-                  </tr>
-                </table>
-                <div class="text-center" *ngIf="!myDashboards.length">
-                  No results
-                </div>
-                <app-pagination *ngIf="myDashboards.length" [totalSize]="myDashboardCollectionSize"
-                  (pageChange)="getNextPage($event, true)"></app-pagination>
-              </div>
-            </ng-container>
+          <div class="col-6">
             <ng-container *ngIf="allDashboards">
               <div class="gap">
-                <h3> All {{ dashboardType }} Dashboards</h3>
-                <table class="table table-hover orders-table">
-                  <tr *ngFor="let dashboard of allDashboards" class="table-row"
-                    routerLink="/dashboard/dashboardview/{{dashboard.id}}">
-                    <td>
+                <nb-card size="giant">
+                  <nb-card-header>
+                    <h4>All Dashboards</h4>
+                  </nb-card-header>
+                  <nb-list >
+                    <nb-list-item *ngFor="let dashboard of allDashboards" routerLink="/dashboard/dashboardview/{{dashboard.id}}">
+                      <span class="fa fa-lg left-icon" [ngClass]="{'fa-cubes' : dashboard.type === 'Product','fa-slideshare': dashboard.type === 'Team'}"></span>
+                      <span class="d-name">{{dashboardName(dashboard)}}</span>
+                    </nb-list-item>
+                  </nb-list>
+                  <nb-card-footer>
+                    <div class="text-center" *ngIf="!allDashboards.length">
+                      No results
+                    </div>
+                    <app-pagination *ngIf="allDashboards.length" [totalSize]="dashboardCollectionSize"
+                                    (pageChange)="getNextPage($event, false)"></app-pagination>
+                  </nb-card-footer>
+                </nb-card>
+              </div>
+            </ng-container>
+          </div>
+          <div class="col-6">
+            <ng-container *ngIf="myDashboards">
+              <div class="gap">
+                <nb-card size="giant">
+                  <nb-card-header>
+                    <h4> My {{ dashboardType }} Dashboards
+                      <button id="bCreate" nbButton outline shape="round" size="small" (click)="createDashboard()"><nb-icon size="large" icon="plus-circle"></nb-icon>Create</button></h4>
+                    <ng-template></ng-template>
+                  </nb-card-header>
+                    <nb-list>
+                      <nb-list-item *ngFor="let dashboard of myDashboards" routerLink="/dashboard/dashboardview/{{dashboard.id}}">
                       <span class="fa fa-lg left-icon"
                             [ngClass]="{'fa-cubes' : dashboard.type === 'Product','fa-slideshare': dashboard.type === 'Team'}"></span>
-                      {{dashboardName(dashboard)}}
-                    </td>
-                  </tr>
-                </table>
-                <div class="text-center" *ngIf="!allDashboards.length">
-                  No results
-                </div>
-                <app-pagination *ngIf="allDashboards.length" [totalSize]="dashboardCollectionSize"
-                  (pageChange)="getNextPage($event, false)"></app-pagination>
+                        <span class="d-name">{{dashboardName(dashboard)}}</span>
+                      </nb-list-item>
+                    </nb-list>
+                  <nb-card-footer>
+                    <div class="text-center" *ngIf="!myDashboards.length">
+                      No results
+                    </div>
+                    <app-pagination *ngIf="myDashboards.length" [totalSize]="myDashboardCollectionSize"
+                                    (pageChange)="getNextPage($event, true)"></app-pagination>
+                  </nb-card-footer>
+                </nb-card>
               </div>
             </ng-container>
+          </div>
+          <div class="col">
             <ng-container *ngIf="dashboardType">
               <div class="gap">
-                <h3>Reports</h3>
-                <table class="table table-hover orders-table">
-                  <tr class="table-row">
-                    <td>
-                      <span class="fa fa-bar-chart-o fa-lg left-icon" style="margin-right: 2px"></span>
-                      <a (click)="goToAuditReport()">Application Audit Metrics Report</a>
-                    </td>
-                  </tr>
-                </table>
+                <nb-card>
+                  <nb-card-header><h4>Reports</h4></nb-card-header>
+                  <nb-list>
+                    <nb-list-item (click)="goToAuditReport()">
+                      <span class="fa fa-bar-chart-o fa-lg left-icon"></span>
+                      <span class="d-name">Application Audit Metrics Report</span>
+                    </nb-list-item>
+                  </nb-list>
+                </nb-card>
               </div>
             </ng-container>
           </div>
-          <div class="col-sm-4">
-          </div>
         </div>
-
       </div>
     </div>
   </div>
-
-
 </div>

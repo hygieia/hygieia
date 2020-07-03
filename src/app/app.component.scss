@@ -1,17 +1,12 @@
 
-.app-container {
-  overflow-y: auto;
-}
-
-.image-backdrop {
+::ng-deep.layout-container {
   background: url("../assets/img/bg-forest.jpg") no-repeat center center fixed;
-  height: 100%;
-
-  position: fixed;
-  width: 100%;
 }
 
-.page-content {
-  max-width: 1440px;
-  margin: 0 auto;
+nb-layout-header {
+  background-color: black;
+
+  app-navbar {
+    width: 100%;
+  }
 }

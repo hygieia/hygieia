@@ -1,83 +1,39 @@
-#header {
-  color: white;
-  //display: block !important;
-  //background: @dash-header-bg;
-  // font-size: 1.5rem;
-  text-align: center;
-  position: relative;
-  margin-bottom: 15px;
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 
-  .dashboard-logo {
-    background: url("../../../assets/img/Hygieia_Logo.png") no-repeat center center;
-    background-size: contain;
-    display: inline-block;
-    position: absolute;
-    left: 10px;
-    top: 8px;
-    width: 135px;
-    height: 35px;
-    cursor: pointer;
-    &.dashboard-logo-inverse {
-      background-image: url("../../../assets/img/Hygieia_Logo_white.png");
+  .header-container-left {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      width: calc(16rem - 1.25rem);
+
+      .logo {
+        background: url(../../../assets/img/Hygieia_Logo_white.png) no-repeat center center;
+        background-size: contain;
+        width: 135px;
+        height: 35px;
+      }
     }
   }
-}
-.navbar-default .nav > li > a,
-.navbar-default .nav > li > a:focus {
-  color: #08b;
-}
 
-.navbar-default .nav > li > a,
-.navbar-default .nav > li > a:hover {
-  color: #08b;
-}
+  .header-container-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: auto;
 
-.navbar-default .nav > li > a,
-.navbar-default .nav > li > a:focus:hover {
-  color: #08b;
-}
-
-.navbar-fixed-top .navbar-nav {
-  height: auto;
-}
-
-.navbar-fixed-top .navbar-brand {
-  height: auto;
-}
-
-.navbar-header {
-  height: auto;
-}
-
-.navbar-inverse {
-  background-color: #000;
-  border-color: #000;
-}
-
-#navbar-brand {
-  margin-left: 20%;
-}
-
-.navtext {
-  font-size: 10px;
-}
-.welcome-header {
-  //color: white;
-  position: relative;
-
-
-  .fa-stack {
-    cursor: pointer;
-
-    .fa-circle {
-      color: darken(#222, 20%);
-      opacity: 0;
-    }
-
-    &:hover {
-      .fa-circle {
-        opacity: 1;
-      }
+    nb-actions {
+      background-color: transparent;
+      font-family: Open Sans, sans-serif;
+      font-weight: 700;
+      line-height: 1rem;
     }
   }
 }

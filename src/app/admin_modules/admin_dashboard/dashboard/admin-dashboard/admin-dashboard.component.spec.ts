@@ -20,6 +20,9 @@ import { PaginationWrapperService } from '../../services/pagination-wrapper.serv
 import { SharedModule } from 'src/app/shared/shared.module';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import {NbThemeModule} from '@nebular/theme';
+import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+import {NbEvaIconsModule} from '@nebular/eva-icons';
 
 describe('AdminDashboardComponent', () => {
     let component: AdminDashboardComponent;
@@ -30,11 +33,12 @@ describe('AdminDashboardComponent', () => {
                AdminOrderByPipe, AdminFilterPipe, DashTrashComponent, DashEditComponent, FeatureFlagsComponent,
                ServiceAccountsComponent ],
           imports: [FormsModule, CommonModule, ReactiveFormsModule, SharedModule, HttpClientTestingModule,
-            RouterTestingModule.withRoutes([])],
+            RouterTestingModule.withRoutes([]), NbThemeModule.forRoot(), NbEvaIconsModule],
           providers: [DashboardDataService,
               CmdbDataService,
               AdminDashboardService,
-              PaginationWrapperService, FormBuilder, NgbActiveModal, UserDataService ]
+              PaginationWrapperService, FormBuilder, NgbActiveModal, UserDataService ],
+        schemas: [CUSTOM_ELEMENTS_SCHEMA]
       })
           .compileComponents();
   }));
