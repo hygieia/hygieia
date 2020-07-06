@@ -91,6 +91,7 @@ import {
   StaticAnalysisDeleteFormComponent
 } from '../widget_modules/static-analysis/static-analysis-delete-form/static-analysis-delete-form.component';
 import {TestDeleteFormComponent} from '../widget_modules/test/test-delete-form/test-delete-form.component';
+import {RotationChartComponent} from './charts/rotation/rotation-chart.component';
 import {NbActionsModule, NbCardModule, NbSearchModule, NbTabsetModule, NbUserModule} from '@nebular/theme';
 
 @NgModule({
@@ -138,6 +139,7 @@ import {NbActionsModule, NbCardModule, NbSearchModule, NbTabsetModule, NbUserMod
     RepoDeleteFormComponent,
     RepoDetailComponent,
     RepoWidgetComponent,
+    RotationChartComponent,
     TemplatesDirective,
     TimeAgoPipe,
     TwoByTwoLayoutComponent,
@@ -215,6 +217,7 @@ import {NbActionsModule, NbCardModule, NbSearchModule, NbTabsetModule, NbUserMod
     RepoWidgetComponent,
     RepoConfigFormComponent,
     RepoDeleteFormComponent,
+    RotationChartComponent,
     TwoByTwoLayoutComponent,
     StaticAnalysisConfigFormComponent,
     StaticAnalysisDeleteFormComponent,
@@ -267,6 +270,7 @@ import {NbActionsModule, NbCardModule, NbSearchModule, NbTabsetModule, NbUserMod
     PieGridComponent,
     PieGridChartComponent,
     ReactiveFormsModule,
+    RotationChartComponent,
     TemplatesDirective,
     TwoByTwoLayoutComponent,
     TwoByOneLayoutComponent,

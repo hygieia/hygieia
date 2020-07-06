@@ -138,7 +138,7 @@ describe('FeatureWidgetComponent', () => {
     completeEstimate: 3
   } as IFeature;
 
-  const iterations = [
+  const iterations = [[
     {
       sName: 'name',
       changeDate: 'date',
@@ -162,11 +162,34 @@ describe('FeatureWidgetComponent', () => {
       sUrl: 'url',
       sNumber: 'num',
       sEstimateTime: 'time',
-    }
-  ];
+    }],
+      [{
+        sName: 'name',
+        changeDate: 'date',
+        sUrl: 'url',
+        sNumber: 'num',
+        sEstimateTime: 'time',
+        sStatus: 'Backlog',
+      },
+      {
+        sStatus: 'In Progress',
+        changeDate: 'date',
+        sName: 'name',
+        sUrl: 'url',
+        sNumber: 'num',
+        sEstimateTime: 'time',
+      },
+      {
+        sStatus: 'Done',
+        changeDate: 'date',
+        sName: 'name',
+        sUrl: 'url',
+        sNumber: 'num',
+        sEstimateTime: 'time',
+      }]];
 
   const wip = [
-    {
+    [{
       sEpicName: 'name',
       sEpicUrl: 'url',
       sEpicNumber: 'num',
@@ -177,7 +200,19 @@ describe('FeatureWidgetComponent', () => {
       sEpicUrl: 'url',
       sEpicNumber: 'num',
       sEstimate: 'time',
-    }
+    }],
+    [{
+      sEpicName: 'name',
+      sEpicUrl: 'url',
+      sEpicNumber: 'num',
+      sEstimate: 'time',
+    },
+      {
+        sEpicName: 'name',
+        sEpicUrl: 'url',
+        sEpicNumber: 'num',
+        sEstimate: 'time',
+      }]
   ];
 
   beforeEach(async(() => {
@@ -223,13 +258,6 @@ describe('FeatureWidgetComponent', () => {
 
   it('should call startRefreshInterval', () => {
     spyOn(component, 'getCurrentWidgetConfig').and.returnValues(of(mockConfigEpics), of(mockConfigIssues), of(mockConfigIssues), of(null));
-    spyOn(featureService, 'fetchFeatureWip').and.returnValues(of(wip), of(wip), of([]));
-    spyOn(featureService, 'fetchAggregateSprintEstimates').and.returnValues(of(estimates), of(estimates), of([]));
-    spyOn(featureService, 'fetchIterations').and.returnValues(of(iterations), of(iterations), of([]));
-
-    component.startRefreshInterval();
-    component.startRefreshInterval();
-    component.startRefreshInterval();
     component.startRefreshInterval();
   });
 
@@ -265,5 +293,4 @@ describe('FeatureWidgetComponent', () => {
     component.generateFeatureSummary(null, params);
   });
 });
-
 
