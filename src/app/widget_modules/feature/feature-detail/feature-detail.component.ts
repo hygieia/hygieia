@@ -1,6 +1,6 @@
 import {Component, Input, OnInit, Type} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {IClickListItemFeature} from '../../../shared/charts/click-list/click-list-interfaces';
+import {IFeatureRotationItem} from '../../../shared/charts/rotation/rotation-chart-interfaces';
 
 @Component({
   selector: 'app-feature-detail',
@@ -10,7 +10,7 @@ import {IClickListItemFeature} from '../../../shared/charts/click-list/click-lis
 export class FeatureDetailComponent implements OnInit {
   @Input() detailView: Type<any>;
 
-  public data: IClickListItemFeature;
+  public data: IFeatureRotationItem;
 
   constructor(
     public activeModal: NgbActiveModal,
