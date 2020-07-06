@@ -92,7 +92,6 @@ export class NfrrViewComponent implements OnInit, OnDestroy {
   }
 
   onSelect(event) {
-    console.log(event);
   }
 
   transformToChartData(audits: IAudit[]) {

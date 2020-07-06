@@ -19,6 +19,7 @@ import {MatTableModule} from '@angular/material';
 import { StaticSecurityScanEvidenceComponent } from './collector-item-viewer/static-security-scan-evidence/static-security-scan-evidence.component';
 import { BaseEvidenceComponent } from './collector-item-viewer/base-evidence/base-evidence.component';
 import {CollectorItemService} from './collector-item.service';
+import {NbCardModule, NbInputModule} from '@nebular/theme';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,9 @@ import {CollectorItemService} from './collector-item.service';
     MatFormFieldModule,
     MatTableModule,
     MatSortModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    NbInputModule,
+    NbCardModule
   ],
   providers: [
     CollectorItemRoutingModule.components,

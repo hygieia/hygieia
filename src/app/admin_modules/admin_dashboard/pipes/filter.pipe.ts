@@ -24,7 +24,6 @@ export class AdminFilterPipe implements PipeTransform {
             if (Array.isArray(obj[c])) {
               const isNot = agrs[c].indexOf('!') !== -1;
               if (isNot) {
-                console.log('isNot :', isNot);
                 return obj[c].indexOf(agrs[c]) === -1;
               } else {
                 return obj[c].indexOf(agrs[c]) !== -1;

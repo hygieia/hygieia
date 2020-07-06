@@ -38,7 +38,6 @@ export class EditTokenModalComponent implements OnInit {
       this.apiEditForm.get('apiUser').setValue(this.apiUser);
       this.apiEditForm.get('date').setValue(this.date);
     }, 100);
-    console.log('api user , token item' + this.apiUser, ' item ', this.tokenItem, 'date' + this.date);
   }
 
   get f() { return this.apiEditForm.controls; }
@@ -58,7 +57,6 @@ export class EditTokenModalComponent implements OnInit {
       this.userData
         .updateToken(apitoken, id)
         .subscribe((response) => {
-          console.log(response);
           this.apiTokenError = false;
           this.activeModal.close('close');
         }, (error) => {
