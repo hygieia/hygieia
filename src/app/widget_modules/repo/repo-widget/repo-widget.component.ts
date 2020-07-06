@@ -284,19 +284,27 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
 
   setDefaultIfNoData() {
     if (!this.hasData) {
-      this.charts[0].data.dataPoints[0].series = [];
-      this.charts[0].data.dataPoints[1].series = [];
-      this.charts[0].data.dataPoints[2].series = [];
-      this.charts[1].data = [];
-      this.charts[2].data = [];
-      this.charts[3].data = [];
-      this.charts[4].data = [];
-      this.charts[5].data = [];
-      this.charts[6].data = [];
-      this.charts[7].data = [];
-      this.charts[8].data = [];
-      this.charts[9].data = [];
-    }
+      this.charts[0].data.dataPoints[0].series = [{name: new Date(), value: 0, data: 'Commits'}];
+      this.charts[0].data.dataPoints[1].series = [{name: new Date(), value: 0, data: 'Pulls'}];
+      this.charts[0].data.dataPoints[2].series = [{name: new Date(), value: 0, data: 'Issues'}];
+      this.charts[1].data = '0';
+      this.charts[2].data = '0';
+      this.charts[3].data = '0';
+      this.charts[4].data = '0';
+      this.charts[5].data = '0';
+      this.charts[6].data = '0';
+      this.charts[7].data = '0';
+      this.charts[8].data = '0';
+      this.charts[9].data = '0';
+      this.charts[10].data = '0';
+      this.charts[11].data = '0';
+      this.charts[12].data = '0';
+      this.charts[13].data = '0';
+      this.charts[14].data = '0';
+      this.charts[15].data = '0';
+      this.charts[16].data = '0';
+      this.charts[17].data = '0';
+      this.charts[18].data = '0';    }
     super.loadComponent(this.childLayoutTag);
   }
 }
