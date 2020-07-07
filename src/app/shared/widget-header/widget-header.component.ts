@@ -102,7 +102,6 @@ export class WidgetHeaderComponent implements OnInit {
     const newWidgetConfig$ = this.widgetComponent.getCurrentWidgetConfig().pipe(
       map( widgetConfig => {
         extend(widgetConfig, newWidgetConfig);
-        console.log(widgetConfig);
         return widgetConfig;
       }),
       map((widgetConfig: any) => {

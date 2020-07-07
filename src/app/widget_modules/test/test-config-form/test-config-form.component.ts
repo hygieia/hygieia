@@ -44,7 +44,6 @@ export class TestConfigFormComponent implements OnInit {
     private dashboardService: DashboardService
   ) {
     this.createForm();
-    console.log(this.functionalTests.controls.length);
   }
 
   ngOnInit() {

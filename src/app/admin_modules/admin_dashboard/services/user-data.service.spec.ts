@@ -35,7 +35,6 @@ describe('UserDataService', () => {
         userDataService: UserDataService
       ) => {
         userDataService.apitokens().subscribe((data: any) => {
-          console.log('Data :', data);
           expect(data).toBeTruthy();
           expect(data.length).toBe(2);
         });
@@ -55,7 +54,6 @@ describe('UserDataService', () => {
         userDataService: UserDataService
       ) => {
         userDataService.apitokens().subscribe((data: any) => {
-          console.log('Data :', data);
           expect(data).toBeTruthy();
           expect(data.length).toBe(2);
         });

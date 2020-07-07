@@ -90,7 +90,6 @@ export class EditDashboardModalComponent implements OnInit {
         this.getConfigItem('app', '');
         this.getConfigItemComponent('', '');
         setTimeout(() => {
-            console.log('dashboardItem' + JSON.stringify(this.dashboardItem));
             this.cdfForm.get('dashboardTitle').setValue(this.getDashboardTitle());
         }, 100);
 
@@ -150,7 +149,6 @@ export class EditDashboardModalComponent implements OnInit {
         this.dashboardData.getMyWidget(response.template).subscribe((result: any) => {
             const widgetsSet = new Set();
             result.forEach(ele => {
-                console.log('template', ele.template);
                 if (ele.widgets) {
                     ele.widgets.forEach(widget => {
                         if (widget.name && widget.options.id) {
@@ -178,7 +176,6 @@ export class EditDashboardModalComponent implements OnInit {
     }
 
     processUserResponse = (response) => {
-        console.log('user :', this.users, response);
         this.users = response;
     }
 
@@ -209,7 +206,6 @@ export class EditDashboardModalComponent implements OnInit {
     }
 
     saveForm() {
-        console.log('tabview ', this.tabView);
         switch (this.tabView) {
             case 'Dashboard Title':
                 this.submit('');
@@ -218,7 +214,6 @@ export class EditDashboardModalComponent implements OnInit {
                 this.submitBusServOrApp('');
                 break;
             case 'Owner Information':
-                console.log('ownerFormSubmit');
                 this.ownerFormSubmit('');
                 break;
             case 'Widget Management':
@@ -246,14 +241,12 @@ export class EditDashboardModalComponent implements OnInit {
     }
 
     renameSubmit() {
-        console.log('value', this.cdfForm.get('dashboardTitle'));
         return this.dashboardData.renameDashboard(this.dashboardItem.id, this.cdfForm.get('dashboardTitle').value)
             .pipe(map((response: any) => {
                 return response;
             }));
     }
     ownerFormSubmit(form) {
-        console.log('form', form);
         this.ownerSubmit()
             .subscribe(() => {
                 this.activeModal.dismiss();
@@ -263,7 +256,6 @@ export class EditDashboardModalComponent implements OnInit {
             });
     }
     ownerSubmit() {
-        console.log('users save', this.owners);
         return this.dashboardData.updateOwners(this.dashboardItem.id, this.prepareOwners(this.owners))
             .pipe(map((response: any) => {
                 return response;
@@ -301,19 +293,15 @@ export class EditDashboardModalComponent implements OnInit {
     }
 
     getConfigItem(type, filter) {
-        console.log('getConfigItem', type, filter);
         return this.cmdbData.getConfigItemList(type, { search: filter, size: 20 })
             .subscribe((response) => {
-                console.log('getConfigItem', response);
                 this.searchconfigItemBus = response;
             });
     }
 
     getConfigItemComponent(type, filter) {
-        console.log('getConfigItem', type, filter);
         return this.cmdbData.getConfigItemList('component', { search: filter, size: 20 })
             .subscribe((response) => {
-                console.log('getConfigItem', response);
                 this.searchconfigItemBusComponent = response;
             });
     }
@@ -361,7 +349,6 @@ export class EditDashboardModalComponent implements OnInit {
         const submitData = {
             activeWidgets: this.selectedWidgets
         };
-        console.log('this.selectedWidgets 337', this.selectedWidgets);
         this.dashboardData
             .updateDashboardWidgets(this.dashboardItem.id, submitData)
             .subscribe((data) => {
@@ -375,7 +362,6 @@ export class EditDashboardModalComponent implements OnInit {
     // find selected widgets and add it to collection
     findSelectedWidgets() {
         this.selectedWidgets = [];
-        console.log('widgetSelections 360', this.widgetSelections);
 
         Object.entries(this.widgetSelections).map((items: any) => {
             const s = this.widgetSelections[items[0]];
@@ -403,7 +389,6 @@ export class EditDashboardModalComponent implements OnInit {
         }
     }
     swal(info: any) {
-        console.log('swal', 'info', info);
     }
 
 }

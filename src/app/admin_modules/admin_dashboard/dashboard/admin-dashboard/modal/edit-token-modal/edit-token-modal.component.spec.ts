@@ -47,7 +47,6 @@ describe('EditTokenModalComponent', () => {
   it('should  submit edit from  when clicked on submit', () => {
     setTimeout(() => {
       component.apiEditForm.get('apiUser').setValue('testing1');
-      console.log('submit from :', component.apiEditForm);
       component.submit();
       expect(component.apiEditForm.valid).toBeTruthy();
     }, 500);

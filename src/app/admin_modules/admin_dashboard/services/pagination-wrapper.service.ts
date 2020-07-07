@@ -33,7 +33,6 @@ export class PaginationWrapperService {
   calculateTotalItems(type) {
     return this.dashboardData.count(type)
       .pipe(map((data: any) => {
-        console.log('data ::', data);
         this.totalItems = data;
         return data;
       }));
@@ -134,7 +133,6 @@ export class PaginationWrapperService {
       };
 
       if (board.isProduct) {
-        console.log(board);
       }
       dashboardsLocal.push(board);
     });
@@ -162,7 +160,6 @@ export class PaginationWrapperService {
       };
 
       if (board.isProduct) {
-        console.log(board);
       }
       dashboardsLocal.push(board);
     });

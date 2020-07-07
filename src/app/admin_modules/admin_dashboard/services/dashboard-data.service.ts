@@ -93,7 +93,6 @@ export class DashboardDataService {
   // renames a dashboard
 
   renameDashboard(id, newDashboardName) {
-    console.log('In data renaming dashboard');
     const postData = {
       title: newDashboardName
     };
@@ -128,8 +127,6 @@ export class DashboardDataService {
     // create a copy so we don't modify the original
     widget = _.clone(widget);
 
-    console.log('New Widget Config', widget);
-
     const widgetId = widget.id;
 
     if (widgetId) {
@@ -159,7 +156,6 @@ export class DashboardDataService {
   // can be used to delete existing widget
   deleteWidget(dashboardId, widget) {
     widget = _.clone(widget);
-    console.log('Deconste widget config', widget);
     const widgetId = widget.id;
     if (widgetId) {
       // remove the id since that would cause an api failure
@@ -184,7 +180,6 @@ export class DashboardDataService {
   public searchByPage(params) {
     return this.http.get(this.HygieiaConfig.local ? this.testSearchRoute : this.dashboardRoutePage, { params })
       .pipe(map((response: any) => {
-        console.log('searchByPage :', response);
         return { data: response, type: params.type };
       }));
   }

@@ -100,7 +100,7 @@ export class DashboardListComponent implements OnInit {
   }
 
   goToAuditReport() {
-    window.open('/audits', '_blank');
+    this.router.navigate(['/audits']);
   }
 
   dashboardName(dashboard: IDashboards): string {
@@ -115,5 +115,9 @@ export class DashboardListComponent implements OnInit {
 
   createDashboard() {
     this.dialogService.open(DashboardCreateComponent);
+  }
+
+  goToCollectorItemMetrics() {
+    this.router.navigate(['/collectorItem']);
   }
 }
