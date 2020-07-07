@@ -158,7 +158,7 @@ describe('RepoWidgetComponent', () => {
   });
 
   it('should hit collectRepoCommits, Pulls, and Issues', () => {
-    const date = new Date(123);
+    // const date = new Date(123);
     component.collectRepoCommits([IRepo1]);
     component.collectRepoPulls([IRepo1]);
     component.collectRepoIssues([IRepo1]);

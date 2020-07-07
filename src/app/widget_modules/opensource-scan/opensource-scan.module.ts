@@ -6,10 +6,11 @@ import { OSSConfigFormComponent } from './oss-config-form/oss-config-form.compon
 import {CommonModule} from '@angular/common';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { OSSDetailAllComponent } from './oss-detail-all/oss-detail-all.component';
+import {OSSDeleteFormComponent} from './oss-delete-form/oss-delete-form.component';
 
 @NgModule({
-  declarations: [OSSWidgetComponent, OSSDetailComponent, OSSConfigFormComponent, OSSDetailAllComponent],
-  entryComponents: [OSSDetailComponent, OSSConfigFormComponent],
+  declarations: [OSSWidgetComponent, OSSDetailComponent, OSSConfigFormComponent, OSSDetailAllComponent, OSSDeleteFormComponent],
+  entryComponents: [OSSWidgetComponent, OSSDetailComponent, OSSConfigFormComponent, OSSDetailAllComponent, OSSDeleteFormComponent],
   imports: [
     CommonModule,
     NgbModule,

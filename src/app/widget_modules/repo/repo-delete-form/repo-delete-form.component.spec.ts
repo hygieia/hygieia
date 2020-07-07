@@ -60,7 +60,7 @@ describe('RepoDeleteFormComponent', () => {
   let collectorService: CollectorService;
   let modalService: NgbModule;
 
-  const scmCollectorItem = {
+  /*const scmCollectorItem = {
     id: '1234',
     description: 'repo1',
     collectorId: '4321',
@@ -69,7 +69,7 @@ describe('RepoDeleteFormComponent', () => {
       name: 'Github',
       collectorType: 'SCM'
     }
-  };
+  };*/
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({

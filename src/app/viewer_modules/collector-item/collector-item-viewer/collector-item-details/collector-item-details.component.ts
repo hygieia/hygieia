@@ -9,10 +9,10 @@ import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 })
 export class CollectorItemDetailsComponent implements OnInit {
 
-  private collectorDetails: ICollItem;
-  private collector: string;
+  collectorDetails: ICollItem;
+  collector: string;
 
-  constructor(private activeModal: NgbActiveModal) { }
+  constructor(public activeModal: NgbActiveModal) { }
 
   ngOnInit() {
   }

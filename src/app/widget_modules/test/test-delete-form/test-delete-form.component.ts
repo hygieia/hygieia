@@ -2,7 +2,6 @@ import { Component, Input, OnInit } from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { map, take } from 'rxjs/operators';
-import { CollectorService } from 'src/app/shared/collector.service';
 import { DashboardService } from 'src/app/shared/dashboard.service';
 import {TestType} from '../interfaces';
 
@@ -19,7 +18,7 @@ export class TestDeleteFormComponent implements OnInit {
   @Input() public message = 'This Test item will be deleted immediately. Would you like to confirm? (You cannot undo this action)';
 
   private componentId: string;
-  private widgetConfigId: string;
+  widgetConfigId: string;
 
   testDeleteForm: FormGroup;
 
@@ -34,7 +33,6 @@ export class TestDeleteFormComponent implements OnInit {
   constructor(
     public activeModal: NgbActiveModal,
     private formBuilder: FormBuilder,
-    private collectorService: CollectorService,
     private dashboardService: DashboardService
   ) {
     this.createDeleteForm();
@@ -74,7 +72,7 @@ export class TestDeleteFormComponent implements OnInit {
     });
   }
 
-  private submitDeleteForm() {
+  submitDeleteForm() {
     const deleteConfig = {
       name: 'codeanalysis',
       options: {

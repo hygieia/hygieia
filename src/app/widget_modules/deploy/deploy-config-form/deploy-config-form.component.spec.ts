@@ -13,9 +13,6 @@ import {RouterModule} from '@angular/router';
 import {DashboardService} from '../../../shared/dashboard.service';
 import {CollectorService} from '../../../shared/collector.service';
 
-class DevExTokenResponse {
-}
-
 class MockCollectorService {
   mockCollectorData = {
     id: '4321',
@@ -75,7 +72,7 @@ describe('DeployConfigFormComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, NgbModule, SharedModule, HttpClientTestingModule],
+      imports: [TestModule, ReactiveFormsModule, NgbModule, SharedModule, HttpClientTestingModule],
       providers: [
         { provide: NgbActiveModal, useClass: NgbActiveModal },
         { provide: CollectorService, useClass: MockCollectorService},

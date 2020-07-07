@@ -131,12 +131,12 @@ describe('FeatureWidgetComponent', () => {
     collectorItemId: '5678'
   };
 
-  const estimates = {
+  /*const estimates = {
     id: '123',
     openEstimate: 1,
     inProgressEstimate: 2,
     completeEstimate: 3
-  } as IFeature;
+  } as IFeature;*/
 
   const iterations = [[
     {

@@ -129,8 +129,10 @@ describe('CollectorItemService', () => {
 
   beforeEach(() => TestBed.configureTestingModule({
     imports: [
+      TestModule,
       HttpClientTestingModule
-    ]
+    ],
+    providers: [MockCIService]
   }).compileComponents()
 
   );
@@ -446,7 +448,7 @@ describe('CollectorItemService', () => {
         service.getCollectorItemDetails('Hygieia', null, 'Test').subscribe(data => {
           expect(data).toBeTruthy();
         });
-        const request = httpMock.expectOne(req => req.method === 'GET');
+        httpMock.expectOne(req => req.method === 'GET');
       })
   );
 

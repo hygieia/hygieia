@@ -25,14 +25,13 @@ export class DeployWidgetComponent extends WidgetComponent implements OnInit {
   constructor(ComponentFactoryResolver: ComponentFactoryResolver,
               cdr: ChangeDetectorRef,
               dashboardService: DashboardService,
-              route: ActivatedRoute,
               private deployService: DeployService) {
-    super(ComponentFactoryResolver, cdr, dashboardService, route);
+    super(ComponentFactoryResolver, cdr, dashboardService);
   }
   charts: any;
   widgetId: string;
   layout: typeof OneChartLayoutComponent;
-  private TimeThreshold: number;
+  // private TimeThreshold: number;
 
   // Default build time threshold
 // Reference to the subscription used to refresh the widget
@@ -66,7 +65,7 @@ export class DeployWidgetComponent extends WidgetComponent implements OnInit {
         }
         this.widgetConfigExists = true;
         this.state = WidgetState.READY;
-        this.TimeThreshold = 1000 * 60 * widgetConfig.options.deployDurationThreshold;
+        // this.TimeThreshold = 1000 * 60 * widgetConfig.options.deployDurationThreshold;
         return this.deployService.fetchDetails(widgetConfig.componentId);
       })).subscribe(result => {
         this.hasData = (result && result.length > 0);

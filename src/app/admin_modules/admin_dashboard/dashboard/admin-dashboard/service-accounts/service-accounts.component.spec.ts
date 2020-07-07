@@ -48,7 +48,7 @@ describe('ServiceAccountsComponent', () => {
         AdminOrderByPipe,
         AdminDeleteComponent],
       providers: [UserDataService, FormBuilder, NgbActiveModal],
-      imports: [FormsModule, NgbModule, CommonModule, ReactiveFormsModule, HttpClientTestingModule]
+      imports: [TestModule, FormsModule, NgbModule, CommonModule, ReactiveFormsModule, HttpClientTestingModule]
     })
       .compileComponents();
 

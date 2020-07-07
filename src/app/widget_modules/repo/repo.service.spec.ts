@@ -2,7 +2,6 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { inject, TestBed } from '@angular/core/testing';
 
 import { RepoService } from './repo.service';
-import {BuildService} from '../build/build.service';
 
 describe('RepoService', () => {
   beforeEach(() => TestBed.configureTestingModule({

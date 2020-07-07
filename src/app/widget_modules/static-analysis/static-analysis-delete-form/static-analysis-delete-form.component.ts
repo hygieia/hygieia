@@ -21,8 +21,7 @@ export class StaticAnalysisDeleteFormComponent implements OnInit {
     'This Static Analysis item will be deleted immediately. Would you like to confirm? (You cannot undo this action)';
 
   private componentId: string;
-  private widgetConfigId: string;
-  private dashboard: any;
+  widgetConfigId: string;
 
   staticAnalysisDeleteForm: FormGroup;
 

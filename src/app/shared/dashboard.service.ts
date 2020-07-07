@@ -1,10 +1,9 @@
-import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { cloneDeep, extend } from 'lodash';
-import {interval, Observable, of, ReplaySubject, Subject, Subscription} from 'rxjs';
+import {interval, Observable, ReplaySubject, Subject, Subscription} from 'rxjs';
 import {catchError, filter, map, startWith, take} from 'rxjs/operators';
 import {IAuditResult} from './interfaces';
-import {IDashboards} from '../landing_page/dashboard-list/dashboard-list';
 
 @Injectable({
   providedIn: 'root'

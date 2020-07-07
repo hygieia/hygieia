@@ -5,10 +5,11 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { DeployConfigFormComponent } from './deploy-config-form/deploy-config-form.component';
 import { DeployDetailComponent } from './deploy-detail/deploy-detail.component';
 import { DeployWidgetComponent } from './deploy-widget/deploy-widget.component';
+import {DeployDeleteFormComponent} from './deploy-delete-form/deploy-delete-form.component';
 
 @NgModule({
-  declarations: [DeployWidgetComponent, DeployConfigFormComponent, DeployDetailComponent],
-  entryComponents: [DeployConfigFormComponent, DeployDetailComponent],
+  declarations: [DeployWidgetComponent, DeployConfigFormComponent, DeployDetailComponent, DeployDeleteFormComponent],
+  entryComponents: [DeployWidgetComponent, DeployConfigFormComponent, DeployDetailComponent, DeployDeleteFormComponent],
   imports: [
     CommonModule,
     NgbModule,

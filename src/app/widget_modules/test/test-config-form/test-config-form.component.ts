@@ -166,7 +166,7 @@ export class TestConfigFormComponent implements OnInit {
 
 
   // Create new config which will be posted to database
-  private submitForm() {
+  submitForm() {
     const newConfig = {
       name: 'codeanalysis',
       options: {

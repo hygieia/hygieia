@@ -11,13 +11,11 @@ import { WidgetComponent } from 'src/app/shared/widget/widget.component';
 import { OneByTwoLayoutComponent } from 'src/app/shared/layouts/one-by-two-layout/one-by-two-layout.component';
 import { TestService } from '../test.service';
 import { DashboardService } from 'src/app/shared/dashboard.service';
-import { ActivatedRoute } from '@angular/router';
 import { TEST_CHARTS } from './test-charts';
 import {
   startWith,
   distinctUntilChanged,
   switchMap,
-  map,
   take
 } from 'rxjs/operators';
 import { LayoutDirective } from 'src/app/shared/layouts/layout.directive';
@@ -44,9 +42,8 @@ export class TestWidgetComponent extends WidgetComponent implements OnInit, Afte
   constructor(componentFactoryResolver: ComponentFactoryResolver,
               cdr: ChangeDetectorRef,
               dashboardService: DashboardService,
-              route: ActivatedRoute,
               private testService: TestService) {
-    super(componentFactoryResolver, cdr, dashboardService, route);
+    super(componentFactoryResolver, cdr, dashboardService);
   }
 
   ngOnInit() {

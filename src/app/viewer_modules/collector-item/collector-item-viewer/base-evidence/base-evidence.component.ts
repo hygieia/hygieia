@@ -22,7 +22,7 @@ export class BaseEvidenceComponent implements OnInit, AfterViewInit, OnDestroy {
   protected intervalRefreshSubscription: Subscription;
 
   protected collectorEvidenceDetails: any[];
-  protected dashboardTitle: string;
+  dashboardTitle: string;
   protected componentId: string;
   collector: string;
 

@@ -60,7 +60,7 @@ describe('SecurityScanDeleteFormComponent', () => {
   let collectorService: CollectorService;
   let modalService: NgbModule;
 
-  const secScanCollectorItem = {
+  /*const secScanCollectorItem = {
     id: '1234',
     description: 'scan1',
     collectorId: '4321',
@@ -69,7 +69,7 @@ describe('SecurityScanDeleteFormComponent', () => {
       name: 'Scanner',
       collectorType: 'StaticSecurityScan'
     }
-  };
+  };*/
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({

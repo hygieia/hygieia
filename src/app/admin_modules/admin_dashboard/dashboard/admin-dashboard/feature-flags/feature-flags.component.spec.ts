@@ -46,7 +46,7 @@ describe('FeatureFlagsComponent', () => {
       declarations: [ FeatureFlagsComponent, DashTrashComponent, DashEditComponent, CreateOrUpdateFeatureFlagsComponent,
         AdminDeleteComponent],
       providers: [UserDataService, FormBuilder, NgbActiveModal],
-      imports: [ReactiveFormsModule, NgbModule, FormsModule, CommonModule, HttpClientTestingModule]
+      imports: [TestModule, ReactiveFormsModule, NgbModule, FormsModule, CommonModule, HttpClientTestingModule]
     })
       .compileComponents();
   }));

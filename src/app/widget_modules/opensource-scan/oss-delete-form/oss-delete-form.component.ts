@@ -18,9 +18,8 @@ export class OSSDeleteFormComponent implements OnInit {
   public cancel = 'Cancel';
   @Input() public message = 'This OSS item will be deleted immediately. Would you like to confirm? (You cannot undo this action)';
 
-  private widgetConfigId: string;
+  widgetConfigId: string;
   private componentId: string;
-  private dashboard: any;
 
   ossDeleteForm: FormGroup;
 

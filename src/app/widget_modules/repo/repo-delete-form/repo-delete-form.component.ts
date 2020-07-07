@@ -17,7 +17,7 @@ export class RepoDeleteFormComponent implements OnInit {
   public cancel = 'Cancel';
   @Input() public message = 'This Repo item will be deleted immediately. Would you like to confirm? (You cannot undo this action)';
 
-  private widgetConfigId: string;
+  widgetConfigId: string;
   private componentId: string;
 
   repoDeleteForm: FormGroup;

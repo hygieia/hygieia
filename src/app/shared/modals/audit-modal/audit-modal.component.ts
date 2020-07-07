@@ -10,7 +10,7 @@ import {IAuditResult} from '../../interfaces';
 export class AuditModalComponent implements OnInit {
 
   constructor(public activeModal: NgbActiveModal) { }
-  private auditResultsArr: IAuditResult[];
+  auditResultsArr: IAuditResult[];
 
 
   ngOnInit() {

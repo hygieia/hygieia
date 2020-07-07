@@ -7,10 +7,13 @@ import { StaticAnalysisConfigFormComponent } from './static-anaylsis-config-form
 import { StaticAnalysisDetailComponent } from './static-analysis-detail/static-analysis-detail.component';
 import { StaticAnalysisRoutingModule } from './static-analysis-routing-module';
 import { StaticAnalysisWidgetComponent } from './static-analysis-widget/static-analysis-widget.component';
+import {StaticAnalysisDeleteFormComponent} from './static-analysis-delete-form/static-analysis-delete-form.component';
 
 @NgModule({
-  declarations: [StaticAnalysisWidgetComponent, StaticAnalysisConfigFormComponent, StaticAnalysisDetailComponent],
-  entryComponents: [StaticAnalysisConfigFormComponent, StaticAnalysisDetailComponent],
+  declarations: [StaticAnalysisWidgetComponent, StaticAnalysisConfigFormComponent, StaticAnalysisDetailComponent
+  , StaticAnalysisDeleteFormComponent],
+  entryComponents: [StaticAnalysisWidgetComponent, StaticAnalysisConfigFormComponent, StaticAnalysisDetailComponent,
+    StaticAnalysisDeleteFormComponent],
   imports: [
     StaticAnalysisRoutingModule,
     CommonModule,

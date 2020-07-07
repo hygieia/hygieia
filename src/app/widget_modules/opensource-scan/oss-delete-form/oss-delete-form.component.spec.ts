@@ -60,7 +60,7 @@ describe('OSSDeleteFormComponent', () => {
   let collectorService: CollectorService;
   let modalService: NgbModule;
 
-  const lpCollectorItem = {
+  /*const lpCollectorItem = {
     id: '1234',
     description: 'scan1',
     collectorId: '4321',
@@ -69,7 +69,7 @@ describe('OSSDeleteFormComponent', () => {
       name: 'Scanner',
       collectorType: 'LibraryPolicy'
     }
-  };
+  };*/
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({

@@ -14,8 +14,8 @@ import {CollectorRefreshComponent} from './collector-refresh/collector-refresh.c
   styleUrls: ['./collector-item-viewer.component.scss']
 })
 export class CollectorItemViewerComponent implements OnInit {
-  private dashboards: IDashboardCI[];
-  private queryField: FormControl = new FormControl();
+  dashboards: IDashboardCI[];
+  queryField: FormControl = new FormControl();
   private ciTitle: string;
 
   public readonly collectors = [
