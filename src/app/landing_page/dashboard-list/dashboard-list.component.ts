@@ -11,6 +11,7 @@ import {DashboardCreateComponent} from '../dashboard-create/dashboard-create.com
 import {EditDashboardModalComponent} from '../../shared/modals/edit-dashboard-modal/edit-dashboard-modal.component';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {DashboardDataService} from '../../shared/services/dashboard-data.service';
+// tslint:disable-next-line:max-line-length
 import {GeneralDeleteComponent} from '../../admin_modules/admin_dashboard/dashboard/admin-dashboard/modal/general-delete/general-delete.component';
 
 @Component({
