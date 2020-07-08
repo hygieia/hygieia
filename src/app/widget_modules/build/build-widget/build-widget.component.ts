@@ -7,7 +7,6 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
 import {of, Subscription} from 'rxjs';
 import {distinctUntilChanged, startWith, switchMap} from 'rxjs/operators';
 import {IClickListData, IClickListItem} from 'src/app/shared/charts/click-list/click-list-interfaces';

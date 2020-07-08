@@ -8,7 +8,6 @@ import {DashStatus} from 'src/app/shared/dash-status/DashStatus';
 import {DashboardService} from 'src/app/shared/dashboard.service';
 import {DeployDetailComponent} from 'src/app/widget_modules/deploy/deploy-detail/deploy-detail.component';
 import {WidgetComponent} from 'src/app/shared/widget/widget.component';
-import {ActivatedRoute} from '@angular/router';
 import {distinctUntilChanged, startWith, switchMap} from 'rxjs/operators';
 import {LayoutDirective} from 'src/app/shared/layouts/layout.directive';
 import {OneChartLayoutComponent} from 'src/app/shared/layouts/one-chart-layout/one-chart-layout.component';

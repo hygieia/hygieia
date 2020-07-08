@@ -12,6 +12,7 @@ import {CommonModule} from '@angular/common';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {RouterModule} from '@angular/router';
 import {NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
+import {SecurityScanModule} from '../security-scan.module';
 
 class MockSecurityScanService {
   mockSecurityScanData = {
@@ -47,7 +48,8 @@ class MockSecurityScanService {
 
 @NgModule({
   declarations: [],
-  imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([]), NgbModule],
+  imports: [SecurityScanModule, HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule,
+    RouterModule.forRoot([]), NgbModule],
   entryComponents: []
 })
 class TestModule { }

@@ -11,6 +11,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { FeatureService } from '../feature.service';
 import { IFeature } from '../interfaces';
 import { FeatureWidgetComponent } from './feature-widget.component';
+import {FeatureModule} from '../feature.module';
 
 class MockFeatureService {
   mockFeatureDataEstimates = {
@@ -85,7 +86,8 @@ class MockFeatureService {
 
 @NgModule({
   declarations: [],
-  imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([]), NgbModule],
+  imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule,
+    RouterModule.forRoot([]), NgbModule, FeatureModule],
   entryComponents: []
 })
 class TestModule { }

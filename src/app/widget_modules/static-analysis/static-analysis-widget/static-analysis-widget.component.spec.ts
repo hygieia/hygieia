@@ -12,6 +12,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { StaticAnalysisService } from '../static-analysis.service';
 import { IStaticAnalysis } from '../interfaces';
 import { StaticAnalysisWidgetComponent} from './static-analysis-widget.component';
+import {StaticAnalysisModule} from '../static-analysis.module';
 
 class MockStaticAnalysisService {
 
@@ -37,7 +38,8 @@ class MockStaticAnalysisService {
 
 @NgModule({
   declarations: [],
-  imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([]), NgbModule],
+  imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule,
+    RouterModule.forRoot([]), NgbModule, StaticAnalysisModule],
   entryComponents: []
 })
 class TestModule { }

@@ -11,6 +11,7 @@ import {DashboardService} from '../../../shared/dashboard.service';
 import {NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {IDeploy, IServers, IUnits} from '../interfaces';
+import {DeployModule} from '../deploy.module';
 
 class MockDeployService {
   mockDeployData = {
@@ -47,7 +48,8 @@ class MockDeployService {
 
 @NgModule({
   declarations: [],
-  imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([]), NgbModule],
+  imports: [DeployModule, HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule,
+    RouterModule.forRoot([]), NgbModule],
   entryComponents: []
 })
 class TestModule { }

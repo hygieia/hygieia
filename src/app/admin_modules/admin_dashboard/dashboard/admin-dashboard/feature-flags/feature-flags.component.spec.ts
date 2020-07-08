@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import {NgbActiveModal, NgbModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {NgbActiveModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
@@ -8,10 +8,9 @@ import {UserDataService} from '../../../services/user-data.service';
 import {DashTrashComponent} from '../dash-trash/dash-trash.component';
 import {DashEditComponent} from '../dash-edit/dash-edit.component';
 import {CreateOrUpdateFeatureFlagsComponent} from '../modal/create-or-update-feature-flags/create-or-update-feature-flags.component';
-import {NgModule} from '@angular/core';
 import { AdminDeleteComponent } from '../modal/admin-delete/admin-delete.component';
 
-@NgModule({
+/*@NgModule({
   declarations: [FeatureFlagsComponent, DashEditComponent, DashTrashComponent, AdminDeleteComponent],
   providers: [UserDataService, NgbModal],
   imports: [FormsModule, CommonModule, ReactiveFormsModule, NgbModule, HttpClientTestingModule],
@@ -21,7 +20,7 @@ import { AdminDeleteComponent } from '../modal/admin-delete/admin-delete.compone
     CreateOrUpdateFeatureFlagsComponent
   ]
 })
-class TestModule { }
+class TestModule { }*/
 
 describe('FeatureFlagsComponent', () => {
   let component: FeatureFlagsComponent;
@@ -46,7 +45,7 @@ describe('FeatureFlagsComponent', () => {
       declarations: [ FeatureFlagsComponent, DashTrashComponent, DashEditComponent, CreateOrUpdateFeatureFlagsComponent,
         AdminDeleteComponent],
       providers: [UserDataService, FormBuilder, NgbActiveModal],
-      imports: [TestModule, ReactiveFormsModule, NgbModule, FormsModule, CommonModule, HttpClientTestingModule]
+      imports: [ReactiveFormsModule, NgbModule, FormsModule, CommonModule, HttpClientTestingModule]
     })
       .compileComponents();
   }));

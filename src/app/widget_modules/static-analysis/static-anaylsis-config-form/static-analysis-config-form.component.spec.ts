@@ -7,6 +7,7 @@ import { StaticAnalysisConfigFormComponent } from './static-analysis-config-form
 import {DashboardService} from '../../../shared/dashboard.service';
 import {CollectorService} from '../../../shared/collector.service';
 import {Observable, of} from 'rxjs';
+import {StaticAnalysisModule} from '../static-analysis.module';
 
 class MockCollectorService {
   mockCollectorData = {
@@ -51,7 +52,7 @@ describe('StaticAnalysisConfigFormComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, NgbModule, SharedModule, HttpClientTestingModule],
+      imports: [StaticAnalysisModule, ReactiveFormsModule, NgbModule, SharedModule, HttpClientTestingModule],
       declarations: [ ],
       providers: [{ provide: NgbActiveModal, useClass: NgbActiveModal },
         { provide: CollectorService, useClass: MockCollectorService},

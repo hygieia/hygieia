@@ -2,10 +2,8 @@ import {inject, TestBed} from '@angular/core/testing';
 
 import { CollectorItemService } from './collector-item.service';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {IDashboardCI} from './interfaces';
-import {Observable, of} from 'rxjs';
 
-class TestModule { }
+/*class TestModule { }
 
 class MockCIService {
   mockData: IDashboardCI;
@@ -123,17 +121,15 @@ class MockCIService {
 
     return of([this.mockData]);
   }
-}
+}*/
 
 describe('CollectorItemService', () => {
 
   beforeEach(() => TestBed.configureTestingModule({
-    imports: [
-      TestModule,
-      HttpClientTestingModule
-    ],
-    providers: [MockCIService]
-  }).compileComponents()
+      imports: [
+        HttpClientTestingModule
+      ]
+    }).compileComponents()
 
   );
 

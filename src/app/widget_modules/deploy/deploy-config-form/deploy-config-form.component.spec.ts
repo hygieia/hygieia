@@ -12,6 +12,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {RouterModule} from '@angular/router';
 import {DashboardService} from '../../../shared/dashboard.service';
 import {CollectorService} from '../../../shared/collector.service';
+import {DeployModule} from '../deploy.module';
 
 class MockCollectorService {
   mockCollectorData = {
@@ -50,7 +51,8 @@ class MockDashboardService {
 
 @NgModule({
   declarations: [],
-  imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([]), NgbModule],
+  imports: [DeployModule, HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule,
+    RouterModule.forRoot([]), NgbModule],
   entryComponents: []
 })
 class TestModule { }

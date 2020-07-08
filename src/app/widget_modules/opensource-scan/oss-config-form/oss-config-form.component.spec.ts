@@ -8,6 +8,7 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {CollectorService} from '../../../shared/collector.service';
 import {DashboardService} from '../../../shared/dashboard.service';
 import {Observable, of} from 'rxjs';
+import {OpensourceScanModule} from '../opensource-scan.module';
 
 class MockCollectorService {
   mockCollectorData = {
@@ -52,7 +53,7 @@ describe('OSSConfigFormComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, NgbModule, SharedModule, HttpClientTestingModule],
+      imports: [OpensourceScanModule, ReactiveFormsModule, NgbModule, SharedModule, HttpClientTestingModule],
       declarations: [ ],
       providers: [{ provide: NgbActiveModal, useClass: NgbActiveModal },
         { provide: CollectorService, useClass: MockCollectorService},
