@@ -1,15 +1,14 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { AdminDeleteComponent } from './admin-delete.component';
 import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import {GeneralDeleteComponent} from './general-delete.component';
 
 describe('AdminDeleteComponent', () => {
-  let component: AdminDeleteComponent;
-  let fixture: ComponentFixture<AdminDeleteComponent>;
+  let component: GeneralDeleteComponent;
+  let fixture: ComponentFixture<GeneralDeleteComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AdminDeleteComponent ],
+      declarations: [ GeneralDeleteComponent ],
       providers: [NgbActiveModal],
       imports: [NgbModule]
     })
@@ -17,7 +16,7 @@ describe('AdminDeleteComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AdminDeleteComponent);
+    fixture = TestBed.createComponent(GeneralDeleteComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
