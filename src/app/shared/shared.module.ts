@@ -60,7 +60,7 @@ import {DashEditComponent} from './dash-edit/dash-edit.component';
 import {DashTrashComponent} from './dash-trash/dash-trash.component';
 import {EditDashboardModalComponent} from './modals/edit-dashboard-modal/edit-dashboard-modal.component';
 // tslint:disable-next-line:max-line-length
-import {GeneralDeleteComponent} from '../admin_modules/admin_dashboard/dashboard/admin-dashboard/modal/general-delete/general-delete.component';
+import {GeneralDeleteComponent} from './modals/general-delete/general-delete.component';
 import {AdminOrderByPipe} from './pipes/order-by.pipe';
 import {UserDataService} from './services/user-data.service';
 import {DashboardDataService} from './services/dashboard-data.service';

@@ -9,24 +9,24 @@ import { UserDataService } from '../../../../../shared/services/user-data.servic
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { AdminFilterPipe } from '../../../pipes/filter.pipe';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { API_TOKEN_LIST } from '../../../../../shared/services/user-data.service.mockdata';
 import { NgModule } from '@angular/core';
-import { AdminOrderByPipe } from '../../../pipes/order-by.pipe';
-import { AdminDeleteComponent } from '../modal/admin-delete/admin-delete.component';
+import {AdminFilterPipe} from '../../../../../shared/pipes/filter.pipe';
+import {AdminOrderByPipe} from '../../../../../shared/pipes/order-by.pipe';
+import {GeneralDeleteComponent} from '../../../../../shared/modals/general-delete/general-delete.component';
 
 @NgModule({
   declarations: [GenerateApiTokensComponent, DashEditComponent, DashTrashComponent, AdminFilterPipe,
           AdminOrderByPipe, EditTokenModalComponent,
     GenerateApiTokenModalComponent,
-    AdminDeleteComponent],
+    GeneralDeleteComponent],
   providers: [UserDataService, NgbModal],
   imports: [FormsModule, CommonModule, ReactiveFormsModule, NgbModule, HttpClientTestingModule],
   entryComponents: [
     EditTokenModalComponent,
     GenerateApiTokenModalComponent,
-    AdminDeleteComponent
+    GeneralDeleteComponent
   ]
 })
 class TestModule { }

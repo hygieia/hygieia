@@ -3,7 +3,7 @@ import { UserDataService } from '../../../../../shared/services/user-data.servic
 import { NgbModal, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 import { EditTokenModalComponent } from '../modal/edit-token-modal/edit-token-modal.component';
 import { GenerateApiTokenModalComponent } from '../modal/generate-api-token-modal/generate-api-token-modal.component';
-import {GeneralDeleteComponent} from '../modal/general-delete/general-delete.component';
+import {GeneralDeleteComponent} from '../../../../../shared/modals/general-delete/general-delete.component';
 
 @Component({
   selector: 'app-generate-tokens',

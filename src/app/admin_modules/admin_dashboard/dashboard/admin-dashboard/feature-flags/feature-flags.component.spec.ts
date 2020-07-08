@@ -8,7 +8,7 @@ import {UserDataService} from '../../../../../shared/services/user-data.service'
 import {DashTrashComponent} from '../../../../../shared/dash-trash/dash-trash.component';
 import {DashEditComponent} from '../../../../../shared/dash-edit/dash-edit.component';
 import {CreateOrUpdateFeatureFlagsComponent} from '../modal/create-or-update-feature-flags/create-or-update-feature-flags.component';
-import {GeneralDeleteComponent} from '../modal/admin-delete/admin-delete.component';
+import {GeneralDeleteComponent} from '../../../../../shared/modals/general-delete/general-delete.component';
 
 /*@NgModule({
   declarations: [FeatureFlagsComponent, DashEditComponent, DashTrashComponent],

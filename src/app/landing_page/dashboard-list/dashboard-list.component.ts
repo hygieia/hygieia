@@ -12,7 +12,7 @@ import {EditDashboardModalComponent} from '../../shared/modals/edit-dashboard-mo
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {DashboardDataService} from '../../shared/services/dashboard-data.service';
 // tslint:disable-next-line:max-line-length
-import {GeneralDeleteComponent} from '../../admin_modules/admin_dashboard/dashboard/admin-dashboard/modal/general-delete/general-delete.component';
+import {GeneralDeleteComponent} from '../../shared/modals/general-delete/general-delete.component';
 
 @Component({
   selector: 'app-dashboard-list',

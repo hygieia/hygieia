@@ -6,7 +6,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DashboardItem } from '../../../../../shared/model/dashboard-item';
 import { EditDashboardModalComponent } from '../../../../../shared/modals/edit-dashboard-modal/edit-dashboard-modal.component';
 import { forkJoin } from 'rxjs';
-import {GeneralDeleteComponent} from '../modal/general-delete/general-delete.component';
+import {GeneralDeleteComponent} from '../../../../../shared/modals/general-delete/general-delete.component';
 
 @Component({
   selector: 'app-edit-dashboard',

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserDataService } from '../../../../../shared/services/user-data.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CreateOrUpdateFeatureFlagsComponent } from '../modal/create-or-update-feature-flags/create-or-update-feature-flags.component';
-import {GeneralDeleteComponent} from '../modal/general-delete/general-delete.component';
+import {GeneralDeleteComponent} from '../../../../../shared/modals/general-delete/general-delete.component';
 
 @Component({
   selector: 'app-feature-flags',

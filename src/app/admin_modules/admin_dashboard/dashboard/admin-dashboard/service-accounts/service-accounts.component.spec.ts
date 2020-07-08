@@ -10,7 +10,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import {ServiceAccountsComponent} from './service-accounts.component';
 // tslint:disable-next-line:max-line-length
 import {CreateOrUpdateServiceAccountComponent} from '../modal/create-or-update-service-account/create-or-update-service-account.component';
-import {GeneralDeleteComponent} from '../modal/general-delete/general-delete.component';
+import {GeneralDeleteComponent} from '../../../../../shared/modals/general-delete/general-delete.component';
 import {AdminFilterPipe} from '../../../../../shared/pipes/filter.pipe';
 import {AdminOrderByPipe} from '../../../../../shared/pipes/order-by.pipe';
 
