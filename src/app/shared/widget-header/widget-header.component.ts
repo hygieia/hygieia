@@ -316,7 +316,9 @@ export class WidgetHeaderComponent implements OnInit {
         const owners = dashboard.owners;
         for (const owner of owners) {
           isOwner = (owner.username === currentUser || this.auth.isAdmin());
-          if (isOwner) break;
+          if (isOwner) {
+            break;
+          }
         }
         return isOwner;
       })).subscribe(bool => isOwner = bool);
