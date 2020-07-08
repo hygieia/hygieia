@@ -11,6 +11,7 @@ import { NgbModule, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { RouterModule } from '@angular/router';
 import { TestService } from '../test.service';
 import { DashboardService } from 'src/app/shared/dashboard.service';
+import {TestModule} from '../test.module';
 
 class MockTestService {
   mockTestData = {
@@ -41,10 +42,11 @@ class MockTestService {
 
 @NgModule({
   declarations: [],
-  imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([]), NgbModule],
+  imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule,
+    RouterModule.forRoot([]), NgbModule, TestModule],
   entryComponents: []
 })
-class TestModule { }
+class TestsModule { }
 
 
 describe('TestWidgetComponent', () => {
@@ -104,7 +106,7 @@ describe('TestWidgetComponent', () => {
         { provide: TestService, useClass: MockTestService },
       ],
       imports: [
-        TestModule, HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([])
+        TestsModule, HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([])
       ],
       declarations: [],
       schemas: [NO_ERRORS_SCHEMA]

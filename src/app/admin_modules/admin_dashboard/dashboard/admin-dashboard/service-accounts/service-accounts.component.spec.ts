@@ -3,19 +3,18 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { DashEditComponent } from '../dash-edit/dash-edit.component';
 import { DashTrashComponent } from '../dash-trash/dash-trash.component';
 import { UserDataService } from '../../../services/user-data.service';
-import {NgbActiveModal, NgbModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {NgbActiveModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AdminFilterPipe } from '../../../pipes/filter.pipe';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { AdminOrderByPipe } from '../../../pipes/order-by.pipe';
 import {ServiceAccountsComponent} from './service-accounts.component';
-import {NgModule} from '@angular/core';
 // tslint:disable-next-line:max-line-length
 import {CreateOrUpdateServiceAccountComponent} from '../modal/create-or-update-service-account/create-or-update-service-account.component';
 import { AdminDeleteComponent } from '../modal/admin-delete/admin-delete.component';
 
-@NgModule({
+/*@NgModule({
   declarations: [ServiceAccountsComponent, DashEditComponent, DashTrashComponent, AdminFilterPipe,
     AdminOrderByPipe, CreateOrUpdateServiceAccountComponent,
     AdminDeleteComponent],
@@ -31,7 +30,7 @@ import { AdminDeleteComponent } from '../modal/admin-delete/admin-delete.compone
     AdminDeleteComponent
   ]
 })
-class TestModule { }
+class TestModule { }*/
 
 describe('ServiceAccountsComponent', () => {
   let component: ServiceAccountsComponent;

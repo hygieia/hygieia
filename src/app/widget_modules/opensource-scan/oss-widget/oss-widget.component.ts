@@ -9,7 +9,6 @@ import {
 } from '@angular/core';
 import {WidgetComponent} from '../../../shared/widget/widget.component';
 import {DashboardService} from '../../../shared/dashboard.service';
-import {ActivatedRoute} from '@angular/router';
 import {OpensourceScanService} from '../opensource-scan.service';
 import {distinctUntilChanged, startWith, switchMap} from 'rxjs/operators';
 import {of, Subscription} from 'rxjs';
@@ -43,9 +42,8 @@ export class OSSWidgetComponent extends WidgetComponent implements OnInit, After
   constructor(componentFactoryResolver: ComponentFactoryResolver,
               cdr: ChangeDetectorRef,
               dashboardService: DashboardService,
-              route: ActivatedRoute,
               private ossService: OpensourceScanService) {
-    super(componentFactoryResolver, cdr, dashboardService, route);
+    super(componentFactoryResolver, cdr, dashboardService);
   }
 
   ngOnInit() {

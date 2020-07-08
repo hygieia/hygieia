@@ -16,7 +16,6 @@ export class FeatureConfigFormComponent implements OnInit {
 
   private widgetConfigId: string;
   private componentId: string;
-  private dashboard: any;
   featureTool = [];
   estimateMetricType = [];
   sprintType = [];
@@ -211,7 +210,6 @@ export class FeatureConfigFormComponent implements OnInit {
   private getDashboardComponent() {
     this.dashboardService.dashboardConfig$.pipe(take(1),
       map(dashboard => {
-        this.dashboard = dashboard;
         return dashboard.application.components[0].id;
       })).subscribe(componentId => this.componentId = componentId);
   }

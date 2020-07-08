@@ -8,7 +8,6 @@ import {DashStatus} from 'src/app/shared/dash-status/DashStatus';
 import {DashboardService} from 'src/app/shared/dashboard.service';
 import {DeployDetailComponent} from 'src/app/widget_modules/deploy/deploy-detail/deploy-detail.component';
 import {WidgetComponent} from 'src/app/shared/widget/widget.component';
-import {ActivatedRoute} from '@angular/router';
 import {distinctUntilChanged, startWith, switchMap} from 'rxjs/operators';
 import {LayoutDirective} from 'src/app/shared/layouts/layout.directive';
 import {OneChartLayoutComponent} from 'src/app/shared/layouts/one-chart-layout/one-chart-layout.component';
@@ -25,14 +24,13 @@ export class DeployWidgetComponent extends WidgetComponent implements OnInit {
   constructor(ComponentFactoryResolver: ComponentFactoryResolver,
               cdr: ChangeDetectorRef,
               dashboardService: DashboardService,
-              route: ActivatedRoute,
               private deployService: DeployService) {
-    super(ComponentFactoryResolver, cdr, dashboardService, route);
+    super(ComponentFactoryResolver, cdr, dashboardService);
   }
   charts: any;
   widgetId: string;
   layout: typeof OneChartLayoutComponent;
-  private TimeThreshold: number;
+  // private TimeThreshold: number;
 
   // Default build time threshold
 // Reference to the subscription used to refresh the widget
@@ -66,7 +64,7 @@ export class DeployWidgetComponent extends WidgetComponent implements OnInit {
         }
         this.widgetConfigExists = true;
         this.state = WidgetState.READY;
-        this.TimeThreshold = 1000 * 60 * widgetConfig.options.deployDurationThreshold;
+        // this.TimeThreshold = 1000 * 60 * widgetConfig.options.deployDurationThreshold;
         return this.deployService.fetchDetails(widgetConfig.componentId);
       })).subscribe(result => {
         this.hasData = (result && result.length > 0);

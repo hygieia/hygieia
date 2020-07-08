@@ -24,7 +24,7 @@ export class RepoConfigFormComponent implements OnInit {
       return;
     }
     this.widgetConfigId = widgetConfig.options.id;
-    this.repoConfigForm.get('scm').setValue(widgetConfig.options.scm.name);
+    this.repoConfigForm.get('scm').setValue(widgetConfig.options.scm ? widgetConfig.options.scm.name : '');
     this.repoConfigForm.get('url').setValue(widgetConfig.options.url);
     this.repoConfigForm.get('branch').setValue(widgetConfig.options.branch);
     this.repoConfigForm.get('userID').setValue(widgetConfig.options.userID);

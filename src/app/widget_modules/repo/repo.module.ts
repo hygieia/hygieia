@@ -6,10 +6,11 @@ import { RepoConfigFormComponent} from './repo-config-form/repo-config-form.comp
 import { RepoWidgetComponent} from './repo-widget/repo-widget.component';
 import { RepoDetailComponent} from './repo-detail/repo-detail.component';
 import { RepoRoutingModule } from './repo-routing-module';
+import {RepoDeleteFormComponent} from './repo-delete-form/repo-delete-form.component';
 
 @NgModule({
-  declarations: [RepoWidgetComponent, RepoConfigFormComponent, RepoDetailComponent],
-  entryComponents: [RepoConfigFormComponent, RepoDetailComponent],
+  declarations: [RepoWidgetComponent, RepoConfigFormComponent, RepoDetailComponent, RepoDeleteFormComponent],
+  entryComponents: [RepoWidgetComponent, RepoConfigFormComponent, RepoDetailComponent, RepoDeleteFormComponent],
   imports: [
     RepoRoutingModule,
     CommonModule,

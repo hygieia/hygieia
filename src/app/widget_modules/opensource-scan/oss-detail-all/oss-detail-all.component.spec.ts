@@ -8,6 +8,7 @@ import {SharedModule} from '../../../shared/shared.module';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {IClickListData, IClickListItemOSS} from '../../../shared/charts/click-list/click-list-interfaces';
 import {OSSDetailComponent} from '../oss-detail/oss-detail.component';
+import {OpensourceScanModule} from '../opensource-scan.module';
 
 describe('OSSDetailAllComponent', () => {
   let component: OSSDetailAllComponent;
@@ -15,7 +16,7 @@ describe('OSSDetailAllComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, NgbModule, SharedModule, HttpClientTestingModule],
+      imports: [OpensourceScanModule, ReactiveFormsModule, NgbModule, SharedModule, HttpClientTestingModule],
       declarations: [ ],
       providers: [NgbActiveModal]
     })

@@ -5,6 +5,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 
 import { TestDeleteFormComponent } from './test-delete-form.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import {TestModule} from '../test.module';
 
 describe('TestDeleteFormComponent', () => {
   let component: TestDeleteFormComponent;
@@ -12,7 +13,7 @@ describe('TestDeleteFormComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, NgbModule, SharedModule, HttpClientTestingModule],
+      imports: [TestModule, ReactiveFormsModule, NgbModule, SharedModule, HttpClientTestingModule],
       providers: [NgbActiveModal]
     })
 

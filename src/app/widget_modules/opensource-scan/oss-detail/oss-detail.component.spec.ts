@@ -5,6 +5,7 @@ import {DashStatus} from '../../../shared/dash-status/DashStatus';
 import {ReactiveFormsModule} from '@angular/forms';
 import {SharedModule} from '../../../shared/shared.module';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {OpensourceScanModule} from '../opensource-scan.module';
 
 describe('OSSDetailComponent', () => {
   let component: OSSDetailComponent;
@@ -12,7 +13,7 @@ describe('OSSDetailComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, NgbModule, SharedModule, HttpClientTestingModule],
+      imports: [OpensourceScanModule, ReactiveFormsModule, NgbModule, SharedModule, HttpClientTestingModule],
       declarations: [ ],
       providers: [ NgbActiveModal ]
     }).compileComponents();

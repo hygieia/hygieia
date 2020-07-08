@@ -66,7 +66,6 @@ export class EditDashboardComponent implements OnInit {
       this.loadData();
     }).catch((error) => {
       this.loadData();
-      console.log('edit error newConfig :' + error);
     });
 
   }

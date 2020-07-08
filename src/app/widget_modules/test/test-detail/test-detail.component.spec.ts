@@ -5,6 +5,7 @@ import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
+import {TestModule} from '../test.module';
 
 describe('TestDetailComponent', () => {
   let component: TestDetailComponent;
@@ -12,7 +13,7 @@ describe('TestDetailComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, NgbModule, SharedModule, HttpClientTestingModule],
+      imports: [TestModule, ReactiveFormsModule, NgbModule, SharedModule, HttpClientTestingModule],
       providers: [NgbActiveModal]
     })
       .compileComponents();

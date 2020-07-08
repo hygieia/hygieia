@@ -2,10 +2,8 @@ import {inject, TestBed} from '@angular/core/testing';
 
 import { CollectorItemService } from './collector-item.service';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {IDashboardCI} from './interfaces';
-import {Observable, of} from 'rxjs';
 
-class TestModule { }
+/*class TestModule { }
 
 class MockCIService {
   mockData: IDashboardCI;
@@ -123,15 +121,15 @@ class MockCIService {
 
     return of([this.mockData]);
   }
-}
+}*/
 
 describe('CollectorItemService', () => {
 
   beforeEach(() => TestBed.configureTestingModule({
-    imports: [
-      HttpClientTestingModule
-    ]
-  }).compileComponents()
+      imports: [
+        HttpClientTestingModule
+      ]
+    }).compileComponents()
 
   );
 
@@ -446,7 +444,7 @@ describe('CollectorItemService', () => {
         service.getCollectorItemDetails('Hygieia', null, 'Test').subscribe(data => {
           expect(data).toBeTruthy();
         });
-        const request = httpMock.expectOne(req => req.method === 'GET');
+        httpMock.expectOne(req => req.method === 'GET');
       })
   );
 

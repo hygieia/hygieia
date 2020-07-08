@@ -5,7 +5,6 @@ import {
 import {groupBy, map, mergeMap, takeUntil, toArray} from 'rxjs/operators';
 import {NfrrService} from '../nfrr.service';
 import {from, of, Subject, zip} from 'rxjs';
-import {ActivatedRoute} from '@angular/router';
 import {IAudit} from '../../../shared/interfaces';
 
 export class ChartDataModel {
@@ -53,8 +52,8 @@ export class NfrrViewComponent implements OnInit, OnDestroy {
     return value;
   }
 
-  constructor(private nfrrService: NfrrService, private route: ActivatedRoute) {
-    route.params.subscribe(value => this.getAuditMetricsAll());
+  constructor(private nfrrService: NfrrService) {
+    this.getAuditMetricsAll();
   }
 
   ngOnInit() {

@@ -13,10 +13,12 @@ import {OpensourceScanService} from '../opensource-scan.service';
 import {DashboardService} from '../../../shared/dashboard.service';
 import {DashStatus} from '../../../shared/dash-status/DashStatus';
 import {IOpensourceScan} from '../interfaces';
+import {OpensourceScanModule} from '../opensource-scan.module';
 
 @NgModule({
   declarations: [],
-  imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([]), NgbModule],
+  imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule,
+    RouterModule.forRoot([]), NgbModule, OpensourceScanModule],
   entryComponents: []
 })
 

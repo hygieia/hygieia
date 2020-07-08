@@ -9,9 +9,9 @@ import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 })
 export class CollectorRefreshComponent implements OnInit {
 
-  private collectorDetails: ICollItem;
+  collectorDetails: ICollItem;
 
-  constructor(private activeModal: NgbActiveModal) { }
+  constructor(public activeModal: NgbActiveModal) { }
 
 
   ngOnInit() {

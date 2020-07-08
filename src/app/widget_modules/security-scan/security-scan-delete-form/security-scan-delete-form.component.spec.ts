@@ -11,6 +11,7 @@ import {CommonModule} from '@angular/common';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {RouterModule} from '@angular/router';
 import {DashboardService} from '../../../shared/dashboard.service';
+import {SecurityScanModule} from '../security-scan.module';
 
 class MockCollectorService {
   mockCollectorData = {
@@ -48,7 +49,8 @@ class MockDashboardService {
 
 @NgModule({
   declarations: [],
-  imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([]), NgbModule],
+  imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule,
+    RouterModule.forRoot([]), NgbModule, SecurityScanModule],
   entryComponents: []
 })
 class TestModule { }
@@ -60,7 +62,7 @@ describe('SecurityScanDeleteFormComponent', () => {
   let collectorService: CollectorService;
   let modalService: NgbModule;
 
-  const secScanCollectorItem = {
+  /*const secScanCollectorItem = {
     id: '1234',
     description: 'scan1',
     collectorId: '4321',
@@ -69,7 +71,7 @@ describe('SecurityScanDeleteFormComponent', () => {
       name: 'Scanner',
       collectorType: 'StaticSecurityScan'
     }
-  };
+  };*/
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({

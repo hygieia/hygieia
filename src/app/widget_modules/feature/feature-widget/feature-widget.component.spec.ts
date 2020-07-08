@@ -11,6 +11,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { FeatureService } from '../feature.service';
 import { IFeature } from '../interfaces';
 import { FeatureWidgetComponent } from './feature-widget.component';
+import {FeatureModule} from '../feature.module';
 
 class MockFeatureService {
   mockFeatureDataEstimates = {
@@ -85,7 +86,8 @@ class MockFeatureService {
 
 @NgModule({
   declarations: [],
-  imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([]), NgbModule],
+  imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule,
+    RouterModule.forRoot([]), NgbModule, FeatureModule],
   entryComponents: []
 })
 class TestModule { }
@@ -131,12 +133,12 @@ describe('FeatureWidgetComponent', () => {
     collectorItemId: '5678'
   };
 
-  const estimates = {
+  /*const estimates = {
     id: '123',
     openEstimate: 1,
     inProgressEstimate: 2,
     completeEstimate: 3
-  } as IFeature;
+  } as IFeature;*/
 
   const iterations = [[
     {

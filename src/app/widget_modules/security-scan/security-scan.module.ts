@@ -6,15 +6,18 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {SharedModule} from '../../shared/shared.module';
 import {SecurityScanWidgetComponent} from './security-scan-widget/security-scan-widget.component';
 import {SecurityScanConfigComponent} from './security-scan-config/security-scan-config.component';
+import {SecurityScanDeleteFormComponent} from './security-scan-delete-form/security-scan-delete-form.component';
+import {NgbTypeaheadModule} from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
-  declarations: [SecurityScanWidgetComponent, SecurityScanConfigComponent],
-  entryComponents: [SecurityScanWidgetComponent, SecurityScanConfigComponent],
+  declarations: [SecurityScanWidgetComponent, SecurityScanConfigComponent, SecurityScanDeleteFormComponent],
+  entryComponents: [SecurityScanWidgetComponent, SecurityScanConfigComponent, SecurityScanDeleteFormComponent],
   imports: [
     CommonModule,
     ReactiveFormsModule,
     SharedModule,
-    SecurityScanRoutingModule
+    SecurityScanRoutingModule,
+    NgbTypeaheadModule
   ],
   exports: [SecurityScanWidgetComponent, SecurityScanConfigComponent]
 })

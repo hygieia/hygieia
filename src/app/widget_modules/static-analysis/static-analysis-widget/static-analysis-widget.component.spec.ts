@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
 import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
-import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -12,6 +12,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { StaticAnalysisService } from '../static-analysis.service';
 import { IStaticAnalysis } from '../interfaces';
 import { StaticAnalysisWidgetComponent} from './static-analysis-widget.component';
+import {StaticAnalysisModule} from '../static-analysis.module';
 
 class MockStaticAnalysisService {
 
@@ -37,7 +38,8 @@ class MockStaticAnalysisService {
 
 @NgModule({
   declarations: [],
-  imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([]), NgbModule],
+  imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule,
+    RouterModule.forRoot([]), NgbModule, StaticAnalysisModule],
   entryComponents: []
 })
 class TestModule { }

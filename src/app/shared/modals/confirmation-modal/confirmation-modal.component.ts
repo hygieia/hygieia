@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, ComponentFactoryResolver, Input, OnInit, Type, ViewChild} from '@angular/core';
-import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import {NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import {ConfirmationModalDirective} from './confirmation-modal.directive';
 
 @Component({
@@ -13,6 +13,7 @@ export class ConfirmationModalComponent implements OnInit {
   @Input() form: Type<any>;
   @Input() widgetConfig: Type<any>;
   @ViewChild(ConfirmationModalDirective, { static: true }) modalTypeTag: ConfirmationModalDirective;
+  @Input() title: any;
 
   constructor(
     public activeModal: NgbActiveModal,

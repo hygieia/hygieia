@@ -5,6 +5,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 
 import { TestConfigFormComponent } from './test-config-form.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import {TestModule} from '../test.module';
 
 describe('TestConfigFormComponent', () => {
   let component: TestConfigFormComponent;
@@ -12,7 +13,7 @@ describe('TestConfigFormComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, NgbModule, SharedModule, HttpClientTestingModule],
+      imports: [TestModule, ReactiveFormsModule, NgbModule, SharedModule, HttpClientTestingModule],
       providers: [NgbActiveModal]
     })
 

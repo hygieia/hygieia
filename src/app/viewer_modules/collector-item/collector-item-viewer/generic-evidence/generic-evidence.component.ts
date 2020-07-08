@@ -10,11 +10,11 @@ import {Subscription} from 'rxjs';
 })
 export class GenericEvidenceComponent implements OnInit, OnDestroy {
 
-  protected collectorEvidenceDetails: any[];
-  private dashboardTitle: string;
+  collectorEvidenceDetails: any[];
+  dashboardTitle: string;
   private componentId: string;
-  private componentName: string;
-  private collector: string;
+  componentName: string;
+  collector: string;
 
   // Reference to the subscription used to refresh the viewer
   private intervalRefreshSubscription: Subscription;

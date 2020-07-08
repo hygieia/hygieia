@@ -9,7 +9,6 @@ import {
 } from '@angular/core';
 import {WidgetComponent} from '../../../shared/widget/widget.component';
 import {DashboardService} from '../../../shared/dashboard.service';
-import {ActivatedRoute} from '@angular/router';
 import {SecurityScanService} from '../security-scan.service';
 import {catchError, distinctUntilChanged, startWith, switchMap} from 'rxjs/operators';
 import {LayoutDirective} from '../../../shared/layouts/layout.directive';
@@ -39,9 +38,8 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
   constructor(componentFactoryResolver: ComponentFactoryResolver,
               cdr: ChangeDetectorRef,
               dashboardService: DashboardService,
-              route: ActivatedRoute,
               private securityService: SecurityScanService) {
-    super(componentFactoryResolver, cdr, dashboardService, route);
+    super(componentFactoryResolver, cdr, dashboardService);
   }
 
   ngOnInit() {

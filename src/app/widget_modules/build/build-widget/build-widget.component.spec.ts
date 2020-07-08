@@ -13,6 +13,7 @@ import { GET_DASHBOARD_MOCK, POST_DASHBOARD_MOCK } from '../../../shared/dashboa
 import { BuildService } from '../build.service';
 import { IBuild } from '../interfaces';
 import { BuildWidgetComponent } from './build-widget.component';
+import {BuildModule} from '../build.module';
 
 class MockBuildService {
 
@@ -298,7 +299,7 @@ class MockDashboardService {
 
 @NgModule({
   declarations: [],
-  imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([]), NgbModule],
+  imports: [BuildModule, HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([]), NgbModule],
   entryComponents: []
 })
 class TestModule { }

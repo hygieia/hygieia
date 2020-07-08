@@ -1,8 +1,6 @@
 import { ChangeDetectorRef, Component, ComponentFactoryResolver, Input, Type } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { extend } from 'lodash';
-import { Observable, ReplaySubject, zip } from 'rxjs';
-import {isEmpty, map, switchMap, take} from 'rxjs/operators';
+import { Observable, ReplaySubject } from 'rxjs';
+import {map, take} from 'rxjs/operators';
 
 import { DashboardService } from '../dashboard.service';
 import { IChart } from '../interfaces';
@@ -16,8 +14,6 @@ import {WidgetState} from '../widget-header/widget-state';
   styleUrls: ['./widget.component.scss']
 })
 export class WidgetComponent {
-
-  private dashboardId: string;
 
   @Input() widgetId: string;
   @Input() layout: Type<any>;
@@ -43,8 +39,7 @@ export class WidgetComponent {
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver,
               private cdr: ChangeDetectorRef,
-              protected dashboardService: DashboardService,
-              private route: ActivatedRoute) { }
+              protected dashboardService: DashboardService) { }
 
 
   // Pull the layout tag from the template and initialize the charts

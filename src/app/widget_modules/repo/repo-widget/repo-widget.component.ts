@@ -7,7 +7,6 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
 import {forkJoin, of, Subscription} from 'rxjs';
 import {catchError, distinctUntilChanged, startWith, switchMap} from 'rxjs/operators';
 import {DashboardService} from 'src/app/shared/dashboard.service';
@@ -41,10 +40,9 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
   constructor(componentFactoryResolver: ComponentFactoryResolver,
               cdr: ChangeDetectorRef,
               dashboardService: DashboardService,
-              route: ActivatedRoute,
               collectorService: CollectorService,
               private repoService: RepoService) {
-    super(componentFactoryResolver, cdr, dashboardService, route);
+    super(componentFactoryResolver, cdr, dashboardService);
   }
 
   // Initialize the widget and set layout and charts.

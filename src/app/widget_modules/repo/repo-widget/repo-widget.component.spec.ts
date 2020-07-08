@@ -11,6 +11,7 @@ import {RepoWidgetComponent} from './repo-widget.component';
 import {RepoService} from '../repo.service';
 import {Observable, of} from 'rxjs';
 import {IRepo} from '../interfaces';
+import {RepoModule} from '../repo.module';
 
 class MockRepoService {
   mockRepoData = {
@@ -47,7 +48,8 @@ class MockRepoService {
 
 @NgModule({
   declarations: [],
-  imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([]), NgbModule],
+  imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule,
+    RouterModule.forRoot([]), NgbModule, RepoModule],
   entryComponents: []
 })
 class TestModule { }
@@ -158,7 +160,7 @@ describe('RepoWidgetComponent', () => {
   });
 
   it('should hit collectRepoCommits, Pulls, and Issues', () => {
-    const date = new Date(123);
+    // const date = new Date(123);
     component.collectRepoCommits([IRepo1]);
     component.collectRepoPulls([IRepo1]);
     component.collectRepoIssues([IRepo1]);

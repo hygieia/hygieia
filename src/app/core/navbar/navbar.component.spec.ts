@@ -41,5 +41,6 @@ describe('NavbarComponent', () => {
   });
   it('should get userName', () => {
     const userTest = component.userName;
+    expect(userTest).not.toBeNull();
   });
 });
