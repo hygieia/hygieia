@@ -1,7 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { EditDashboardComponent } from './edit-dashboard.component';
-import { AdminOrderByPipe } from '../../../../../shared/pipes/order-by.pipe';
-import { AdminFilterPipe } from '../../../../../shared/pipes/filter.pipe';
 import { DashboardDataService } from '../../../../../shared/services/dashboard-data.service';
 import { CmdbDataService } from '../../../../../shared/services/cmdb-data.service';
 import { AdminDashboardService } from '../../../../../shared/services/dashboard.service';
@@ -24,7 +22,7 @@ import { EditDashboardModalComponent } from '../../../../../shared/modals/edit-d
 import {GeneralDeleteComponent} from '../../../../../shared/modals/general-delete/general-delete.component';
 
 @NgModule({
-  declarations: [EditDashboardComponent, AdminFilterPipe, AdminOrderByPipe,
+  declarations: [EditDashboardComponent,
     EditDashboardModalComponent, DashTrashComponent, DashEditComponent, GeneralDeleteComponent],
   providers: [{ provide: DashboardDataService, useClass: MockDashboardDataService },
     CmdbDataService, UserDataService, AdminDashboardService, { provide: PaginationWrapperService, useClass: MockPaginationWrapperService }],

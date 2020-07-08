@@ -4,10 +4,8 @@ import { GenerateApiTokensComponent } from './generate-api-tokens/generate-api-t
 import { ManageAdminsComponent } from './manage-admins/manage-admins.component';
 import { FormsModule, ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { AdminFilterPipe } from '../../../../shared/pipes/filter.pipe';
 import { DashEditComponent } from '../../../../shared/dash-edit/dash-edit.component';
 import { DashTrashComponent } from '../../../../shared/dash-trash/dash-trash.component';
-import { AdminOrderByPipe } from '../../../../shared/pipes/order-by.pipe';
 import {FeatureFlagsComponent} from './feature-flags/feature-flags.component';
 import {ServiceAccountsComponent} from './service-accounts/service-accounts.component';
 import {UserDataService} from '../../../../shared/services/user-data.service';
@@ -30,7 +28,7 @@ describe('AdminDashboardComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [AdminDashboardComponent, GenerateApiTokensComponent, ManageAdminsComponent, EditDashboardComponent,
-        AdminOrderByPipe, AdminFilterPipe, DashTrashComponent, DashEditComponent, FeatureFlagsComponent,
+        DashTrashComponent, DashEditComponent, FeatureFlagsComponent,
         ServiceAccountsComponent ],
       imports: [FormsModule, CommonModule, ReactiveFormsModule, SharedModule, HttpClientTestingModule,
         RouterTestingModule.withRoutes([]), NbThemeModule.forRoot(), NbEvaIconsModule],
