@@ -11,6 +11,7 @@ import {DashboardService} from '../dashboard.service';
 import {AuditModalComponent} from '../modals/audit-modal/audit-modal.component';
 import {DeleteConfirmModalComponent} from '../modals/delete-confirm-modal/delete-confirm-modal.component';
 import {WidgetState} from './widget-state';
+import {AuthService} from '../../core/services/auth.service';
 import moment from 'moment';
 
 @Component({
@@ -38,7 +39,8 @@ export class WidgetHeaderComponent implements OnInit {
   constructor(private componentFactoryResolver: ComponentFactoryResolver,
               private cdr: ChangeDetectorRef,
               private modalService: NgbModal,
-              private dashboardService: DashboardService) {
+              private dashboardService: DashboardService,
+              private auth: AuthService) {
   }
 
   ngOnInit() {
@@ -305,5 +307,21 @@ export class WidgetHeaderComponent implements OnInit {
         }
       })).subscribe(data => this.lastUpdated = data);
   }
+
+  get isOwnerOrAdmin(): boolean {
+    const currentUser = this.auth.getUserName();
+    let isOwner = false;
+    this.dashboardService.dashboardConfig$.pipe(take(1),
+      map(dashboard => {
+        const owners = dashboard.owners;
+        for (const owner of owners) {
+          isOwner = (owner.username === currentUser || this.auth.isAdmin());
+          if (isOwner) break;
+        }
+        return isOwner;
+      })).subscribe(bool => isOwner = bool);
+    return isOwner;
+  }
+
 }
 
