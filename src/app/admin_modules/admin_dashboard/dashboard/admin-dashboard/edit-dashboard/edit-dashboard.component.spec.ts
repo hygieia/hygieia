@@ -21,7 +21,7 @@ import { UserDataService } from '../../../../../shared/services/user-data.servic
 import { MockDashboardDataService } from '../../../services/mock-dashboard-data.service';
 import { MockPaginationWrapperService } from '../../../services/mock-pagination-wrapper.service';
 import { EditDashboardModalComponent } from '../../../../../shared/modals/edit-dashboard-modal/edit-dashboard-modal.component';
-import {GeneralDeleteComponent} from '../../../../../shared/modals/general-delete/general-delete.component';
+import {GeneralDeleteComponent} from '../modal/general-delete/general-delete.component';
 
 @NgModule({
   declarations: [EditDashboardComponent, AdminFilterPipe, AdminOrderByPipe,

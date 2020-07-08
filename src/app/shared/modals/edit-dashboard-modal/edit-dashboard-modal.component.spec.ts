@@ -8,10 +8,10 @@ import { AdminDashboardService } from 'src/app/shared/services/dashboard.service
 import { PaginationWrapperService } from 'src/app/admin_modules/admin_dashboard/services/pagination-wrapper.service';
 import { CommonModule } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { AdminFilterPipe } from 'src/app/admin_modules/admin_dashboard/pipes/filter.pipe';
-import { AdminOrderByPipe } from 'src/app/admin_modules/admin_dashboard/pipes/order-by.pipe';
 import { UserDataService } from 'src/app/shared/services/user-data.service';
 import { USER_LIST, DASHBOARDITEM  } from 'src/app/shared/services/user-data.service.mockdata';
+import {AdminFilterPipe} from '../../pipes/filter.pipe';
+import {AdminOrderByPipe} from '../../pipes/order-by.pipe';
 
 describe('EditDashboardModalComponent', () => {
   let component: EditDashboardModalComponent;
