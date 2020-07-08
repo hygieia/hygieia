@@ -1,11 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { EditTokenModalComponent } from './edit-token-modal.component';
 import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { UserDataService } from 'src/app/admin_modules/admin_dashboard/services/user-data.service';
+import { UserDataService } from 'src/app/shared/services/user-data.service';
 import { FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { API_TOKEN_LIST } from 'src/app/admin_modules/admin_dashboard/services/user-data.service.mockdata';
+import { API_TOKEN_LIST } from 'src/app/shared/services/user-data.service.mockdata';
 
 describe('EditTokenModalComponent', () => {
   let component: EditTokenModalComponent;

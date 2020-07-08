@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { UserDataService } from 'src/app/admin_modules/admin_dashboard/services/user-data.service';
+import { UserDataService } from 'src/app/shared/services/user-data.service';
 
 @Component({
   selector: 'app-create-or-update-feature-flags',

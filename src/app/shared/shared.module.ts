@@ -55,6 +55,14 @@ import {DeleteConfirmModalDirective} from './modals/delete-confirm-modal/delete-
 import {RotationChartComponent} from './charts/rotation/rotation-chart.component';
 import {NbActionsModule, NbCardModule, NbSearchModule, NbTabsetModule, NbUserModule} from '@nebular/theme';
 import {ConfirmationModalDirective} from './modals/confirmation-modal/confirmation-modal.directive';
+import {AdminFilterPipe} from './pipes/filter.pipe';
+import {DashEditComponent} from './dash-edit/dash-edit.component';
+import {DashTrashComponent} from './dash-trash/dash-trash.component';
+import {EditDashboardModalComponent} from './modals/edit-dashboard-modal/edit-dashboard-modal.component';
+import {GeneralDeleteComponent} from '../admin_modules/admin_dashboard/dashboard/admin-dashboard/modal/general-delete/general-delete.component';
+import {AdminOrderByPipe} from './pipes/order-by.pipe';
+import {UserDataService} from './services/user-data.service';
+import {DashboardDataService} from './services/dashboard-data.service';
 
 @NgModule({
   declarations: [
@@ -103,6 +111,12 @@ import {ConfirmationModalDirective} from './modals/confirmation-modal/confirmati
     TwoByOneLayoutComponent,
     NavbarComponent,
     ConfirmationModalDirective,
+    AdminFilterPipe,
+    AdminOrderByPipe,
+    DashEditComponent,
+    DashTrashComponent,
+    EditDashboardModalComponent,
+    GeneralDeleteComponent
   ],
   entryComponents: [
     DeleteConfirmModalComponent,
@@ -130,7 +144,13 @@ import {ConfirmationModalDirective} from './modals/confirmation-modal/confirmati
     RotationChartComponent,
     TwoByTwoLayoutComponent,
     TwoByTwoLayoutComponent,
-    AuditModalComponent
+    AuditModalComponent,
+    EditDashboardModalComponent,
+    GeneralDeleteComponent
+  ],
+  providers: [
+    UserDataService,
+    DashboardDataService
   ],
   imports: [
     CommonModule,
@@ -149,6 +169,11 @@ import {ConfirmationModalDirective} from './modals/confirmation-modal/confirmati
     NbTabsetModule,
   ],
   exports: [
+    AdminFilterPipe,
+    AdminOrderByPipe,
+    DashEditComponent,
+    DashTrashComponent,
+    GeneralDeleteComponent,
     BarHorizontalComponent,
     CaponeTemplateComponent,
     ChartComponent,

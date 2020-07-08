@@ -1,4 +1,4 @@
-import { DASHBOARDDATA } from './user-data.service.mockdata';
+import { DASHBOARDDATA } from '../../../shared/services/user-data.service.mockdata';
 import { of } from 'rxjs';
 
 export class MockDashboardDataService {

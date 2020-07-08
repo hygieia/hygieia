@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GenerateApiTokenModalComponent } from './generate-api-token-modal.component';
-import { UserDataService } from 'src/app/admin_modules/admin_dashboard/services/user-data.service';
+import { UserDataService } from 'src/app/shared/services/user-data.service';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClientTestingModule } from '@angular/common/http/testing';

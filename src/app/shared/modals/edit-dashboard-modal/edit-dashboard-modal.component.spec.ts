@@ -2,16 +2,16 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { EditDashboardModalComponent } from './edit-dashboard-modal.component';
 import { FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { DashboardDataService } from 'src/app/admin_modules/admin_dashboard/services/dashboard-data.service';
-import { CmdbDataService } from 'src/app/admin_modules/admin_dashboard/services/cmdb-data.service';
-import { AdminDashboardService } from 'src/app/admin_modules/admin_dashboard/services/dashboard.service';
+import { DashboardDataService } from 'src/app/shared/services/dashboard-data.service';
+import { CmdbDataService } from 'src/app/shared/services/cmdb-data.service';
+import { AdminDashboardService } from 'src/app/shared/services/dashboard.service';
 import { PaginationWrapperService } from 'src/app/admin_modules/admin_dashboard/services/pagination-wrapper.service';
 import { CommonModule } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { AdminFilterPipe } from 'src/app/admin_modules/admin_dashboard/pipes/filter.pipe';
 import { AdminOrderByPipe } from 'src/app/admin_modules/admin_dashboard/pipes/order-by.pipe';
-import { UserDataService } from 'src/app/admin_modules/admin_dashboard/services/user-data.service';
-import { USER_LIST, DASHBOARDITEM  } from 'src/app/admin_modules/admin_dashboard/services/user-data.service.mockdata';
+import { UserDataService } from 'src/app/shared/services/user-data.service';
+import { USER_LIST, DASHBOARDITEM  } from 'src/app/shared/services/user-data.service.mockdata';
 
 describe('EditDashboardModalComponent', () => {
   let component: EditDashboardModalComponent;

@@ -1,12 +1,12 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { PaginationWrapperService } from '../../../services/pagination-wrapper.service';
-import { DashboardDataService } from '../../../services/dashboard-data.service';
+import { DashboardDataService } from '../../../../../shared/services/dashboard-data.service';
 import { IPaginationParams } from 'src/app/shared/interfaces';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { DashboardItem } from '../model/dashboard-item';
-import { EditDashboardModalComponent } from '../modal/edit-dashboard-modal/edit-dashboard-modal.component';
+import { DashboardItem } from '../../../../../shared/model/dashboard-item';
+import { EditDashboardModalComponent } from '../../../../../shared/modals/edit-dashboard-modal/edit-dashboard-modal.component';
 import { forkJoin } from 'rxjs';
-import { AdminDeleteComponent } from '../modal/admin-delete/admin-delete.component';
+import {GeneralDeleteComponent} from '../modal/general-delete/general-delete.component';
 
 @Component({
   selector: 'app-edit-dashboard',
@@ -19,7 +19,6 @@ export class EditDashboardComponent implements OnInit {
   dashboards: any = [];
   page: PaginationWrapperService;
   @Input() dashboardItem: any;
-  pageSize = 10;
   searchDashboard = '';
 
   constructor(private dashboardData: DashboardDataService, private paginationWrapperService: PaginationWrapperService,
@@ -66,6 +65,7 @@ export class EditDashboardComponent implements OnInit {
       this.loadData();
     }).catch((error) => {
       this.loadData();
+      console.log('edit error newConfig :' + error);
     });
 
   }
@@ -83,8 +83,8 @@ export class EditDashboardComponent implements OnInit {
   }
 
   deleteDashboard(item) {
-    const modalRef = this.modalService.open(AdminDeleteComponent);
-    modalRef.componentInstance.message = `Are you sure you want to delete ${item.name}?`;
+    const modalRef = this.modalService.open(GeneralDeleteComponent);
+    modalRef.componentInstance.title = `Are you sure you want to delete ${item.name}?`;
     modalRef.result.then((newConfig) => {
       this.dashboardData.deleteDashboard(item.id).subscribe(response => {
         this.loadData();
@@ -97,9 +97,9 @@ export class EditDashboardComponent implements OnInit {
   filterByTitle(title) {
     const promises = this.paginationWrapperService.filterByTitle(title, this.dashboardType);
     forkJoin(promises).subscribe((response: any) => {
-        this.dashboards = this.paginationWrapperService.getDashboards();
-        this.totalItems = this.paginationWrapperService.getTotalItems();
+      this.dashboards = this.paginationWrapperService.getDashboards();
+      this.totalItems = this.paginationWrapperService.getTotalItems();
     });
-}
+  }
 
 }

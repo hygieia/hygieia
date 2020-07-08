@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { DashboardDataService } from './dashboard-data.service';
-import { AdminDashboardService } from './dashboard.service';
+import { DashboardDataService } from '../../../shared/services/dashboard-data.service';
+import { AdminDashboardService } from '../../../shared/services/dashboard.service';
 import { map } from 'rxjs/internal/operators/map';
 import { catchError } from 'rxjs/operators';
 

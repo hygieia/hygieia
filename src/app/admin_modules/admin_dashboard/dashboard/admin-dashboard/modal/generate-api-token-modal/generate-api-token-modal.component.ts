@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbActiveModal, NgbDateStruct, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { UserDataService } from 'src/app/admin_modules/admin_dashboard/services/user-data.service';
+import { UserDataService } from 'src/app/shared/services/user-data.service';
 // @ts-ignore
 import moment from 'moment';
 
