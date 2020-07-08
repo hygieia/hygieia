@@ -12,13 +12,10 @@ import { CommonModule } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { API_TOKEN_LIST } from '../../../../../shared/services/user-data.service.mockdata';
 import { NgModule } from '@angular/core';
-import {AdminFilterPipe} from '../../../../../shared/pipes/filter.pipe';
-import {AdminOrderByPipe} from '../../../../../shared/pipes/order-by.pipe';
 import {GeneralDeleteComponent} from '../../../../../shared/modals/general-delete/general-delete.component';
 
 @NgModule({
-  declarations: [GenerateApiTokensComponent, DashEditComponent, DashTrashComponent, AdminFilterPipe,
-          AdminOrderByPipe, EditTokenModalComponent,
+  declarations: [GenerateApiTokensComponent, DashEditComponent, DashTrashComponent, EditTokenModalComponent,
     GenerateApiTokenModalComponent,
     GeneralDeleteComponent],
   providers: [UserDataService, NgbModal],
