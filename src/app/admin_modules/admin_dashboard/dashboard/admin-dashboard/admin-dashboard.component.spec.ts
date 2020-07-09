@@ -4,13 +4,9 @@ import { GenerateApiTokensComponent } from './generate-api-tokens/generate-api-t
 import { ManageAdminsComponent } from './manage-admins/manage-admins.component';
 import { FormsModule, ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { DashEditComponent } from '../../../../shared/dash-edit/dash-edit.component';
-import { DashTrashComponent } from '../../../../shared/dash-trash/dash-trash.component';
 import {FeatureFlagsComponent} from './feature-flags/feature-flags.component';
 import {ServiceAccountsComponent} from './service-accounts/service-accounts.component';
-import {UserDataService} from '../../../../shared/services/user-data.service';
 import { NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import { EditDashboardComponent } from './edit-dashboard/edit-dashboard.component';
 import { DashboardDataService } from '../../../../shared/services/dashboard-data.service';
 import { CmdbDataService } from '../../../../shared/services/cmdb-data.service';
 import { AdminDashboardService } from '../../../../shared/services/dashboard.service';
@@ -27,15 +23,15 @@ describe('AdminDashboardComponent', () => {
   let fixture: ComponentFixture<AdminDashboardComponent>;
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [AdminDashboardComponent, GenerateApiTokensComponent, ManageAdminsComponent, EditDashboardComponent,
-        DashTrashComponent, DashEditComponent, FeatureFlagsComponent,
+      declarations: [AdminDashboardComponent, GenerateApiTokensComponent, ManageAdminsComponent,
+        FeatureFlagsComponent,
         ServiceAccountsComponent ],
       imports: [FormsModule, CommonModule, ReactiveFormsModule, SharedModule, HttpClientTestingModule,
         RouterTestingModule.withRoutes([]), NbThemeModule.forRoot(), NbEvaIconsModule],
       providers: [DashboardDataService,
         CmdbDataService,
         AdminDashboardService,
-        PaginationWrapperService, FormBuilder, NgbActiveModal, UserDataService ],
+        PaginationWrapperService, FormBuilder, NgbActiveModal],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
       .compileComponents();

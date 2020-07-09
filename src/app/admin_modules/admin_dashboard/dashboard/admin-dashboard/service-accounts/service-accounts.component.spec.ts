@@ -10,9 +10,9 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import {ServiceAccountsComponent} from './service-accounts.component';
 // tslint:disable-next-line:max-line-length
 import {CreateOrUpdateServiceAccountComponent} from '../modal/create-or-update-service-account/create-or-update-service-account.component';
-import {GeneralDeleteComponent} from '../../../../../shared/modals/general-delete/general-delete.component';
 import {AdminFilterPipe} from '../../../../../shared/pipes/filter.pipe';
 import {AdminOrderByPipe} from '../../../../../shared/pipes/order-by.pipe';
+
 
 /*@NgModule({
   declarations: [ServiceAccountsComponent, DashEditComponent, DashTrashComponent, AdminFilterPipe,
@@ -44,8 +44,7 @@ describe('ServiceAccountsComponent', () => {
         DashEditComponent,
         CreateOrUpdateServiceAccountComponent,
         AdminFilterPipe,
-        AdminOrderByPipe,
-        GeneralDeleteComponent],
+        AdminOrderByPipe],
       providers: [UserDataService, FormBuilder, NgbActiveModal],
       imports: [FormsModule, NgbModule, CommonModule, ReactiveFormsModule, HttpClientTestingModule]
     })

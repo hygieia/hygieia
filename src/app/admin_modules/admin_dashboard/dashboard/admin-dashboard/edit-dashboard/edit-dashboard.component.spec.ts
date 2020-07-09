@@ -8,9 +8,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NgModule } from '@angular/core';
-import { DashEditComponent } from '../../../../../shared/dash-edit/dash-edit.component';
-import { DashTrashComponent } from '../../../../../shared/dash-trash/dash-trash.component';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClientModule } from '@angular/common/http';
 import { DASHBOARDITEM } from '../../../../../shared/services/user-data.service.mockdata';
@@ -18,18 +15,15 @@ import { DashboardItem } from '../../../../../shared/model/dashboard-item';
 import { UserDataService } from '../../../../../shared/services/user-data.service';
 import { MockDashboardDataService } from '../../../services/mock-dashboard-data.service';
 import { MockPaginationWrapperService } from '../../../services/mock-pagination-wrapper.service';
-import { EditDashboardModalComponent } from '../../../../../shared/modals/edit-dashboard-modal/edit-dashboard-modal.component';
 import {GeneralDeleteComponent} from '../../../../../shared/modals/general-delete/general-delete.component';
+import {SharedModule} from '../../../../../shared/shared.module';
 
 @NgModule({
-  declarations: [EditDashboardComponent,
-    EditDashboardModalComponent, DashTrashComponent, DashEditComponent, GeneralDeleteComponent],
+  declarations: [EditDashboardComponent],
   providers: [{ provide: DashboardDataService, useClass: MockDashboardDataService },
     CmdbDataService, UserDataService, AdminDashboardService, { provide: PaginationWrapperService, useClass: MockPaginationWrapperService }],
-  imports: [FormsModule, CommonModule, NgbModule, ReactiveFormsModule, HttpClientTestingModule, SharedModule, HttpClientModule],
-  entryComponents: [
-    EditDashboardModalComponent,
-    GeneralDeleteComponent]
+  imports: [FormsModule, CommonModule, NgbModule, ReactiveFormsModule, HttpClientTestingModule, HttpClientModule, SharedModule],
+  entryComponents: [GeneralDeleteComponent]
 })
 class TestModule { }
 

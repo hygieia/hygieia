@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ManageAdminsComponent } from './manage-admins.component';
 import { UserDataService } from '../../../../../shared/services/user-data.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AdminOrderByPipe } from '../../../../../shared/pipes/order-by.pipe';
+import { AdminFilterPipe } from '../../../../../shared/pipes/filter.pipe';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('ManageAdminsComponent', () => {
@@ -11,7 +13,7 @@ describe('ManageAdminsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ManageAdminsComponent],
+      declarations: [ManageAdminsComponent, AdminFilterPipe, AdminOrderByPipe],
       providers: [UserDataService],
       imports: [FormsModule, CommonModule, ReactiveFormsModule, HttpClientTestingModule]
     })

@@ -101,5 +101,4 @@ export class EditDashboardComponent implements OnInit {
       this.totalItems = this.paginationWrapperService.getTotalItems();
     });
   }
-
 }

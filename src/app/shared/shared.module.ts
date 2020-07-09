@@ -182,6 +182,7 @@ import {DashboardDataService} from './services/dashboard-data.service';
     ComboChartComponent,
     ComboSeriesVerticalComponent,
     CommonModule,
+    EditDashboardModalComponent,
     HorizontalBarChartComponent,
     LayoutComponent,
     LayoutDirective,

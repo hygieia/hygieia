@@ -1,28 +1,49 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { GenerateApiTokenModalComponent } from './generate-api-token-modal.component';
-import { UserDataService } from 'src/app/shared/services/user-data.service';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NgModule } from '@angular/core';
+import {GenerateApiTokensComponent} from '../../generate-api-tokens/generate-api-tokens.component';
+import {DashEditComponent} from '../../../../../../shared/dash-edit/dash-edit.component';
+import {GenerateApiTokenModalComponent} from './generate-api-token-modal.component';
+import {AdminOrderByPipe} from '../../../../../../shared/pipes/order-by.pipe';
+import {EditTokenModalComponent} from '../edit-token-modal/edit-token-modal.component';
+import {GeneralDeleteComponent} from '../../../../../../shared/modals/general-delete/general-delete.component';
+import {DashTrashComponent} from '../../../../../../shared/dash-trash/dash-trash.component';
+import {AdminFilterPipe} from '../../../../../../shared/pipes/filter.pipe';
+import {UserDataService} from '../../../../../../shared/services/user-data.service';
+import {API_TOKEN_LIST} from '../../../../../../shared/services/user-data.service.mockdata';
 
-describe('GenerateApiTokenModalComponent', () => {
-  let component: GenerateApiTokenModalComponent;
-  let fixture: ComponentFixture<GenerateApiTokenModalComponent>;
+@NgModule({
+  declarations: [GenerateApiTokensComponent, DashEditComponent, DashTrashComponent, AdminFilterPipe,
+    AdminOrderByPipe, EditTokenModalComponent,
+    GenerateApiTokenModalComponent,
+    GeneralDeleteComponent],
+  providers: [UserDataService, NgbModal],
+  imports: [FormsModule, CommonModule, ReactiveFormsModule, NgbModule, HttpClientTestingModule],
+  entryComponents: [
+    EditTokenModalComponent,
+    GenerateApiTokenModalComponent,
+    GeneralDeleteComponent
+  ]
+})
+class TestModule { }
 
+describe('GenerateApiTokensComponent', () => {
+  let component: GenerateApiTokensComponent;
+  let fixture: ComponentFixture<GenerateApiTokensComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [GenerateApiTokenModalComponent],
-      providers: [UserDataService, FormBuilder, NgbActiveModal],
-      imports: [ReactiveFormsModule, NgbModule, HttpClientTestingModule]
-
+      imports: [TestModule],
     })
       .compileComponents();
+
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(GenerateApiTokenModalComponent);
+    fixture = TestBed.createComponent(GenerateApiTokensComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -31,15 +52,15 @@ describe('GenerateApiTokenModalComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should create a  generate token from ', () => {
-    component.ngOnInit();
-    expect(component.apiForm).toBeTruthy();
+  it('should openConfig edit token when clicked', () => {
+    component.editToken(API_TOKEN_LIST[0]);
   });
 
-  it('should  submit generate from  when clicked on submit', () => {
-    component.apiForm.get('apiUser').setValue('testing1');
-    component.submit();
-    expect(component.apiForm.valid).toBeTruthy();
+  it('should openConfig delete token when clicked', () => {
+    component.deleteToken(API_TOKEN_LIST[0]);
   });
 
+  it('should openConfig generate token when clicked', () => {
+    component.generateToken();
+  });
 });
