@@ -30,23 +30,4 @@ describe('EditDashboardModalComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
-  it('should  submit edit from  when clicked on submit', () => {
-    setTimeout(() => {
-      component.cdfForm.get('dashboardTitle').setValue('Test111');
-      component.tabView = 'Dashboard Title';
-      component.saveForm();
-      expect(component.cdfForm.valid).toBeTruthy();
-    }, 500);
-  });
-
-  it('should  submit edit form BusinessService  when clicked on submit', () => {
-    setTimeout(() => {
-      component.formBusinessService.get('configurationItemBusServ').setValue('test111');
-      component.formBusinessService.get('configurationItemBusApp').setValue('test111');
-      component.tabView = 'Business Service/ Application';
-      component.saveForm();
-      expect(component.formBusinessService.valid).toBeTruthy();
-    }, 500);
-  });
 });
