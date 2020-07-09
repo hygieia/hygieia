@@ -2,7 +2,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgbActiveModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxUIModule } from '@swimlane/ngx-ui';
@@ -64,6 +64,7 @@ import {GeneralDeleteComponent} from './modals/general-delete/general-delete.com
 import {AdminOrderByPipe} from './pipes/order-by.pipe';
 import {UserDataService} from './services/user-data.service';
 import {DashboardDataService} from './services/dashboard-data.service';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
 
 @NgModule({
   declarations: [
@@ -170,6 +171,8 @@ import {DashboardDataService} from './services/dashboard-data.service';
     NbSearchModule,
     NbCardModule,
     NbTabsetModule,
+    FormsModule,
+    HttpClientTestingModule
   ],
   exports: [
     AdminFilterPipe,
