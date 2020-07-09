@@ -51,5 +51,4 @@ describe('EditTokenModalComponent', () => {
       expect(component.apiEditForm.valid).toBeTruthy();
     }, 500);
   });
-
 });

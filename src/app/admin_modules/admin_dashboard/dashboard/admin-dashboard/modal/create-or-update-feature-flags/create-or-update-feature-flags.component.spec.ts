@@ -1,4 +1,3 @@
-
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { CreateOrUpdateFeatureFlagsComponent } from './create-or-update-feature-flags.component';
 import {UserDataService} from '../../../../../../shared/services/user-data.service';

@@ -4,18 +4,19 @@ import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {FeatureFlagsComponent} from './feature-flags.component';
-import {UserDataService} from '../../../../../shared/services/user-data.service';
+import {CreateOrUpdateFeatureFlagsComponent} from '../modal/create-or-update-feature-flags/create-or-update-feature-flags.component';
 import {DashTrashComponent} from '../../../../../shared/dash-trash/dash-trash.component';
 import {DashEditComponent} from '../../../../../shared/dash-edit/dash-edit.component';
-import {CreateOrUpdateFeatureFlagsComponent} from '../modal/create-or-update-feature-flags/create-or-update-feature-flags.component';
 import {GeneralDeleteComponent} from '../../../../../shared/modals/general-delete/general-delete.component';
+import {UserDataService} from '../../../../../shared/services/user-data.service';
 
 /*@NgModule({
-  declarations: [FeatureFlagsComponent, DashEditComponent, DashTrashComponent],
+  declarations: [FeatureFlagsComponent, DashEditComponent, DashTrashComponent, AdminDeleteComponent],
   providers: [UserDataService, NgbModal],
   imports: [FormsModule, CommonModule, ReactiveFormsModule, NgbModule, HttpClientTestingModule],
   entryComponents: [
     FeatureFlagsComponent,
+    AdminDeleteComponent,
     CreateOrUpdateFeatureFlagsComponent
   ]
 })
@@ -43,7 +44,7 @@ describe('FeatureFlagsComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ FeatureFlagsComponent, DashTrashComponent, DashEditComponent, CreateOrUpdateFeatureFlagsComponent,
         GeneralDeleteComponent],
-      providers: [UserDataService, FormBuilder, NgbActiveModal],
+      providers: [FormBuilder, NgbActiveModal, UserDataService],
       imports: [ReactiveFormsModule, NgbModule, FormsModule, CommonModule, HttpClientTestingModule]
     })
       .compileComponents();

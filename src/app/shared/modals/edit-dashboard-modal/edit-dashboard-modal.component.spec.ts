@@ -1,11 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { EditDashboardModalComponent } from './edit-dashboard-modal.component';
-import { FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { DashboardDataService } from 'src/app/shared/services/dashboard-data.service';
-import { CmdbDataService } from 'src/app/shared/services/cmdb-data.service';
-import { AdminDashboardService } from 'src/app/shared/services/dashboard.service';
-import { PaginationWrapperService } from 'src/app/admin_modules/admin_dashboard/services/pagination-wrapper.service';
 import { CommonModule } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { UserDataService } from 'src/app/shared/services/user-data.service';
@@ -17,14 +13,10 @@ describe('EditDashboardModalComponent', () => {
   let component: EditDashboardModalComponent;
   let fixture: ComponentFixture<EditDashboardModalComponent>;
 
-
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [EditDashboardModalComponent, AdminFilterPipe, AdminOrderByPipe],
-      providers: [DashboardDataService,
-        CmdbDataService,
-        AdminDashboardService,
-        PaginationWrapperService, FormBuilder, NgbActiveModal, UserDataService],
+      declarations: [ EditDashboardModalComponent, AdminFilterPipe, AdminOrderByPipe ],
+      providers: [UserDataService, NgbActiveModal],
       imports: [ReactiveFormsModule, NgbModule, FormsModule, CommonModule, HttpClientTestingModule]
     })
       .compileComponents();
@@ -111,8 +103,6 @@ describe('EditDashboardModalComponent', () => {
     expect(null).toEqual(component.error);
   });
 
-
-
   it('should isActiveUser ', () => {
     const user = USER_LIST[0];
     expect(component.isActiveUser(user)).toBeFalsy();
@@ -131,5 +121,4 @@ describe('EditDashboardModalComponent', () => {
     expect('A top level name which support Business function.')
     .toEqual(component.getBusSerToolText());
   });
-
 });

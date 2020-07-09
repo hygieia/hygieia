@@ -2,8 +2,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { ReactiveFormsModule } from '@angular/forms';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {NgbActiveModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxUIModule } from '@swimlane/ngx-ui';
 import { TimeAgoPipe } from 'time-ago-pipe';
@@ -150,8 +150,10 @@ import {DashboardDataService} from './services/dashboard-data.service';
     GeneralDeleteComponent
   ],
   providers: [
+    DashboardDataService,
+    FormBuilder,
     UserDataService,
-    DashboardDataService
+    NgbActiveModal
   ],
   imports: [
     CommonModule,

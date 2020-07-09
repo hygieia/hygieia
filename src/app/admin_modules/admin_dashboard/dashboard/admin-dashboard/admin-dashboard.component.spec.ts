@@ -17,6 +17,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import {NbThemeModule} from '@nebular/theme';
 import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 import {NbEvaIconsModule} from '@nebular/eva-icons';
+import {UserDataService} from '../../../../shared/services/user-data.service';
 
 describe('AdminDashboardComponent', () => {
   let component: AdminDashboardComponent;
@@ -31,7 +32,7 @@ describe('AdminDashboardComponent', () => {
       providers: [DashboardDataService,
         CmdbDataService,
         AdminDashboardService,
-        PaginationWrapperService, FormBuilder, NgbActiveModal],
+        PaginationWrapperService, FormBuilder, NgbActiveModal, UserDataService],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
       .compileComponents();
