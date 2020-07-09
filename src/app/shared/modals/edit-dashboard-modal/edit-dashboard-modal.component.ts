@@ -90,7 +90,6 @@ export class EditDashboardModalComponent implements OnInit {
     this.getConfigItem('app', '');
     this.getConfigItemComponent('', '');
     setTimeout(() => {
-      console.log('dashboardItem' + JSON.stringify(this.dashboardItem));
       this.cdfForm.get('dashboardTitle').setValue(this.getDashboardTitle());
     }, 100);
   }
@@ -227,7 +226,6 @@ export class EditDashboardModalComponent implements OnInit {
         break;
     }
     this.activeModal.close();
-    window.location.reload();
   }
 
   submit(form) {
