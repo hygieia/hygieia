@@ -65,6 +65,9 @@ import {AdminOrderByPipe} from './pipes/order-by.pipe';
 import {UserDataService} from './services/user-data.service';
 import {DashboardDataService} from './services/dashboard-data.service';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {TabsMultipleActiveFixtureComponent} from './ngx-ui/tabs/fixtures/tabs-multiple-active.fixture';
+import {TabsLabeltemplateFixtureComponent} from './ngx-ui/tabs/fixtures/tabs-label-template.fixture';
+import {TabsFixtureComponent} from './ngx-ui/tabs/fixtures/tabs.fixture';
 
 @NgModule({
   declarations: [
@@ -118,7 +121,10 @@ import {HttpClientTestingModule} from '@angular/common/http/testing';
     DashEditComponent,
     DashTrashComponent,
     EditDashboardModalComponent,
-    GeneralDeleteComponent
+    GeneralDeleteComponent,
+    TabsMultipleActiveFixtureComponent,
+    TabsLabeltemplateFixtureComponent,
+    TabsFixtureComponent
   ],
   entryComponents: [
     DeleteConfirmModalComponent,
