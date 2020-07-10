@@ -11,7 +11,6 @@ import { DashboardItem } from '../../model/dashboard-item';
 import { Observable, of } from 'rxjs';
 import {DashboardService} from '../../dashboard.service';
 import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
-import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-edit-dashboard-modal',
