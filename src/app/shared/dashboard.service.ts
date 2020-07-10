@@ -160,7 +160,6 @@ export class DashboardService {
       if (!foundComponent) {
         dashboard.application.components.push(responseComponent);
       }
-      console.log(dashboard);
       return dashboard;
     }));
 

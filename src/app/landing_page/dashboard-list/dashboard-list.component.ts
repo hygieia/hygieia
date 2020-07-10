@@ -108,7 +108,7 @@ export class DashboardListComponent implements OnInit {
   }
 
   goToAuditReport() {
-    window.open('/audits', '_blank');
+    this.router.navigate(['/audits']);
   }
 
   dashboardName(dashboard: IDashboards): string {
@@ -138,7 +138,7 @@ export class DashboardListComponent implements OnInit {
     const modalRef = this.modalService.open(EditDashboardModalComponent);
     modalRef.componentInstance.dashboardItem = item;
     modalRef.result.then((newConfig) => {
-      this.router.navigate(['']);
+      this.router.navigate(['/']);
     }).catch((error) => {
       console.log('edit error newConfig :' + error);
     });
@@ -146,5 +146,9 @@ export class DashboardListComponent implements OnInit {
 
   createDashboard() {
     this.dialogService.open(DashboardCreateComponent);
+  }
+
+  goToCollectorItemMetrics() {
+    this.router.navigate(['/collectorItem']);
   }
 }

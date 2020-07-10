@@ -31,7 +31,6 @@ describe('EditDashboardModalComponent', () => {
   it('should  submit edit from  when clicked on submit', () => {
     setTimeout(() => {
       component.cdfForm.get('dashboardTitle').setValue('Test111');
-      console.log('submit from :', component.cdfForm);
       component.tabView = 'Dashboard Title';
       component.saveForm();
       expect(component.cdfForm.valid).toBeTruthy();
@@ -41,7 +40,6 @@ describe('EditDashboardModalComponent', () => {
     setTimeout(() => {
       component.formBusinessService.get('configurationItemBusServ').setValue('test111');
       component.formBusinessService.get('configurationItemBusApp').setValue('test111');
-      console.log('submit from :', component.formBusinessService);
       component.tabView = 'Business Service/ Application';
       component.saveForm();
       expect(component.formBusinessService.valid).toBeTruthy();

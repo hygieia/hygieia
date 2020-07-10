@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 import { DashboardDataService } from 'src/app/shared/services/dashboard-data.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { WidgetManagerService } from 'src/app/shared/services/widget-manager.service';
@@ -11,6 +11,7 @@ import { DashboardItem } from '../../model/dashboard-item';
 import { Observable, of } from 'rxjs';
 import {DashboardService} from '../../dashboard.service';
 import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-edit-dashboard-modal',
@@ -57,7 +58,7 @@ export class EditDashboardModalComponent implements OnInit {
   constructor(private dashboardData: DashboardDataService, private authService: AuthService,
               private widgetManager: WidgetManagerService, private userData: UserDataService,
               private cmdbData: CmdbDataService, private dashboardService: DashboardService,
-              private formBulider: FormBuilder, public activeModal: NgbActiveModal) { }
+              private formBulider: FormBuilder, public activeModal: NgbActiveModal, private router: Router) { }
 
   ngOnInit() {
     this.username = this.authService.getUserName();
