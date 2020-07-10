@@ -58,7 +58,7 @@ export class EditDashboardModalComponent implements OnInit {
   constructor(private dashboardData: DashboardDataService, private authService: AuthService,
               private widgetManager: WidgetManagerService, private userData: UserDataService,
               private cmdbData: CmdbDataService, private dashboardService: DashboardService,
-              private formBulider: FormBuilder, public activeModal: NgbActiveModal, private router: Router) { }
+              private formBulider: FormBuilder, public activeModal: NgbActiveModal) { }
 
   ngOnInit() {
     this.username = this.authService.getUserName();
