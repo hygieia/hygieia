@@ -17,9 +17,23 @@ export class AdminDashboardService {
   constructor() {
   }
 
-
   getBusServValueBasedOnType(dashboardType, value) {
     return dashboardType === this.getDashboardType().PRODUCT ? '' : value;
+  }
+
+  getDashboardTitle(data) {
+    let title = data.title;
+    const businessServiceName = data.configurationItemBusServName ? '-' + data.configurationItemBusServName : '';
+    const businessApplicationName = data.configurationItemBusAppName ? '-' + data.configurationItemBusAppName : '';
+    const applicationName = data.application && data.application.name ? '-' + data.application.name : '';
+
+    if (businessServiceName !== '' || businessApplicationName !== '') {
+      title = title + businessServiceName + businessApplicationName;
+    } else {
+      title = title + applicationName;
+    }
+
+    return title;
   }
 
   setBusinessServiceId(id) {
@@ -41,32 +55,5 @@ export class AdminDashboardService {
       value = this.businessApplicationId;
     }
     return value;
-  }
-
-  getDashboardTitle(data) {
-    let title = data.title;
-    const businessServiceName = data.configurationItemBusServName ? '-' + data.configurationItemBusServName : '';
-    const businessApplicationName = data.configurationItemBusAppName ? '-' + data.configurationItemBusAppName : '';
-    const applicationName = data.application && data.application.name ? '-' + data.application.name : '';
-
-    if (businessServiceName !== '' || businessApplicationName !== '') {
-      title = title + businessServiceName + businessApplicationName;
-    } else {
-      title = title + applicationName;
-    }
-
-    return title;
-  }
-  getDashboardTitleOrig(data) {
-    const subName = data.name.substring(0, data.name.indexOf('-'));
-
-    return subName ? subName : data.name;
-  }
-  getBusSerToolTipText() {
-    return 'A top level name which support Business function.';
-  }
-
-  getBusAppToolTipText() {
-    return 'A Business Application (BAP) CI is a CI Subtype in the application which supports business function (Top level).';
   }
 }

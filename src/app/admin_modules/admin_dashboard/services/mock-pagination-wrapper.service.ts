@@ -1,4 +1,4 @@
-import { DASHBOARDDATA, DASHBOARDDATARESPONSE } from './user-data.service.mockdata';
+import { DASHBOARDDATA, DASHBOARDDATARESPONSE } from '../../../shared/services/user-data.service.mockdata';
 
 export class MockPaginationWrapperService {
       data = {data: DASHBOARDDATA};

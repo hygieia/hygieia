@@ -1,7 +1,6 @@
-
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { CreateOrUpdateFeatureFlagsComponent } from './create-or-update-feature-flags.component';
-import {UserDataService} from '../../../../services/user-data.service';
+import {UserDataService} from '../../../../../../shared/services/user-data.service';
 import {NgbActiveModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';

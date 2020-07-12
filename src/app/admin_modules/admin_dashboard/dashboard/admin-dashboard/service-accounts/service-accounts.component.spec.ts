@@ -1,18 +1,16 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-// tslint:disable-next-line:max-line-length
-import { DashEditComponent } from '../dash-edit/dash-edit.component';
-import { DashTrashComponent } from '../dash-trash/dash-trash.component';
-import { UserDataService } from '../../../services/user-data.service';
 import {NgbActiveModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { AdminFilterPipe } from '../../../pipes/filter.pipe';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { AdminOrderByPipe } from '../../../pipes/order-by.pipe';
 import {ServiceAccountsComponent} from './service-accounts.component';
 // tslint:disable-next-line:max-line-length
 import {CreateOrUpdateServiceAccountComponent} from '../modal/create-or-update-service-account/create-or-update-service-account.component';
-import { AdminDeleteComponent } from '../modal/admin-delete/admin-delete.component';
+import {DashEditComponent} from '../../../../../shared/dash-edit/dash-edit.component';
+import {DashTrashComponent} from '../../../../../shared/dash-trash/dash-trash.component';
+import {AdminFilterPipe} from '../../../../../shared/pipes/filter.pipe';
+import {AdminOrderByPipe} from '../../../../../shared/pipes/order-by.pipe';
+import {UserDataService} from '../../../../../shared/services/user-data.service';
 
 /*@NgModule({
   declarations: [ServiceAccountsComponent, DashEditComponent, DashTrashComponent, AdminFilterPipe,
@@ -44,8 +42,7 @@ describe('ServiceAccountsComponent', () => {
         DashEditComponent,
         CreateOrUpdateServiceAccountComponent,
         AdminFilterPipe,
-        AdminOrderByPipe,
-        AdminDeleteComponent],
+        AdminOrderByPipe],
       providers: [UserDataService, FormBuilder, NgbActiveModal],
       imports: [FormsModule, NgbModule, CommonModule, ReactiveFormsModule, HttpClientTestingModule]
     })

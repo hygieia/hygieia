@@ -1,10 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import {UserDataService} from '../../../../services/user-data.service';
 import {NgbActiveModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {CreateOrUpdateServiceAccountComponent} from './create-or-update-service-account.component';
+import {UserDataService} from '../../../../../../shared/services/user-data.service';
 
 describe('CreateOrUpdateServiceAccountComponent', () => {
   let component: CreateOrUpdateServiceAccountComponent;
