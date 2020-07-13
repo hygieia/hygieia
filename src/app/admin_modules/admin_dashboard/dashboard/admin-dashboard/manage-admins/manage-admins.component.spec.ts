@@ -1,10 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
 import { ManageAdminsComponent } from './manage-admins.component';
-import { UserDataService } from '../../../../../shared/services/user-data.service';
+import { UserDataService } from '../../../services/user-data.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AdminOrderByPipe } from '../../../../../shared/pipes/order-by.pipe';
-import { AdminFilterPipe } from '../../../../../shared/pipes/filter.pipe';
+import { AdminOrderByPipe } from '../../../pipes/order-by.pipe';
+import { AdminFilterPipe } from '../../../pipes/filter.pipe';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('ManageAdminsComponent', () => {

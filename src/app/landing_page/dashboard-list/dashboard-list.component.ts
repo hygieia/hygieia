@@ -3,16 +3,12 @@ import {Component, OnInit} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+
 import { IPaginationParams } from '../../shared/interfaces';
 import { IDashboards } from './dashboard-list';
 import { DashboardListService } from './dashboard-list.service';
 import {NbDialogService} from '@nebular/theme';
 import {DashboardCreateComponent} from '../dashboard-create/dashboard-create.component';
-import {EditDashboardModalComponent} from '../../shared/modals/edit-dashboard-modal/edit-dashboard-modal.component';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {DashboardDataService} from '../../shared/services/dashboard-data.service';
-// tslint:disable-next-line:max-line-length
-import {GeneralDeleteComponent} from '../../shared/modals/general-delete/general-delete.component';
 
 @Component({
   selector: 'app-dashboard-list',
@@ -22,7 +18,7 @@ import {GeneralDeleteComponent} from '../../shared/modals/general-delete/general
 export class DashboardListComponent implements OnInit {
 
   constructor(private landingPageService: DashboardListService, private router: Router,
-              private dialogService: NbDialogService, private modalService: NgbModal, private dashboardData: DashboardDataService) { }
+              private dialogService: NbDialogService) { }
   dashboardType = '';
   queryField: FormControl = new FormControl();
   myDashboards: IDashboards[] = [];
@@ -32,7 +28,8 @@ export class DashboardListComponent implements OnInit {
   defaultPageSize = '10';
 
   ngOnInit() {
-    this.loadDash();
+    this.findMyDashboards(this.paramBuilder(0, this.defaultPageSize));
+    this.findAllDashboards(this.paramBuilder(0, this.defaultPageSize));
     // Query for pull filtered owner dashboards
     this.queryField.valueChanges.pipe(
       debounceTime(500),
@@ -54,11 +51,6 @@ export class DashboardListComponent implements OnInit {
         this.allDashboards = response.data;
         this.dashboardCollectionSize = response.total;
       });
-  }
-
-  loadDash() {
-    this.findMyDashboards(this.paramBuilder(0, this.defaultPageSize));
-    this.findAllDashboards(this.paramBuilder(0, this.defaultPageSize));
   }
 
   // Default function call for pulling users dashboards
@@ -119,29 +111,6 @@ export class DashboardListComponent implements OnInit {
 
   tabChange($event) {
     this.setDashboardType($event.tabId);
-  }
-
-  deleteDashboard(dashboard) {
-    const modalRef = this.modalService.open(GeneralDeleteComponent);
-    const dashName = this.dashboardName(dashboard);
-    modalRef.componentInstance.title = `Are you sure you want to delete ${dashName}?`;
-    modalRef.result.then((newConfig) => {
-      this.dashboardData.deleteDashboard(dashboard.id).subscribe(response => {
-        this.loadDash();
-      });
-    }).catch((error) => {
-      console.log('delete error deleteDashboard :' + error);
-    });
-  }
-
-  editDashboard(item) {
-    const modalRef = this.modalService.open(EditDashboardModalComponent);
-    modalRef.componentInstance.dashboardItem = item;
-    modalRef.result.then((newConfig) => {
-      this.router.navigate(['/']);
-    }).catch((error) => {
-      console.log('edit error newConfig :' + error);
-    });
   }
 
   createDashboard() {

@@ -2,8 +2,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {NgbActiveModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { ReactiveFormsModule } from '@angular/forms';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxUIModule } from '@swimlane/ngx-ui';
 import { TimeAgoPipe } from 'time-ago-pipe';
@@ -55,19 +55,6 @@ import {DeleteConfirmModalDirective} from './modals/delete-confirm-modal/delete-
 import {RotationChartComponent} from './charts/rotation/rotation-chart.component';
 import {NbActionsModule, NbCardModule, NbSearchModule, NbTabsetModule, NbUserModule} from '@nebular/theme';
 import {ConfirmationModalDirective} from './modals/confirmation-modal/confirmation-modal.directive';
-import {AdminFilterPipe} from './pipes/filter.pipe';
-import {DashEditComponent} from './dash-edit/dash-edit.component';
-import {DashTrashComponent} from './dash-trash/dash-trash.component';
-import {EditDashboardModalComponent} from './modals/edit-dashboard-modal/edit-dashboard-modal.component';
-// tslint:disable-next-line:max-line-length
-import {GeneralDeleteComponent} from './modals/general-delete/general-delete.component';
-import {AdminOrderByPipe} from './pipes/order-by.pipe';
-import {UserDataService} from './services/user-data.service';
-import {DashboardDataService} from './services/dashboard-data.service';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
-import {TabsMultipleActiveFixtureComponent} from './ngx-ui/tabs/fixtures/tabs-multiple-active.fixture';
-import {TabsLabeltemplateFixtureComponent} from './ngx-ui/tabs/fixtures/tabs-label-template.fixture';
-import {TabsFixtureComponent} from './ngx-ui/tabs/fixtures/tabs.fixture';
 
 @NgModule({
   declarations: [
@@ -116,15 +103,6 @@ import {TabsFixtureComponent} from './ngx-ui/tabs/fixtures/tabs.fixture';
     TwoByOneLayoutComponent,
     NavbarComponent,
     ConfirmationModalDirective,
-    AdminFilterPipe,
-    AdminOrderByPipe,
-    DashEditComponent,
-    DashTrashComponent,
-    EditDashboardModalComponent,
-    GeneralDeleteComponent,
-    TabsMultipleActiveFixtureComponent,
-    TabsLabeltemplateFixtureComponent,
-    TabsFixtureComponent
   ],
   entryComponents: [
     DeleteConfirmModalComponent,
@@ -152,15 +130,7 @@ import {TabsFixtureComponent} from './ngx-ui/tabs/fixtures/tabs.fixture';
     RotationChartComponent,
     TwoByTwoLayoutComponent,
     TwoByTwoLayoutComponent,
-    AuditModalComponent,
-    EditDashboardModalComponent,
-    GeneralDeleteComponent
-  ],
-  providers: [
-    DashboardDataService,
-    FormBuilder,
-    UserDataService,
-    NgbActiveModal
+    AuditModalComponent
   ],
   imports: [
     CommonModule,
@@ -177,15 +147,8 @@ import {TabsFixtureComponent} from './ngx-ui/tabs/fixtures/tabs.fixture';
     NbSearchModule,
     NbCardModule,
     NbTabsetModule,
-    FormsModule,
-    HttpClientTestingModule
   ],
   exports: [
-    AdminFilterPipe,
-    AdminOrderByPipe,
-    DashEditComponent,
-    DashTrashComponent,
-    GeneralDeleteComponent,
     BarHorizontalComponent,
     CaponeTemplateComponent,
     ChartComponent,
@@ -193,7 +156,6 @@ import {TabsFixtureComponent} from './ngx-ui/tabs/fixtures/tabs.fixture';
     ComboChartComponent,
     ComboSeriesVerticalComponent,
     CommonModule,
-    EditDashboardModalComponent,
     HorizontalBarChartComponent,
     LayoutComponent,
     LayoutDirective,

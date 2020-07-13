@@ -75,22 +75,6 @@ export class DashboardService {
     return apiCall;
   }
 
-  getBusSerToolTipText() {
-    return 'A top level name which support Business function.';
-  }
-
-  getBusAppToolTipText() {
-    return 'A Business Application (BAP) CI is a CI Subtype in the application which supports business function (Top level).';
-  }
-
-  getDashboardTitleOrig(data) {
-    if (!data.name) {
-      return data.title;
-    }
-    const subName = data.name.substring(0, data.name.indexOf('-'));
-    return subName ? subName : data.name;
-  }
-
   // Take a new component and config returned by the API, and update the data locally.
   // Push this new version to subscribers.
   upsertLocally(newComponent: any, newConfig: any) {
