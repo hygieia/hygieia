@@ -2,11 +2,11 @@ import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  selector: 'app-general-delete',
-  templateUrl: './general-delete.component.html',
-  styleUrls: ['./general-delete.component.scss']
+  selector: 'app-admin-delete',
+  templateUrl: './admin-delete.component.html',
+  styleUrls: ['./admin-delete.component.scss']
 })
-export class GeneralDeleteComponent implements OnInit {
+export class AdminDeleteComponent implements OnInit {
 
   @Input() public title = 'DeleteModal';
   public confirm = 'Confirm';

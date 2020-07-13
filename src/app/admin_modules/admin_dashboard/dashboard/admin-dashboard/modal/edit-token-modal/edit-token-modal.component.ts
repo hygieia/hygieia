@@ -3,7 +3,7 @@ import { NgbActiveModal, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 // @ts-ignore
 import moment from 'moment';
-import { UserDataService } from 'src/app/shared/services/user-data.service';
+import { UserDataService } from 'src/app/admin_modules/admin_dashboard/services/user-data.service';
 
 @Component({
   selector: 'app-edit-token-modal',
