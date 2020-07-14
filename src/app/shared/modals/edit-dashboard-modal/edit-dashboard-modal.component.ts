@@ -2,14 +2,13 @@ import { Component, OnInit, Input } from '@angular/core';
 import { DashboardDataService } from 'src/app/admin_modules/admin_dashboard/services/dashboard-data.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { WidgetManagerService } from 'src/app/admin_modules/admin_dashboard/services/widget-manager.service';
-import * as _ from 'lodash';
 import { UserDataService } from 'src/app/admin_modules/admin_dashboard/services/user-data.service';
 import { CmdbDataService } from 'src/app/admin_modules/admin_dashboard/services/cmdb-data.service';
 import { AdminDashboardService } from 'src/app/admin_modules/admin_dashboard/services/dashboard.service';
 import { map, debounceTime, distinctUntilChanged, switchMap, catchError, tap } from 'rxjs/operators';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { DashboardItem } from '../../model/dashboard-item';
+import { DashboardItem } from '../../../admin_modules/admin_dashboard/dashboard/admin-dashboard/model/dashboard-item';
 import { Observable, of } from 'rxjs';
 
 @Component({
@@ -146,7 +145,7 @@ export class EditDashboardModalComponent implements OnInit {
 
 
     processDashboardDetail = (response) => {
-        this.dashboardData.getMyWidget(response.template).subscribe((result: any) => {
+      this.dashboardData.getMyWidget(response.template).subscribe((result: any) => {
             const widgetsSet = new Set();
             result.forEach(ele => {
                 if (ele.widgets) {

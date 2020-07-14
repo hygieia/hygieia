@@ -1,5 +1,5 @@
 import { AdminFilterPipe } from './filter.pipe';
-import { API_TOKEN_LIST, USER_LIST } from '../services/user-data.service.mockdata';
+import { API_TOKEN_LIST, USER_LIST } from '../../admin_modules/admin_dashboard/services/user-data.service.mockdata';
 
 describe('FilterPipe', () => {
   it('create an instance', () => {

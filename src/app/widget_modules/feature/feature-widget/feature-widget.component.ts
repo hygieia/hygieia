@@ -265,9 +265,9 @@ export class FeatureWidgetComponent extends WidgetComponent implements OnInit, A
           name: curr.sEpicName,
           url: curr.sEpicUrl,
           number: curr.sEpicNumber,
-          progressStatus: '-',
+          progressStatus: 'N/A',
           type: 'Epic',
-          date: '-',
+          date: 'N/A',
           time: curr.sEstimate
         } as IFeatureRotationItem;
       } else {

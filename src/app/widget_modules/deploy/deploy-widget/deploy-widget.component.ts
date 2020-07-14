@@ -102,6 +102,9 @@ export class DeployWidgetComponent extends WidgetComponent implements OnInit {
 
         if (deploy.url) {
           regexText = deploy.url.match(new RegExp('^(https?:\/\/)?(?:www.)?([^\/]+)'))[0];
+        } else {
+          regexText = 'N/A';
+          deploy.url = '';
         }
 
         return {

@@ -55,9 +55,22 @@ import {DeleteConfirmModalDirective} from './modals/delete-confirm-modal/delete-
 import {RotationChartComponent} from './charts/rotation/rotation-chart.component';
 import {NbActionsModule, NbCardModule, NbSearchModule, NbTabsetModule, NbUserModule} from '@nebular/theme';
 import {ConfirmationModalDirective} from './modals/confirmation-modal/confirmation-modal.directive';
+import {DashEditComponent} from './dash-edit/dash-edit.component';
+import {DashTrashComponent} from './dash-trash/dash-trash.component';
+import {AdminDeleteComponent} from './modals/admin-delete/admin-delete.component';
+import {EditDashboardModalComponent} from './modals/edit-dashboard-modal/edit-dashboard-modal.component';
+import {AdminOrderByPipe} from './pipes/order-by.pipe';
+import {AdminFilterPipe} from './pipes/filter.pipe';
+import {UserDataService} from '../admin_modules/admin_dashboard/services/user-data.service';
+import {AdminDashboardService} from '../admin_modules/admin_dashboard/services/dashboard.service';
+import {DashboardDataService} from '../admin_modules/admin_dashboard/services/dashboard-data.service';
 
 @NgModule({
   declarations: [
+    EditDashboardModalComponent,
+    AdminDeleteComponent,
+    DashEditComponent,
+    DashTrashComponent,
     BarHorizontalComponent,
     BaseTemplateComponent,
     CaponeTemplateComponent,
@@ -103,8 +116,13 @@ import {ConfirmationModalDirective} from './modals/confirmation-modal/confirmati
     TwoByOneLayoutComponent,
     NavbarComponent,
     ConfirmationModalDirective,
+    AdminDeleteComponent,
+    AdminFilterPipe,
+    AdminOrderByPipe
   ],
   entryComponents: [
+    EditDashboardModalComponent,
+    AdminDeleteComponent,
     DeleteConfirmModalComponent,
     BarHorizontalComponent,
     CaponeTemplateComponent,
@@ -149,6 +167,10 @@ import {ConfirmationModalDirective} from './modals/confirmation-modal/confirmati
     NbTabsetModule,
   ],
   exports: [
+    DashEditComponent,
+    DashTrashComponent,
+    AdminFilterPipe,
+    AdminOrderByPipe,
     BarHorizontalComponent,
     CaponeTemplateComponent,
     ChartComponent,
@@ -176,7 +198,14 @@ import {ConfirmationModalDirective} from './modals/confirmation-modal/confirmati
     WidgetDirective,
     WidgetHeaderComponent,
     GaugeChartComponent,
-    NavbarComponent
+    NavbarComponent,
+    AdminDeleteComponent,
+    EditDashboardModalComponent
+  ],
+  providers: [
+    UserDataService,
+    AdminDashboardService,
+    DashboardDataService
   ]
 })
 export class SharedModule { }

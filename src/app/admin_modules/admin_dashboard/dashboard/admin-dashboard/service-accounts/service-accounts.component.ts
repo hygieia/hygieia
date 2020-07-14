@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserDataService } from '../../../services/user-data.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {CreateOrUpdateServiceAccountComponent} from '../modal/create-or-update-service-account/create-or-update-service-account.component';
-import { AdminDeleteComponent } from '../modal/admin-delete/admin-delete.component';
+import { AdminDeleteComponent } from '../../../../../shared/modals/admin-delete/admin-delete.component';
 
 @Component({
   selector: 'app-service-accounts',

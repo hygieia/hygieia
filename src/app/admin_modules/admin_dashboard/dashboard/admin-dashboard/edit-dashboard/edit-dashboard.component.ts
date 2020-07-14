@@ -4,9 +4,9 @@ import { DashboardDataService } from '../../../services/dashboard-data.service';
 import { IPaginationParams } from 'src/app/shared/interfaces';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DashboardItem } from '../model/dashboard-item';
-import { EditDashboardModalComponent } from '../modal/edit-dashboard-modal/edit-dashboard-modal.component';
+import { EditDashboardModalComponent } from '../../../../../shared/modals/edit-dashboard-modal/edit-dashboard-modal.component';
 import { forkJoin } from 'rxjs';
-import { AdminDeleteComponent } from '../modal/admin-delete/admin-delete.component';
+import { AdminDeleteComponent } from '../../../../../shared/modals/admin-delete/admin-delete.component';
 
 @Component({
   selector: 'app-edit-dashboard',

@@ -8,8 +8,8 @@ import { AdminDashboardService } from 'src/app/admin_modules/admin_dashboard/ser
 import { PaginationWrapperService } from 'src/app/admin_modules/admin_dashboard/services/pagination-wrapper.service';
 import { CommonModule } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { AdminFilterPipe } from 'src/app/admin_modules/admin_dashboard/pipes/filter.pipe';
-import { AdminOrderByPipe } from 'src/app/admin_modules/admin_dashboard/pipes/order-by.pipe';
+import { AdminFilterPipe } from 'src/app/shared/pipes/filter.pipe';
+import { AdminOrderByPipe } from 'src/app/shared/pipes/order-by.pipe';
 import { UserDataService } from 'src/app/admin_modules/admin_dashboard/services/user-data.service';
 import { USER_LIST, DASHBOARDITEM  } from 'src/app/admin_modules/admin_dashboard/services/user-data.service.mockdata';
 
