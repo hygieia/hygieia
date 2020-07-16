@@ -6,7 +6,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DashboardItem } from '../model/dashboard-item';
 import { EditDashboardModalComponent } from '../../../../../shared/modals/edit-dashboard-modal/edit-dashboard-modal.component';
 import { forkJoin } from 'rxjs';
-import { AdminDeleteComponent } from '../../../../../shared/modals/admin-delete/admin-delete.component';
+import {GeneralDashboardDeleteComponent} from '../../../../../shared/modals/general-dashboard-delete/general-dashboard-delete.component';
 
 @Component({
   selector: 'app-edit-dashboard',
@@ -83,7 +83,7 @@ export class EditDashboardComponent implements OnInit {
   }
 
   deleteDashboard(item) {
-    const modalRef = this.modalService.open(AdminDeleteComponent);
+    const modalRef = this.modalService.open(GeneralDashboardDeleteComponent);
     modalRef.componentInstance.message = `Are you sure you want to delete ${item.name}?`;
     modalRef.result.then((newConfig) => {
       this.dashboardData.deleteDashboard(item.id).subscribe(response => {

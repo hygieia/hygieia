@@ -8,10 +8,10 @@ import { AdminDashboardService } from 'src/app/admin_modules/admin_dashboard/ser
 import { PaginationWrapperService } from 'src/app/admin_modules/admin_dashboard/services/pagination-wrapper.service';
 import { CommonModule } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { AdminFilterPipe } from 'src/app/shared/pipes/filter.pipe';
-import { AdminOrderByPipe } from 'src/app/shared/pipes/order-by.pipe';
 import { UserDataService } from 'src/app/admin_modules/admin_dashboard/services/user-data.service';
 import { USER_LIST, DASHBOARDITEM  } from 'src/app/admin_modules/admin_dashboard/services/user-data.service.mockdata';
+import {GeneralFilterPipe} from '../../pipes/filter.pipe';
+import {GeneralOrderByPipe} from '../../pipes/order-by.pipe';
 
 describe('EditDashboardModalComponent', () => {
   let component: EditDashboardModalComponent;
@@ -20,7 +20,7 @@ describe('EditDashboardModalComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [EditDashboardModalComponent, AdminFilterPipe, AdminOrderByPipe],
+      declarations: [EditDashboardModalComponent, GeneralFilterPipe, GeneralOrderByPipe],
       providers: [DashboardDataService,
         CmdbDataService,
         AdminDashboardService,

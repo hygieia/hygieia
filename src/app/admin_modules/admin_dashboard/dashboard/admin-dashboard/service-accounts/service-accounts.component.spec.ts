@@ -6,28 +6,28 @@ import { UserDataService } from '../../../services/user-data.service';
 import {NgbActiveModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { AdminFilterPipe } from '../../../../../shared/pipes/filter.pipe';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { AdminOrderByPipe } from '../../../../../shared/pipes/order-by.pipe';
 import {ServiceAccountsComponent} from './service-accounts.component';
 // tslint:disable-next-line:max-line-length
 import {CreateOrUpdateServiceAccountComponent} from '../modal/create-or-update-service-account/create-or-update-service-account.component';
-import { AdminDeleteComponent } from '../../../../../shared/modals/admin-delete/admin-delete.component';
+import {GeneralFilterPipe} from '../../../../../shared/pipes/filter.pipe';
+import {GeneralOrderByPipe} from '../../../../../shared/pipes/order-by.pipe';
+import {GeneralDashboardDeleteComponent} from '../../../../../shared/modals/general-dashboard-delete/general-dashboard-delete.component';
 
 /*@NgModule({
-  declarations: [ServiceAccountsComponent, DashEditComponent, DashTrashComponent, AdminFilterPipe,
-    AdminOrderByPipe, CreateOrUpdateServiceAccountComponent,
-    AdminDeleteComponent],
+  declarations: [ServiceAccountsComponent, DashEditComponent, DashTrashComponent, GeneralFilterPipe,
+    GeneralOrderByPipe, CreateOrUpdateServiceAccountComponent,
+    GeneralDashboardDeleteComponent],
   providers: [UserDataService, NgbModal],
   imports: [FormsModule, CommonModule, ReactiveFormsModule, NgbModule, HttpClientTestingModule],
   exports: [
-    AdminOrderByPipe,
-    AdminFilterPipe
+    GeneralOrderByPipe,
+    GeneralFilterPipe
   ],
   entryComponents: [
     ServiceAccountsComponent,
     CreateOrUpdateServiceAccountComponent,
-    AdminDeleteComponent
+    GeneralDashboardDeleteComponent
   ]
 })
 class TestModule { }*/
@@ -43,9 +43,9 @@ describe('ServiceAccountsComponent', () => {
         DashTrashComponent,
         DashEditComponent,
         CreateOrUpdateServiceAccountComponent,
-        AdminFilterPipe,
-        AdminOrderByPipe,
-        AdminDeleteComponent],
+        GeneralFilterPipe,
+        GeneralOrderByPipe,
+        GeneralDashboardDeleteComponent],
       providers: [UserDataService, FormBuilder, NgbActiveModal],
       imports: [FormsModule, NgbModule, CommonModule, ReactiveFormsModule, HttpClientTestingModule]
     })

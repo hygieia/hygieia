@@ -55,7 +55,6 @@ import {DeleteConfirmModalDirective} from './modals/delete-confirm-modal/delete-
 import {RotationChartComponent} from './charts/rotation/rotation-chart.component';
 import {NbActionsModule, NbCardModule, NbSearchModule, NbTabsetModule, NbUserModule} from '@nebular/theme';
 import {ConfirmationModalDirective} from './modals/confirmation-modal/confirmation-modal.directive';
-import {AdminDeleteComponent} from './modals/admin-delete/admin-delete.component';
 import {TabsLabeltemplateFixtureComponent} from './ngx-ui/tabs/fixtures/tabs-label-template.fixture';
 import {TabsMultipleActiveFixtureComponent} from './ngx-ui/tabs/fixtures/tabs-multiple-active.fixture';
 import {TabsFixtureComponent} from './ngx-ui/tabs/fixtures/tabs.fixture';
@@ -65,10 +64,11 @@ import {EditDashboardModalComponent} from './modals/edit-dashboard-modal/edit-da
 import {GeneralFilterPipe} from './pipes/filter.pipe';
 import {GeneralOrderByPipe} from './pipes/order-by.pipe';
 import {UserDataService} from '../admin_modules/admin_dashboard/services/user-data.service';
+import {GeneralDashboardDeleteComponent} from './modals/general-dashboard-delete/general-dashboard-delete.component';
 
 @NgModule({
   declarations: [
-    AdminDeleteComponent,
+    GeneralDashboardDeleteComponent,
     BarHorizontalComponent,
     BaseTemplateComponent,
     CaponeTemplateComponent,
@@ -114,7 +114,6 @@ import {UserDataService} from '../admin_modules/admin_dashboard/services/user-da
     TwoByOneLayoutComponent,
     NavbarComponent,
     ConfirmationModalDirective,
-    AdminDeleteComponent,
     TabsLabeltemplateFixtureComponent,
     TabsMultipleActiveFixtureComponent,
     TabsFixtureComponent,
@@ -125,7 +124,7 @@ import {UserDataService} from '../admin_modules/admin_dashboard/services/user-da
     GeneralOrderByPipe
   ],
   entryComponents: [
-    AdminDeleteComponent,
+    GeneralDashboardDeleteComponent,
     DeleteConfirmModalComponent,
     BarHorizontalComponent,
     CaponeTemplateComponent,
@@ -201,7 +200,7 @@ import {UserDataService} from '../admin_modules/admin_dashboard/services/user-da
     WidgetHeaderComponent,
     GaugeChartComponent,
     NavbarComponent,
-    AdminDeleteComponent,
+    GeneralDashboardDeleteComponent,
     DashTrashComponent,
     DashEditComponent,
     GeneralFilterPipe,

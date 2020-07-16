@@ -9,24 +9,24 @@ import { UserDataService } from '../../../services/user-data.service';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { AdminFilterPipe } from '../../../../../shared/pipes/filter.pipe';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { API_TOKEN_LIST } from '../../../services/user-data.service.mockdata';
 import { NgModule } from '@angular/core';
-import { AdminOrderByPipe } from '../../../../../shared/pipes/order-by.pipe';
-import { AdminDeleteComponent } from '../../../../../shared/modals/admin-delete/admin-delete.component';
+import {GeneralOrderByPipe} from '../../../../../shared/pipes/order-by.pipe';
+import {GeneralFilterPipe} from '../../../../../shared/pipes/filter.pipe';
+import {GeneralDashboardDeleteComponent} from '../../../../../shared/modals/general-dashboard-delete/general-dashboard-delete.component';
 
 @NgModule({
-  declarations: [GenerateApiTokensComponent, DashEditComponent, DashTrashComponent, AdminFilterPipe,
-          AdminOrderByPipe, EditTokenModalComponent,
+  declarations: [GenerateApiTokensComponent, DashEditComponent, DashTrashComponent, GeneralFilterPipe,
+          GeneralOrderByPipe, EditTokenModalComponent,
     GenerateApiTokenModalComponent,
-    AdminDeleteComponent],
+    GeneralDashboardDeleteComponent],
   providers: [UserDataService, NgbModal],
   imports: [FormsModule, CommonModule, ReactiveFormsModule, NgbModule, HttpClientTestingModule],
   entryComponents: [
     EditTokenModalComponent,
     GenerateApiTokenModalComponent,
-    AdminDeleteComponent
+    GeneralDashboardDeleteComponent
   ]
 })
 class TestModule { }

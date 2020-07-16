@@ -17,7 +17,7 @@ import { UserDataService } from '../../../services/user-data.service';
 import { MockDashboardDataService } from '../../../services/mock-dashboard-data.service';
 import { MockPaginationWrapperService } from '../../../services/mock-pagination-wrapper.service';
 import { EditDashboardModalComponent } from '../../../../../shared/modals/edit-dashboard-modal/edit-dashboard-modal.component';
-import { AdminDeleteComponent } from '../../../../../shared/modals/admin-delete/admin-delete.component';
+import {GeneralDashboardDeleteComponent} from '../../../../../shared/modals/general-dashboard-delete/general-dashboard-delete.component';
 
 @NgModule({
   declarations: [EditDashboardComponent ],
@@ -26,7 +26,7 @@ import { AdminDeleteComponent } from '../../../../../shared/modals/admin-delete/
   imports: [FormsModule, CommonModule, NgbModule, ReactiveFormsModule, HttpClientTestingModule, SharedModule, HttpClientModule],
   entryComponents: [
     EditDashboardModalComponent,
-    AdminDeleteComponent]
+    GeneralDashboardDeleteComponent]
 })
 class TestModule { }
 
