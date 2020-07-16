@@ -9,7 +9,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "test-headless": "ng test --watch=false --browsers=ChromeHeadless"
+    "test-headless": "ng test --watch=false --browsers=ChromeHeadless",
+    "stats": "npx webpack-bundle-analyzer dist/hygieia-ui/stats.json"
   },
   "private": true,
   "dependencies": {

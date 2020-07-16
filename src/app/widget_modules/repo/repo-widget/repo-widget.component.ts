@@ -18,7 +18,7 @@ import {IRepo} from '../interfaces';
 import {CollectorService} from '../../../shared/collector.service';
 // @ts-ignore
 import moment from 'moment';
-import * as _ from 'lodash';
+import { groupBy } from 'lodash';
 // tslint:disable-next-line:max-line-length
 import {OneByTwoLayoutTableChartComponent} from '../../../shared/layouts/one-by-two-layout-table-chart/one-by-two-layout-table-chart.component';
 import {WidgetState} from '../../../shared/widget-header/widget-state';
@@ -209,7 +209,7 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
 
   private collectDataArray(content: any[]) {
     const dataArrayToSend = [];
-    const groupedResults = _.groupBy(content, (result) => moment(new Date(result.time), 'DD/MM/YYYY').startOf('day'));
+    const groupedResults = groupBy(content, (result) => moment(new Date(result.time), 'DD/MM/YYYY').startOf('day'));
     for (const key of Object.keys(groupedResults)) {
       dataArrayToSend.push(
         {

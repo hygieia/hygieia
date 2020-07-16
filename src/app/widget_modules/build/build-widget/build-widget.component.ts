@@ -21,7 +21,8 @@ import {IBuild} from '../interfaces';
 import {BUILD_CHARTS} from './build-charts';
 // @ts-ignore
 import moment from 'moment';
-import * as __ from 'lodash';
+import { groupBy } from 'lodash';
+
 import {WidgetState} from '../../../shared/widget-header/widget-state';
 
 @Component({
@@ -140,7 +141,7 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
 
   private collectDataArray(content: any[]) {
     const dataArrayToSend = [];
-    const groupedResults = __.groupBy(content, (result) => moment(new Date(result.time), 'DD/MM/YYYY').startOf('day'));
+    const groupedResults = groupBy(content, (result) => moment(new Date(result.time), 'DD/MM/YYYY').startOf('day'));
     for (const key of Object.keys(groupedResults)) {
       dataArrayToSend.push(
         {

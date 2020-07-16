@@ -2,7 +2,6 @@ import { Component, OnInit, Input } from '@angular/core';
 import { DashboardDataService } from 'src/app/admin_modules/admin_dashboard/services/dashboard-data.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { WidgetManagerService } from 'src/app/admin_modules/admin_dashboard/services/widget-manager.service';
-import * as _ from 'lodash';
 import { UserDataService } from 'src/app/admin_modules/admin_dashboard/services/user-data.service';
 import { CmdbDataService } from 'src/app/admin_modules/admin_dashboard/services/cmdb-data.service';
 import { AdminDashboardService } from 'src/app/admin_modules/admin_dashboard/services/dashboard.service';
