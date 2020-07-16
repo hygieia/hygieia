@@ -12,9 +12,12 @@ export class CmdbDataService {
 
   constructor(private http: HttpClient) { }
 
-
      getConfigItemList(type, params) {
         return this.http
         .get(this.HygieiaConfig.local ? this.testConfigItemRoute : this.dashboardConfigItemListRoute + '/' + type, {params});
     }
+
+    getConfigItems(type, params) {
+    return this.http.get(this.dashboardConfigItemListRoute + '/' + type, {params});
+  }
 }

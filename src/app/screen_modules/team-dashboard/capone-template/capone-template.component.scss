@@ -1,3 +1,21 @@
+@import "../../../../../node_modules/bootstrap/scss/bootstrap-grid.scss";
+
+:host {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto;
+  grid-gap: 3em;
+
+  @include media-breakpoint-down(md) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.template-item {
+  display: grid;
+  align-self: stretch;
+}
+
 .widget {
   background-color: #c8cbce4b;
   border: 1px solid rgba(255,255,255,0.1);
@@ -22,6 +40,8 @@
 
 nb-card {
   background-color: black;
+  box-shadow: 8px 16px 6px rgb(0, 0, 0, 0.2);
+  margin-bottom: 0;
 }
 
 div .search-i {

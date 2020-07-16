@@ -18,6 +18,7 @@ import {
 } from '@nebular/theme';
 import { DashboardCreateComponent } from './dashboard-create/dashboard-create.component';
 import {FormsModule} from '@angular/forms';
+import {NgbTypeaheadModule} from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -26,28 +27,29 @@ import {FormsModule} from '@angular/forms';
     DashboardCreateComponent,
 
   ],
-  imports: [
-    SharedModule,
-    LandingPageRoutingModule,
-    NbTabsetModule,
-    NbSearchModule,
-    NbCardModule,
-    NbIconModule,
-    NbListModule,
-    NbUserModule,
-    NbTableModule,
-    NbTreeGridModule,
-    NbMenuModule,
-    NbInputModule,
-    NbButtonModule,
-    NbActionsModule,
-    NbSelectModule,
-    NbRadioModule,
-    NbDialogModule.forRoot(),
-    NbStepperModule,
-    NbCheckboxModule,
-    FormsModule,
-  ],
+    imports: [
+        SharedModule,
+        LandingPageRoutingModule,
+        NbTabsetModule,
+        NbSearchModule,
+        NbCardModule,
+        NbIconModule,
+        NbListModule,
+        NbUserModule,
+        NbTableModule,
+        NbTreeGridModule,
+        NbMenuModule,
+        NbInputModule,
+        NbButtonModule,
+        NbActionsModule,
+        NbSelectModule,
+        NbRadioModule,
+        NbDialogModule.forRoot(),
+        NbStepperModule,
+        NbCheckboxModule,
+        FormsModule,
+        NgbTypeaheadModule,
+    ],
   entryComponents: [DashboardCreateComponent],
   providers: [ DashboardListService ]
 })

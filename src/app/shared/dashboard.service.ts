@@ -2,7 +2,7 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { cloneDeep, extend } from 'lodash';
 import {interval, Observable, ReplaySubject, Subject, Subscription} from 'rxjs';
-import {catchError, filter, map, startWith, take} from 'rxjs/operators';
+import {filter, map, startWith, take} from 'rxjs/operators';
 import {IAuditResult} from './interfaces';
 
 @Injectable({
@@ -175,6 +175,6 @@ export class DashboardService {
 
   createDashboard(data: any): Observable<any> {
     const httpOptions = { headers: new HttpHeaders({ 'Content-Type':  'application/json'})};
-    return this.http.post(this.dashboardRoute, data, httpOptions).pipe(catchError(err => err));
+    return this.http.post(this.dashboardRoute, data, httpOptions);
   }
 }

@@ -16,9 +16,9 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-6">
-            <ng-container *ngIf="allDashboards">
-              <div class="gap">
+          <div class="col justify-content-center" *ngIf="allDashboards"s>
+            <ng-container>
+              <div>
                 <nb-card size="giant">
                   <nb-card-header>
                     <h4>All Dashboards</h4>
@@ -40,9 +40,9 @@
               </div>
             </ng-container>
           </div>
-          <div class="col-6">
-            <ng-container *ngIf="myDashboards">
-              <div class="gap">
+          <div class="col-6" *ngIf="myDashboards">
+            <ng-container>
+              <div>
                 <nb-card size="giant">
                   <nb-card-header>
                     <h4> My {{ dashboardType }} Dashboards
@@ -68,18 +68,18 @@
             </ng-container>
           </div>
           <div class="col">
-            <ng-container *ngIf="dashboardType">
-              <div class="gap">
-                <nb-card>
+            <ng-container>
+              <div>
+                <nb-card size="giant">
                   <nb-card-header><h4>Reports</h4></nb-card-header>
                   <nb-list>
                     <nb-list-item (click)="goToAuditReport()">
                       <span class="fa fa-bar-chart-o fa-lg left-icon"></span>
-                      <span class="d-name">Application Audit Metrics</span>
+                      <span class="d-name">Application Audit Result Metrics</span>
                     </nb-list-item>
                     <nb-list-item (click)="goToCollectorItemMetrics()">
                       <span class="fa fa-bar-chart-o fa-lg left-icon"></span>
-                      <span class="d-name">Collector Item Metrics</span>
+                      <span class="d-name">Application Collector Detail Metrics</span>
                     </nb-list-item>
                   </nb-list>
                 </nb-card>

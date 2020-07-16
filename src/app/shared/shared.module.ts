@@ -53,7 +53,14 @@ import { NavbarComponent } from '../core/navbar/navbar.component';
 import {RouterModule} from '@angular/router';
 import {DeleteConfirmModalDirective} from './modals/delete-confirm-modal/delete-confirm-modal.directive';
 import {RotationChartComponent} from './charts/rotation/rotation-chart.component';
-import {NbActionsModule, NbCardModule, NbSearchModule, NbTabsetModule, NbUserModule} from '@nebular/theme';
+import {
+    NbActionsModule,
+    NbCardModule,
+    NbIconModule,
+    NbSearchModule,
+    NbTabsetModule,
+    NbUserModule
+} from '@nebular/theme';
 import {ConfirmationModalDirective} from './modals/confirmation-modal/confirmation-modal.directive';
 
 @NgModule({
@@ -132,22 +139,23 @@ import {ConfirmationModalDirective} from './modals/confirmation-modal/confirmati
     TwoByTwoLayoutComponent,
     AuditModalComponent
   ],
-  imports: [
-    CommonModule,
-    DragDropModule,
-    FlexLayoutModule,
-    NgbModule,
-    NgxChartsModule,
-    NgxUIModule,
-    ReactiveFormsModule,
-    TabsModule,
-    RouterModule,
-    NbActionsModule,
-    NbUserModule,
-    NbSearchModule,
-    NbCardModule,
-    NbTabsetModule,
-  ],
+    imports: [
+        CommonModule,
+        DragDropModule,
+        FlexLayoutModule,
+        NgbModule,
+        NgxChartsModule,
+        NgxUIModule,
+        ReactiveFormsModule,
+        TabsModule,
+        RouterModule,
+        NbActionsModule,
+        NbUserModule,
+        NbSearchModule,
+        NbCardModule,
+        NbTabsetModule,
+        NbIconModule,
+    ],
   exports: [
     BarHorizontalComponent,
     CaponeTemplateComponent,

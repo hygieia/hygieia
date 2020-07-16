@@ -1,7 +1,7 @@
 <div class="widget-container-small">
 <div class="widget" [ngClass]="{'configure': this.widgetComponent?.state === widgetState().CONFIGURE}">
   <div class="widget-heading">
-      <span>{{title}}</span>
+      <span class="tab-text text-muted font-weight-bold">{{title.toUpperCase()}}</span>
       <span *ngIf="this.widgetComponent?.state === widgetState().READY">
         <span class="widget-settings-icon clickable pull-right fa fa-lightbulb-o" *ngIf="auditStatus"
               [ngClass]="{'audit-ok': auditStatus==='OK', 'audit-fail': auditStatus==='FAIL'}" (click)="openAudit()"></span>
