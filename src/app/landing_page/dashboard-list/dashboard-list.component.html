@@ -21,7 +21,7 @@
               <div>
                 <nb-card size="giant">
                   <nb-card-header>
-                    <h4>All Dashboards</h4>
+                    <h4>{{ dashboardType }} Dashboards</h4>
                   </nb-card-header>
                   <nb-list >
                     <nb-list-item *ngFor="let dashboard of allDashboards" routerLink="/dashboard/dashboardview/{{dashboard.id}}">

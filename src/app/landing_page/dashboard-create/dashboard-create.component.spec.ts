@@ -6,6 +6,7 @@ import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {RouterTestingModule} from '@angular/router/testing';
+import {NgbTypeaheadModule} from '@ng-bootstrap/ng-bootstrap';
 
 class MockDialogRef {}
 
@@ -16,7 +17,7 @@ describe('DashboardCreateComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [FormsModule, NbThemeModule.forRoot(), NbInputModule, NbButtonModule, HttpClientTestingModule,
-        RouterTestingModule.withRoutes([]), NbDialogModule],
+        RouterTestingModule.withRoutes([]), NbDialogModule, NgbTypeaheadModule],
       declarations: [ DashboardCreateComponent ],
       providers: [{provide: NbDialogRef, useClass: MockDialogRef}],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
