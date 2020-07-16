@@ -64,6 +64,9 @@ import {AdminFilterPipe} from './pipes/filter.pipe';
 import {UserDataService} from '../admin_modules/admin_dashboard/services/user-data.service';
 import {AdminDashboardService} from '../admin_modules/admin_dashboard/services/dashboard.service';
 import {DashboardDataService} from '../admin_modules/admin_dashboard/services/dashboard-data.service';
+import {TabsLabeltemplateFixtureComponent} from './ngx-ui/tabs/fixtures/tabs-label-template.fixture';
+import {TabsMultipleActiveFixtureComponent} from './ngx-ui/tabs/fixtures/tabs-multiple-active.fixture';
+import {TabsFixtureComponent} from './ngx-ui/tabs/fixtures/tabs.fixture';
 
 @NgModule({
   declarations: [
@@ -118,7 +121,10 @@ import {DashboardDataService} from '../admin_modules/admin_dashboard/services/da
     ConfirmationModalDirective,
     AdminDeleteComponent,
     AdminFilterPipe,
-    AdminOrderByPipe
+    AdminOrderByPipe,
+    TabsLabeltemplateFixtureComponent,
+    TabsMultipleActiveFixtureComponent,
+    TabsFixtureComponent
   ],
   entryComponents: [
     EditDashboardModalComponent,
