@@ -54,7 +54,7 @@ class MockRepoService {
 })
 class TestModule { }
 
-fdescribe('RepoWidgetComponent', () => {
+describe('RepoWidgetComponent', () => {
   let component: RepoWidgetComponent;
   let repoService: RepoService;
   let dashboardService: DashboardService;
