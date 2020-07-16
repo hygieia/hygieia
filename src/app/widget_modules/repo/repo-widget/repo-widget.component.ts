@@ -84,8 +84,8 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
           this.repoService.fetchPullRequests(this.params.componentId, this.params.numberOfDays).pipe(catchError(err => of(err))),
           this.repoService.fetchIssues(this.params.componentId, this.params.numberOfDays).pipe(catchError(err => of(err))));
       })).subscribe(([commits, pulls, issues]) => {
-        this.hasData = (commits && commits.length > 0 && pulls && pulls.length > 0 && issues && issues.length > 0);
-        if (this.hasData) {
+        //this.hasData = (commits || commits.length > 0 || pulls || pulls.length > 0 || issues || issues.length > 0);
+        if (commits.length > 0 || pulls.length > 0 || issues.length > 0) {
           this.loadCharts(commits, pulls, issues);
         } else {
           this.setDefaultIfNoData();
