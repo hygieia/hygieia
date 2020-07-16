@@ -26,7 +26,7 @@
                         <input type="text" class="form-control" id="tokenSearch" placeholder="Filter Api Users"
                             [(ngModel)]="tokenSearch">
                         <div class="dash-modal-row delete-dashboard-row clearfix" style="font-size: 20px;"
-                            *ngFor="let apitoken of apitokens | adminfilter:{apiUser:tokenSearch} | adminOrderBy:'apiUser'">
+                            *ngFor="let apitoken of apitokens | generalFilter:{apiUser:tokenSearch} | generalOrderBy:'apiUser'">
                             <div class="btn-block1 row">
                                 <span class="col-md-3">{{apitoken.apiUser}}</span>
                                 <span class="col-md-3">{{apitoken.expirationDt | date:'MM/dd/yyyy HH:mm:ss'}}</span>

@@ -1,9 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'adminfilter'
+  name: 'generalFilter'
 })
-export class AdminFilterPipe implements PipeTransform {
+export class GeneralFilterPipe implements PipeTransform {
   transform(items: any[], agrs?: any): any[] {
     if (!items) {
       return [];

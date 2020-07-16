@@ -37,7 +37,7 @@ import { AuthInterceptor } from 'src/app/core/interceptors/auth.interceptor';
     GenerateApiTokenModalComponent,
     FeatureFlagsComponent,
     ServiceAccountsComponent,
-    EditDashboardComponent,
+    EditDashboardComponent
   ],
 
   providers: [UserDataService, DashboardDataService, PaginationWrapperService, AdminDashboardService,
@@ -49,20 +49,20 @@ import { AuthInterceptor } from 'src/app/core/interceptors/auth.interceptor';
     }],
   imports: [
     AdminDashboardRoutingModule,
-    SharedModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
     NgbModule,
     ReactiveFormsModule,
+    SharedModule
   ],
   entryComponents: [
     CreateOrUpdateFeatureFlagsComponent,
     CreateOrUpdateServiceAccountComponent,
     EditTokenModalComponent,
     GenerateApiTokenModalComponent,
-  ]
+  ],
 })
 
 export class AdminDashboardModule { }

@@ -55,25 +55,20 @@ import {DeleteConfirmModalDirective} from './modals/delete-confirm-modal/delete-
 import {RotationChartComponent} from './charts/rotation/rotation-chart.component';
 import {NbActionsModule, NbCardModule, NbSearchModule, NbTabsetModule, NbUserModule} from '@nebular/theme';
 import {ConfirmationModalDirective} from './modals/confirmation-modal/confirmation-modal.directive';
-import {DashEditComponent} from './dash-edit/dash-edit.component';
-import {DashTrashComponent} from './dash-trash/dash-trash.component';
 import {AdminDeleteComponent} from './modals/admin-delete/admin-delete.component';
-import {EditDashboardModalComponent} from './modals/edit-dashboard-modal/edit-dashboard-modal.component';
-import {AdminOrderByPipe} from './pipes/order-by.pipe';
-import {AdminFilterPipe} from './pipes/filter.pipe';
-import {UserDataService} from '../admin_modules/admin_dashboard/services/user-data.service';
-import {AdminDashboardService} from '../admin_modules/admin_dashboard/services/dashboard.service';
-import {DashboardDataService} from '../admin_modules/admin_dashboard/services/dashboard-data.service';
 import {TabsLabeltemplateFixtureComponent} from './ngx-ui/tabs/fixtures/tabs-label-template.fixture';
 import {TabsMultipleActiveFixtureComponent} from './ngx-ui/tabs/fixtures/tabs-multiple-active.fixture';
 import {TabsFixtureComponent} from './ngx-ui/tabs/fixtures/tabs.fixture';
+import {DashTrashComponent} from './dash-trash/dash-trash.component';
+import {DashEditComponent} from './dash-edit/dash-edit.component';
+import {EditDashboardModalComponent} from './modals/edit-dashboard-modal/edit-dashboard-modal.component';
+import {GeneralFilterPipe} from './pipes/filter.pipe';
+import {GeneralOrderByPipe} from './pipes/order-by.pipe';
+import {UserDataService} from '../admin_modules/admin_dashboard/services/user-data.service';
 
 @NgModule({
   declarations: [
-    EditDashboardModalComponent,
     AdminDeleteComponent,
-    DashEditComponent,
-    DashTrashComponent,
     BarHorizontalComponent,
     BaseTemplateComponent,
     CaponeTemplateComponent,
@@ -120,14 +115,16 @@ import {TabsFixtureComponent} from './ngx-ui/tabs/fixtures/tabs.fixture';
     NavbarComponent,
     ConfirmationModalDirective,
     AdminDeleteComponent,
-    AdminFilterPipe,
-    AdminOrderByPipe,
     TabsLabeltemplateFixtureComponent,
     TabsMultipleActiveFixtureComponent,
-    TabsFixtureComponent
+    TabsFixtureComponent,
+    DashTrashComponent,
+    DashEditComponent,
+    EditDashboardModalComponent,
+    GeneralFilterPipe,
+    GeneralOrderByPipe
   ],
   entryComponents: [
-    EditDashboardModalComponent,
     AdminDeleteComponent,
     DeleteConfirmModalComponent,
     BarHorizontalComponent,
@@ -154,7 +151,10 @@ import {TabsFixtureComponent} from './ngx-ui/tabs/fixtures/tabs.fixture';
     RotationChartComponent,
     TwoByTwoLayoutComponent,
     TwoByTwoLayoutComponent,
-    AuditModalComponent
+    AuditModalComponent,
+    DashTrashComponent,
+    DashEditComponent,
+    EditDashboardModalComponent
   ],
   imports: [
     CommonModule,
@@ -170,13 +170,9 @@ import {TabsFixtureComponent} from './ngx-ui/tabs/fixtures/tabs.fixture';
     NbUserModule,
     NbSearchModule,
     NbCardModule,
-    NbTabsetModule,
+    NbTabsetModule
   ],
   exports: [
-    DashEditComponent,
-    DashTrashComponent,
-    AdminFilterPipe,
-    AdminOrderByPipe,
     BarHorizontalComponent,
     CaponeTemplateComponent,
     ChartComponent,
@@ -206,12 +202,13 @@ import {TabsFixtureComponent} from './ngx-ui/tabs/fixtures/tabs.fixture';
     GaugeChartComponent,
     NavbarComponent,
     AdminDeleteComponent,
-    EditDashboardModalComponent
+    DashTrashComponent,
+    DashEditComponent,
+    GeneralFilterPipe,
+    GeneralOrderByPipe
   ],
   providers: [
-    UserDataService,
-    AdminDashboardService,
-    DashboardDataService
+    UserDataService
   ]
 })
 export class SharedModule { }
