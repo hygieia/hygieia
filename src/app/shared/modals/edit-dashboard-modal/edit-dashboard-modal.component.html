@@ -98,7 +98,7 @@
                                                         [ngModelOptions]="{standalone: true}">
 
                                                     <div class="dash-modal-row delete-dashboard-row clearfix"
-                                                        *ngFor="let user of users | adminfilter:{username:userSearch, authorities:'!ROLE_ADMIN'} | adminOrderBy:'username' ">
+                                                        *ngFor="let user of users | generalFilter:{username:userSearch, authorities:'!ROLE_ADMIN'} | generalOrderBy:'username' ">
                                                         <div class="btn-block">
                                                             <span class="label label-primary"
                                                                 [hidden]="!isActiveUser(user)">You</span>
@@ -119,7 +119,7 @@
                                                 <div class="col-push col-md-5">
                                                     <h3>Owners</h3>
                                                     <div class="dash-modal-row delete-dashboard-row clearfix"
-                                                        *ngFor="let owner of owners | adminOrderBy:'username' ">
+                                                        *ngFor="let owner of owners | generalOrderBy:'username' ">
                                                         <div class="btn-block">
                                                             <span class="badge badge-primary"
                                                                 [hidden]="!isActiveUser(owner)">You</span>

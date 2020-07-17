@@ -58,8 +58,13 @@ export class AdminDashboardService {
     return title;
   }
   getDashboardTitleOrig(data) {
-    const subName = data.name.substring(0, data.name.indexOf('-'));
+    let subName;
 
+    if (data.name === undefined) {
+      subName = data.title;
+    } else {
+      subName = data.name.substring(0, data.name.indexOf('-'));
+    }
     return subName ? subName : data.name;
   }
   getBusSerToolTipText() {

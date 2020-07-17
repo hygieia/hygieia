@@ -1,7 +1,7 @@
 <div>
     <div class="widget-modal">
         <div class="widget-modal-heading">
-            Rename/Delete Dashboard
+            Rename/Delete<br><br>Dashboard
         </div>
         <div class="widget-modal-body">
             <div class="row">
@@ -14,7 +14,7 @@
 
                     <div class="list-animate">
                         <div class="dash-modal-row delete-dashboard-row clearfix"
-                            *ngFor="let item of dashboards | adminfilter:{name:searchDashboard} | adminOrderBy: 'name' as filteredDashboards ">
+                            *ngFor="let item of dashboards | generalFilter:{name:searchDashboard} | generalOrderBy: 'name' as filteredDashboards ">
                             <div title="{{item.name}}" class="btn-block">{{item.name }}
                                 <a (click)="deleteDashboard(item)">
                                     <app-dash-trash class="clickable pull-right"></app-dash-trash>
