@@ -17,6 +17,7 @@
 #dSearch {
   background: black;
   border: dimgrey solid 0.1em;
+  box-shadow: 8px 16px 6px rgb(0, 0, 0, 0.2);
 }
 
 #bCreate {
@@ -47,9 +48,11 @@ nb-list-item:hover {
   @include box-shadow(10px,0px,15px,4px,grey);
 }
 nb-card {
-  background-color: black;
+  background-color: transparent;
+  border: 1px solid dimgrey;
+  box-shadow: 8px 16px 6px rgb(0, 0, 0, 0.2);
 }
 
 h4 {
-  color: dimgrey;
+  color: lightgray;
 }
