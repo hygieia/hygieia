@@ -153,6 +153,9 @@ export class DashboardCreateComponent implements OnInit {
   }
 
   clear() {
+    this.isAnySelected = false;
     this.createErrorMsg = '';
+    this.widgets.forEach(widget => widget.status = false);
+    this.templates.forEach(template => template.status = false);
   }
 }
