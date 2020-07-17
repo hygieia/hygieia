@@ -4,8 +4,10 @@
 }
 
 nb-layout-header {
-  background-color: black;
-
+  background-color: transparent;
+  ::ng-deep nav {
+    box-shadow: none;
+  }
   app-navbar {
     width: 100%;
   }

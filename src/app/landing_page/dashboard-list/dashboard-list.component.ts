@@ -117,7 +117,8 @@ export class DashboardListComponent implements OnInit {
     this.setDashboardType($event.tabId);
   }
 
-  deleteDashboard(dashboard) {
+  deleteDashboard(dashboard, $event) {
+    $event.stopPropagation();
     const modalRef = this.modalService.open(GeneralDashboardDeleteComponent);
     const dashName = this.dashboardName(dashboard);
     modalRef.componentInstance.title = `Are you sure you want to delete ${dashName}?`;
@@ -130,7 +131,8 @@ export class DashboardListComponent implements OnInit {
     });
   }
 
-  editDashboard(item) {
+  editDashboard(item, $event) {
+    $event.stopPropagation();
     const modalRef = this.modalService.open(EditDashboardModalComponent);
     modalRef.componentInstance.dashboardItem = item;
     modalRef.result.then((newConfig) => {
@@ -150,5 +152,9 @@ export class DashboardListComponent implements OnInit {
   private loadDash() {
     this.findMyDashboards(this.paramBuilder(0, this.defaultPageSize));
     this.findAllDashboards(this.paramBuilder(0, this.defaultPageSize));
+  }
+
+  routeDashboard(dashboard: IDashboards, $event: MouseEvent) {
+    this.router.navigate(['/dashboard/dashboardview/' + dashboard.id]);
   }
 }

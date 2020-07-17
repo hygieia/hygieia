@@ -53,7 +53,14 @@ import { NavbarComponent } from '../core/navbar/navbar.component';
 import {RouterModule} from '@angular/router';
 import {DeleteConfirmModalDirective} from './modals/delete-confirm-modal/delete-confirm-modal.directive';
 import {RotationChartComponent} from './charts/rotation/rotation-chart.component';
-import {NbActionsModule, NbCardModule, NbSearchModule, NbTabsetModule, NbUserModule} from '@nebular/theme';
+import {
+    NbActionsModule,
+    NbCardModule,
+    NbIconModule,
+    NbSearchModule,
+    NbTabsetModule,
+    NbUserModule
+} from '@nebular/theme';
 import {ConfirmationModalDirective} from './modals/confirmation-modal/confirmation-modal.directive';
 import {TabsLabeltemplateFixtureComponent} from './ngx-ui/tabs/fixtures/tabs-label-template.fixture';
 import {TabsMultipleActiveFixtureComponent} from './ngx-ui/tabs/fixtures/tabs-multiple-active.fixture';
@@ -156,21 +163,22 @@ import {GeneralDashboardDeleteComponent} from './modals/general-dashboard-delete
     EditDashboardModalComponent
   ],
   imports: [
-    CommonModule,
-    DragDropModule,
-    FlexLayoutModule,
-    NgbModule,
-    NgxChartsModule,
-    NgxUIModule,
-    ReactiveFormsModule,
-    TabsModule,
-    RouterModule,
-    NbActionsModule,
-    NbUserModule,
-    NbSearchModule,
-    NbCardModule,
-    NbTabsetModule
-  ],
+        CommonModule,
+        DragDropModule,
+        FlexLayoutModule,
+        NgbModule,
+        NgxChartsModule,
+        NgxUIModule,
+        ReactiveFormsModule,
+        TabsModule,
+        RouterModule,
+        NbActionsModule,
+        NbUserModule,
+        NbSearchModule,
+        NbCardModule,
+        NbTabsetModule,
+        NbIconModule,
+    ],
   exports: [
     BarHorizontalComponent,
     CaponeTemplateComponent,

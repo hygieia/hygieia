@@ -305,7 +305,7 @@ export class WidgetHeaderComponent implements OnInit {
         if (collectorItems && collectorItems[0] && ((collectorItems[0].lastUpdated % 1000) > 0)) {
           return moment(collectorItems[0].lastUpdated).fromNow(true);
         }
-      })).subscribe(data => this.lastUpdated = data);
+      })).subscribe(data => this.lastUpdated = data ? data + ' ago' : data);
   }
 
   get isOwnerOrAdmin(): boolean {
