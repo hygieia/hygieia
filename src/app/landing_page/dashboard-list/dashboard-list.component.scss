@@ -34,6 +34,11 @@ nb-list-item {
   }
 }
 
+nb-list-item.user-dl {
+  display: flex;
+  justify-content: space-between;
+}
+
 nb-list-item:hover {
   cursor: pointer;
   line-height: 2;

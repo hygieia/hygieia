@@ -50,15 +50,15 @@
                     <ng-template></ng-template>
                   </nb-card-header>
                   <nb-list>
-                    <nb-list-item *ngFor="let dashboard of myDashboards">
-                      <span class="fa fa-lg left-icon" [ngClass]="{'fa-cubes' : dashboard.type === 'Product','fa-slideshare': dashboard.type === 'Team'}"></span>
-                      <div routerLink="/dashboard/dashboardview/{{dashboard.id}}" class="btn-block">{{dashboardName(dashboard)}}
-                      </div>
-                      <app-dash-edit (click)="editDashboard(dashboard)" class="clickable pull-right">
-                      </app-dash-edit>
-                      <a (click)="deleteDashboard(dashboard)">
-                        <app-dash-trash class="clickable pull-right"></app-dash-trash>
-                      </a>
+                    <nb-list-item  class="user-dl" *ngFor="let dashboard of myDashboards" (click)="routeDashboard(dashboard, $event)">
+                        <div>
+                          <span class="fa fa-lg left-icon" [ngClass]="{'fa-cubes' : dashboard.type === 'Product','fa-slideshare': dashboard.type === 'Team'}"></span>
+                          <span class="d-name">{{dashboardName(dashboard)}}</span>
+                        </div>
+                        <div>
+                          <a (click)="deleteDashboard(dashboard, $event)"><app-dash-trash class="clickable pull-right"></app-dash-trash></a>
+                          <app-dash-edit (click)="editDashboard(dashboard, $event)" class="clickable pull-right"></app-dash-edit>
+                        </div>
                     </nb-list-item>
                   </nb-list>
                   <nb-card-footer>
