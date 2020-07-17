@@ -86,13 +86,13 @@
             </configuration>
           </execution>
           <execution>
-            <id>npm run-script build-prod</id>
+            <id>npm run-script build</id>
             <goals>
               <goal>npm</goal>
             </goals>
             <!-- Optional configuration which provides for running any npm command -->
             <configuration>
-              <arguments>run-script build-prod</arguments>
+              <arguments>run-script build</arguments>
             </configuration>
           </execution>
         </executions>
