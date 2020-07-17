@@ -62,9 +62,20 @@ import {
     NbUserModule
 } from '@nebular/theme';
 import {ConfirmationModalDirective} from './modals/confirmation-modal/confirmation-modal.directive';
+import {TabsLabeltemplateFixtureComponent} from './ngx-ui/tabs/fixtures/tabs-label-template.fixture';
+import {TabsMultipleActiveFixtureComponent} from './ngx-ui/tabs/fixtures/tabs-multiple-active.fixture';
+import {TabsFixtureComponent} from './ngx-ui/tabs/fixtures/tabs.fixture';
+import {DashTrashComponent} from './dash-trash/dash-trash.component';
+import {DashEditComponent} from './dash-edit/dash-edit.component';
+import {EditDashboardModalComponent} from './modals/edit-dashboard-modal/edit-dashboard-modal.component';
+import {GeneralFilterPipe} from './pipes/filter.pipe';
+import {GeneralOrderByPipe} from './pipes/order-by.pipe';
+import {UserDataService} from '../admin_modules/admin_dashboard/services/user-data.service';
+import {GeneralDashboardDeleteComponent} from './modals/general-dashboard-delete/general-dashboard-delete.component';
 
 @NgModule({
   declarations: [
+    GeneralDashboardDeleteComponent,
     BarHorizontalComponent,
     BaseTemplateComponent,
     CaponeTemplateComponent,
@@ -110,8 +121,17 @@ import {ConfirmationModalDirective} from './modals/confirmation-modal/confirmati
     TwoByOneLayoutComponent,
     NavbarComponent,
     ConfirmationModalDirective,
+    TabsLabeltemplateFixtureComponent,
+    TabsMultipleActiveFixtureComponent,
+    TabsFixtureComponent,
+    DashTrashComponent,
+    DashEditComponent,
+    EditDashboardModalComponent,
+    GeneralFilterPipe,
+    GeneralOrderByPipe
   ],
   entryComponents: [
+    GeneralDashboardDeleteComponent,
     DeleteConfirmModalComponent,
     BarHorizontalComponent,
     CaponeTemplateComponent,
@@ -137,9 +157,12 @@ import {ConfirmationModalDirective} from './modals/confirmation-modal/confirmati
     RotationChartComponent,
     TwoByTwoLayoutComponent,
     TwoByTwoLayoutComponent,
-    AuditModalComponent
+    AuditModalComponent,
+    DashTrashComponent,
+    DashEditComponent,
+    EditDashboardModalComponent
   ],
-    imports: [
+  imports: [
         CommonModule,
         DragDropModule,
         FlexLayoutModule,
@@ -184,7 +207,15 @@ import {ConfirmationModalDirective} from './modals/confirmation-modal/confirmati
     WidgetDirective,
     WidgetHeaderComponent,
     GaugeChartComponent,
-    NavbarComponent
+    NavbarComponent,
+    GeneralDashboardDeleteComponent,
+    DashTrashComponent,
+    DashEditComponent,
+    GeneralFilterPipe,
+    GeneralOrderByPipe
+  ],
+  providers: [
+    UserDataService
   ]
 })
 export class SharedModule { }

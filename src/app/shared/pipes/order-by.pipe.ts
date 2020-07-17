@@ -1,10 +1,10 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'adminOrderBy',
+  name: 'generalOrderBy',
   pure: true
 })
-export class AdminOrderByPipe implements PipeTransform {
+export class GeneralOrderByPipe implements PipeTransform {
 
   transform(value: any[], propertyName: string): any[] {
     if (propertyName) {

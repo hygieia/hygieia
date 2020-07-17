@@ -49,13 +49,18 @@
                       <button id="bCreate" nbButton outline shape="round" size="small" (click)="createDashboard()"><nb-icon size="large" icon="plus-circle"></nb-icon>Create</button></h4>
                     <ng-template></ng-template>
                   </nb-card-header>
-                    <nb-list>
-                      <nb-list-item *ngFor="let dashboard of myDashboards" routerLink="/dashboard/dashboardview/{{dashboard.id}}">
-                      <span class="fa fa-lg left-icon"
-                            [ngClass]="{'fa-cubes' : dashboard.type === 'Product','fa-slideshare': dashboard.type === 'Team'}"></span>
-                        <span class="d-name">{{dashboardName(dashboard)}}</span>
-                      </nb-list-item>
-                    </nb-list>
+                  <nb-list>
+                    <nb-list-item *ngFor="let dashboard of myDashboards">
+                      <span class="fa fa-lg left-icon" [ngClass]="{'fa-cubes' : dashboard.type === 'Product','fa-slideshare': dashboard.type === 'Team'}"></span>
+                      <div routerLink="/dashboard/dashboardview/{{dashboard.id}}" class="btn-block">{{dashboardName(dashboard)}}
+                      </div>
+                      <app-dash-edit (click)="editDashboard(dashboard)" class="clickable pull-right">
+                      </app-dash-edit>
+                      <a (click)="deleteDashboard(dashboard)">
+                        <app-dash-trash class="clickable pull-right"></app-dash-trash>
+                      </a>
+                    </nb-list-item>
+                  </nb-list>
                   <nb-card-footer>
                     <div class="text-center" *ngIf="!myDashboards.length">
                       No results
