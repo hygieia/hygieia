@@ -82,58 +82,51 @@ export class EditDashboardModalComponent implements OnInit {
                 [Validators.required, Validators.minLength(6), Validators.maxLength(50), Validators.pattern(/^[a-zA-Z0-9 ]*$/)]]
         });
         this.formBusinessService = this.fromBulider.group({
-            configurationItemBusServ: [''],
-            configurationItemBusApp: ['']
+          configurationItemBusServ: [''],
+          configurationItemBusApp: ['']
         });
-
         this.getConfigItem('app', '');
         this.getConfigItemComponent('', '');
         setTimeout(() => {
-            this.cdfForm.get('dashboardTitle').setValue(this.getDashboardTitle());
+          this.cdfForm.get('dashboardTitle').setValue(this.getDashboardTitle());
         }, 100);
-
     }
 
-
-        searchconfigItemBusServ = (text$: Observable<string>) =>
-        text$.pipe(
-          debounceTime(200),
-          distinctUntilChanged(),
-          tap(() => this.noResults = false),
-          switchMap(term =>
+    searchconfigItemBusServ = (text$: Observable<string>) =>
+      text$.pipe(
+        debounceTime(200),
+        distinctUntilChanged(),
+        tap(() => this.noResults = false),
+        switchMap(term =>
             this.cmdbData.getConfigItemList('app', { search: term, size: 20 })
-            .pipe(
+              .pipe(
                 map( (result: any) => {
-                    if (!result || result.length === 0) {
-                        this.noResults = true;
-                    }
-                    return result;
-                } ),
-              catchError(() => {
+                  if (!result || result.length === 0) {
+                    this.noResults = true;
+                  }
+                  return result;
+                }),
+                catchError(() => {
                   return of([]);
-              }))
-          ),
+                }))),
         )
-
-    formatter = (x: { configurationItem: string }) => x.configurationItem;
-        searchconfigItemBusApp = (text$: Observable<string>) =>
-        text$.pipe(
-          debounceTime(200),
-          distinctUntilChanged(),
-          tap(() => this.noResultsCom = false),
-          switchMap(term =>
+  formatter = (x: { configurationItem: string }) => x.configurationItem;
+    searchconfigItemBusApp = (text$: Observable<string>) =>
+      text$.pipe(
+        debounceTime(200),
+        distinctUntilChanged(),
+        tap(() => this.noResultsCom = false),
+        switchMap(term =>
             this.cmdbData.getConfigItemList('component', { search: term, size: 20 })
-            .pipe(
-                map( (result: any) => {
-                    if (!result || result.length === 0) {
-                        this.noResultsCom = true;
-                    }
-                    return result;
-                } ),
-              catchError(() => {
+              .pipe(map( (result: any) => {
+                if (!result || result.length === 0) {
+                  this.noResultsCom = true;
+                }
+                return result;
+              }),
+                catchError(() => {
                   return of([]);
-              }))
-          ),
+              }))),
         )
 
     formatterConfigItemBusApp = (x: { configurationItem: string }) => x.configurationItem;
@@ -141,8 +134,6 @@ export class EditDashboardModalComponent implements OnInit {
     get f() { return this.cdfForm.controls; }
 
     get fB() { return this.formBusinessService.controls; }
-
-
 
     processDashboardDetail = (response) => {
       this.dashboardData.getMyWidget(response.template).subscribe((result: any) => {
@@ -315,6 +306,7 @@ export class EditDashboardModalComponent implements OnInit {
     getBusSerToolText() {
         return this.dashboardService.getBusSerToolTipText();
     }
+
     tabToggleView(index) {
         this.dupErroMessage = '';
         this.tabView = typeof this.tabs[index] === 'undefined' ? this.tabs[0].name : this.tabs[index].name;

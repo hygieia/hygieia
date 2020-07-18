@@ -84,12 +84,13 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
           this.repoService.fetchPullRequests(this.params.componentId, this.params.numberOfDays).pipe(catchError(err => of(err))),
           this.repoService.fetchIssues(this.params.componentId, this.params.numberOfDays).pipe(catchError(err => of(err))));
       })).subscribe(([commits, pulls, issues]) => {
-      this.hasData = (commits && commits.length > 0 && pulls && pulls.length > 0 && issues && issues.length > 0);
-      if (this.hasData) {
-        this.loadCharts(commits, pulls, issues);
-      } else {
-        this.setDefaultIfNoData();
-      }
+        if ((commits || pulls || issues) && (commits.length > 0 || pulls.length > 0 || issues.length > 0)) {
+          this.hasData = true;
+          this.loadCharts(commits, pulls, issues);
+        } else {
+          this.hasData = false;
+          this.setDefaultIfNoData();
+        }
     });
   }
 
@@ -281,7 +282,7 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
   }
 
   setDefaultIfNoData() {
-    if (!this.hasData) {
+    if (this.hasData === false) {
       this.charts[0].data.dataPoints[0].series = [{name: new Date(), value: 0, data: 'Commits'}];
       this.charts[0].data.dataPoints[1].series = [{name: new Date(), value: 0, data: 'Pulls'}];
       this.charts[0].data.dataPoints[2].series = [{name: new Date(), value: 0, data: 'Issues'}];
@@ -302,7 +303,8 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
       this.charts[15].data = '0';
       this.charts[16].data = '0';
       this.charts[17].data = '0';
-      this.charts[18].data = '0';    }
+      this.charts[18].data = '0';
+    }
     super.loadComponent(this.childLayoutTag);
   }
 }

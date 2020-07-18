@@ -52,11 +52,11 @@
                                 <ng-template #rt let-r="result" let-t="term">
                                     <span>{{r.configurationItem}}-({{r.commonName}})</span>
                                 </ng-template>
-                                <label class="modal-label">Business Service<i class="fa fa-info-circle"
+                                <label class="modal-label">Business Service <i class="fa fa-info-circle"
                                         ngbTooltip="{{getBusSerToolText()}}"></i></label>
                                 <input type="text" name="configurationItemBusServ"
                                     formControlName="configurationItemBusServ" class="form-control"
-                                    placeholder="Select a Business Service (Optional)"
+                                    placeholder="Select a Business Service (Optional)" value="{{this.configurationItemBusServ}}"
                                     [ngClass]="{ 'is-invalid': fB.configurationItemBusServ.touched && fB.configurationItemBusServ.errors }"
                                     [ngbTypeahead]="searchconfigItemBusServ" [resultTemplate]="rt"
                                     [inputFormatter]="formatter" />
@@ -66,11 +66,11 @@
                                 <ng-template #rtB let-r="result" let-t="term">
                                     <span>{{r.configurationItem}}-({{r.commonName}})</span>
                                 </ng-template>
-                                <label class="modal-label">Business Application<i class="fa fa-info-circle"
+                                <label class="modal-label">Business Application <i class="fa fa-info-circle"
                                         ngbTooltip="{{getBusAppToolText()}}"></i></label>
                                 <input type="text" name="configurationItemBusApp"
                                     formControlName="configurationItemBusApp" class="form-control"
-                                    placeholder="Select a Business Application (Optional)"
+                                    placeholder="Select a Business Application (Optional)" value="{{this.configurationItemBusApp}}"
                                     [ngbTypeahead]="searchconfigItemBusApp" [resultTemplate]="rtB"
                                     [inputFormatter]="formatterConfigItemBusApp" />
                                 <div class="form-control" [hidden]="!noResultsCom">

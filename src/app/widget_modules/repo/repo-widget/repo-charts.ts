@@ -28,7 +28,7 @@ export let REPO_CHARTS: IChart[] = [
     xAxisLabel: 'Date',
     yAxisLabel: 'Commits, Pull Requests, and Issues',
     colorScheme: {
-      domain: []
+      domain: ['blue', 'green', 'red']
     }
   },
   {

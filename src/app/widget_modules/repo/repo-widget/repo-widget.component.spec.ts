@@ -223,9 +223,9 @@ describe('RepoWidgetComponent', () => {
   it('should assign default if no data', () => {
     component.hasData = false;
     component.setDefaultIfNoData();
-    expect(component.charts[0].data.dataPoints[0].series).toEqual([{name: new Date(), value: 0, data: 'Commits'}]);
-    expect(component.charts[0].data.dataPoints[1].series).toEqual([{name: new Date(), value: 0, data: 'Pulls'}]);
-    expect(component.charts[0].data.dataPoints[2].series).toEqual([{name: new Date(), value: 0, data: 'Issues'}]);
+    expect(component.charts[0].data.dataPoints[0].series[0].value).toEqual(0);
+    expect(component.charts[0].data.dataPoints[1].series[0].value).toEqual(0);
+    expect(component.charts[0].data.dataPoints[2].series[0].value).toEqual(0);
     expect(component.charts[1].data).toEqual('0');
     expect(component.charts[2].data).toEqual('0');
     expect(component.charts[3].data).toEqual('0');
@@ -243,5 +243,6 @@ describe('RepoWidgetComponent', () => {
     expect(component.charts[15].data).toEqual('0');
     expect(component.charts[16].data).toEqual('0');
     expect(component.charts[17].data).toEqual('0');
-    expect(component.charts[18].data).toEqual('0');  });
+    expect(component.charts[18].data).toEqual('0');
+  });
 });
