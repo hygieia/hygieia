@@ -10,23 +10,23 @@
       <tbody>
         <tr>
           <th>Type</th>
-          <td>{{auditResult.auditType}}</td>
+          <td>{{auditResult?.auditType}}</td>
         </tr>
         <tr>
           <th>Status</th>
-          <td>{{auditResult.auditStatus === 'NA' ? auditResult.auditTypeStatus : auditResult.auditStatus}}</td>
+          <td>{{auditResult?.auditStatus === 'NA' ? auditResult?.auditTypeStatus : auditResult?.auditStatus}}</td>
         </tr>
         <tr>
           <th>Reason</th>
-          <td style="overflow-wrap: break-word; max-width: 5rem">{{auditResult.auditDetails}}</td>
+          <td style="overflow-wrap: break-word; max-width: 5rem">{{auditResult?.auditDetails}}</td>
         </tr>
         <tr>
           <th>Last Audited</th>
-          <td>{{toDate(auditResult.timestamp)}}</td>
+          <td>{{toDate(auditResult?.timestamp)}}</td>
         </tr>
         <tr>
           <th>Url</th>
-          <td><a href="{{auditResult.url}}" target="_blank">{{auditResult.url}}</a></td>
+          <td><a href="{{auditResult?.url}}" target="_blank">{{auditResult?.url}}</a></td>
         </tr>
       </tbody>
     </table>

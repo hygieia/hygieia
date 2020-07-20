@@ -5,8 +5,9 @@
 }
 
 @mixin font-style {
-  font-family: 'Lucida Grande';
-  font-weight: 600;
+  font-family: "Optimist", Optimist, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 17px;
   line-height: 1.5;
   color: lightgray;
 }
@@ -14,9 +15,33 @@
   margin-top: 3.5rem;
 }
 
+.jumbotron {
+  background:transparent;
+  display: flex; justify-content: space-between;
+  box-shadow: 0px 1px 2px 1px rgb(0, 0, 0.5);
+  margin-bottom: 2em;
+  padding: 0 2rem;
+  .container {
+    background-color: transparent;
+  }
+  h1 {
+    z-index: -1;
+    color: lightgray;
+    font-family: 'Optimist', Optimist, Arial, sans-serif;
+    font-weight: 400;
+    font-size: 36px;
+  }
+  p {
+    font-family: 'Optimist', Optimist, Arial, sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+    color: dimgrey;
+  }
+}
+
 #dSearch {
   background: black;
-  border: dimgrey solid 0.1em;
+  border: black solid 0.1em;
   box-shadow: 8px 16px 6px rgb(0, 0, 0, 0.2);
 }
 
@@ -43,16 +68,21 @@ nb-list-item.user-dl {
 nb-list-item:hover {
   cursor: pointer;
   line-height: 2;
-  font-size: 18px;
+  font-size: 19px;
   color: #3366ff;
-  @include box-shadow(10px,0px,15px,4px,grey);
+  box-shadow: 2px 0px 8px 2px grey;
+  .d-name {
+    font-size: 19px;
+  }
 }
 nb-card {
   background-color: transparent;
-  border: 1px solid dimgrey;
-  box-shadow: 8px 16px 6px rgb(0, 0, 0, 0.2);
+  box-shadow: 0px 2px 24px 2px rgb(0, 0, 0.1);
 }
 
 h4 {
   color: lightgray;
+  font-family: 'Optimist', Optimist, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 28px;
 }

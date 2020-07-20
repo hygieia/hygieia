@@ -19,12 +19,15 @@ import {
 import { DashboardCreateComponent } from './dashboard-create/dashboard-create.component';
 import {FormsModule} from '@angular/forms';
 import {NgbTypeaheadModule} from '@ng-bootstrap/ng-bootstrap';
+import { DashboardCountComponent } from './dashboard-list/dashboard-count/dashboard-count.component';
+import {PieChartModule} from '@swimlane/ngx-charts';
 
 @NgModule({
   declarations: [
     LandingPageRoutingModule.components,
     DashboardListComponent,
     DashboardCreateComponent,
+    DashboardCountComponent,
 
   ],
     imports: [
@@ -49,6 +52,7 @@ import {NgbTypeaheadModule} from '@ng-bootstrap/ng-bootstrap';
         NbCheckboxModule,
         FormsModule,
         NgbTypeaheadModule,
+        PieChartModule,
     ],
   entryComponents: [DashboardCreateComponent],
   providers: [ DashboardListService ]
