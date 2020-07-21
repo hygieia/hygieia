@@ -62,9 +62,6 @@ import {
     NbUserModule
 } from '@nebular/theme';
 import {ConfirmationModalDirective} from './modals/confirmation-modal/confirmation-modal.directive';
-import {TabsLabeltemplateFixtureComponent} from './ngx-ui/tabs/fixtures/tabs-label-template.fixture';
-import {TabsMultipleActiveFixtureComponent} from './ngx-ui/tabs/fixtures/tabs-multiple-active.fixture';
-import {TabsFixtureComponent} from './ngx-ui/tabs/fixtures/tabs.fixture';
 import {DashTrashComponent} from './dash-trash/dash-trash.component';
 import {DashEditComponent} from './dash-edit/dash-edit.component';
 import {EditDashboardModalComponent} from './modals/edit-dashboard-modal/edit-dashboard-modal.component';
@@ -72,6 +69,7 @@ import {GeneralFilterPipe} from './pipes/filter.pipe';
 import {GeneralOrderByPipe} from './pipes/order-by.pipe';
 import {UserDataService} from '../admin_modules/admin_dashboard/services/user-data.service';
 import {GeneralDashboardDeleteComponent} from './modals/general-dashboard-delete/general-dashboard-delete.component';
+import {TabsFixturesModule} from './ngx-ui/tabs/fixtures/tabs-fixtures.module';
 
 @NgModule({
   declarations: [
@@ -121,9 +119,6 @@ import {GeneralDashboardDeleteComponent} from './modals/general-dashboard-delete
     TwoByOneLayoutComponent,
     NavbarComponent,
     ConfirmationModalDirective,
-    TabsLabeltemplateFixtureComponent,
-    TabsMultipleActiveFixtureComponent,
-    TabsFixtureComponent,
     DashTrashComponent,
     DashEditComponent,
     EditDashboardModalComponent,
@@ -178,6 +173,7 @@ import {GeneralDashboardDeleteComponent} from './modals/general-dashboard-delete
         NbCardModule,
         NbTabsetModule,
         NbIconModule,
+        TabsFixturesModule,
     ],
   exports: [
     BarHorizontalComponent,
