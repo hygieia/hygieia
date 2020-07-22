@@ -10,7 +10,7 @@
       </div>
       <nb-card *ngFor="let dashboard of dashboards" class="gap">
         <nb-card-header>
-          <a target="_blank" routerLink="/dashboard/dashboardview/{{dashboard.id}}"><h3>Dashboard Title: {{dashboard.title}} <i class="fa fa-external-link" aria-hidden="true"></i></h3></a>
+          <a target="_blank" routerLink="/dashboard/dashboard-view/{{dashboard.id}}"><h3>Dashboard Title: {{dashboard.title}} <i class="fa fa-external-link" aria-hidden="true"></i></h3></a>
         </nb-card-header>
         <nb-card-body>
           <div *ngIf="dashboard.application && dashboard.application.components" class="table-responsive">

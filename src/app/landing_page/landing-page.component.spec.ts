@@ -9,6 +9,7 @@ import { DashboardListService } from './dashboard-list/dashboard-list.service';
 import { LandingPageComponent } from './landing-page.component';
 import {NbDialogService, NbThemeModule} from '@nebular/theme';
 import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+import {DashboardService} from '../shared/dashboard.service';
 
 class MockDialogService {}
 
@@ -21,7 +22,7 @@ describe('LandingPageComponent', () => {
       imports: [ReactiveFormsModule, SharedModule, HttpClientTestingModule, RouterTestingModule.withRoutes([]),
         NbThemeModule.forRoot()],
       declarations: [ LandingPageComponent, DashboardListComponent ],
-      providers: [DashboardListService, {provide: NbDialogService, useClass: MockDialogService}],
+      providers: [DashboardService, DashboardListService, {provide: NbDialogService, useClass: MockDialogService}],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
     .compileComponents();

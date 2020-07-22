@@ -33,7 +33,7 @@
                     <h4>{{ dashboardType }} Dashboards</h4>
                   </nb-card-header>
                   <nb-list >
-                    <nb-list-item *ngFor="let dashboard of allDashboards" routerLink="/dashboard/dashboardview/{{dashboard.id}}">
+                    <nb-list-item *ngFor="let dashboard of allDashboards" routerLink="/dashboard/dashboard-view/{{dashboard.id}}">
                       <span class="fa fa-lg left-icon" [ngClass]="{'fa-cubes' : dashboard.type === 'Product','fa-slideshare': dashboard.type === 'Team'}"></span>
                       <span class="d-name">{{dashboardName(dashboard)}}</span>
                     </nb-list-item>

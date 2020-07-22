@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {DashboardService} from '../shared/dashboard.service';
 
 @Component({
   selector: 'app-landing-page',
@@ -7,7 +8,9 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LandingPageComponent implements OnInit {
 
-  constructor() { }
+  constructor( private dashboardService: DashboardService) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.dashboardService.loadCounts();
+  }
 }

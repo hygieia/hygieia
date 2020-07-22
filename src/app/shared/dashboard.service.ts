@@ -16,11 +16,15 @@ export class DashboardService {
 
   private dashboardAuditRoute = '/apiaudit/auditresult/dashboard/title/';
 
+  private dashboardCountRoute = '/api/dashboard/count/';
+
   private dashboardSubject = new ReplaySubject<any>(1);
 
   private dashboardAuditSubject = new ReplaySubject<any>(1);
 
   public dashboardQualitySubject = new ReplaySubject<any>(1);
+
+  private dashboardCountSubject = new ReplaySubject<any>(2);
 
   private dashboardRefreshSubject = new Subject<any>();
 
@@ -33,6 +37,8 @@ export class DashboardService {
   public dashboardConfig$ = this.dashboardSubject.asObservable().pipe(filter(result => result));
 
   public dashboardAuditConfig$ = this.dashboardAuditSubject.asObservable().pipe(filter(result => result));
+
+  public dashboardCountConfig$ = this.dashboardCountSubject.asObservable().pipe(filter(result => result));
 
   public dashboardQualityConfig$ = this.dashboardQualitySubject.asObservable().pipe(filter(result => result));
 
@@ -176,5 +182,12 @@ export class DashboardService {
   createDashboard(data: any): Observable<any> {
     const httpOptions = { headers: new HttpHeaders({ 'Content-Type':  'application/json'})};
     return this.http.post(this.dashboardRoute, data, httpOptions);
+  }
+
+  loadCounts() {
+    ['Team', 'Product'].forEach(type => {
+      this.http.get(this.dashboardCountRoute + type)
+        .subscribe(count => this.dashboardCountSubject.next({ name: type, value: count }));
+    });
   }
 }

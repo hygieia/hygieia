@@ -81,7 +81,7 @@ export class DashboardCreateComponent implements OnInit {
       activeWidgets: this.selectedLayoutItems
     };
     this.dashboardService.createDashboard(submitData).subscribe(response => {
-      this.router.navigate([`dashboard/dashboardview/${response.id}`, { activeWidgets: this.selectedLayoutItems}]);
+      this.router.navigate([`dashboard/dashboard-view/${response.id}`, { activeWidgets: this.selectedLayoutItems}]);
       this.close();
     }, error => { this.createErrorMsg = 'Error creating dashboard, invalid request'; });
   }

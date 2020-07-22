@@ -155,6 +155,6 @@ export class DashboardListComponent implements OnInit {
   }
 
   routeDashboard(dashboard: IDashboards, $event: MouseEvent) {
-    this.router.navigate(['/dashboard/dashboardview/' + dashboard.id]);
+    this.router.navigate(['/dashboard/dashboard-view/' + dashboard.id]);
   }
 }

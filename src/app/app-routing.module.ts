@@ -2,8 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
-  { path: '', loadChildren: () =>
-      import('./landing_page/landing-page.module').then(m => m.LandingPageModule) },
   { path: 'user', loadChildren: () =>
       import('./user/user.module').then(m => m.UserModule) },
   { path: 'build', loadChildren: () =>
@@ -16,7 +14,9 @@ const routes: Routes = [
       import('./admin_modules/admin_dashboard/admin-dashboard-modules').then(m => m.AdminDashboardModule) },
   { path: 'audits', loadChildren: () =>
       import('./screen_modules/nfrr/nfrr.module').then(m => m.NfrrModule)},
-  { path: '**', redirectTo: '', pathMatch: 'full' },
+  { path: '', loadChildren: () =>
+      import('./landing_page/landing-page.module').then(m => m.LandingPageModule), pathMatch: 'full' },
+  { path: '**', redirectTo: '' },
 ];
 
 @NgModule({

@@ -1,5 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {DashboardService} from '../../../shared/dashboard.service';
+import {take} from 'rxjs/operators';
+
+export interface IPieData {
+  name: string;
+  value: number;
+}
 
 @Component({
   selector: 'app-dashboard-count',
@@ -7,35 +13,29 @@ import {HttpClient} from '@angular/common/http';
   styleUrls: ['./dashboard-count.component.scss']
 })
 export class DashboardCountComponent implements OnInit {
-  dCount: any[] = [];
+  dCount: IPieData[] = [];
   view: any[] = [450, 200];
-  private dashboardCountRoute = '/api/dashboard/count/';
 
   // options
   gradient = true;
   showLegend = false;
-  // showLabels = false;
-  // isDoughnut = false;
   label = ' Total dashboards';
 
   colorScheme = {
     domain: ['green', 'brown']
   };
 
-  constructor(private http: HttpClient) {
+  constructor(private dashboardService: DashboardService) {
     this.loadCounts();
   }
 
   ngOnInit(): void {}
 
   private loadCounts() {
-    const counts = [];
-    ['Team', 'Product'].forEach(type => {
-      this.http.get(this.dashboardCountRoute + type).subscribe(count => counts.push({name: type, value: count}));
+    const counts = new Set();
+    this.dashboardService.dashboardCountConfig$.pipe(take(2)).subscribe(count => {
+      counts.add(count);
+      this.dCount = [...counts];
     });
-
-    setTimeout(() => {
-      this.dCount = counts;
-    }, 200);
   }
 }
