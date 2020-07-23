@@ -23,7 +23,7 @@
     <properties>
       <hygieia.core.version>3.1.5</hygieia.core.version>
         <spring-data-releasetrain.version>Gosling-RELEASE</spring-data-releasetrain.version>
-        <mongodb.version>3.0.2</mongodb.version>
+        <mongodb.version>3.12.5</mongodb.version>
         <mongo>3.0.2</mongo>
         <spring.version>4.2.5.RELEASE</spring.version>
         <spring.cloud.version>1.3.1.RELEASE</spring.cloud.version>
