@@ -12,12 +12,12 @@ import {ServiceAccountsComponent} from './service-accounts.component';
 import {CreateOrUpdateServiceAccountComponent} from '../modal/create-or-update-service-account/create-or-update-service-account.component';
 import {GeneralFilterPipe} from '../../../../../shared/pipes/filter.pipe';
 import {GeneralOrderByPipe} from '../../../../../shared/pipes/order-by.pipe';
-import {GeneralDashboardDeleteComponent} from '../../../../../shared/modals/general-dashboard-delete/general-dashboard-delete.component';
+import {GeneralDeleteComponent} from '../../../../../shared/modals/general-delete-modal/general-delete-modal.component';
 
 /*@NgModule({
   declarations: [ServiceAccountsComponent, DashEditComponent, DashTrashComponent, GeneralFilterPipe,
     GeneralOrderByPipe, CreateOrUpdateServiceAccountComponent,
-    GeneralDashboardDeleteComponent],
+    GeneralDeleteComponent],
   providers: [UserDataService, NgbModal],
   imports: [FormsModule, CommonModule, ReactiveFormsModule, NgbModule, HttpClientTestingModule],
   exports: [
@@ -27,7 +27,7 @@ import {GeneralDashboardDeleteComponent} from '../../../../../shared/modals/gene
   entryComponents: [
     ServiceAccountsComponent,
     CreateOrUpdateServiceAccountComponent,
-    GeneralDashboardDeleteComponent
+    GeneralDeleteComponent
   ]
 })
 class TestModule { }*/
@@ -45,7 +45,7 @@ describe('ServiceAccountsComponent', () => {
         CreateOrUpdateServiceAccountComponent,
         GeneralFilterPipe,
         GeneralOrderByPipe,
-        GeneralDashboardDeleteComponent],
+        GeneralDeleteComponent],
       providers: [UserDataService, FormBuilder, NgbActiveModal],
       imports: [FormsModule, NgbModule, CommonModule, ReactiveFormsModule, HttpClientTestingModule]
     })

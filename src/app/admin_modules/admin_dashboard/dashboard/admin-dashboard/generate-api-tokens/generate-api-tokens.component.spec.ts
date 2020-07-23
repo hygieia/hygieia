@@ -14,19 +14,19 @@ import { API_TOKEN_LIST } from '../../../services/user-data.service.mockdata';
 import { NgModule } from '@angular/core';
 import {GeneralOrderByPipe} from '../../../../../shared/pipes/order-by.pipe';
 import {GeneralFilterPipe} from '../../../../../shared/pipes/filter.pipe';
-import {GeneralDashboardDeleteComponent} from '../../../../../shared/modals/general-dashboard-delete/general-dashboard-delete.component';
+import {GeneralDeleteComponent} from '../../../../../shared/modals/general-delete-modal/general-delete-modal.component';
 
 @NgModule({
   declarations: [GenerateApiTokensComponent, DashEditComponent, DashTrashComponent, GeneralFilterPipe,
           GeneralOrderByPipe, EditTokenModalComponent,
     GenerateApiTokenModalComponent,
-    GeneralDashboardDeleteComponent],
+    GeneralDeleteComponent],
   providers: [UserDataService, NgbModal],
   imports: [FormsModule, CommonModule, ReactiveFormsModule, NgbModule, HttpClientTestingModule],
   entryComponents: [
     EditTokenModalComponent,
     GenerateApiTokenModalComponent,
-    GeneralDashboardDeleteComponent
+    GeneralDeleteComponent
   ]
 })
 class TestModule { }

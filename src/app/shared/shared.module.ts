@@ -68,12 +68,12 @@ import {EditDashboardModalComponent} from './modals/edit-dashboard-modal/edit-da
 import {GeneralFilterPipe} from './pipes/filter.pipe';
 import {GeneralOrderByPipe} from './pipes/order-by.pipe';
 import {UserDataService} from '../admin_modules/admin_dashboard/services/user-data.service';
-import {GeneralDashboardDeleteComponent} from './modals/general-dashboard-delete/general-dashboard-delete.component';
 import {TabsFixturesModule} from './ngx-ui/tabs/fixtures/tabs-fixtures.module';
+import {GeneralDeleteComponent} from './modals/general-delete-modal/general-delete-modal.component';
 
 @NgModule({
   declarations: [
-    GeneralDashboardDeleteComponent,
+    GeneralDeleteComponent,
     BarHorizontalComponent,
     BaseTemplateComponent,
     CaponeTemplateComponent,
@@ -126,7 +126,7 @@ import {TabsFixturesModule} from './ngx-ui/tabs/fixtures/tabs-fixtures.module';
     GeneralOrderByPipe
   ],
   entryComponents: [
-    GeneralDashboardDeleteComponent,
+    GeneralDeleteComponent,
     DeleteConfirmModalComponent,
     BarHorizontalComponent,
     CaponeTemplateComponent,
@@ -204,7 +204,7 @@ import {TabsFixturesModule} from './ngx-ui/tabs/fixtures/tabs-fixtures.module';
     WidgetHeaderComponent,
     GaugeChartComponent,
     NavbarComponent,
-    GeneralDashboardDeleteComponent,
+    GeneralDeleteComponent,
     DashTrashComponent,
     DashEditComponent,
     GeneralFilterPipe,

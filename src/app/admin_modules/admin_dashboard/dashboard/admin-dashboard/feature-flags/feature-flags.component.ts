@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserDataService } from '../../../services/user-data.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CreateOrUpdateFeatureFlagsComponent } from '../modal/create-or-update-feature-flags/create-or-update-feature-flags.component';
-import {GeneralDashboardDeleteComponent} from '../../../../../shared/modals/general-dashboard-delete/general-dashboard-delete.component';
+import {GeneralDeleteComponent} from '../../../../../shared/modals/general-delete-modal/general-delete-modal.component';
 
 @Component({
   selector: 'app-feature-flags',
@@ -61,7 +61,7 @@ export class FeatureFlagsComponent implements OnInit {
   }
 
   deleteFeatureFlag(id) {
-    const modalRef = this.modalService.open(GeneralDashboardDeleteComponent);
+    const modalRef = this.modalService.open(GeneralDeleteComponent);
     modalRef.componentInstance.title = 'Are you sure you want to delete?';
     modalRef.result.then((newConfig) => {
       this.userData.deleteFeatureFlags(id).subscribe(response => {

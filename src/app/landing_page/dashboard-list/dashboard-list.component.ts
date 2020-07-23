@@ -12,7 +12,7 @@ import {DashboardCreateComponent} from '../dashboard-create/dashboard-create.com
 import {EditDashboardModalComponent} from '../../shared/modals/edit-dashboard-modal/edit-dashboard-modal.component';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {DashboardDataService} from '../../admin_modules/admin_dashboard/services/dashboard-data.service';
-import {GeneralDashboardDeleteComponent} from '../../shared/modals/general-dashboard-delete/general-dashboard-delete.component';
+import {GeneralDeleteComponent} from '../../shared/modals/general-delete-modal/general-delete-modal.component';
 
 @Component({
   selector: 'app-dashboard-list',
@@ -119,7 +119,7 @@ export class DashboardListComponent implements OnInit {
 
   deleteDashboard(dashboard, $event) {
     $event.stopPropagation();
-    const modalRef = this.modalService.open(GeneralDashboardDeleteComponent);
+    const modalRef = this.modalService.open(GeneralDeleteComponent);
     const dashName = this.dashboardName(dashboard);
     modalRef.componentInstance.title = `Are you sure you want to delete ${dashName}?`;
     modalRef.result.then((newConfig) => {

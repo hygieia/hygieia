@@ -41,7 +41,7 @@
     "eva-icons": "^1.1.2",
     "font-awesome": "^4.7.0",
     "get-google-fonts": "^1.2.2",
-    "lodash": "^4.17.13",
+    "lodash": "^4.17.19",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.25",
     "ngx-moment": "^3.4.0",
