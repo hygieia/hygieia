@@ -25,6 +25,8 @@ import { AdminDashboardService } from './services/dashboard.service';
 import { EditDashboardComponent } from './dashboard/admin-dashboard/edit-dashboard/edit-dashboard.component';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { AuthInterceptor } from 'src/app/core/interceptors/auth.interceptor';
+import {PropertiesBuilderComponent} from './dashboard/admin-dashboard/properties-builder/properties-builder.component';
+import {CreateOrUpdateApiPropertiesComponent} from './dashboard/admin-dashboard/modal/create-or-update-api-properties/create-or-update-api-properties.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +39,9 @@ import { AuthInterceptor } from 'src/app/core/interceptors/auth.interceptor';
     GenerateApiTokenModalComponent,
     FeatureFlagsComponent,
     ServiceAccountsComponent,
-    EditDashboardComponent
+    EditDashboardComponent,
+    PropertiesBuilderComponent,
+    CreateOrUpdateApiPropertiesComponent
   ],
 
   providers: [UserDataService, DashboardDataService, PaginationWrapperService, AdminDashboardService,
@@ -62,6 +66,7 @@ import { AuthInterceptor } from 'src/app/core/interceptors/auth.interceptor';
     CreateOrUpdateServiceAccountComponent,
     EditTokenModalComponent,
     GenerateApiTokenModalComponent,
+    CreateOrUpdateApiPropertiesComponent
   ],
 })
 

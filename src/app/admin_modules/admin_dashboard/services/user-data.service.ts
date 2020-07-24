@@ -18,7 +18,6 @@ export class UserDataService {
     return this.http.get(this.userRoute);
   }
 
-
   createToken(apitoken) {
     const route = this.adminRoute + '/createToken';
     return this.http.post(route, apitoken);
@@ -80,5 +79,27 @@ export class UserDataService {
    demoteUserFromAdmin(user) {
     const route = this.adminRoute + '/users/removeAdmin';
     return this.http.post(route, user);
+  }
+
+  createOrUpdateApiPropertiesBuilder(collector) {
+    const apiPropertiesAddUpdateRoute = this.adminRoute + '/addOrUpdateCollector/' + collector.name +
+      '/' + collector.collectorType;
+    let jsonProperties;
+    if(Object.keys(collector.properties).length !== 0) {
+      jsonProperties = JSON.parse(collector.properties);
+    } else {
+      jsonProperties = collector.properties;
+    }
+    return this.http.post(apiPropertiesAddUpdateRoute, jsonProperties);
+  }
+
+  deleteProperties(id) {
+    const propertiesDeleteRoute = this.adminRoute + '/deletePropertiesCase/';
+    return this.http.delete(propertiesDeleteRoute + id);
+  }
+
+  getApiPropertiesBuilderData(type: String) {
+    const propertiesBuilderRoute = this.adminRoute + '/allCollectorsByType/' + type;
+    return this.http.get(propertiesBuilderRoute);
   }
 }
