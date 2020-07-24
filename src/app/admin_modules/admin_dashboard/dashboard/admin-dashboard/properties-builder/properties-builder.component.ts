@@ -12,10 +12,12 @@ import {CreateOrUpdateApiPropertiesComponent} from '../modal/create-or-update-ap
 export class PropertiesBuilderComponent implements OnInit {
 
   error: any = {};
-  apiProperties: any = {};
-  constructor(private userData: UserDataService, private modalService: NgbModal) { }
+  apiProperties: any;
   apiPropertiesSearch = '';
   name: string;
+
+  constructor(private userData: UserDataService, private modalService: NgbModal) {
+  }
 
   ngOnInit() {
     this.loadProperties();

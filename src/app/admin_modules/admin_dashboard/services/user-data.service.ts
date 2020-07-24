@@ -86,7 +86,7 @@ export class UserDataService {
     const apiPropertiesAddUpdateRoute = this.collectorRoute + '/addOrUpdateCollector/' + collector.name +
       '/' + collector.collectorType;
     let jsonProperties;
-    if(Object.keys(collector.properties).length !== 0) {
+    if (Object.keys(collector.properties).length !== 0) {
       jsonProperties = JSON.parse(collector.properties);
     } else {
       jsonProperties = collector.properties;
@@ -99,7 +99,7 @@ export class UserDataService {
     return this.http.delete(propertiesDeleteRoute + id);
   }
 
-  getApiPropertiesBuilderData(type: String) {
+  getApiPropertiesBuilderData(type) {
     const propertiesBuilderRoute = this.collectorRoute + '/allCollectorsByType/' + type;
     return this.http.get(propertiesBuilderRoute);
   }

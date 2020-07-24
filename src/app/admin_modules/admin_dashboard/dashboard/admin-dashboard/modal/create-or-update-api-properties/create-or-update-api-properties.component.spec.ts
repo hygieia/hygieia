@@ -6,7 +6,7 @@ import {CommonModule} from '@angular/common';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {CreateOrUpdateApiPropertiesComponent} from './create-or-update-api-properties.component';
 
-fdescribe('CreateOrUpdateApiPropertiesComponent', () => {
+describe('CreateOrUpdateApiPropertiesComponent', () => {
   let component: CreateOrUpdateApiPropertiesComponent;
   let fixture: ComponentFixture<CreateOrUpdateApiPropertiesComponent>;
 
@@ -39,7 +39,7 @@ fdescribe('CreateOrUpdateApiPropertiesComponent', () => {
     const submitTest = {
       id: '123',
       name: 'name',
-      properties: {'test': 'test'}
+      properties: {test: 'test'}
     };
     setTimeout(() => {
       component.apiPropertiesForm.get('properties').setValue(submitTest.properties);
@@ -52,7 +52,7 @@ fdescribe('CreateOrUpdateApiPropertiesComponent', () => {
   it('should hit api properties post statements', () => {
     const submitTest = {
       name: 'name',
-      properties: {'test': 'test'},
+      properties: {test: 'test'},
     };
     setTimeout(() => {
       component.apiPropertiesForm.get('name').setValue(submitTest.name);

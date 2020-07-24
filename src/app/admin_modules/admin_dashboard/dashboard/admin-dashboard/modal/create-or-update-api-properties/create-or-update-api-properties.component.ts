@@ -29,7 +29,7 @@ export class CreateOrUpdateApiPropertiesComponent implements OnInit {
       this.apiPropertiesForm.get('name').setValue(this.name);
       this.apiPropertiesForm.get('properties').setValue(this.properties);
       this.propertiesJSON = JSON.stringify(this.properties);
-      if(this.name) {
+      if (this.name) {
         this.disableName = true;
       }
     });
