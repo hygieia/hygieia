@@ -9,3 +9,4 @@ EXPOSE 80 443
 
 CMD conf-builder.sh &&\
   nginx -g "daemon off;"
+ENTRYPOINT ["/bin/bash"]
