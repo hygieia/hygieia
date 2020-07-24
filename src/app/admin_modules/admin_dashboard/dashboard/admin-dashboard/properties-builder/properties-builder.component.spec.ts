@@ -27,7 +27,7 @@ import {NgbModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 })
 class TestModule { }
 
-fdescribe('PropertiesBuilderComponent', () => {
+describe('PropertiesBuilderComponent', () => {
   let component: PropertiesBuilderComponent;
   let fixture: ComponentFixture<PropertiesBuilderComponent>;
 
