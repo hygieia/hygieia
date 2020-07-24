@@ -11,10 +11,10 @@ import { UserDataService } from 'src/app/admin_modules/admin_dashboard/services/
 export class CreateOrUpdateApiPropertiesComponent implements OnInit {
   @Input() public name: string;
   @Input() public properties: {};
-  private propertiesJSON = '';
+  propertiesJSON = '';
   apiPropertiesForm: FormGroup;
   id: string;
-  private disableName = false;
+  disableName = false;
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -44,30 +44,28 @@ export class CreateOrUpdateApiPropertiesComponent implements OnInit {
 
   submit() {
     let collector = {};
-    if (this.apiPropertiesForm.valid) {
-      if (this.id) {
-        // Edit
-        collector = {
-          id : this.id,
-          name : this.apiPropertiesForm.get('name').value,
-          collectorType : 'Api',
-          properties : (this.apiPropertiesForm.get('properties').value),
-        };
-      } else {
-        // Post
-        collector = {
-          name: this.apiPropertiesForm.get('name').value,
-          collectorType : 'Api',
-          properties: (this.apiPropertiesForm.get('properties').value),
-        };
-      }
-      this.userData
-        .createOrUpdateApiPropertiesBuilder(collector)
-        .subscribe( (response) => {
-          this.activeModal.close('close');
-        }, (error) => {
-          console.log(error);
-        });
+    if (this.id) {
+      // Edit
+      collector = {
+        id : this.id,
+        name : this.apiPropertiesForm.get('name').value,
+        collectorType : 'Api',
+        properties : (this.apiPropertiesForm.get('properties').value),
+      };
+    } else {
+      // Post
+      collector = {
+        name: this.apiPropertiesForm.get('name').value,
+        collectorType : 'Api',
+        properties: (this.apiPropertiesForm.get('properties').value),
+      };
     }
+    this.userData
+      .createOrUpdateApiPropertiesBuilder(collector)
+      .subscribe( (response) => {
+        this.activeModal.close('close');
+        }, (error) => {
+        console.log(error);
+      });
   }
 }

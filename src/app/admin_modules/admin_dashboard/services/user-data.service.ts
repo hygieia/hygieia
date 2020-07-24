@@ -6,6 +6,7 @@ export class UserDataService {
 
   adminRoute = '/api/admin';
   userRoute = '/api/users';
+  collectorRoute = '/api/collector';
 
   constructor(private http: HttpClient) { }
 
@@ -82,7 +83,7 @@ export class UserDataService {
   }
 
   createOrUpdateApiPropertiesBuilder(collector) {
-    const apiPropertiesAddUpdateRoute = this.adminRoute + '/addOrUpdateCollector/' + collector.name +
+    const apiPropertiesAddUpdateRoute = this.collectorRoute + '/addOrUpdateCollector/' + collector.name +
       '/' + collector.collectorType;
     let jsonProperties;
     if(Object.keys(collector.properties).length !== 0) {
@@ -94,12 +95,12 @@ export class UserDataService {
   }
 
   deleteProperties(id) {
-    const propertiesDeleteRoute = this.adminRoute + '/deletePropertiesCase/';
+    const propertiesDeleteRoute = this.collectorRoute + '/deletePropertiesCase/';
     return this.http.delete(propertiesDeleteRoute + id);
   }
 
   getApiPropertiesBuilderData(type: String) {
-    const propertiesBuilderRoute = this.adminRoute + '/allCollectorsByType/' + type;
+    const propertiesBuilderRoute = this.collectorRoute + '/allCollectorsByType/' + type;
     return this.http.get(propertiesBuilderRoute);
   }
 }
