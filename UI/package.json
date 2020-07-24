@@ -97,7 +97,7 @@
     "underscore": "1.9.1",
     "lodash": "~4.17.11",
     "components-font-awesome": "~4.2.0",
-    "dexie": "~1.2.0",
+    "dexie": "~1.5.1",
     "json-logic-js": "^1.2.2",
     "jstz": "~2.0.0",
     "modernizr": "~3.6.0",
