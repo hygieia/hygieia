@@ -6,7 +6,7 @@ import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 
-fdescribe('CreateOrUpdateFeatureFlagsComponent', () => {
+describe('CreateOrUpdateFeatureFlagsComponent', () => {
   let component: CreateOrUpdateFeatureFlagsComponent;
   let fixture: ComponentFixture<CreateOrUpdateFeatureFlagsComponent>;
   beforeEach(async(() => {
