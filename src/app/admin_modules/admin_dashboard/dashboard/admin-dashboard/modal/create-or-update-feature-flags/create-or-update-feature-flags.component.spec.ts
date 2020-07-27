@@ -1,4 +1,3 @@
-
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { CreateOrUpdateFeatureFlagsComponent } from './create-or-update-feature-flags.component';
 import {UserDataService} from '../../../../services/user-data.service';
@@ -6,7 +5,8 @@ import {NgbActiveModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
-describe('CreateOrUpdateFeatureFlagsComponent', () => {
+
+fdescribe('CreateOrUpdateFeatureFlagsComponent', () => {
   let component: CreateOrUpdateFeatureFlagsComponent;
   let fixture: ComponentFixture<CreateOrUpdateFeatureFlagsComponent>;
   beforeEach(async(() => {
