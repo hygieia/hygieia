@@ -46,19 +46,25 @@ export class CreateOrUpdateApiPropertiesComponent implements OnInit {
     let collector = {};
     if (this.id) {
       // Edit
-      collector = {
-        id : this.id,
-        name : this.apiPropertiesForm.get('name').value,
-        collectorType : 'Api',
-        properties : (this.apiPropertiesForm.get('properties').value),
-      };
+      try {
+        collector = {
+          id: this.id,
+          name: this.apiPropertiesForm.get('name').value,
+          collectorType: 'Api',
+          properties: JSON.parse(this.apiPropertiesForm.get('properties').value),
+        };
+      } catch (e) {
+      }
     } else {
       // Post
-      collector = {
-        name: this.apiPropertiesForm.get('name').value,
-        collectorType : 'Api',
-        properties: (this.apiPropertiesForm.get('properties').value),
-      };
+      try {
+        collector = {
+          name: this.apiPropertiesForm.get('name').value,
+          collectorType: 'Api',
+          properties: JSON.parse(this.apiPropertiesForm.get('properties').value),
+        };
+      } catch (e) {
+      }
     }
     this.userData
       .createOrUpdateApiPropertiesBuilder(collector)

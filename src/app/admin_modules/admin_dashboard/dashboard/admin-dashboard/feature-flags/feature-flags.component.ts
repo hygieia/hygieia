@@ -13,6 +13,7 @@ export class FeatureFlagsComponent implements OnInit {
 
   error: any = {};
   featureFlags: FeatureFlagsComponent[] = [];
+  featureFlagsSearch = '';
   id: string;
   name: string;
   description: string;
