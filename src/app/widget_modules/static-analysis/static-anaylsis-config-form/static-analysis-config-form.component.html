@@ -2,8 +2,7 @@
   <div class="modal-body">
     <div class="container">
       <div class="form-group">
-        <label class="modal-label" for="staticAnalysisJob">Static Analysis Project</label>
-        <span class="required-text"> (*Required)</span>
+        <label class="col-form-label" for="staticAnalysisJob">Static Analysis Project <span class="required-text"> *</span></label>
         <input id="staticAnalysisJob" type="search" class="form-control"
                [class.is-invalid]="((configForm.staticAnalysisJob.dirty || configForm.staticAnalysisJob.touched) && configForm.staticAnalysisJob.errors) || searchFailed"
                formControlName="staticAnalysisJob"
@@ -18,7 +17,7 @@
     <div class="container">
       <div class="row">
         <div class="col text-center">
-          <button [disabled]="!staticAnalysisConfigForm.valid">
+          <button class="btn btn-primary" [disabled]="!staticAnalysisConfigForm.valid">
             Save
           </button>
         </div>

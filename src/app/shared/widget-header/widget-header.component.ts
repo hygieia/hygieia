@@ -69,7 +69,7 @@ export class WidgetHeaderComponent implements OnInit {
     if (!modalRef) {
       return;
     }
-    modalRef.componentInstance.title = 'Configure';
+    modalRef.componentInstance.title = 'Configure Widget';
     modalRef.componentInstance.form = this.configForm;
     modalRef.componentInstance.id = 1;
 
@@ -150,7 +150,7 @@ export class WidgetHeaderComponent implements OnInit {
     if (!modalRef) {
       return;
     }
-    modalRef.componentInstance.title = 'Are you sure want to delete this widget from your dashboard?';
+    modalRef.componentInstance.title = 'Delete Widget';
     modalRef.componentInstance.modalType = DeleteConfirmModalComponent;
 
     // copy from openConfig()
