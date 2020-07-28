@@ -6,7 +6,7 @@
   grid-template-rows: auto;
   grid-column-gap: 3em;
 
-  @include media-breakpoint-down(md) {
+  @include media-breakpoint-down(lg) {
     grid-template-columns: 1fr;
   }
 }

@@ -36,7 +36,7 @@
                 <input class="form-control" type="text" nbInput fullWidth status="basic" placeholder="Business Application (Optional)"
                        [(ngModel)]="busApp" id="busApp" name="busApp" [ngbTypeahead]="typeAheadCmdbs" [inputFormatter]="getBusApp" [resultFormatter]="getBusApp">
               </div>
-              <button nbButton nbStepperNext outline type="submit" style="float: right" (click)="clear()" [disabled]="!myForm.form.valid">Next</button>
+              <button nbButton nbStepperNext type="submit" style="float: right" (click)="clear()" [disabled]="!myForm.form.valid">Next</button>
             </form>
           </div>
         </nb-step>
@@ -55,8 +55,8 @@
             </nb-card-body>
             <nb-card-footer>
               <div style="display: flex; flex-direction: row; justify-content: space-between">
-                <button nbButton outline nbStepperPrevious>prev</button>
-                <button hero nbButton (click)="createDashboard()" [disabled]="!isAnySelected">Create Dashboard</button>
+                <button nbButton nbStepperPrevious>prev</button>
+                <button nbButton (click)="createDashboard()" [disabled]="!isAnySelected" status="success">Create Dashboard</button>
               </div>
               <small *ngIf="createErrorMsg" class="form-text text-danger">{{createErrorMsg}}</small>
             </nb-card-footer>

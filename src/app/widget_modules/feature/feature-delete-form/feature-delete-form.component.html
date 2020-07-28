@@ -1,12 +1,14 @@
 <form [formGroup]="featureDeleteForm" (ngSubmit)="submitDeleteForm()">
   <div class="modal-body">
-    {{message}}
+    <div class="row">
+      <div class="col">
+        <div class="col-form-label">{{message}}</div>
+      </div>
+    </div>
   </div>
   <div class="modal-footer">
     <div class="col text-center">
-      <button class="btn btn-primary btn-block btn-warning" [disabled]="!featureDeleteForm.valid || !widgetConfigId">
-        {{confirm}}
-      </button>
+      <button class="btn btn-success" [disabled]="!featureDeleteForm.valid || !widgetConfigId">Confirm</button>
     </div>
   </div>
 </form>

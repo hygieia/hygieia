@@ -15,7 +15,7 @@ export class TestDeleteFormComponent implements OnInit {
   // buttons
   public confirm = 'Confirm';
   public cancel = 'Cancel';
-  @Input() public message = 'This Test item will be deleted immediately. Would you like to confirm? (You cannot undo this action)';
+  @Input() public message = 'This test item will be deleted immediately. Would you like to delete?';
 
   private componentId: string;
   widgetConfigId: string;

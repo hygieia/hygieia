@@ -2,8 +2,7 @@
   <div class="modal-body">
     <div class="container">
       <div class="form-group">
-        <label class="modal-label" for="sJob">Security Scan</label>
-        <span class="required-text"> (*Required)</span>
+        <label class="col-form-label" for="sJob">Security Scan <span class="required-text"> *</span></label>
         <input id="sJob" type="search" class="form-control"
                [class.is-invalid]="((configForm.sJob.dirty || configForm.sJob.touched) && configForm.sJob.errors) || searchFailed"
                formControlName="sJob"
@@ -21,7 +20,7 @@
     <div class="container">
       <div class="row">
         <div class="col text-center">
-          <button [disabled]="!securityConfigForm.valid">
+          <button class="btn btn-primary" [disabled]="!securityConfigForm.valid">
             Save
           </button>
         </div>

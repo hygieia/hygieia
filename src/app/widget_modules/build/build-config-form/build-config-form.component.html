@@ -2,8 +2,7 @@
   <div class="modal-body">
     <div class="container">
       <div class="form-group">
-        <label class="modal-label" for="buildJob">Build Job</label>
-        <span class="required-text"> (*Required)</span>
+        <label class="col-form-label" for="buildJob">Build Job <span class="required-text"> *</span></label>
         <input id="buildJob" type="search" class="form-control"
                [class.is-invalid]="((configForm.buildJob.dirty || configForm.buildJob.touched) && configForm.buildJob.errors) || searchFailed"
                formControlName="buildJob"
@@ -16,8 +15,7 @@
         <div class="invalid-feedback" *ngIf="searchFailed && !searching && configForm.buildJob.value !== ''">Sorry, suggestions could not be loaded.</div>
       </div>
       <div class="form-group">
-        <label class="modal-label" for="buildDurationThreshold">Build Duration Threshold</label>
-        <span class="required-text"> (*Required)</span>
+        <label class="col-form-label" for="buildDurationThreshold">Build Duration Threshold <span class="required-text"> *</span></label>
         <div class="input-group mb-3">
           <input id="buildDurationThreshold" type="text" class="form-control" placeholder="Build Duration Threshold" aria-label="Build Duration Threshold"
             aria-describedby="minutes-label" formControlName="buildDurationThreshold"
@@ -30,8 +28,7 @@
         </div>
       </div>
       <div class="form-group">
-        <label class="modal-label" for="consecutive-failure-threshold">Alert Takeover Criteria</label>
-        <span class="required-text"> (*Required)</span>
+        <label class="col-form-label" for="consecutive-failure-threshold">Alert Takeover Criteria <span class="required-text"> *</span></label>
         <div class="input-group mb-3">
           <input id="consecutive-failure-threshold" type="text" class="form-control" placeholder="Alert Takeover Criteria" aria-label="Alert Takeover Criteria"
             aria-describedby="consecutive-build-fails" formControlName="consecutiveFailureThreshold"
@@ -51,7 +48,7 @@
     <div class="container">
       <div class="row">
         <div class="col text-center">
-          <button [disabled]="!buildConfigForm.valid">
+          <button class="btn btn-primary" [disabled]="!buildConfigForm.valid">
             Save
           </button>
         </div>
