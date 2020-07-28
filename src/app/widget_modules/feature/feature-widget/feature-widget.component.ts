@@ -143,13 +143,13 @@ export class FeatureWidgetComponent extends WidgetComponent implements OnInit, A
         status: null,
         statusText: '',
         title: 'Project Name',
-        subtitles: [params.projectName],
+        subtitles: [ typeof(params.projectName) === 'string' ? params.projectName : params.projectName.options.projectName],
       },
       {
         status: null,
         statusText: '',
         title: 'Team Name',
-        subtitles: [params.teamName],
+        subtitles: [ typeof(params.teamName) === 'string' ? params.teamName : params.teamName.options.teamName],
       },
     ] as IClickListItem[];
 
@@ -250,9 +250,6 @@ export class FeatureWidgetComponent extends WidgetComponent implements OnInit, A
   }
 
   private issueOrEpicBreakdown(issueOrEpicCollection, issueOrEpic) {
-    if (issueOrEpicCollection.length === 0) {
-      return [{name: 'No Data Found'}];
-    }
     if (issueOrEpic === 'issues') {
       issueOrEpicCollection = issueOrEpicCollection.sort((a: IFeatureRotationItem, b: IFeatureRotationItem): number => {
         return a.changeDate > b.changeDate ? 1 : -1;

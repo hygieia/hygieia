@@ -1,10 +1,14 @@
 <form [formGroup]="ossDeleteForm" (ngSubmit)="submitDeleteForm()">
   <div class="modal-body">
-    {{message}}
+    <div class="row">
+      <div class="col">
+        <div class="col-form-label">{{message}}</div>
+      </div>
+    </div>
   </div>
   <div class="modal-footer">
     <div class="col text-center">
-      <button class="btn btn-primary btn-block btn-warning" [disabled]="!ossDeleteForm.valid || !widgetConfigId">
+      <button class="btn btn-success" [disabled]="!ossDeleteForm.valid || !widgetConfigId">
         {{confirm}}
       </button>
     </div>

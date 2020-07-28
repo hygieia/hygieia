@@ -6,7 +6,7 @@ import {
   OnInit, Output,
   ViewChild
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import { DashboardService } from 'src/app/shared/dashboard.service';
 import { DashboardComponent } from 'src/app/shared/dashboard/dashboard.component';
 import { TemplatesDirective } from 'src/app/shared/templates/templates.directive';
@@ -30,7 +30,7 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
   constructor(componentFactoryResolver: ComponentFactoryResolver,
               cdr: ChangeDetectorRef,
               private route: ActivatedRoute,
-              private dashboardService: DashboardService) {
+              private dashboardService: DashboardService, private router: Router) {
     super(componentFactoryResolver, cdr);
   }
 
@@ -66,5 +66,9 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
       this.widgets = widgets;
       super.loadComponent(this.childTemplateTag);
     });
+  }
+
+  openCollectorViewer() {
+    this.router.navigate(['/collectorItem', {title : this.dashboardTitle.split('-')[0].trim()}]);
   }
 }

@@ -5,12 +5,12 @@
       <div class="col-sm-8">
         <div class="gap">
           <input nbInput fullWidth id="dashboardSearch" shape="round" type="search" name="dashboardSearch" fieldSize="large"
-                 class="form-control" [formControl]="queryField" placeholder="Type to find dashboard">
+                 class="form-control" [formControl]="queryField" placeholder="Enter Dashboard Name">
         </div>
       </div>
       <nb-card *ngFor="let dashboard of dashboards" class="gap">
         <nb-card-header>
-          <a target="_blank" routerLink="/dashboard/dashboard-view/{{dashboard.id}}"><h3>Dashboard Title: {{dashboard.title}} <i class="fa fa-external-link" aria-hidden="true"></i></h3></a>
+          <a routerLink="/dashboard/dashboard-view/{{dashboard.id}}"><h3>Dashboard Title: {{dashboard.title}} <i class="fa fa-external-link" aria-hidden="true"></i></h3></a>
         </nb-card-header>
         <nb-card-body>
           <div *ngIf="dashboard.application && dashboard.application.components" class="table-responsive">

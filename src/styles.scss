@@ -54,25 +54,31 @@ body,
 }
 
 .modal-dialog {
-  max-width: 60%;
-  width: 60%;
-  margin: 1.75rem auto;
+  max-width: 50%;
+  width: 50%;
+}
+
+.modal-content {
+  border: none;
+  background-color: lightgray;
 }
 
 .modal-header {
   background-color: #2D2D2D;
-  padding: 20px;
-  table-layout: auto;
   color: white;
+  border: none;
 }
 
 .close{
   color: white;
+  font-size: 2rem;
+  border: none;
+  outline: none;
 }
 
 .modal-footer {
-  background-color: #565859;
-  color: #fafafa;
+  background-color: lightgray;
+  border: none;
 }
 
 button {
@@ -81,6 +87,18 @@ button {
   padding: 15px;
   text-align: center;
   position:relative;
+}
+
+.col-form-label {
+  color: dimgrey;
+  font-size: 1.275rem;
+  font-family: Open Sans, sans-serif;
+  font-weight: 600;
+  line-height: 2rem;
+}
+
+.modal-body {
+  background-color: lightgray;
 }
 
 
