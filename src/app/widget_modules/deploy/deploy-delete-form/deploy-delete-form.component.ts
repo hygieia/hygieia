@@ -16,7 +16,7 @@ export class DeployDeleteFormComponent implements OnInit {
   // buttons
   public confirm = 'Confirm';
   public cancel = 'Cancel';
-  @Input() public message = 'This Deploy item will be deleted immediately. Would you like to confirm? (You cannot undo this action)';
+  @Input() public message = 'This Deploy item will be deleted immediately. Would you like to delete?';
 
   widgetConfigId: string;
   private componentId: string;

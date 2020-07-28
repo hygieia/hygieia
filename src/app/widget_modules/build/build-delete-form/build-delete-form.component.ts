@@ -16,7 +16,7 @@ export class BuildDeleteFormComponent implements OnInit {
   // buttons
   public confirm = 'Confirm';
   public cancel = 'Cancel';
-  @Input() public message = 'This Build item will be deleted immediately. Would you like to confirm? (You cannot undo this action)';
+  @Input() public message = 'This build item will be deleted immediately. Would you like to delete?';
 
   widgetConfigId: string;
   private componentId: string;

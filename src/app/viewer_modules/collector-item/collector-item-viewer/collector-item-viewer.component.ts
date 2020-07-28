@@ -7,6 +7,7 @@ import {of} from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {CollectorItemDetailsComponent} from './collector-item-details/collector-item-details.component';
 import {CollectorRefreshComponent} from './collector-refresh/collector-refresh.component';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-collector-item',
@@ -45,12 +46,14 @@ export class CollectorItemViewerComponent implements OnInit {
     'Log',
     'AutoDiscover'
   ];
+  private dashboardTitle: string;
 
   constructor(
     private ciViewerService: CollectorItemService,
-    private modalService: NgbModal) { }
+    private modalService: NgbModal, private route: ActivatedRoute) { }
 
   ngOnInit() {
+    this.dashboardTitle = this.route.snapshot.paramMap.get('title');
     // Query for a dashboard
     this.queryField.valueChanges.pipe(
       debounceTime(500),
@@ -65,6 +68,9 @@ export class CollectorItemViewerComponent implements OnInit {
     ).subscribe(response => {
       this.dashboards = response;
     });
+    if (this.dashboardTitle) {
+      this.queryField.setValue(this.dashboardTitle, {emitEvent: true});
+    }
   }
 
   openDetails( collector: string, dashboardTitle: string, componentName: string, ci: ICollItem) {
