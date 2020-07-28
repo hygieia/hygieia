@@ -95,7 +95,7 @@ export class UserDataService {
   }
 
   getApiPropertiesBuilderData(type) {
-    const propertiesBuilderRoute = this.collectorRoute + '/allCollectorsByType/' + type;
+    const propertiesBuilderRoute = this.collectorRoute + '/type/' + type;
     return this.http.get(propertiesBuilderRoute);
   }
 }
