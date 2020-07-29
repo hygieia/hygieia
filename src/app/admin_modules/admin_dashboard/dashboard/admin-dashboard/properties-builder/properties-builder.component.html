@@ -1,0 +1,27 @@
+<div>
+  <div class="widget-modal">
+    <div class="widget-modal-heading">Api Properties Builder</div>
+    <div class = "table-content">
+      <span class="col-xs-6"><button type="button" class="btn btn-primary btn-wide pull-right" (click)="addNewApiPropertiesBuilder()">New</button></span>
+      <input type="text" class="form-control" id="apiPropertiesSearch" placeholder="Filter Api Properties"
+             [(ngModel)]="apiPropertiesSearch">
+      <div class="dash-modal-row delete-dashboard-row clearfix" style="font-size: 20px;" *ngFor="let apiProperty of this.apiProperties | generalFilter:{name:apiPropertiesSearch} | generalOrderBy:'name'">
+        <div>
+          <div ng-hide="!ctrl.apiProperties">
+            <a  (click)="deleteProperties(apiProperty?.id)">
+              <app-dash-trash class="clickable pull-right"></app-dash-trash>
+            </a>
+            <app-dash-edit class="clickable pull-right" (click)="editApiPropertiesBuilder(apiProperty)"></app-dash-edit>
+          </div>
+          <h6>Name: {{apiProperty?.name}}</h6>
+          <h6>Properties: </h6>
+          <div class="table-row" *ngFor="let currProperties of properKeys(apiProperty?.properties)">
+            <div class="individual">
+              <h6>{{currProperties}}: {{stringifyObj(apiProperty?.properties[currProperties])}}</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

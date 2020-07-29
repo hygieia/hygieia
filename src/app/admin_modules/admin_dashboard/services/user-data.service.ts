@@ -6,6 +6,7 @@ export class UserDataService {
 
   adminRoute = '/api/admin';
   userRoute = '/api/users';
+  collectorRoute = '/api/collector';
 
   constructor(private http: HttpClient) { }
 
@@ -17,7 +18,6 @@ export class UserDataService {
   users() {
     return this.http.get(this.userRoute);
   }
-
 
   createToken(apitoken) {
     const route = this.adminRoute + '/createToken';
@@ -80,5 +80,21 @@ export class UserDataService {
    demoteUserFromAdmin(user) {
     const route = this.adminRoute + '/users/removeAdmin';
     return this.http.post(route, user);
+  }
+
+  createOrUpdateApiPropertiesBuilder(collector) {
+    const apiPropertiesAddUpdateRoute = this.collectorRoute + '/addOrUpdateCollector/' + collector.name +
+      '/' + collector.collectorType;
+    return this.http.post(apiPropertiesAddUpdateRoute, (collector.properties));
+  }
+
+  deleteProperties(id) {
+    const propertiesDeleteRoute = this.collectorRoute + '/deletePropertiesCase/';
+    return this.http.delete(propertiesDeleteRoute + id);
+  }
+
+  getApiPropertiesBuilderData(type) {
+    const propertiesBuilderRoute = this.collectorRoute + '/type/' + type;
+    return this.http.get(propertiesBuilderRoute);
   }
 }

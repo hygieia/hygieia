@@ -2,13 +2,13 @@ import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  selector: 'app-general-dashboard-delete',
-  templateUrl: './general-dashboard-delete.component.html',
-  styleUrls: ['./general-dashboard-delete.component.scss']
+  selector: 'app-general-delete-modal',
+  templateUrl: './general-delete-modal.component.html',
+  styleUrls: ['./general-delete-modal.component.scss']
 })
-export class GeneralDashboardDeleteComponent implements OnInit {
+export class GeneralDeleteComponent implements OnInit {
 
-  @Input() public title = 'DeleteModal';
+  @Input() public title = 'Delete Modal';
   public confirm = 'Confirm';
   // public cancel = 'Cancel';
   public message = 'This item will be deleted immediately.  You cannot undo this action.';

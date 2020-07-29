@@ -1,14 +1,14 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import {GeneralDashboardDeleteComponent} from './general-dashboard-delete.component';
+import {GeneralDeleteComponent} from './general-delete-modal.component';
 
-describe('GeneralDashboardDeleteComponent', () => {
-  let component: GeneralDashboardDeleteComponent;
-  let fixture: ComponentFixture<GeneralDashboardDeleteComponent>;
+describe('GeneralDeleteComponent', () => {
+  let component: GeneralDeleteComponent;
+  let fixture: ComponentFixture<GeneralDeleteComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ GeneralDashboardDeleteComponent ],
+      declarations: [ GeneralDeleteComponent ],
       providers: [NgbActiveModal],
       imports: [NgbModule]
     })
@@ -16,7 +16,7 @@ describe('GeneralDashboardDeleteComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(GeneralDashboardDeleteComponent);
+    fixture = TestBed.createComponent(GeneralDeleteComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

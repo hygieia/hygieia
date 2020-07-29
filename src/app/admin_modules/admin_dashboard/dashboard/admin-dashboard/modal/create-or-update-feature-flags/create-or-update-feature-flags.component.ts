@@ -25,6 +25,7 @@ export class CreateOrUpdateFeatureFlagsComponent implements OnInit {
 
   featureFlagForm: FormGroup;
   id: string;
+  disableName = false;
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -44,6 +45,9 @@ export class CreateOrUpdateFeatureFlagsComponent implements OnInit {
         } else {
           this.featureFlagForm.get(currFlag).setValue(false);
         }
+      }
+      if (this.name) {
+        this.disableName = true;
       }
     });
   }

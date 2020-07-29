@@ -9,9 +9,10 @@
     <div>
       <form name="cdf" [formGroup]="featureFlagForm" class="form"  novalidate>
         <div class="form-group">
-          <label class="modal-label" for="name">Feature Flags Name (Required):</label>
+          <label class="modal-label">Feature Flags Name (Required):</label>
           <div class="col-xs-offset-3 col-xs-6">
-            <input id= "name" type="text" class= "form-control" placeholder="Feature Flags Name" aria-label="name" formControlName="name" required/>
+            <input type="text" *ngIf="this.disableName" class= "form-control" placeholder="Feature Flags Name" formControlName="name" disabled required/>
+            <input type="text" *ngIf="!this.disableName" class= "form-control" placeholder="Feature Flags Name" formControlName="name" required/>
           </div>
         </div>
         <div class="form-group">

@@ -14,6 +14,7 @@ export class CreateOrUpdateServiceAccountComponent implements OnInit {
 
   serviceAccountForm: FormGroup;
   id: string;
+  disableName = false;
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -28,6 +29,9 @@ export class CreateOrUpdateServiceAccountComponent implements OnInit {
       this.serviceAccountForm.get('serviceAccountName').setValue(this.serviceAccountName);
       this.serviceAccountForm.get('fileNames').setValue(this.fileNames);
     });
+    if (this.serviceAccountName) {
+      this.disableName = true;
+    }
   }
 
   private createForm() {
