@@ -37,7 +37,6 @@ export class UserDataService {
     return this.http.post(featureFlagAddUpdateRoute, json);
   }
 
-
   deleteFeatureFlags(id) {
     const featureFlagsDeleteRoute = this.adminRoute + '/deleteFeatureFlags/';
     return this.http.delete(featureFlagsDeleteRoute + id);
