@@ -15,6 +15,7 @@ import { NgModule } from '@angular/core';
 import {GeneralOrderByPipe} from '../../../../../shared/pipes/order-by.pipe';
 import {GeneralFilterPipe} from '../../../../../shared/pipes/filter.pipe';
 import {GeneralDeleteComponent} from '../../../../../shared/modals/general-delete-modal/general-delete-modal.component';
+import {NgxPaginationModule} from 'ngx-pagination';
 
 @NgModule({
   declarations: [GenerateApiTokensComponent, DashEditComponent, DashTrashComponent, GeneralFilterPipe,
@@ -22,7 +23,7 @@ import {GeneralDeleteComponent} from '../../../../../shared/modals/general-delet
     GenerateApiTokenModalComponent,
     GeneralDeleteComponent],
   providers: [UserDataService, NgbModal],
-  imports: [FormsModule, CommonModule, ReactiveFormsModule, NgbModule, HttpClientTestingModule],
+  imports: [FormsModule, CommonModule, ReactiveFormsModule, NgbModule, HttpClientTestingModule, NgxPaginationModule],
   entryComponents: [
     EditTokenModalComponent,
     GenerateApiTokenModalComponent,

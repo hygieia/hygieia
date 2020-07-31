@@ -15,6 +15,7 @@ export class GenerateApiTokensComponent implements OnInit {
   error: any = {};
   apitokens: any[] = [];
   tokenSearch = '';
+  p = 1;
   constructor(private userData: UserDataService, private modalService: NgbModal) { }
 
   ngOnInit() {

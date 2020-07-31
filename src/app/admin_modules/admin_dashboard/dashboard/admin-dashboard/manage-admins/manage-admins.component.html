@@ -16,7 +16,7 @@
               <input type="text" class="form-control" id="userSearch" placeholder="Filter Users"
                 [(ngModel)]="userSearch">
               <div class="dash-modal-row delete-dashboard-row clearfix"
-                *ngFor="let user of users | generalFilter:{username:userSearch, authorities:'!ROLE_ADMIN'} | generalOrderBy:'username'">
+                *ngFor="let user of users | generalFilter:{username:userSearch, authorities:'!ROLE_ADMIN'} | generalOrderBy:'username' | paginate: { itemsPerPage: 20, currentPage: p }">
                 <div class="btn-block">
                   <span class="badge badge-primary" [hidden]="!(user.authType === authType && user.username === username)">You</span>
                   {{user.username}}
@@ -28,6 +28,10 @@
                     </span>
                   </div>
                 </div>
+              </div>
+              <div class="card-footer pb-0 pt-3">
+                <pagination-controls totalItems=users.length previousLabel=""
+                                     nextLabel="" maxSize="4" (pageChange)="p = $event"></pagination-controls>
               </div>
             </div>
             <div class="col-push col-md-5">

@@ -12,13 +12,14 @@ import {GeneralDeleteComponent} from '../../../../../shared/modals/general-delet
 import {CreateOrUpdateApiPropertiesComponent} from '../modal/create-or-update-api-properties/create-or-update-api-properties.component';
 import {NgModule} from '@angular/core';
 import {NgbModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {NgxPaginationModule} from 'ngx-pagination';
 
 @NgModule({
   declarations: [PropertiesBuilderComponent, DashEditComponent, DashTrashComponent, GeneralFilterPipe,
     GeneralOrderByPipe, CreateOrUpdateApiPropertiesComponent,
     GeneralDeleteComponent],
   providers: [UserDataService, NgbModal],
-  imports: [FormsModule, CommonModule, ReactiveFormsModule, NgbModule, HttpClientTestingModule],
+  imports: [FormsModule, CommonModule, ReactiveFormsModule, NgbModule, HttpClientTestingModule, NgxPaginationModule],
   entryComponents: [
     PropertiesBuilderComponent,
     CreateOrUpdateApiPropertiesComponent,

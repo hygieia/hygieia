@@ -15,6 +15,7 @@ export class ManageAdminsComponent implements OnInit {
   userSearch = '';
   authType: any;
   username: any;
+  p = 1;
 
   constructor(private userData: UserDataService, private authService: AuthService) {
     this.authType = this.authService.getAuthType();

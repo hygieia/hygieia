@@ -101,6 +101,10 @@ button {
   background-color: lightgray;
 }
 
+.ngx-pagination a, .ngx-pagination button {
+  cursor: pointer;
+  color: lightgray !important;
+}
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

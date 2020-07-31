@@ -5,7 +5,7 @@
       <span class="col-xs-6"><button type="button" class="btn btn-primary btn-wide pull-right" (click)="addNewApiPropertiesBuilder()">New</button></span>
       <input type="text" class="form-control" id="apiPropertiesSearch" placeholder="Filter Api Properties"
              [(ngModel)]="apiPropertiesSearch">
-      <div class="dash-modal-row delete-dashboard-row clearfix" style="font-size: 20px;" *ngFor="let apiProperty of this.apiProperties | generalFilter:{name:apiPropertiesSearch} | generalOrderBy:'name'">
+      <div class="dash-modal-row delete-dashboard-row clearfix" style="font-size: 20px;" *ngFor="let apiProperty of this.apiProperties | generalFilter:{name:apiPropertiesSearch} | generalOrderBy:'name' |  paginate: { itemsPerPage: 10, currentPage: p }">
         <div>
           <div ng-hide="!ctrl.apiProperties">
             <a  (click)="deleteProperties(apiProperty?.id)">
@@ -21,6 +21,10 @@
             </div>
           </div>
         </div>
+      </div>
+      <div class="card-footer pb-0 pt-3">
+        <pagination-controls totalItems=this.apiProperties.length previousLabel=""
+                             nextLabel="" maxSize="4" (pageChange)="p = $event"></pagination-controls>
       </div>
     </div>
   </div>
