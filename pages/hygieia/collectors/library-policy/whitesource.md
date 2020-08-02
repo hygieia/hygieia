@@ -87,22 +87,22 @@ The sample `application.properties` file lists parameters with sample values to 
 		# WhiteSource userKey - provided for read access
 		whitesource.userKey=
 		
-    # WhiteSource orgToken - Organization token to identify an organization in whitesource - Can provide multiple
+	    	# WhiteSource orgToken - Organization token to identify an organization in whitesource - Can provide multiple
 		whitesource.orgToken[0]=
-    
-    # WhiteSource sleeTime - can manual inject thread sleep-time between transations to whitesource apis
-    whitesource.sleepTime=150              
-    
-    # WhiteSource requestRateLimit - threshold for rate-limit 
-    whitesource.requestRateLimit=3            
-    
-    # WhiteSource requestRateLimitTimeWindow
-    whitesource.requestRateLimitTimeWindow=1000
-    
-    # WhiteSource errorResetWindow
-    whitesource.errorResetWindow = 36000
-    
-    # WhiteSource highLicensePolicyTypes - transalation of license violations to HIGH severity (Enterprise specific) - can be multiple
-    whitesource.highLicensePolicyTypes[0]=
+
+	    	# WhiteSource sleeTime - can manual inject thread sleep-time between transations to whitesource apis
+	    	whitesource.sleepTime=150              
+
+	    	# WhiteSource requestRateLimit - threshold for rate-limit 
+	    	whitesource.requestRateLimit=3            
+
+	    	# WhiteSource requestRateLimitTimeWindow
+	    	whitesource.requestRateLimitTimeWindow=1000
+
+	    	# WhiteSource errorResetWindow
+	    	whitesource.errorResetWindow = 36000
+
+	    	# WhiteSource highLicensePolicyTypes - transalation of license violations to HIGH severity (Enterprise specific) - can be multiple
+	    	whitesource.highLicensePolicyTypes[0]=
     
 ```		
