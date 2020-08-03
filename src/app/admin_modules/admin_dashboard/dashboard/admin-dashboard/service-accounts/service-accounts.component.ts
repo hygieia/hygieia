@@ -17,6 +17,7 @@ export class ServiceAccountsComponent implements OnInit {
   serviceAccountSearch = '';
   serviceAccountName: string;
   fileNames: string;
+  p = 1;
   constructor(private userData: UserDataService, private modalService: NgbModal) { }
 
   ngOnInit() {

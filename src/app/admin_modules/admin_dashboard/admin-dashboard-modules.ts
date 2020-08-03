@@ -60,7 +60,7 @@ import {CreateOrUpdateApiPropertiesComponent} from './dashboard/admin-dashboard/
     HttpClientModule,
     NgbModule,
     ReactiveFormsModule,
-    SharedModule
+    SharedModule,
   ],
   entryComponents: [
     CreateOrUpdateFeatureFlagsComponent,

@@ -15,6 +15,7 @@ export class PropertiesBuilderComponent implements OnInit {
   apiProperties: any;
   apiPropertiesSearch = '';
   name: string;
+  p = 1;
 
   constructor(private userData: UserDataService, private modalService: NgbModal) {
   }

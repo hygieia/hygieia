@@ -70,6 +70,7 @@ import {GeneralOrderByPipe} from './pipes/order-by.pipe';
 import {UserDataService} from '../admin_modules/admin_dashboard/services/user-data.service';
 import {TabsFixturesModule} from './ngx-ui/tabs/fixtures/tabs-fixtures.module';
 import {GeneralDeleteComponent} from './modals/general-delete-modal/general-delete-modal.component';
+import {NgxPaginationModule} from 'ngx-pagination';
 
 @NgModule({
   declarations: [
@@ -174,6 +175,7 @@ import {GeneralDeleteComponent} from './modals/general-delete-modal/general-dele
         NbTabsetModule,
         NbIconModule,
         TabsFixturesModule,
+    NgxPaginationModule
     ],
   exports: [
     BarHorizontalComponent,
@@ -208,7 +210,8 @@ import {GeneralDeleteComponent} from './modals/general-delete-modal/general-dele
     DashTrashComponent,
     DashEditComponent,
     GeneralFilterPipe,
-    GeneralOrderByPipe
+    GeneralOrderByPipe,
+    NgxPaginationModule
   ],
   providers: [
     UserDataService,

@@ -13,6 +13,7 @@ import {CreateOrUpdateServiceAccountComponent} from '../modal/create-or-update-s
 import {GeneralFilterPipe} from '../../../../../shared/pipes/filter.pipe';
 import {GeneralOrderByPipe} from '../../../../../shared/pipes/order-by.pipe';
 import {GeneralDeleteComponent} from '../../../../../shared/modals/general-delete-modal/general-delete-modal.component';
+import {NgxPaginationModule} from 'ngx-pagination';
 
 /*@NgModule({
   declarations: [ServiceAccountsComponent, DashEditComponent, DashTrashComponent, GeneralFilterPipe,
@@ -47,7 +48,7 @@ describe('ServiceAccountsComponent', () => {
         GeneralOrderByPipe,
         GeneralDeleteComponent],
       providers: [UserDataService, FormBuilder, NgbActiveModal],
-      imports: [FormsModule, NgbModule, CommonModule, ReactiveFormsModule, HttpClientTestingModule]
+      imports: [FormsModule, NgbModule, CommonModule, ReactiveFormsModule, HttpClientTestingModule, NgxPaginationModule]
     })
       .compileComponents();
 

@@ -17,6 +17,7 @@ export class FeatureFlagsComponent implements OnInit {
   id: string;
   name: string;
   description: string;
+  p = 1;
   flags: {
     artifact: boolean;
     libraryPolicy: boolean;

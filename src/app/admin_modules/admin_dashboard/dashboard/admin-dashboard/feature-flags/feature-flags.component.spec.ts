@@ -11,6 +11,7 @@ import {CreateOrUpdateFeatureFlagsComponent} from '../modal/create-or-update-fea
 import {GeneralDeleteComponent} from '../../../../../shared/modals/general-delete-modal/general-delete-modal.component';
 import {GeneralFilterPipe} from '../../../../../shared/pipes/filter.pipe';
 import {GeneralOrderByPipe} from '../../../../../shared/pipes/order-by.pipe';
+import {NgxPaginationModule} from 'ngx-pagination';
 
 /*@NgModule({
   declarations: [FeatureFlagsComponent, DashEditComponent, DashTrashComponent, AdminDeleteComponent],
@@ -47,7 +48,7 @@ describe('FeatureFlagsComponent', () => {
       declarations: [ FeatureFlagsComponent, DashTrashComponent, DashEditComponent, CreateOrUpdateFeatureFlagsComponent,
         GeneralFilterPipe, GeneralOrderByPipe, GeneralDeleteComponent],
       providers: [UserDataService, FormBuilder, NgbActiveModal],
-      imports: [ReactiveFormsModule, NgbModule, FormsModule, CommonModule, HttpClientTestingModule]
+      imports: [ReactiveFormsModule, NgbModule, FormsModule, CommonModule, HttpClientTestingModule, NgxPaginationModule]
     })
       .compileComponents();
   }));

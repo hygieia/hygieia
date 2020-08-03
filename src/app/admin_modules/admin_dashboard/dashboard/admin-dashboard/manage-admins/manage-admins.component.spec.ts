@@ -6,6 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import {GeneralFilterPipe} from '../../../../../shared/pipes/filter.pipe';
 import {GeneralOrderByPipe} from '../../../../../shared/pipes/order-by.pipe';
+import {NgxPaginationModule} from 'ngx-pagination';
 
 describe('ManageAdminsComponent', () => {
   let component: ManageAdminsComponent;
@@ -15,7 +16,7 @@ describe('ManageAdminsComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ManageAdminsComponent, GeneralFilterPipe, GeneralOrderByPipe],
       providers: [UserDataService],
-      imports: [FormsModule, CommonModule, ReactiveFormsModule, HttpClientTestingModule]
+      imports: [FormsModule, CommonModule, ReactiveFormsModule, HttpClientTestingModule, NgxPaginationModule]
     })
       .compileComponents();
   }));
