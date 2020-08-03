@@ -1,7 +1,9 @@
 <div>
   <div class="widget-modal">
-    <div class="widget-modal-heading">Api Properties Builder</div>
-    <div class = "table-content">
+    <div class="panel-heading pointerCursor">
+      <h3 class="panel-title" (click)="panelExpanded = !panelExpanded">Api Properties Builder <i class="fa fa-caret-down"></i></h3>
+    </div>
+    <div class = "table-content" *ngIf="panelExpanded">
       <span class="col-xs-6"><button type="button" class="btn btn-primary btn-wide pull-right" (click)="addNewApiPropertiesBuilder()">New</button></span>
       <input type="text" class="form-control" id="apiPropertiesSearch" placeholder="Filter Api Properties"
              [(ngModel)]="apiPropertiesSearch">

@@ -16,6 +16,7 @@ export class PropertiesBuilderComponent implements OnInit {
   apiPropertiesSearch = '';
   name: string;
   p = 1;
+  panelExpanded = false;
 
   constructor(private userData: UserDataService, private modalService: NgbModal) {
   }
