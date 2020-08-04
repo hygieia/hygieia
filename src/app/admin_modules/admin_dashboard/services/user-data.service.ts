@@ -82,7 +82,7 @@ export class UserDataService {
     return this.http.post(route, user);
   }
 
-  createOrUpdateApiPropertiesBuilder(collector) {
+  createOrUpdatePropertiesBuilder(collector) {
     const apiPropertiesAddUpdateRoute = this.collectorRoute + '/addOrUpdateCollector/' + collector.name +
       '/' + collector.collectorType;
     return this.http.post(apiPropertiesAddUpdateRoute, (collector.properties));
@@ -93,7 +93,7 @@ export class UserDataService {
     return this.http.delete(propertiesDeleteRoute + id);
   }
 
-  getApiPropertiesBuilderData(type) {
+  getPropertiesBuilderData(type) {
     const propertiesBuilderRoute = this.collectorRoute + '/type/' + type;
     return this.http.get(propertiesBuilderRoute);
   }

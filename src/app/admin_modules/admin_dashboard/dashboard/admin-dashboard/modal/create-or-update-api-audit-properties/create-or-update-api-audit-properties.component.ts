@@ -4,15 +4,15 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { UserDataService } from 'src/app/admin_modules/admin_dashboard/services/user-data.service';
 
 @Component({
-  selector: 'app-create-or-update-api-properties',
-  templateUrl: './create-or-update-api-properties.component.html',
-  styleUrls: ['./create-or-update-api-properties.component.scss']
+  selector: 'app-create-or-update-api-audit-properties',
+  templateUrl: './create-or-update-api-audit-properties.component.html',
+  styleUrls: ['./create-or-update-api-audit-properties.component.scss']
 })
-export class CreateOrUpdateApiPropertiesComponent implements OnInit {
+export class CreateOrUpdateApiAuditPropertiesComponent implements OnInit {
   @Input() public name: string;
   @Input() public properties: {};
   propertiesJSON = '';
-  apiPropertiesForm: FormGroup;
+  apiAuditPropertiesForm: FormGroup;
   id: string;
   disableName = false;
 
@@ -26,8 +26,8 @@ export class CreateOrUpdateApiPropertiesComponent implements OnInit {
 
   ngOnInit() {
     setTimeout(() => {
-      this.apiPropertiesForm.get('name').setValue(this.name);
-      this.apiPropertiesForm.get('properties').setValue(this.properties);
+      this.apiAuditPropertiesForm.get('name').setValue(this.name);
+      this.apiAuditPropertiesForm.get('properties').setValue(this.properties);
       this.propertiesJSON = JSON.stringify(this.properties);
       if (this.name) {
         this.disableName = true;
@@ -36,7 +36,7 @@ export class CreateOrUpdateApiPropertiesComponent implements OnInit {
   }
 
   private createForm() {
-    this.apiPropertiesForm = this.formBuilder.group({
+    this.apiAuditPropertiesForm = this.formBuilder.group({
       name: '',
       properties: ''
     });
@@ -49,9 +49,9 @@ export class CreateOrUpdateApiPropertiesComponent implements OnInit {
       try {
         collector = {
           id: this.id,
-          name: this.apiPropertiesForm.get('name').value,
-          collectorType: 'Api',
-          properties: JSON.parse(this.apiPropertiesForm.get('properties').value),
+          name: this.apiAuditPropertiesForm.get('name').value,
+          collectorType: 'ApiAudit',
+          properties: JSON.parse(this.apiAuditPropertiesForm.get('properties').value),
         };
       } catch (e) {
       }
@@ -59,9 +59,9 @@ export class CreateOrUpdateApiPropertiesComponent implements OnInit {
       // Post
       try {
         collector = {
-          name: this.apiPropertiesForm.get('name').value,
-          collectorType: 'Api',
-          properties: JSON.parse(this.apiPropertiesForm.get('properties').value),
+          name: this.apiAuditPropertiesForm.get('name').value,
+          collectorType: 'ApiAudit',
+          properties: JSON.parse(this.apiAuditPropertiesForm.get('properties').value),
         };
       } catch (e) {
       }

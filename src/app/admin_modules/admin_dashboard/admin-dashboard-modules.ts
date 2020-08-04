@@ -28,6 +28,8 @@ import { AuthInterceptor } from 'src/app/core/interceptors/auth.interceptor';
 import {PropertiesBuilderComponent} from './dashboard/admin-dashboard/properties-builder/properties-builder.component';
 // tslint:disable-next-line:max-line-length
 import {CreateOrUpdateApiPropertiesComponent} from './dashboard/admin-dashboard/modal/create-or-update-api-properties/create-or-update-api-properties.component';
+// tslint:disable-next-line:max-line-length
+import {CreateOrUpdateApiAuditPropertiesComponent} from './dashboard/admin-dashboard/modal/create-or-update-api-audit-properties/create-or-update-api-audit-properties.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +44,8 @@ import {CreateOrUpdateApiPropertiesComponent} from './dashboard/admin-dashboard/
     ServiceAccountsComponent,
     EditDashboardComponent,
     PropertiesBuilderComponent,
-    CreateOrUpdateApiPropertiesComponent
+    CreateOrUpdateApiPropertiesComponent,
+    CreateOrUpdateApiAuditPropertiesComponent
   ],
 
   providers: [UserDataService, DashboardDataService, PaginationWrapperService, AdminDashboardService,
@@ -67,7 +70,8 @@ import {CreateOrUpdateApiPropertiesComponent} from './dashboard/admin-dashboard/
     CreateOrUpdateServiceAccountComponent,
     EditTokenModalComponent,
     GenerateApiTokenModalComponent,
-    CreateOrUpdateApiPropertiesComponent
+    CreateOrUpdateApiPropertiesComponent,
+    CreateOrUpdateApiAuditPropertiesComponent
   ],
 })
 
