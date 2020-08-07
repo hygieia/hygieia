@@ -80,11 +80,11 @@ h3 {
     }
 
     .custom-tabs>li.active>a, .custom-tabs>li.active>a:focus, .custom-tabs>li.active>a:hover {
-        color: #666;
-        background-color: transparent;
-        border: 1px solid #ddd;
-        border-bottom-color: transparent;
-        cursor: default;
+      color: black;
+      font-weight: bold;
+      background-color: transparent;
+      border: 1px solid dimgrey;
+      cursor: default;
     }
 
     .nav-tabs>li>a {
@@ -95,7 +95,8 @@ h3 {
     }
 
     .nav>li>a {
-        padding: 10px 15px;
+      color: black;
+      padding: 10px 15px;
     }
 
     .nav>li, .nav>li>a {

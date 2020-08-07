@@ -215,7 +215,7 @@ export class EditDashboardModalComponent implements OnInit {
         }
     }
 
-    submit(form) {
+    submit() {
         if (this.cdfForm.valid) {
             this.isSubmit = true;
             this.renameSubmit()
@@ -236,7 +236,7 @@ export class EditDashboardModalComponent implements OnInit {
                 return response;
             }));
     }
-    ownerFormSubmit(form) {
+    ownerFormSubmit() {
         this.ownerSubmit()
             .subscribe(() => {
                 this.activeModal.dismiss();
