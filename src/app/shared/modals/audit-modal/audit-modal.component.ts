@@ -22,6 +22,6 @@ export class AuditModalComponent implements OnInit {
   }
 
   toDate(timestamp: number) {
-    return new Date(timestamp).toDateString();
+    return new Date(timestamp);
   }
 }

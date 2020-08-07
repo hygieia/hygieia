@@ -17,7 +17,7 @@ describe('DashboardService', () => {
   it('should load a dashboard by id',
     inject([HttpTestingController, DashboardService],
       (httpMock: HttpTestingController, service: DashboardService) => {
-        service.loadDashboard('123');
+        service.getDashboard('123').subscribe(res => service.dashboardSubject.next(res));
         service.dashboardConfig$.subscribe(dashboard => {
           expect(dashboard).toBeTruthy();
         });
@@ -54,7 +54,7 @@ describe('DashboardService', () => {
     inject([HttpTestingController, DashboardService],
       (httpMock: HttpTestingController, service: DashboardService) => {
         // Load initial dashboard
-        service.loadDashboard('123');
+        service.getDashboard('123').subscribe(res => service.dashboardSubject.next(res));
         service.dashboardConfig$.subscribe(dashboard => {
           expect(dashboard).toBeTruthy();
         });

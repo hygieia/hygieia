@@ -13,6 +13,7 @@ import { TemplatesDirective } from 'src/app/shared/templates/templates.directive
 import { CaponeTemplateComponent } from '../capone-template/capone-template.component';
 import { widgetsAll } from './dashboard-view';
 import {IWidget} from '../../../shared/interfaces';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Component({
   selector: 'app-dashboard-view',
@@ -37,8 +38,17 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
   ngOnInit() {
     this.dashboardService.clearDashboard();
     this.dashboardId = this.route.snapshot.paramMap.get('id');
-    this.dashboardService.loadDashboard(this.dashboardId);
+    this.loadDashboard(this.dashboardId);
     this.baseTemplate = CaponeTemplateComponent;
+  }
+
+  private loadDashboard(dashboardId: string) {
+    this.dashboardService.getDashboard(dashboardId)
+      .subscribe(res => {
+        this.dashboardService.dashboardSubject.next(res);
+        this.dashboardService.loadDashboardAudits();
+        this.dashboardService.subscribeDashboardRefresh();
+      }, err => this.handleError(err));
   }
 
   ngAfterViewInit() {
@@ -70,5 +80,11 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
 
   openCollectorViewer() {
     this.router.navigate(['/collectorItem', {title : this.dashboardTitle.split('-')[0].trim()}]);
+  }
+
+  private handleError(err: HttpErrorResponse) {
+    if (err.status === 401) {
+      this.router.navigate(['/user/login']);
+    }
   }
 }

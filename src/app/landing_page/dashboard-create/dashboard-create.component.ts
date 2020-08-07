@@ -44,20 +44,23 @@ export class DashboardCreateComponent implements OnInit {
   next: any;
   createErrorMsg: string;
   dType = 'Team';
-  dLayout = 'Widgets';
+  dLayout = 'Templates';
   widgetNames: Array<string> = ['feature', 'build', 'repo', 'codeanalysis', 'deploy'];
   templateNames: Array<string> = ['CapOne'];
   widgets: Widget[] = [];
   templates: DTemplate[] = [];
   isAnySelected: boolean;
-  typeAheadCmdbs: (text$: Observable<string>) => Observable<any>;
+  typeAheadBAItems: (text$: Observable<string>) => Observable<any>;
+  typeAheadBCItems: (text$: Observable<string>) => Observable<any>;
 
   isValidTitle = (title: string) => (title && title.trim().length >= 6);
   isValidAppName = (appName: string) => (appName && appName.trim().length >= 6);
   isValidType = (dType: any) => dType;
   isValidTemplate = (template: any) => template;
-  getBusService = (cmdb: any) => cmdb ? cmdb.commonName as string : '';
-  getBusApp = (cmdb: any) => cmdb ? cmdb.configurationItem as string : '';
+  getBusService = (cmdb: any) => cmdb ? cmdb.configurationItem + ' : ' + cmdb.commonName as string : '';
+  getBusServiceInput = (cmdb: any) => cmdb ? cmdb.configurationItem as string : '';
+  getBusApp = (cmdb: any) => cmdb ? cmdb.configurationItem + ' : ' + cmdb.commonName as string : '';
+  getBusAppInput = (cmdb: any) => cmdb ? cmdb.configurationItem as string : '';
 
   ngOnInit() {
     this.widgetNames.forEach(name => this.widgets.push(new Widget(name, false)));
@@ -97,10 +100,10 @@ export class DashboardCreateComponent implements OnInit {
     if (this.dLayout === 'Widgets') {
       return this.getSelectedWidgets();
     }
-    if (this.dLayout === 'Template') {
+    if (this.dLayout === 'Templates') {
       return this.getSelectedTemplate();
     }
-    return [''];
+    return [];
   }
 
   private getSelectedWidgets(): string[] {
@@ -134,28 +137,32 @@ export class DashboardCreateComponent implements OnInit {
     this.isAnySelected = dItems.find(dItem => dItem.status === true);
   }
 
-  private lookUpBusinessItems() {
-    this.typeAheadCmdbs = (text$: Observable<string>) =>
-      text$.pipe(
-        debounceTime(100),
-        distinctUntilChanged(),
-        tap(() => this.searching = true),
-        switchMap(term =>
-          this.cmdbService.getConfigItems('app', { search: term, size: 10 }).pipe(
-            tap(() => this.searchFailed = false),
-            catchError(() => {
-              this.searchFailed = true;
-              return of([]);
-            }))
-        ),
-        tap(() => this.searching = false)
-      );
-  }
-
   clear() {
     this.isAnySelected = false;
     this.createErrorMsg = '';
     this.widgets.forEach(widget => widget.status = false);
     this.templates.forEach(template => template.status = false);
+  }
+
+  private lookUpBusinessItems() {
+    this.typeAheadBAItems = (text$: Observable<string>) => this.getConfigItems(text$, 'app');
+    this.typeAheadBCItems = (text$: Observable<string>) => this.getConfigItems(text$, 'component');
+  }
+
+  private getConfigItems(text$: Observable<string>, itemType: string): Observable<any> {
+    return text$.pipe(
+        debounceTime(100),
+        distinctUntilChanged(),
+        tap(() => this.searching = true),
+        switchMap(term =>
+            this.cmdbService.getConfigItems(itemType, { search: term, size: 10 }).pipe(
+                tap(() => this.searchFailed = false),
+                catchError(() => {
+                  this.searchFailed = true;
+                  return of([]);
+                }))
+        ),
+        tap(() => this.searching = false)
+    );
   }
 }

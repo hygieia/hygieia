@@ -8,14 +8,13 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 })
 export class GeneralDeleteComponent implements OnInit {
 
-  @Input() public title = 'Delete Modal';
-  public confirm = 'Confirm';
-  // public cancel = 'Cancel';
-  public message = 'This item will be deleted immediately.  You cannot undo this action.';
+  @Input() public title;
+  public message;
+  public messageSubtext = 'This item will be deleted immediately, cannot undo the action';
   constructor(public activeModal: NgbActiveModal) { }
 
-
   ngOnInit() {
+    this.message = `Are you sure you want to delete this item : ${this.title} ?`;
   }
 
 }

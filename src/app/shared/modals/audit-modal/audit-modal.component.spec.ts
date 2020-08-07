@@ -26,6 +26,6 @@ describe('AuditModalComponent', () => {
   });
 
   it('should get valid date', () => {
-    expect(component.toDate(1590760603000) === 'Fri May 29 2020');
+    expect(component.toDate(1590760603000).toDateString().includes('Fri May 29 2020'));
   });
 });

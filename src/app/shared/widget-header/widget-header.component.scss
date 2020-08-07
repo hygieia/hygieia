@@ -23,8 +23,6 @@
 
   // heading in a widget
   .widget-heading {
-    //border-bottom: 1px solid $dash-widget-heading-border;
-    //color: $dash-widget-heading-text;
     letter-spacing: .1em;
     padding-bottom: .5em;
     margin-bottom: 1em;
@@ -83,8 +81,6 @@
     }
   }
 
-  // sections of widgets should have the same widget markup
-  // but may be styled slightly differently
   .widget-body .widget {
     padding: 0;
 
@@ -95,7 +91,6 @@
     }
   }
 
-  // when widget hasn't yet been configured
   .widget-body-config {
     background: $dash-widget-section-highlight;
     border: .2em $dash-state-config-text;
@@ -126,7 +121,6 @@
     }
   }
 
-  // changes when not yet configured
   &.configure {
     .widget-settings-icon {
       display: none;
@@ -150,15 +144,4 @@
       }
     }
   }
-
-  // // styles when in an alert state
-  // &.alert {
-  //     #gradient > @include vertical(lighten($dash-widget-alert-bg, 10%), darken($dash-widget-alert-bg, 10%));
-  //     color: $dash-widget-alert-text;
-
-  //     .widget-heading {
-  //         border-bottom-color: $dash-widget-alert-heading-border;
-  //         color: $dash-widget-alert-text;
-  //     }
-  // }
 }

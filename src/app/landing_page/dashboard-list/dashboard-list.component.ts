@@ -121,7 +121,7 @@ export class DashboardListComponent implements OnInit {
     $event.stopPropagation();
     const modalRef = this.modalService.open(GeneralDeleteComponent);
     const dashName = this.dashboardName(dashboard);
-    modalRef.componentInstance.title = `Are you sure you want to delete ${dashName}?`;
+    modalRef.componentInstance.title = dashName;
     modalRef.result.then((newConfig) => {
       this.dashboardData.deleteDashboard(dashboard.id).subscribe(response => {
         this.loadDash();
