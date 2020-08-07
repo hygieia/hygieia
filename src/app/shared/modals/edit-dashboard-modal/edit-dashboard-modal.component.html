@@ -1,7 +1,7 @@
 <div>
     <div class="modal-content ">
         <div class="modal-header">
-            <h4 class="modal-title ">Administer Your Dashboard</h4>
+            <h4 class="modal-title ">Edit Dashboard</h4>
             <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
                 <span aria-hidden="true">&times;</span>
             </button>
@@ -20,7 +20,7 @@
                         <div class="help-block text-danger" [hidden]="!error">
                             {{error}}
                         </div>
-                        <div class="row ">
+                        <div class="row">
                             <div class="col-md-12 col-padding">
                                 <label class="modal-label">Dashboard Title</label>
                                 <input type="text" name="dashboardTitle" class="form-control"

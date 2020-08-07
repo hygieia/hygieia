@@ -6,9 +6,11 @@
     </button>
   </div>
   <div class="modal-body">
-    <pre>{{getJsonHtml(collectorDetails)}}</pre>
+    <pre style="border-style: inset">{{getJsonHtml(collectorDetails)}}</pre>
   </div>
   <div class="modal-footer">
-    <button type="button" (click)="activeModal.close('Close click')">Close</button>
+    <div class="col text-center">
+      <button class="btn btn-primary" type="button" (click)="activeModal.close('Close click')">Close</button>
+    </div>
   </div>
 </div>

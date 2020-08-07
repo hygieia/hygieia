@@ -23,4 +23,8 @@ export class OSSDetailComponent implements OnInit {
   set detailData(data: any) {
     this.data = data;
   }
+
+  toDate(lastUpdated: number) {
+    return new Date(lastUpdated).toDateString();
+  }
 }

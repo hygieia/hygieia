@@ -124,7 +124,7 @@ export class DeployWidgetComponent extends WidgetComponent implements OnInit {
     this.charts[0].data = {
       items: latestDeployData,
       clickableContent: DeployDetailComponent,
-      clickableHeader: null
+      clickableHeader: DeployDetailComponent,
     } as IClickListData;
   }
 

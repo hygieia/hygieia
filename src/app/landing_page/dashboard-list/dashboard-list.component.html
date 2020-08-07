@@ -12,9 +12,14 @@
     <div class="row justify-content-md-center">
       <div class="col-8">
         <div class="col">
-          <div class="col">
-            <input nbInput type="search" id="dSearch" name="dSearch" placeholder="Search dashboard by title or application component name" shape="round" fieldSize="large"
-                   fullWidth [formControl]="queryField">
+          <div class="row">
+            <div class="col">
+              <input nbInput type="search" id="dSearch" name="dSearch" placeholder="Search dashboard by title or application component name" shape="round" fieldSize="large"
+                     fullWidth [formControl]="queryField">
+            </div>
+            <div class="col-2" *ngIf="myDashboards" style="padding-left: 0">
+              <button style="line-height: 2" class="btn btn-outline-secondary badge-pill" (click)="createDashboard()"><nb-icon size="large" icon="plus-circle"></nb-icon> New Dashboard</button>
+            </div>
           </div>
           <div class="col">
             <nb-tabset fullWidth (changeTab)="tabChange($event)">
@@ -54,8 +59,7 @@
               <div>
                 <nb-card size="giant">
                   <nb-card-header>
-                    <h4> My {{ dashboardType }} Dashboards
-                      <button id="bCreate" nbButton outline shape="round" size="small" (click)="createDashboard()"><nb-icon size="large" icon="plus-circle"></nb-icon>Create</button></h4>
+                    <h4> My {{ dashboardType }} Dashboards</h4>
                     <ng-template></ng-template>
                   </nb-card-header>
                   <nb-list>

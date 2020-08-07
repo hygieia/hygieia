@@ -5,9 +5,10 @@
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-  <div class="modal-body">
-    <table class="table table-sm table-striped" *ngFor="let auditResult of auditResultsArr">
-      <tbody>
+  <div class="modal-body ml-2">
+    <div class="table-responsive" *ngIf="auditResultsArr && auditResultsArr.length > 0">
+      <table class="table table-sm" *ngFor="let auditResult of auditResultsArr">
+        <tbody>
         <tr>
           <th class="col-form-label">Type</th>
           <td>{{auditResult?.auditType}}</td>
@@ -18,7 +19,7 @@
         </tr>
         <tr>
           <th class="col-form-label">Reason</th>
-          <td style="overflow-wrap: break-word; max-width: 5rem">{{auditResult?.auditDetails}}</td>
+          <td style="word-break: break-all">{{auditResult?.auditDetails}}</td>
         </tr>
         <tr>
           <th class="col-form-label">Last Audited</th>
@@ -28,7 +29,8 @@
           <th class="col-form-label">Url</th>
           <td><a href="{{auditResult?.url}}" target="_blank">{{auditResult?.url}}</a></td>
         </tr>
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>

@@ -18,7 +18,7 @@ export class DashboardService {
 
   private dashboardCountRoute = '/api/dashboard/count/';
 
-  private dashboardSubject = new ReplaySubject<any>(1);
+  dashboardSubject = new ReplaySubject<any>(1);
 
   private dashboardAuditSubject = new ReplaySubject<any>(1);
 
@@ -46,13 +46,19 @@ export class DashboardService {
 
   constructor(private http: HttpClient) { }
 
-  // Retrieve a new dashboard from the API, and push it to subscribers
-  loadDashboard(dashboardId: string) {
+  // Get dashboard by id
+  getDashboard(dashboardId: string): Observable<any> {
     this.dashboardId = dashboardId;
-    this.http.get(this.dashboardRoute + dashboardId).subscribe(res => this.dashboardSubject.next(res));
+    return this.http.get(this.dashboardRoute + dashboardId);
+  }
+
+  loadDashboardAudits() {
     this.dashboardConfig$.pipe(map(dashboard => dashboard)).subscribe(dashboard => {
       this.http.get<IAuditResult[]>(this.dashboardAuditRoute + dashboard.title).subscribe(res => this.dashboardAuditSubject.next(res));
     });
+  }
+
+  subscribeDashboardRefresh() {
     this.dashboardRefreshSubscription = interval(1000 * this.REFRESH_INTERVAL_SECONDS).pipe(
       startWith(-1)).subscribe(res => this.dashboardRefreshSubject.next(res));
   }

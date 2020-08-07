@@ -11,6 +11,7 @@ export class DetailModalComponent implements OnInit {
   @Input() detailView: Type<any>;
   @ViewChild(DetailModalDirective, {static: true}) modalTypeTag: DetailModalDirective;
   public detailData: any;
+  @Input() title: any;
 
   constructor(
     public activeModal: NgbActiveModal,
