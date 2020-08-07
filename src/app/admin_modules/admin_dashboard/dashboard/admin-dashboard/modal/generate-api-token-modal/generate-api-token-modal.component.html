@@ -9,7 +9,7 @@
         <div class="token-from">
             <form name="cdf" [formGroup]="apiForm" class="form" novalidate>
                 <div class="form-group">
-                    <label class="modal-label">Api User</label>
+                    <label class="col-form-label">Api User</label>
                     <div class="input-group">
                         <input type="text" formControlName="apiUser" name="apiUser" class="form-control"
                             placeholder="Api User" autocomplete="off"
@@ -30,7 +30,7 @@
                     </div>
 
                     <br>
-                    <label class="modal-label" id="dtLabel">Expiration Date</label>
+                    <label class="col-form-label" id="dtLabel">Expiration Date</label>
 
                     <div class="input-group">
                         <input type="text" name="expDt" placeholder="yyyy-mm-dd" #d="ngbDatepicker" ngbDatepicker
@@ -41,7 +41,7 @@
                         </div>
                     </div>
                     <br />
-                    <label class="modal-label">Api Key</label>
+                    <label class="col-form-label">Api Key</label>
                     <div class="input-group">
                         <input type="text" name="apiKey" class="form-control"
                             placeholder="Api Key will only be visible till this dialog box is open"
@@ -55,7 +55,10 @@
             </form>
         </div>
         <div class="modal-footer text-center">
-            <button type="button" class="btn btn-primary btn-wide" (click)="submit()">Create</button>
+          <div class="col text-center">
+            <button class="btn btn-outline-secondary mr-2" type="button" (click)="activeModal.dismiss()">Cancel</button>
+            <button class="btn btn-primary" type="button" class="btn btn-primary btn-wide" (click)="submit()">Create</button>
+          </div>
         </div>
     </div>
 </div>

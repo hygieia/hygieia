@@ -42,7 +42,7 @@ export class GenerateApiTokensComponent implements OnInit {
 
   deleteToken(apiToken) {
     const modalRef = this.modalService.open(GeneralDeleteComponent);
-    modalRef.componentInstance.title = `Are you sure you want to delete ${apiToken.apiUser}?`;
+    modalRef.componentInstance.title = apiToken.apiUser;
     modalRef.result.then((newConfig) => {
       this.userData.deleteToken(apiToken.id).subscribe(response => {
         this.loadApiToken();

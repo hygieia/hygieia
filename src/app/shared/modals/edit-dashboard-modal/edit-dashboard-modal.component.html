@@ -16,7 +16,7 @@
                 </ul>
 
                 <div class="container-fluid" *ngIf="tabView == 'Dashboard Title'">
-                    <form name="cdf" [formGroup]="cdfForm" (submit)="submit(cdf)" novalidate>
+                    <form name="cdf" [formGroup]="cdfForm" (submit)="submit()" novalidate>
                         <div class="help-block text-danger" [hidden]="!error">
                             {{error}}
                         </div>
@@ -84,7 +84,7 @@
                     <div class="row">
                         <div class="col-md-12 col-padding">
                             <label class="modal-label">Add/Remove Owners</label>
-                            <form name="ownerForm" class="form" (submit)="ownerFormSubmit(ownerForm)" novalidate>
+                            <form name="ownerForm" class="form" (submit)="ownerFormSubmit()" novalidate>
                                 <div class="widget-modal-body" style="height: 300px;overflow: auto;">
                                     <div class="row">
                                         <div class="col-md-12">
@@ -209,8 +209,11 @@
                 </div>
             </div>
         </div>
-        <div class="modal-footer text-center">
+        <div class="modal-footer">
+          <div class="col text-center">
+            <button type="button" class="btn btn-outline-secondary mr-2" (click)="activeModal.dismiss()">Cancel</button>
             <button type="button" class="btn btn-primary btn-wide" (click)="saveForm()">Save</button>
+          </div>
         </div>
     </div>
 </div>

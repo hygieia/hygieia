@@ -198,13 +198,13 @@ export class EditDashboardModalComponent implements OnInit {
     saveForm() {
         switch (this.tabView) {
             case 'Dashboard Title':
-                this.submit('');
+                this.submit();
                 break;
             case 'Business Service/ Application':
                 this.submitBusServOrApp('');
                 break;
             case 'Owner Information':
-                this.ownerFormSubmit('');
+                this.ownerFormSubmit();
                 break;
             case 'Widget Management':
                 this.saveWidgets('');
@@ -215,7 +215,7 @@ export class EditDashboardModalComponent implements OnInit {
         }
     }
 
-    submit(form) {
+    submit() {
         if (this.cdfForm.valid) {
             this.isSubmit = true;
             this.renameSubmit()
@@ -236,7 +236,7 @@ export class EditDashboardModalComponent implements OnInit {
                 return response;
             }));
     }
-    ownerFormSubmit(form) {
+    ownerFormSubmit() {
         this.ownerSubmit()
             .subscribe(() => {
                 this.activeModal.dismiss();
