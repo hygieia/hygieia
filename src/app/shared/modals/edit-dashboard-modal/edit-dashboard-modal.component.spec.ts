@@ -13,7 +13,7 @@ import { USER_LIST, DASHBOARDITEM  } from 'src/app/admin_modules/admin_dashboard
 import {GeneralFilterPipe} from '../../pipes/filter.pipe';
 import {GeneralOrderByPipe} from '../../pipes/order-by.pipe';
 
-fdescribe('EditDashboardModalComponent', () => {
+describe('EditDashboardModalComponent', () => {
   let component: EditDashboardModalComponent;
   let fixture: ComponentFixture<EditDashboardModalComponent>;
 
