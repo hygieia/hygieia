@@ -62,11 +62,11 @@ export class FeatureFlagsComponent implements OnInit {
     });
   }
 
-  deleteFeatureFlag(id) {
+  deleteFeatureFlag(item) {
     const modalRef = this.modalService.open(GeneralDeleteComponent);
-    modalRef.componentInstance.title = 'Are you sure you want to delete?';
+    modalRef.componentInstance.title = item.name;
     modalRef.result.then((newConfig) => {
-      this.userData.deleteFeatureFlags(id).subscribe(response => {
+      this.userData.deleteFeatureFlags(item.id).subscribe(response => {
         this.loadFeatureFlags();
       });
     });

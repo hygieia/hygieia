@@ -4,7 +4,7 @@
       <h3 class="panel-title" (click)="panelExpandedApi = !panelExpandedApi">Api Properties Builder <i class="fa fa-caret-down"></i></h3>
     </div>
     <div class = "table-content" *ngIf="panelExpandedApi">
-      <span class="col-xs-6"><button type="button" class="btn btn-primary btn-wide pull-right" (click)="addNewApiPropertiesBuilder()">New</button></span>
+      <span class="col-xs-6"><button type="button" class="btn btn-dark btn-lg pull-right mb-2" (click)="addNewApiPropertiesBuilder()">New</button></span>
       <input type="text" class="form-control" id="apiPropertiesSearch" placeholder="Filter Api Properties"
              [(ngModel)]="apiPropertiesSearch">
       <div class="dash-modal-row delete-dashboard-row clearfix" style="font-size: 20px;" *ngFor="let apiProperty of this.apiProperties | generalFilter:{name:apiPropertiesSearch} | generalOrderBy:'name' |  paginate: { itemsPerPage: 10, currentPage: p }">
@@ -25,7 +25,7 @@
         </div>
       </div>
       <div class="card-footer pb-0 pt-3">
-        <pagination-controls totalItems=this.apiProperties.length previousLabel=""
+        <pagination-controls *ngIf="this.apiProperties && this.apiProperties.length > 0" totalItems=this.apiProperties.length previousLabel=""
                              nextLabel="" maxSize="4" (pageChange)="p = $event"></pagination-controls>
       </div>
     </div>
@@ -34,7 +34,7 @@
       <h3 class="panel-title" (click)="panelExpandedApiAudit = !panelExpandedApiAudit">Api Audit Properties Builder <i class="fa fa-caret-down"></i></h3>
     </div>
     <div class = "table-content" *ngIf="panelExpandedApiAudit">
-      <span class="col-xs-6"><button type="button" class="btn btn-primary btn-wide pull-right" (click)="addNewApiAuditPropertiesBuilder()">New</button></span>
+      <span class="col-xs-6"><button type="button" class="btn btn-dark btn-lg pull-right mb-2" (click)="addNewApiAuditPropertiesBuilder()">New</button></span>
       <input type="text" class="form-control" id="apiAuditPropertiesSearch" placeholder="Filter Api Audit Properties"
              [(ngModel)]="apiAuditPropertiesSearch">
       <div class="dash-modal-row delete-dashboard-row clearfix" style="font-size: 20px;" *ngFor="let apiAuditProperty of this.apiAuditProperties | generalFilter:{name:apiAuditPropertiesSearch} | generalOrderBy:'name' |  paginate: { itemsPerPage: 10, currentPage: p }">
@@ -55,7 +55,7 @@
         </div>
       </div>
       <div class="card-footer pb-0 pt-3">
-        <pagination-controls totalItems=this.apiProperties.length previousLabel=""
+        <pagination-controls *ngIf="this.apiProperties && this.apiProperties.length > 0" totalItems=this.apiProperties.length previousLabel=""
                              nextLabel="" maxSize="4" (pageChange)="p = $event"></pagination-controls>
       </div>
     </div>

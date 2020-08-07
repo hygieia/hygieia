@@ -84,7 +84,7 @@ export class EditDashboardComponent implements OnInit {
 
   deleteDashboard(item) {
     const modalRef = this.modalService.open(GeneralDeleteComponent);
-    modalRef.componentInstance.message = `Are you sure you want to delete ${item.name}?`;
+    modalRef.componentInstance.title = item.name;
     modalRef.result.then((newConfig) => {
       this.dashboardData.deleteDashboard(item.id).subscribe(response => {
         this.loadData();
