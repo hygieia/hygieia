@@ -103,6 +103,17 @@ The sample `application.properties` file lists parameters with sample values to 
 	    	whitesource.errorResetWindow = 36000
 
 	    	# WhiteSource highLicensePolicyTypes - transalation of license violations to HIGH severity (Enterprise specific) - can be multiple
-	    	whitesource.highLicensePolicyTypes[0]=
+	    	whitesource.criticalLicensePolicyTypes[0].policyName=
+		whitesource.criticalLicensePolicyTypes[0].descriptions[0]=
+
+		whitesource.highLicensePolicyTypes[0].policyName=
+		whitesource.highLicensePolicyTypes[0].descriptions[0]=
+		
+
+		whitesource.mediumLicensePolicyTypes[0].policyName=
+		whitesource.mediumLicensePolicyTypes[0].descriptions[0]=
+
+		whitesource.lowLicensePolicyTypes[0].policyName=
+		whitesource.lowLicensePolicyTypes[0].descriptions[0]=
     
 ```		
