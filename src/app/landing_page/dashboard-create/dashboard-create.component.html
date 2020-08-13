@@ -1,4 +1,4 @@
-  <nb-card size="large" accent="basic">
+  <nb-card size="large">
     <nb-card-header><h4>New Dashboard</h4></nb-card-header>
     <nb-card-body>
       <nb-stepper disableStepNavigation="true" orientation="vertical" [linear]="true">
@@ -43,17 +43,17 @@
             <nb-card-body>
               <div *ngIf="dLayout === 'Widgets'" style="display: grid; grid-template-columns: 1fr 1fr 1fr; grid-gap: 1em">
                 <button name="widget" status="basic" nbButton size="medium" *ngFor="let widget of widgets"
-                        (click)="widget.status = !widget.status; onClick(widget);" [appearance]="widget.status ? 'filled' : ''">{{widget.name}}</button>
+                        (click)="widget.status = !widget.status; onClick(widget);" [appearance]="widget.status ? 'filled' : ''">{{widget.name.toUpperCase()}}</button>
               </div>
               <div *ngIf="dLayout === 'Templates'" style="display: grid; grid-template-columns: 1fr 1fr 1fr; grid-gap: 1em">
                 <button name="template" status="basic" nbButton size="medium" *ngFor="let template of templates"
-                        (click)="template.status = !template.status; onClick(template)" [appearance]="template.status ? 'filled' : ''">{{template.name}}</button>
+                        (click)="template.status = !template.status; onClick(template)" [appearance]="template.status ? 'filled' : ''">{{template.name.toUpperCase()}}</button>
               </div>
             </nb-card-body>
             <nb-card-footer>
               <div style="display: flex; flex-direction: row; justify-content: space-between">
                 <button nbButton nbStepperPrevious>prev</button>
-                <button nbButton (click)="createDashboard()" [disabled]="!isAnySelected" status="success">Create Dashboard</button>
+                <button nbButton outline (click)="createDashboard()" [disabled]="!isAnySelected" status="success">Create Dashboard</button>
               </div>
               <small *ngIf="createErrorMsg" class="form-text text-danger">{{createErrorMsg}}</small>
             </nb-card-footer>
@@ -62,7 +62,7 @@
       </nb-stepper>
     </nb-card-body>
     <nb-card-footer style="text-align: end">
-      <button nbButton size="small" status="warning" outline (click)="close()">Close</button>
+      <button nbButton size="small" status="danger" (click)="close()">Close</button>
     </nb-card-footer>
   </nb-card>
 
