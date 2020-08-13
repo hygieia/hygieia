@@ -72,6 +72,11 @@ export class NfrrViewComponent implements OnInit, OnDestroy {
       return;
     }
     this.nfrrService.getAuditMetricsAll().pipe(takeUntil(this.destroyed$)).subscribe(result => {
+      if (result.length === 0) {
+        this.isLoading = false;
+        this.isEmpty = true;
+        return;
+      }
       this.lastAudited = new Date(result[0].timestamp);
       const lobs = new Set<string>();
       result.forEach(r => {

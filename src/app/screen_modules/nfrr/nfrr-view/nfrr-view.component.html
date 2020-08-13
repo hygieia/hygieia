@@ -14,13 +14,13 @@
   </select>
 </div>
 <div class="spinner">
-  <button class="btn btn-primary" *ngIf="isLoading">
+  <button class="btn btn-outline-primary" *ngIf="isLoading">
     <span class="spinner-border spinner-border-sm"></span>
-    Loading...
+    Charting audit metrics data
   </button>
   <p *ngIf="isEmpty">No data returned</p>
 </div>
-<div class="row">
+<div class="row" *ngIf="!isEmpty">
   <div class="row-in">
     <ngx-charts-bar-horizontal-normalized
       [view]="[850, 600]"
@@ -66,7 +66,7 @@
 </div>
 <div class="row-gap">
 </div>
-<div class="row">
+<div class="row" *ngIf="!isEmpty">
   <div class="row-in">
     <ngx-charts-bar-horizontal-2d
       [view]="[850, 800]"
