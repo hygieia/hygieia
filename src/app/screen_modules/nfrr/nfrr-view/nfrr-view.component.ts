@@ -2,7 +2,7 @@ import {
   Component, OnDestroy,
   OnInit,
 } from '@angular/core';
-import {groupBy, map, mergeMap, take, takeUntil, toArray} from 'rxjs/operators';
+import {groupBy, map, mergeMap, takeUntil, toArray} from 'rxjs/operators';
 import {NfrrService} from '../nfrr.service';
 import {from, of, Subject, zip} from 'rxjs';
 import {IAudit} from '../../../shared/interfaces';
