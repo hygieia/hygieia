@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
+import {ErrorHandler, NgModule} from '@angular/core';
 
 // 3rd Party imports
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
@@ -20,6 +20,7 @@ import {
 } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 import {NgxUIModule} from '@swimlane/ngx-ui';
+import {GlobalErrorHandler} from './app.error.handler';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import {NgxUIModule} from '@swimlane/ngx-ui';
     NbSearchModule,
     NbIconModule
   ],
+  providers: [{ provide: ErrorHandler, useClass: GlobalErrorHandler }],
   bootstrap: [AppComponent],
   exports: []
 })
