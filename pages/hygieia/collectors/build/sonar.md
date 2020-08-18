@@ -103,3 +103,19 @@ The sample `application.properties` file lists parameters with sample values to 
                 sonar.passwords=
 
 ```
+
+### To run this collector with Docker
+#### 1. Build
+```
+Docker build .
+```
+#### 2. Run
+```
+Docker run -e SKIP_PROPERTIES_BUILDER=true -v properties_location:/hygieia/config image_name
+```
+  - <code>-e SKIP_PROPERTIES_BUILDER=true</code>  <br />
+  indicates whether you want to supply a properties file for the java application. If false/omitted, the script will build a properties file with default values
+  - <code>-v properties_location:/hygieia/config</code> <br />
+  if you want to use your own properties file that located outside of docker container, supply the path here. 
+    - Example: <code>-v /Home/User/Document/application.properties:/hygieia/config</code>
+
