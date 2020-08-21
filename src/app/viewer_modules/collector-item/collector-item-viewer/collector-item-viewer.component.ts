@@ -78,11 +78,17 @@ export class CollectorItemViewerComponent implements OnInit {
     modalRef.componentInstance.collector = collector;
     modalRef.componentInstance.dashboardTitle = dashboardTitle;
     modalRef.componentInstance.componentName = componentName;
-    modalRef.componentInstance.collectorDetails = ci;
+    modalRef.componentInstance.collectorDetails = this.maskSecureData(ci);
   }
 
   confirmRefresh(ci: ICollItem) {
     const modalRefresh = this.modalService.open(CollectorRefreshComponent);
     modalRefresh.componentInstance.collectorDetails = ci;
+  }
+
+  private maskSecureData(ci: ICollItem): ICollItem {
+    if (ci.options.password) { ci.options.password = '******'; }
+    if (ci.options.personalAccessToken) { ci.options.personalAccessToken = '******'; }
+    return ci;
   }
 }

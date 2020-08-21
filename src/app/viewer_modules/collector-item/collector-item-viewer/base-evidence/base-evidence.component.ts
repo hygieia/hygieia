@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
 import {Subscription} from 'rxjs';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {CollectorItemService} from '../../collector-item.service';
 import {CollectorItemDetailsComponent} from '../collector-item-details/collector-item-details.component';
@@ -26,7 +26,7 @@ export class BaseEvidenceComponent implements OnInit, AfterViewInit, OnDestroy {
   protected componentId: string;
   collector: string;
 
-  constructor(private route: ActivatedRoute,
+  constructor(private router: Router, private route: ActivatedRoute,
               private modalService: NgbModal,
               protected ciViewerService: CollectorItemService) {
   }
@@ -64,5 +64,9 @@ export class BaseEvidenceComponent implements OnInit, AfterViewInit, OnDestroy {
     const modalRef = this.modalService.open(CollectorItemDetailsComponent);
     modalRef.componentInstance.collector = this.collector;
     modalRef.componentInstance.collectorDetails = ci;
+  }
+
+  openCollectorViewer(dTitle: string) {
+    this.router.navigate(['/collectorItem', {title : dTitle}]);
   }
 }

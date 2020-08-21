@@ -1,7 +1,10 @@
 <div class="main-content">
   <div class="container">
-    <H3 class="gap">{{collector}} results for Dashboard {{dashboardTitle}}</H3>
-
+    <h3 class="gap">{{collector}} results for Dashboard
+      <a routerLink="/collectorItem" (click)="this.openCollectorViewer(dashboardTitle)">
+        {{dashboardTitle}} <i class="fa fa-external-link" aria-hidden="true"></i>
+      </a>
+    </h3>
     <div class="mat-header">
       <mat-form-field>
         <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">

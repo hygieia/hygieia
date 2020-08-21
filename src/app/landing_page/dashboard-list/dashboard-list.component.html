@@ -17,7 +17,7 @@
               <input nbInput type="search" id="dSearch" name="dSearch" placeholder="Search dashboard by title or application component name" shape="round" fieldSize="large"
                      fullWidth [formControl]="queryField">
             </div>
-            <div class="col-2" *ngIf="myDashboards" style="padding-left: 0">
+            <div *ngIf="myDashboards" style="padding-left: 0">
               <button id="createBtn" class="btn btn-outline-secondary badge-pill" (click)="createDashboard()"><nb-icon size="large" icon="plus-circle"></nb-icon> New Dashboard</button>
             </div>
           </div>

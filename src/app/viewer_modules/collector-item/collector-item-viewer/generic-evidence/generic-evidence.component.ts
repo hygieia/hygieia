@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {CollectorItemService} from '../../collector-item.service';
 import {Subscription} from 'rxjs';
 
@@ -20,6 +20,7 @@ export class GenericEvidenceComponent implements OnInit, OnDestroy {
   private intervalRefreshSubscription: Subscription;
 
   constructor(
+    private router: Router,
     private route: ActivatedRoute,
     private ciViewerService: CollectorItemService) { }
 
@@ -44,5 +45,9 @@ export class GenericEvidenceComponent implements OnInit, OnDestroy {
 
   getJsonHtml( obj ) {
     return JSON.stringify(obj, undefined, 4);
+  }
+
+  openCollectorViewer(dTitle: string) {
+    this.router.navigate(['/collectorItem', {title : dTitle}]);
   }
 }
