@@ -43,6 +43,8 @@ export interface ICollItem {
     repoName: string;
     path: string;
     artifactName: string;
+    password: string;
+    personalAccessToken: string;
   };
   errorCount: number;
   errors: ICollectionError[];
