@@ -28,12 +28,17 @@ Navigate to `api\target,` and execute the following command in the command promp
 ## Build the Project
 With the api running, open a different terminal and run `ng build` in your \UI folder. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build. 
 
-## Building  the Project and launching the dashboard in Ubuntu (20.04) : REFER HERE FOR UBUNTU 20.04 
-version of node and npm used => node version :v12.18.3 , npm version : 6.14.6 
+## Building  the Project and launching the dashboard in Ubuntu (20.04) : Refer here for Ubuntu 20.04 
+Versions of node and npm used => node version v12.18.3 , npm version  6.14.6 
+
 In the UI/ folder :
+
 Install gulp using command : npm install -g gulp 
+
 To check the version : gulp -v 
+
 You then have to install gulp locally on a per-project basis :  npm install gulp --save-dev
+
 *If gulp is listed in the package.json (Under the UI folder) under 'dependencies' , then replace '--save-dev' with just '--save' 
 
 With the api running, open a different terminal and run `gulp build` in your \UI folder. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build. 
