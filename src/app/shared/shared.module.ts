@@ -71,6 +71,8 @@ import {UserDataService} from '../admin_modules/admin_dashboard/services/user-da
 import {TabsFixturesModule} from './ngx-ui/tabs/fixtures/tabs-fixtures.module';
 import {GeneralDeleteComponent} from './modals/general-delete-modal/general-delete-modal.component';
 import {NgxPaginationModule} from 'ngx-pagination';
+import {CollectorItemModule} from '../viewer_modules/collector-item/collector-item.module';
+import {NfrrModule} from '../screen_modules/nfrr/nfrr.module';
 
 @NgModule({
   declarations: [
@@ -211,7 +213,9 @@ import {NgxPaginationModule} from 'ngx-pagination';
     DashEditComponent,
     GeneralFilterPipe,
     GeneralOrderByPipe,
-    NgxPaginationModule
+    NgxPaginationModule,
+    CollectorItemModule,
+    NfrrModule,
   ],
   providers: [
     UserDataService,

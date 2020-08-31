@@ -48,6 +48,6 @@ export class GenericEvidenceComponent implements OnInit, OnDestroy {
   }
 
   openCollectorViewer(dTitle: string) {
-    this.router.navigate(['/collectorItem', {title : dTitle}]);
+    this.router.navigate(['/collectorItem/viewer', {title : dTitle}]);
   }
 }
