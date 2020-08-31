@@ -6,7 +6,7 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {NgbActiveModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {RouterTestingModule} from '@angular/router/testing';
 
-fdescribe('CollectorItemDetailsComponent', () => {
+describe('CollectorItemDetailsComponent', () => {
   let component: CollectorItemDetailsComponent;
   let fixture: ComponentFixture<CollectorItemDetailsComponent>;
 
