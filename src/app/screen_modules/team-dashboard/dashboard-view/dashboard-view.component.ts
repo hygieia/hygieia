@@ -79,7 +79,7 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
   }
 
   openCollectorViewer() {
-    this.router.navigate(['/collectorItem', {title : this.dashboardTitle.split('-')[0].trim()}]);
+    this.router.navigate(['/collectorItem/viewer', {title : this.dashboardTitle.split('-')[0].trim()}]);
   }
 
   private handleError(err: HttpErrorResponse) {
