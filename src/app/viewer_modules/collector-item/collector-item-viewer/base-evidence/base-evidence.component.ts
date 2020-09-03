@@ -67,6 +67,6 @@ export class BaseEvidenceComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   openCollectorViewer(dTitle: string) {
-    this.router.navigate(['/collectorItem', {title : dTitle}]);
+    this.router.navigate(['/collectorItem/viewer', {title : dTitle}]);
   }
 }

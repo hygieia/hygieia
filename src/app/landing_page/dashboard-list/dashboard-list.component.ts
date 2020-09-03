@@ -104,7 +104,7 @@ export class DashboardListComponent implements OnInit {
   }
 
   goToAuditReport() {
-    this.router.navigate(['/audits']);
+    this.router.navigate(['/audits/nfrr']);
   }
 
   dashboardName(dashboard: IDashboards): string {
@@ -146,7 +146,7 @@ export class DashboardListComponent implements OnInit {
   }
 
   goToCollectorItemMetrics() {
-    this.router.navigate(['/collectorItem']);
+    this.router.navigate(['/collectorItem/viewer']);
   }
 
   private loadDash() {

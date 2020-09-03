@@ -4,7 +4,6 @@ import { CollectorItemDetailsComponent } from './collector-item-details.componen
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {ReactiveFormsModule} from '@angular/forms';
 import {NgbActiveModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
-import {SharedModule} from '../../../../shared/shared.module';
 import {RouterTestingModule} from '@angular/router/testing';
 
 describe('CollectorItemDetailsComponent', () => {
@@ -14,7 +13,7 @@ describe('CollectorItemDetailsComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
-        ReactiveFormsModule, NgbModule, SharedModule, HttpClientTestingModule,
+        ReactiveFormsModule, NgbModule, HttpClientTestingModule,
         RouterTestingModule.withRoutes([])
       ],
       declarations: [CollectorItemDetailsComponent],

@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import {NgbActiveModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
-import { SharedModule } from 'src/app/shared/shared.module';
 
 import {CollectorItemRoutingModule} from './collector-item-routing.module';
 import { GenericEvidenceComponent } from './collector-item-viewer/generic-evidence/generic-evidence.component';
@@ -20,6 +19,7 @@ import { StaticSecurityScanEvidenceComponent } from './collector-item-viewer/sta
 import { BaseEvidenceComponent } from './collector-item-viewer/base-evidence/base-evidence.component';
 import {CollectorItemService} from './collector-item.service';
 import {NbCardModule, NbInputModule} from '@nebular/theme';
+import {ReactiveFormsModule} from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -40,14 +40,14 @@ import {NbCardModule, NbInputModule} from '@nebular/theme';
     CollectorItemRoutingModule,
     CommonModule,
     NgbModule,
-    SharedModule,
     MatInputModule,
     MatFormFieldModule,
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
     NbInputModule,
-    NbCardModule
+    NbCardModule,
+    ReactiveFormsModule
   ],
   providers: [
     CollectorItemRoutingModule.components,

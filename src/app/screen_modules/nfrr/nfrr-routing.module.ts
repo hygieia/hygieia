@@ -4,7 +4,7 @@ import {NfrrViewComponent} from './nfrr-view/nfrr-view.component';
 
 const routes: Routes = [
   {
-    path: '',
+    path: 'nfrr',
     component: NfrrViewComponent
   }
 ];
