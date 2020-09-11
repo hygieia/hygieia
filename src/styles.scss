@@ -67,11 +67,12 @@ body,
   background-color: #2D2D2D;
   color: white;
   border: none;
+  padding-bottom: 0.5rem;
 }
 
 .close{
   color: white;
-  font-size: 2rem;
+  font-size: 2.5rem;
   border: none;
   outline: none;
 }
@@ -87,6 +88,10 @@ button {
   padding: 15px;
   text-align: center;
   position:relative;
+}
+
+button:focus {
+  outline: none !important;
 }
 
 .col-form-label {
