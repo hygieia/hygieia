@@ -197,7 +197,7 @@ describe('TestWidgetComponent', () => {
 
     const clickItemNoData = component.generateTestClickListChartItem([], 'title');
     expect(clickItemNoData.title).toBe(component.formatTitle('title', 100));
-    expect(clickItemNoData.subtitles[0]).toBe('No data found.');
+    expect(clickItemNoData.subtitles[0]).toBe('No data found');
   });
 
   it('should format title correctly', () => {
@@ -228,8 +228,6 @@ describe('TestWidgetComponent', () => {
     spyOn(component, 'getCurrentWidgetConfig').and.returnValues(of(mockConfig), of(mockConfig), of(null));
     spyOn(testService, 'fetchTestResults').and.returnValues(of([mockTest]), of([]));
     spyOn(dashboardService, 'checkCollectorItemTypeExist').and.returnValues(true, false);
-    component.startRefreshInterval();
-    component.startRefreshInterval();
     component.startRefreshInterval();
   });
 

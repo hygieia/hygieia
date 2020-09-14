@@ -20,7 +20,7 @@ describe('test result service', () => {
     inject([HttpTestingController, TestService],
       (httpMock: HttpTestingController, service: TestService) => {
         // We call the service
-        service.fetchTestResults('123', 1, 10, 3, [TestType.Functional, TestType.Performance]).subscribe(data => {
+        service.fetchTestResults('123', 1, 3, [TestType.Functional, TestType.Performance]).subscribe(data => {
           expect(data).toBeTruthy();
         });
         // We set the expectations for the HttpClient mock

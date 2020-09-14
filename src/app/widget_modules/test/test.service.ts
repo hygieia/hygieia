@@ -13,13 +13,12 @@ export class TestService {
 
   constructor(private http: HttpClient) { }
 
-  fetchTestResults(componentId: string, endDateBegins: number, endDateEnds: number, depth: number, type: TestType[]): Observable<ITest[]> {
+  fetchTestResults(componentId: string, max: number, depth: number, type: TestType[]): Observable<ITest[]> {
     const params = {
       params: new HttpParams().set('componentId', componentId)
-                              .set('endDateBegins', endDateBegins.toFixed(0))
-                              .set('endDateEnds', endDateEnds.toFixed(0))
                               .set('depth', depth.toFixed(0))
                               .set('types', type.toString())
+                              .set('max', max.toFixed(0))
     };
     return this.http.get<ITest>(this.testDetailRoute, params).pipe(map(response => response.result));
   }
