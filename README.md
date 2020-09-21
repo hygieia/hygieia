@@ -1,6 +1,9 @@
 As a part of making Hygieia more modular, this repo will host Hygieia UI code. More to come!!!!
 
 # Hygieia UI
+[![Build Status](https://travis-ci.com/Hygieia/UI.svg?branch=master)](https://travis-ci.com/Hygieia/UI?branch=master)
+[![Maven Central](https://img.shields.io/maven-central/v/com.capitalone.dashboard/UI.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.capitalone.dashboard%22%20AND%20a:%22UI%22)
+[![Total alerts](https://img.shields.io/lgtm/alerts/github/Hygieia/UI.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Hygieia/UI/alerts/)
 
 This project requires Angular CLI version 8.0.3.
 This project requires java version : openjdk version "1.8.0_265"
