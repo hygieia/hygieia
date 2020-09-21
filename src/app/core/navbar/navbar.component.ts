@@ -53,4 +53,11 @@ export class NavbarComponent implements OnInit {
   openGithub() {
     window.open('https://hygieia.github.io/Hygieia/getting_started.html', '_blank');
   }
+  
+  get customPowerIcon(): NbIconConfig {
+    return {
+      icon: 'power-outline',
+      status: (this.isAuthenticated) ? 'success' : 'danger'
+    } as NbIconConfig;
+  }
 }
