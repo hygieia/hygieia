@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { NbIconConfig } from '@nebular/theme';
 // local imports
 import { AuthService } from '../services/auth.service';
 @Component({
