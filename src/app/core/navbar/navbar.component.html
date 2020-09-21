@@ -11,8 +11,7 @@
         <nb-user color="black" class="size-medium shape-round" name="{{userName}}"></nb-user>
       </nb-action>
       <nb-action *ngIf="isAdmin && isAuthenticated" (click)="admin()" icon="settings-outline"></nb-action>
-      <nb-action (click)="loginOrOut()">
-        <nb-icon icon="power-outline" [status]="isAuthenticated? 'success' : 'danger'"></nb-icon></nb-action>
+      <nb-action (click)="loginOrOut()" [icon]="customPowerIcon">
     </nb-actions>
   </div>
 </div>
