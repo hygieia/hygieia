@@ -1,3 +1,7 @@
+@import "node_modules/bootstrap/scss/functions";
+@import "node_modules/bootstrap/scss/variables";
+@import "node_modules/bootstrap/scss/mixins/breakpoints";
+
 @mixin box-shadow ($v1, $v2, $v3, $v4, $v5){
   -moz-box-shadow: $v1 $v2 $v3 $v4 $v5;
   -webkit-box-shadow: $v1 $v2 $v3 $v4 $v5;
@@ -91,4 +95,16 @@ h4 {
   font-family: 'Optimist', Optimist, Arial, sans-serif;
   font-weight: 400;
   font-size: 28px;
+}
+
+@include media-breakpoint-down(sm) {
+  .jumbotron h1, p {
+    display: none;
+  }
+
+  #createBtn {
+    .new-dbd-lbl {
+      display: none;
+    }
+  }
 }

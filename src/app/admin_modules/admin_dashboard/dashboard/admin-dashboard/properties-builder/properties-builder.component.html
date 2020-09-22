@@ -10,7 +10,7 @@
       <div class="dash-modal-row delete-dashboard-row clearfix" style="font-size: 20px;" *ngFor="let apiProperty of this.apiProperties | generalFilter:{name:apiPropertiesSearch} | generalOrderBy:'name' |  paginate: { itemsPerPage: 10, currentPage: p }">
         <div>
           <div ng-hide="!ctrl.apiProperties">
-            <a  (click)="deleteProperties(apiProperty?.id)">
+            <a  (click)="deleteProperties(apiProperty)">
               <app-dash-trash class="clickable pull-right"></app-dash-trash>
             </a>
             <app-dash-edit class="clickable pull-right" (click)="editApiPropertiesBuilder(apiProperty)"></app-dash-edit>
