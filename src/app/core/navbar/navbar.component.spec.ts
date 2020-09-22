@@ -43,4 +43,8 @@ describe('NavbarComponent', () => {
     const userTest = component.userName;
     expect(userTest).not.toBeNull();
   });
+  it('should get danger status for login icon', () => {
+    expect(component.customPowerIcon.status).toBe('danger');
+    expect(component.customPowerIcon.icon).toBe('power-outline');
+  });
 });

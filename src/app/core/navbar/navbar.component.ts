@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { NbIconConfig } from '@nebular/theme';
 // local imports
 import { AuthService } from '../services/auth.service';
 @Component({
@@ -52,5 +53,11 @@ export class NavbarComponent implements OnInit {
 
   openGithub() {
     window.open('https://hygieia.github.io/Hygieia/getting_started.html', '_blank');
+  }
+  get customPowerIcon(): NbIconConfig {
+    return {
+      icon: 'power-outline',
+      status: (this.isAuthenticated) ? 'success' : 'danger'
+    } as NbIconConfig;
   }
 }
