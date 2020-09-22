@@ -10,7 +10,7 @@
 <div class="main-content">
   <div class="container">
     <div class="row justify-content-md-center">
-      <div class="col-8">
+      <div class="col-12 col-xl-9">
         <div class="col">
           <div class="row">
             <div class="col">
@@ -18,7 +18,8 @@
                      fullWidth [formControl]="queryField">
             </div>
             <div *ngIf="myDashboards" style="padding-left: 0">
-              <button id="createBtn" class="btn btn-outline-secondary badge-pill" (click)="createDashboard()"><nb-icon size="large" icon="plus-circle"></nb-icon> New Dashboard</button>
+              <button id="createBtn" class="btn btn-outline-secondary badge-pill" (click)="createDashboard()"><nb-icon size="large" icon="plus-circle"></nb-icon>
+                <span class="new-dbd-lbl"> New Dashboard</span></button>
             </div>
           </div>
           <div class="col">
@@ -30,7 +31,7 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-6 justify-content-center" *ngIf="allDashboards">
+          <div class="col-12 col-xl-6 justify-content-center" *ngIf="allDashboards">
             <ng-container>
               <div>
                 <nb-card size="giant">
@@ -54,7 +55,7 @@
               </div>
             </ng-container>
           </div>
-          <div class="col-6 justify-content-center" *ngIf="myDashboards">
+          <div class="col-12 col-xl-6 justify-content-center" *ngIf="myDashboards">
             <ng-container>
               <div>
                 <nb-card size="giant">

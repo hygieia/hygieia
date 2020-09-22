@@ -47,11 +47,11 @@ export class ServiceAccountsComponent implements OnInit {
     });
   }
 
-  deleteServiceAccount(id) {
+  deleteServiceAccount(serviceAccount) {
     const modalRef = this.modalService.open(GeneralDeleteComponent);
-    modalRef.componentInstance.title = 'Are you sure you want to delete?';
+    modalRef.componentInstance.title = serviceAccount.serviceAccountName;
     modalRef.result.then((newConfig) => {
-      this.userData.deleteServiceAccount(id).subscribe(response => {
+      this.userData.deleteServiceAccount(serviceAccount.id).subscribe(response => {
         this.loadServiceAccounts();
       });
     });

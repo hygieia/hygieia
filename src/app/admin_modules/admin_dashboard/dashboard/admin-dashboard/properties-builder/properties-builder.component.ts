@@ -82,11 +82,11 @@ export class PropertiesBuilderComponent implements OnInit {
     });
   }
 
-  deleteProperties(id) {
+  deleteProperties(collector) {
     const modalRef = this.modalService.open(GeneralDeleteComponent);
-    modalRef.componentInstance.title = 'Are you sure you want to delete?';
+    modalRef.componentInstance.title = collector.name;
     modalRef.result.then((newConfig) => {
-      this.userData.deleteProperties(id).subscribe(response => {
+      this.userData.deleteProperties(collector.id).subscribe(response => {
         this.loadProperties();
       });
     });

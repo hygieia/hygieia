@@ -1,3 +1,7 @@
+@import "node_modules/bootstrap/scss/functions";
+@import "node_modules/bootstrap/scss/variables";
+@import "node_modules/bootstrap/scss/mixins/breakpoints";
+
 .nav-container {
   display: flex;
   justify-content: space-between;
@@ -35,5 +39,12 @@
       font-weight: 700;
       line-height: 1rem;
     }
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  .nav-container {
+    flex-wrap: wrap;
+    row-gap: 10px;
   }
 }
