@@ -30,10 +30,10 @@ entries:
     output: web, pdf
     folderitems:
       - title: API
-        url: https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/api/api.md
+        url: [](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/api/api.md)
         output: web, pdf
       - title: Audit API
-        url: https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/api-audit/api-audit.md
+        url: [](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/api-audit/api-audit.md)
         output: web, pdf
       - title: Collectors' Configuration
         url: /collectors.html
