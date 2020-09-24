@@ -10,9 +10,9 @@ folder: hygieia
 ---
 ## What changes have we made to the UI? 
 
-We are currently upgrading from our old UI (using AngularJS) to a new UI, which will use Angular 8 and node 12.
+We have upgraded from our old UI (using AngularJS) to a new UI, which uses Angular 8 and node 12.
 
-This upgrade will give us a chance to clean up code, fix existing bugs, and modernize the user interface. With the same api, users will be able to take advantage of Hygieia's data from a different perspective with new charts, visualization tools, and UI features.
+This upgrade gave us a chance to clean up code, fix existing bugs, and modernize the user interface. With the same api, users will be able to take advantage of Hygieia's data from a different perspective with new charts, visualization tools, and UI features.
 
 ## Download or Clone new Hygieia UI 
 

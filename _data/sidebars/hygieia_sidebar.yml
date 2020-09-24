@@ -26,6 +26,19 @@ entries:
       output: web, pdf
       type: homepage
 
+  - title: Components
+    output: web, pdf
+    folderitems:
+      - title: API
+        url: https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/api/api.md
+        output: web, pdf
+      - title: Audit API
+          url: https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/api-audit/api-audit.md
+          output: web, pdf
+      - title: Collectors' Configuration
+        url: /collectors.html
+        output: web, pdf
+
   - title: Installing the New Hygieia UI
     output: web, pdf
     folderitems:
@@ -42,36 +55,22 @@ entries:
     - title: Database
       url: /database.html
       output: web, pdf
-    - title: API
-      url: /api.html
-      output: web, pdf
-    - title: Audit API
-      url: /api-audit.html
-      output: web, pdf
     - title: UI
-      url: /ui.html
+      url: https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/UI/ui.md
       output: web, pdf
 
   - title: Configuration
     output: web, pdf
     folderitems:
-    - title: Collectors' Configuration
-      url: /collectors.html
+    - title: Hygieia-Jenkins Plugin
+      url: https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/hygieia-jenkins-plugin/hygieia-jenkins-plugin.md
       output: web, pdf
-
-      subfolders:
-      - title: Additional Configuration
-        output: web, pdf
-        subfolderitems:
-           - title: Hygieia-Jenkins Plugin
-             url: /hygieia-jenkins-plugin.html
-             output: web, pdf
-           - title: GitHub Webhook
-             url: /webhook.html
-             output: web, pdf
-           - title: Proxy Authentication
-             url: /proxyauthentication.html
-             output: web, pdf
+    - title: GitHub Webhook
+      url: https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/webhook.md
+      output: web, pdf
+    - title: Proxy Authentication
+      url: https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/proxyauthentication.md
+      output: web, pdf
 
   - title: Building Docker Image
     output: web, pdf
