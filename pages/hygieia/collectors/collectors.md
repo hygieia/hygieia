@@ -24,38 +24,39 @@ You may choose the collectors applicable to your DevOps toolset from the list of
 Hygieia supports the following collectors Inventory:
 
 - **Build Collectors**
-  - [Bamboo](build/bamboo.md)
-  - [Jenkins](build/jenkins.md)
-  - [Jenkins-codequality](build/jenkins-codequality.md)
-  - [Jenkins Cucumber](build/jenkins-cucumber.md)
-  - [Sonar](build/sonar.md)
+  - [Bamboo](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/collectors/build/bamboo.md)
+  - [Jenkins](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/collectors/build/jenkins.md)
+  - [Jenkins-codequality](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/collectors/build/jenkins-codequality.md)
+  - [Jenkins Cucumber](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/collectors/build/jenkins-cucumber.md)
+  - [Sonar](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/collectors/build/sonar.md)
 - **Cloud Collectors**
-  - [AWS](cloud/aws.md)
+  - [AWS](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/collectors/cloud/aws.md)
 - **Deploy Collectors**
-  - [uDeploy](deploy/udeploy.md)
-  - [XLDeploy](deploy/xldeploy.md)
+  - [uDeploy](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/collectors/deploy/udeploy.md)
+  - [XLDeploy](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/collectors/deploy/xldeploy.md)
 - **Feature Collectors**
-  - [Jira](feature/jira.md)
-  - [VersionOne](feature/versionone.md)
-  - [Gitlab](feature/feature-gitlab.md)
-  - [Rally](feature/rally.md)
+  - [Jira](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/collectors/feature/jira.md)
+  - [VersionOne](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/collectors/feature/versionone.md)
+  - [Gitlab](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/collectors/feature/feature-gitlab.md)
+  - [Rally](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/collectors/feature/rally.md)
 - **Miscellaneous Collectors**
-  - [Chat Ops](misc/chat-ops.md)
-  - [Score](misc/score.md)
+  - [Chat Ops](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/collectors/misc/chat-ops.md)
+  - [Score](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/collectors/misc/score.md)
 - **SCM Collectors** 
-  - [Bitbucket](scm/bitbucket.md)
-  - [GitHub](scm/github.md)
-  - [Gitlab](scm/gitlab.md)
-  - [Subversion](scm/subversion.md)
-  - [GitHub GraphQL](scm/github-graphql.md)
+  - [Bitbucket](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/collectors/scm/bitbucket.md)
+  - [GitHub](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/collectors/scm/github.md)
+  - [Gitlab](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/collectors/scm/gitlab.md)
+  - [Subversion](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/collectors/scm/subversion.md)
+  - GitHub GraphQL - Currently Unavailable
 - **Performance Collector**
-  - [AppDynamics](performance/appdynamics.md)
+  - [AppDynamics](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/collectors/performance/appdynamics.md)
 - **Configuration Management Database (CMDB)**
-  - [HP Service Manager (HPSM)](cmdb/hpsm.md)
+  - [HP Service Manager (HPSM)](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/collectors/cmdb/hpsm.md)
 - **Library Policy**
-  - [Nexus IQ](library-policy/nexus-iq-collector.md)
+  - [Nexus IQ](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/collectors/library-policy/nexus-iq-collector.md)
+  - [WhiteSource](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/collectors/library-policy/whitesource.md)
 - **Artifact Repository**
-  - [Artifactory](artifact/artifactory.md)
+  - [Artifactory](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/collectors/artifact/artifactory.md)
 
 ## Encrypted Properties
 

@@ -13,7 +13,7 @@ permalink: api.html
 
 Hygieia API layer contains all the typical REST API services that work with the source system data (collected by service tasks). The Hygieia API layer is an abstraction of the local and source system data layer. All API REST controllers are generic to their purpose - they are not specific to any given source system.
 
-For detailed information on APIs, see the Swagger documentation available at `http://[your-doman].com/api/swagger/index.html#`.
+For detailed information on APIs, see the Swagger documentation available at `http://[your-domain].com/api/swagger/index.html#`.
 
 Hygieia uses Spring Boot to package the API as an executable JAR file with dependencies.
 
