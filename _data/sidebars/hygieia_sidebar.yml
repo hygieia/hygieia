@@ -29,15 +29,15 @@ entries:
   - title: Components
     output: web, pdf
     folderitems:
-      - title: API
-        url: [](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/api/api.md)
-        output: web, pdf
-      - title: Audit API
-        url: [](https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/api-audit/api-audit.md)
-        output: web, pdf
-      - title: Collectors' Configuration
-        url: /collectors.html
-        output: web, pdf
+    - title: API
+      url: /api.html
+      output: web, pdf
+    - title: Audit API
+      url: /api-audit.html
+      output: web, pdf
+    - title: Collectors' Configuration
+      url: /collectors.html
+      output: web, pdf
 
   - title: Installing the New Hygieia UI
     output: web, pdf
@@ -56,20 +56,20 @@ entries:
       url: /database.html
       output: web, pdf
     - title: UI
-      url: https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/UI/ui.md
+      url: /ui.html
       output: web, pdf
 
   - title: Configuration
     output: web, pdf
     folderitems:
     - title: Hygieia-Jenkins Plugin
-      url: https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/hygieia-jenkins-plugin/hygieia-jenkins-plugin.md
+      url: /hygieia-jenkins-plugin.html
       output: web, pdf
     - title: GitHub Webhook
-      url: https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/webhook.md
+      url: /webhook.html
       output: web, pdf
     - title: Proxy Authentication
-      url: https://github.com/Hygieia/Hygieia/blob/gh-pages/pages/hygieia/proxyauthentication.md
+      url: /proxyauthentication.html
       output: web, pdf
 
   - title: Building Docker Image
