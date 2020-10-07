@@ -48,10 +48,15 @@
     "moment-timezone": "^0.5.31",
     "ngx-moment": "^3.4.0",
     "ngx-pagination": "^5.0.0",
+    "node-forge": "^0.10.0",
     "node-gyp": "^7.0.0",
+    "npm-registry-fetch": "^8.1.4",
     "rxjs": "~6.5.2",
+    "serialize-javascript": "^5.0.1",
     "time-ago-pipe": "^1.3.2",
+    "tree-kill": "^1.2.2",
     "tslib": "^1.10.0",
+    "yargs-parser": "^20.2.1",
     "zone.js": "~0.9.1"
   },
   "devDependencies": {
