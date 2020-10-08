@@ -10,8 +10,6 @@ Configure the Jenkins Collector to display and monitor information (related to b
 
 ### Setup Instructions
 
-## Fork and Clone the Collector 
-
 Fork and clone the Jenkins Collector from the [GitHub repo](https://github.com/Hygieia/hygieia-build-jenkins-collector). 
 
 To configure the Jenkins Collector, execute the following steps:
