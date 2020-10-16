@@ -3,7 +3,7 @@ title: Hygieia Audit API
 tags:
 keywords:
 toc: true
-summary: Learn how to install and configure Hygieia audit APIs
+summary: Learn how to install and configure Hygieia Audit API
 sidebar: hygieia_sidebar
 permalink: api-audit.html
 ---
