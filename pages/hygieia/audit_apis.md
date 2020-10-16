@@ -1,192 +1,136 @@
 ---
-title: About Audit APIs
-tags: 
-type: 
-homepage: 
+title: Hygieia Audit API
+tags:
+keywords:
 toc: true
+summary: Learn how to install and configure Hygieia audit APIs
 sidebar: hygieia_sidebar
-permalink: audit_apis.html
+permalink: api-audit.html
 ---
 
-Hygieia audit APIs are a collection of API endpoints that serve to audit CI/CD data gathered by Hygieia collectors. The collectors create a large amount of information that provides insights in to the quality of code that goes into production.
+## Hygieia Audit API
 
-## Auditing Capabilities in Release Management
+[![Build Status](https://api.travis-ci.com/Hygieia/api-audit.svg?branch=master)](https://travis-ci.com/Hygieia/api-audit?branch=master)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Hygieia_api-audit&metric=alert_status)](https://sonarcloud.io/dashboard?id=Hygieia_api-audit)
+[![Maven Central](https://img.shields.io/maven-central/v/com.capitalone.dashboard/api-audit.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.capitalone.dashboard%22%20AND%20a:%22api-audit%22)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/Hygieia/api-audit.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Hygieia/api-audit/alerts/)
+[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/Hygieia/api-audit.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Hygieia/api-audit/context:java)
+[![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+[![Gitter Chat](https://badges.gitter.im/Join%20Chat.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+<br>
+<br>
+Hygieia Audit API - Learn how to install and configure Hygieia audit APIs
 
-The Audit APIs position Hygieia as the auditor for automated releases. Hygieia provides insights into not only the health of the CI/CD pipeline but also the quality of code going into production. This information enables Hygieia to audit the automated releases.
+Hygieia audit APIs are a collection of API endpoints that serve to audit CI/CD data gathered by Hygieia collectors. The audit API provides endpoints to audit individual widgets on the Dashboard. In addition to these endpoints, Hygieia also provides a dashboard-level audit API. 
 
-Hygieia audit APIs collect all the information necessary for a release review. Consider the following scenarios:
+The audit API logic adds various audit flags depending on the data. 
 
-- There are security violations in artifacts for deployment
-- There is an open source library that includes the wrong kind of license
-- Automated test coverage is below the standard
+For detailed information on audit APIs, see the Swagger documentation available at `http://[your-domain].com/apiaudit/swagger/index.html#`. 
 
-All these cases would result in the release being automatically rejected.
+Hygieia uses Spring Boot to package the APIs as an executable JAR file with dependencies.
 
-The audit APIs provide endpoints to audit individual widgets on the dashboard. In addition to these endpoints, Hygieia also provides a dashboard-level audit API for analyzing the code quality.
+## Setup Instructions
 
-The audit API logic adds various audit flags depending on the data. For a detailed listing of the audit flags, see the audit-api module’s [model]( https://github.com/capitalone/Hygieia/tree/master/api-audit/src/main/java/com/capitalone/dashboard/model) package.
+To configure the Hygieia Audit API layer, execute the following steps:
 
-For instructions on installing and running the audit APIs, see the [Setup Instructions](api-audit/api-audit.md) documentation.
+*	**Step 1 - Artifact Preparation:**
 
-For detailed information on audit APIs, see the Swagger documentation, which is generated as part of your build. You can view Swagger documentation on your web browser using the URL,  ```http://localhost:<port>/apiaudit/swagger/index.html#/```.
+	Please review the two options in Step 1 to find the best fit for you. 
+	
+	***Option 1 - Download the artifact:***
+	
+	You can download the SNAPSHOTs from the SNAPSHOT directory [here](https://oss.sonatype.org/content/repositories/snapshots/com/capitalone/dashboard/api-audit/) or from the maven central repository [here](https://search.maven.org/artifact/com.capitalone.dashboard/api-audit).  
+	
+	***Option 2 - Build locally:***
 
-The following audit APIs support code quality checks:
+	To configure the Hygieia API Audit layer, git clone the [api audit repo](https://github.com/Hygieia/api-audit).  Then, execute the following steps:
 
-- Remote Create and Update 
-- Dashboard Review
-- Peer review
-- Static Code Analysis
-- Performance Analysis
+	To package the Audit API source code into an executable JAR file, run the maven build from the `\api-audit` directory of your source code installation:
 
-## Remote Create and Update
+	```bash
+	mvn install
+	```
 
-These endpoints are used to post (either create or update) dashboard data.
+	The output file `apiaudit.jar` is generated in the `\api-audit\target` folder.
 
-Note: Widget display on UI will show information basing on last updated timestamp.  
+	Once you have chosen an option in Step 1, please proceed: 
 
+*	**Step 2: Set Parameters in the API Properties File**
 
-**Input Parameters**
+	Set the configurable parameters in the `dashboard.properties` file to connect to the Dashboard MongoDB database instance, including properties required by the audit API module. To configure the parameters, refer to the [API Audit properties](#api-audit-properties) section.
 
-- Build entries
-- Code repo entries
-- Deployment entries
-- Feature entries
-- Functional test entries
-- Library scan entries
-- Dashboard metadata
-- Security scan entries
-- Static code entries
+	For more information about the server configuration, see the Spring Boot [documentation](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files).
 
-**Sample Request**
+*	**Step 3: Run the API**
 
-```
-{"codeRepoEntries":[{"toolName":"GitHub","description":"Brief description","options":{"branch":"master","url":"","personalAccessToken":""}}],"staticCodeEntries":[{"toolName":"Sonar","description":"","options":{"projectName":"","projectId":"","instanceUrl":""}}],"metaData":{"applicationName":"","businessApplication":"","businessService":"","componentName":"","owner":{"authType":"LDAP","username":"username"},"template":"Template","title":"title","type":"Team"}}
-```
+	To run the executable file, change directory to 'api-audit\target' and then execute the following command from the command prompt:
 
-**API Response**
+	```bash
+	java -jar apiaudit.jar --spring.config.location=C:\[path to]\api-audit.properties
+	```
+	Verify API access from the web browser using the url: http://localhost:8080/apiaudit/ping.
 
-- SCA data created or updated.
+	By default, the server starts at port `8080` and uses the context path `/api-audit`. You can configure these values in the `api-audit.properties` file for the following properties:
 
-## Dashboard Review Audit API
+	```properties
+	server.contextPath=/api-audit
+	server.port=8080
+	```
 
-This endpoint validates that your artifact is meeting the quality gate threshold established in Sonar and returns an appropriate audit status based on whether the threshold has been met or not.
+	**Note**: The 'jasypt.encryptor.password' system property is used to decrypt the database password. 
 
-**Input Parameters**
+## API Audit Properties
 
-- Date Range (begin date and end date)
-- Repo
-- Branch Name
+The sample `api-audit.properties` lists parameters with sample values to configure the audit API layer. Set the parameters based on your environment setup.
 
-**Sample Request**
+```properties
+# api-audit.properties
+dbname=dashboarddb
+dbusername=dashboarduser[MogoDb Database Username, defaults to empty]
+dbpassword=dbpassword[MongoDB Database Password, defaults to empty]
+dbhost=[Host on which MongoDB is running, defaults to localhost]
+dbport=[Port on which MongoDB is listening, defaults to 27017]
+dbreplicaset=[False if you are not using MongoDB replicaset]
+dbhostport=[host1:port1,host2:port2,host3:port3]
+server.contextPath=[Web Context path, if any]
+server.port=[Web server port - default is 8080]
+logRequest=false
+logSplunkRequest=false
+serviceAccountOU=SAOU1,SAOU2 [comma separated list of OU setup in LDAP for whitelist of Service Accounts]
 
-```
-/apiaudit/dashboardReview?title=testSCA&beginDate=1524501989477&endDate=1527598806000&auditType=ALL
-
-#Values for auditType
-auditType="ALL" or "CODE_REVIEW" or "BUILD_REVIEW" or "CODE_QUALITY" or "TEST_RESULT" or "PERF_TEST"
-```
-
-**API Response**
-
-Passed Validation – The quality gate threshold is met.
-Failed Validation – The quality gate threshold is either not met or is missing.
-
-## Peer Review Audit API
-
-The peer review audit API returns the audit status as passed or failed for the peer review of a pull request, based on the following checks:
-
--	Direct commits are not merged to the master (release) branch
--	Any change made to the master (release) branch is reviewed by a second person before it is merged in to the repository
-
-**Input Parameters**
-
-- Date Range (begin date and end date)
-- Repo 
-- SCM Name
-- Branch Name
-
-**Sample request**
-
-```
-/apiaudit/peerReview?repo=https://github.com&branch=master&beginDate=0&endDate=1519415217000
+# pattern to match the featureID/storyNumber (Jira ID, VersionOne ID, etc) for traceability
+featureIDPattern=((?<!([A-Za-z]{1,10})-?)[A-Z]+-\\d+)
 ```
 
-**API Response**
- 
-- Passed Validation - Pull Request peer-reviewed before being merged to the master (release) branch.
-- Failed Validation - Pull Request not peer-reviewed or there are direct commits to the master (release) branch.
+All values in the `api-audit.properties` file are optional. If you have MongoDB installed with no authorization, you must be able to run the API even without the properties file.
 
-## Static Code Analysis (SCA)
+**Note**: If the value of `dbusername` is empty, then system skips MongoDB authorization.
 
-Static Code Analysis validates that your artifact is meeting the quality gate threshold established in Sonar and returns an appropriate audit status based on whether the threshold has been met or not. Static code analysis validation is achieved using following endpoints:
+## Docker Image for API Audit 
 
-- Code Quality Audit
-- Quality Profile Validation
+You can install Hygieia by using a docker image from docker hub. This section gives detailed instructions on how to download and run with Docker. 
 
-### Code Quality Audit
+*	**Step 1: Download**
 
-Code Quality Audit validates that the Static Code Analysis threshold (set by an individual team) is met during an SCA scan on the release build. This API performs the following requirement checks:
+	Navigate to the audit api docker hub location [here](https://hub.docker.com/r/hygieiadoc/apiaudit/tags) and download the latest image (most recent version is preferred).  Tags can also be used, if needed.
 
-- SCA scan is performed on the latest commit
-- SCA Quality Gate and threshold exist for the release build
-- Release build meets the threshold set by the team
+*	**Step 2: Run with Docker**
 
-**Input Parameters**
+	```Docker run -e SKIP_PROPERTIES_BUILDER=true -v properties_location:/hygieia/config image_name```
+	
+	- <code>-e SKIP_PROPERTIES_BUILDER=true</code>  <br />
+	indicates whether you want to supply a properties file for the java application. If false/omitted, the script will build a properties file with default values
+	- <code>-v properties_location:/hygieia/config</code> <br />
+	if you want to use your own properties file that located outside of docker container, supply the path here. 
+		- Example: <code>-v /Home/User/Document/application.properties:/hygieia/config</code>
 
-- Business Application
-- Business Service
-- Jenkins Sonar Job link
-- Project name
-- Date Range
 
-**API Response**
+## Create a New Audit API
 
-- Passed Validation - The SCA threshold is met for all the requirement checks.
-- Failed validation - The SCA threshold is not met.
+The steps to create a new audit API are as follows:
 
-### Code Quality Profile Validation
+1. Create a new rest controller or add to an existing controller.
+2. Create a new service interface and new service implementation.
+3. Add new request and response classes.
 
-Code Quality Profile audit API validates that the change author of the quality profile is different from the commit author, based on the following checks:
-
-- Any change made to the SCA Sonar profile (changes to rules, quality gate, or threshold)
-- The audit history for details of the change author in case there are SCA Sonar profile changes
-
-**Input Parameters**
-
-- Business Application
-- Business Service
-- Jenkins Sonar Job link
-- Project name
-- Date Range
-
-**API Response**
-
-Passed validation – The commit author has not made changes to the SCA Sonar profile (quality profile).
-Failed validation – The commit author has modified the SCA Sonar profile (quality profile) during the specified time duration (date range).
-
-**Sample Request for SCA**
-
-```
-"staticCodeEntries":[{"toolName":"Sonar","description":"","options":{"projectName":"","projectId":"","instanceUrl":""}}]
-```
-
-## Performance Analysis
-
-Periodic performance testing is important to assess the resiliency of an application. This audit API ensures that each release build must have performance testing done and the results of this must meet the passing threshold defined by the team lead.
-
-This API performs the following requirement checks:
-
-- Must execute automated performance test suite for each release build
-- Performance test results must meet the pass threshold for each release build
-
-**Input Parameters**
-
-- Business Application
-- Business Service
-- Date Range
-
-**API Response**
-
-Passed Validation – The performance threshold is met.
-Failed Validation – The performance threshold is either not met or is missing.
-
+**Note**: For common data models used in the audit APIs, refer the core module's model package.
