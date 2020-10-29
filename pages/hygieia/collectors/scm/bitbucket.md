@@ -93,7 +93,8 @@ The sample `application.properties` file lists parameters with sample values to 
 
 		git.username=user_for_git.host1,user_for_git.host2
 		
-		#convert password to base64
+		#convert password to base64 ( echo -n password | base64 ) 
+		#sometimes you may need to specify the password in double quotes
 		git.password=password_for_git.host1,password_for_git.host2
 		
 		#Since the older api version is now depreciated so current api is given below for Bitbucket Cloud
