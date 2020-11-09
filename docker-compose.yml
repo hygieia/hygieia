@@ -15,6 +15,11 @@ services:
     depends_on:
       - db
 
+  api:
+    build:
+      context: https://github.com/Hygieia/api.git
+      dockerfile: Dockerfile.build
+
   ui:
     build: UI
     image: hygieia-ui
