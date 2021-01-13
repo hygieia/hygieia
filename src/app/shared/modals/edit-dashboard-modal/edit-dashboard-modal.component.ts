@@ -275,13 +275,6 @@ export class EditDashboardModalComponent implements OnInit {
           this.newConfigItemBusServ = this.formBusServ ? this.formBusServ : this.configurationItemBusServ;
           this.newConfigItemBusApp = this.formBusApp ? this.formBusApp : this.configurationItemBusApp;
 
-          if (!this.formBusServ && this.formBusinessService.controls.configurationItemBusServ.touched == true) {
-            this.newConfigItemBusServ = undefined;
-          }
-          if (!this.formBusApp && this.formBusinessService.controls.configurationItemBusApp.touched == true) {
-            this.newConfigItemBusApp = undefined;
-          }
-
           const submitData = {
                 configurationItemBusServName: this.newConfigItemBusServ,
                 configurationItemBusAppName: this.newConfigItemBusApp
@@ -297,7 +290,38 @@ export class EditDashboardModalComponent implements OnInit {
                         }
                     });
         }
+    }
 
+  clearBusServ() {
+      const submitData = {
+        configurationItemBusServName: undefined,
+        configurationItemBusAppName: this.configurationItemBusApp
+      };
+      this.dashboardData
+        .updateBusItems(this.dashboardItem.id, submitData)
+        .subscribe((data: any) => {
+          this.activeModal.dismiss();
+        }, (error: any) => {
+          if (error) {
+            this.dupErroMessage = error;
+          }
+        });
+  }
+
+  clearBusApp() {
+    const submitData = {
+      configurationItemBusServName: this.configurationItemBusServ,
+      configurationItemBusAppName: undefined
+    };
+    this.dashboardData
+      .updateBusItems(this.dashboardItem.id, submitData)
+      .subscribe((data: any) => {
+        this.activeModal.dismiss();
+      }, (error: any) => {
+        if (error) {
+          this.dupErroMessage = error;
+        }
+      });
     }
 
     getConfigItem(type, filter) {
