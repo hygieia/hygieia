@@ -278,25 +278,28 @@ export class EditDashboardModalComponent implements OnInit {
           const submitData = {
                 configurationItemBusServName: this.newConfigItemBusServ,
                 configurationItemBusAppName: this.newConfigItemBusApp
-            };
-            this.dashboardData
-                .updateBusItems(this.dashboardItem.id, submitData)
-                .subscribe((data: any) => {
-                    this.activeModal.dismiss();
-                }
-                    , (error: any) => {
-                        if (error) {
-                            this.dupErroMessage = error;
-                        }
-                    });
+          };
+          this.busAppAndServSubmission(submitData);
         }
     }
 
-  clearBusServ() {
+    clearBusServ() {
       const submitData = {
         configurationItemBusServName: undefined,
         configurationItemBusAppName: this.configurationItemBusApp
       };
+      this.busAppAndServSubmission(submitData);
+    }
+
+    clearBusApp() {
+      const submitData = {
+        configurationItemBusServName: this.configurationItemBusServ,
+        configurationItemBusAppName: undefined
+      };
+      this.busAppAndServSubmission(submitData);
+    }
+
+    busAppAndServSubmission(submitData) {
       this.dashboardData
         .updateBusItems(this.dashboardItem.id, submitData)
         .subscribe((data: any) => {
@@ -306,22 +309,6 @@ export class EditDashboardModalComponent implements OnInit {
             this.dupErroMessage = error;
           }
         });
-  }
-
-  clearBusApp() {
-    const submitData = {
-      configurationItemBusServName: this.configurationItemBusServ,
-      configurationItemBusAppName: undefined
-    };
-    this.dashboardData
-      .updateBusItems(this.dashboardItem.id, submitData)
-      .subscribe((data: any) => {
-        this.activeModal.dismiss();
-      }, (error: any) => {
-        if (error) {
-          this.dupErroMessage = error;
-        }
-      });
     }
 
     getConfigItem(type, filter) {
