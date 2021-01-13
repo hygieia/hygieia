@@ -7,7 +7,7 @@
     </tr>
     </thead>
     <tr *ngFor="let item of this.data">
-      <td><a href="{{item?.url}}" target="_blank">{{item?.number}}</a></td>
+      <td><a href="{{item?.url}}" target="_blank" rel="noopener noreferrer">{{item?.number}}</a></td>
       <td>{{item?.subtitles | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
     </tr>
   </table>
