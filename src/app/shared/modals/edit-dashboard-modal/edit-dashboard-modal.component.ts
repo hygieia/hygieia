@@ -51,11 +51,15 @@ export class EditDashboardModalComponent implements OnInit {
     searchconfigItemBusComponent: any;
     noResults = false;
     noResultsCom = false;
+    newConfigItemBusServ: string;
+    newConfigItemBusApp: string;
+    formBusServ: any;
+    formBusApp: any;
 
     constructor(private dashboardData: DashboardDataService, private authService: AuthService,
                 private widgetManager: WidgetManagerService, private userData: UserDataService,
                 private cmdbData: CmdbDataService, private dashboardService: AdminDashboardService,
-                private fromBulider: FormBuilder, public activeModal: NgbActiveModal) { }
+                private formBuilder: FormBuilder, public activeModal: NgbActiveModal) { }
 
     ngOnInit() {
         this.username = this.authService.getUserName();
@@ -77,11 +81,11 @@ export class EditDashboardModalComponent implements OnInit {
             scoreEnabled: !!this.dashboardItem.scoreEnabled,
             scoreDisplay: this.dashboardItem.scoreDisplay
         };
-        this.cdfForm = this.fromBulider.group({
+        this.cdfForm = this.formBuilder.group({
             dashboardTitle: ['',
                 [Validators.required, Validators.minLength(6), Validators.maxLength(50), Validators.pattern(/^[a-zA-Z0-9 ]*$/)]]
         });
-        this.formBusinessService = this.fromBulider.group({
+        this.formBusinessService = this.formBuilder.group({
           configurationItemBusServ: [''],
           configurationItemBusApp: ['']
         });
@@ -264,9 +268,23 @@ export class EditDashboardModalComponent implements OnInit {
 
     submitBusServOrApp(form) {
         if (this.formBusinessService.valid) {
-            const submitData = {
-                configurationItemBusServName: this.formBusinessService.get('configurationItemBusServ').value.configurationItem,
-                configurationItemBusAppName: this.formBusinessService.get('configurationItemBusApp').value.commonName
+          this.formBusServ = this.formBusinessService.get('configurationItemBusServ').value.configurationItem;
+          this.formBusApp = this.formBusinessService.get('configurationItemBusApp').value.commonName;
+
+          // save old form data, then check if new data is deleted
+          this.newConfigItemBusServ = this.formBusServ ? this.formBusServ : this.configurationItemBusServ;
+          this.newConfigItemBusApp = this.formBusApp ? this.formBusApp : this.configurationItemBusApp;
+
+          if (!this.formBusServ && this.formBusinessService.controls.configurationItemBusServ.touched == true) {
+            this.newConfigItemBusServ = undefined;
+          }
+          if (!this.formBusApp && this.formBusinessService.controls.configurationItemBusApp.touched == true) {
+            this.newConfigItemBusApp = undefined;
+          }
+
+          const submitData = {
+                configurationItemBusServName: this.newConfigItemBusServ,
+                configurationItemBusAppName: this.newConfigItemBusApp
             };
             this.dashboardData
                 .updateBusItems(this.dashboardItem.id, submitData)

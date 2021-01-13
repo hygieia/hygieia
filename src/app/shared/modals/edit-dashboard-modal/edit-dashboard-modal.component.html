@@ -71,8 +71,9 @@
                                 <input type="text" name="configurationItemBusApp"
                                     formControlName="configurationItemBusApp" class="form-control"
                                     placeholder="Select a Business Application (Optional)" value="{{this.configurationItemBusApp}}"
+                                       [ngClass]="{ 'is-invalid': fB.configurationItemBusApp.touched && fB.configurationItemBusApp.errors }"
                                     [ngbTypeahead]="searchconfigItemBusApp" [resultTemplate]="rtB"
-                                    [inputFormatter]="formatterConfigItemBusApp" />
+                                    [inputFormatter]="formatter" />
                                 <div class="form-control" [hidden]="!noResultsCom">
                                     No Results Found
                                 </div>
