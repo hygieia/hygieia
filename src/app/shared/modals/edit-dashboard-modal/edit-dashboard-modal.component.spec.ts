@@ -12,6 +12,7 @@ import { UserDataService } from 'src/app/admin_modules/admin_dashboard/services/
 import { USER_LIST, DASHBOARDITEM  } from 'src/app/admin_modules/admin_dashboard/services/user-data.service.mockdata';
 import {GeneralFilterPipe} from '../../pipes/filter.pipe';
 import {GeneralOrderByPipe} from '../../pipes/order-by.pipe';
+import {DashTrashComponent} from '../../dash-trash/dash-trash.component';
 
 describe('EditDashboardModalComponent', () => {
   let component: EditDashboardModalComponent;
@@ -19,7 +20,7 @@ describe('EditDashboardModalComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [EditDashboardModalComponent, GeneralFilterPipe, GeneralOrderByPipe],
+      declarations: [EditDashboardModalComponent, GeneralFilterPipe, GeneralOrderByPipe, DashTrashComponent],
       providers: [DashboardDataService,
         CmdbDataService,
         AdminDashboardService,

@@ -54,28 +54,35 @@
                                 </ng-template>
                                 <label class="modal-label">Business Service <i class="fa fa-info-circle"
                                         ngbTooltip="{{getBusSerToolText()}}"></i></label>
-                                <input type="text" name="configurationItemBusServ"
-                                    formControlName="configurationItemBusServ" class="form-control"
+                              <div class="form-inline">
+                                <input type="text" name="configurationItemBusServ" style="width:95%"
+                                       formControlName="configurationItemBusServ" class="form-control"
                                     placeholder="Select a Business Service (Optional)" value="{{this.configurationItemBusServ}}"
                                     [ngClass]="{ 'is-invalid': fB.configurationItemBusServ.touched && fB.configurationItemBusServ.errors }"
                                     [ngbTypeahead]="searchconfigItemBusServ" [resultTemplate]="rt"
                                     [inputFormatter]="formatter" />
-                                <div class="form-control" [hidden]="!noResults">
+                                <a (click)="clearBusServ()" style="cursor: pointer"><app-dash-trash class="clickable pull-right"></app-dash-trash></a>
+                              </div>
+                              <div class="form-control" [hidden]="!noResults">
                                     No Results Found
-                                </div>
+                              </div>
                                 <ng-template #rtB let-r="result" let-t="term">
                                     <span>{{r.configurationItem}}-({{r.commonName}})</span>
                                 </ng-template>
                                 <label class="modal-label">Business Application <i class="fa fa-info-circle"
                                         ngbTooltip="{{getBusAppToolText()}}"></i></label>
-                                <input type="text" name="configurationItemBusApp"
-                                    formControlName="configurationItemBusApp" class="form-control"
+                              <div class="form-inline">
+                                <input type="text" name="configurationItemBusApp" style="width:95%"
+                                       formControlName="configurationItemBusApp" class="form-control"
                                     placeholder="Select a Business Application (Optional)" value="{{this.configurationItemBusApp}}"
+                                       [ngClass]="{ 'is-invalid': fB.configurationItemBusApp.touched && fB.configurationItemBusApp.errors }"
                                     [ngbTypeahead]="searchconfigItemBusApp" [resultTemplate]="rtB"
-                                    [inputFormatter]="formatterConfigItemBusApp" />
+                                    [inputFormatter]="formatter" />
                                 <div class="form-control" [hidden]="!noResultsCom">
                                     No Results Found
                                 </div>
+                                <a (click)="clearBusApp()" style="cursor: pointer"><app-dash-trash class="clickable pull-right"></app-dash-trash></a>
+                              </div>
                             </div>
                         </div>
                     </form>
