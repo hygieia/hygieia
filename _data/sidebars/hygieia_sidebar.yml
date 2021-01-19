@@ -38,6 +38,9 @@ entries:
     - title: Collectors' Configuration
       url: /collectors.html
       output: web, pdf
+    - title: Database
+        url: /database.html
+        output: web, pdf
 
   - title: Installing the New Hygieia UI
     output: web, pdf
@@ -51,9 +54,6 @@ entries:
     folderitems:
     - title: Old UI Setup Instructions
       url: /setup.html
-      output: web, pdf
-    - title: Database
-      url: /database.html
       output: web, pdf
     - title: UI
       url: /ui.html
