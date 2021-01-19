@@ -200,6 +200,12 @@
                     options: getOptions('Gitlab'),
                     uniqueOptions: getUniqueOptions('Gitlab')
 				};
+			} else if (ctrl.repoOption.name.indexOf("AzureRepos") !== -1) {
+				item = {
+					collectorId : _.find(ctrl.collectors, { name: 'AzureRepos' }).id,
+                    options: getOptions('AzureRepos'),
+                    uniqueOptions: getUniqueOptions('AzureRepos')
+				};
 			}
 			return collectorData.createCollectorItem(item);
 		}

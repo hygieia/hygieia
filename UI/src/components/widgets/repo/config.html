@@ -31,7 +31,7 @@
 			   required />
 	</form-group>
 
-	<form-group ng-if="repoConfig.repoOption.name == 'GitHub'  || repoConfig.repoOption.name == 'Bitbucket' || repoConfig.repoOption.name == 'Gitlab'"
+	<form-group ng-if="repoConfig.repoOption.name == 'GitHub'  || repoConfig.repoOption.name == 'Bitbucket' || repoConfig.repoOption.name == 'Gitlab' || repoConfig.repoOption.name == 'AzureRepos'"
 				errors="{required:'Branch is required'}"
 				input="gitBranch"
 				class="text-center">
@@ -77,9 +77,9 @@
 		size="55"/>
 	</form-group>
 
-	<label ng-if="repoConfig.repoOption.name == 'GitHub'" class="modal-label">(OR)</label>
+	<label ng-if="repoConfig.repoOption.name == 'GitHub' || repoConfig.repoOption.name == 'AzureRepos'" class="modal-label">(OR)</label>
 
-	<form-group ng-if="repoConfig.repoOption.name == 'GitHub'" input="repoPersonalAccessToken"
+	<form-group ng-if="repoConfig.repoOption.name == 'GitHub' || repoConfig.repoOption.name == 'AzureRepos'" input="repoPersonalAccessToken"
 				errors="{}">
 
 		<label class="modal-label">Personal Access Token</label>
@@ -90,7 +90,7 @@
 			   ng-model="repoConfig.repoPersonalAccessToken"
 			   maxlength="100"
 			   autocomplete="new-password"
-			   placeholder="Enter your Github personal access token"/>
+			   placeholder="Enter your personal access token"/>
 	</form-group>
 
 	<form-group ng-if="repoConfig.repoOption.name == 'Gitlab'" input="repokey"
