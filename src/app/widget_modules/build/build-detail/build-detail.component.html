@@ -1,5 +1,5 @@
 <div>
-  <table class="table-content">
+  <!-- <table class="table-content">
     <thead>
     <tr>
       <th>Build Job</th>
@@ -9,6 +9,61 @@
     <tr *ngFor="let item of this.data">
       <td><a href="{{item?.url}}" target="_blank" rel="noopener noreferrer">{{item?.number}}</a></td>
       <td>{{item?.subtitles | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
+      <td>{{item?.collectorItemId}}</td>
+      <td *ngFor="let stage of item.stages">{{stage.name}}</td>
+    </tr>
+  </table> -->
+  <mat-icon *ngIf="this.data[0].buildStatus=='Success'">check_circle</mat-icon>
+  <mat-icon *ngIf="this.data[0].buildStatus=='Failure'">highlight_off</mat-icon>
+  <mat-icon *ngIf="this.data[0].buildStatus=='Aborted'">priority_high</mat-icon>
+
+  <table>
+    <tr>
+      <th>Start Time</th>
+      <th>End Time</th>
+      <th>Duration (HH:mm:ss)</th>
+    </tr>
+    <tr>
+      <td>{{this.data[0]?.startTime | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
+      <td>{{this.data[0]?.subtitles[0] | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
+      <td>{{this.readableDuration}}</td>
     </tr>
   </table>
+
+  <br>
+
+  <h5 ngbTooltip="TOOLTIP">Stage Flow</h5>
+  <mat-vertical-stepper>
+    <mat-step label="Start"></mat-step>
+    <mat-step *ngFor="let stage of this.data[0].stages" [state]="stage.status" [completed]="false" (click)="complete()" #stepper>
+      <ng-template matStepLabel>
+        <div placement="right" [ngbTooltip]="getTooltipInfo(stage)">{{stage.name}}</div>
+      </ng-template>
+      <div>Status: {{stage.status}}</div>
+      <div>Duration: {{stage.durationMillis}} ms</div>
+      <div><a href="{{this.data[0].baseLogUrl + stage._links.self.href}}">Log Url</a></div>
+      <div *ngIf="stage.status=='FAILURE'">Error Type: {{stage.error.type}}</div>
+      <div *ngIf="stage.status=='FAILURE'">Error Log: {{stage.error.message}} </div>
+    </mat-step>
+    <mat-step label="End"></mat-step>
+
+    <!-- Icon overrides. -->
+    <ng-template matStepperIcon="SUCCESS">
+      <mat-icon>check_circle</mat-icon>
+    </ng-template>
+    <ng-template matStepperIcon="FAILURE">
+      <mat-icon>highlight_off</mat-icon>
+    </ng-template>
+    <ng-template matStepperIcon="NOT_EXECUTED">
+      <mat-icon>do_not_disturb</mat-icon>
+    </ng-template>
+
+    <!--NEED TO FIGURE OUT HOW TO MAKE EDIT ICON CORRELATE TO STAGE.STATUS-->
+    <ng-template matStepperIcon="edit">
+      <mat-icon  *ngIf="this.data[0].number == 354">check_circle</mat-icon>
+      <mat-icon *ngIf="this.data[0].number != 354">do_not_disturb</mat-icon>
+    </ng-template>
+  </mat-vertical-stepper>
+
+
 </div>

@@ -6,6 +6,7 @@ import {
   OnDestroy,
   OnInit,
   ViewChild,
+  wtfStartTimeRange,
 } from '@angular/core';
 import {of, Subscription} from 'rxjs';
 import {distinctUntilChanged, startWith, switchMap} from 'rxjs/operators';
@@ -165,19 +166,30 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
       success: DashStatus.PASS,
       inprogress: DashStatus.IN_PROGRESS
     };
+
+
     const latestBuildData = sorted.map(build => {
       const buildStatus = buildStatusTable[build.buildStatus.toLowerCase()] ?
         buildStatusTable[build.buildStatus.toLowerCase()] : DashStatus.FAIL;
+      console.log(buildStatus)
+      console.log(build.buildStatus)
       const statusTextFitted = DashStatus.FAIL ? '!' : build.buildStatus;
+      let baseLogUrl = build.buildUrl.split('/job')[0]
       return {
         status: buildStatus,
+        buildStatus: build.buildStatus,
         statusText: statusTextFitted,
         title: build.number,
+        collectorItemId: build.collectorItemId,
         subtitles: [
           new Date(build.endTime)
         ],
+        startTime: new Date(build.startTime),
+        duration: build.endTime - build.startTime,
         url: build.buildUrl,
-        number: build.number
+        baseLogUrl: baseLogUrl,
+        number: build.number,
+        stages: build.stages,
       } as IClickListItem;
     });
     this.charts[1].data = {
