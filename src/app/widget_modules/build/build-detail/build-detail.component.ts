@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Type, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, Type, ViewChild, AfterViewInit } from '@angular/core';
 import { MatVerticalStepper } from '@angular/material';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -8,7 +8,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
   templateUrl: './build-detail.component.html',
   styleUrls: ['./build-detail.component.scss']
 })
-export class BuildDetailComponent implements OnInit {
+export class BuildDetailComponent implements AfterViewInit {
 
   @Input() detailView: Type<any>;
   @ViewChild(MatVerticalStepper, {static: false}) stepper: MatVerticalStepper;
@@ -21,7 +21,8 @@ export class BuildDetailComponent implements OnInit {
     public activeModal: NgbActiveModal,
   ) { }
 
-  ngOnInit() {
+  ngAfterViewInit() {
+    this.stepper.selectedIndex = 1;
   }
 
   @Input()
