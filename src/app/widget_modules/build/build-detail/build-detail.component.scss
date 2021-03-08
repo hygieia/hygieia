@@ -23,5 +23,9 @@ td, th{
 }
 
 ::ng-deep .mat-step-header .mat-step-icon-state-edit {
-  background-color: violet;
+  background-color: yellow;
+}
+
+.mat-stepper-vertical{
+  background-color: rgb(212,212,212)
 }

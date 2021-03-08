@@ -70,7 +70,6 @@ export class BuildDetailComponent implements OnInit {
 
   complete() {
     console.log('completed')
-    // console.log(this.stepper.selected)
     // this.stepper.selected.completed = true;
     // this.stepper.selected.editable = false;
 }

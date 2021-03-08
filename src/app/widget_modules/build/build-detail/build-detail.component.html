@@ -1,18 +1,4 @@
 <div>
-  <!-- <table class="table-content">
-    <thead>
-    <tr>
-      <th>Build Job</th>
-      <th>Date</th>
-    </tr>
-    </thead>
-    <tr *ngFor="let item of this.data">
-      <td><a href="{{item?.url}}" target="_blank" rel="noopener noreferrer">{{item?.number}}</a></td>
-      <td>{{item?.subtitles | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
-      <td>{{item?.collectorItemId}}</td>
-      <td *ngFor="let stage of item.stages">{{stage.name}}</td>
-    </tr>
-  </table> -->
   <mat-icon *ngIf="this.data[0].buildStatus=='Success'">check_circle</mat-icon>
   <mat-icon *ngIf="this.data[0].buildStatus=='Failure'">highlight_off</mat-icon>
   <mat-icon *ngIf="this.data[0].buildStatus=='Aborted'">priority_high</mat-icon>
@@ -35,7 +21,8 @@
   <h5 ngbTooltip="TOOLTIP">Stage Flow</h5>
   <mat-vertical-stepper>
     <mat-step label="Start"></mat-step>
-    <mat-step *ngFor="let stage of this.data[0].stages" [state]="stage.status" [completed]="false" (click)="complete()" #stepper>
+    <mat-step *ngFor="let stage of this.data[0].stages" [state]="stage.status" [completed]="false" (click)="complete()"
+      #stepper>
       <ng-template matStepLabel>
         <div placement="right" [ngbTooltip]="getTooltipInfo(stage)">{{stage.name}}</div>
       </ng-template>
@@ -60,9 +47,9 @@
 
     <!--NEED TO FIGURE OUT HOW TO MAKE EDIT ICON CORRELATE TO STAGE.STATUS-->
     <ng-template matStepperIcon="edit">
-      <mat-icon  *ngIf="this.data[0].number == 354">check_circle</mat-icon>
-      <mat-icon *ngIf="this.data[0].number != 354">do_not_disturb</mat-icon>
     </ng-template>
+
+
   </mat-vertical-stepper>
 
 
