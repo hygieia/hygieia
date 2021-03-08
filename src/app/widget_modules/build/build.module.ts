@@ -12,6 +12,7 @@ import {MatStepperModule} from '@angular/material/stepper';
 import {MatIconModule} from '@angular/material/icon';
 import {MatTooltipModule} from '@angular/material/tooltip'
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 @NgModule({
   providers: [
@@ -29,7 +30,8 @@ import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
     SharedModule,
     MatStepperModule,
     MatIconModule,
-    MatTooltipModule
+    MatTooltipModule,
+    FlexLayoutModule
     ],
   exports: []
 })

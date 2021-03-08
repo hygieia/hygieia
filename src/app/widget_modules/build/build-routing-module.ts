@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { BuildWidgetComponent } from './build-widget/build-widget.component';
 
+
 const routes: Routes = [
 ];
 

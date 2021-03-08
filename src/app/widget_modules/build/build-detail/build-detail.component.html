@@ -1,26 +1,32 @@
 <div>
-  <mat-icon *ngIf="this.data[0].buildStatus=='Success'">check_circle</mat-icon>
-  <mat-icon *ngIf="this.data[0].buildStatus=='Failure'">highlight_off</mat-icon>
-  <mat-icon *ngIf="this.data[0].buildStatus=='Aborted'">priority_high</mat-icon>
-
-  <table>
-    <tr>
-      <th>Start Time</th>
-      <th>End Time</th>
-      <th>Duration (HH:mm:ss)</th>
-    </tr>
-    <tr>
-      <td>{{this.data[0]?.startTime | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
-      <td>{{this.data[0]?.subtitles[0] | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
-      <td>{{this.readableDuration}}</td>
-    </tr>
-  </table>
+  <div class="build-overview" fxLayout="row" fxLayoutAlign="space-around center" >
+    <div  fxFlex="20">
+      <h5>Build Status</h5>
+      <mat-icon class="build-overview-icon" *ngIf="this.data[0].buildStatus=='Success'" style="color:green">check_circle</mat-icon>
+      <mat-icon class="build-overview-icon" *ngIf="this.data[0].buildStatus=='Failure'" style="color:red">highlight_off</mat-icon>
+      <mat-icon class="build-overview-icon" *ngIf="this.data[0].buildStatus=='Aborted'" style="color:grey">priority_high</mat-icon>
+    </div> 
+  
+    <table fxFlex="60">
+      <tr>
+        <th>Start Time</th>
+        <th>End Time</th>
+        <th>Duration (HH:mm:ss)</th>
+      </tr>
+      <tr>
+        <td>{{this.data[0]?.startTime | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
+        <td>{{this.data[0]?.subtitles[0] | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
+        <td>{{this.readableDuration}}</td>
+      </tr>
+    </table>
+    <div fxFlex></div>
+  </div>
 
   <br>
 
-  <h5 ngbTooltip="TOOLTIP">Stage Flow</h5>
+  <h5 style="padding: 30px" ngbTooltip="TOOLTIP">Stage Flow</h5>
   <mat-vertical-stepper>
-    <mat-step label="Start"></mat-step>
+    <mat-step label="Start" state="start"></mat-step>
     <mat-step *ngFor="let stage of this.data[0].stages" [state]="stage.status" [completed]="false" (click)="complete()"
       #stepper>
       <ng-template matStepLabel>
@@ -44,9 +50,13 @@
     <ng-template matStepperIcon="NOT_EXECUTED">
       <mat-icon>do_not_disturb</mat-icon>
     </ng-template>
+    <ng-template matStepperIcon="start">
+      <mat-icon>schedule</mat-icon>
+    </ng-template>
 
     <!--NEED TO FIGURE OUT HOW TO MAKE EDIT ICON CORRELATE TO STAGE.STATUS-->
     <ng-template matStepperIcon="edit">
+      <mat-icon>do_not_disturb</mat-icon>
     </ng-template>
 
 
