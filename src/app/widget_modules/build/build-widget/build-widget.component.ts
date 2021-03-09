@@ -5,8 +5,7 @@ import {
   ComponentFactoryResolver,
   OnDestroy,
   OnInit,
-  ViewChild,
-  wtfStartTimeRange,
+  ViewChild
 } from '@angular/core';
 import {of, Subscription} from 'rxjs';
 import {distinctUntilChanged, startWith, switchMap} from 'rxjs/operators';
