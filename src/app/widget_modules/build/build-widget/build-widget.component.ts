@@ -171,8 +171,6 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
     const latestBuildData = sorted.map(build => {
       const buildStatus = buildStatusTable[build.buildStatus.toLowerCase()] ?
         buildStatusTable[build.buildStatus.toLowerCase()] : DashStatus.FAIL;
-      console.log(buildStatus)
-      console.log(build.buildStatus)
       const statusTextFitted = DashStatus.FAIL ? '!' : build.buildStatus;
       let baseLogUrl = build.buildUrl.split('/job')[0]
       return {

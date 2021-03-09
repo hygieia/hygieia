@@ -28,7 +28,6 @@ export class DetailModalComponent implements OnInit {
       componentRef.instance.detailData = this.detailData;
       this.cdr.detectChanges();
     }
-    console.log(this.detailData)
   }
   onSubmit() {
     if (this.activeModal) {

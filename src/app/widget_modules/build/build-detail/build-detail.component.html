@@ -1,12 +1,5 @@
 <div class="modal-body">
-  <div class="build-overview" fxLayout="row" fxLayoutAlign="space-around center" >
-    <!-- <div  fxFlex="20">
-      <h5>Build Status</h5>
-      <mat-icon class="build-overview-icon" *ngIf="this.data[0].buildStatus=='Success'" style="color:green">check_circle</mat-icon>
-      <mat-icon class="build-overview-icon" *ngIf="this.data[0].buildStatus=='Failure'" style="color:red">highlight_off</mat-icon>
-      <mat-icon class="build-overview-icon" *ngIf="this.data[0].buildStatus=='Aborted'" style="color:grey">priority_high</mat-icon>
-    </div>  -->
-
+  <div class="build-overview" fxLayout="row" fxLayoutAlign="space-around center">
     <table fxFlex="80">
       <tr>
         <th>Build Status</th>
@@ -16,9 +9,12 @@
       </tr>
       <tr>
         <td>
-          <mat-icon class="build-overview-icon" *ngIf="this.data[0].buildStatus=='Success'" style="color:green">check_circle</mat-icon>
-          <mat-icon class="build-overview-icon" *ngIf="this.data[0].buildStatus=='Failure'" style="color:red">highlight_off</mat-icon>
-          <mat-icon class="build-overview-icon" *ngIf="this.data[0].buildStatus=='Aborted'" style="color:grey">priority_high</mat-icon>
+          <mat-icon id="build-success" class="build-overview-icon" *ngIf="this.data[0].buildStatus=='Success'">
+            check_circle</mat-icon>
+          <mat-icon class="build-overview-icon" *ngIf="this.data[0].buildStatus=='Failure'">
+            highlight_off</mat-icon>
+          <mat-icon class="build-overview-icon" *ngIf="this.data[0].buildStatus=='Aborted'">
+            priority_high</mat-icon>
         </td>
         <td>{{this.data[0]?.startTime | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
         <td>{{this.data[0]?.subtitles[0] | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
@@ -29,22 +25,22 @@
   </div>
 
   <h4>Stage Flow</h4>
-  <mat-vertical-stepper>
-    <mat-step label="Start" state="start" completed="false"></mat-step>
-    <mat-step *ngFor="let stage of this.data[0].stages" [state]="stage.status" [completed]="false" (click)="complete()"
-      #stepper>
+  <mat-vertical-stepper #stepper>
+    <mat-step label="Start" state="bookend" completed="false" editable="false"></mat-step>
+    <mat-step *ngFor="let stage of this.data[0].stages" [state]="stage.status" [completed]="false">
       <ng-template matStepLabel>
         <div placement="right" [ngbTooltip]="getTooltipInfo(stage)">{{stage.name}}</div>
       </ng-template>
       <div>Status: {{stage.status}}</div>
       <div>Duration: {{stage.durationMillis}} ms</div>
       <div><a href="{{this.data[0].baseLogUrl + stage._links.self.href}}">Log Url</a></div>
+      <!-- Display error type and message if stage failed -->
       <div *ngIf="stage.status=='FAILURE'">Error Type: {{stage.error.type}}</div>
       <div *ngIf="stage.status=='FAILURE'">Error Log: {{stage.error.message}} </div>
     </mat-step>
-    <mat-step label="End"></mat-step>
+    <mat-step label="End" state="bookend" completed="false" editable="false"></mat-step>
 
-    <!-- Icon overrides. -->
+    <!-- Icon overrides -->
     <ng-template matStepperIcon="SUCCESS">
       <mat-icon>check_circle</mat-icon>
     </ng-template>
@@ -54,13 +50,17 @@
     <ng-template matStepperIcon="NOT_EXECUTED">
       <mat-icon>do_not_disturb</mat-icon>
     </ng-template>
-    <ng-template matStepperIcon="start">
+    <ng-template matStepperIcon="bookend">
       <mat-icon>schedule</mat-icon>
     </ng-template>
 
-    <!--NEED TO FIGURE OUT HOW TO MAKE EDIT ICON CORRELATE TO STAGE.STATUS-->
+    <!-- The "edit" state is very finnicky for mat-stepper, still searching for a way to not have to do this next section. -->
     <ng-template matStepperIcon="edit">
-      <mat-icon>do_not_disturb</mat-icon>
+      <mat-icon class="success-icon" *ngIf="this.stepper.selected.state == 'SUCCESS'">check_circle</mat-icon>
+      <mat-icon *ngIf="this.stepper.selected.state == 'NOT_EXECUTED'">do_not_disturb</mat-icon>
+      <mat-icon *ngIf="this.stepper.selected.state == 'FAILURE'">highlight_off</mat-icon>
+      <mat-icon *ngIf="this.stepper.selected.state == 'start'">schedule</mat-icon>
+      <mat-icon *ngIf="this.stepper.selected.state == 'end'">highlight_off</mat-icon>
     </ng-template>
 
 
