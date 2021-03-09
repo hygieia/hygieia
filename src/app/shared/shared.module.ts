@@ -74,7 +74,6 @@ import {NgxPaginationModule} from 'ngx-pagination';
 import {CollectorItemModule} from '../viewer_modules/collector-item/collector-item.module';
 import {NfrrModule} from '../screen_modules/nfrr/nfrr.module';
 
-
 @NgModule({
   declarations: [
     GeneralDeleteComponent,
@@ -178,7 +177,7 @@ import {NfrrModule} from '../screen_modules/nfrr/nfrr.module';
         NbTabsetModule,
         NbIconModule,
         TabsFixturesModule,
-    NgxPaginationModule,
+    NgxPaginationModule
     ],
   exports: [
     BarHorizontalComponent,
