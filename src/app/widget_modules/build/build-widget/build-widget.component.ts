@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import {of, Subscription} from 'rxjs';
 import {distinctUntilChanged, startWith, switchMap} from 'rxjs/operators';
-import {IClickListData, IClickListItem} from 'src/app/shared/charts/click-list/click-list-interfaces';
+import {IClickListData, IClickListItemBuild} from 'src/app/shared/charts/click-list/click-list-interfaces';
 import {DashStatus} from 'src/app/shared/dash-status/DashStatus';
 import {DashboardService} from 'src/app/shared/dashboard.service';
 import {LayoutDirective} from 'src/app/shared/layouts/layout.directive';
@@ -187,7 +187,7 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
         baseLogUrl: baseLogUrl,
         number: build.number,
         stages: build.stages,
-      } as IClickListItem;
+      } as IClickListItemBuild;
     });
     this.charts[1].data = {
       items: latestBuildData,
