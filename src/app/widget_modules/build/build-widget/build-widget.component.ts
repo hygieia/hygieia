@@ -171,7 +171,7 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
       const buildStatus = buildStatusTable[build.buildStatus.toLowerCase()] ?
         buildStatusTable[build.buildStatus.toLowerCase()] : DashStatus.FAIL;
       const statusTextFitted = DashStatus.FAIL ? '!' : build.buildStatus;
-      let baseLogUrl = build.buildUrl.split('/job')[0]
+      const baseLogUrl = build.buildUrl.split('/job')[0];
       return {
         status: buildStatus,
         buildStatus: build.buildStatus,
@@ -184,7 +184,7 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
         startTime: new Date(build.startTime),
         duration: build.endTime - build.startTime,
         url: build.buildUrl,
-        baseLogUrl: baseLogUrl,
+        baseLogUrl,
         number: build.number,
         stages: build.stages,
       } as IClickListItemBuild;
