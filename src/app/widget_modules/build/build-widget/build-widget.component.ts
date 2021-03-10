@@ -176,7 +176,7 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
         status: buildStatus,
         buildStatus: build.buildStatus,
         statusText: statusTextFitted,
-        title: build.number,
+        title: `Build: ${build.number}`,
         collectorItemId: build.collectorItemId,
         subtitles: [
           new Date(build.endTime)

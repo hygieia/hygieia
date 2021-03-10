@@ -17,13 +17,17 @@ export interface IClickListData {
 }
 
 export interface IClickListItem {
-  status?: DashStatus;
-  buildStatus?: string;
+  status: DashStatus;
   statusText: string;
   title: string;
   subtitles: any[];
   url: string;
-  baseLogUrl?: string;
+}
+
+
+export interface IClickListItemBuild extends IClickListItem {
+  buildStatus: string;
+  baseLogUrl: string;
 }
 
 export interface IClickListItemDeploy extends IClickListItem {
