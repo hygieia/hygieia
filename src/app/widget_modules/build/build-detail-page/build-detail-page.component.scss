@@ -1,0 +1,43 @@
+.table-content {
+  width: 100%;
+  word-break: break-all;
+  border-collapse: separate;
+  padding: 1.5em;
+}
+
+td, th{
+  border: 2px solid grey;
+  padding: 5px;
+}
+
+::ng-deep .mat-step-header .mat-step-icon-state-SUCCESS {
+  background-color: rgb(8,232,17);
+}
+
+::ng-deep .mat-step-header .mat-step-icon-state-NOT_EXECUTED {
+  background-color: rgb(97, 106, 114);
+}
+
+::ng-deep .mat-step-header .mat-step-icon-state-FAILURE {
+  background-color: red;
+}
+
+::ng-deep .mat-step-header .mat-step-icon-state-edit {
+  background-color: grey;
+}
+
+.mat-stepper-vertical{
+  background-color: rgb(212,212,212)
+}
+
+.build-overview{
+  padding: 30px;
+}
+
+.build-overview-icon{
+  font-size: xxx-large;
+}
+
+h5{
+  color: #212529;
+}
