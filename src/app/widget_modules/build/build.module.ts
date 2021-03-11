@@ -8,6 +8,7 @@ import { BuildDetailComponent } from './build-detail/build-detail.component';
 import { BuildRoutingModule } from './build-routing-module';
 import { BuildWidgetComponent } from './build-widget/build-widget.component';
 import {BuildDeleteFormComponent} from './build-delete-form/build-delete-form.component';
+import { BuildDetailPageComponent } from './build-detail-page/build-detail-page.component';
 import {MatStepperModule} from '@angular/material/stepper';
 import {MatIconModule} from '@angular/material/icon';
 import {MatTooltipModule} from '@angular/material/tooltip';
@@ -22,8 +23,8 @@ import { FlexLayoutModule } from '@angular/flex-layout';
       useValue: { displayDefaultIndicatorType: false }
     }
   ],
-  declarations: [BuildWidgetComponent, BuildConfigFormComponent, BuildDetailComponent, BuildDeleteFormComponent],
-  entryComponents: [BuildWidgetComponent, BuildConfigFormComponent, BuildDetailComponent, BuildDeleteFormComponent],
+  declarations: [BuildWidgetComponent, BuildConfigFormComponent, BuildDetailComponent, BuildDeleteFormComponent, BuildDetailPageComponent],
+  entryComponents: [BuildWidgetComponent, BuildConfigFormComponent, BuildDetailComponent, BuildDeleteFormComponent, BuildDetailPageComponent],
   imports: [
     BuildRoutingModule,
     CommonModule,
