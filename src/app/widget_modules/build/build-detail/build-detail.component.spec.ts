@@ -6,14 +6,9 @@ import {MatStepperModule} from '@angular/material/stepper';
 import {MatIconModule} from '@angular/material/icon';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-
-
-
-
 describe('BuildDetailComponent', () => {
   let component: BuildDetailComponent;
   let fixture: ComponentFixture<BuildDetailComponent>;
-
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ BuildDetailComponent ],
@@ -24,10 +19,14 @@ describe('BuildDetailComponent', () => {
     .compileComponents();
   }));
 
-  beforeEach(() => {
+  afterEach(() => {
+    fixture.destroy();
+  });
+
+  beforeEach( async () => {
     fixture = TestBed.createComponent(BuildDetailComponent);
     component = fixture.componentInstance;
-    const detailData = {
+    const detailData = [{
       title: 'buildTitle',
       url: 'buildUrl',
       lastUpdated: 1587131351,
@@ -38,24 +37,25 @@ describe('BuildDetailComponent', () => {
           name: 'Test Stage',
           status: 'SUCCESS',
           startTimeMillis: 1111,
-          durationMillis: 1000
+          durationMillis: 1000,
+          _links: {
+            self: {
+              href: 'url-string'
+            }
+          }
         }
       ],
-
-    };
+    }];
     component.data = detailData;
     fixture.detectChanges();
   });
-
   it('should create', () => {
     fixture = TestBed.createComponent(BuildDetailComponent);
-
     component = fixture.componentInstance;
     expect(component).toBeTruthy();
   });
-
   it('should set detailData', () => {
-    const detailData = {
+    const detailData = [{
       title: 'buildTitle',
       url: 'buildUrl',
       lastUpdated: 1587131351,
@@ -74,23 +74,8 @@ describe('BuildDetailComponent', () => {
           }
         }
       ],
-
-    };
-
+    }];
     component.data = detailData;
     expect(component.data.length).toEqual(1);
-
-    //// Removed because I don't think there will ever be a data.data with the way we are sending the data through, so these tests are redundant.
-    // const noData = [{
-    //   title: 'buildTitle',
-    //   url: 'buildUrl',
-    //   lastUpdated: 1587131351,
-    //   stages: [
-
-    //   ]
-    // }];
-
-    // component.detailData = [noData];
-    // expect(component.data[0]).toEqual(noData);
   });
 });

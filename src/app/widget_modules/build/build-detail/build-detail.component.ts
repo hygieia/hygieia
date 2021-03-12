@@ -1,4 +1,4 @@
-import { Component, Input, Type, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, Input, Type, ViewChild, OnInit } from '@angular/core';
 import { MatVerticalStepper } from '@angular/material';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -8,7 +8,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
   templateUrl: './build-detail.component.html',
   styleUrls: ['./build-detail.component.scss']
 })
-export class BuildDetailComponent implements AfterViewInit {
+export class BuildDetailComponent implements OnInit {
 
   @Input() detailView: Type<any>;
   @ViewChild(MatVerticalStepper, { static: false }) stepper: MatVerticalStepper;
@@ -20,21 +20,17 @@ export class BuildDetailComponent implements AfterViewInit {
     public activeModal: NgbActiveModal,
   ) { }
 
-  ngAfterViewInit() {
-    // Open the first stage to indicate to the user how the modal works
-    this.stepper.selectedIndex = 1;
+  ngOnInit() {
+
   }
 
   @Input()
   set detailData(data: any) {
-    console.log(data)
     if (data.data) {
       this.data = data.data;
     } else {
-      this.data = [data]
+      this.data = [data];
     }
-    console.log(`THIS`)
-    console.log(this.data)
 
     // Truncate error messages
     this.data[0].stages.map(stage => {
