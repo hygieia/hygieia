@@ -30,7 +30,7 @@ export class BuildDetailComponent implements OnInit {
     if (data.data) {
       this.data = data.data;
     } else {
-      this.data = data
+      this.data = [data]
     }
 
     // Truncate error messages
