@@ -22,23 +22,26 @@ export class BuildDetailComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     // Open the first stage to indicate to the user how the modal works
-    this.stepper.selectedIndex = 1;
+    // this.stepper.selectedIndex = 1;
   }
 
   @Input()
   set detailData(data: any) {
+    console.log(data)
     if (data.data) {
       this.data = data.data;
     } else {
-      this.data = [data];
+      this.data = data
     }
+    console.log(`THIS`)
+    console.log(this.data)
 
     // Truncate error messages
-    this.data[0].stages.map(stage => {
-      if (stage.error) {
-        stage.error.message = `${stage.error.message.substring(0, 150)} ...`;
-      }
-    });
+    // this.data[0].stages.map(stage => {
+    //   if (stage.error) {
+    //     stage.error.message = `${stage.error.message.substring(0, 150)} ...`;
+    //   }
+    // });
 
     this.readableDuration = this.convertToReadable(this.data[0].duration);
 

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SharedModule } from 'src/app/shared/shared.module';
 
@@ -13,6 +13,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { FlexLayoutModule } from '@angular/flex-layout';
+
 
 @NgModule({
   providers: [
@@ -33,6 +34,9 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     MatTooltipModule,
     FlexLayoutModule
     ],
-  exports: []
+  exports: [],
+  schemas: [
+    CUSTOM_ELEMENTS_SCHEMA
+  ]
 })
 export class BuildModule { }
