@@ -27,17 +27,22 @@ describe('BuildDetailComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(BuildDetailComponent);
     component = fixture.componentInstance;
-    const detailData = [{
+    const detailData = {
       title: 'buildTitle',
       url: 'buildUrl',
       lastUpdated: 1587131351,
-      data: [{
-        name: 'name',
-        items: [],
-      }],
-      stages: [],
+      subtitles: [111],
+      stages: [
+        {
+          stageId: 111,
+          name: 'Test Stage',
+          status: 'SUCCESS',
+          startTimeMillis: 1111,
+          durationMillis: 1000
+        }
+      ],
 
-    }];
+    };
     component.data = detailData;
     fixture.detectChanges();
   });
@@ -50,30 +55,42 @@ describe('BuildDetailComponent', () => {
   });
 
   it('should set detailData', () => {
-    const detailData = [{
+    const detailData = {
       title: 'buildTitle',
       url: 'buildUrl',
       lastUpdated: 1587131351,
-      data: [{
-        name: 'name',
-        items: [],
-      }],
-      stages: []
-    }];
+      subtitles: [111],
+      stages: [
+        {
+          stageId: 111,
+          name: 'Test Stage',
+          status: 'SUCCESS',
+          startTimeMillis: 1111,
+          durationMillis: 1000,
+          _links: {
+            self: {
+              href: 'test_href'
+            }
+          }
+        }
+      ],
+
+    };
 
     component.data = detailData;
     expect(component.data.length).toEqual(1);
 
-    const noData = [{
-      title: 'buildTitle',
-      url: 'buildUrl',
-      lastUpdated: 1587131351,
-      stages: [
+    //// Removed because I don't think there will ever be a data.data with the way we are sending the data through, so these tests are redundant.
+    // const noData = [{
+    //   title: 'buildTitle',
+    //   url: 'buildUrl',
+    //   lastUpdated: 1587131351,
+    //   stages: [
 
-      ]
-    }];
+    //   ]
+    // }];
 
-    component.detailData = [noData];
-    expect(component.data[0]).toEqual(noData);
+    // component.detailData = [noData];
+    // expect(component.data[0]).toEqual(noData);
   });
 });
