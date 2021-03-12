@@ -27,7 +27,7 @@ describe('BuildDetailComponent', () => {
   beforeEach( async () => {
     fixture = TestBed.createComponent(BuildDetailComponent);
     component = fixture.componentInstance;
-    const detailData = [{
+    const detailData = {
       title: 'buildTitle',
       url: 'buildUrl',
       lastUpdated: 1587131351,
@@ -56,7 +56,7 @@ describe('BuildDetailComponent', () => {
     expect(component).toBeTruthy();
   });
   it('should set detailData', () => {
-    const detailData = [{
+    const detailData = {
       title: 'buildTitle',
       url: 'buildUrl',
       lastUpdated: 1587131351,
