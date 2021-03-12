@@ -6,6 +6,7 @@ import {MatStepperModule} from '@angular/material/stepper';
 import {MatIconModule} from '@angular/material/icon';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+
 describe('BuildDetailComponent', () => {
   let component: BuildDetailComponent;
   let fixture: ComponentFixture<BuildDetailComponent>;
