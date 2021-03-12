@@ -26,10 +26,11 @@ export class BuildDetailComponent implements OnInit {
 
   @Input()
   set detailData(data: any) {
+    console.log(data)
     if (data.data) {
       this.data = data.data;
     } else {
-      this.data = [data];
+      this.data = data
     }
 
     // Truncate error messages
