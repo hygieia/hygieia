@@ -23,7 +23,7 @@ export class BuildService {
   }
 
   fetchBuild(buildId: string): Observable<IBuild>{
-    let buildRoute = '/api/build-details/' + buildId;
+    let buildRoute = `/api/build-details/${buildId}`;
     return this.http.get<IBuild>(buildRoute);
   }
 }
