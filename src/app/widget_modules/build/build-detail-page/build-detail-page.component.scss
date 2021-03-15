@@ -1,3 +1,8 @@
+.build-page {
+  box-shadow: 0px 2px 24px 2px black;
+  background-color: none;
+}
+
 .table-content {
   width: 100%;
   word-break: break-all;
@@ -15,6 +20,10 @@ th {
 td {
   padding: 4px;
   word-wrap: break-word;
+}
+
+::ng-deep .mat-step-header .mat-step-label.mat-step-label-active{
+  color: white;
 }
 
 ::ng-deep .mat-step-header .mat-step-icon-state-SUCCESS {
@@ -37,12 +46,12 @@ td {
   background-color: rgb(250, 218, 94);
 }
 
-.mat-stepper-vertical{
-  background-color: rgb(212,212,212)
+::ng-deep .mat-stepper-vertical{
+  background-color: transparent;
 }
 
 .build-overview{
-  padding: 10px 10px 30px 10px;
+  padding: 20px;
 }
 
 .build-overview-icon{
@@ -50,7 +59,6 @@ td {
 }
 
 h4{
-  color: #212529;
   border-top: 1px solid  rgba(0, 0, 0, .25);
   padding: 30px 30px 10px 30px;
 }
@@ -71,6 +79,11 @@ h4{
 
 #build-aborted{
   color: grey;
+}
+
+.stepper{
+  padding: 20px;
+  box-shadow: 0px 2px 24px 2px black;
 }
 
 

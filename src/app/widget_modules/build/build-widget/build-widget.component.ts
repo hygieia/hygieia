@@ -32,7 +32,7 @@ import {WidgetState} from '../../../shared/widget-header/widget-state';
 })
 export class BuildWidgetComponent extends WidgetComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  private readonly BUILDS_PER_DAY_TIME_RANGE = 14;
+  private readonly BUILDS_PER_DAY_TIME_RANGE = 100;
   private readonly TOTAL_BUILD_COUNTS_TIME_RANGES = [7, 14];
 
   private buildTimeThreshold: number;

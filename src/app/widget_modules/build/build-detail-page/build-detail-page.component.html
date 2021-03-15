@@ -1,31 +1,32 @@
-<div style="background-color: rgb(150,150,150)" *ngIf="this.data">
-    <div  class="build-overview" fxLayout="row" fxLayoutAlign="space-around center" >
-      <table fxFlex="80">
-        <tr>
-          <th>Build Status</th>
-          <th>Start Time</th>
-          <th>End Time</th>
-          <th>Duration (HH:mm:ss)</th> 
-        </tr>
-        <tr>
-          <td> <!--NOTE: add default. get color into scss-->
-            <mat-icon id="build-success" class="build-overview-icon" *ngIf="this.data.buildStatus=='Success'">
-              check_circle</mat-icon>
-            <mat-icon id="build-failure" class="build-overview-icon" *ngIf="this.data.buildStatus=='Failure'">
-              highlight_off</mat-icon>
-            <mat-icon id="build-aborted" class="build-overview-icon" *ngIf="this.data.buildStatus=='Aborted'">
-              priority_high</mat-icon>
-          </td>
-          <!--NOTE: add better default-->
-          <td>{{(this.data.startTime ? (this.data.startTime | date: 'yyyy-MM-dd HH:mm:ss') : 'N/A') }}</td>
-          <td>{{this.data.endTime ? (this.data.endTime | date: 'yyyy-MM-dd HH:mm:ss') : 'N/A'}}</td>
-          <td>{{this.readableDuration}}</td>
-        </tr>
-      </table>
-      <div fxFlex></div>
-    </div>
+<div class="build-page" *ngIf="this.data">
+  <div class="build-overview" fxLayout="row" fxLayoutAlign="space-around center">
+    <table fxFlex="80">
+      <tr>
+        <th>Build Status</th>
+        <th>Start Time</th>
+        <th>End Time</th>
+        <th>Duration (HH:mm:ss)</th>
+      </tr>
+      <tr>
+        <td>
+          <!--NOTE: add default. get color into scss-->
+          <mat-icon id="build-success" class="build-overview-icon" *ngIf="this.data.buildStatus=='Success'">
+            check_circle</mat-icon>
+          <mat-icon id="build-failure" class="build-overview-icon" *ngIf="this.data.buildStatus=='Failure'">
+            highlight_off</mat-icon>
+          <mat-icon id="build-aborted" class="build-overview-icon" *ngIf="this.data.buildStatus=='Aborted'">
+            priority_high</mat-icon>
+        </td>
+        <!--NOTE: add better default-->
+        <td>{{(this.data.startTime ? (this.data.startTime | date: 'yyyy-MM-dd HH:mm:ss') : 'N/A') }}</td>
+        <td>{{this.data.endTime ? (this.data.endTime | date: 'yyyy-MM-dd HH:mm:ss') : 'N/A'}}</td>
+        <td>{{this.readableDuration}}</td>
+      </tr>
+    </table>
+    <div fxFlex></div>
+  </div>
 
-
+  <div class="stepper">
     <h4>Stage Flow</h4>
     <mat-vertical-stepper #stepper>
       <mat-step label="Start" state="bookend" completed="false" editable="false"></mat-step>
@@ -35,19 +36,15 @@
         </ng-template>
         <div>Status: {{stage.status}}</div>
         <div>Duration: {{stage.durationMillis}} ms</div>
-
-
-        
-        <div><a href="{{this.data.baseLogUrl + stage._links.self.href}}">Log Url</a></div>
-        
-        
-        
+        <div *ngIf="data.buildUrl && stage._links"><a href="{{this.data.baseLogUrl + stage._links.self.href}}">Log
+            Url</a>
+        </div>
         <!-- Display error type and message if stage failed -->
-        <div *ngIf="stage.status=='FAILURE'">Error Type: {{stage.error.type}}</div>
-        <div *ngIf="stage.status=='FAILURE'">Error Log: {{stage.error.message}} </div>
+        <div *ngIf="stage.status=='FAILED' && stage.error">Error Type: {{stage.error.type}}</div>
+        <div *ngIf="stage.status=='FAILED' && stage.error">Error Log: {{stage.error.message}} </div>
       </mat-step>
       <mat-step label="End" state="bookend" completed="false" editable="false"></mat-step>
-  
+
       <!-- Icon overrides -->
       <ng-template matStepperIcon="SUCCESS">
         <mat-icon>check_circle</mat-icon>
@@ -61,7 +58,7 @@
       <ng-template matStepperIcon="bookend">
         <mat-icon>schedule</mat-icon>
       </ng-template>
-  
+
       <!-- The "edit" state is very finnicky for mat-stepper, still searching for a way to not have to do this next section. -->
       <ng-template matStepperIcon="edit">
         <mat-icon class="success-icon" *ngIf="this.stepper.selected.state == 'SUCCESS'">check_circle</mat-icon>
@@ -70,7 +67,9 @@
         <mat-icon *ngIf="this.stepper.selected.state == 'start'">schedule</mat-icon>
         <mat-icon *ngIf="this.stepper.selected.state == 'end'">highlight_off</mat-icon>
       </ng-template>
-  
-  
+
+
     </mat-vertical-stepper>
   </div>
+
+</div>
