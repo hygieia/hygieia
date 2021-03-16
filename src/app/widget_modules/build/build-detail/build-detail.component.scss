@@ -1,85 +1,91 @@
-
-
-
-.modal-body{
-  max-height: 80vh;
-  overflow: scroll;
+.modal-body {
+    max-height: 80vh;
+    overflow: scroll;
 }
 
 .table-content {
-  width: 100%;
-  word-break: break-all;
-  border-collapse: separate;
-  padding: 1.5em;
+    width: 100%;
+    word-break: break-all;
+    border-collapse: separate;
+    padding: 1.5em;
 }
 
 th {
-  padding: 4px;
-  font-weight: 900;
-  border-bottom: 1px solid  rgba(0, 0, 0, .25);
-  table-layout: fixed;
+    padding: 4px;
+    font-weight: 900;
+    border-bottom: 1px solid rgba(0, 0, 0, .25);
+    table-layout: fixed;
+    text-align: center;
+    justify-content: center;
+}
+
+table {
+    width: 100%;
 }
 
 td {
-  padding: 4px;
-  word-wrap: break-word;
+    padding: 4px;
+    word-wrap: break-word;
+    text-align: center;
+    justify-content: center;
 }
 
 ::ng-deep .mat-step-header .mat-step-icon-state-SUCCESS {
-  background-color: green;
+    background-color: rgb(74, 158, 55);
 }
 
 ::ng-deep .mat-step-header .mat-step-icon-state-NOT_EXECUTED {
-  background-color: rgb(97, 106, 114);
+    background-color: rgb(97, 106, 114);
 }
 
 ::ng-deep .mat-step-header .mat-step-icon-state-bookend {
-  background-color: blue;
+    background-color: rgb(73, 73, 228);
 }
 
 ::ng-deep .mat-step-header .mat-step-icon-state-FAILURE {
-  background-color: red;
+    background-color: rgb(208, 61, 51);
 }
 
-::ng-deep .mat-step-header .mat-step-icon-state-edit{
-  background-color: rgb(250, 218, 94);
+::ng-deep .mat-step-header .mat-step-icon-state-FAILED {
+    background-color: rgb(208, 61, 51);
 }
 
-.mat-stepper-vertical{
-  background-color: rgb(212,212,212)
+::ng-deep .mat-step-header .mat-step-icon-state-edit {
+    background-color: rgb(250, 218, 94);
 }
 
-.build-overview{
-  padding: 10px 10px 30px 10px;
+.mat-stepper-vertical {
+    background-color: rgb(212, 212, 212)
 }
 
-.build-overview-icon{
-  font-size: xxx-large;
+.build-overview {
+    padding: 10px 10px 30px 10px;
 }
 
-h4{
-  color: #212529;
-  border-top: 1px solid  rgba(0, 0, 0, .25);
-  padding: 30px 30px 10px 30px;
+.build-overview-icon {
+    font-size: xxx-large;
 }
 
-::ng-deep .mat-step-header .mat-step-icon-state-edit mat-icon{
-  font-size: 20px;
-  height: fit-content;
-  width: fit-content;
+h4 {
+    color: #212529;
+    border-top: 1px solid rgba(0, 0, 0, .25);
+    padding: 30px 30px 10px 30px;
 }
 
-#build-success{
-  color: green;
+::ng-deep .mat-step-header .mat-step-icon-state-edit mat-icon {
+    font-size: 20px;
+    height: fit-content;
+    width: fit-content;
 }
 
-#build-failure{
-  color: red;
+#build-success {
+    color: rgb(74, 158, 55);
 }
 
-#build-aborted{
-  color: grey;
+#build-failure {
+    color: rgb(208, 61, 51);
 }
 
-
-
+#build-aborted {
+    color: grey;
+}
