@@ -42,7 +42,7 @@ export class BuildDetailComponent implements OnInit {
     if (this.data[0].duration) {
       this.readableDuration = this.convertToReadable(this.data[0].duration);
     } else {
-      this.readableDuration = '-- : -- : --'
+      this.readableDuration = '-- : -- : --';
     }
 
   }
@@ -67,7 +67,7 @@ export class BuildDetailComponent implements OnInit {
       secondsString = `0${seconds.toString()}`;
     }
 
-    return `${hoursString}:${minutesString}:${secondsString}`;``
+    return `${hoursString}:${minutesString}:${secondsString}`;
   }
 
   getTooltipInfo(stage) {
