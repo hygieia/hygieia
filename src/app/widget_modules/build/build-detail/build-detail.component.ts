@@ -2,7 +2,6 @@ import { Component, Input, Type, ViewChild, OnInit } from '@angular/core';
 import { MatVerticalStepper } from '@angular/material';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
-
 @Component({
   selector: 'app-build-detail',
   templateUrl: './build-detail.component.html',
@@ -16,6 +15,8 @@ export class BuildDetailComponent implements OnInit {
   public data;
   public readableDuration;
 
+
+
   constructor(
     public activeModal: NgbActiveModal,
   ) { }
@@ -26,11 +27,10 @@ export class BuildDetailComponent implements OnInit {
 
   @Input()
   set detailData(data: any) {
-    console.log(data)
     if (data.data) {
       this.data = data.data;
     } else {
-      this.data = [data]
+      this.data = [data];
     }
 
     // Truncate error messages
@@ -74,6 +74,12 @@ export class BuildDetailComponent implements OnInit {
   getTooltipInfo(stage) {
     const tooltipObj = { Status: stage.status, 'Duration (ms)': stage.durationMillis };
     return JSON.stringify(tooltipObj);
+  }
+
+  openInNewTab() {
+    console.log(this.data[0].buildId);
+    const url = `/build/${this.data[0].buildId}`;
+    window.open(url, '_blank');
   }
 
 }

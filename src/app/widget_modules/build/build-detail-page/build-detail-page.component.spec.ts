@@ -7,7 +7,6 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { IBuild } from '../interfaces';
 import { BuildService } from '../build.service';
@@ -15,7 +14,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 class MockBuildService {
   fetchBuild(): Observable<IBuild> {
-    let mockBuild = {
+    const mockBuild = {
       id: '1234',
       number: 'buildTitle',
       buildUrl: 'buildUrl',
@@ -40,19 +39,19 @@ class MockBuildService {
   }
 }
 
-fdescribe('BuildDetailComponent', () => {
+describe('BuildDetailComponent', () => {
   let component: BuildDetailPageComponent;
   let fixture: ComponentFixture<BuildDetailPageComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ BuildDetailPageComponent ],
-      providers: [ 
+      providers: [
         NgbActiveModal,
         { provide: ActivatedRoute, useValue: {
             snapshot: {
               paramMap: {
-                get: () => { return '1234'; }
+                get: () =>  '1234'
               }
             }
         }},

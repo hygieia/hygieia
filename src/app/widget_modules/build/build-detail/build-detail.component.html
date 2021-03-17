@@ -1,11 +1,12 @@
 <div class="modal-body" *ngIf="this.data">
   <div class="build-overview" fxLayout="row" fxLayoutAlign="space-around center">
-    <table fxFlex="80">
+    <table>
       <tr>
         <th>Build Status</th>
         <th>Start Time</th>
         <th>End Time</th>
         <th>Duration (HH:mm:ss)</th>
+        <th>Open In New Tab</th>
       </tr>
       <tr>
         <td>
@@ -15,14 +16,14 @@
             *ngIf="this.data[0].buildStatus=='Failure' || this.data[0].buildStatus=='Failed'">
             error</mat-icon>
           <mat-icon id="build-aborted" class="build-overview-icon" *ngIf="this.data[0].buildStatus=='Aborted'">
-            priority_high</mat-icon>
+            error</mat-icon>
         </td>
         <td>{{(this.data[0].startTime ? (this.data[0].startTime | date: 'yyyy-MM-dd HH:mm:ss') : 'N/A') }}</td>
         <td>{{this.data[0].subtitles[0] ? (this.data[0].subtitles[0] | date: 'yyyy-MM-dd HH:mm:ss') : 'N/A'}}</td>
         <td>{{this.readableDuration}}</td>
+        <td><button (click)="openInNewTab()" class="new-tab-button"><mat-icon class="new-tab-icon">open_in_new</mat-icon></button></td>
       </tr>
     </table>
-    <div fxFlex id="open-in-new-icon"><mat-icon>open_in_new</mat-icon></div>
   </div>
 
   <h4>Stage Flow</h4>

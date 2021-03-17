@@ -25,11 +25,16 @@ import { AuthInterceptor } from 'src/app/core/interceptors/auth.interceptor';
       provide: STEPPER_GLOBAL_OPTIONS,
       useValue: { displayDefaultIndicatorType: false }
     },
-    BuildService, 
+    BuildService,
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
   ],
-  declarations: [BuildWidgetComponent, BuildConfigFormComponent, BuildDetailComponent, BuildDeleteFormComponent, BuildDetailPageComponent],
-  entryComponents: [BuildWidgetComponent, BuildConfigFormComponent, BuildDetailComponent, BuildDeleteFormComponent, BuildDetailPageComponent],
+  declarations: [
+    BuildWidgetComponent, BuildConfigFormComponent, BuildDetailComponent,
+    BuildDeleteFormComponent, BuildDetailPageComponent
+  ],
+  entryComponents: [
+    BuildWidgetComponent, BuildConfigFormComponent, BuildDetailComponent, BuildDeleteFormComponent, BuildDetailPageComponent
+  ],
   imports: [
     BuildRoutingModule,
     CommonModule,

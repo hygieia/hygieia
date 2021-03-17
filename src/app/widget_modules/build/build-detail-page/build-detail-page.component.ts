@@ -1,7 +1,7 @@
 import { Component, OnInit, } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BuildService } from '../build.service';
-import { IBuild} from '../interfaces';
+import { IBuild } from '../interfaces';
 
 
 @Component({
@@ -12,49 +12,54 @@ import { IBuild} from '../interfaces';
 export class BuildDetailPageComponent implements OnInit {
   private buildId: string;
   private data: IBuild;
-  private readableDuration;
+  public readableDuration;
 
   constructor(
     private route: ActivatedRoute,
     private buildService: BuildService
-  ){}
+  ) { }
 
-  ngOnInit(){
+  ngOnInit() {
     this.buildId = this.route.snapshot.paramMap.get('id');
-    console.log(this.data);
+
     this.buildService.fetchBuild(this.buildId).subscribe(res => {
-      this.data = res
-      console.log(this.data);
+      this.data = res;
+
+      // Truncate error messages
       this.data.stages.map(stage => {
         if (stage.error) {
           stage.error.message = `${stage.error.message.substring(0, 150)} ...`;
         }
-      })
-      if(this.data.duration){
+      });
+
+
+      if (this.data.duration) {
         this.readableDuration = this.convertToReadable(this.data.duration);
+      } else {
+        this.readableDuration = '-- : -- : --';
       }
     });
   }
 
-  convertToReadable(timeInMiliseconds): String {
-    let hours = Math.floor(timeInMiliseconds / 1000 / 60 / 60);
+  convertToReadable(timeInMiliseconds): string {
+    const hours = Math.floor(timeInMiliseconds / 1000 / 60 / 60);
     let hoursString = hours.toString();
-    if(hours < 10){
-      hoursString = `0${hours.toString()}`
+    if (hours < 10) {
+      hoursString = `0${hours.toString()}`;
     }
 
-    let minutes = Math.floor((timeInMiliseconds / 1000 / 60 / 60 - hours) * 60);
+    const minutes = Math.floor((timeInMiliseconds / 1000 / 60 / 60 - hours) * 60);
     let minutesString = minutes.toString();
-    if(minutes < 10){
-      minutesString = `0${minutes.toString()}`
+    if (minutes < 10) {
+      minutesString = `0${minutes.toString()}`;
     }
 
-    let seconds = Math.floor(((timeInMiliseconds / 1000 / 60 / 60 - hours) * 60 - minutes) * 60);
+    const seconds = Math.floor(((timeInMiliseconds / 1000 / 60 / 60 - hours) * 60 - minutes) * 60);
     let secondsString = seconds.toString();
-    if(seconds < 10){
-      secondsString = `0${seconds.toString()}`
+    if (seconds < 10) {
+      secondsString = `0${seconds.toString()}`;
     }
-    return `${hoursString}:${minutesString}:${secondsString}`
+    return `${hoursString}:${minutesString}:${secondsString}`;
   }
 
   getTooltipInfo(stage) {
