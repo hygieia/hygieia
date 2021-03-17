@@ -77,7 +77,6 @@ export class BuildDetailComponent implements OnInit {
   }
 
   openInNewTab() {
-    console.log(this.data[0].buildId);
     const url = `/build/${this.data[0].buildId}`;
     window.open(url, '_blank');
   }
