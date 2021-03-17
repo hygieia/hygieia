@@ -1,11 +1,7 @@
-import { Component, Input, OnInit, Type, ViewChild } from '@angular/core';
-import { MatVerticalStepper } from '@angular/material';
+import { Component, OnInit, } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { switchMap } from 'rxjs/operators';
-import { BuildDetailComponent } from '../build-detail/build-detail.component';
 import { BuildService } from '../build.service';
-import { IBuild, IStage } from '../interfaces';
+import { IBuild} from '../interfaces';
 
 
 @Component({
