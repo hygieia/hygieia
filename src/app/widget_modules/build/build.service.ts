@@ -22,8 +22,8 @@ export class BuildService {
       map(response => response.result));
   }
 
-  fetchBuild(buildId: string): Observable<IBuild>{
-    let buildRoute = `/api/build-details/${buildId}`;
+  fetchBuild(buildId: string): Observable<IBuild> {
+    const buildRoute = `/api/build-details/${buildId}`;
     return this.http.get<IBuild>(buildRoute);
   }
 }
