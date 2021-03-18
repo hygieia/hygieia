@@ -10,8 +10,8 @@ import { IBuild } from '../interfaces';
   styleUrls: ['./build-detail-page.component.scss']
 })
 export class BuildDetailPageComponent implements OnInit {
-  private buildId: string;
-  private data: IBuild;
+  public buildId: string;
+  public data: IBuild;
   public readableDuration;
 
   constructor(
