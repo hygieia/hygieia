@@ -17,11 +17,13 @@
             error</mat-icon>
           <mat-icon id="build-aborted" class="build-overview-icon" *ngIf="this.data[0].buildStatus=='Aborted'">
             error</mat-icon>
+          <mat-icon id="build-aborted" class="build-overview-icon" *ngIf="!buildStatusCheck(this.data[0].buildStatus)">
+            horizontal_rule</mat-icon>
         </td>
         <td>{{(this.data[0].startTime ? (this.data[0].startTime | date: 'yyyy-MM-dd HH:mm:ss') : 'N/A') }}</td>
         <td>{{this.data[0].subtitles[0] ? (this.data[0].subtitles[0] | date: 'yyyy-MM-dd HH:mm:ss') : 'N/A'}}</td>
         <td>{{this.readableDuration}}</td>
-        <td><button (click)="openInNewTab()" class="new-tab-button"><mat-icon class="new-tab-icon">open_in_new</mat-icon></button></td>
+        <td><button (click)="openStandaloneView()" class="new-tab-button"><mat-icon class="new-tab-icon">open_in_new</mat-icon></button></td>
       </tr>
     </table>
   </div>
@@ -29,7 +31,7 @@
   <h4>Stage Flow</h4>
   <mat-vertical-stepper #stepper>
     <mat-step label="Start" state="bookend" completed="false" editable="false"></mat-step>
-    <mat-step *ngFor="let stage of this.data[0].stages" [state]="stage.status" [completed]="false">
+    <mat-step *ngFor="let stage of this.data[0].stages" [state]="stageStatusCheck(stage.status)" [completed]="false">
       <ng-template matStepLabel>
         <div placement="right" [ngbTooltip]="getTooltipInfo(stage)">{{stage.name}}</div>
       </ng-template>
@@ -62,7 +64,7 @@
       <mat-icon>schedule</mat-icon>
     </ng-template>
     <!-- If there is no stage.status the state will be 'number' -->
-    <ng-template matStepperIcon="number">
+    <ng-template matStepperIcon="default">
       <mat-icon>horizontal_rule</mat-icon>
     </ng-template>
 
@@ -74,7 +76,7 @@
       <mat-icon *ngIf="this.stepper.selected.state == 'FAILED'">priority_high</mat-icon>
       <mat-icon *ngIf="this.stepper.selected.state == 'start'">schedule</mat-icon>
       <mat-icon *ngIf="this.stepper.selected.state == 'end'">highlight_off</mat-icon>
-      <mat-icon *ngIf="this.stepper.selected.state == undefined">horizontal_rule</mat-icon>
+      <mat-icon *ngIf="this.stepper.selected.state == 'default'">horizontal_rule</mat-icon>
 
     </ng-template>
 

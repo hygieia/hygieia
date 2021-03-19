@@ -6,8 +6,9 @@ import {MatStepperModule} from '@angular/material/stepper';
 import {MatIconModule} from '@angular/material/icon';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { RouterTestingModule } from '@angular/router/testing';
 
-describe('BuildDetailComponent', () => {
+fdescribe('BuildDetailComponent', () => {
   let component: BuildDetailComponent;
   let fixture: ComponentFixture<BuildDetailComponent>;
   beforeEach(async(() => {
@@ -15,7 +16,7 @@ describe('BuildDetailComponent', () => {
       declarations: [ BuildDetailComponent ],
       providers: [ NgbActiveModal ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
-      imports: [NgbModule, MatStepperModule, MatIconModule, MatTooltipModule, BrowserAnimationsModule]
+      imports: [NgbModule, MatStepperModule, MatIconModule, MatTooltipModule, BrowserAnimationsModule, RouterTestingModule.withRoutes([])]
     })
     .compileComponents();
   }));
