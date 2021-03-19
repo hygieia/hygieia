@@ -187,6 +187,7 @@ export class BuildWidgetComponent extends WidgetComponent implements OnInit, Aft
         baseLogUrl,
         number: build.number,
         stages: build.stages,
+        buildId: build.id
       } as IClickListItemBuild;
     });
     this.charts[1].data = {

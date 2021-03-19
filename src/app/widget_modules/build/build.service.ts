@@ -21,4 +21,9 @@ export class BuildService {
     return this.http.get<IBuildResponse>(this.buildDetailRoute, params).pipe(
       map(response => response.result));
   }
+
+  fetchBuild(buildId: string): Observable<IBuild> {
+    const buildRoute = `/api/build-details/${buildId}`;
+    return this.http.get<IBuild>(buildRoute);
+  }
 }

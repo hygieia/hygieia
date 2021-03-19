@@ -28,6 +28,7 @@ export interface IClickListItem {
 export interface IClickListItemBuild extends IClickListItem {
   buildStatus: string;
   baseLogUrl: string;
+  buildId: string;
 }
 
 export interface IClickListItemDeploy extends IClickListItem {
