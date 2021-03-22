@@ -8,7 +8,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 
-fdescribe('BuildDetailComponent', () => {
+describe('BuildDetailComponent', () => {
   let component: BuildDetailComponent;
   let fixture: ComponentFixture<BuildDetailComponent>;
   beforeEach(async(() => {
