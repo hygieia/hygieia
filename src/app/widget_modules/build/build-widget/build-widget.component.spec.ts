@@ -13,7 +13,7 @@ import { GET_DASHBOARD_MOCK, POST_DASHBOARD_MOCK } from '../../../shared/dashboa
 import { BuildService } from '../build.service';
 import { IBuild } from '../interfaces';
 import { BuildWidgetComponent } from './build-widget.component';
-import {BuildModule} from '../build.module';
+import { BuildModule } from '../build.module';
 
 class MockBuildService {
 
@@ -307,7 +307,7 @@ class MockDashboardService {
     of(GET_DASHBOARD_MOCK).subscribe(dashboard => this.dashboardSubject.next(dashboard));
   }
 
-  clearDashboard() {}
+  clearDashboard() { }
 }
 
 @NgModule({
@@ -328,7 +328,7 @@ describe('BuildWidgetComponent', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: BuildService, useClass: MockBuildService },
-        { provide: DashboardService, useClass: MockDashboardService}
+        { provide: DashboardService, useClass: MockDashboardService }
       ],
       imports: [
         TestModule, HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([])
@@ -352,14 +352,14 @@ describe('BuildWidgetComponent', () => {
   });
 
   it('should create all charts', () => {
-      // Mock Date April 1st, 2019
-      const baseTime = new Date(2019, 3, 1);
-      jasmine.clock().mockDate(baseTime);
-      fixture.detectChanges();
-      component.stopRefreshInterval();
+    // Mock Date April 1st, 2019
+    const baseTime = new Date(2019, 3, 1);
+    jasmine.clock().mockDate(baseTime);
+    fixture.detectChanges();
+    component.stopRefreshInterval();
 
-      setTimeout(() => {
-        buildService.fetchDetails('123', 14).subscribe(result => {
+    setTimeout(() => {
+      buildService.fetchDetails('123', 14).subscribe(result => {
         component.loadCharts(result);
 
         expect(component.charts[0].data.dataPoints[0].series.length).toEqual(1);
@@ -373,7 +373,7 @@ describe('BuildWidgetComponent', () => {
         expect(component.charts[3].data[2].value).toEqual(7);
       });
       component.ngOnDestroy();
-    }, 500) 
+    }, 500);
   });
 });
 

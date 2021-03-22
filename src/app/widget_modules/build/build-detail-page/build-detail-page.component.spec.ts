@@ -74,13 +74,13 @@ describe('BuildDetailComponent', () => {
     service = TestBed.get(BuildService);
     fixture.detectChanges();
   });
-  
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
   it('should format time currectly if duration is available', () => {
-    let mockData = {
+    const mockData = {
       id: '1234',
       number: 'buildTitle',
       buildUrl: 'buildUrl',
@@ -101,7 +101,7 @@ describe('BuildDetailComponent', () => {
           }
         }
       ],
-    }
+    };
     spyOn(service, 'fetchBuild').and.returnValue(of(mockData));
     fixture = TestBed.createComponent(BuildDetailPageComponent);
     component = fixture.componentInstance;
