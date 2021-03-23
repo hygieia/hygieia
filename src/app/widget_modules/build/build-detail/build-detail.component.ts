@@ -1,5 +1,6 @@
 import { Component, Input, Type, ViewChild, OnInit } from '@angular/core';
 import { MatVerticalStepper } from '@angular/material';
+import { Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -14,11 +15,12 @@ export class BuildDetailComponent implements OnInit {
 
   public data;
   public readableDuration;
-
-
+  public buildStatusArray = [`Success`, `Failed`, `Failure`, `Aborted`];
+  public stageStatusArray = [`SUCCESS`, `FAILED`, `FAILURE`, `ABORTED`, `NOT_EXECUTED`];
 
   constructor(
     public activeModal: NgbActiveModal,
+    public router: Router
   ) { }
 
   ngOnInit() {
@@ -76,9 +78,20 @@ export class BuildDetailComponent implements OnInit {
     return JSON.stringify(tooltipObj);
   }
 
-  openInNewTab() {
-    const url = `/build/${this.data[0].buildId}`;
-    window.open(url, '_blank');
+  openStandaloneView() {
+    this.activeModal.close();
+    this.router.navigate([`/build/${this.data[0].buildId}`]);
+  }
+
+  buildStatusCheck(status: string): boolean {
+    return this.buildStatusArray.includes(status);
+  }
+
+  stageStatusCheck(status: string): string {
+    if (this.stageStatusArray.includes(status)) {
+      return status;
+    }
+    return `default`;
   }
 
 }

@@ -42,6 +42,7 @@ class MockBuildService {
 describe('BuildDetailComponent', () => {
   let component: BuildDetailPageComponent;
   let fixture: ComponentFixture<BuildDetailPageComponent>;
+  let service: BuildService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -67,14 +68,44 @@ describe('BuildDetailComponent', () => {
     fixture.destroy();
   });
 
-  beforeEach( async () => {
+  beforeEach(() => {
+    fixture = TestBed.createComponent(BuildDetailPageComponent);
+    component = fixture.componentInstance;
+    service = TestBed.get(BuildService);
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('should format time currectly if duration is available', () => {
+    const mockData = {
+      id: '1234',
+      number: 'buildTitle',
+      buildUrl: 'buildUrl',
+      startTime: 1234,
+      endTime: 12345,
+      duration: 12345,
+      stages: [
+        {
+          stageId: '111',
+          name: 'Test Stage',
+          status: 'SUCCESS',
+          startTimeMillis: '1111',
+          durationMillis: '1000',
+          _links: {
+            self: {
+              href: 'url-string'
+            }
+          }
+        }
+      ],
+    };
+    spyOn(service, 'fetchBuild').and.returnValue(of(mockData));
     fixture = TestBed.createComponent(BuildDetailPageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
-  it('should create', () => {
-    fixture = TestBed.createComponent(BuildDetailPageComponent);
-    component = fixture.componentInstance;
-    expect(component).toBeTruthy();
+    expect(component.readableDuration).toBe('00:00:12');
   });
 });
