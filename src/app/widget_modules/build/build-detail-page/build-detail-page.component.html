@@ -11,7 +11,6 @@
       </tr>
       <tr>
         <td>
-          <!--NOTE: add default. get color into scss-->
           <mat-icon [ngbTooltip]="this.data.buildStatus" id="build-success" class="build-overview-icon" *ngIf="this.data.buildStatus=='Success'">
             check_circle</mat-icon>
           <mat-icon [ngbTooltip]="this.data.buildStatus" id="build-failure" class="build-overview-icon"
@@ -22,7 +21,6 @@
           <mat-icon [ngbTooltip]="this.data.buildStatus" id="build-default" class="build-overview-icon" *ngIf="!buildStatusCheck(this.data.buildStatus)">
             horizontal_rule</mat-icon>
         </td>
-        <!--NOTE: add better default-->
         <td>{{(this.data.startTime ? (this.data.startTime | date: 'yyyy-MM-dd HH:mm:ss') : 'N/A') }}</td>
         <td>{{this.data.endTime ? (this.data.endTime | date: 'yyyy-MM-dd HH:mm:ss') : 'N/A'}}</td>
         <td>{{this.readableDuration}}</td>
@@ -69,7 +67,7 @@
     <ng-template matStepperIcon="bookend">
       <mat-icon>schedule</mat-icon>
     </ng-template>
-    <!-- If there is no stage.status the state will be 'number' -->
+    <!-- If there is no stage.status the state will be 'default' -->
     <ng-template matStepperIcon="default">
       <mat-icon>horizontal_rule</mat-icon>
     </ng-template>

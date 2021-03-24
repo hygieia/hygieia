@@ -25,26 +25,7 @@ export class BuildDetailPageComponent implements OnInit {
     this.buildId = this.route.snapshot.paramMap.get('id');
 
     this.buildService.fetchBuild(this.buildId).subscribe(res => {
-      this.data = {
-        id: '1234',
-        number: 'buildTitle',
-        buildUrl: 'buildUrl',
-        startTime: 1234,
-        endTime: 12345,
-        stages: [
-          {
-            stageId: '111',
-            name: 'Test Stage',
-            startTimeMillis: '1111',
-            durationMillis: '1000',
-            _links: {
-              self: {
-                href: 'url-string'
-              }
-            }
-          }
-        ],
-      };
+      this.data = res;
 
       // Truncate error messages
       this.data.stages.map(stage => {
