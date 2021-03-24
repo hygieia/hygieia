@@ -80,4 +80,34 @@ describe('BuildDetailComponent', () => {
     component.data = detailData;
     expect(component.data.length).toEqual(1);
   });
+
+  it('should format time currectly if duration is available', () => {
+    const detailData = [{
+      title: 'buildTitle',
+      url: 'buildUrl',
+      lastUpdated: 1587131351,
+      subtitles: [111],
+      duration: 12345,
+      stages: [
+        {
+          stageId: 111,
+          name: 'Test Stage',
+          status: 'SUCCESS',
+          startTimeMillis: 1111,
+          durationMillis: 1000,
+          _links: {
+            self: {
+              href: 'test_href'
+            }
+          }
+        }
+      ],
+    }];
+    fixture = TestBed.createComponent(BuildDetailComponent);
+    component = fixture.componentInstance;
+    component.data = detailData
+    fixture.detectChanges();
+    component.readableDuration = component.convertToReadable(component.data[0].duration)
+    expect(component.readableDuration).toBe('00:00:12');
+  });
 });

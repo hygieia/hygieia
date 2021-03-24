@@ -36,7 +36,7 @@ export class BuildDetailComponent implements OnInit {
     } else {
       this.data = [data];
     }
-    console.log(this.data[0])
+
     // Truncate error messages
     this.data[0].stages.map(stage => {
       if (stage.error && stage.error.message) {
