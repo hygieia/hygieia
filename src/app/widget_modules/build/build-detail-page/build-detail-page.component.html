@@ -1,5 +1,6 @@
 <div class="build-page" *ngIf="this.data">
-  <h1>Build: {{data.number}}</h1>
+  <h1 *ngIf="this.data.buildUrl"><a href={{this.data.buildUrl}}>Build: {{this.data.number}}</a></h1>
+  <h1 *ngIf="!this.data.buildUrl">Build: {{this.data.number}}</h1>
   <div class="build-overview" fxLayout="row" fxLayoutAlign="space-around center">
     <table fxFlex="80">
       <tr>
@@ -34,7 +35,7 @@
     <h4>Stage Flow</h4>
     <mat-vertical-stepper #stepper>
       <mat-step label="Start" state="bookend" completed="false" editable="false"></mat-step>
-      <mat-step *ngFor="let stage of this.data.stages" [state]="stage.status" [completed]="false">
+      <mat-step *ngFor="let stage of this.data.stages" [state]="stageStatusCheck(stage.status)" [completed]="false">
         <ng-template matStepLabel>
           <div placement="right" [ngbTooltip]="getTooltipInfo(stage)">{{stage.name}}</div>
         </ng-template>
