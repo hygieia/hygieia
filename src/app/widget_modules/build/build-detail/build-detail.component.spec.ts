@@ -105,9 +105,9 @@ describe('BuildDetailComponent', () => {
     }];
     fixture = TestBed.createComponent(BuildDetailComponent);
     component = fixture.componentInstance;
-    component.data = detailData
+    component.data = detailData;
     fixture.detectChanges();
-    component.readableDuration = component.convertToReadable(component.data[0].duration)
+    component.readableDuration = component.convertToReadable(component.data[0].duration);
     expect(component.readableDuration).toBe('00:00:12');
   });
 });
