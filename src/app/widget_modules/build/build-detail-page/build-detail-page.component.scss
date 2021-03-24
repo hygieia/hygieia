@@ -21,7 +21,7 @@ td {
   word-wrap: break-word;
 }
 
-::ng-deep .mat-step-header .mat-step-label.mat-step-label-active{
+:host::ng-deep .mat-step-header .mat-step-label.mat-step-label-active{
   color: white;
 }
 
