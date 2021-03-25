@@ -149,6 +149,10 @@ export class DashboardListComponent implements OnInit {
     this.router.navigate(['/collectorItem/viewer']);
   }
 
+  goToBuildViewer() {
+    this.router.navigate(['/build/viewer']);
+  }
+
   private loadDash() {
     this.findMyDashboards(this.paramBuilder(0, this.defaultPageSize));
     this.findAllDashboards(this.paramBuilder(0, this.defaultPageSize));

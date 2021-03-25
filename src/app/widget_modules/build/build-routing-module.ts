@@ -7,8 +7,8 @@ import { BuildViewerComponent } from './build-viewer/build-viewer.component';
 
 
 const routes: Routes = [
-  { path: ':id', component: BuildDetailPageComponent },
-  { path: 'viewer', component: BuildViewerComponent }
+  { path: 'viewer', component: BuildViewerComponent },
+  { path: ':id', component: BuildDetailPageComponent }
 ];
 
 @NgModule({
