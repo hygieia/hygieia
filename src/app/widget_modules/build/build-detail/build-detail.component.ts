@@ -18,6 +18,8 @@ export class BuildDetailComponent implements OnInit {
   public buildStatusArray = [`Success`, `Failed`, `Failure`, `Aborted`];
   public stageStatusArray = [`SUCCESS`, `FAILED`, `FAILURE`, `ABORTED`, `NOT_EXECUTED`];
 
+
+
   constructor(
     public activeModal: NgbActiveModal,
     public router: Router
@@ -37,7 +39,7 @@ export class BuildDetailComponent implements OnInit {
 
     // Truncate error messages
     this.data[0].stages.map(stage => {
-      if (stage.error) {
+      if (stage.error && stage.error.message) {
         stage.error.message = `${stage.error.message.substring(0, 150)} ...`;
       }
     });

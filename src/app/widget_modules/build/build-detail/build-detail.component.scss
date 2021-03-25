@@ -82,12 +82,8 @@ h4 {
   color: rgb(74, 158, 55);
 }
 
-#build-failure {
+#build-failure, #build-aborted {
   color: rgb(208, 61, 51);
-}
-
-#build-aborted {
-  color: grey;
 }
 
 #open-in-new-icon{

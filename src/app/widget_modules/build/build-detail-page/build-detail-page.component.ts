@@ -13,6 +13,8 @@ export class BuildDetailPageComponent implements OnInit {
   public buildId: string;
   public data: IBuild;
   public readableDuration;
+  public buildStatusArray = [`Success`, `Failed`, `Failure`, `Aborted`];
+  public stageStatusArray = [`SUCCESS`, `FAILED`, `FAILURE`, `ABORTED`, `NOT_EXECUTED`];
 
   constructor(
     private route: ActivatedRoute,
@@ -65,5 +67,16 @@ export class BuildDetailPageComponent implements OnInit {
   getTooltipInfo(stage) {
     const tooltipObj = { Status: stage.status, 'Duration (ms)': stage.durationMillis };
     return JSON.stringify(tooltipObj);
+  }
+
+  buildStatusCheck(status: string): boolean {
+    return this.buildStatusArray.includes(status);
+  }
+
+  stageStatusCheck(status: string): string {
+    if (this.stageStatusArray.includes(status)) {
+      return status;
+    }
+    return `default`;
   }
 }
