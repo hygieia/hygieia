@@ -17,6 +17,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { BuildService } from './build.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from 'src/app/core/interceptors/auth.interceptor';
+import { BuildViewerComponent } from './build-viewer/build-viewer.component';
 
 
 @NgModule({
@@ -30,10 +31,10 @@ import { AuthInterceptor } from 'src/app/core/interceptors/auth.interceptor';
   ],
   declarations: [
     BuildWidgetComponent, BuildConfigFormComponent, BuildDetailComponent,
-    BuildDeleteFormComponent, BuildDetailPageComponent
+    BuildDeleteFormComponent, BuildDetailPageComponent, BuildViewerComponent
   ],
   entryComponents: [
-    BuildWidgetComponent, BuildConfigFormComponent, BuildDetailComponent, BuildDeleteFormComponent, BuildDetailPageComponent
+    BuildWidgetComponent, BuildConfigFormComponent, BuildDetailComponent, BuildDeleteFormComponent, BuildDetailPageComponent, BuildViewerComponent
   ],
   imports: [
     BuildRoutingModule,
