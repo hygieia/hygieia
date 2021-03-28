@@ -18,6 +18,7 @@ import { BuildService } from './build.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from 'src/app/core/interceptors/auth.interceptor';
 import { BuildViewerComponent } from './build-viewer/build-viewer.component';
+import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -44,7 +45,8 @@ import { BuildViewerComponent } from './build-viewer/build-viewer.component';
     MatStepperModule,
     MatIconModule,
     MatTooltipModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    FormsModule
     ],
   exports: [],
   schemas: [
