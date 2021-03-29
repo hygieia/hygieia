@@ -13,7 +13,7 @@ describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
   let router: Router;
-  let authService;
+  let authService: AuthService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -79,6 +79,19 @@ describe('LoginComponent', () => {
       }};
     component.submit(obj);
     expect(spy).toHaveBeenCalledWith({username: 'test', password: 'test'});
+  });
+
+  it('should login with SSO user', () => {
+    component.activeTab = 'SSO';
+    const spy = spyOn(component, 'routeToSso').and.returnValue({ subscribe: () => true });
+    component.routeToSso();
+    expect(spy).toHaveBeenCalledWith();
+  });
+
+  it('should check sso variables', () =>  {
+    component.setActiveTab('SSO');
+    expect(component.isSsoLogin()).toBe(true);
+    expect(component.loginBtnName()).toBe('Single Sign On');
   });
 });
 

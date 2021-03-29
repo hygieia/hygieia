@@ -1,5 +1,5 @@
 import { Injectable, Output, EventEmitter } from '@angular/core';
-import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import {HttpClient, HttpParams, HttpHeaders, HttpRequest} from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -79,6 +79,7 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem('access_token');
+    localStorage.removeItem('auth-code');
   }
 
   public getUserName(): string {
@@ -112,5 +113,13 @@ export class AuthService {
     } else {
       return {} as IUser;
     }
+  }
+
+  getAuthCode(): string {
+    return localStorage.getItem('auth-code');
+  }
+
+  isSsoLogin(req: HttpRequest<any>): boolean {
+    return (req.url === '/api/login/openid' && !!this.getAuthCode());
   }
 }

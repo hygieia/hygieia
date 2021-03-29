@@ -9,6 +9,9 @@
           <li class="nav-item">
             <a class="nav-link" data-toggle="tab" *ngIf="authenticationProviders && authenticationProviders.includes('LDAP')" [class.active]="isLdapLogin()" (click)="setActiveTab('LDAP')">LDAP</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" *ngIf="authenticationProviders && authenticationProviders.includes('SSO')" [class.active]="isSsoLogin()" (click)="setActiveTab('SSO')">SSO</a>
+          </li>
         </ul>
         <header>
           <h3> {{ authName |  titlecase }} Login</h3>
@@ -16,7 +19,7 @@
         <br />
         <form [formGroup]="loginForm" (ngSubmit)="submit(loginForm)" class="login-form" novalidate>
           <div class="login">
-            <div class="row">
+            <div class="row" *ngIf="!isSsoLogin()">
               <div class="col-md-2">
                 Username:
               </div>
@@ -28,12 +31,12 @@
               </div>
             </div>
             <br />
-            <div class="row">
+            <div class="row" *ngIf="!isSsoLogin()">
               <div class="col-md-2">
                 Password:
               </div>
               <div class="col-md-10">
-                <input type="password" name="password" id="password" class="form-control" formControlName="password" />
+                <input type="password" name="password" id="password" class="form-control" formControlName="password" autocomplete="on"/>
                 <div class="alert alert-danger" [hidden]="loginForm.controls.password.untouched || loginForm.controls.password.valid">
                   Password is required (6 or more characters with at least one number)
                 </div>
@@ -42,13 +45,13 @@
             <br />
             <div class="row">
               <div class="col-md-12">
-                <button type="submit" class="btn btn-success" [disabled]="!loginForm.valid">Login</button>
+                <button type="submit" class="btn btn-success" [disabled]="!loginForm.valid && !isSsoLogin()">{{loginBtnName()}}</button>
               </div>
             </div>
             <br />
             <div class="statusRow">
               <br />
-              <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+              <div *ngIf="errorMessage && !isSsoLogin()" class="alert alert-danger">{{ errorMessage }}</div>
             </div>
             <div class="gap text-center" [hidden]="!isStandLogin()">
               <p>Don't have an account?</p>

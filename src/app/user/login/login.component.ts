@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 // local imports
 import { AuthService } from '../../core/services/auth.service';
 import { IUserLogin } from '../../shared/interfaces';
+import {of} from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -38,6 +39,9 @@ export class LoginComponent implements OnInit {
   isLdapLogin(): boolean {
     return this.activeTab === 'LDAP';
   }
+  isSsoLogin(): boolean {
+    return this.activeTab === 'SSO';
+  }
   setActiveTab(tab: string) {
     if ( tab ) {
       this.activeTab = tab;
@@ -55,8 +59,12 @@ export class LoginComponent implements OnInit {
     let login;
     if (this.isStandLogin()) {
       login = this.authService.login(value);
-    } else {
+    } else if (this.isLdapLogin()) {
       login = this.authService.loginLdap(value);
+    } else if (this.isSsoLogin()) {
+      login = this.routeToSso();
+    } else {
+      login = of(false);
     }
     login.subscribe((status: boolean) => {
           if (status) {
@@ -75,6 +83,14 @@ export class LoginComponent implements OnInit {
   }
   signUp() {
     this.router.navigate(['/user/signup']);
+  }
+
+  loginBtnName(): string {
+    return this.isSsoLogin() ? 'Single Sign On' : 'Login';
+  }
+
+  routeToSso(): Promise<boolean> {
+    return this.router.navigate(['/user/sso']);
   }
 }
 
