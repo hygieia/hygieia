@@ -10,11 +10,19 @@ describe('SsoComponent', () => {
   let component: SsoComponent;
   let fixture: ComponentFixture<SsoComponent>;
 
+  beforeAll(() => {
+    localStorage.setItem('auth-code', 'test-code');
+  });
+
+  afterAll(() => {
+    localStorage.removeItem('auth-code');
+  });
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
         ReactiveFormsModule,
-        RouterTestingModule.withRoutes([]),
+        RouterTestingModule,
         HttpClientTestingModule,
       ],
       declarations: [ SsoComponent ],

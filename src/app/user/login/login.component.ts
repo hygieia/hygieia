@@ -62,7 +62,7 @@ export class LoginComponent implements OnInit {
     } else if (this.isLdapLogin()) {
       login = this.authService.loginLdap(value);
     } else if (this.isSsoLogin()) {
-      login = this.router.navigate(['/user/sso']);
+      login = this.routeToSso();
     } else {
       login = of(false);
     }
@@ -87,6 +87,10 @@ export class LoginComponent implements OnInit {
 
   loginBtnName(): string {
     return this.isSsoLogin() ? 'Single Sign On' : 'Login';
+  }
+
+  routeToSso(): Promise<boolean> {
+    return this.router.navigate(['/user/sso']);
   }
 }
 

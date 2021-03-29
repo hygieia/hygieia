@@ -9,7 +9,7 @@ import {environment} from '../../../environments/environment';
 })
 
 export class SsoService {
-  private authCode: any;
+  authCode: any;
   private LOGIN_ENDPOINT = '/api/login/openid';
   private AUTH_ENDPOINT = '/authcode';
 
