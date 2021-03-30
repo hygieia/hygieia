@@ -19,6 +19,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from 'src/app/core/interceptors/auth.interceptor';
 import { BuildViewerComponent } from './build-viewer/build-viewer.component';
 import { FormsModule } from '@angular/forms';
+import { NbInputModule } from '@nebular/theme';
 
 
 @NgModule({
@@ -46,7 +47,9 @@ import { FormsModule } from '@angular/forms';
     MatIconModule,
     MatTooltipModule,
     FlexLayoutModule,
-    FormsModule
+    FormsModule,
+    NgbModule,
+    NbInputModule
     ],
   exports: [],
   schemas: [
