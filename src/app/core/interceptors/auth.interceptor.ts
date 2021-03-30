@@ -16,6 +16,9 @@ export class AuthInterceptor implements HttpInterceptor {
     if (this.authService.getToken()) {
       const authReq = req.clone({headers: req.headers.set('Authorization', `Bearer ${this.authService.getToken()}`)});
       return next.handle(authReq);
+    } else if (this.authService.isSsoLogin(req)) {
+      const authReq = req.clone({headers: req.headers.set('Authorization', `ssoCode ${this.authService.getAuthCode()}`)});
+      return next.handle(authReq);
     }
     return next.handle(req).pipe(catchError((err: any) => {
       if (err instanceof HttpErrorResponse) {

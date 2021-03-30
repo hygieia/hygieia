@@ -3,7 +3,12 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  authorization: {
+    ALLOW_SSO: true,
+    CLIENT_ID: 'dummy_client_id',
+    AUTHORIZATION_URL: 'dummy_oauth_url',
+  }
 };
 
 /*
