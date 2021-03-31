@@ -91,7 +91,7 @@ h4{
   box-shadow: 0px 2px 24px 2px black;
 }
 
-::ng-deep .mat-stepper-vertical-line::before{
+:host::ng-deep .mat-stepper-vertical-line::before{
   border-left-color:rgb(247, 244, 244);
 }
 
