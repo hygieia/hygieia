@@ -36,7 +36,12 @@ import { NbInputModule } from '@nebular/theme';
     BuildDeleteFormComponent, BuildDetailPageComponent, BuildViewerComponent
   ],
   entryComponents: [
-    BuildWidgetComponent, BuildConfigFormComponent, BuildDetailComponent, BuildDeleteFormComponent, BuildDetailPageComponent, BuildViewerComponent
+    BuildWidgetComponent,
+    BuildConfigFormComponent,
+    BuildDetailComponent,
+    BuildDeleteFormComponent,
+    BuildDetailPageComponent,
+    BuildViewerComponent
   ],
   imports: [
     BuildRoutingModule,

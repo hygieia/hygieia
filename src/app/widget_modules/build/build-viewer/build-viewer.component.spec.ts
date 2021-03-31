@@ -1,10 +1,6 @@
-import { HttpClientTestingModule } from "@angular/common/http/testing";
-import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core"
-import { async, ComponentFixture, TestBed } from "@angular/core/testing"
-import { FormsModule } from "@angular/forms";
-import { Router } from "@angular/router";
-import { RouterTestingModule } from "@angular/router/testing";
-import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { BuildViewerComponent } from './build-viewer.component';
 
 describe('BuildViewerComponent', () => {
@@ -39,8 +35,8 @@ describe('BuildViewerComponent', () => {
     });
 
     it('should navigate to standalone build page', () => {
-        component.buildId = "1234";
+        component.buildId = '1234';
         component.searchBuild();
         expect(router.navigate).toHaveBeenCalledWith(['/build/1234']);
-    })  
-})
+    });
+});
