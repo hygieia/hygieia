@@ -1,1 +1,12 @@
-<p>collectors works!</p>
+<div *ngIf="this.collectors">
+    <table>
+        <tr>
+            <th>Collector Name</th>
+            <th>Online</th>
+        </tr>
+        <tr *ngFor="let collector of this.collectors">
+            <td>{{collector.name}}</td>
+            <td>{{collector.online}}</td>
+        </tr>
+    </table>
+</div>
