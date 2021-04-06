@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { CollectorsService } from '../../../services/collectors.service';
+import { CollectorItem } from '../model/collectors-item';
 
 @Component({
   selector: 'app-collectors',
@@ -7,9 +9,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CollectorsComponent implements OnInit {
 
-  constructor() { }
+  public collectors;
+
+  constructor(private collectorsService: CollectorsService) { }
 
   ngOnInit() {
+    this.collectorsService.getAllCollectors().subscribe(res => {
+      this.collectors = res;
+      console.log(this.collectors);
+    })
   }
 
 }
