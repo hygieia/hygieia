@@ -14,19 +14,20 @@ import {catchError, distinctUntilChanged, startWith, switchMap} from 'rxjs/opera
 import {LayoutDirective} from '../../../shared/layouts/layout.directive';
 import {ISecurityScan} from '../security-scan-interfaces';
 import {of, Subscription} from 'rxjs';
-import {SECURITY_SCAN_CHARTS} from '../security-scan-widget/security-scan-charts';
 import {
-  IClickListData,
   IClickListItem,
 } from '../../../shared/charts/click-list/click-list-interfaces';
-import {OneChartLayoutComponent} from '../../../shared/layouts/one-chart-layout/one-chart-layout.component';
+import {XByOneLayoutComponent} from '../../../shared/layouts/x-by-one-layout/x-by-one-layout.component';
 import {DashStatus} from '../../../shared/dash-status/DashStatus';
 import {WidgetState} from '../../../shared/widget-header/widget-state';
+import { IChart } from 'src/app/shared/interfaces';
+import {ClickListComponent} from '../../../shared/charts/click-list/click-list.component';
+import { SecurityScanDetailComponent } from '../security-scan-detail/security-scan-detail.component';
 
 @Component({
   selector: 'app-security-scan-widget',
   templateUrl: './security-scan-widget.component.html',
-  styleUrls: ['./security-scan-widget.component.sass']
+  styleUrls: ['./security-scan-widget.component.scss']
 })
 export class SecurityScanWidgetComponent extends WidgetComponent implements OnInit, AfterViewInit, OnDestroy {
 
@@ -44,8 +45,8 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
 
   ngOnInit() {
     this.widgetId = 'codeanalysis0';
-    this.layout = OneChartLayoutComponent;
-    this.charts = SECURITY_SCAN_CHARTS;
+    this.layout = XByOneLayoutComponent;
+    this.charts = [];
     this.auditType = 'STATIC_SECURITY_ANALYSIS';
     this.init();
   }
@@ -78,7 +79,7 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
           componentId: widgetConfig.componentId,
           max: 1
         };
-        return this.securityService.getSecurityScanDetails(this.params.componentId, this.params.max)
+        return this.securityService.getSecurityScanDetails(this.params.componentId)
           .pipe(catchError(err => of(err)));
         // );
       })).subscribe(result => {
@@ -112,22 +113,47 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
   }
 
   generateSecurityScanData(result: ISecurityScan[]) {
-    const sData = result[0].metrics.map(metric => {
-      const riskStatus = metric.name === 'High' ? DashStatus.CRITICAL : (metric.name === 'Medium' ?
+    const sData = [];
+
+    result.forEach(scan => {
+      const projectMetrics = [];
+      scan.metrics.map(metric => {
+        const riskStatus = metric.name === 'High' ? DashStatus.CRITICAL : (metric.name === 'Medium' ?
         DashStatus.WARN : DashStatus.PASS);
-      return {
-        title: metric.name,
-        subtitles : [metric.value],
-        status: riskStatus,
-        statusText: metric.status,
-      } as IClickListItem;
+        const clickListItem = {
+          title: metric.name,
+          subtitles : [metric.value],
+          status: riskStatus,
+          statusText: metric.status,
+        } as IClickListItem;
+        projectMetrics.push(clickListItem);
+      });
+      const projectInfo = { name: scan.name, url: scan.url ? scan.url : '', timestamp: scan.timestamp, metrics: projectMetrics };
+      sData.push(projectInfo);
     });
 
-    this.charts[0].data = {
-      items: sData,
-      clickableContent: null,
-      clickableHeader: null
-    } as IClickListData;
+    this.populateChartsFromData(sData);
+  }
+
+  populateChartsFromData(sData) {
+    for (const project of sData) {
+      const chart: IChart = {
+        title: project.name,
+        component: ClickListComponent,
+        data: {
+          name: project.name,
+          items: project.metrics,
+          clickableContent: null,
+          url: project.url,
+          timestamp: project.timestamp,
+          clickableHeader: SecurityScanDetailComponent
+        } ,
+        xAxisLabel: '',
+        yAxisLabel: '',
+        colorScheme: {}
+      };
+      this.charts.push(chart);
+    }
   }
 
   setDefaultIfNoData() {

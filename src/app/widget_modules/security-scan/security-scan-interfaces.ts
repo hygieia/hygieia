@@ -10,6 +10,8 @@ export interface ISecurityScan {
   timestamp: number;
   type: string;
   metrics: IMetric[];
+  url?: string;
+  name?: string;
 }
 
 export interface IMetric {

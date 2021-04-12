@@ -106,7 +106,7 @@ describe('SecurityScanWidgetComponent', () => {
   it('should create chart', () => {
     fixture.detectChanges();
     component.stopRefreshInterval();
-    securityScanService.getSecurityScanDetails('123', 1).subscribe(result => {
+    securityScanService.getSecurityScanDetails('123').subscribe(result => {
       component.loadCharts(result);
 
       expect(component.charts[0].data.items[0].title).toEqual('High');
