@@ -1,0 +1,38 @@
+
+table {
+  width: 100%;
+  align-self: center;
+  background: none;
+}
+
+.mat-cell {
+  color: white;
+}
+
+.widget-modal-heading {
+    border-bottom: 1px solid rgba(0, 0, 0, .35);
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    padding: 1rem;
+    text-align: center;
+}
+
+.expanded-detail {
+  overflow: hidden;
+  display: flex;
+}
+
+.collector-row td{
+  border-bottom-width: 0;
+  border-top-width: 1px;
+  border-top-style: solid;
+  border-top-color: white;
+}
+
+tr.expanded-detail-row {
+  height: 0;
+}
+
+.expanded-detail-row td {
+  border-bottom-width: 0;
+}
