@@ -38,7 +38,7 @@ describe('SecurityScanDetailComponent', () => {
       items: [],
       timestamp: 1234566,
       url: 'test_url'
-    }
+    };
 
     component.detailData = detailData;
     expect(component.data).toEqual(detailData);
