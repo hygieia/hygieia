@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import {SsoAuthGuard} from "./user/sso/sso.authguard";
+import {SsoAuthGuard} from './user/sso/sso.authguard';
 
 const routes: Routes = [
   { path: 'user', loadChildren: () =>

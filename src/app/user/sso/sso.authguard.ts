@@ -7,8 +7,8 @@ export class SsoAuthGuard implements CanActivate {
 
   canActivate() {
     if (!document.baseURI.includes('localhost')) {
-      if (!localStorage.getItem("auth-code") || !localStorage.getItem("access_token")) {
-        this.router.navigateByUrl("/user/sso");
+      if (!localStorage.getItem('auth-code') || !localStorage.getItem('access_token')) {
+        this.router.navigateByUrl('/user/sso');
       }
     }
     return true;

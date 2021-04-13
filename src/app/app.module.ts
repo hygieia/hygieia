@@ -21,7 +21,7 @@ import {
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 import {NgxUIModule} from '@swimlane/ngx-ui';
 import {GlobalErrorHandler} from './app.error.handler';
-import {SsoAuthGuard} from "./user/sso/sso.authguard";
+import {SsoAuthGuard} from './user/sso/sso.authguard';
 
 @NgModule({
   declarations: [
