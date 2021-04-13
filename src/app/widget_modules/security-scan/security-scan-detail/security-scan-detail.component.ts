@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import { IClickListItem } from 'src/app/shared/charts/click-list/click-list-interfaces';
+import { IClickListItemSecurityScan } from 'src/app/shared/charts/click-list/click-list-interfaces';
 
 @Component({
   selector: 'app-security-scan-detail',
@@ -8,7 +8,7 @@ import { IClickListItem } from 'src/app/shared/charts/click-list/click-list-inte
 })
 export class SecurityScanDetailComponent implements OnInit {
 
-  public data: IClickListItem;
+  public data: IClickListItemSecurityScan;
 
   constructor() {}
 
@@ -19,7 +19,6 @@ export class SecurityScanDetailComponent implements OnInit {
   @Input()
   set detailData(data: any) {
     this.data = data;
-    console.log(this.data);
   }
 
   isDate(obj): boolean {
