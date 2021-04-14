@@ -30,4 +30,8 @@ export class CollectorsComponent implements OnInit {
     })
   }
 
+  getUniqueFields(uniqueFields){
+    return Object.keys(uniqueFields)
+  }
+
 }

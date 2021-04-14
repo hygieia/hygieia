@@ -6,29 +6,41 @@
 <table mat-table [dataSource]="this.collectors" *ngIf="this.collectors" multiTemplateDataRows>
 
     <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>Collector Name</th>
-        <td mat-cell *matCellDef="let collector">{{collector.name}}</td>
+        <th mat-header-cell *matHeaderCellDef><h3>Collector Name</h3></th>
+        <td mat-cell class="collector-name" *matCellDef="let collector">{{collector.name}}</td>
     </ng-container>
 
     <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef>Online</th>
-        <td mat-cell *matCellDef="let collector">{{collector.online}}</td>
+        <th mat-header-cell *matHeaderCellDef><h3>Online</h3></th>
+        <td mat-cell class="online-status" *matCellDef="let collector">
+            <mat-icon *ngIf="collector.online" style="color: green">check_circle</mat-icon>
+            <mat-icon *ngIf="!collector.online" style="color: red">cancel</mat-icon>
+        </td>
     </ng-container>
 
     <ng-container matColumnDef="expandedRow">
         <td mat-cell *matCellDef="let collector" class="expanded-detail" [attr.colspan]="2">
-            <div class="expanded-detail" [@detailExpand]="collector == expandedDetails ? 'expanded' : 'collapsed'">
-                {{collector.lastExecuted}}
-                {{collector.lastExecuted}}
-                {{collector.lastExecuted}}
-                {{collector.lastExecuted}}
+            <div class="expanded-detail-block" [@detailExpand]="collector == expandedDetails ? 'expanded' : 'collapsed'">
+                <div class="expanded-details">
+                    <div class="expanded-type">Collector Type: {{collector.collectorType}}</div>
+                    <div class="expanded-enabled">Enabled: {{collector.enabled}}</div>
+                    <div  class="expanded-unique-fields" *ngIf="collector.uniqueFields && this.getUniqueFields(collector.uniqueFields).length > 0">
+                        Unique Fields: 
+                        <div class="unique-fields" *ngFor="let field of this.getUniqueFields(collector.uniqueFields)">{{field}}</div>
+                    </div>
+                    <div class="expanded-all-fields" *ngIf="collector.allFields && this.getUniqueFields(collector.allFields).length > 0">
+                        All Fields: 
+                        <div class="all-fields" *ngFor="let field of this.getUniqueFields(collector.allFields)">{{field}}</div>
+                    </div>
+                </div>
             </div>
         </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayColumns"></tr>
     <tr mat-row class="collector-row" *matRowDef="let collector; columns: displayColumns;" 
-        (click)="expandedDetails = expandedDetails === collector ? null : collector">
+        (click)="expandedDetails = expandedDetails === collector ? null : collector"
+        [class.collector-expanded-row]="expandedDetails === collector">
     </tr> <!-- makes expansion a toggle -->
     <tr mat-row class="expanded-detail-row" 
         *matRowDef="let row; columns: ['expandedRow']"

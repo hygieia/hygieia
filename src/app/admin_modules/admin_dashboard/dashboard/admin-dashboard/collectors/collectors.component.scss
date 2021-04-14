@@ -9,6 +9,11 @@ table {
   color: white;
 }
 
+.collector-name.mat-cell {
+  font-weight: bold;
+  font-size: medium;
+}
+
 .widget-modal-heading {
     border-bottom: 1px solid rgba(0, 0, 0, .35);
     font-size: 2.5rem;
@@ -17,16 +22,17 @@ table {
     text-align: center;
 }
 
-.expanded-detail {
+.expanded-detail-block {
   overflow: hidden;
   display: flex;
 }
 
 .collector-row td{
+  padding-top: 10px;
   border-bottom-width: 0;
   border-top-width: 1px;
   border-top-style: solid;
-  border-top-color: white;
+  border-top-color: grey;
 }
 
 tr.expanded-detail-row {
@@ -35,4 +41,54 @@ tr.expanded-detail-row {
 
 .expanded-detail-row td {
   border-bottom-width: 0;
+}
+
+.mat-header-cell {
+  color: white;
+  font-family: Open Sans, sans-serif;
+}
+
+tr.collector-expanded-row:not(.collector-expanded-row):hover {
+  background: gray;
+}
+
+tr.collector-expanded-row:not(.collector-expanded-row) {
+  background: rgb(36, 31, 31);
+}
+
+.collector-name {
+}
+
+.online-status {
+}
+
+.expanded-details {
+  margin-top: 15px;
+  display: block;
+}
+
+.expanded-type {
+  margin-left: 15px;
+}
+
+.expanded-enabled {
+  margin: 15px;
+}
+
+.expanded-unique-fields {
+  margin: 15px;
+}
+
+.unique-fields {
+  display: block;
+  margin-left: 80%;
+}
+
+.expanded-all-fields {
+  margin: 15px;
+}
+
+.all-fields {
+  display: block;
+  margin-left: 80%;
 }
