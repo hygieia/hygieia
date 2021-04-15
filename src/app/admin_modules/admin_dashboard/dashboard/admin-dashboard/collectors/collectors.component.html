@@ -22,8 +22,18 @@
         <td mat-cell *matCellDef="let collector" class="expanded-detail" [attr.colspan]="2">
             <div class="expanded-detail-block" [@detailExpand]="collector == expandedDetails ? 'expanded' : 'collapsed'">
                 <div class="expanded-details">
-                    <div class="expanded-type">Collector Type: {{collector.collectorType}}</div>
-                    <div class="expanded-enabled">Enabled: {{collector.enabled}}</div>
+                    <div class="expanded-type">
+                        Collector Type: 
+                        <div class="expanded-type-value">
+                            {{collector.collectorType}}
+                        </div>
+                    </div>
+                    <div class="expanded-enabled">
+                        Enabled: 
+                        <div class="expanded-enabled-value">
+                            {{collector.enabled}}
+                        </div>
+                    </div>
                     <div  class="expanded-unique-fields" *ngIf="collector.uniqueFields && this.getUniqueFields(collector.uniqueFields).length > 0">
                         Unique Fields: 
                         <div class="unique-fields" *ngFor="let field of this.getUniqueFields(collector.uniqueFields)">{{field}}</div>

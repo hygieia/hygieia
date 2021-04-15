@@ -59,16 +59,19 @@ tr.collector-expanded-row:not(.collector-expanded-row) {
 .collector-name {
 }
 
-.online-status {
+.material-icons {
+  font-size: x-large;
 }
 
 .expanded-details {
   margin-top: 15px;
   display: block;
+  font-size: medium;
 }
 
 .expanded-type {
   margin-left: 15px;
+  margin-right: 15px;
 }
 
 .expanded-enabled {
@@ -81,7 +84,7 @@ tr.collector-expanded-row:not(.collector-expanded-row) {
 
 .unique-fields {
   display: block;
-  margin-left: 80%;
+  margin-left: 100%;
 }
 
 .expanded-all-fields {
@@ -90,5 +93,13 @@ tr.collector-expanded-row:not(.collector-expanded-row) {
 
 .all-fields {
   display: block;
-  margin-left: 80%;
+  margin-left: 100%;
+}
+
+.expanded-type-value {
+  margin-left: 100%;
+}
+
+.expanded-enabled-value {
+  margin-left: 100%
 }
