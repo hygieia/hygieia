@@ -34,4 +34,9 @@ export class CollectorsComponent implements OnInit {
     return Object.keys(uniqueFields)
   }
 
+   // Converts build duration to HH:mm:ss format
+   convertToReadable(time): string {
+    return new Date(time).toUTCString();
+  }
+
 }

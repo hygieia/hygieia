@@ -13,8 +13,8 @@
     <ng-container matColumnDef="status">
         <th mat-header-cell *matHeaderCellDef><h3>Online</h3></th>
         <td mat-cell class="online-status" *matCellDef="let collector">
-            <mat-icon *ngIf="collector.online" style="color: green">check_circle</mat-icon>
-            <mat-icon *ngIf="!collector.online" style="color: red">cancel</mat-icon>
+            <mat-icon *ngIf="collector.online" style="color: #28a745">check_circle</mat-icon>
+            <mat-icon *ngIf="!collector.online" style="color: #dc3545">cancel</mat-icon>
         </td>
     </ng-container>
 
@@ -32,6 +32,12 @@
                         Enabled: 
                         <div class="expanded-enabled-value">
                             {{collector.enabled}}
+                        </div>
+                    </div>
+                    <div class="expanded-enabled">
+                        Last Executed:
+                        <div class="expanded-enabled-value">
+                            {{this.convertToReadable(collector.lastExecuted)}}
                         </div>
                     </div>
                     <div  class="expanded-unique-fields" *ngIf="collector.uniqueFields && this.getUniqueFields(collector.uniqueFields).length > 0">

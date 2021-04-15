@@ -24,7 +24,6 @@ table {
 
 .expanded-detail-block {
   overflow: hidden;
-  display: flex;
 }
 
 .collector-row td{
@@ -65,7 +64,6 @@ tr.collector-expanded-row:not(.collector-expanded-row) {
 
 .expanded-details {
   margin-top: 15px;
-  display: block;
   font-size: medium;
 }
 
@@ -84,7 +82,7 @@ tr.collector-expanded-row:not(.collector-expanded-row) {
 
 .unique-fields {
   display: block;
-  margin-left: 100%;
+  margin-left: 10%;
 }
 
 .expanded-all-fields {
@@ -93,13 +91,13 @@ tr.collector-expanded-row:not(.collector-expanded-row) {
 
 .all-fields {
   display: block;
-  margin-left: 100%;
+  margin-left: 10%;
 }
 
 .expanded-type-value {
-  margin-left: 100%;
+  margin-left: 10%;
 }
 
 .expanded-enabled-value {
-  margin-left: 100%
+  margin-left: 10%
 }
