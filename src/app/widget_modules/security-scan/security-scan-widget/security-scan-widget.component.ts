@@ -5,24 +5,29 @@ import {
   ComponentFactoryResolver,
   OnDestroy,
   OnInit,
-  ViewChild
+  ViewChild,
+  ElementRef
 } from '@angular/core';
-import {WidgetComponent} from '../../../shared/widget/widget.component';
-import {DashboardService} from '../../../shared/dashboard.service';
-import {SecurityScanService} from '../security-scan.service';
-import {catchError, distinctUntilChanged, startWith, switchMap} from 'rxjs/operators';
-import {LayoutDirective} from '../../../shared/layouts/layout.directive';
-import {ISecurityScan} from '../security-scan-interfaces';
-import {of, Subscription} from 'rxjs';
+import { WidgetComponent } from '../../../shared/widget/widget.component';
+import { DashboardService } from '../../../shared/dashboard.service';
+import { SecurityScanService } from '../security-scan.service';
+import { catchError, distinctUntilChanged, startWith, switchMap } from 'rxjs/operators';
+import { LayoutDirective } from '../../../shared/layouts/layout.directive';
+import { ISecurityScan } from '../security-scan-interfaces';
+import { of, Subscription } from 'rxjs';
 import {
   IClickListItem,
 } from '../../../shared/charts/click-list/click-list-interfaces';
-import {XByOneLayoutComponent} from '../../../shared/layouts/x-by-one-layout/x-by-one-layout.component';
-import {DashStatus} from '../../../shared/dash-status/DashStatus';
-import {WidgetState} from '../../../shared/widget-header/widget-state';
+import { OneChartLayoutComponent } from '../../../shared/layouts/one-chart-layout/one-chart-layout.component';
+import { DashStatus } from '../../../shared/dash-status/DashStatus';
+import { WidgetState } from '../../../shared/widget-header/widget-state';
 import { IChart } from 'src/app/shared/interfaces';
-import {ClickListComponent} from '../../../shared/charts/click-list/click-list.component';
+import { ClickListComponent } from '../../../shared/charts/click-list/click-list.component';
 import { SecurityScanDetailComponent } from '../security-scan-detail/security-scan-detail.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { SecurityScanRefreshModalComponent } from '../security-scan-refresh-modal/security-scan-refresh-modal.component';
+
+
 
 @Component({
   selector: 'app-security-scan-widget',
@@ -33,21 +38,28 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
 
   private intervalRefreshSubscription: Subscription;
   private params;
-
-  @ViewChild(LayoutDirective, {static: true}) childLayoutTag: LayoutDirective;
+  private allScanData;
+  public loading;
+  private selectedIndex: number;
+  @ViewChild('projectSelector', { static: true }) projectSelector: ElementRef;
+  @ViewChild(LayoutDirective, { static: true }) childLayoutTag: LayoutDirective;
 
   constructor(componentFactoryResolver: ComponentFactoryResolver,
               cdr: ChangeDetectorRef,
               dashboardService: DashboardService,
+              private modalService: NgbModal,
               private securityService: SecurityScanService) {
-    super(componentFactoryResolver, cdr, dashboardService);
+              super(componentFactoryResolver, cdr, dashboardService);
   }
 
   ngOnInit() {
     this.widgetId = 'codeanalysis0';
-    this.layout = XByOneLayoutComponent;
+    this.layout = OneChartLayoutComponent;
     this.charts = [];
     this.auditType = 'STATIC_SECURITY_ANALYSIS';
+    this.allScanData = [];
+    this.loading = false;
+    this.selectedIndex = 0;
     this.init();
   }
   ngAfterViewInit() {
@@ -85,7 +97,7 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
       })).subscribe(result => {
         this.hasData = (result && result.length > 0);
         if (this.hasData) {
-          this.loadCharts(result);
+          this.loadCharts(result, 0);
         } else {
           this.setDefaultIfNoData();
         }
@@ -108,68 +120,99 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
     }
   }
 
-  loadCharts(result: ISecurityScan[]) {
-    this.generateSecurityScanData(result);
+  loadCharts(result: ISecurityScan[], index) {
+    this.generateSecurityScanData(result, index);
   }
 
-  generateSecurityScanData(result: ISecurityScan[]) {
-    const sData = [];
+  generateSecurityScanData(result: ISecurityScan[], index) {
+    this.allScanData = [];
 
     result.forEach(scan => {
       const projectMetrics = [];
       scan.metrics.map(metric => {
         const riskStatus = metric.name === 'High' ? DashStatus.CRITICAL : (metric.name === 'Medium' ?
-        DashStatus.WARN : DashStatus.PASS);
+          DashStatus.WARN : DashStatus.PASS);
         const clickListItem = {
           title: metric.name,
-          subtitles : [metric.value],
+          subtitles: [metric.value],
           status: riskStatus,
           statusText: metric.status,
         } as IClickListItem;
         projectMetrics.push(clickListItem);
       });
       const projectInfo = { name: scan.name, url: scan.url ? scan.url : '', timestamp: scan.timestamp, metrics: projectMetrics };
-      sData.push(projectInfo);
+      this.allScanData.push(projectInfo);
     });
 
-    this.populateChartsFromData(sData);
+    this.populateChartsFromData(index);
   }
 
-  populateChartsFromData(sData) {
-    for (const project of sData) {
-      const chart: IChart = {
-        title: project.name,
+  populateChartsFromData(index) {
+    this.selectedIndex = index;
+    const project = this.allScanData[index];
+    const currentChart: IChart = {
+      title: project.name,
+      component: ClickListComponent,
+      data: {
+        name: project.name,
+        items: project.metrics,
+        clickableContent: null,
+        url: project.url,
+        timestamp: project.timestamp,
+        clickableHeader: SecurityScanDetailComponent
+      },
+      xAxisLabel: '',
+      yAxisLabel: '',
+      colorScheme: {}
+    };
+    this.charts = [currentChart];
+    super.loadComponent(this.childLayoutTag);
+
+  }
+
+  setDefaultIfNoData() {
+    this.allScanData = [];
+    if (!this.hasData) {
+      const defaultItem: IChart = {
+        title: 'Security Scan',
         component: ClickListComponent,
-        data: {
-          name: project.name,
-          items: project.metrics,
-          clickableContent: null,
-          url: project.url,
-          timestamp: project.timestamp,
-          clickableHeader: SecurityScanDetailComponent
-        } ,
+        data: [],
         xAxisLabel: '',
         yAxisLabel: '',
         colorScheme: {}
       };
-      this.charts.push(chart);
-    }
-  }
-
-  setDefaultIfNoData() {
-    if (!this.hasData) {
-      const defaultItem: IChart = {
-          title: 'Security Scan',
-          component: ClickListComponent,
-          data: [],
-          xAxisLabel: '',
-          yAxisLabel: '',
-          colorScheme: {}
-        };
       this.charts.push(defaultItem);
-      this.charts[0].data = { items: [{ title: 'No Data Found' }]};
+      this.charts[0].data = { items: [{ title: 'No Data Found' }] };
     }
     super.loadComponent(this.childLayoutTag);
+  }
+
+  refreshProject() {
+    if ( !this.hasData ) {
+      return;
+    }
+    this.loading = true;
+    this.securityService.refreshProject(this.charts[0].title).subscribe(refreshResult => {
+      this.loading = false;
+      const modalRef = this.modalService.open(SecurityScanRefreshModalComponent);
+      modalRef.componentInstance.message = refreshResult;
+      modalRef.componentInstance.title = this.charts[0].title;
+      modalRef.result.then(modalResult => {
+        this.securityService.getSecurityScanDetails(this.params.componentId).subscribe(result => {
+          this.hasData = (result && result.length > 0);
+          if (this.hasData) {
+            this.loadCharts(result, this.selectedIndex);
+          } else {
+            // Select the first option in the dropdown since there will only be the default option.
+            this.selectedIndex = 0;
+            this.setDefaultIfNoData();
+          }
+          this.projectSelector.nativeElement.selectedIndex = this.selectedIndex;
+
+          super.loadComponent(this.childLayoutTag);
+        });
+      });
+    });
   }
 
 }

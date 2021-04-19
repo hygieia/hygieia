@@ -2,3 +2,28 @@
   max-height: 500px;
   overflow: scroll;
 }
+
+.dropdown-row{
+  height: 100%;
+  align-items: center;
+  padding-bottom: 15px;
+}
+
+.dropdown-col{
+  padding-right: 0;
+}
+
+select{
+  background-color: rgb(100, 100, 100);
+  margin: 5px;
+  color: white;
+  height: 50px;
+  border-radius: 5px;
+  width: 100%;
+  // margin: auto;
+}
+
+
+#refresh-icon:hover {
+ cursor: pointer;
+}

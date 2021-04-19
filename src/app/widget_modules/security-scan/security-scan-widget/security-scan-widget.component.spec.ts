@@ -41,8 +41,12 @@ class MockSecurityScanService {
     reportUrl: 'https://testscan.com/testComponent/report.html'
   };
 
-  getSecurityScanDetails(componentId: string, max: number): Observable<ISecurityScan[]> {
+  getSecurityScanDetails(componentId: string): Observable<ISecurityScan[]> {
     return of(this.mockSecurityScanData.result as ISecurityScan[]);
+  }
+
+  refreshProject(){
+    return 'Successfully refreshed'
   }
 }
 
@@ -107,7 +111,7 @@ describe('SecurityScanWidgetComponent', () => {
     fixture.detectChanges();
     component.stopRefreshInterval();
     securityScanService.getSecurityScanDetails('123').subscribe(result => {
-      component.loadCharts(result);
+      component.loadCharts(result, 0);
 
       expect(component.charts[0].data.items[0].title).toEqual('High');
       expect(component.charts[0].data.items[0].subtitles[0]).toEqual('6');
@@ -123,6 +127,12 @@ describe('SecurityScanWidgetComponent', () => {
     component.setDefaultIfNoData();
     expect(component.charts[0].data.items[0].title).toEqual('No Data Found');
   });
+
+  it('should not assign default if it has data', () => {
+    component.hasData = true;
+    component.setDefaultIfNoData();
+    expect(component.charts).toEqual([]);
+  })
 
   it('should call ngOnInit()', () => {
     component.ngOnInit();
@@ -158,7 +168,12 @@ describe('SecurityScanWidgetComponent', () => {
     component.startRefreshInterval();
   });
 
+  it('should return empty on refresh if !hasData', () => {
+    component.hasData = false;
+    component.refreshProject();
+  });
+
   it('should loadCharts', () => {
-    component.loadCharts([mockSecurityScan]);
+    component.loadCharts([mockSecurityScan], 0);
   });
 });
