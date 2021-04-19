@@ -40,6 +40,12 @@
                             {{this.convertToReadable(collector.lastExecuted)}}
                         </div>
                     </div>
+                    <div class="expanded-enabled" *ngIf="collector.lastExecutedSeconds">
+                        Run Duration:
+                        <div class="expanded-enabled-value">
+                            {{collector.lastExecutedSeconds}}s
+                        </div>
+                    </div>
                     <div  class="expanded-unique-fields" *ngIf="collector.uniqueFields && this.getUniqueFields(collector.uniqueFields).length > 0">
                         Unique Fields: 
                         <div class="unique-fields" *ngFor="let field of this.getUniqueFields(collector.uniqueFields)">{{field}}</div>

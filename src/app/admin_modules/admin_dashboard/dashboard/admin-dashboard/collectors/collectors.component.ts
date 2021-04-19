@@ -26,7 +26,6 @@ export class CollectorsComponent implements OnInit {
   ngOnInit() {
     this.collectorsService.getAllCollectors().subscribe(res => {
       this.collectors = res;
-      console.log(this.collectors);
     })
   }
 
