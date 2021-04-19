@@ -47,15 +47,8 @@ tr.expanded-detail-row {
   font-family: Open Sans, sans-serif;
 }
 
-tr.collector-expanded-row:not(.collector-expanded-row):hover {
-  background: gray;
-}
-
-tr.collector-expanded-row:not(.collector-expanded-row) {
-  background: rgb(36, 31, 31);
-}
-
-.collector-name {
+tr.collector-row:not(.collector-expanded-row):hover {
+  box-shadow: 0px 2px 24px 2px black;
 }
 
 .material-icons {
@@ -72,32 +65,15 @@ tr.collector-expanded-row:not(.collector-expanded-row) {
   margin-right: 15px;
 }
 
-.expanded-enabled {
+.expanded-keys {
   margin: 15px;
 }
 
-.expanded-unique-fields {
-  margin: 15px;
-}
-
-.unique-fields {
+.fields {
   display: block;
   margin-left: 10%;
 }
 
-.expanded-all-fields {
-  margin: 15px;
-}
-
-.all-fields {
-  display: block;
+.expanded-values {
   margin-left: 10%;
-}
-
-.expanded-type-value {
-  margin-left: 10%;
-}
-
-.expanded-enabled-value {
-  margin-left: 10%
 }

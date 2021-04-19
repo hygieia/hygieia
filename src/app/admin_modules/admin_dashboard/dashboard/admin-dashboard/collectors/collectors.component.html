@@ -24,35 +24,35 @@
                 <div class="expanded-details">
                     <div class="expanded-type">
                         Collector Type: 
-                        <div class="expanded-type-value">
+                        <div class="expanded-values">
                             {{collector.collectorType}}
                         </div>
                     </div>
-                    <div class="expanded-enabled">
+                    <div class="expanded-keys">
                         Enabled: 
-                        <div class="expanded-enabled-value">
+                        <div class="expanded-values">
                             {{collector.enabled}}
                         </div>
                     </div>
-                    <div class="expanded-enabled">
+                    <div class="expanded-keys">
                         Last Executed:
-                        <div class="expanded-enabled-value">
+                        <div class="expanded-values">
                             {{this.convertToReadable(collector.lastExecuted)}}
                         </div>
                     </div>
-                    <div class="expanded-enabled" *ngIf="collector.lastExecutedSeconds">
+                    <div class="expanded-keys" *ngIf="collector.lastExecutedSeconds">
                         Run Duration:
-                        <div class="expanded-enabled-value">
+                        <div class="expanded-values">
                             {{collector.lastExecutedSeconds}}s
                         </div>
                     </div>
-                    <div  class="expanded-unique-fields" *ngIf="collector.uniqueFields && this.getFields(collector.uniqueFields).length > 0">
+                    <div  class="expanded-keys" *ngIf="collector.uniqueFields && this.getFields(collector.uniqueFields).length > 0">
                         Unique Fields: 
-                        <div class="unique-fields" *ngFor="let field of this.getFields(collector.uniqueFields)">{{field}}</div>
+                        <div class="fields" *ngFor="let field of this.getFields(collector.uniqueFields)">{{field}}</div>
                     </div>
-                    <div class="expanded-all-fields" *ngIf="collector.allFields && this.getFields(collector.allFields).length > 0">
+                    <div class="expanded-keys" *ngIf="collector.allFields && this.getFields(collector.allFields).length > 0">
                         All Fields: 
-                        <div class="all-fields" *ngFor="let field of this.getFields(collector.allFields)">{{field}}</div>
+                        <div class="fields" *ngFor="let field of this.getFields(collector.allFields)">{{field}}</div>
                     </div>
                 </div>
             </div>
