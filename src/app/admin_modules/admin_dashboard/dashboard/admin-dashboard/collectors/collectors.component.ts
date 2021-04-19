@@ -29,7 +29,7 @@ export class CollectorsComponent implements OnInit {
     });
   }
 
-  getUniqueFields(uniqueFields) {
+  getFields(uniqueFields) {
     return Object.keys(uniqueFields);
   }
 

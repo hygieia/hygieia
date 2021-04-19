@@ -63,7 +63,7 @@ describe('CollectorsComponent', () => {
       field2: ''
     };
     const keysExpected = ['field1', 'field2'];
-    const keys = component.getUniqueFields(fields);
+    const keys = component.getFields(fields);
     console.log(keys);
     expect(keys).toEqual(keysExpected);
   });
@@ -71,7 +71,7 @@ describe('CollectorsComponent', () => {
   it('should return empty array of keys', () => {
     const fields = {};
     const keysExpected = [];
-    const keys = component.getUniqueFields(fields);
+    const keys = component.getFields(fields);
     console.log(keys);
     expect(keys).toEqual(keysExpected);
   });
