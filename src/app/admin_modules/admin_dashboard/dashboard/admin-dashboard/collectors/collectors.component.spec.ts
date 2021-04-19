@@ -9,7 +9,7 @@ class MockCollectorService {
   getAllCollectors() {
     const mockCollectorList = [
       {
-        name: "github",
+        name: 'github',
         online: true,
         collectorType: 'foo',
         enabled: true,
@@ -17,7 +17,7 @@ class MockCollectorService {
         runDuration: 1234
       },
       {
-        name: "jmeter",
+        name: 'jmeter',
         online: false,
         collectorType: 'bar',
         enabled: false,
@@ -54,14 +54,14 @@ describe('CollectorsComponent', () => {
 
   it('should convert time to readable format', () => {
     const stringTime = component.convertToReadable(1616464805371);
-    expect(stringTime).toBe("Tue, 23 Mar 2021 02:00:05 GMT");
+    expect(stringTime).toBe('Tue, 23 Mar 2021 02:00:05 GMT');
   });
 
   it('should return array of keys', () => {
     const fields = {
       field1: '',
       field2: ''
-    }
+    };
     const keysExpected = ['field1', 'field2'];
     const keys = component.getUniqueFields(fields);
     console.log(keys);
@@ -69,7 +69,7 @@ describe('CollectorsComponent', () => {
   });
 
   it('should return empty array of keys', () => {
-    const fields = {}
+    const fields = {};
     const keysExpected = [];
     const keys = component.getUniqueFields(fields);
     console.log(keys);

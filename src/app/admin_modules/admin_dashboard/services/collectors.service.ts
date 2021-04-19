@@ -1,16 +1,16 @@
-import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
-import { CollectorItem } from "../dashboard/admin-dashboard/model/collectors-item";
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { CollectorItem } from '../dashboard/admin-dashboard/model/collectors-item';
 
 @Injectable({
     providedIn: 'root'
 })
 export class CollectorsService {
-    getAllCollectorsRoute = '/api/collector/'
+    getAllCollectorsRoute = '/api/collector/';
 
-    constructor(private http: HttpClient, private service: CollectorsService) {}
+    constructor(private http: HttpClient) {}
 
     getAllCollectors() {
-        return this.http.get<CollectorItem[]>(this.getAllCollectorsRoute)
+        return this.http.get<CollectorItem[]>(this.getAllCollectorsRoute);
     }
 }

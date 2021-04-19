@@ -19,18 +19,18 @@ export class CollectorsComponent implements OnInit {
   public collectors;
   displayColumns: string[] = ['name', 'status'];
 
-  isExpansionDetailRow = (i: number, row: Object) => row.hasOwnProperty('detailRow');
+  isExpansionDetailRow = (i: number, row: object) => row.hasOwnProperty('detailRow');
 
   constructor(private collectorsService: CollectorsService) { }
 
   ngOnInit() {
     this.collectorsService.getAllCollectors().subscribe(res => {
       this.collectors = res;
-    })
+    });
   }
 
-  getUniqueFields(uniqueFields){
-    return Object.keys(uniqueFields)
+  getUniqueFields(uniqueFields) {
+    return Object.keys(uniqueFields);
   }
 
    // Converts build duration to HH:mm:ss format
