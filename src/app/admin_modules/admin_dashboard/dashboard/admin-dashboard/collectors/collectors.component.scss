@@ -74,9 +74,14 @@ tr.collector-row:not(.collector-expanded-row):hover {
 }
 
 .error-message {
-  margin-top: 15px;
+  margin-bottom: 15px;
 }
 
 .col-md-3{
+  padding-left: 0;
+  max-width: 100%;
+}
+
+.col-md-9 {
   padding-left: 0;
 }
