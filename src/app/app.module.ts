@@ -21,6 +21,7 @@ import {
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 import {NgxUIModule} from '@swimlane/ngx-ui';
 import {GlobalErrorHandler} from './app.error.handler';
+import {SsoAuthGuard} from './user/sso/sso.authguard';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,7 @@ import {GlobalErrorHandler} from './app.error.handler';
     NbSearchModule,
     NbIconModule
   ],
-  providers: [{ provide: ErrorHandler, useClass: GlobalErrorHandler }],
+  providers: [{ provide: ErrorHandler, useClass: GlobalErrorHandler }, SsoAuthGuard],
   bootstrap: [AppComponent],
   exports: []
 })
