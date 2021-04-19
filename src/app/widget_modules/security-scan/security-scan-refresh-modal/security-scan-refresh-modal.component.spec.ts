@@ -39,5 +39,5 @@ describe('SecurityScanRefreshModalComponent', () => {
 
   it('should close', () => {
     component.closeModal();
-  })
+  });
 });

@@ -10,5 +10,11 @@
       "secure": true,
       "changeOrigin": true,
       "logLevel": "debug"
+    },
+    "/eratocode-security/": {
+      "target": "http://localhost:8081",
+      "secure": true,
+      "changeOrigin": true,
+      "logLevel": "debug"
     }
 }

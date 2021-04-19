@@ -45,8 +45,8 @@ class MockSecurityScanService {
     return of(this.mockSecurityScanData.result as ISecurityScan[]);
   }
 
-  refreshProject(){
-    return 'Successfully refreshed'
+  refreshProject() {
+    return 'Successfully refreshed';
   }
 }
 
@@ -132,7 +132,7 @@ describe('SecurityScanWidgetComponent', () => {
     component.hasData = true;
     component.setDefaultIfNoData();
     expect(component.charts).toEqual([]);
-  })
+  });
 
   it('should call ngOnInit()', () => {
     component.ngOnInit();
