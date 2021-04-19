@@ -54,6 +54,22 @@
                         All Fields: 
                         <div class="fields" *ngFor="let field of this.getFields(collector.allFields)">{{field}}</div>
                     </div>
+                    <div class="expanded-keys" *ngIf="collector.errors && collector.errors.length > 0" >
+                        Errors:
+                        <div class="fields" *ngFor="let error of collector.errors">
+                            <div class="error-message">
+                                <div>Error Code: 
+                                    <span style="color:lightgray">{{error.errorCode}}</span>
+                                </div>
+                                <div>Error Message: 
+                                    <span style="color:lightgray">{{error.errorMessage}}</span>
+                                </div>
+                                <div>Timestamp: 
+                                    <span style="color:lightgray">{{this.convertToReadable(error.timestamp)}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </td>

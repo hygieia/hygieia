@@ -71,9 +71,13 @@ tr.collector-row:not(.collector-expanded-row):hover {
 
 .fields {
   display: block;
-  margin-left: 10%;
+  margin-left: 15%;
 }
 
 .expanded-values {
-  margin-left: 10%;
+  margin-left: 15%;
+}
+
+.error-message {
+  margin-top: 15px;
 }
