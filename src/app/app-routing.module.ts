@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import {SsoAuthGuard} from './user/sso/sso.authguard';
 
 const routes: Routes = [
   { path: 'user', loadChildren: () =>
@@ -15,7 +16,7 @@ const routes: Routes = [
   { path: 'audits', loadChildren: () =>
       import('./screen_modules/nfrr/nfrr.module').then(m => m.NfrrModule)},
   { path: '', loadChildren: () =>
-      import('./landing_page/landing-page.module').then(m => m.LandingPageModule), pathMatch: 'full' },
+      import('./landing_page/landing-page.module').then(m => m.LandingPageModule), pathMatch: 'full', canActivate: [ SsoAuthGuard ] },
   { path: '**', redirectTo: '' },
 ];
 
