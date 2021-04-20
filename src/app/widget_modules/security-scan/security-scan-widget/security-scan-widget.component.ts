@@ -38,7 +38,7 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
 
   private intervalRefreshSubscription: Subscription;
   private params;
-  private allScanData;
+  public allScanData;
   public loading;
   private selectedIndex: number;
   @ViewChild('projectSelector', { static: true }) projectSelector: ElementRef;
