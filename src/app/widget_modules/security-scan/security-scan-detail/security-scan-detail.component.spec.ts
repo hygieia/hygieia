@@ -34,7 +34,7 @@ describe('SecurityScanDetailComponent', () => {
     const detailData = {
       clickableHeader: null,
       clickableContent: null,
-      name: 'eratocode-project',
+      name: 'sast-project',
       items: [],
       timestamp: 1234566,
       url: 'test_url'

@@ -33,6 +33,7 @@ export interface ICollItem {
   pushed: boolean;
   collectorId: string;
   lastUpdated: number;
+  refreshLink?: string;
   options: {
     dashboardId: string;
     jobName: string;

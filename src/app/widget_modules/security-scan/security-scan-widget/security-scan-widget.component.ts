@@ -26,7 +26,7 @@ import { ClickListComponent } from '../../../shared/charts/click-list/click-list
 import { SecurityScanDetailComponent } from '../security-scan-detail/security-scan-detail.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SecurityScanRefreshModalComponent } from '../security-scan-refresh-modal/security-scan-refresh-modal.component';
-
+import { ICollItem } from 'src/app/viewer_modules/collector-item/interfaces';
 
 
 @Component({
@@ -38,9 +38,11 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
 
   private intervalRefreshSubscription: Subscription;
   private params;
-  public allScanData;
-  public loading;
+  public hasData;
+  public allCollectorItems;
+  public loading: boolean;
   private selectedIndex: number;
+  public hasRefreshLink: boolean;
   @ViewChild('projectSelector', { static: true }) projectSelector: ElementRef;
   @ViewChild(LayoutDirective, { static: true }) childLayoutTag: LayoutDirective;
 
@@ -57,11 +59,10 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
     this.layout = OneChartLayoutComponent;
     this.charts = [];
     this.auditType = 'STATIC_SECURITY_ANALYSIS';
-    this.allScanData = [];
-    this.loading = false;
-    this.selectedIndex = 0;
+    this.allCollectorItems = [];
     this.init();
   }
+
   ngAfterViewInit() {
     this.startRefreshInterval();
   }
@@ -91,7 +92,7 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
           componentId: widgetConfig.componentId,
           max: 1
         };
-        return this.securityService.getSecurityScanDetails(this.params.componentId)
+        return this.securityService.getSecurityScanCollectorItems(this.params.componentId)
           .pipe(catchError(err => of(err)));
         // );
       })).subscribe(result => {
@@ -113,52 +114,74 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
       }
     });
   }
-
   stopRefreshInterval() {
     if (this.intervalRefreshSubscription) {
       this.intervalRefreshSubscription.unsubscribe();
     }
   }
 
-  loadCharts(result: ISecurityScan[], index) {
-    this.generateSecurityScanData(result, index);
+  loadCharts(result: ICollItem[], index) {
+    this.selectedIndex = index;
+    // result[1].refreshLink = '/eratocode-security/refresh?projectName=identity-profile-preferences-master';
+    // result[0].refreshLink = 'http://localhost:8081/eratocode-security/refresh?projectName=identity-profile-preferences-master';
+    if ( result[this.selectedIndex].refreshLink ) {
+      this.hasRefreshLink = true;
+    } else {
+      this.hasRefreshLink = false;
+    }
+    this.populateDropdown(result);
+    const collectorItemId = result[index].id;
+    this.securityService.getCodeQuality(this.params.componentId, collectorItemId).subscribe(codeQuality => {
+      console.log(codeQuality);
+      this.generateSecurityScanData(codeQuality.result[0], index);
+    });
   }
 
-  generateSecurityScanData(result: ISecurityScan[], index) {
-    this.allScanData = [];
+  populateDropdown(collectorItems) {
+    collectorItems.map(item => {
+      item.description = item.description.split(':')[0];
+    });
+    console.log(collectorItems);
 
-    result.forEach(scan => {
-      const projectMetrics = [];
-      scan.metrics.map(metric => {
-        const riskStatus = metric.name === 'High' ? DashStatus.CRITICAL : (metric.name === 'Medium' ?
-          DashStatus.WARN : DashStatus.PASS);
-        const clickListItem = {
-          title: metric.name,
-          subtitles: [metric.value],
-          status: riskStatus,
-          statusText: metric.status,
-        } as IClickListItem;
-        projectMetrics.push(clickListItem);
-      });
-      const projectInfo = { name: scan.name, url: scan.url ? scan.url : '', timestamp: scan.timestamp, metrics: projectMetrics };
-      this.allScanData.push(projectInfo);
+    this.allCollectorItems = collectorItems;
+  }
+
+
+  generateSecurityScanData(codeQuality: ISecurityScan, index) {
+    this.charts = [];
+    const projectMetrics = [];
+    codeQuality.metrics.map(metric => {
+      const riskStatus = metric.name === 'High' ? DashStatus.CRITICAL : (metric.name === 'Medium' ?
+        DashStatus.WARN : DashStatus.PASS);
+      const clickListItem = {
+        title: metric.name,
+        subtitles: [metric.value],
+        status: riskStatus,
+        statusText: metric.status,
+      } as IClickListItem;
+      projectMetrics.push(clickListItem);
     });
 
-    this.populateChartsFromData(index);
+    const currentItem = this.allCollectorItems[index];
+    const projectInfo = {
+      description: currentItem.description, reportUrl: currentItem.options.reportUrl ? currentItem.options.reportUrl : '',
+      timestamp: codeQuality.timestamp, metrics: projectMetrics
+    };
+
+    this.populateChartsFromData(projectInfo);
   }
 
-  populateChartsFromData(index) {
-    this.selectedIndex = index;
-    const project = this.allScanData[index];
+  populateChartsFromData(projectInfo) {
+
     const currentChart: IChart = {
-      title: project.name,
+      title: projectInfo.description,
       component: ClickListComponent,
       data: {
-        name: project.name,
-        items: project.metrics,
+        name: projectInfo.description,
+        items: projectInfo.metrics,
         clickableContent: null,
-        url: project.url,
-        timestamp: project.timestamp,
+        url: projectInfo.reportUrl,
+        timestamp: projectInfo.timestamp,
         clickableHeader: SecurityScanDetailComponent
       },
       xAxisLabel: '',
@@ -171,7 +194,7 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
   }
 
   setDefaultIfNoData() {
-    this.allScanData = [];
+    this.allCollectorItems = [];
     if (!this.hasData) {
       const defaultItem: IChart = {
         title: 'Security Scan',
@@ -188,30 +211,49 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
   }
 
   refreshProject() {
-    if ( !this.hasData ) {
+    const refreshLink = this.allCollectorItems[this.selectedIndex].refreshLink;
+    console.log(this.hasData)
+    // Redundant check for refresh link, but just in case somebody attempts to call refreshProject() without hitting the button
+    if ( !this.hasData || !refreshLink   ) {
       return;
     }
+
     this.loading = true;
-    this.securityService.refreshProject(this.charts[0].title).subscribe(refreshResult => {
+
+    this.securityService.refreshProject(refreshLink).subscribe(refreshResult => {
       this.loading = false;
       const modalRef = this.modalService.open(SecurityScanRefreshModalComponent);
       modalRef.componentInstance.message = refreshResult;
       modalRef.componentInstance.title = this.charts[0].title;
       modalRef.result.then(modalResult => {
-        this.securityService.getSecurityScanDetails(this.params.componentId).subscribe(result => {
-          this.hasData = (result && result.length > 0);
-          if (this.hasData) {
-            this.loadCharts(result, this.selectedIndex);
-          } else {
-            // Select the first option in the dropdown since there will only be the default option.
-            this.selectedIndex = 0;
-            this.setDefaultIfNoData();
-          }
-          this.projectSelector.nativeElement.selectedIndex = this.selectedIndex;
-
-          super.loadComponent(this.childLayoutTag);
-        });
+        this.reloadAfterRefresh();
       });
+    }, err => {
+      console.log(err);
+      this.loading = false;
+      const modalRef = this.modalService.open(SecurityScanRefreshModalComponent);
+      modalRef.componentInstance.message = 'Something went wrong while trying to refresh the data.';
+      modalRef.componentInstance.title = this.charts[0].title;
+      modalRef.result.then(modalResult => {
+        this.reloadAfterRefresh();
+      });
+
+    });
+  }
+
+  reloadAfterRefresh() {
+    this.securityService.getSecurityScanCollectorItems(this.params.componentId).subscribe(result => {
+      this.hasData = (result && result.length > 0);
+      if (this.hasData) {
+        this.loadCharts(result, this.selectedIndex);
+      } else {
+        // Select the first option in the dropdown since there will only be the default option.
+        this.selectedIndex = 0;
+        this.setDefaultIfNoData();
+      }
+      super.loadComponent(this.childLayoutTag);
+      this.hasRefreshLink =  true;
+      this.projectSelector.nativeElement.selectedIndex =  this.selectedIndex;
     });
   }
 

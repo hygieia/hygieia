@@ -1,33 +1,39 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {ISecurityScan} from './security-scan-interfaces';
+import { ISecurityScanResponse} from './security-scan-interfaces';
+import { ICollItem } from 'src/app/viewer_modules/collector-item/interfaces';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SecurityScanService {
 
-  securityScanDetailEndPoint = '/api/quality/security-analysis/ui-widget';
+  collectorItemsEndpoint = '/api/collector/item/component';
+  codeQualityEndpoint = '/api/ui-widget/code-quality';
   baseRefreshUrl = '/eratocode-security/refresh';
 
 
   constructor(private http: HttpClient) {}
 
-  getSecurityScanDetails(componentId: string): Observable<ISecurityScan[]> {
-    return this.http.get<ISecurityScan[]>(this.securityScanDetailEndPoint, this.getHttpParams(componentId));
+  getSecurityScanCollectorItems(componentId: string): Observable<ICollItem[]> {
+    return this.http.get<ICollItem[]>(`${this.collectorItemsEndpoint}/${componentId}`, this.getCollectorItemParams());
   }
 
-  private getHttpParams(componentId: string) {
-    return { params : new HttpParams().set('componentId', componentId)};
+  private getCollectorItemParams() {
+    return { params : new HttpParams().set('type', 'StaticSecurityScan')};
   }
 
-  refreshProject(projectName: string) {
-    return this.http.get(this.baseRefreshUrl, this.getRefreshParams(projectName));
+  getCodeQuality(componentId, collectorItemId: string): Observable<ISecurityScanResponse> {
+    return this.http.get<ISecurityScanResponse>(this.codeQualityEndpoint, this.getCodeQualityParams(componentId, collectorItemId));
   }
 
-  private getRefreshParams(projectName: string) {
-    return { params : new HttpParams().set('projectName', projectName)};
+  private getCodeQualityParams(componentId, collectorItemId) {
+    return { params : new HttpParams().set('componentId', componentId).set('collectorItemId', collectorItemId)};
+  }
+
+  refreshProject(refreshLink: string) {
+    return this.http.get(refreshLink);
   }
 
 }

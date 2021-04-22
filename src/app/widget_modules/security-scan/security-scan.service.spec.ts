@@ -19,7 +19,7 @@ describe('SecurityScanService', () => {
     inject([HttpTestingController, SecurityScanService],
       (httpMock: HttpTestingController, service: SecurityScanService) => {
         // We call the service
-        service.getSecurityScanDetails('123').subscribe(data => {
+        service.getSecurityScanCollectorItems('123').subscribe(data => {
           expect(data).toBeTruthy();
         });
         // We set the expectations for the HttpClient mock
