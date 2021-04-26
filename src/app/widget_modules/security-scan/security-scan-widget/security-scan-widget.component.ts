@@ -122,8 +122,6 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
 
   loadCharts(result: ICollItem[], index) {
     this.selectedIndex = index;
-    // result[1].refreshLink = '/eratocode-security/refresh?projectName=identity-profile-preferences-master';
-    // result[0].refreshLink = 'http://localhost:8081/eratocode-security/refresh?projectName=identity-profile-preferences-master';
     if ( result[this.selectedIndex].refreshLink ) {
       this.hasRefreshLink = true;
     } else {
@@ -132,7 +130,6 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
     this.populateDropdown(result);
     const collectorItemId = result[index].id;
     this.securityService.getCodeQuality(this.params.componentId, collectorItemId).subscribe(codeQuality => {
-      console.log(codeQuality);
       this.generateSecurityScanData(codeQuality.result[0], index);
     });
   }
@@ -141,8 +138,6 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
     collectorItems.map(item => {
       item.description = item.description.split(':')[0];
     });
-    console.log(collectorItems);
-
     this.allCollectorItems = collectorItems;
   }
 
@@ -172,7 +167,6 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
   }
 
   populateChartsFromData(projectInfo) {
-
     const currentChart: IChart = {
       title: projectInfo.description,
       component: ClickListComponent,
@@ -212,7 +206,7 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
 
   refreshProject() {
     const refreshLink = this.allCollectorItems[this.selectedIndex].refreshLink;
-    console.log(this.hasData)
+
     // Redundant check for refresh link, but just in case somebody attempts to call refreshProject() without hitting the button
     if ( !this.hasData || !refreshLink   ) {
       return;

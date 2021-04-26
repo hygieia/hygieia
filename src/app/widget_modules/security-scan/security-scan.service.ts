@@ -11,8 +11,6 @@ export class SecurityScanService {
 
   collectorItemsEndpoint = '/api/collector/item/component';
   codeQualityEndpoint = '/api/ui-widget/code-quality';
-  baseRefreshUrl = '/eratocode-security/refresh';
-
 
   constructor(private http: HttpClient) {}
 
