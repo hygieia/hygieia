@@ -95,7 +95,7 @@ class MockSecurityScanService {
 })
 class TestModule { }
 
-fdescribe('SecurityScanWidgetComponent', () => {
+describe('SecurityScanWidgetComponent', () => {
   let component: SecurityScanWidgetComponent;
   let securityScanService: SecurityScanService;
   let dashboardService: DashboardService;
