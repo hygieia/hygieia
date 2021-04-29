@@ -222,19 +222,4 @@ describe('SecurityScanWidgetComponent', () => {
     component.startRefreshInterval();
     component.startRefreshInterval();
   });
-
-  // it('should create chart', () => {
-  //   fixture.detectChanges();
-  //   component.stopRefreshInterval();
-  //   securityScanService.getSecurityScanCollectorItems('123').subscribe(result => {
-  //     component.loadCharts(result, 0);
-
-  //     expect(component.charts[0].data.items[0].title).toEqual('High');
-  //     expect(component.charts[0].data.items[0].subtitles[0]).toEqual('6');
-  //     expect(component.charts[0].data.items[0].statusText).toEqual('Alert');
-  //     expect(component.charts[0].data.items[1].title).toEqual('Score');
-  //     expect(component.charts[0].data.items[1].subtitles[0]).toEqual('62');
-  //   });
-  //   component.ngOnDestroy();
-  // });
 });
