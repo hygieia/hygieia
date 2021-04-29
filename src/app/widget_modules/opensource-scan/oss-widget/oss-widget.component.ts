@@ -152,7 +152,9 @@ export class OSSWidgetComponent extends WidgetComponent implements OnInit, After
 
   populateDropdown(collectorItems) {
     collectorItems.map(item => {
-      item.description = item.description.split(':')[0];
+      if (item.description) {
+        item.description = item.description.split(':')[0];
+      }
     });
     this.allCollectorItems = collectorItems;
   }
