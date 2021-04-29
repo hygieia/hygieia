@@ -81,7 +81,7 @@ class MockOSSService {
   }
 }
 
-describe('OSSWidgetComponent', () => {
+ describe('OSSWidgetComponent', () => {
   let component: OSSWidgetComponent;
   let fixture: ComponentFixture<OSSWidgetComponent>;
   let ossService: OpensourceScanService;
