@@ -81,7 +81,7 @@ class MockOSSService {
   }
 }
 
- describe('OSSWidgetComponent', () => {
+describe('OSSWidgetComponent', () => {
   let component: OSSWidgetComponent;
   let fixture: ComponentFixture<OSSWidgetComponent>;
   let ossService: OpensourceScanService;
@@ -255,8 +255,8 @@ class MockOSSService {
 
   it('should loadCharts and set hasRefreshLink to false', () => {
     (component as any).params = { componentId: '1234' };
-    let collItemArray = collItemResponse;
-    delete(collItemArray[0].refreshLink);
+    const collItemArray = collItemResponse;
+    delete (collItemArray[0].refreshLink);
     component.loadCharts(collItemArray, 0);
     expect(component.hasRefreshLink).toEqual(false);
   });
@@ -347,7 +347,7 @@ class MockOSSService {
     component.charts[0].data = [];
     component.charts[1].data = [];
     const ossResult = ossTestData;
-    ossResult.threats = {License: null, Security: null};
+    ossResult.threats = { License: null, Security: null };
     component.generateSecurityDetails(ossTestData);
     expect(component.charts[1].data).toEqual([]);
   });

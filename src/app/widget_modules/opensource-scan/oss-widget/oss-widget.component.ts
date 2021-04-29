@@ -131,7 +131,6 @@ export class OSSWidgetComponent extends WidgetComponent implements OnInit, After
     if ( result[this.selectedIndex].refreshLink ) {
       this.hasRefreshLink = true;
     } else {
-      console.log('FALSE FALSE FALSEY')
       this.hasRefreshLink = false;
     }
 
