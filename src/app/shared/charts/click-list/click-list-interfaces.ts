@@ -46,6 +46,12 @@ export interface IClickListItemStaticAnalysis extends IClickListData {
   timestamp?: any;
 }
 
+export interface IClickListItemSecurityScan extends IClickListData {
+  url: string;
+  name?: string;
+  timestamp?: any;
+}
+
 export interface IClickListItemTest extends IClickListItem {
   timestamp: string;
   description: string;
