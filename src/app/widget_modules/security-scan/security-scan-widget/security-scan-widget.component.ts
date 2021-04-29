@@ -136,7 +136,7 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
 
   populateDropdown(collectorItems) {
     collectorItems.map(item => {
-      if(item.description){
+      if (item.description) {
         item.description = item.description.split(':')[0];
       }
     });
