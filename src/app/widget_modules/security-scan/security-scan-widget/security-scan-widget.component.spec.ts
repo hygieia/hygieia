@@ -39,7 +39,7 @@ class MockSecurityScanService {
         personalAccessToken: 'token'
       },
       pushed: false,
-      refreshLink: 'http://localhost:8081/security/refresh?projectName=identity-profile-preferences-master',
+      refreshLink: '/security/refresh?projectName=identity-profile-preferences-master',
       niceName: 'nicename',
       environment: 'env'
     }
@@ -125,7 +125,7 @@ describe('SecurityScanWidgetComponent', () => {
         personalAccessToken: 'token'
       },
       pushed: false,
-      refreshLink: 'http://localhost:8081/security/refresh?projectName=identity-profile-preferences-master',
+      refreshLink: '/security/refresh?projectName=identity-profile-preferences-master',
       niceName: 'nicename',
       environment: 'env'
     }

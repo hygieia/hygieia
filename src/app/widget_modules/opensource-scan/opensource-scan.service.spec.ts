@@ -69,7 +69,7 @@ describe('OpensourceScanService', () => {
               personalAccessToken: 'token'
             },
             pushed: false,
-            refreshLink: 'http://localhost:8081/security/refresh?projectName=test-master',
+            refreshLink: '/security/refresh?projectName=test-master',
             niceName: 'nicename',
             environment: 'env'
           }
