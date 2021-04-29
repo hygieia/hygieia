@@ -25,7 +25,7 @@ import { IChart } from 'src/app/shared/interfaces';
 import { ClickListComponent } from '../../../shared/charts/click-list/click-list.component';
 import { SecurityScanDetailComponent } from '../security-scan-detail/security-scan-detail.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { SecurityScanRefreshModalComponent } from '../security-scan-refresh-modal/security-scan-refresh-modal.component';
+import { RefreshModalComponent } from '../../../shared/modals/refresh-modal/refresh-modal.component';
 import { ICollItem } from 'src/app/viewer_modules/collector-item/interfaces';
 
 
@@ -216,7 +216,7 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
 
     this.securityService.refreshProject(refreshLink).subscribe(refreshResult => {
       this.loading = false;
-      const modalRef = this.modalService.open(SecurityScanRefreshModalComponent);
+      const modalRef = this.modalService.open(RefreshModalComponent);
       modalRef.componentInstance.message = refreshResult;
       modalRef.componentInstance.title = this.charts[0].title;
       modalRef.result.then(modalResult => {
@@ -225,7 +225,7 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
     }, err => {
       console.log(err);
       this.loading = false;
-      const modalRef = this.modalService.open(SecurityScanRefreshModalComponent);
+      const modalRef = this.modalService.open(RefreshModalComponent);
       modalRef.componentInstance.message = 'Something went wrong while trying to refresh the data.';
       modalRef.componentInstance.title = this.charts[0].title;
       modalRef.result.then(modalResult => {

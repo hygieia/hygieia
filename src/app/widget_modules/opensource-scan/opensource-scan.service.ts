@@ -31,4 +31,8 @@ export class OpensourceScanService {
       map(response => response.result));
   }
 
+  refreshProject(refreshLink: string) {
+    return this.http.get(refreshLink);
+  }
+
 }

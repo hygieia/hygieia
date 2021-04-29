@@ -74,6 +74,7 @@ import {NgxPaginationModule} from 'ngx-pagination';
 import {CollectorItemModule} from '../viewer_modules/collector-item/collector-item.module';
 import {NfrrModule} from '../screen_modules/nfrr/nfrr.module';
 import { XByOneLayoutComponent } from './layouts/x-by-one-layout/x-by-one-layout.component';
+import { RefreshModalComponent } from './modals/refresh-modal/refresh-modal.component';
 
 @NgModule({
   declarations: [
@@ -128,7 +129,8 @@ import { XByOneLayoutComponent } from './layouts/x-by-one-layout/x-by-one-layout
     EditDashboardModalComponent,
     GeneralFilterPipe,
     GeneralOrderByPipe,
-    XByOneLayoutComponent
+    XByOneLayoutComponent,
+    RefreshModalComponent
   ],
   entryComponents: [
     GeneralDeleteComponent,

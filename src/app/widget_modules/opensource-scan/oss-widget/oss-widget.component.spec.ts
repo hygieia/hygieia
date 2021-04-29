@@ -1,19 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { OSSWidgetComponent } from './oss-widget.component';
-import {Observable, of} from 'rxjs';
-import {NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
-import {SharedModule} from '../../../shared/shared.module';
-import {CommonModule} from '@angular/common';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {RouterModule} from '@angular/router';
-import {NgbModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
-import {OpensourceScanService} from '../opensource-scan.service';
-import {DashboardService} from '../../../shared/dashboard.service';
-import {DashStatus} from '../../../shared/dash-status/DashStatus';
-import {IOpensourceScan} from '../interfaces';
-import {OpensourceScanModule} from '../opensource-scan.module';
+import { Observable, of } from 'rxjs';
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { SharedModule } from '../../../shared/shared.module';
+import { CommonModule } from '@angular/common';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterModule } from '@angular/router';
+import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { OpensourceScanService } from '../opensource-scan.service';
+import { DashboardService } from '../../../shared/dashboard.service';
+import { DashStatus } from '../../../shared/dash-status/DashStatus';
+import { IOpensourceScan } from '../interfaces';
+import { OpensourceScanModule } from '../opensource-scan.module';
+import { ICollItem } from 'src/app/viewer_modules/collector-item/interfaces';
 
 @NgModule({
   declarations: [],
@@ -25,10 +26,40 @@ import {OpensourceScanModule} from '../opensource-scan.module';
 class TestModule { }
 
 class MockOSSService {
+
+  mockCollectorItemArray: ICollItem[] = [
+    {
+      collectorId: '12345',
+      description: 'identity-profile-preferences-master',
+      enabled: true,
+      errorCount: 0,
+      errors: [],
+      id: '5cba241bb0dd131c5f3eeb34',
+      lastUpdated: 1619112848762,
+      options: {
+        dashboardId: 'id',
+        jobName: 'jobName',
+        jobUrl: 'joburl.com',
+        instanceUrl: 'instanceurl.com',
+        branch: 'development',
+        url: 'url.com',
+        repoName: 'identitygithub.com',
+        path: '/test',
+        artifactName: 'artifactTest',
+        password: 'pswrd',
+        personalAccessToken: 'token'
+      },
+      pushed: false,
+      refreshLink: 'http://localhost:8081/security/refresh?projectName=identity-profile-preferences-master',
+      niceName: 'nicename',
+      environment: 'env'
+    }
+  ];
+
   mockOSSData = {
     result: [
       {
-        name : 'QA',
+        name: 'QA',
         id: 'OSS_ID',
         collectorItemId: 'coll_id',
         timestamp: 1555590574399,
@@ -42,6 +73,9 @@ class MockOSSService {
     ]
   };
 
+  getLibraryPolicyCollectorItems(componentId: string): Observable<ICollItem[]> {
+    return of(this.mockCollectorItemArray);
+  }
   fetchDetails(componentId: string, maxCnt: number): Observable<IOpensourceScan[]> {
     return of(this.mockOSSData.result);
   }
@@ -54,6 +88,7 @@ describe('OSSWidgetComponent', () => {
   let dashboardService: DashboardService;
   let modalService: NgbModal;
   let ossTestData: IOpensourceScan;
+  let collItemResponse: ICollItem[];
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -67,6 +102,35 @@ describe('OSSWidgetComponent', () => {
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
 
+    collItemResponse = [
+      {
+        collectorId: '5991223442ff4e0d3c1485c1',
+        description: 'identity-profile-preferences-master',
+        enabled: true,
+        errorCount: 0,
+        errors: [],
+        id: '5cba241bb0dd131c5f3eeb34',
+        lastUpdated: 1619112848762,
+        options: {
+          dashboardId: 'id',
+          jobName: 'jobName',
+          jobUrl: 'joburl.com',
+          instanceUrl: 'instanceurl.com',
+          branch: 'development',
+          url: 'url.com',
+          repoName: 'identitygithub.com',
+          path: '/test',
+          artifactName: 'artifactTest',
+          password: 'pswrd',
+          personalAccessToken: 'token'
+        },
+        pushed: false,
+        refreshLink: 'http://localhost:8081/security/refresh?projectName=identity-profile-preferences-master',
+        niceName: 'nicename',
+        environment: 'env'
+      }
+    ];
+
     ossTestData = {
       id: 'OSS_ID',
       collectorItemId: 'coll_id',
@@ -75,7 +139,7 @@ describe('OSSWidgetComponent', () => {
         License: [
           {
             level: 'high',
-            components : ['high##open'],
+            components: ['high##open'],
             count: 1,
             dispositionCounts: {
               Open: 1,
@@ -85,7 +149,7 @@ describe('OSSWidgetComponent', () => {
           },
           {
             level: 'low',
-            components : ['low1##cl', 'low2##open', 'low3##open'],
+            components: ['low1##cl', 'low2##open', 'low3##open'],
             count: 3,
             dispositionCounts: {
               Open: 2,
@@ -97,7 +161,7 @@ describe('OSSWidgetComponent', () => {
         Security: [
           {
             level: 'critical',
-            components : ['critical##closed'],
+            components: ['critical##closed'],
             count: 1,
             dispositionCounts: {
               Open: 0,
@@ -107,7 +171,7 @@ describe('OSSWidgetComponent', () => {
           },
           {
             level: 'medium',
-            components : ['mid1##cl', 'mid2##open', 'mid3##cl'],
+            components: ['mid1##cl', 'mid2##open', 'mid3##cl'],
             count: 3,
             dispositionCounts: {
               Open: 1,
@@ -185,8 +249,16 @@ describe('OSSWidgetComponent', () => {
   });
 
   it('should loadCharts', () => {
-    component.loadCharts(ossTestData);
-    component.loadCharts(null);
+    (component as any).params = { componentId: '1234' };
+    component.loadCharts(collItemResponse, 0);
+  });
+
+  it('should loadCharts and set hasRefreshLink to false', () => {
+    (component as any).params = { componentId: '1234' };
+    let collItemArray = collItemResponse;
+    delete(collItemArray[0].refreshLink);
+    component.loadCharts(collItemArray, 0);
+    expect(component.hasRefreshLink).toEqual(false);
   });
 
   it('should generateLicenseDetails', () => {
@@ -255,6 +327,29 @@ describe('OSSWidgetComponent', () => {
     component.hasData = false;
     component.setDefaultIfNoData();
     expect(component.charts[0].data.items[0].title).toEqual('No Data Found');
+  });
+
+  it('should not assign default if it has data', () => {
+    component.charts[0].data = [];
+    component.hasData = true;
+    component.setDefaultIfNoData();
+    expect(component.charts[0].data).toEqual([]);
+  });
+
+  it('should return empty on refresh if !hasData', () => {
+    (component as any).params = { componentId: '1234' };
+    component.loadCharts(collItemResponse, 0);
+    component.hasData = false;
+    component.refreshProject();
+  });
+
+  it('should return empty security findings if !result.threats.Security', () => {
+    component.charts[0].data = [];
+    component.charts[1].data = [];
+    const ossResult = ossTestData;
+    ossResult.threats = {License: null, Security: null};
+    component.generateSecurityDetails(ossTestData);
+    expect(component.charts[1].data).toEqual([]);
   });
 
 });

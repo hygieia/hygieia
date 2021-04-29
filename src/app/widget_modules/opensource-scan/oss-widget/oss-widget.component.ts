@@ -27,6 +27,8 @@ import {OSSDetailAllComponent} from '../oss-detail-all/oss-detail-all.component'
 import {WidgetState} from '../../../shared/widget-header/widget-state';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ICollItem } from 'src/app/viewer_modules/collector-item/interfaces';
+import { RefreshModalComponent } from '../../../shared/modals/refresh-modal/refresh-modal.component';
+
 
 
 @Component({
@@ -98,7 +100,6 @@ export class OSSWidgetComponent extends WidgetComponent implements OnInit, After
         };
         return this.ossService.getLibraryPolicyCollectorItems(widgetConfig.componentId).pipe(catchError(err => of(err)));
       })).subscribe(result => {
-        console.log(result);
         this.hasData = result && result.length > 0;
         if (this.hasData) {
           this.loadCharts(result, 0);
@@ -130,6 +131,7 @@ export class OSSWidgetComponent extends WidgetComponent implements OnInit, After
     if ( result[this.selectedIndex].refreshLink ) {
       this.hasRefreshLink = true;
     } else {
+      console.log('FALSE FALSE FALSEY')
       this.hasRefreshLink = false;
     }
 
@@ -137,11 +139,15 @@ export class OSSWidgetComponent extends WidgetComponent implements OnInit, After
     const collectorItemId = result[index].id;
 
     this.ossService.fetchDetails(this.params.componentId, collectorItemId).subscribe(libraryPolicy => {
-      console.log(libraryPolicy)
-      this.generateLicenseDetails(libraryPolicy[0]);
-      this.generateSecurityDetails(libraryPolicy[0]);
-      super.loadComponent(this.childLayoutTag);
-    })
+      if (libraryPolicy.length > 0) {
+        this.generateLicenseDetails(libraryPolicy[0]);
+        this.generateSecurityDetails(libraryPolicy[0]);
+        super.loadComponent(this.childLayoutTag);
+      } else {
+        this.setDefaultIfNoData();
+      }
+
+    });
 
   }
 
@@ -254,5 +260,52 @@ export class OSSWidgetComponent extends WidgetComponent implements OnInit, After
       this.charts[1].data = { items: [{ title: 'No Data Found' }]};
     }
     super.loadComponent(this.childLayoutTag);
+  }
+
+  refreshProject() {
+    const refreshLink = this.allCollectorItems[this.selectedIndex].refreshLink;
+
+    // Redundant check for refresh link, but just in case somebody attempts to call refreshProject() without hitting the button
+    if ( !this.hasData || !refreshLink   ) {
+      return;
+    }
+
+    this.loading = true;
+
+    this.ossService.refreshProject(refreshLink).subscribe(refreshResult => {
+      this.loading = false;
+      const modalRef = this.modalService.open(RefreshModalComponent);
+      modalRef.componentInstance.message = refreshResult;
+      modalRef.componentInstance.title = this.projectSelector.nativeElement.value;
+      modalRef.result.then(modalResult => {
+        this.reloadAfterRefresh();
+      });
+    }, err => {
+      console.log(err);
+      this.loading = false;
+      const modalRef = this.modalService.open(RefreshModalComponent);
+      modalRef.componentInstance.message = 'Something went wrong while trying to refresh the data.';
+      modalRef.componentInstance.title = this.allCollectorItems[this.selectedIndex].description;
+      modalRef.result.then(modalResult => {
+        this.reloadAfterRefresh();
+      });
+
+    });
+  }
+
+  reloadAfterRefresh() {
+    this.ossService.getLibraryPolicyCollectorItems(this.params.componentId).subscribe(result => {
+      this.hasData = (result && result.length > 0);
+      if (this.hasData) {
+        this.loadCharts(result, this.selectedIndex);
+      } else {
+        // Select the first option in the dropdown since there will only be the default option.
+        this.selectedIndex = 0;
+        this.setDefaultIfNoData();
+      }
+      super.loadComponent(this.childLayoutTag);
+      this.hasRefreshLink =  true;
+      this.projectSelector.nativeElement.selectedIndex =  this.selectedIndex;
+    });
   }
 }

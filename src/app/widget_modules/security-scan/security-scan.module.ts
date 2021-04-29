@@ -10,16 +10,17 @@ import { SecurityScanDeleteFormComponent } from './security-scan-delete-form/sec
 import { NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { SecurityScanDetailComponent } from './security-scan-detail/security-scan-detail.component';
 import { MatIconModule } from '@angular/material/icon';
-import { SecurityScanRefreshModalComponent } from './security-scan-refresh-modal/security-scan-refresh-modal.component';
+// import { RefreshModalComponent } from '../../shared/modals/refresh-modal/refresh-modal.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { RefreshModalComponent } from 'src/app/shared/modals/refresh-modal/refresh-modal.component';
 
 
 
 @NgModule({
   declarations: [SecurityScanWidgetComponent, SecurityScanConfigComponent, SecurityScanDeleteFormComponent,
-                 SecurityScanDetailComponent, SecurityScanRefreshModalComponent],
+                 SecurityScanDetailComponent],
   entryComponents: [SecurityScanWidgetComponent, SecurityScanConfigComponent, SecurityScanDeleteFormComponent,
-                    SecurityScanDetailComponent, SecurityScanRefreshModalComponent],
+                    SecurityScanDetailComponent, RefreshModalComponent],
   imports: [
     CommonModule,
     ReactiveFormsModule,

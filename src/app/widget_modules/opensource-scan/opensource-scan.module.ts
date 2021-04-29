@@ -9,11 +9,12 @@ import { OSSDetailAllComponent } from './oss-detail-all/oss-detail-all.component
 import {OSSDeleteFormComponent} from './oss-delete-form/oss-delete-form.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { OssRefreshModalComponent } from './oss-refresh-modal/oss-refresh-modal.component';
+import { RefreshModalComponent } from '../../shared/modals/refresh-modal/refresh-modal.component';
 
 @NgModule({
-  declarations: [OSSWidgetComponent, OSSDetailComponent, OSSConfigFormComponent, OSSDetailAllComponent, OSSDeleteFormComponent, OssRefreshModalComponent],
-  entryComponents: [OSSWidgetComponent, OSSDetailComponent, OSSConfigFormComponent, OSSDetailAllComponent, OSSDeleteFormComponent],
+  declarations: [OSSWidgetComponent, OSSDetailComponent, OSSConfigFormComponent, OSSDetailAllComponent, OSSDeleteFormComponent],
+  entryComponents: [OSSWidgetComponent, OSSDetailComponent, OSSConfigFormComponent,
+                    OSSDetailAllComponent, OSSDeleteFormComponent, RefreshModalComponent],
   imports: [
     CommonModule,
     NgbModule,
