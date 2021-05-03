@@ -317,7 +317,7 @@ class MockDashboardService {
 })
 class TestModule { }
 
-fdescribe('BuildWidgetComponent', () => {
+describe('BuildWidgetComponent', () => {
   let component: BuildWidgetComponent;
   let buildService: BuildService;
   let dashboardService: DashboardService;
