@@ -3,11 +3,11 @@ import { Component, Input, OnInit  } from '@angular/core';
 
 
 @Component({
-  selector: 'app-security-scan-refresh-modal',
-  templateUrl: './security-scan-refresh-modal.component.html',
-  styleUrls: ['./security-scan-refresh-modal.component.scss']
+  selector: 'app-refresh-modal',
+  templateUrl: './refresh-modal.component.html',
+  styleUrls: ['./refresh-modal.component.scss']
 })
-export class SecurityScanRefreshModalComponent implements OnInit {
+export class RefreshModalComponent implements OnInit {
 
   public detailData: any;
   @Input() title: any;

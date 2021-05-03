@@ -1,17 +1,17 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SecurityScanRefreshModalComponent } from './security-scan-refresh-modal.component';
+import { RefreshModalComponent } from './refresh-modal.component';
 
 import {NgbActiveModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {MatIconModule} from '@angular/material/icon';
 
 describe('SecurityScanRefreshModalComponent', () => {
-  let component: SecurityScanRefreshModalComponent;
-  let fixture: ComponentFixture<SecurityScanRefreshModalComponent>;
+  let component: RefreshModalComponent;
+  let fixture: ComponentFixture<RefreshModalComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SecurityScanRefreshModalComponent ],
+      declarations: [ RefreshModalComponent ],
       providers: [ NgbActiveModal ],
       imports: [NgbModule, MatIconModule ]
 
@@ -20,7 +20,7 @@ describe('SecurityScanRefreshModalComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SecurityScanRefreshModalComponent);
+    fixture = TestBed.createComponent(RefreshModalComponent);
     component = fixture.componentInstance;
     const title = 'Project 1';
     const message = 'Updated 2 components.';
