@@ -317,7 +317,7 @@ class MockDashboardService {
 })
 class TestModule { }
 
-describe('BuildWidgetComponent', () => {
+fdescribe('BuildWidgetComponent', () => {
   let component: BuildWidgetComponent;
   let buildService: BuildService;
   let dashboardService: DashboardService;
@@ -361,7 +361,6 @@ describe('BuildWidgetComponent', () => {
     setTimeout(() => {
       buildService.fetchDetails('123', 14).subscribe(result => {
         component.loadCharts(result);
-
         expect(component.charts[0].data.dataPoints[0].series.length).toEqual(1);
         expect(component.charts[0].data.dataPoints[1].series.length).toEqual(1);
         expect(component.charts[0].data.dataPoints[0].series[0].value).toEqual(7);
