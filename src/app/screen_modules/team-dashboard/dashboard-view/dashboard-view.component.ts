@@ -46,7 +46,6 @@ export class DashboardViewComponent extends DashboardComponent implements OnInit
     this.dashboardService.getDashboard(dashboardId)
       .subscribe(res => {
         this.dashboardService.dashboardSubject.next(res);
-        this.dashboardService.componentSubject.next(res.application.components[0]);
         this.dashboardService.loadDashboardAudits();
         this.dashboardService.subscribeDashboardRefresh();
       }, err => this.handleError(err));
