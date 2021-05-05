@@ -31,7 +31,7 @@
     </mat-table>
   </div>
 
-  <div *ngIf="!this.data.instances || !this.data.instances.length > 0">
+  <div *ngIf="!this.data.instances || !(this.data.instances.length > 0)">
     No instance details found.
   </div>
 
