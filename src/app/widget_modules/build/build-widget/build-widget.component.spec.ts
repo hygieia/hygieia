@@ -361,12 +361,10 @@ describe('BuildWidgetComponent', () => {
     setTimeout(() => {
       buildService.fetchDetails('123', 14).subscribe(result => {
         component.loadCharts(result);
-
         expect(component.charts[0].data.dataPoints[0].series.length).toEqual(1);
         expect(component.charts[0].data.dataPoints[1].series.length).toEqual(1);
         expect(component.charts[0].data.dataPoints[0].series[0].value).toEqual(7);
         expect(component.charts[0].data.dataPoints[1].series[0].value).toEqual(6);
-
         expect(component.charts[1].data.items[0].title).toEqual('Build: 708');
         expect(component.charts[3].data[0].value).toEqual(0);
         expect(component.charts[3].data[1].value).toEqual(0);
@@ -375,6 +373,7 @@ describe('BuildWidgetComponent', () => {
       component.ngOnDestroy();
     }, 500);
   });
+
 });
 
 

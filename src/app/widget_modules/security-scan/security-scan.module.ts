@@ -9,18 +9,20 @@ import { SecurityScanConfigComponent } from './security-scan-config/security-sca
 import { SecurityScanDeleteFormComponent } from './security-scan-delete-form/security-scan-delete-form.component';
 import { NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { SecurityScanDetailComponent } from './security-scan-detail/security-scan-detail.component';
-import { MatIconModule } from '@angular/material/icon';
+import { MatIconModule, MatTableModule } from '@angular/material/';
 // import { RefreshModalComponent } from '../../shared/modals/refresh-modal/refresh-modal.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RefreshModalComponent } from 'src/app/shared/modals/refresh-modal/refresh-modal.component';
+import { SecurityScanMetricDetailComponent } from './security-scan-metric-detail/security-scan-metric-detail.component';
 
 
 
 @NgModule({
   declarations: [SecurityScanWidgetComponent, SecurityScanConfigComponent, SecurityScanDeleteFormComponent,
-                 SecurityScanDetailComponent],
+                 SecurityScanDetailComponent,
+                 SecurityScanMetricDetailComponent],
   entryComponents: [SecurityScanWidgetComponent, SecurityScanConfigComponent, SecurityScanDeleteFormComponent,
-                    SecurityScanDetailComponent, RefreshModalComponent],
+                    SecurityScanDetailComponent, RefreshModalComponent, SecurityScanMetricDetailComponent],
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -28,7 +30,8 @@ import { RefreshModalComponent } from 'src/app/shared/modals/refresh-modal/refre
     SecurityScanRoutingModule,
     NgbTypeaheadModule,
     MatIconModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatTableModule
   ],
   exports: [SecurityScanWidgetComponent, SecurityScanConfigComponent]
 })

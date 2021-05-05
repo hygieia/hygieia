@@ -19,4 +19,5 @@ export interface IMetric {
   value: string;
   formattedValue: string;
   status: string;
+  instances?: any;
 }
