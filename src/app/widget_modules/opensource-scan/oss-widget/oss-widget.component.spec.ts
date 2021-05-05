@@ -353,11 +353,10 @@ describe('OSSWidgetComponent', () => {
   });
 
   it('should populate dropdown when no description present', () => {
-    let noDesc = collItemResponse
+    const noDesc = collItemResponse;
     noDesc[0].description = null;
-    console.log(noDesc)
     component.populateDropdown(noDesc);
-  })
+  });
 
 });
 
