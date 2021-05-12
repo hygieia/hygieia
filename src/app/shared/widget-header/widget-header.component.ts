@@ -99,7 +99,6 @@ export class WidgetHeaderComponent implements OnInit {
     if (!newWidgetConfig) {
       return;
     }
-
     // Take the current config and prepare it for saving
     const newWidgetConfig$ = this.widgetComponent.getCurrentWidgetConfig().pipe(
       map( widgetConfig => {

@@ -28,7 +28,7 @@ export class RepoConfigFormComponent implements OnInit {
     if (!collectorItem) {
       return '';
     }
-    const repoUrl = (collectorItem.repoUrl as string);
+    const repoUrl = (collectorItem.options.url as string);
     return repoUrl;
   }
 
@@ -105,18 +105,17 @@ export class RepoConfigFormComponent implements OnInit {
     // if repoUrl is just a string it's not a valid url
     if (!this.repoConfigForm.value.url.options) {
       this.submitFailed = true;
-      return
+      return;
     }
 
-    let repoUrl = this.repoConfigForm.value.url.options.url;
+    const repoUrl = this.repoConfigForm.value.url.options.url;
     this.collectorService.searchItemsBySearchField('scm', repoUrl, 'options.url').subscribe(repoArray => {
-      if (!repoArray || repoArray.length == 0) {
+      if (!repoArray || repoArray.length === 0) {
         this.submitFailed = true;
-        return
+        return;
       }
-
       repoArray.forEach(repo => {
-        if (repo.options.branch == this.repoConfigForm.value.branch && repo.options.url == repoUrl) {
+        if (repo.options.branch === this.repoConfigForm.value.branch && repo.options.url === repoUrl) {
           const newConfig = {
             name: 'repo',
             componentId: this.componentId,
@@ -135,10 +134,12 @@ export class RepoConfigFormComponent implements OnInit {
             },
           };
           this.activeModal.close(newConfig);
+          return;
         }
-      })
+      });
+
       this.submitFailed = true;
-    })
+    });
 
   }
 
