@@ -39,7 +39,7 @@ class MockCollectorService {
           url : 'testUrl'
       },
       upsertTime : '2021-02-21T15:30:02.885Z',
-      _class : 'com.capitalone.dashboard.model.webhook.github.GitHubRepo'
+      _class : 'GitHubRepo'
   }
   ];
 
@@ -127,7 +127,7 @@ describe('RepoConfigFormComponent', () => {
           url : 'testUrl'
       },
       upsertTime : '2021-02-21T15:30:02.885Z',
-      _class : 'com.capitalone.dashboard.model.webhook.github.GitHubRepo'
+      _class : 'GitHubRepo'
   }
   ];
 
