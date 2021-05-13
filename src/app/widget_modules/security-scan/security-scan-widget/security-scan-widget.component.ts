@@ -16,7 +16,7 @@ import { LayoutDirective } from '../../../shared/layouts/layout.directive';
 import { ISecurityScan } from '../security-scan-interfaces';
 import { of, Subscription } from 'rxjs';
 import {
-  IClickListItem,
+  IClickListItemMetric,
 } from '../../../shared/charts/click-list/click-list-interfaces';
 import { OneChartLayoutComponent } from '../../../shared/layouts/one-chart-layout/one-chart-layout.component';
 import { DashStatus } from '../../../shared/dash-status/DashStatus';
@@ -27,6 +27,7 @@ import { SecurityScanDetailComponent } from '../security-scan-detail/security-sc
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { RefreshModalComponent } from '../../../shared/modals/refresh-modal/refresh-modal.component';
 import { ICollItem } from 'src/app/viewer_modules/collector-item/interfaces';
+import { SecurityScanMetricDetailComponent } from '../security-scan-metric-detail/security-scan-metric-detail.component';
 
 
 @Component({
@@ -155,7 +156,8 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
         subtitles: [metric.value],
         status: riskStatus,
         statusText: metric.status,
-      } as IClickListItem;
+        instances: metric.instances
+      } as IClickListItemMetric;
       projectMetrics.push(clickListItem);
     });
 
@@ -175,10 +177,10 @@ export class SecurityScanWidgetComponent extends WidgetComponent implements OnIn
       data: {
         name: projectInfo.description,
         items: projectInfo.metrics,
-        clickableContent: null,
         url: projectInfo.reportUrl,
         timestamp: projectInfo.timestamp,
-        clickableHeader: SecurityScanDetailComponent
+        clickableHeader: SecurityScanDetailComponent,
+        clickableContent: SecurityScanMetricDetailComponent
       },
       xAxisLabel: '',
       yAxisLabel: '',
