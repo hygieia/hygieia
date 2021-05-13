@@ -27,6 +27,7 @@ describe('DetailModalComponent', () => {
   it('should check detailView and modalTypeTag', () => {
     component.ngOnInit();
   });
+
   it('should close activeModal and check if it is active', () => {
     component.onSubmit();
     component.closeModal();

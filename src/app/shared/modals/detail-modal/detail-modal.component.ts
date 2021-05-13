@@ -21,6 +21,9 @@ export class DetailModalComponent implements OnInit {
 
   ngOnInit() {
     if (this.detailView) {
+      if (this.detailView.name === 'SecurityScanMetricDetailComponent') {
+        this.title = `Static Security Scan Details: ${this.title}`;
+      }
       const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.detailView);
       const viewContainerRef = this.modalTypeTag.viewContainerRef;
       viewContainerRef.clear();
