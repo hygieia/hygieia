@@ -161,7 +161,6 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
 
   loadCharts(result: ICollItem[], index) {
     this.selectedIndex = index;
-    result[this.selectedIndex].refreshLink = 'refreshMeDude'
     if ( result[this.selectedIndex].refreshLink ) {
       this.hasRefreshLink = true;
     } else {
