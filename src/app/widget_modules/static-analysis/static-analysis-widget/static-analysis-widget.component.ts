@@ -6,6 +6,7 @@ import {
   OnDestroy,
   OnInit,
   ViewChild,
+  ElementRef
 } from '@angular/core';
 import {of, Subscription} from 'rxjs';
 import {distinctUntilChanged, startWith, switchMap} from 'rxjs/operators';
@@ -24,6 +25,8 @@ import {IStaticAnalysis} from '../interfaces';
 import {StaticAnalysisDetailComponent} from '../static-analysis-detail/static-analysis-detail.component';
 import {isUndefined} from 'util';
 import {WidgetState} from '../../../shared/widget-header/widget-state';
+import { ICollItem } from 'src/app/viewer_modules/collector-item/interfaces';
+
 
 @Component({
   selector: 'app-static-analysis-widget',
@@ -62,6 +65,16 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
     WARN: 'WARN',
     FAILED: 'ERROR',
   };
+
+  private params;
+  public hasData;
+  public allCollectorItems;
+  public loading: boolean;
+  private selectedIndex: number;
+  public hasRefreshLink: boolean;
+  @ViewChild('projectSelector', { static: true }) projectSelector: ElementRef;
+
+
 
   // Reference to the subscription used to refresh the widget
   private intervalRefreshSubscription: Subscription;
@@ -111,11 +124,15 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
         if (this.dashboardService.checkCollectorItemTypeExist('CodeQuality')) {
           this.state = WidgetState.READY;
         }
-        return this.staticAnalysisService.fetchStaticAnalysis(widgetConfig.componentId, 1);
+        this.params = {
+          componentId: widgetConfig.componentId,
+          max: 1
+        };
+        return this.staticAnalysisService.getStaticAnalysisCollectorItems(this.params.componentId);
       })).subscribe(result => {
-        this.hasData = result && result.length > 0;
+        this.hasData = (result && result.length > 0);
         if (this.hasData) {
-          this.loadCharts(result[0]);
+          this.loadCharts(result, 0);
         } else {
           // code quality collector item could not be found
           this.setDefaultIfNoData();
@@ -139,14 +156,35 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
     }
   }
 
-  loadCharts(result: IStaticAnalysis) {
-    this.generateProjectDetails(result);
-    this.generateViolations(result);
-    this.generateCoverage(result);
-    this.generateUnitTestMetrics(result);
-    super.loadComponent(this.childLayoutTag);
+  loadCharts(result: ICollItem[], index) {
+    this.selectedIndex = index;
+    if ( result[this.selectedIndex].refreshLink ) {
+      this.hasRefreshLink = true;
+    } else {
+      this.hasRefreshLink = false;
+    }
+    this.populateDropdown(result);
+    const collectorItemId = result[index].id;
+
+    this.staticAnalysisService.getCodeQuality(this.params.componentId, collectorItemId).subscribe(codeQualityResponse => {
+      const codeQuality = codeQualityResponse.result[0];
+      this.generateProjectDetails(codeQuality);
+      this.generateViolations(codeQuality);
+      this.generateCoverage(codeQuality);
+      this.generateUnitTestMetrics(codeQuality);
+      super.loadComponent(this.childLayoutTag);
+    });
+
   }
 
+  populateDropdown(collectorItems) {
+    collectorItems.map(item => {
+      if (item.description) {
+        item.description = item.description.split(':')[0];
+      }
+    });
+    this.allCollectorItems = collectorItems;
+  }
   // *********************** DETAILS/QUALITY *********************
 
   generateProjectDetails(result: IStaticAnalysis) {
