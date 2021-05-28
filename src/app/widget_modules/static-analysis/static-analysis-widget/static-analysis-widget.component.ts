@@ -26,6 +26,8 @@ import {StaticAnalysisDetailComponent} from '../static-analysis-detail/static-an
 import {isUndefined} from 'util';
 import {WidgetState} from '../../../shared/widget-header/widget-state';
 import { ICollItem } from 'src/app/viewer_modules/collector-item/interfaces';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { RefreshModalComponent } from '../../../shared/modals/refresh-modal/refresh-modal.component';
 
 
 @Component({
@@ -84,6 +86,7 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
   constructor(componentFactoryResolver: ComponentFactoryResolver,
               cdr: ChangeDetectorRef,
               dashboardService: DashboardService,
+              private modalService: NgbModal,
               private staticAnalysisService: StaticAnalysisService) {
     super(componentFactoryResolver, cdr, dashboardService);
   }
@@ -158,6 +161,7 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
 
   loadCharts(result: ICollItem[], index) {
     this.selectedIndex = index;
+    result[this.selectedIndex].refreshLink = 'refreshMeDude'
     if ( result[this.selectedIndex].refreshLink ) {
       this.hasRefreshLink = true;
     } else {
@@ -314,6 +318,53 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
       this.charts[3].data = { items: [{ title: 'No Data Found' }]};
     }
     super.loadComponent(this.childLayoutTag);
+  }
+
+  refreshProject() {
+    const refreshLink = this.allCollectorItems[this.selectedIndex].refreshLink;
+
+    // Redundant check for refresh link, but just in case somebody attempts to call refreshProject() without hitting the button
+    if ( !this.hasData || !refreshLink   ) {
+      return;
+    }
+
+    this.loading = true;
+
+    this.staticAnalysisService.refreshProject(refreshLink).subscribe(refreshResult => {
+      this.loading = false;
+      const modalRef = this.modalService.open(RefreshModalComponent);
+      modalRef.componentInstance.message = refreshResult;
+      modalRef.componentInstance.title = this.charts[0].title;
+      modalRef.result.then(modalResult => {
+        this.reloadAfterRefresh();
+      });
+    }, err => {
+      console.log(err);
+      this.loading = false;
+      const modalRef = this.modalService.open(RefreshModalComponent);
+      modalRef.componentInstance.message = 'Something went wrong while trying to refresh the data.';
+      modalRef.componentInstance.title = this.charts[0].title;
+      modalRef.result.then(modalResult => {
+        this.reloadAfterRefresh();
+      });
+
+    });
+  }
+
+  reloadAfterRefresh() {
+    this.staticAnalysisService.getStaticAnalysisCollectorItems(this.params.componentId).subscribe(result => {
+      this.hasData = (result && result.length > 0);
+      if (this.hasData) {
+        this.loadCharts(result, this.selectedIndex);
+      } else {
+        // Select the first option in the dropdown since there will only be the default option.
+        this.selectedIndex = 0;
+        this.setDefaultIfNoData();
+      }
+      super.loadComponent(this.childLayoutTag);
+      this.hasRefreshLink =  true;
+      this.projectSelector.nativeElement.selectedIndex =  this.selectedIndex;
+    });
   }
 
 }

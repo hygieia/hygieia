@@ -234,6 +234,20 @@ describe('StaticAnalysisWidgetComponent', () => {
     component.ngOnInit();
   });
 
+  it('should return empty on refresh if !hasData', () => {
+    (component as any).params = { componentId: '1234' };
+    component.loadCharts(mockCollectorItemArray, 0);
+    component.hasData = false;
+    component.refreshProject();
+  });
+
+  it('should not assign default if it has data', () => {
+    component.charts = [];
+    component.hasData = true;
+    component.setDefaultIfNoData();
+    expect(component.charts).toEqual([]);
+  });
+
   it('should set initial value of widgetId, layout, and charts', () => {
     component.ngOnInit();
     expect(component.widgetId).toBeDefined();
@@ -262,6 +276,8 @@ describe('StaticAnalysisWidgetComponent', () => {
   it('should call ngAfterViewInit', () => {
     component.ngAfterViewInit();
   });
+
+
 
   it('should hit startRefreshInterval', () => {
     const mockConfig = {
