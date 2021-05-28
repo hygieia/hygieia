@@ -8,6 +8,10 @@ import { StaticAnalysisDetailComponent } from './static-analysis-detail/static-a
 import { StaticAnalysisRoutingModule } from './static-analysis-routing-module';
 import { StaticAnalysisWidgetComponent } from './static-analysis-widget/static-analysis-widget.component';
 import {StaticAnalysisDeleteFormComponent} from './static-analysis-delete-form/static-analysis-delete-form.component';
+import { MatIconModule, MatTableModule } from '@angular/material/';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
+
 
 @NgModule({
   declarations: [StaticAnalysisWidgetComponent, StaticAnalysisConfigFormComponent, StaticAnalysisDetailComponent
@@ -18,7 +22,10 @@ import {StaticAnalysisDeleteFormComponent} from './static-analysis-delete-form/s
     StaticAnalysisRoutingModule,
     CommonModule,
     NgbModule,
-    SharedModule
+    SharedModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatTableModule
   ],
   exports: [],
 })
