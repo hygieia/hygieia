@@ -1,0 +1,30 @@
+<form [formGroup]="ossConfigForm" (ngSubmit)="submitForm()">
+  <div class="modal-body">
+    <div class="container">
+      <div class="form-group">
+        <label class="col-form-label" for="ossJob">Open Source Scan <span class="required-text"> *</span></label>
+        <input id="ossJob" type="search" class="form-control"
+               [class.is-invalid]="((configForm.ossJob.dirty || configForm.ossJob.touched) && configForm.ossJob.errors) || searchFailed"
+               formControlName="ossJob"
+               [ngbTypeahead]="typeAheadResults"
+               [inputFormatter]="getOssTitle"
+               [resultFormatter]="getOssTitle"
+               placeholder="Enter Open Source Library" required/>
+        <span *ngIf="searching">searching...</span>
+        <div class="invalid-feedback" *ngIf="!searchFailed || configForm.ossJob.value === ''">Please provide an oss job.</div>
+        <div class="invalid-feedback" *ngIf="searchFailed && !searching && configForm.ossJob.value !== ''">Sorry, suggestions could not be loaded.</div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col text-center">
+          <button class="btn btn-primary" [disabled]="!ossConfigForm.valid">
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

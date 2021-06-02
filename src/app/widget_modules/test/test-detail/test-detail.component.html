@@ -1,0 +1,94 @@
+<!-- No data -->
+<ng-template #no_data>
+  <div class="card">
+    <div class="card-header">
+      No data found.
+    </div>
+  </div>  
+</ng-template>
+<div class="body" *ngIf="this.hasData(); else no_data">
+  <div #other_content>
+
+    <!-- First level-->
+    <ngb-accordion [closeOthers]="true" >
+      <div *ngFor="let test of this.data.testCapabilities; let i = index;">
+        <ngb-panel  id="{{i}}" title="{{test.description}}">
+          <ng-template ngbPanelHeader>
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="column overflow-auto testCapabilityDescription">{{test.description}}</div>
+              <div class="column">Passed: {{test.successTestSuiteCount}}</div>
+              <div class="column">Failed: {{test.failedTestSuiteCount}}</div>
+              <div class="column">Skipped: {{test.skippedTestSuiteCount}}</div>
+              <button ngbPanelToggle class="btn fa fa-chevron-down"></button>
+            </div>
+          </ng-template>
+          <ng-template ngbPanelContent>
+
+            <!-- Second level-->
+            <ngb-accordion  [closeOthers]="true" >
+              <div *ngFor="let testSuite of test.testSuites; let j = index">
+                <ngb-panel id="{{j}}"  class="level1"  title="{{testSuite.description}}">
+                  <ng-template ngbPanelHeader>
+                    <div class="d-flex align-items-center justify-content-between">
+                      <div class="column overflow-auto testCapabilityDescription">{{testSuite.description}}</div>
+                      <div class="column">Passed: {{testSuite.successTestCaseCount}}</div>
+                      <div class="column">Failed: {{testSuite.failedTestCaseCount}}</div>
+                      <div class="column">Skipped: {{testSuite.skippedTestCaseCount}}</div>
+                      <button ngbPanelToggle class="btn fa fa-chevron-down"></button>
+                    </div>
+                  </ng-template>
+                  <ng-template ngbPanelContent>
+                    
+                    <!-- Third level -->
+                    <ngb-accordion [closeOthers]="true" >
+                      <div *ngFor="let testCase of testSuite.testCases; let k = index">
+                        <ngb-panel id="{{k}}" title="{{testCase.description}}">
+                          <ng-template ngbPanelHeader>
+                            <div class="d-flex align-items-center justify-content-between">
+                              <div class="column overflow-auto testCapabilityDescription">{{testCase.description}}</div>
+                              <div class="column">Passed: {{testCase.successTestStepCount}}</div>
+                              <div class="column">Failed: {{testCase.failedTestStepCount}}</div>
+                              <div class="column">Skipped: {{testCase.skippedTestStepCount}}</div>
+                              <button ngbPanelToggle class="btn fa fa-chevron-down"></button>
+                            </div>
+                          </ng-template>
+                          <ng-template ngbPanelContent>
+                            
+                            <!-- Fourth level -->
+                            <table>
+                              <div *ngFor="let testStep of testCase.testSteps">
+                                <tr id="testStep.description">
+                                  <td *ngIf="testStep.status == 'Success'">
+                                    <span class="fa fa-check"></span>
+                                  </td> 
+                                  <td *ngIf="testStep.status == 'Failure'">
+                                    <span class="fa fa-times"></span>
+                                  </td> 
+                                  <td *ngIf="testStep.status == 'Skipped'">
+                                    <span class="fa fa-warning"></span>
+                                  </td> 
+                                  <td class="level4_id"> {{testStep.id}}: </td>
+                                  <td class="level4_desc">{{testStep.description}}</td>
+                                </tr>
+                              </div>
+                            </table>
+
+
+                          </ng-template>
+                        </ngb-panel>
+                      </div>
+                    </ngb-accordion>
+
+
+                  </ng-template>
+                </ngb-panel>
+              </div>
+            </ngb-accordion>
+
+
+          </ng-template>
+        </ngb-panel>
+      </div>
+    </ngb-accordion>
+  </div>
+</div>

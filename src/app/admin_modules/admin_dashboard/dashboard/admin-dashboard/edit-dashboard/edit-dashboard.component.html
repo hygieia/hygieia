@@ -1,0 +1,39 @@
+<div>
+    <div class="widget-modal">
+        <div class="widget-modal-heading">
+            Rename/Delete<br><br>Dashboard
+        </div>
+        <div class="widget-modal-body">
+            <div class="row">
+                <div class="col-md-12 ">
+                    <input type="search" name="collectorItemId" class="form-control"
+                        placeholder="Type to find dashboard" [(ngModel)]="searchDashboard" (change)="filterByTitle(searchDashboard)" required>
+                </div>
+                <div class="col-md-8 col-push ">
+                    <div class="text-center" [hidden]="dashboards">Loading Dashboards...</div>
+
+                    <div class="list-animate">
+                        <div class="dash-modal-row delete-dashboard-row clearfix"
+                            *ngFor="let item of dashboards | generalFilter:{name:searchDashboard} | generalOrderBy: 'name' as filteredDashboards ">
+                            <div title="{{item.name}}" class="btn-block">{{item.name }}
+                                <a (click)="deleteDashboard(item)">
+                                    <app-dash-trash class="clickable pull-right"></app-dash-trash>
+                                </a>
+                                <app-dash-edit class="clickable pull-right" (click)="editDashboard(item)">
+                                </app-dash-edit>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <app-pagination *ngIf="dashboards && dashboards.length" [totalSize]="totalItems"
+                            (pageChange)="getNextPage($event, false)"></app-pagination>
+                    </div>
+                    <br />
+                    <div class="text-center" [hidden]="!(dashboards && !dashboards.length)">
+                        No results
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

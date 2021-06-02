@@ -1,0 +1,88 @@
+<div class="modal-body" *ngIf="this.data">
+  <div class="build-overview" fxLayout="row" fxLayoutAlign="space-around center">
+    <table>
+      <tr>
+        <th>Build Status</th>
+        <th>Start Time</th>
+        <th>End Time</th>
+        <th>Duration (HH:mm:ss)</th>
+        <th>Open Full Page View</th>
+      </tr>
+      <tr>
+        <td>
+          <mat-icon [ngbTooltip]="this.data[0].buildStatus" id="build-success" class="build-overview-icon" *ngIf="this.data[0].buildStatus=='Success'">
+            check_circle</mat-icon>
+          <mat-icon [ngbTooltip]="this.data[0].buildStatus" id="build-failure" class="build-overview-icon"
+            *ngIf="this.data[0].buildStatus=='Failure' || this.data[0].buildStatus=='Failed'">
+            error</mat-icon>
+          <mat-icon [ngbTooltip]="this.data[0].buildStatus" id="build-aborted" class="build-overview-icon" *ngIf="this.data[0].buildStatus=='Aborted'">
+            error</mat-icon>
+          <mat-icon [ngbTooltip]="this.data[0].buildStatus" id="build-default" class="build-overview-icon" *ngIf="!buildStatusCheck(this.data[0].buildStatus)">
+            horizontal_rule</mat-icon>
+        </td>
+        <td>{{(this.data[0].startTime ? (this.data[0].startTime | date: 'yyyy-MM-dd HH:mm:ss') : 'N/A') }}</td>
+        <td>{{this.data[0].subtitles[0] ? (this.data[0].subtitles[0] | date: 'yyyy-MM-dd HH:mm:ss') : 'N/A'}}</td>
+        <td>{{this.readableDuration}}</td>
+        <td><button (click)="openStandaloneView()" class="new-tab-button"><mat-icon class="new-tab-icon">open_in_new</mat-icon></button></td>
+      </tr>
+    </table>
+  </div>
+
+  <h4>Stage Flow</h4>
+  <mat-vertical-stepper #stepper>
+    <mat-step label="Start" state="bookend" completed="false" editable="false"></mat-step>
+    <mat-step *ngFor="let stage of this.data[0].stages" [state]="stageStatusCheck(stage.status)" [completed]="false">
+      <ng-template matStepLabel>
+        <div placement="right" [ngbTooltip]="getTooltipInfo(stage)">{{stage.name}}</div>
+      </ng-template>
+      <div *ngIf="stage.status">Status: {{(stage.status)}}</div>
+      <div *ngIf="stage.durationMillis">Duration: {{stage.durationMillis}} ms</div>
+      <div *ngIf="this.data[0].baseLogUrl && stage._links"><a
+          href="{{this.data[0].baseLogUrl + stage._links.self.href}}">Log
+          Url</a>
+      </div>
+      <!-- Display error type and message if stage failed -->
+      <div *ngIf="stage.status=='FAILURE' && stage.error">Error Type: {{stage.error.type}}</div>
+      <div *ngIf="stage.status=='FAILURE' && stage.error">Error Log: {{stage.error.message}} </div>
+    </mat-step>
+    <mat-step label="End" state="bookend" completed="false" editable="false"></mat-step>
+
+    <!-- Icon overrides -->
+    <ng-template matStepperIcon="SUCCESS">
+      <mat-icon>done</mat-icon>
+    </ng-template>
+    <ng-template matStepperIcon="FAILURE">
+      <mat-icon>priority_high</mat-icon>
+    </ng-template>
+    <ng-template matStepperIcon="FAILED">
+      <mat-icon>priority_high</mat-icon>
+    </ng-template>
+    <ng-template matStepperIcon="ABORTED">
+      <mat-icon>priority_high</mat-icon>
+    </ng-template>
+    <ng-template matStepperIcon="NOT_EXECUTED">
+      <mat-icon>do_not_disturb</mat-icon>
+    </ng-template>
+    <ng-template matStepperIcon="bookend">
+      <mat-icon>schedule</mat-icon>
+    </ng-template>
+    <!-- If there is no stage.status the state will be 'default' -->
+    <ng-template matStepperIcon="default">
+      <mat-icon>horizontal_rule</mat-icon>
+    </ng-template>
+
+    <!-- The "edit" state is very finnicky for mat-stepper, still searching for a way to not have to do this next section. -->
+    <ng-template matStepperIcon="edit">
+      <mat-icon class="success-icon" *ngIf="this.stepper.selected.state == 'SUCCESS'">done</mat-icon>
+      <mat-icon *ngIf="this.stepper.selected.state == 'NOT_EXECUTED'">do_not_disturb</mat-icon>
+      <mat-icon *ngIf="this.stepper.selected.state == 'FAILURE'">priority_high</mat-icon>
+      <mat-icon *ngIf="this.stepper.selected.state == 'FAILED'">priority_high</mat-icon>
+      <mat-icon *ngIf="this.stepper.selected.state == 'ABORTED'">priority_high</mat-icon>
+      <mat-icon *ngIf="this.stepper.selected.state == 'default'">horizontal_rule</mat-icon>
+    </ng-template>
+
+
+  </mat-vertical-stepper>
+
+
+</div>

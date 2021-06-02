@@ -1,0 +1,57 @@
+<div class="main-content">
+
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-sm-8">
+        <div class="gap">
+          <input nbInput fullWidth id="dashboardSearch" shape="round" type="search" name="dashboardSearch" fieldSize="large"
+                 class="form-control" [formControl]="queryField" placeholder="Enter Dashboard Name">
+        </div>
+      </div>
+      <nb-card *ngFor="let dashboard of dashboards" class="gap">
+        <nb-card-header>
+          <a routerLink="/dashboard/dashboard-view/{{dashboard.id}}"><h3>{{dashboard.title}} <i class="fa fa-external-link" aria-hidden="true"></i></h3></a>
+        </nb-card-header>
+        <nb-card-body>
+          <div *ngIf="dashboard.application && dashboard.application.components" class="table-responsive">
+            <table *ngFor="let component of dashboard.application.components" class="table table-bordered table-secondary">
+              <thead class="thead-dark">
+              <tr>
+                <th>Collector</th>
+                <th>Id</th>
+                <th>enabled</th>
+                <th>pushed</th>
+                <th>lastUpdated</th>
+                <th>description</th>
+                <th>Refresh</th>
+              </tr>
+              </thead>
+              <ng-container *ngFor="let collector of collectors">
+                <tr *ngFor="let ci of component.collectorItems[collector]">
+                  <td>
+                    <a href="#" routerLink="{{collector}}/{{dashboard.title}}/{{component.id}}">{{collector}}</a>
+                  </td>
+                  <td class="popupWin" (click)="openDetails(collector,dashboard.title,component.name,ci)">
+                    <em> {{ ci.id }}</em>
+                  </td>
+                  <td>
+                    <span *ngIf="ci.enabled"><i class="fa fa-check"></i></span>
+                    <span *ngIf="!ci.enabled"><i class="fa fa-times"></i></span>
+                  </td>
+                  <td>
+                    <span *ngIf="ci.pushed"><i class="fa fa-check"></i></span>
+                    <span *ngIf="!ci.pushed"><i class="fa fa-times"></i></span>
+                  </td>
+                  <td> {{ ci.lastUpdated | date:'MM/dd/yyyy' }} </td>
+                  <td id="description"> {{ci.description}}</td>
+                  <td class="popupWin" (click)="confirmRefresh(ci)">
+                    <i class="fa fa-play"></i>
+                </tr>
+              </ng-container>
+            </table>
+          </div>
+        </nb-card-body>
+      </nb-card>
+    </div>
+  </div>
+</div>

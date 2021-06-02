@@ -1,0 +1,226 @@
+<div>
+    <div class="modal-content ">
+        <div class="modal-header">
+            <h4 class="modal-title ">Edit Dashboard</h4>
+            <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <ul class="nav nav-tabs custom-tabs">
+                    <li class="auth-modal-tab" *ngFor="let tab of tabs;let i=index" (click)="tabToggleView(i)"
+                        [ngClass]="tab.name == tabView ? 'active' : ''">
+                        <a data-toggle="tab">{{tab.name}}</a>
+                    </li>
+                </ul>
+
+                <div class="container-fluid" *ngIf="tabView == 'Dashboard Title'">
+                    <form name="cdf" [formGroup]="cdfForm" (submit)="submit()" novalidate>
+                        <div class="help-block text-danger" [hidden]="!error">
+                            {{error}}
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 col-padding">
+                                <label class="modal-label">Dashboard Title</label>
+                                <input type="text" name="dashboardTitle" class="form-control"
+                                    placeholder="Dashboard title" formControlName="dashboardTitle" autocomplete="off"
+                                    [ngClass]="{ 'is-invalid': f.dashboardTitle.touched && f.dashboardTitle.errors }" />
+                                <div *ngIf="f.dashboardTitle.touched && f.dashboardTitle.errors"
+                                    class="invalid-feedback">
+                                    <div *ngIf="f.dashboardTitle.errors.required">New Dashboard name is required</div>
+                                    <div *ngIf="f.dashboardTitle.errors.minlength">Min length of 6 characters</div>
+                                    <div *ngIf="f.dashboardTitle.errors.renameError">Error renaming dashboard. Change
+                                        title and try again.</div>
+                                    <div *ngIf="f.dashboardTitle.errors.maxlength">Max length of 50 characters</div>
+                                    <div *ngIf="f.dashboardTitle.errors.pattern">Special character(s) found. Please
+                                        enter only letters, numbers or spaces.
+                                    </div>
+                                </div>
+                                <span class="text-danger"></span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="container-fluid" *ngIf="tabView == 'Business Service/ Application'">
+                    <form name="formBusinessService" [formGroup]="formBusinessService"
+                        (submit)="submitBusServOrApp(formBusinessService)">
+                        <div class="row">
+                            <div class="col-md-12 ">
+                                <p class="text-danger">{{dupErroMessage}}</p>
+                                <ng-template #rt let-r="result" let-t="term">
+                                    <span>{{r.configurationItem}}-({{r.commonName}})</span>
+                                </ng-template>
+                                <label class="modal-label">Business Service <i class="fa fa-info-circle"
+                                        ngbTooltip="{{getBusSerToolText()}}"></i></label>
+                              <div class="form-inline">
+                                <input type="text" name="configurationItemBusServ" style="width:95%"
+                                       formControlName="configurationItemBusServ" class="form-control"
+                                    placeholder="Select a Business Service (Optional)" value="{{this.configurationItemBusServ}}"
+                                    [ngClass]="{ 'is-invalid': fB.configurationItemBusServ.touched && fB.configurationItemBusServ.errors }"
+                                    [ngbTypeahead]="searchconfigItemBusServ" [resultTemplate]="rt"
+                                    [inputFormatter]="formatter" />
+                                <a (click)="clearBusServ()" style="cursor: pointer"><app-dash-trash class="clickable pull-right"></app-dash-trash></a>
+                              </div>
+                              <div class="form-control" [hidden]="!noResults">
+                                    No Results Found
+                              </div>
+                                <ng-template #rtB let-r="result" let-t="term">
+                                    <span>{{r.configurationItem}}-({{r.commonName}})</span>
+                                </ng-template>
+                                <label class="modal-label">Business Application <i class="fa fa-info-circle"
+                                        ngbTooltip="{{getBusAppToolText()}}"></i></label>
+                              <div class="form-inline">
+                                <input type="text" name="configurationItemBusApp" style="width:95%"
+                                       formControlName="configurationItemBusApp" class="form-control"
+                                    placeholder="Select a Business Application (Optional)" value="{{this.configurationItemBusApp}}"
+                                       [ngClass]="{ 'is-invalid': fB.configurationItemBusApp.touched && fB.configurationItemBusApp.errors }"
+                                    [ngbTypeahead]="searchconfigItemBusApp" [resultTemplate]="rtB"
+                                    [inputFormatter]="formatter" />
+                                <div class="form-control" [hidden]="!noResultsCom">
+                                    No Results Found
+                                </div>
+                                <a (click)="clearBusApp()" style="cursor: pointer"><app-dash-trash class="clickable pull-right"></app-dash-trash></a>
+                              </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="container-fluid" *ngIf="tabView == 'Owner Information'">
+                    <div class="row">
+                        <div class="col-md-12 col-padding">
+                            <label class="modal-label">Add/Remove Owners</label>
+                            <form name="ownerForm" class="form" (submit)="ownerFormSubmit()" novalidate>
+                                <div class="widget-modal-body" style="height: 300px;overflow: auto;">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="text-center" [hidden]="users">Loading Users...</div>
+
+                                            <div class="row">
+                                                <div class="col-md-5">
+                                                    <h3>Users</h3>
+                                                    <input type="text" class="form-control" id="userSearch"
+                                                        placeholder="Filter Users" [(ngModel)]="userSearch"
+                                                        [ngModelOptions]="{standalone: true}">
+
+                                                    <div class="dash-modal-row delete-dashboard-row clearfix"
+                                                        *ngFor="let user of users | generalFilter:{username:userSearch, authorities:'!ROLE_ADMIN'} | generalOrderBy:'username' ">
+                                                        <div class="btn-block">
+                                                            <span class="label label-primary"
+                                                                [hidden]="!isActiveUser(user)">You</span>
+                                                            {{user.username}}
+                                                            <span class="badge badge-secondary">{{user.authType}}</span>
+                                                            <div title="Promote User" class="clickable pull-right"
+                                                                (click)="promoteUserToOwner(user)">
+                                                                <span class="clickable fa fa-stack">
+                                                                    <span
+                                                                        class="fa-circle-thin fa-stack-2x text-success"></span>
+                                                                    <span
+                                                                        class="fa-angle-right fa-stack-1x text-success"></span>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-push col-md-5">
+                                                    <h3>Owners</h3>
+                                                    <div class="dash-modal-row delete-dashboard-row clearfix"
+                                                        *ngFor="let owner of owners | generalOrderBy:'username' ">
+                                                        <div class="btn-block">
+                                                            <span class="badge badge-primary"
+                                                                [hidden]="!isActiveUser(owner)">You</span>
+                                                            {{owner.username}}
+                                                            <span
+                                                                class="badge badge-secondary">{{owner.authType}}</span>
+                                                            <div title="Demote User" [hidden]="!(owners.length > 1)"
+                                                                class="clickable pull-right"
+                                                                (click)="demoteUserFromOwner(owner)">
+                                                                <span class="clickable fa fa-stack">
+                                                                    <span
+                                                                        class="fa-circle-thin fa-stack-2x text-danger"></span>
+                                                                    <span
+                                                                        class="fa-angle-left fa-stack-1x text-danger"></span>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="text-center" [hidden]="!(users && !users.length)">
+                                                No results
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container-fluid" *ngIf="tabView == 'Widget Management'">
+                    <div class="row">
+                        <div class="col-md-12 ">
+                            <label class="modal-label">Add/Remove Widgets</label>
+                            <form name="editForm">
+                                <ul *ngIf="widgetSelections" class="list-animate list-group text-left">
+                                    <ng-container *ngFor="let title of Object.keys(widgetSelections);let i=index">
+                                        <ng-container
+                                            *ngIf="title!='product' && title!='monitor2' && title!='undefined'">
+                                            <li class="list-group-item">
+                                                <span class="fa fa-lg left-icon"></span>
+                                                <input type="checkbox" name="widgetSelections{{i}}"
+                                                    [disabled]="selectWidgetsDisabled"
+                                                    [(ngModel)]="widgetSelections[title]">
+                                                <span> {{ title | uppercase}}</span>
+                                            </li>
+                                        </ng-container>
+                                    </ng-container>
+                                </ul>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="container-fluid" *ngIf="tabView == 'Score'">
+                    <div class="row">
+                        <div class="col-md-12 ">
+                            <form name="scoreSettingsForm">
+                                <div class="score-settings" style="text-align: center;">
+                                    <div id="scoreEnabled" class="score-enabled" style="padding-top: 20px;">
+                                        <input type="checkbox" name="scoreSelection"
+                                            [(ngModel)]="scoreSettings.scoreEnabled">
+                                        <span style="padding-left: 10px;">Enable Score</span>
+                                    </div>
+                                    <div *ngIf="scoreSettings.scoreEnabled" id="scoreDisplay" class="score-display">
+                                        <span class="col-md-8">
+                                            <label class="radio-inline" for="scoreDisplayHeader"> <input
+                                                    id="scoreDisplayHeader" type="radio" name="scoreDisplay"
+                                                    [(ngModel)]="scoreSettings.scoreDisplay"
+                                                    value="{{scoreDisplayType.HEADER}}" [checked]="true"> Display in
+                                                Header </label>
+                                            <label class="radio-inline" style="padding-left: 10px;"
+                                                for="scoreDisplayWidget"> <input id="scoreDisplayWidget" type="radio"
+                                                    name="scoreDisplay" [(ngModel)]="scoreSettings.scoreDisplay"
+                                                    value="{{scoreDisplayType.WIDGET}}"> Display in Widget
+                                            </label></span>
+                                        <span class="col-md-4 pull-left"> <i
+                                                class="fa fa-stack-1x fa-info-circle pull-left"
+                                                ngbTooltip="{{selectHeaderOrWidgetToolTip}}"
+                                                title="{{selectHeaderOrWidgetToolTip}}"></i></span>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <div class="col text-center">
+            <button type="button" class="btn btn-outline-secondary mr-2" (click)="activeModal.dismiss()">Cancel</button>
+            <button type="button" class="btn btn-primary btn-wide" (click)="saveForm()">Save</button>
+          </div>
+        </div>
+    </div>
+</div>

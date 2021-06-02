@@ -1,0 +1,16 @@
+<div>
+    <table class = "table-content">
+      <thead>
+      <tr>
+        <th>Project Name</th>
+        <th>Last Activity</th>
+        <th>Url</th>
+      </tr>
+      </thead>
+      <tr>
+        <td>{{data?.name}}</td>
+        <td>{{isDate(data?.timestamp) ? formatDate(data?.timestamp.getTime()) : data?.timestamp.toString()}}</td>
+        <td><a href="{{data?.url}}" target="_blank" rel="noopener noreferrer">View in Sonar</a></td>
+      </tr>
+    </table>
+</div>

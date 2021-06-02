@@ -1,0 +1,12 @@
+<span class="dash-status fa">
+  <span class="dash-status-ignore" *ngIf="status == DashStatus.IGNORE">
+    {{statusText}}
+  </span>
+  <span class="dash-status-pass fa-check" *ngIf="status == DashStatus.PASS"></span>
+  <span class="dash-status-warn fa-warning" *ngIf="status == DashStatus.WARN"></span>
+  <span class="dash-status-pass fa-lock" *ngIf="status == DashStatus.UNAUTH"></span>
+  <span class="dash-status-fail" *ngIf="status == DashStatus.FAIL">
+    {{statusText}}
+  </span>
+  <span class="dash-status-critical fas fa-times-circle" *ngIf="status == DashStatus.CRITICAL"></span>
+</span>

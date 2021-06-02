@@ -1,0 +1,35 @@
+<div class="widget dark-chart-theme">
+  <div [ngClass]="{'clickable-title': data?.clickableHeader, 'chart-heading': !data?.clickableHeader}" (click)="openHeaderView(data, title)">
+    {{title}}
+    <ng-container *ngIf="data?.clickableHeader">
+      <span class="header-arrow fa fa-arrow-right"></span>
+    </ng-container>
+  </div>
+  <div>
+    <div class="widget-body">
+      <table class="table table-hover" [ngClass]="{'table-hover': data?.clickableContent}">
+        <tr class="dash-row clickable" *ngFor="let item of data?.items" [ngClass]="{'clickable': data?.clickableContent}" (click)="openDetailView(item)">
+          <td *ngIf="item.status">
+            <app-dash-status [statusText]="item.statusText" [status]="item.status"></app-dash-status>
+          </td>
+          <td><span class="list-item-title">{{item.title}}</span></td>
+          <ng-container *ngFor="let subtitle of item.subtitles">
+            <td>
+              <ng-container *ngIf="isDate(subtitle); else elseBlock">
+                <span class="list-item-subtitle">{{subtitle.getTime() | timeAgo}}</span>
+              </ng-container>
+              <ng-template #elseBlock>
+                <span class="list-item-subtitle">{{subtitle?.toString()}}</span>
+              </ng-template>
+
+            </td>
+          </ng-container>
+
+          <ng-container *ngIf="data?.clickableContent">
+            <td><span class="list-item-chevron pull-right fa fa-lg fa-angle-right"></span></td>
+          </ng-container>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>

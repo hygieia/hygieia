@@ -1,0 +1,135 @@
+.modal{
+    padding-left: 40px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.list-group-item {
+  color: black;
+}
+
+h3 {
+  color: black;
+}
+
+.gap {
+    margin-top: 200px;
+}
+
+.modal-label {
+    font-weight: 600;
+    width: 100%;
+    text-align: center;
+}
+
+.modal-content{
+    background-color: #ececec;
+  }
+
+.col-push{
+    left: 16%;
+}
+
+.col-padding{
+    padding-top: 25px;
+}
+
+.dash-modal-row {
+    border-top: 1px solid  rgba(0, 0, 0, .1);;
+    padding: .8rem 0;
+
+    &:first-of-type {
+        border-top: none;
+    }
+}
+
+.score-settings {
+    .score-enabled {
+      font-weight: 600;
+    }
+    .score-display {
+      padding: 5px 0 0 10px;
+    }
+  }
+
+
+.nav {
+        padding-left: 15px;
+        margin-bottom: 0;
+        list-style: none;
+}
+
+    .nav-tabs {
+        border-bottom: 1px solid #ddd;
+    }
+
+    .nav-tabs>li {
+        float: left;
+        margin-bottom: -1px;
+    }
+
+    .nav>li, .nav>li>a {
+        display: block;
+        position: relative;
+    }
+
+    .nav {
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .custom-tabs>li.active>a, .custom-tabs>li.active>a:focus, .custom-tabs>li.active>a:hover {
+      color: black;
+      font-weight: bold;
+      background-color: transparent;
+      border: 1px solid dimgrey;
+      cursor: default;
+    }
+
+    .nav-tabs>li>a {
+        margin-right: 2px;
+        line-height: 1.42857143;
+        border: 1px solid transparent;
+        border-radius: 4px 4px 0 0;
+    }
+
+    .nav>li>a {
+      color: black;
+      padding: 10px 15px;
+    }
+
+    .nav>li, .nav>li>a {
+        display: block;
+        position: relative;
+    }
+
+    .widget-modal .widget-modal-heading {
+        border-bottom: 1px solid rgba(0,0,0,.35);
+        color: #152131;
+        font-size: 2.5rem;
+        margin-bottom: 3rem;
+        padding: 1rem;
+        text-align: center;
+    }
+
+    .widget-modal .widget-modal-close {
+        background: 0 0;
+        cursor: pointer;
+        color: #333;
+        font-weight: 700;
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 3rem;
+        height: 3rem;
+        border: 0;
+        background-clip: padding-box;
+        text-align: center;
+        opacity: .7;
+        font-size: 1.5em;
+        line-height: 1em;
+        -webkit-transition: opacity .2s linear;
+        -o-transition: opacity .2s linear;
+        transition: opacity .2s linear;
+    }

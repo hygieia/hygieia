@@ -1,0 +1,50 @@
+@import "node_modules/bootstrap/scss/functions";
+@import "node_modules/bootstrap/scss/variables";
+@import "node_modules/bootstrap/scss/mixins/breakpoints";
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+
+  .header-container-left {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      width: calc(16rem - 1.25rem);
+
+      .logo {
+        background: url(../../../assets/img/Hygieia_Logo_white.png) no-repeat center center;
+        background-size: contain;
+        width: 135px;
+        height: 35px;
+      }
+    }
+  }
+
+  .header-container-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: auto;
+
+    nb-actions {
+      background-color: transparent;
+      font-family: Open Sans, sans-serif;
+      font-weight: 700;
+      line-height: 1rem;
+    }
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  .nav-container {
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+}

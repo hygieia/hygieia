@@ -1,0 +1,27 @@
+<form [formGroup]="staticAnalysisConfigForm" (ngSubmit)="submitForm()">
+  <div class="modal-body">
+    <div class="container">
+      <div class="form-group">
+        <label class="col-form-label" for="staticAnalysisJob">Static Analysis Project <span class="required-text"> *</span></label>
+        <input id="staticAnalysisJob" type="search" class="form-control"
+               [class.is-invalid]="((configForm.staticAnalysisJob.dirty || configForm.staticAnalysisJob.touched) && configForm.staticAnalysisJob.errors) || searchFailed"
+               formControlName="staticAnalysisJob"
+       [ngbTypeahead]="typeAheadResults" [inputFormatter]="getStaticAnalysisTitle" [resultFormatter]="getStaticAnalysisTitle" placeholder="Enter Sonar Project" required/>
+        <span *ngIf="searching">searching...</span>
+        <div class="invalid-feedback" *ngIf="!searchFailed || configForm.staticAnalysisJob.value === ''">Please provide a static analysis job.</div>
+        <div class="invalid-feedback" *ngIf="searchFailed && !searching && configForm.staticAnalysisJob.value !== ''">Sorry, suggestions could not be loaded.</div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col text-center">
+          <button class="btn btn-primary" [disabled]="!staticAnalysisConfigForm.valid">
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
