@@ -9,20 +9,16 @@ import {
 } from '@angular/core';
 import {WidgetComponent} from '../../../shared/widget/widget.component';
 import {DashboardService} from '../../../shared/dashboard.service';
-import {OneChartLayoutComponent} from '../../../shared/layouts/one-chart-layout/one-chart-layout.component';
 import {InfraScanService} from '../infra-scan.service';
 import {INFRA_SCAN_CHARTS} from './infra-scan-charts';
 import {catchError, distinctUntilChanged, map, startWith, switchMap, take} from 'rxjs/operators';
 import {of, Subscription} from 'rxjs';
 import {WidgetState} from '../../../shared/widget-header/widget-state';
 import {LayoutDirective} from '../../../shared/layouts/layout.directive';
-import {InfraScan} from '../infra-scan-interfaces';
-import {DashStatus} from '../../../shared/dash-status/DashStatus';
-import {
-  IClickListData,
-  IClickListItemInfra
-} from '../../../shared/charts/click-list/click-list-interfaces';
+import {InfraScan, IVulnerability} from '../infra-scan-interfaces';
+import {DashStatus, IClickListData, IClickListItemInfra} from '../../../shared/charts/click-list/click-list-interfaces';
 import {InfraScanDetailComponent} from '../infra-scan-detail/infra-scan-detail.component';
+import {TwoByOneLayoutComponent} from "../../../shared/layouts/two-by-one-layout/two-by-one-layout.component";
 
 @Component({
   selector: 'app-infra-scan-widget',
@@ -45,7 +41,7 @@ export class InfraScanWidgetComponent extends WidgetComponent implements OnInit,
 
   ngOnInit() {
     this.widgetId = 'infrascan0';
-    this.layout = OneChartLayoutComponent;
+    this.layout = TwoByOneLayoutComponent;
     this.charts = INFRA_SCAN_CHARTS;
     this.auditType = 'INFRASTRUCTURE_SCAN';
     this.init();
@@ -102,23 +98,39 @@ export class InfraScanWidgetComponent extends WidgetComponent implements OnInit,
   }
 
   private loadCharts(result: InfraScan[]) {
-    const sData = result[0].vulnerabilities.map(v => {
-      const riskStatus = v.contextualizedRiskLabel === 'HIGH' ?
-        DashStatus.CRITICAL : (v.contextualizedRiskLabel === 'MEDIUM' ? DashStatus.WARN : DashStatus.PASS);
+    const vulnerabilities = result && result[0] && result[0].vulnerabilities;
+    if (!vulnerabilities || vulnerabilities.length == 0) {
+      return;
+    }
+
+
+    const sData = vulnerabilities.map(v => {
+      const riskStatus = this.getRiskStatus(v);
       return {
         title: v.vulnerabilityTitle,
-        subtitles : [v.contextualizedRiskScore],
+        subtitles : [v.contextualizedRiskLabel],
         status: riskStatus,
-        statusText: v.vulnerabilityStatus,
+        // statusText: v.vulnerabilityStatus,
         vulnerability: v,
       } as IClickListItemInfra;
-    });
+    }).sort((a, b) => a.status > b.status ? -1 : 1 );
+
+    vulnerabilities.filter(v => v.contextualizedRiskLabel === 'HIGH').length;
 
     this.charts[0].data = {
       items: sData,
       clickableContent: InfraScanDetailComponent,
       clickableHeader: null
     } as IClickListData;
+
+    this.charts[1].title = 'Summary : ' + vulnerabilities.length
+    this.charts[1].data[0].value = vulnerabilities.filter(v => v.contextualizedRiskLabel === 'CRITICAL').length;
+    this.charts[1].data[1].value = vulnerabilities.filter(v => v.contextualizedRiskLabel === 'HIGH').length;
+    this.charts[1].data[2].value = vulnerabilities.filter(v => v.contextualizedRiskLabel === 'MEDIUM').length;
+    this.charts[1].data[3].value = vulnerabilities.filter(v =>
+      !(v.contextualizedRiskLabel === 'CRITICAL' || v.contextualizedRiskLabel === 'HIGH' ||
+        v.contextualizedRiskLabel === 'MEDIUM')).length;
+
   }
 
   private setDefaultIfNoData() {
@@ -126,5 +138,22 @@ export class InfraScanWidgetComponent extends WidgetComponent implements OnInit,
       this.charts[0].data = { items: [{ title: 'No Data Found' }]};
     }
     super.loadComponent(this.childLayoutTag);
+  }
+
+  private compareBySeveriaty(v1: any, v2: any) {
+    return function (p1: IClickListItemInfra, p2: IClickListItemInfra) {
+      return 0;
+    };
+  }
+
+  private getRiskStatus(v: IVulnerability): DashStatus {
+    const risk = v.contextualizedRiskLabel;
+    switch (risk) {
+      case 'CRITICAL': return DashStatus.CRITICAL; break;
+      case 'HIGH': return DashStatus.FAIL; break;
+      case 'MEDIUM': return DashStatus.WARN; break;
+      case 'INFO': return DashStatus.PASS; break;
+      default: return DashStatus.IN_PROGRESS; break;
+    }
   }
 }

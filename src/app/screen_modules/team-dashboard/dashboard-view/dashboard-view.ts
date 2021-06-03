@@ -84,7 +84,7 @@ export const widgetsAll = [
     title: ['Infra Scan'],
     component: [InfraScanWidgetComponent],
     status: 'Success',
-    widgetSize: 'col-xl-2',
+    widgetSize: 'col-xl-4',
     configForm: [InfraScanConfigComponent],
     deleteForm: [InfraScanDeleteComponent]
   }

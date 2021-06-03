@@ -22,6 +22,8 @@ export class InfraScanDetailComponent implements OnInit {
   }
 
   getData() {
-    return JSON.stringify(this.data.vulnerability, undefined, 1);
+    if (this.data && this.data.vulnerability) {
+      return JSON.stringify(this.data.vulnerability, undefined, 1);
+    }
   }
 }

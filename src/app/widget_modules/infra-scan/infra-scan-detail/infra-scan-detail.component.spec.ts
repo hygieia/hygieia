@@ -3,7 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { InfraScanDetailComponent } from './infra-scan-detail.component';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
-describe('InfraScanDetailComponent', () => {
+fdescribe('InfraScanDetailComponent', () => {
   let component: InfraScanDetailComponent;
   let fixture: ComponentFixture<InfraScanDetailComponent>;
 
