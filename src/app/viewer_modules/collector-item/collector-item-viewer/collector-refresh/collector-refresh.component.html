@@ -1,0 +1,22 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h4 class="modal-title">Collector Item: {{collectorDetails?.id}}</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <pre style="border-style: inset">{{getJsonHtml(collectorDetails)}}</pre>
+  </div>
+  <div class="modal-footer">
+    <div class="col">
+      <div class="row justify-content-center">
+        <button class="btn btn-outline-secondary mr-2" type="button" (click)="activeModal.close('Close click')">Cancel</button>
+        <button disabled class="btn btn-success" type="button" (click)="activeModal.dismiss('This is to be implemented in the near future.')">* Refresh</button>
+      </div>
+      <div class="row justify-content-end">
+        <small class="text-muted">* This is to be implemented in the near future.</small>
+      </div>
+    </div>
+  </div>
+</div>

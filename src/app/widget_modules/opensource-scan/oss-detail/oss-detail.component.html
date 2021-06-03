@@ -1,0 +1,18 @@
+<div style="padding: 0px">
+    <table class ="table-content">
+      <tr>
+        <th>Url</th>
+      </tr>
+      <tr><a href="{{data?.url}}" target="_blank" rel="noopener noreferrer">{{data?.url}}</a></tr>
+      <tr>
+        <th>Last Updated</th>
+      </tr>
+      <tr>{{toDate(data?.lastUpdated)}}</tr>
+      <tr>
+        <th>Components</th>
+      </tr>
+      <tr *ngFor="let item of this.data?.components">
+        <td>{{item}}</td>
+      </tr>
+    </table>
+</div>

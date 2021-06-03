@@ -1,0 +1,58 @@
+@mixin font-style {
+  font-family: 'Lucida Grande';
+  font-weight: 600;
+  line-height: 2;
+  color: lightgray;
+}
+
+.gap {
+  margin-top: 2.5rem;
+}
+.table-row{
+    cursor:pointer;
+}
+table th td{
+    padding: .5rem;
+    background: #fff;
+    color: #666;
+}
+
+H3[ng-reflect-router-link] {
+  color: blue;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+td[ng-reflect-router-link] {
+  color: blue;
+  cursor: pointer;
+}
+
+#description {
+  overflow-wrap: break-word;
+  max-width: 15rem;
+}
+
+
+th {
+  @include font-style
+}
+
+
+.popupWin {
+  color: blue;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+#dashboardSearch {
+  background: black;
+  border: solid 0.1em dimgrey;
+}
+
+nb-card {
+  background: black;
+  nb-card-header a h3 {
+    color: lightgray;
+  }
+}

@@ -1,0 +1,33 @@
+<div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h4 class="modal-title">Api Properties Configuration</h4>
+      <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div>
+      <form name="cdf" [formGroup]="apiPropertiesForm" class="form"  novalidate>
+        <div class="form-group">
+          <label class="col-form-label">Api Properties Name (Required):</label>
+          <div class="col-xs-offset-3 col-xs-6">
+            <input type="text" *ngIf="this.disableName" class= "form-control" placeholder="Api Properties Name" formControlName="name" disabled required/>
+            <input type="text" *ngIf="!this.disableName" class= "form-control" placeholder="Api Properties Name" formControlName="name" required/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-form-label">Properties JSON (Required):</label>
+          <div class="col-xs-offset-3 col-xs-6">
+            <input id= "description" value= "{{this.propertiesJSON}}" type="text" class= "form-control" placeholder="Properties JSON" formControlName="properties" required/>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <div class="col text-center">
+        <button class="btn btn-outline-secondary mr-2" type="button"  (click)="activeModal.dismiss()">Cancel</button>
+        <button class="btn btn-primary" type="button" [disabled]="!apiPropertiesForm.valid" (click)="submit()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>

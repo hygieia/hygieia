@@ -1,0 +1,20 @@
+.modal-body {
+  background-color: lightgray;
+}
+
+.modal-footer {
+  background-color: lightgray;
+}
+
+select {
+  padding: 7px;
+  border-radius: 4px;
+}
+
+#submitFailed, .invalid-feedback, .required-text {
+  color:orangered;
+}
+
+h5 {
+  color: #444444;
+}

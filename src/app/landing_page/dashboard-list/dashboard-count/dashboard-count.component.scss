@@ -1,0 +1,27 @@
+#d-pie {
+  ::ng-deep .advanced-pie-legend {
+    line-height: 1.35;
+
+    .total-value {
+      font-size: 28px;
+      color: #98C5AB;
+    }
+
+    .total-label {
+      font-size: 20px;
+      margin-bottom: 5px;
+      color: lightgray;
+    }
+    .legend-items-container .legend-items .legend-item {
+      .item-value {
+        color: #98C5AB;
+      }
+      .item-label {
+        color: lightgray;
+      }
+      .item-percent {
+        color: lightgray;
+      }
+    }
+  }
+}

@@ -1,0 +1,49 @@
+<div id="admin">
+  <div class="col-md-2 dash">
+    <ul class="nav nav-pills flex-column dash-nav">
+      <li class="nav-item"><a class="nav-link" [ngClass]="{active:tab === 'editDashboards'}"
+                              (click)="navigateToTab('editDashboards')">Edit Dashboards</a></li>
+      <li class="nav-item"><a class="nav-link" [ngClass]="{active:tab === 'users'}"
+                              (click)="navigateToTab('users')">Manage Admins</a></li>
+      <li class="nav-item"><a class="nav-link" [ngClass]="{active:tab === 'apitokens'}"
+                              (click)="navigateToTab('apitokens')">Generate ApiTokens</a></li>
+      <li class="nav-item"><a class="nav-link" [ngClass]="{active:tab === 'auditconfig'}"
+                              (click)="navigateToTab('auditconfig')">Audit Configurations</a></li>
+      <li class="nav-item"><a class="nav-link" [ngClass]="{active:tab === 'featureflags'}"
+                              (click)="navigateToTab('featureflags')">Feature Flags</a></li>
+      <li class="nav-item"><a class="nav-link" [ngClass]="{active:tab === 'propertiesconfig'}"
+                              (click)="navigateToTab('propertiesconfig')">Properties Configuration</a></li>
+      <li class="nav-item"><a class="nav-link" [ngClass]="{active:tab === 'collectors'}"
+                              (click)="navigateToTab('collectors')">View Collectors</a></li>
+    </ul>
+  </div>
+  <div class="container-fluid">
+    <div class="col-md-9 dashcon">
+      <div *ngIf="tab === 'editDashboards'">
+        <app-edit-dashboard></app-edit-dashboard>
+      </div>
+      <div *ngIf="tab === 'templates'">
+      </div>
+      <div *ngIf="tab === 'users'">
+        <app-manage-admins></app-manage-admins>
+      </div>
+      <div *ngIf="tab === 'apitokens'">
+        <app-generate-tokens></app-generate-tokens>
+      </div>
+      <div *ngIf="tab === 'configurations'">
+      </div>
+      <div *ngIf="tab === 'auditconfig'">
+        <app-service-accounts></app-service-accounts>
+      </div>
+      <div *ngIf="tab === 'featureflags'">
+        <app-feature-flags></app-feature-flags>
+      </div>
+      <div *ngIf="tab === 'propertiesconfig'">
+        <app-properties-builder></app-properties-builder>
+      </div>
+      <div *ngIf="tab === 'collectors'">
+        <app-collectors></app-collectors>
+      </div>
+    </div>
+  </div>
+</div>

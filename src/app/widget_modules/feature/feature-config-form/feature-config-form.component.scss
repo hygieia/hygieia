@@ -1,0 +1,24 @@
+.modal-content {
+  background-color: lightgray;
+  border: none;
+}
+
+.modal-header {
+  background-color: lightgray;
+  border: none;
+  color: white;
+}
+
+.model-body {
+  background-color: lightgray;
+}
+
+.modal-footer {
+  background-color: lightgray;
+  border: none;
+  justify-content: center;
+}
+
+.invalid-feedback, .required-text {
+  color:orangered;
+}

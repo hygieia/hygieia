@@ -1,0 +1,116 @@
+<div class="jumbotron">
+  <div>
+    <h1 class="display-4"> Welcome to Hygieia</h1>
+    <p>A configurable DevOps dashboard that provides a near real-time consolidated view of entire application release pipeline</p>
+  </div>
+  <div>
+    <app-dashboard-count></app-dashboard-count>
+  </div>
+</div>
+<div class="main-content">
+  <div class="container">
+    <div class="row justify-content-md-center">
+      <div class="col-12 col-xl-9">
+        <div class="col">
+          <div class="row">
+            <div class="col">
+              <input nbInput type="search" id="dSearch" name="dSearch" placeholder="Search dashboard by title or application component name" shape="round" fieldSize="large"
+                     fullWidth [formControl]="queryField">
+            </div>
+            <div *ngIf="myDashboards" style="padding-left: 0">
+              <button id="createBtn" class="btn btn-outline-secondary badge-pill" (click)="createDashboard()"><nb-icon size="large" icon="plus-circle"></nb-icon>
+                <span class="new-dbd-lbl"> New Dashboard</span></button>
+            </div>
+          </div>
+          <div class="col">
+            <nb-tabset fullWidth (changeTab)="tabChange($event)">
+              <nb-tab tabTitle="All" tabId=""></nb-tab>
+              <nb-tab tabTitle="Team" tabId="Team"></nb-tab>
+              <nb-tab tabTitle="Product" tabId="Product"></nb-tab>
+            </nb-tabset>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 col-xl-6 justify-content-center" *ngIf="allDashboards">
+            <ng-container>
+              <div>
+                <nb-card size="giant">
+                  <nb-card-header>
+                    <h4>{{ dashboardType }} Dashboards</h4>
+                  </nb-card-header>
+                  <nb-list >
+                    <nb-list-item *ngFor="let dashboard of allDashboards" routerLink="/dashboard/dashboard-view/{{dashboard.id}}">
+                      <span class="fa fa-lg left-icon" [ngClass]="{'fa-cubes' : dashboard.type === 'Product','fa-slideshare': dashboard.type === 'Team'}"></span>
+                      <span class="d-name">{{dashboardName(dashboard)}}</span>
+                    </nb-list-item>
+                  </nb-list>
+                  <nb-card-footer>
+                    <div class="text-center" *ngIf="!allDashboards.length">
+                      No results
+                    </div>
+                    <app-pagination *ngIf="allDashboards.length" [totalSize]="dashboardCollectionSize"
+                                    (pageChange)="getNextPage($event, false)"></app-pagination>
+                  </nb-card-footer>
+                </nb-card>
+              </div>
+            </ng-container>
+          </div>
+          <div class="col-12 col-xl-6 justify-content-center" *ngIf="myDashboards">
+            <ng-container>
+              <div>
+                <nb-card size="giant">
+                  <nb-card-header>
+                    <h4> My {{ dashboardType }} Dashboards</h4>
+                    <ng-template></ng-template>
+                  </nb-card-header>
+                  <nb-list>
+                    <nb-list-item  class="user-dl" *ngFor="let dashboard of myDashboards" (click)="routeDashboard(dashboard, $event)">
+                        <div>
+                          <span class="fa fa-lg left-icon" [ngClass]="{'fa-cubes' : dashboard.type === 'Product','fa-slideshare': dashboard.type === 'Team'}"></span>
+                          <span class="d-name">{{dashboardName(dashboard)}}</span>
+                        </div>
+                        <div>
+                          <a (click)="deleteDashboard(dashboard, $event)"><app-dash-trash class="clickable pull-right"></app-dash-trash></a>
+                          <app-dash-edit (click)="editDashboard(dashboard, $event)" class="clickable pull-right"></app-dash-edit>
+                        </div>
+                    </nb-list-item>
+                  </nb-list>
+                  <nb-card-footer>
+                    <div class="text-center" *ngIf="!myDashboards.length">
+                      No results
+                    </div>
+                    <app-pagination *ngIf="myDashboards.length" [totalSize]="myDashboardCollectionSize"
+                                    (pageChange)="getNextPage($event, true)"></app-pagination>
+                  </nb-card-footer>
+                </nb-card>
+              </div>
+            </ng-container>
+          </div>
+          <div class="col">
+            <ng-container>
+              <div>
+                <nb-card size="giant">
+                  <nb-card-header><h4>Reports & Tools</h4></nb-card-header>
+                  <nb-list>
+                    <nb-list-item (click)="goToAuditReport()">
+                      <span class="fa fa-bar-chart-o fa-lg left-icon"></span>
+                      <span class="d-name">Application Audit Result Metrics</span>
+                    </nb-list-item>
+                    <nb-list-item (click)="goToCollectorItemMetrics()">
+                      <span class="fa fa-bar-chart-o fa-lg left-icon"></span>
+                      <span class="d-name">Application Collector Detail Viewer</span>
+                    </nb-list-item>
+                    <nb-list-item (click)="goToBuildViewer()">
+                      <span class="fa fa-bar-chart-o fa-lg left-icon"></span>
+                      <span class="d-name">Build Details Viewer</span>
+                    </nb-list-item>
+                  </nb-list>
+                </nb-card>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

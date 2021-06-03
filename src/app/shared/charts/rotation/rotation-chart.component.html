@@ -1,0 +1,38 @@
+<div [ngClass]="{'chart-heading': !data?.clickableHeader}">
+  {{title}}
+</div>
+
+<ngb-tabset [destroyOnHide]="false">
+  <li *ngFor="let indivItem of data?.items">
+    <ngb-tab title="{{indivItem[0]?.type}}" [disabled]="unlockTabs(indivItem[0].agileType, indivItem[0].type) !== true">
+      <ng-template ngbTabContent>
+        <table class="table table-hover" [ngClass]="{'table-hover': data?.clickableContent}">
+          <tr class="dash-row clickable" *ngFor="let item of indivItem" [ngClass]="{'clickable': data?.clickableContent}">
+            <td><span class="list-item-title">{{item?.title}}</span></td>
+            <ng-container *ngFor="let subtitle of item.subtitles">
+              <td>
+                <ng-container><span class="list-item-chevron pull-right fa fa-lg">{{subtitle}}</span></ng-container>
+              </td>
+            </ng-container>
+          </tr>
+        </table>
+        <br><div [ngClass]="{'chart-heading': !data?.clickableHeader}">
+          Epics/Issues in Progress and Points
+        </div>
+        <table class="table table-hover" [ngClass]="{'table-hover': data?.clickableContent}">
+          <tr class="dash-row clickable" *ngFor="let item of indivItem[0].status[0] | keyvalue" [ngClass]="{'clickable': data?.clickableContent}">
+            <td><span class="list-item-title">{{item?.key}}</span></td>
+            <td>
+              <ng-container><span class="list-item-chevron pull-right fa fa-lg">{{item?.value}}</span></ng-container>
+            </td>
+          </tr>
+        </table>
+        <table class="table table-hover" [ngClass]="{'table-hover': data?.clickableContent}">
+          <tr class="dash-row clickable" *ngFor="let item of indivItem[0].rotationData" [ngClass]="{'clickable': data?.clickableContent}" (click)="openDetailView(item)">
+            {{item.name}}
+          </tr>
+        </table>
+      </ng-template>
+    </ngb-tab>
+  </li>
+</ngb-tabset>
