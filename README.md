@@ -34,13 +34,13 @@
 
 <div align="center">
   <h2>
-    <a href="http://hygieia.github.io/Hygieia/getting_started.html"><img src="https://github.com/hygieia/Hygieia/blob/gh-pages/media/images/Buttons/Documentation.png" alt="Documentation" width="125" align="center"></a>
+    <a href="http://hygieia.github.io/hygieia/getting_started.html"><img src="https://github.com/hygieia/Hygieia/blob/gh-pages/media/images/Buttons/Documentation.png" alt="Documentation" width="125" align="center"></a>
     <span>|</span>
-    <a href="http://hygieia.github.io/Hygieia/screenshots.html"><img src="https://github.com/hygieia/hygieia/blob/gh-pages/media/images/Buttons/Screenshots.png" alt="Screenshots" width="125" align="center"></a>
+    <a href="http://hygieia.github.io/hygieia/screenshots.html"><img src="https://github.com/hygieia/hygieia/blob/gh-pages/media/images/Buttons/Screenshots.png" alt="Screenshots" width="125" align="center"></a>
     <span>|</span>
-    <a href="http://hygieia.github.io/Hygieia/contribute.html"><img src="https://github.com/hygieia/hygieia/blob/gh-pages/media/images/Buttons/Contribute.png" alt="Contribute" width="125" align="center"></a>
+    <a href="http://hygieia.github.io/hygieia/contribute.html"><img src="https://github.com/hygieia/hygieia/blob/gh-pages/media/images/Buttons/Contribute.png" alt="Contribute" width="125" align="center"></a>
     <span>|</span>
-    <a href="http://hygieia.github.io/Hygieia/contact.html"><img src="https://github.com/hygieia/hygieia/blob/gh-pages/media/images/Buttons/Contact.png" alt="Contact" width="125" align="center"></a>
+    <a href="http://hygieia.github.io/hygieia/contact.html"><img src="https://github.com/hygieia/hygieia/blob/gh-pages/media/images/Buttons/Contact.png" alt="Contact" width="125" align="center"></a>
   </h2>
 </div>
 
@@ -65,13 +65,13 @@
 
 <tbody>
 <tr>
-<td><a href="http://hygieia.github.io/Hygieia/getting_started.html"><img src="https://github.com/hygieia/hygieia/blob/gh-pages/media/images/ReadmeIcons/About.png" alt="About Icon" height="145" width="280"/></a></td>
+<td><a href="http://hygieia.github.io/hygieia/getting_started.html"><img src="https://github.com/hygieia/hygieia/blob/gh-pages/media/images/ReadmeIcons/About.png" alt="About Icon" height="145" width="280"/></a></td>
 <td><a href="https://www.youtube.com/watch?v=SoNTA78j0tc"><img src="https://github.com/hygieia/hygieia/blob/gh-pages/media/images/ReadmeIcons/Video.png" alt="Video Icon" align="center" height="145" width="280"/></td>
-<td><a href="http://hygieia.github.io/Hygieia/architecture.html"><img src="https://github.com/hygieia/hygieia/blob/gh-pages/media/images/ReadmeIcons/Architecture.png" alt="Architecture Icon" align="center" height="145" width="280"/></a></td>
+<td><a href="http://hygieia.github.io/hygieia/architecture.html"><img src="https://github.com/hygieia/hygieia/blob/gh-pages/media/images/ReadmeIcons/Architecture.png" alt="Architecture Icon" align="center" height="145" width="280"/></a></td>
 </tr>
 <tr>
-<td><a href="http://hygieia.github.io/Hygieia/framework.html"><img src="https://github.com/hygieia/hygieia/blob/gh-pages/media/images/ReadmeIcons/Framework.png" alt="Framework Icon" align="center" height="145" width="280"/></td>
-<td><a href="http://hygieia.github.io/Hygieia/setup.html"><img src="https://github.com/hygieia/hygieia/blob/gh-pages/media/images/ReadmeIcons/Installation.png" alt="Install Icon" align="center" height="145" width="280"/></a></td>
+<td><a href="http://hygieia.github.io/hygieia/framework.html"><img src="https://github.com/hygieia/hygieia/blob/gh-pages/media/images/ReadmeIcons/Framework.png" alt="Framework Icon" align="center" height="145" width="280"/></td>
+<td><a href="https://hygieia.github.io/hygieia/newUI.html"><img src="https://github.com/hygieia/hygieia/blob/gh-pages/media/images/ReadmeIcons/Installation.png" alt="Install Icon" align="center" height="145" width="280"/></a></td>
 <td><a href="https://github.com/hygieia/hygieia/graphs/contributors"><img src="https://github.com/hygieia/hygieia/blob/gh-pages/media/images/ReadmeIcons/TopContributors.png" alt="Contributors Icon" align="center" height="145" width="280"/></a></td>
 </tr>
 </tbody>
