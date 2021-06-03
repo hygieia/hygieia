@@ -1,10 +1,10 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {CollectorService} from "../../../shared/collector.service";
-import {DashboardService} from "../../../shared/dashboard.service";
-import {map, switchMap, take} from "rxjs/operators";
-import {of} from "rxjs";
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {CollectorService} from '../../../shared/collector.service';
+import {DashboardService} from '../../../shared/dashboard.service';
+import {map, switchMap, take} from 'rxjs/operators';
+import {of} from 'rxjs';
 
 @Component({
   selector: 'app-infra-scan-delete',

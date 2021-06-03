@@ -18,7 +18,7 @@ import {LayoutDirective} from '../../../shared/layouts/layout.directive';
 import {InfraScan, IVulnerability} from '../infra-scan-interfaces';
 import {DashStatus, IClickListData, IClickListItemInfra} from '../../../shared/charts/click-list/click-list-interfaces';
 import {InfraScanDetailComponent} from '../infra-scan-detail/infra-scan-detail.component';
-import {TwoByOneLayoutComponent} from "../../../shared/layouts/two-by-one-layout/two-by-one-layout.component";
+import {TwoByOneLayoutComponent} from '../../../shared/layouts/two-by-one-layout/two-by-one-layout.component';
 
 @Component({
   selector: 'app-infra-scan-widget',
@@ -99,7 +99,7 @@ export class InfraScanWidgetComponent extends WidgetComponent implements OnInit,
 
   private loadCharts(result: InfraScan[]) {
     const vulnerabilities = result && result[0] && result[0].vulnerabilities;
-    if (!vulnerabilities || vulnerabilities.length == 0) {
+    if (!vulnerabilities || vulnerabilities.length === 0) {
       return;
     }
 
@@ -115,15 +115,13 @@ export class InfraScanWidgetComponent extends WidgetComponent implements OnInit,
       } as IClickListItemInfra;
     }).sort((a, b) => a.status > b.status ? -1 : 1 );
 
-    vulnerabilities.filter(v => v.contextualizedRiskLabel === 'HIGH').length;
-
     this.charts[0].data = {
       items: sData,
       clickableContent: InfraScanDetailComponent,
       clickableHeader: null
     } as IClickListData;
 
-    this.charts[1].title = 'Summary : ' + vulnerabilities.length
+    this.charts[1].title = 'Summary : ' + vulnerabilities.length;
     this.charts[1].data[0].value = vulnerabilities.filter(v => v.contextualizedRiskLabel === 'CRITICAL').length;
     this.charts[1].data[1].value = vulnerabilities.filter(v => v.contextualizedRiskLabel === 'HIGH').length;
     this.charts[1].data[2].value = vulnerabilities.filter(v => v.contextualizedRiskLabel === 'MEDIUM').length;
@@ -138,12 +136,6 @@ export class InfraScanWidgetComponent extends WidgetComponent implements OnInit,
       this.charts[0].data = { items: [{ title: 'No Data Found' }]};
     }
     super.loadComponent(this.childLayoutTag);
-  }
-
-  private compareBySeveriaty(v1: any, v2: any) {
-    return function (p1: IClickListItemInfra, p2: IClickListItemInfra) {
-      return 0;
-    };
   }
 
   private getRiskStatus(v: IVulnerability): DashStatus {

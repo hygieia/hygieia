@@ -1,6 +1,6 @@
 import {IChart} from '../../../shared/interfaces';
 import {ClickListComponent} from '../../../shared/charts/click-list/click-list.component';
-import {NumberCardChartComponent} from "../../../shared/charts/number-card-chart/number-card-chart.component";
+import {NumberCardChartComponent} from '../../../shared/charts/number-card-chart/number-card-chart.component';
 
 export let INFRA_SCAN_CHARTS: IChart[] =  [
   {

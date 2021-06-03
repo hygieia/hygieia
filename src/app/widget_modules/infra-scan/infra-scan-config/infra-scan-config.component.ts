@@ -1,10 +1,10 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
-import {Observable, of} from "rxjs";
-import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {CollectorService} from "../../../shared/collector.service";
-import {DashboardService} from "../../../shared/dashboard.service";
-import {catchError, debounceTime, distinctUntilChanged, map, switchMap, take, tap} from "rxjs/operators";
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {Observable, of} from 'rxjs';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {CollectorService} from '../../../shared/collector.service';
+import {DashboardService} from '../../../shared/dashboard.service';
+import {catchError, debounceTime, distinctUntilChanged, map, switchMap, take, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-infra-scan-config',
