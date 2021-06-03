@@ -46,19 +46,6 @@ entries:
       url: /newUI.html
       output: web, pdf
 
-  - title: Installing the Old Hygieia UI
-    output: web, pdf
-    folderitems:
-    - title: Old UI Setup Instructions
-      url: /setup.html
-      output: web, pdf
-    - title: Database
-      url: /database.html
-      output: web, pdf
-    - title: UI
-      url: /ui.html
-      output: web, pdf
-
   - title: Configuration
     output: web, pdf
     folderitems:
