@@ -8,7 +8,7 @@ branches:
   - master
 cache:
   directories:
-  - "$TRAVIS_BUILD_DIR/UI/node_modules"
+  - "$TRAVIS_BUILD_DIR/hygieia/node_modules"
 before_install:
 - export TZ=America/New_York
 - export NG_CLI_ANALYTICS=ci
