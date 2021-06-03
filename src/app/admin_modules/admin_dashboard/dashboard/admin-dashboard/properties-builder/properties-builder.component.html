@@ -1,0 +1,63 @@
+<div>
+  <div class="widget-modal">
+    <div class="panel-heading pointerCursor">
+      <h3 class="panel-title" (click)="panelExpandedApi = !panelExpandedApi">Api Properties Builder <i class="fa fa-caret-down"></i></h3>
+    </div>
+    <div class = "table-content" *ngIf="panelExpandedApi">
+      <span class="col-xs-6"><button type="button" class="btn btn-dark btn-lg pull-right mb-2" (click)="addNewApiPropertiesBuilder()">New</button></span>
+      <input type="text" class="form-control" id="apiPropertiesSearch" placeholder="Filter Api Properties"
+             [(ngModel)]="apiPropertiesSearch">
+      <div class="dash-modal-row delete-dashboard-row clearfix" style="font-size: 20px;" *ngFor="let apiProperty of this.apiProperties | generalFilter:{name:apiPropertiesSearch} | generalOrderBy:'name' |  paginate: { itemsPerPage: 10, currentPage: p }">
+        <div>
+          <div ng-hide="!ctrl.apiProperties">
+            <a  (click)="deleteProperties(apiProperty)">
+              <app-dash-trash class="clickable pull-right"></app-dash-trash>
+            </a>
+            <app-dash-edit class="clickable pull-right" (click)="editApiPropertiesBuilder(apiProperty)"></app-dash-edit>
+          </div>
+          <h6>Name: {{apiProperty?.name}}</h6>
+          <h6>Properties: </h6>
+          <div class="table-row" *ngFor="let currProperties of properKeys(apiProperty?.properties)">
+            <div class="individual">
+              <h6>{{currProperties}}: {{stringifyObj(apiProperty?.properties[currProperties])}}</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer pb-0 pt-3">
+        <pagination-controls *ngIf="this.apiProperties && this.apiProperties.length > 0" totalItems=this.apiProperties.length previousLabel=""
+                             nextLabel="" maxSize="4" (pageChange)="p = $event"></pagination-controls>
+      </div>
+    </div>
+
+    <div class="panel-heading pointerCursor">
+      <h3 class="panel-title" (click)="panelExpandedApiAudit = !panelExpandedApiAudit">Api Audit Properties Builder <i class="fa fa-caret-down"></i></h3>
+    </div>
+    <div class = "table-content" *ngIf="panelExpandedApiAudit">
+      <span class="col-xs-6"><button type="button" class="btn btn-dark btn-lg pull-right mb-2" (click)="addNewApiAuditPropertiesBuilder()">New</button></span>
+      <input type="text" class="form-control" id="apiAuditPropertiesSearch" placeholder="Filter Api Audit Properties"
+             [(ngModel)]="apiAuditPropertiesSearch">
+      <div class="dash-modal-row delete-dashboard-row clearfix" style="font-size: 20px;" *ngFor="let apiAuditProperty of this.apiAuditProperties | generalFilter:{name:apiAuditPropertiesSearch} | generalOrderBy:'name' |  paginate: { itemsPerPage: 10, currentPage: p }">
+        <div>
+          <div ng-hide="!ctrl.apiProperties">
+            <a  (click)="deleteProperties(apiAuditProperty?.id)">
+              <app-dash-trash class="clickable pull-right"></app-dash-trash>
+            </a>
+            <app-dash-edit class="clickable pull-right" (click)="editApiAuditPropertiesBuilder(apiAuditProperty)"></app-dash-edit>
+          </div>
+          <h6>Name: {{apiAuditProperty?.name}}</h6>
+          <h6>Properties: </h6>
+          <div class="table-row" *ngFor="let currProperties of properKeys(apiAuditProperty?.properties)">
+            <div class="individual">
+              <h6>{{currProperties}}: {{stringifyObj(apiAuditProperty?.properties[currProperties])}}</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer pb-0 pt-3">
+        <pagination-controls *ngIf="this.apiProperties && this.apiProperties.length > 0" totalItems=this.apiProperties.length previousLabel=""
+                             nextLabel="" maxSize="4" (pageChange)="p = $event"></pagination-controls>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,12 @@
+<section>
+  <ul class="app-tabs-list list-reset" [class.tabs-vertical]="vertical" [class.tabs-horizontal]="!vertical">
+    <li *ngFor="let tab of tabs" class="app-tab" [class.disabled]="tab.disabled" [class.active]="tab.active">
+      <button (click)="tabClicked(tab)" [disabled]="tab.disabled">
+        <ng-container *ngTemplateOutlet="tab.labelTemplate; context: { $implicit: tab }"> </ng-container>
+      </button>
+    </li>
+  </ul>
+  <div class="app-tab-content">
+    <ng-content></ng-content>
+  </div>
+</section>

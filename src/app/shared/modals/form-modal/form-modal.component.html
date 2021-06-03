@@ -1,0 +1,11 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h4>{{title}}</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <ng-template appFormModal></ng-template>
+  </div>
+</div>

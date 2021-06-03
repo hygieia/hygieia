@@ -1,0 +1,16 @@
+<div>
+    <table *ngFor="let level of this.data" class ="table-content">
+      <tr>
+        <th>{{level?.title}}
+          <div class="col-md-2 view-in-tool pull-right">
+            <a href="{{level?.url}}" target="_blank" rel="noopener noreferrer">View Report
+              <span class="fa fa-angle-right"></span>
+            </a>
+          </div>
+        </th>
+      </tr>
+      <tr *ngFor="let comp of level?.components">
+        <td>{{comp}}</td>
+      </tr>
+    </table>
+</div>

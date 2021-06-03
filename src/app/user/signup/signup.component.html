@@ -1,0 +1,92 @@
+<div class="view">
+  <div class="container">
+    <header>
+      <h3>  Please Sign Up</h3>
+    </header>
+    <br />
+    <form [formGroup]="signupForm" (ngSubmit)="submit(signupForm)" class="login-form" novalidate>
+      <div class="login">
+        <div class="row">
+          <div class="col-md-2">
+            username:
+          </div>
+          <div class="col-md-10">
+            <input type="username" id="username" name="username" class="form-control" formControlName="username"
+                   [ngClass]="{'is-invalid': (signupForm.get('username').touched ||
+                                            signupForm.get('username').dirty) &&
+                                            !signupForm.get('username').valid }" />
+            <span class="invalid-feedback">
+              <span *ngIf="signupForm.get('username').errors?.required">
+                A valid username address is required
+              </span>
+            </span>
+          </div>
+        </div>
+        <br />
+        <div formGroupName="passwordGroup">
+        <div class="row">
+
+            <div class="col-md-2">
+              Password:
+            </div>
+            <div class="col-md-10">
+              <input type="password" id="password" name="password" class="form-control" formControlName="password"
+                     [ngClass]="{'is-invalid': signupForm.get('passwordGroup').errors ||
+                                             ((signupForm.get('passwordGroup.password').touched ||
+                                              signupForm.get('passwordGroup.password').dirty) &&
+                                              !signupForm.get('passwordGroup.password').valid) }" />
+              <span class="invalid-feedback">
+              <span *ngIf="signupForm.get('passwordGroup.confirmPassword').errors?.required">
+                Password is required (6 or more characters with at least one number)
+              </span>
+            </span>
+            </div>
+        </div>
+          <br />
+          <div class="row">
+            <div class="col-md-2">
+              Confirm Password:
+            </div>
+            <div class="col-md-10">
+              <input type="password" name="confirmPassword" id="confirmPassword" class="form-control" formControlName="confirmPassword"
+                     [ngClass]="{'is-invalid': signupForm.get('passwordGroup').errors ||
+                                             ((signupForm.get('passwordGroup.confirmPassword').touched ||
+                                              signupForm.get('passwordGroup.confirmPassword').dirty) &&
+                                              !signupForm.get('passwordGroup.confirmPassword').valid) }" />
+
+              <span class="invalid-feedback">
+              <span *ngIf="signupForm.get('passwordGroup.confirmPassword').errors?.required">
+                Please confirm your password.
+              </span>
+              <span *ngIf="signupForm.get('passwordGroup').errors?.match">
+                The confirmation does not match the password.
+              </span>
+            </span>
+            </div>
+          </div>
+
+        </div>
+        <br />
+        <div class="row">
+          <div class="col-md-12">
+            <button type="submit" class="btn btn-success" [disabled]="!signupForm.valid">Sign Up!</button>
+          </div>
+        </div>
+        <br />
+        <div class="statusRow">
+          <br />
+          <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+        </div>
+        <div class="gap text-center">
+          <p>Already have an account?</p>
+
+          <div class="btn btn-link btn-wide" (click)="login()">
+            <span class="fa fa-lg fa-key"></span>
+            Log in
+          </div>
+        </div>
+      </div>
+    </form>
+
+  </div>
+</div>

@@ -1,0 +1,187 @@
+@import '../css/dashvariables.scss';
+@import '../css/mixins.scss';
+
+// CHART TITLES --
+.widget {
+  padding: 0;
+
+  .chart-heading {
+    border-bottom: 1px solid;
+    color: $dash-widget-heading-text;
+    letter-spacing: .1em;
+    padding-bottom: .5em;
+    margin-bottom: 1em;
+
+    @include border-top-radius($dash-widget-border-radius);
+    border-bottom-color: $dash-widget-sub-heading-border;
+    @include text-standard;
+    text-transform: uppercase;
+  }
+
+
+}
+
+.dash-overflow {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+// NGX CHARTS DARK THEME
+
+/**
+  * Backgrounds
+  */
+$color-bg-darkest: #13141b;
+$color-bg-darker: #1b1e27;
+$color-bg-dark: #232837;
+$color-bg-med: #2f3646;
+$color-bg-light: #455066;
+$color-bg-lighter: #5b6882;
+
+/**
+* Text
+*/
+$color-text-dark: #72809b;
+$color-text-med-dark: #919db5;
+$color-text-med: #A0AABE;
+$color-text-med-light: #d9dce1;
+$color-text-light: #f0f1f6;
+$color-text-lighter: #fff;
+
+.dark-chart-theme {
+  .ngx-charts {
+
+    text {
+      fill: $color-text-med;
+    }
+
+    .tooltip-anchor {
+      fill: rgb(255, 255, 255);
+    }
+
+    .gridline-path {
+      stroke: $color-bg-med;
+    }
+
+    .refline-path {
+      stroke: $color-bg-light;
+    }
+
+    .reference-area {
+      fill: #fff;
+    }
+
+    .grid-panel {
+      &.odd {
+        rect {
+          fill: rgba(255, 255, 255, 0.05);
+        }
+      }
+    }
+
+    .force-directed-graph {
+      .edge {
+        stroke: $color-bg-light;
+      }
+    }
+
+    .number-card {
+      p {
+        color: $color-text-light;
+      }
+    }
+
+    .gauge {
+      .background-arc {
+        path {
+          fill: $color-bg-med;
+        }
+      }
+
+      .gauge-tick {
+        path {
+          stroke: $color-text-med;
+        }
+
+        text {
+          fill: $color-text-med;
+        }
+      }
+    }
+
+    .linear-gauge {
+      .background-bar {
+        path {
+          fill: $color-bg-med;
+        }
+      }
+
+      .units {
+        fill: $color-text-dark;
+      }
+    }
+
+    .timeline {
+      .brush-background {
+        fill: rgba(255, 255, 255, 0.05);
+      }
+
+      .brush {
+        .selection {
+          fill: rgba(255, 255, 255, 0.1);
+          stroke: #aaa;
+        }
+      }
+    }
+
+    .polar-chart .polar-chart-background {
+      fill: rgb(30, 34, 46);
+    }
+
+  }
+
+  .chart-legend {
+    .legend-labels {
+      background: rgba(255, 255, 255, 0.05) !important;
+    }
+
+    .legend-item {
+      &:hover {
+        color: #fff;
+      }
+    }
+
+    .legend-label {
+      &:hover {
+        color: #fff !important;
+      }
+
+      .active {
+        .legend-label-text {
+          color: #fff !important;
+        }
+      }
+    }
+
+    .scale-legend-label {
+      color: $color-text-med;
+    }
+  }
+
+  .advanced-pie-legend {
+    color: $color-text-med;
+
+    .legend-item {
+      &:hover {
+        color: #fff !important;
+      }
+    }
+  }
+
+  .number-card .number-card-label {
+    font-size: 0.8em;
+    color: $color-text-med;
+  }
+
+}

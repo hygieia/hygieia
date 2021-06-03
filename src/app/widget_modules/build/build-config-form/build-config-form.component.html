@@ -1,0 +1,58 @@
+<form [formGroup]="buildConfigForm" (ngSubmit)="submitForm()">
+  <div class="modal-body">
+    <div class="container">
+      <div class="form-group">
+        <label class="col-form-label" for="buildJob">Build Job <span class="required-text"> *</span></label>
+        <input id="buildJob" type="search" class="form-control"
+               [class.is-invalid]="((configForm.buildJob.dirty || configForm.buildJob.touched) && configForm.buildJob.errors) || searchFailed"
+               formControlName="buildJob"
+               [ngbTypeahead]="typeAheadResults"
+               [inputFormatter]="getBuildTitle"
+               [resultFormatter]="getBuildTitle"
+               placeholder="Build Job" required/>
+        <span *ngIf="searching">searching...</span>
+        <div class="invalid-feedback" *ngIf="!searchFailed || configForm.buildJob.value === ''">Please provide a build job.</div>
+        <div class="invalid-feedback" *ngIf="searchFailed && !searching && configForm.buildJob.value !== ''">Sorry, suggestions could not be loaded.</div>
+      </div>
+      <div class="form-group">
+        <label class="col-form-label" for="buildDurationThreshold">Build Duration Threshold <span class="required-text"> *</span></label>
+        <div class="input-group mb-3">
+          <input id="buildDurationThreshold" type="text" class="form-control" placeholder="Build Duration Threshold" aria-label="Build Duration Threshold"
+            aria-describedby="minutes-label" formControlName="buildDurationThreshold"
+                 [class.is-invalid]="((configForm.buildDurationThreshold.dirty || configForm.buildDurationThreshold.touched) && configForm.buildDurationThreshold.errors)"
+                 required>
+          <div class="input-group-append">
+            <span class="input-group-text" id="minutes-label">minutes</span>
+          </div>
+          <div class="invalid-feedback" *ngIf="configForm.buildDurationThreshold.value === ''">Please provide a build duration threshold.</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-form-label" for="consecutive-failure-threshold">Alert Takeover Criteria <span class="required-text"> *</span></label>
+        <div class="input-group mb-3">
+          <input id="consecutive-failure-threshold" type="text" class="form-control" placeholder="Alert Takeover Criteria" aria-label="Alert Takeover Criteria"
+            aria-describedby="consecutive-build-fails" formControlName="consecutiveFailureThreshold"
+                 [class.is-invalid]="((configForm.consecutiveFailureThreshold.dirty
+                  || configForm.consecutiveFailureThreshold.touched)
+                   && configForm.consecutiveFailureThreshold.errors)"
+                 required>
+          <div class="input-group-append">
+            <span class="input-group-text" id="consecutive-build-fails">consecutive build fails</span>
+          </div>
+          <div class="invalid-feedback" *ngIf="configForm.consecutiveFailureThreshold.value === ''">Please provide a consecutive failure threshold.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col text-center">
+          <button class="btn btn-primary" [disabled]="!buildConfigForm.valid">
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

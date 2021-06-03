@@ -1,0 +1,28 @@
+<div class="widget dark-chart-theme">
+  <div class="chart-heading">
+    {{title}}
+  </div>
+  <app-line-and-bar-chart
+    [view]="view"
+    [scheme]="colorScheme"
+    [colorSchemeLine]="lineChartScheme"
+    [results]="data[0]"
+    [lineChart]="data[1]"
+    [yAxisTickFormatting]="yAxisTickFormatting"
+    [xAxisTickFormatting]="xAxisTickFormatting"
+    [xAxisLabel]="xAxisLabel"
+    [yAxisLabel]="yAxisLabel"
+    [showXAxisLabel]="showXAxisLabel"
+    [showYAxisLabel]="showYAxisLabel"
+    [animations]='false'>
+    <ng-template #seriesTooltipTemplate let-model="model">
+      <xhtml:div class="area-tooltip-container">
+        <xhtml:div *ngFor="let tooltipItem of model" class="tooltip-item">
+          <span class="tooltip-item-color" [style.background-color]="tooltipItem.color">
+          </span>
+          {{ tooltipItem.series}}: {{ tooltipItem.value | minutes}}
+        </xhtml:div>
+      </xhtml:div>
+    </ng-template>
+  </app-line-and-bar-chart>
+</div>

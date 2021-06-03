@@ -1,0 +1,14 @@
+
+::ng-deep.layout-container {
+  background: url("../assets/img/bg-forest.jpg") no-repeat center center fixed;
+}
+
+nb-layout-header {
+  background: url("../assets/img/bg-forest.jpg") no-repeat center center fixed;
+  ::ng-deep nav {
+    box-shadow: none;
+  }
+  app-navbar {
+    width: 100%;
+  }
+}

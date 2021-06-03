@@ -1,0 +1,30 @@
+<form [formGroup]="securityConfigForm" (ngSubmit)="submitForm()">
+  <div class="modal-body">
+    <div class="container">
+      <div class="form-group">
+        <label class="col-form-label" for="sJob">Security Scan <span class="required-text"> *</span></label>
+        <input id="sJob" type="search" class="form-control"
+               [class.is-invalid]="((configForm.sJob.dirty || configForm.sJob.touched) && configForm.sJob.errors) || searchFailed"
+               formControlName="sJob"
+               [ngbTypeahead]="typeAheadResults"
+               [inputFormatter]="getSecurityJobTitle"
+               [resultFormatter]="getSecurityJobTitle"
+               placeholder="Search Security Analysis Job..." required/>
+        <span *ngIf="searching">searching...</span>
+        <div class="invalid-feedback" *ngIf="!searchFailed || configForm.sJob.value === ''">Please provide a security job.</div>
+        <div class="invalid-feedback" *ngIf="searchFailed && !searching && configForm.sJob.value !== ''">Sorry, suggestions could not be loaded.</div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col text-center">
+          <button class="btn btn-primary" [disabled]="!securityConfigForm.valid">
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

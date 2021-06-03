@@ -1,0 +1,54 @@
+<div class="widget-modal">
+    <div class="widget-modal-heading">
+        Generate<br><br>Api Tokens
+    </div>
+    <div class="widget-modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="text-center" [hidden]="apitokens">Loading Api Tokens...</div>
+                <div [hidden]="!error">
+                    {{error.data}}
+                </div>
+                <div>
+                    <div>
+                        <div class="btn-block1 row">
+                            <span class="col-md-3">
+                                <h3>Api User</h3>
+                            </span>
+                            <span class="col-md-3">
+                                <h3>Expiration Date</h3>
+                            </span>
+                            <span class="col-md-6" style="margin-bottom: 10px;"><button type="button"
+                                    class="btn btn-primary btn-wide pull-right" (click)="generateToken()">New</button>
+                            </span>
+                        </div>
+
+                        <input type="text" class="form-control" id="tokenSearch" placeholder="Filter Api Users"
+                            [(ngModel)]="tokenSearch">
+                        <div class="dash-modal-row delete-dashboard-row clearfix" style="font-size: 20px;"
+                            *ngFor="let apitoken of apitokens | generalFilter:{apiUser:tokenSearch} | generalOrderBy:'apiUser' | paginate: { itemsPerPage: 15, currentPage: p }">
+                            <div class="btn-block1 row">
+                                <span class="col-md-3">{{apitoken.apiUser}}</span>
+                                <span class="col-md-3">{{apitoken.expirationDt | date:'MM/dd/yyyy HH:mm:ss'}}</span>
+                                <div class="col-md-6">
+                                    <a (click)="deleteToken(apitoken)">
+                                        <app-dash-trash class="clickable pull-right"></app-dash-trash>
+                                    </a>
+                                    <app-dash-edit class="clickable pull-right" (click)="editToken(apitoken)"></app-dash-edit>
+                                </div>
+                            </div>
+                        </div>
+                      <div class="card-footer pb-0 pt-3">
+                        <pagination-controls totalItems=apitokens.length previousLabel=""
+                                             nextLabel="" maxSize="4" (pageChange)="p = $event"></pagination-controls>
+                      </div>
+                    </div>
+                </div>
+
+                <div class="text-center" [hidden]="!(apitokens && !apitokens.length)">
+                    No results
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,44 @@
+<div class="main-content">
+  <div class="container">
+    <h3 class="gap">{{collector}} results for Dashboard
+      <a routerLink="/collectorItem/viewer" (click)="this.openCollectorViewer(dashboardTitle)">
+        {{dashboardTitle}} <i class="fa fa-external-link" aria-hidden="true"></i>
+      </a>
+    </h3>
+      <div class="mat-header">
+        <mat-form-field>
+          <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+        </mat-form-field>
+      </div>
+
+      <div class="mat-container mat-elevation-z8">
+        <mat-table [dataSource]="dataSource" matSort>
+          <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> ID </mat-header-cell>
+            <mat-cell *matCellDef="let row" class="popupWin" (click)="openDetails(row)"> {{row.id}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="auditType">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Audit Type </mat-header-cell>
+            <mat-cell *matCellDef="let row"> {{row.auditType}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="auditTypeStatus">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Audit Type Status </mat-header-cell>
+            <mat-cell *matCellDef="let row"> {{row.auditTypeStatus}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="auditStatus">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Audit Status </mat-header-cell>
+            <mat-cell *matCellDef="let row"> {{row.auditStatus}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="timestamp">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Date </mat-header-cell>
+            <mat-cell *matCellDef="let row"> {{row.timestamp | date:'MM/dd/yyyy'}} </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;">
+          </mat-row>
+        </mat-table>
+
+        <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]"></mat-paginator>
+      </div>
+  </div>
+</div>

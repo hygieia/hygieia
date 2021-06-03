@@ -1,0 +1,36 @@
+<div>
+  <div class="widget-modal">
+    <div class="widget-modal-heading">
+      Feature Flags
+    </div>
+    <div class = "table-content">
+      <span class="col-xs-6"><button type="button" class="btn btn-dark btn-lg pull-right mb-2" (click)="addNewFeatureFlag()">New</button></span>
+      <input type="text" class="form-control" id="featureFlagsSearch" placeholder="Filter Feature Flags"
+             [(ngModel)]="featureFlagsSearch">
+      <div class="dash-modal-row delete-dashboard-row clearfix" style="font-size: 20px;" *ngFor="let item of this.featureFlags | generalFilter:{name:featureFlagsSearch} | generalOrderBy:'name' | paginate: { itemsPerPage: 5, currentPage: p }">
+        <div class="each-result">
+          <div ng-hide="!ctrl.featureFlags">
+            <a  (click)="deleteFeatureFlag(item)">
+              <app-dash-trash class="clickable pull-right"></app-dash-trash>
+            </a>
+            <app-dash-edit class="clickable pull-right" (click)="editFeatureFlag(item)"></app-dash-edit>
+          </div>
+          <h6>Name: {{item?.name}}</h6>
+          <h6>Description: {{item?.description}}</h6>
+          <div class="flags">
+            <h6>Flags: </h6>
+            <div class="table-row" *ngFor="let currFlag of flagKeys(item?.flags)">
+              <div class="individual">
+                <p>{{currFlag}}: {{item?.flags[currFlag]}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer pb-0 pt-3">
+        <pagination-controls totalItems=this.featureFlags.length previousLabel=""
+                             nextLabel="" maxSize="4" (pageChange)="p = $event"></pagination-controls>
+      </div>
+    </div>
+  </div>
+  </div>

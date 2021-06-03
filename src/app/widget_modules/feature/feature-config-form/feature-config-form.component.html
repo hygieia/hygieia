@@ -1,0 +1,81 @@
+<form [formGroup]="featureConfigForm" (ngSubmit)="submitForm()">
+  <div class="modal-body">
+      <div class="form-group row">
+        <label for="featureTool" class="col-sm-3 col-form-label">Feature Tool <span class="required-text"> *</span></label>
+        <div class="col-sm-9">
+          <select formControlName="featureTool" id="featureTool" class="form-control">
+            <option *ngFor="let currFeature of featureTool" [value]="currFeature.type">
+            {{currFeature.type}}
+          </option>
+        </select>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label" for="projectName">Project Name <span class="required-text"> *</span></label>
+        <div class="col-sm-9">
+          <input id="projectName" type="search" class="form-control"
+                 [class.is-invalid]="((configForm.projectName.dirty || configForm.projectName.touched) && configForm.projectName.errors) || searchProjectFailed"
+                 formControlName="projectName"
+                 [ngbTypeahead]="typeAheadResultsProject"
+                 [inputFormatter]="getProjectName"
+                 [resultFormatter]="getProjectName"
+                 placeholder="Project Name" required/>
+          <span *ngIf="searchingProject">searching...</span>
+          <div class="invalid-feedback" *ngIf="!searchProjectFailed || configForm.projectName.value === ''">Please provide a project name.</div>
+          <div class="invalid-feedback" *ngIf="searchProjectFailed && !searchingProject && configForm.projectName.value !== ''">Sorry, suggestions could not be loaded.</div>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label" for="teamName">Team Name <span class="required-text"> *</span></label>
+        <div class="col-sm-9">
+          <input id="teamName" type="search" class="form-control"
+                 [class.is-invalid]="((configForm.teamName.dirty || configForm.teamName.touched) && configForm.teamName.errors) || searchTeamFailed"
+                 formControlName="teamName"
+                 [ngbTypeahead]="typeAheadResultsTeam"
+                 [inputFormatter]="getTeamName"
+                 [resultFormatter]="getTeamName"
+                 placeholder="Team Name" required/>
+          <span *ngIf="searchingTeam">searching...</span>
+          <div class="invalid-feedback" *ngIf="!searchTeamFailed || configForm.teamName.value === ''">Please provide a team name.</div>
+          <div class="invalid-feedback" *ngIf="searchTeamFailed && !searchingTeam && configForm.teamName.value !== ''">Sorry, suggestions could not be loaded.</div>
+        </div>
+      </div>
+      <div class="form-group row ">
+        <label class="col-sm-3 col-form-label" for="sprintType">Sprint Type <span class="required-text"> *</span></label>
+        <div class="col-sm-9">
+          <select formControlName="sprintType" id="sprintType" class="form-control">
+            <option *ngFor="let currSprint of sprintType" [value]="currSprint.type">
+              {{currSprint.value}}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label" for="listType">List Type <span class="required-text"> *</span></label>
+        <div class="col-sm-9">
+          <select formControlName="listType" id="listType" class="form-control">
+            <option *ngFor="let currList of listType" [value]="currList.type">
+              {{currList.value}}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label" for="estimateMetricType">Metric Type <span class="required-text"> *</span></label>
+        <div class="col-sm-9">
+          <select formControlName="estimateMetricType" id="estimateMetricType" class="form-control">
+            <option *ngFor="let currEstimateMetric of estimateMetricType" [value]="currEstimateMetric.type">
+              {{currEstimateMetric.value}}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  <div class="modal-footer">
+      <div class="row">
+        <div class="col">
+          <button class="btn btn-primary" [disabled]="!featureConfigForm.valid">Save</button>
+        </div>
+      </div>
+    </div>
+</form>

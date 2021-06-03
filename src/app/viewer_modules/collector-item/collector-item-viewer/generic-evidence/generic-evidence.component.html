@@ -1,0 +1,22 @@
+<div class="main-content">
+  <div class="container">
+    <div *ngIf="collectorEvidenceDetails && collectorEvidenceDetails.length;then foundEvidence else noEvidence"></div>
+    <ng-template #foundEvidence>
+      <h3 class="gap">{{collector}} results for Dashboard
+        <a routerLink="/collectorItem/viewer" (click)="this.openCollectorViewer(dashboardTitle)">{{dashboardTitle}}</a>
+      </h3>
+      <div *ngFor="let ci of collectorEvidenceDetails">
+        <em class="fa fa-list-alt"> {{collector}} Collector Item: {{ci.id}}</em>
+        <pre>{{getJsonHtml( ci )}}</pre>
+      </div>
+
+    </ng-template>
+    <ng-template #noEvidence>
+      <h3 class="gap">No {{collector}} details found for the dashboard
+        <a routerLink="/collectorItem/viewer" (click)="openCollectorViewer(dashboardTitle)">
+          {{dashboardTitle}} <i class="fa fa-external-link" aria-hidden="true"></i>
+        </a>
+      </h3>
+    </ng-template>
+  </div>
+</div>

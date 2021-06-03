@@ -1,0 +1,16 @@
+<div>
+    <table class ="table-content">
+      <tr>
+        <th>Number</th>
+        <th>Author</th>
+        <th>Message</th>
+        <th>Time</th>
+      </tr>
+      <tr *ngFor="let item of this.data">
+        <td>{{item?.number}}</td>
+        <td>{{item?.author}}</td>
+        <td>{{item?.message}}</td>
+        <td>{{item?.time | date:'medium'}}</td>
+      </tr>
+    </table>
+</div>
