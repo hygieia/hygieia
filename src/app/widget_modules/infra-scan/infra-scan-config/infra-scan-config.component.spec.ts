@@ -5,7 +5,7 @@ import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {InfraScanModule} from '../infra-scan.module';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 
-fdescribe('InfraScanConfigComponent', () => {
+describe('InfraScanConfigComponent', () => {
   let component: InfraScanConfigComponent;
   let fixture: ComponentFixture<InfraScanConfigComponent>;
 
