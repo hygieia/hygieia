@@ -116,7 +116,7 @@ export class InfraScanWidgetComponent extends WidgetComponent implements OnInit,
     }).sort((a, b) => a.status > b.status ? -1 : 1 );
 
     this.charts[0].data = {
-      items: sData.slice(0, 5),
+      items: sData ? sData.slice(0, 5) : sData,
       clickableContent: InfraScanDetailComponent,
       clickableHeader: null
     } as IClickListData;
