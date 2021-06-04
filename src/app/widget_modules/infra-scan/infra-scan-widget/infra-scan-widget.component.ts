@@ -107,7 +107,7 @@ export class InfraScanWidgetComponent extends WidgetComponent implements OnInit,
     const sData = vulnerabilities.map(v => {
       const riskStatus = this.getRiskStatus(v);
       return {
-        title: v.vulnerabilityTitle,
+        title: v.vulnerabilityId,
         subtitles : [v.contextualizedRiskLabel],
         status: riskStatus,
         // statusText: v.vulnerabilityStatus,
@@ -116,7 +116,7 @@ export class InfraScanWidgetComponent extends WidgetComponent implements OnInit,
     }).sort((a, b) => a.status > b.status ? -1 : 1 );
 
     this.charts[0].data = {
-      items: sData,
+      items: sData.slice(0, 5),
       clickableContent: InfraScanDetailComponent,
       clickableHeader: null
     } as IClickListData;

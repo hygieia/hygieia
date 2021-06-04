@@ -4,7 +4,7 @@ import {NumberCardChartComponent} from '../../../shared/charts/number-card-chart
 
 export let INFRA_SCAN_CHARTS: IChart[] =  [
   {
-    title: 'Vulnerabilities',
+    title: 'Top 5 Vulnerabilities',
     component: ClickListComponent,
     data: [],
     xAxisLabel: '',
