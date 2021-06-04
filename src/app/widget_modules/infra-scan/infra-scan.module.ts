@@ -17,6 +17,6 @@ import { InfraScanDetailComponent } from './infra-scan-detail/infra-scan-detail.
     SharedModule,
     NgbTypeaheadModule,
   ],
-  exports: [InfraScanWidgetComponent, InfraScanConfigComponent]
+  exports: [InfraScanWidgetComponent, InfraScanConfigComponent, InfraScanDeleteComponent]
 })
 export class InfraScanModule {}

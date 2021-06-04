@@ -1,6 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { InfraScanDeleteComponent } from './infra-scan-delete.component';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {InfraScanModule} from '../infra-scan.module';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
 
 describe('InfraScanDeleteComponent', () => {
   let component: InfraScanDeleteComponent;
@@ -8,7 +11,9 @@ describe('InfraScanDeleteComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ InfraScanDeleteComponent ]
+      imports: [ InfraScanModule, HttpClientTestingModule ],
+      declarations: [],
+      providers: [ NgbActiveModal ],
     })
     .compileComponents();
   }));
