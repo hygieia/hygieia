@@ -12,6 +12,7 @@ import {BuildModule} from '../../widget_modules/build/build.module';
 import {RepoModule} from '../../widget_modules/repo/repo.module';
 import {DeployModule} from '../../widget_modules/deploy/deploy.module';
 import {FeatureModule} from '../../widget_modules/feature/feature.module';
+import {InfraScanModule} from '../../widget_modules/infra-scan/infra-scan.module';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import {FeatureModule} from '../../widget_modules/feature/feature.module';
     RepoModule,
     DeployModule,
     FeatureModule,
+    InfraScanModule,
   ],
   entryComponents: [
   ]

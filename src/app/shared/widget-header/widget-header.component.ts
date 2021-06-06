@@ -292,6 +292,7 @@ export class WidgetHeaderComponent implements OnInit {
       case 'Security Analysis': { collectorType = 'StaticSecurityScan'; break; }
       case 'Open Source': { collectorType = 'LibraryPolicy'; break; }
       case 'Test': { collectorType = 'Test'; break; }
+      case 'Infra Scan': { collectorType = 'InfrastructureScan'; break; }
       default: { collectorType = ''; break; }
     }
     return collectorType;

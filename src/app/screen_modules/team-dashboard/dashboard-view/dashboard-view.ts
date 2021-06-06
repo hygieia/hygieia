@@ -26,6 +26,9 @@ import {StaticAnalysisDeleteFormComponent} from '../../../widget_modules/static-
 import {SecurityScanDeleteFormComponent} from '../../../widget_modules/security-scan/security-scan-delete-form/security-scan-delete-form.component';
 import {OSSDeleteFormComponent} from '../../../widget_modules/opensource-scan/oss-delete-form/oss-delete-form.component';
 import {TestDeleteFormComponent} from '../../../widget_modules/test/test-delete-form/test-delete-form.component';
+import {InfraScanWidgetComponent} from '../../../widget_modules/infra-scan/infra-scan-widget/infra-scan-widget.component';
+import {InfraScanConfigComponent} from '../../../widget_modules/infra-scan/infra-scan-config/infra-scan-config.component';
+import {InfraScanDeleteComponent} from '../../../widget_modules/infra-scan/infra-scan-delete/infra-scan-delete.component';
 
 export interface IDashboardResponse {
   data: any;
@@ -77,12 +80,12 @@ export const widgetsAll = [
     configForm: [StaticAnalysisConfigFormComponent, SecurityScanConfigComponent, OSSConfigFormComponent, TestConfigFormComponent],
     deleteForm: [StaticAnalysisDeleteFormComponent, SecurityScanDeleteFormComponent, OSSDeleteFormComponent, TestDeleteFormComponent]
   },
-  /*{
-    title: ['Placeholder'],
-    component: [PlaceholderWidgetComponent],
+  {
+    title: ['Infra Scan'],
+    component: [InfraScanWidgetComponent],
     status: 'Success',
-    widgetSize: 'col-xl-2',
-    configForm: [BuildConfigFormComponent],
-    deleteForm: [BuildDeleteFormComponent]
-  },*/
+    widgetSize: 'col-xl-4',
+    configForm: [InfraScanConfigComponent],
+    deleteForm: [InfraScanDeleteComponent]
+  }
 ];

@@ -6,7 +6,7 @@
   <packaging>pom</packaging>
   <name>${project.groupId}:${project.artifactId}</name>
   <description>Hygieia UI module</description>
-  <url>https://github.com/capitalone/Hygieia/UI</url>
+  <url>https://github.com/hygieia/hygieia</url>
 
   <properties>
     <frontend-maven-plugin.skip>false</frontend-maven-plugin.skip>

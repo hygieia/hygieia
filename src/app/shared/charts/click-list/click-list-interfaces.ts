@@ -68,3 +68,7 @@ export interface IClickListItemOSS extends IClickListItem {
   components: string[];
   lastUpdated: number;
 }
+
+export interface IClickListItemInfra extends IClickListItem {
+  vulnerability: any;
+}
