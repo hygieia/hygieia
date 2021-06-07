@@ -1,0 +1,14 @@
+{
+    "/api/": {
+        "target": "http://localhost:8080",
+        "secure": true,
+        "changeOrigin": true,
+        "logLevel": "debug"
+    },
+    "/apiaudit/": {
+      "target": "http://localhost:8090",
+      "secure": true,
+      "changeOrigin": true,
+      "logLevel": "debug"
+    }
+}

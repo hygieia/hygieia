@@ -1,0 +1,79 @@
+<form [formGroup]="repoConfigForm" (ngSubmit)="submitForm()">
+  <div class="modal-body">
+    <div class="container">
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label" for="scm">Repo Type <span class="required-text"> *</span></label>
+        <div class="col-sm-9">
+          <select class="form-control" formControlName="scm" id="scm">
+            <option *ngFor="let currSCM of scm" [value]="currSCM.type">
+              {{currSCM.type}}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-form-label col-sm-3" for="url">Repo URL <span class="required-text"> *</span></label>
+        <div class="col-sm-9">
+            <input id="url" type="text" class="form-control" placeholder="Enter repo URL" aria-label="url" formControlName="url"
+                   [class.is-invalid]="((configForm.url.dirty || configForm.url.touched) && configForm.url.errors)"
+                   [ngbTypeahead]="typeAheadResults"
+                   [inputFormatter]="getRepoTitle"
+                   [resultFormatter]="getRepoTitle"
+                   required>
+            <div class="invalid-feedback" *ngIf="configForm.url.value === ''">Please provide a repo url.</div>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-form-label col-sm-3" for="branch">Branch <span class="required-text"> *</span></label>
+        <div class="col-sm-9">
+          <div class="input-group mb-3">
+            <input id="branch" type="text" class="form-control" placeholder="Enter Branch" aria-label="branch" formControlName="branch"
+                   [class.is-invalid]="((configForm.branch.dirty || configForm.branch.touched) && configForm.branch.errors)" required>
+            <div class="invalid-feedback" *ngIf="configForm.branch.value === ''">Please provide a branch.</div>
+          </div>
+        </div>
+      </div>
+
+      <h5>Credentials <small class="text-muted">Optional but required for private repos</small></h5>
+      <div class="form-group row">
+        <label class="col-form-label col-sm-3" for="userID">Username</label>
+        <div class="col-sm-9">
+            <input id="userID" type="text" class="form-control" placeholder="Enter your repo username" aria-label="userID" formControlName="userID" >
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-form-label col-sm-3" for="password">Password</label>
+        <div class="col-sm-9">
+          <div class="input-group mb-3">
+            <input id="password" type="password" class="form-control" placeholder="Enter your repo password" aria-label="password" formControlName="password" >
+          </div>
+        </div>
+      </div>
+
+      <h5>OR</h5>
+      <div class="form-group row" for="personalAccessToken">
+        <label class="col-form-label col-sm-3">Personal Access Token:</label>
+        <div class="col-sm-9">
+          <div class="input-group mb-3">
+            <input id="personalAccessToken" type="password" class="form-control" placeholder="Enter your Github personal access token" aria-label="personalAccessToken" formControlName="personalAccessToken" >
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col text-center">
+          <button class="btn btn-primary" [disabled]="!repoConfigForm.valid">
+            Save
+          </button>
+          <div id="submitFailed" *ngIf="submitFailed">No repos found with matching url and branch.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

@@ -1,0 +1,101 @@
+@import "../../../node_modules/bootstrap/scss/functions";
+@import "../../../node_modules/bootstrap/scss/variables";
+@import "../../../node_modules/bootstrap/scss/mixins/";
+
+
+// LOCAL VARIABLES FOR THIS THEME
+// ========================================
+$white: #fff;
+$chart-green: #05ac45;
+$chart-red: #d8514d;
+$bg-replacement: rgba(0, 0, 0, .75);
+
+$dash-image-path: "assets/img/";
+
+
+// DASH VARIABLES
+// ========================================
+$dash-text: #152131;
+$dash-dashboard-bg: #060610;
+$dash-dashboard-text: rgba(255, 255, 255, .8);
+$dash-dashboard-text-hover: $white;
+
+$dash-dashboard-text-light: rgba(180, 180, 180, .7);
+
+$dash-divider: rgba(255, 255, 255, .50);
+$dash-divider-light: rgba(0, 0, 0, .1);
+$dash-widget-section-highlight: rgba(255, 255, 255, .15);
+
+$dash-header-bg: $white;
+$dash-header-text: $dash-text;
+$dash-widget-heading-border: rgba(255, 255, 255, .5);
+$dash-widget-sub-heading-border: rgba(255, 255, 255, .25);
+
+$dash-modal-bg: #ececec;
+$dash-modal-heading-text: $dash-text;
+$dash-modal-heading-border: rgba(0, 0, 0, .35);
+$dash-modal-divider: rgba(0, 0, 0, .25);
+$dash-modal-icon-text: rgba(0, 0, 0, .5);
+
+$dash-detail-heading-text: $dash-text;
+$dash-detail-heading-border: rgba(0, 0, 0, .35);
+$dash-detail-icon-text: rgba(0, 0, 0, .5);
+$dash-detail-divider: rgba(0, 0, 0, .25);
+
+$dash-widget-alert-bg: #ff5d56;
+$dash-widget-alert-text: #000;
+$dash-widget-alert-heading-border: rgba(0, 0, 0, .5);
+$dash-widget-pass: rgb(0, 255, 0);
+$dash-widget-fail: rgb(255, 0, 0);
+
+$dash-status-pass: rgb(0, 204, 75);
+$dash-status-warn: rgb(255, 189, 53);
+$dash-status-fail: rgb(255, 93, 86);
+$dash-status-fail-border: #000;
+$dash-status-fail-text: #333;
+$dash-status-ignore: $gray-500;
+$dash-status-ignore-border: darken($dash-status-ignore, 30%);
+$dash-status-ignore-text: contrast($dash-status-ignore);
+
+$dash-status-alert-pass: #00a33c;
+$dash-status-alert-fail: #cc4a45;
+$dash-status-alert-ignore: $dash-status-ignore;
+$dash-status-alert-warn: $dash-status-warn;
+
+$dash-state-config-text: rgba(255, 255, 255, .6);
+$dash-state-config-text-hover: rgba(255, 255, 255, .8);
+$dash-state-config-bg: rgba(255, 255, 255, .15);
+$dash-state-config-bg-hover: rgba(255, 255, 255, .30);
+
+$ct-series-colors: $chart-green,
+$chart-red,
+$dash-status-warn,
+$white;
+$dash-chart-alt-color: #dffaff;
+$dash-chart-alt-fill: #65b7c9;
+$dash-chart-halo-color: $white;
+$dash-chart-area-opacity: 1;
+$dash-chart-point-size: 5px;
+$dash-chart-grid: $dash-divider;
+
+$state-danger-text: $dash-status-alert-fail;
+$state-success-text: $dash-status-alert-pass;
+
+
+$dash-text-standard-size: 1.1;
+$dash-text-standard-line-height: 1.2;
+
+// when widget is in alert state
+$dash-widget-alert-bg: $danger;
+$dash-widget-alert-text: #a94442;
+$dash-widget-alert-heading-border: #a94442;
+
+// widget settings
+$dash-widget-border-radius: .5em;
+$dash-widget-heading-text: $dash-dashboard-text;
+
+// widget when in configure state
+$dash-state-config-bg: $dash-widget-section-highlight;
+//$dash-state-config-bg-hover: $dash-state-config-bg;
+$dash-state-config-text: $dash-dashboard-text;
+$dash-state-config-text-hover: $dash-state-config-text;

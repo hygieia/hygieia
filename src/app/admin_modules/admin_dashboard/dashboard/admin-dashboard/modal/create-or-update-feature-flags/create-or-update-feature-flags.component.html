@@ -1,0 +1,132 @@
+<div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h4 class="modal-title">Feature Flags</h4>
+      <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div>
+      <form name="cdf" [formGroup]="featureFlagForm" class="form"  novalidate>
+        <div class="form-group">
+          <label class="col-form-label">Feature Flags Name (Required):</label>
+          <div class="col-xs-offset-3 col-xs-6">
+            <input type="text" *ngIf="this.disableName" class= "form-control" placeholder="Feature Flags Name" formControlName="name" disabled required/>
+            <input type="text" *ngIf="!this.disableName" class= "form-control" placeholder="Feature Flags Name" formControlName="name" required/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-form-label" for="description">Feature Flags Description (Required):</label>
+          <div class="col-xs-offset-3 col-xs-6">
+            <input id= "description" type="text" class= "form-control" placeholder="Feature Flags Description" aria-label="description" formControlName="description" required/>
+          </div>
+        </div>
+
+        <label class="col-form-label">Flags <ng-template #tipContent><b>Flags to auto-discover (true/false)</b></ng-template>
+          <i class="fa fa-info-circle" aria-hidden="true" [ngbTooltip]="tipContent"></i>: </label>
+          <div class="form-group">
+            <div class="col-xs-offset-3 col-xs-6">
+              agile
+              <label class="switch">
+                <input id = "agileTool" type="checkbox" name="agileTool" ng-change="reload()" formControlName="agileTool">
+                <span class="slider round"></span>
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-xs-offset-3 col-xs-6">
+              <div class="form-group checkbox">
+                artifact
+                <label class="switch">
+                  <input id = "artifact" type="checkbox" name="artifact" ng-change="reload()" formControlName="artifact">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-xs-offset-3 col-xs-6">
+              <div class="form-group checkbox">
+                build
+                <label class="switch">
+                  <input id = "build" type="checkbox" name="build" ng-change="reload()" formControlName="build">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-xs-offset-3 col-xs-6">
+              <div class="form-group checkbox">
+                codeQuality
+                <label class="switch">
+                  <input id = "codeQuality" type="checkbox" name="codeQuality" ng-change="reload()" formControlName="codeQuality">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-xs-offset-3 col-xs-6">
+              <div class="form-group checkbox">
+                deployment
+                <label class="switch">
+                  <input id = "deployment" type="checkbox" name="deployment" ng-change="reload()" formControlName="deployment">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-xs-offset-3 col-xs-6">
+              <div class="form-group checkbox">
+                libraryPolicy
+                <label class="switch">
+                  <input id = "libraryPolicy" type="checkbox" name="libraryPolicy" ng-change="reload()" formControlName="libraryPolicy">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-xs-offset-3 col-xs-6">
+              <div class="form-group checkbox">
+                scm
+                <label class="switch">
+                  <input id = "scm" type="checkbox" name="scm" ng-change="reload()" formControlName="scm">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-xs-offset-3 col-xs-6">
+              <div class="form-group checkbox">
+                staticSecurityScan
+                <label class="switch">
+                  <input id = "staticSecurityScan" type="checkbox" name="staticSecurityScan" ng-change="reload()" formControlName="staticSecurityScan">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-xs-offset-3 col-xs-6">
+              <div class="form-group checkbox">
+                test
+                <label class="switch">
+                  <input id = "test" type="checkbox" name="test" ng-change="reload()" formControlName="test">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <div class="col text-center">
+        <button class="btn btn-primary" type="button" [disabled]="!featureFlagForm.valid" (click)="submit()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>

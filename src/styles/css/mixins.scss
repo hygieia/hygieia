@@ -1,0 +1,55 @@
+@import "../../../node_modules/bootstrap/scss/functions";
+@import "../../../node_modules/bootstrap/scss/variables";
+@import "../../../node_modules/bootstrap/scss/mixins/";
+
+@mixin border-radius($radius: 5px) {
+  @include border-top-radius($radius);
+  @include border-bottom-radius($radius);
+}
+
+@mixin box-shadow ($string) {
+  -webkit-box-shadow: $string;
+  -moz-box-shadow: $string;
+  box-shadow: $string;
+}
+
+// TEXT
+// ========================================
+@mixin text($font-size, $line-height:$font-size) {
+  font-size: $font-size * 1em;
+}
+
+@mixin text-standard {
+  @include text($dash-text-standard-size, $dash-text-standard-line-height);
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@mixin text-standard-lg {
+  @include text(1.7, 2.25);
+}
+
+@mixin text-standard-date {
+  @include text(1.2, 2);
+  color: #aaa;
+}
+
+@mixin text-lg {
+  @include text(1.7, 2.25);
+}
+
+@mixin text-1x {
+  @include text(1, 2);
+}
+
+@mixin text-2x {
+  @include text(2, 3.5);
+}
+
+@mixin text-2x-bold {
+  @include text(2.5, 3);
+  font-weight: bold;
+  vertical-align: middle;
+}

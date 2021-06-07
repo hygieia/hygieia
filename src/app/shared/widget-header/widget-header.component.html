@@ -1,0 +1,30 @@
+<div class="widget-container-small">
+<div class="widget" [ngClass]="{'configure': this.widgetComponent?.state === widgetState().CONFIGURE}">
+  <div class="widget-heading">
+      <span class="tab-text text-muted font-weight-bold">{{title? title.toUpperCase() : title}}</span>
+      <span *ngIf="this.widgetComponent?.state === widgetState().READY">
+        <span class="widget-settings-icon clickable pull-right fa fa-lightbulb-o" *ngIf="auditStatus"
+              [ngClass]="{'audit-ok': auditStatus==='OK', 'audit-fail': auditStatus==='FAIL'}" (click)="openAudit()"></span>
+        <span class="widget-settings-icon clickable pull-right fa fa-trash" *ngIf="isOwnerOrAdmin"
+              (click)="openDeleteConfirm()"></span>
+        <span class="widget-settings-icon clickable pull-right fa fa-cog" *ngIf="isOwnerOrAdmin"
+              (click)="openConfig()"></span>
+        <span class="widget-settings-icon pull-right last-updated">{{lastUpdated}}</span>
+      </span>
+    </div>
+    <div class="widget-body">
+      <div *ngIf="isOwnerOrAdmin; else noPermission" class="widget-body-config clickable" (click)="openConfig()">
+        <div>Configure <div class="fa fa-cog fa-lg"></div></div>
+      </div>
+      <ng-template #noPermission>
+        <div class="widget-body-config">
+          <div>Owner Modification Only</div>
+        </div>
+      </ng-template>
+      <div class="widget-body-main">
+      <!-- widget content -->
+        <ng-template appWidget></ng-template>
+      </div>
+    </div>
+  </div>
+</div>

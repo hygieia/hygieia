@@ -1,0 +1,147 @@
+@import '../../../styles/css/dashvariables.scss';
+@import '../../../styles/css/mixins.scss';
+
+.widget-container-small {
+  font-size: 13px;
+  line-height: normal;
+}
+
+// class to add pointer icon
+.clickable {
+  cursor: pointer;
+}
+
+// WIDGET
+// ========================================
+.widget {
+  padding: 2.5em 3em;
+  @include border-radius($dash-widget-border-radius);
+
+  .widget {
+    margin-bottom: 2em;
+  }
+
+  // heading in a widget
+  .widget-heading {
+    letter-spacing: .1em;
+    padding-bottom: .5em;
+    margin-bottom: 1em;
+
+    @include text-lg;
+    @include border-top-radius($dash-widget-border-radius);
+
+    // the cog icon to open the config modal
+    .widget-settings-icon {
+      @include transition(color 300ms ease);
+
+      &:hover {
+        color: $dash-dashboard-text-hover;
+      }
+    }
+    .widget-settings-icon.fa-lightbulb-o.audit-ok {
+      color: $dash-widget-pass;
+    }
+    .widget-settings-icon.fa-lightbulb-o.audit-fail {
+      color: $dash-widget-fail;
+    }
+    .widget-settings-icon.last-updated {
+      font-size: 0.6em;
+      color: $dash-dashboard-text-light;
+    }
+    .widget-settings-icon.fa-lightbulb-o:hover {
+      color: $dash-dashboard-text-hover;
+    }
+
+
+    .last-updated {
+      font-size: 1.1em;
+    }
+  }
+
+  .widget-heading-performance {
+    border-bottom: 0px solid $dash-widget-heading-border;
+    color: $dash-widget-heading-text;
+    letter-spacing: .1em;
+    padding-bottom: .5em;
+    margin-bottom: 1.75em;
+
+    @include text-lg;
+    @include border-top-radius($dash-widget-border-radius);
+
+    .widget-settings-icon {
+      @include transition(color 300ms ease);
+
+      &:hover {
+        color: $dash-dashboard-text-hover;
+      }
+    }
+
+    .last-updated {
+      font-size: 1.1em;
+    }
+  }
+
+  .widget-body .widget {
+    padding: 0;
+
+    .widget-heading {
+      border-bottom-color: $dash-widget-sub-heading-border;
+      @include text-standard;
+      text-transform: uppercase;
+    }
+  }
+
+  .widget-body-config {
+    background: $dash-widget-section-highlight;
+    border: .2em $dash-state-config-text;
+    border-radius: 1em;
+    color: $dash-state-config-text;
+    display: none;
+    font-size: 2em;
+    //line-height: 2.4em;
+    margin: 0.5em 0;
+    padding: 0.5em;
+    text-align: center;
+
+    .fa {
+      border: 2px solid $dash-state-config-text;
+      //margin-bottom: .75em;
+      padding: .45em .4em;
+      @include border-radius(50%);
+
+      @include transition(border-color 300ms linear);
+    }
+
+    @include transition(#{"all 300ms linear"});
+
+    &:hover {
+      background-color: $dash-state-config-bg-hover;
+      border-color: $dash-state-config-text-hover;
+      color: $dash-state-config-text-hover;
+    }
+  }
+
+  &.configure {
+    .widget-settings-icon {
+      display: none;
+    }
+
+    .widget-body-main {
+      display: none;
+    }
+
+    .widget-body-config {
+      display: block;
+
+      &:hover {
+        background-color: $dash-state-config-bg-hover;
+        border-color: $dash-state-config-text-hover;
+        color: $dash-state-config-text-hover;
+
+        .fa {
+          border-color: $dash-state-config-text-hover;
+        }
+      }
+    }
+  }
+}

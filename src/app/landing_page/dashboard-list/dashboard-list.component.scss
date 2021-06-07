@@ -1,0 +1,110 @@
+@import "node_modules/bootstrap/scss/functions";
+@import "node_modules/bootstrap/scss/variables";
+@import "node_modules/bootstrap/scss/mixins/breakpoints";
+
+@mixin box-shadow ($v1, $v2, $v3, $v4, $v5){
+  -moz-box-shadow: $v1 $v2 $v3 $v4 $v5;
+  -webkit-box-shadow: $v1 $v2 $v3 $v4 $v5;
+  box-shadow: $v1 $v2 $v3 $v4 $v5;
+}
+
+@mixin font-style {
+  font-family: "Optimist", Optimist, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 1.5;
+  color: lightgray;
+}
+.gap {
+  margin-top: 3.5rem;
+}
+
+.jumbotron {
+  background:linear-gradient(to right, transparent, black);
+  display: flex; justify-content: space-between;
+  box-shadow: 0px 1px 2px 1px rgb(0, 0, 0.5);
+  margin-bottom: 2em;
+  padding: 0 2rem;
+  .container {
+    background-color: transparent;
+  }
+  h1 {
+    z-index: -1;
+    color: lightgray;
+    font-family: 'Optimist', Optimist, Arial, sans-serif;
+    font-weight: 400;
+    font-size: 36px;
+  }
+  p {
+    font-family: 'Optimist', Optimist, Arial, sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+    color: dimgrey;
+  }
+}
+
+#dSearch {
+  background: #353535;
+  box-shadow: 8px 16px 6px rgba(0, 0, 0, 0.2);
+  color: lightgray;
+}
+
+input#dSearch::placeholder {
+  @include font-style
+}
+
+#createBtn {
+  line-height: 2;
+  color: lightgray;
+  background: #353535;
+}
+
+nb-card-header {
+  @include font-style
+}
+nb-list-item {
+  color: dimgrey;
+  .d-name {
+    margin-left: 1em;
+    @include font-style
+  }
+}
+
+nb-list-item.user-dl {
+  display: flex;
+  justify-content: space-between;
+}
+
+nb-list-item:hover {
+  cursor: pointer;
+  line-height: 2;
+  font-size: 19px;
+  color: #3366ff;
+  box-shadow: 2px 0px 8px 2px grey;
+  .d-name {
+    font-size: 19px;
+  }
+}
+nb-card {
+  background-color: transparent;
+  box-shadow: 0px 2px 24px 2px rgb(0, 0, 0.1);
+}
+
+h4 {
+  color: lightgray;
+  font-family: 'Optimist', Optimist, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 28px;
+}
+
+@include media-breakpoint-down(sm) {
+  .jumbotron h1, p {
+    display: none;
+  }
+
+  #createBtn {
+    .new-dbd-lbl {
+      display: none;
+    }
+  }
+}

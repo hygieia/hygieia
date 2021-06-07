@@ -1,0 +1,36 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h4 class="modal-title">Audit Result</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body ml-2">
+    <div class="table-responsive" *ngIf="auditResultsArr && auditResultsArr.length > 0">
+      <table class="table table-sm" *ngFor="let auditResult of auditResultsArr">
+        <tbody>
+        <tr>
+          <th class="col-form-label">Type</th>
+          <td>{{auditResult?.auditType}}</td>
+        </tr>
+        <tr>
+          <th class="col-form-label">Status</th>
+          <td>{{auditResult?.auditStatus === 'NA' ? auditResult?.auditTypeStatus : auditResult?.auditStatus}}</td>
+        </tr>
+        <tr>
+          <th class="col-form-label">Reason</th>
+          <td style="word-break: break-all">{{auditResult?.auditDetails}}</td>
+        </tr>
+        <tr>
+          <th class="col-form-label">Last Audited</th>
+          <td>{{toDate(auditResult?.timestamp)}}</td>
+        </tr>
+        <tr>
+          <th class="col-form-label">Url</th>
+          <td><a href="{{auditResult?.url}}" target="_blank" rel="noopener noreferrer">{{auditResult?.url}}</a></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

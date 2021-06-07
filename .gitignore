@@ -1,48 +1,47 @@
-.DS_Store
-*.class
+# See http://help.github.com/ignore-files/ for more about ignoring files.
 
-#java certificates
-*.crt
+# compiled output
+/dist
+/tmp
+/out-tsc
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+# dependencies
+/node
+/node_modules
 
-# Package Files #
-*.war
-*.ear
+# profiling files
+chrome-profiler-events.json
+speed-measure-plugin.json
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-
-*.iws
+# IDEs and editors
+/.idea
 *.iml
-*.ipr
-out
-build
-.gradle
-gradle.properties
-.idea
-common/src/querydsl
-common/src/generated
-core/src/generated
-*.log
-target
-UI/node
-UI/src/app/local-testing.js
-*.releaseBackup
-docker-compose.override.yml
-logs
 .project
-.settings
-.pmd
-.pmdruleset.xml
 .classpath
-.README.md.html
-
-# Eclipse specific ignore settings
+.c9/
+*.launch
 .settings/
-.project
-.pmdruleset.xml
-.pmd
-.classpath
-application.properties
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+/target
+testem.log
+/typings
+
+# System Files
+.DS_Store
+Thumbs.db
