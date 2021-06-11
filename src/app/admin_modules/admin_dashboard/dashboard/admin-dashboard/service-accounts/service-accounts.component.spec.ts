@@ -42,12 +42,13 @@ class MockModalRef {
   componentInstance = {
     id: undefined,
     serviceAccountForm: undefined,
-    fileNames: undefined
+    fileNames: undefined,
+    title: undefined
   }
   result: Promise<any> = new Promise((resolve, reject) => resolve(true));
 }
 
-fdescribe('ServiceAccountsComponent', () => {
+describe('ServiceAccountsComponent', () => {
   let component: ServiceAccountsComponent;
   let fixture: ComponentFixture<ServiceAccountsComponent>;
   let modal: NgbModal;
@@ -90,6 +91,27 @@ fdescribe('ServiceAccountsComponent', () => {
   it('should create account', () => {
     spyOn(modal, 'open').and.returnValue(new MockModalRef());
     component.createAccount();
+    expect(modal.open).toHaveBeenCalled();
+  })
+
+  it('should update account', () => {
+    const mock = {
+      id: "id",
+      serviceAccountName: "name",
+      fileName: "fileName"
+    }
+    spyOn(modal, 'open').and.returnValue(new MockModalRef());
+    component.updateAccount(mock);
+    expect(modal.open).toHaveBeenCalled();
+  })
+
+  it('should delete account', () => {
+    const mock = {
+      serviceAccountName: "name",
+      id: "id"
+    }
+    spyOn(modal, 'open').and.returnValue(new MockModalRef());
+    component.deleteServiceAccount(mock);
     expect(modal.open).toHaveBeenCalled();
   })
 });
