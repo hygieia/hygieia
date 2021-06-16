@@ -12,6 +12,7 @@ import { NgxUIModule } from '@swimlane/ngx-ui';
 import { TimeAgoPipe } from 'time-ago-pipe';
 
 import { CaponeTemplateComponent } from '../screen_modules/team-dashboard/capone-template/capone-template.component';
+import { StechProdTemplateComponent } from '../screen_modules/product-dashboard/stech-template/stech-prod-template.component';
 import { ChartDirective } from './charts/chart.directive';
 import { ChartComponent } from './charts/chart/chart.component';
 import { ClickListComponent } from './charts/click-list/click-list.component';
@@ -116,6 +117,7 @@ import { RefreshModalComponent } from './modals/refresh-modal/refresh-modal.comp
     PieGridChartComponent,
     PlaceholderWidgetComponent,
     RotationChartComponent,
+    StechProdTemplateComponent,
     TemplatesDirective,
     TwoByTwoLayoutComponent,
     EngineWagonLayoutChartComponent,
@@ -162,6 +164,7 @@ import { RefreshModalComponent } from './modals/refresh-modal/refresh-modal.comp
     PieGridChartComponent,
     PlaceholderWidgetComponent,
     PlainTextChartComponent,
+    StechProdTemplateComponent,
     TwoByOneLayoutComponent,
     XByOneLayoutComponent,
     RotationChartComponent,
@@ -216,6 +219,7 @@ import { RefreshModalComponent } from './modals/refresh-modal/refresh-modal.comp
     PieGridChartComponent,
     ReactiveFormsModule,
     RotationChartComponent,
+    StechProdTemplateComponent,
     TemplatesDirective,
     TwoByTwoLayoutComponent,
     EngineWagonLayoutChartComponent,
