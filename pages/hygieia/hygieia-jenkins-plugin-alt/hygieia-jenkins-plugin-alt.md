@@ -38,4 +38,4 @@ deployment metrics:
 HygieiaJenkinsPluginAlt should be injected within Jenkins pipeline, here
 is the code snippet for reference:
 
-![Image](https://hygieia.github.io/Hygieia/media/images/hygieia-jenkins-plugin-alt.png)
+![Image](https://hygieia.github.io/hygieia/media/images/hygieia-jenkins-plugin-alt.png)
