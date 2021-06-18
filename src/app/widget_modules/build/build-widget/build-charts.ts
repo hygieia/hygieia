@@ -12,7 +12,7 @@ export let BUILD_CHARTS: IChart[] = [
     title: "Builds Per Day",
     component: LineChartComponent,
     data: {
-      areaChart: false, // Default true
+      areaChart: true, // Default true
       detailComponent: BuildDetailComponent,
       dataPoints: [
         {
@@ -70,7 +70,7 @@ export let OLD_BUILD_CHARTS: IChart[] = [
     title: 'Builds Per Day',
     component: LineChartComponent,
     data: {
-      areaChart: true,
+      areaChart: false,
       detailComponent: BuildDetailComponent,
       dataPoints: [
       {

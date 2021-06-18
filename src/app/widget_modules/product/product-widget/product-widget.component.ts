@@ -159,11 +159,12 @@ export class ProductWidgetComponent
   ): void {
     const teamStages = Object.keys(teamResponse.stages) as string[];
 
-    this.productPipelineService.addLastRequest({
-      id: teamResponse.collectorItemId,
-      type: "pipeline-commit",
-      timestamp: nowTimestamp,
-    });
+    // // Is it really needed? Need to check and then use
+    // this.productPipelineService.addLastRequest({
+    //   id: teamResponse.collectorItemId,
+    //   type: "pipeline-commit",
+    //   timestamp: nowTimestamp,
+    // });
     let prodCommits: IProdCommitData[] = new Array<IProdCommitData>();
     teamResponse.stages[teamResponse.prodStage].forEach(
       (commit: IStageEntry) => {

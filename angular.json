@@ -24,7 +24,7 @@
                  "moment-timezone",
                  "mousetrap",
                  "rxjs/internal/operators/map",
-		 "time-ago-pipe",
+
                  "util"
             ],
             "outputPath": "dist/hygieia-ui",

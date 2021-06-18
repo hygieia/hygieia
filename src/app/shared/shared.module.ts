@@ -138,7 +138,8 @@ import { RefreshModalComponent } from './modals/refresh-modal/refresh-modal.comp
     GeneralFilterPipe,
     GeneralOrderByPipe,
     XByOneLayoutComponent,
-    RefreshModalComponent
+    RefreshModalComponent,
+    TimeAgoPipe
   ],
   entryComponents: [
     GeneralDeleteComponent,
