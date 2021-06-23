@@ -8,7 +8,7 @@ import { ChartDirective } from "../../charts/chart.directive";
 import { ChartComponent } from "../../charts/chart/chart.component";
 import { LineChartComponent } from "../../charts/line-chart/line-chart.component";
 import { LayoutComponent } from "../layout/layout.component";
-import { OneByTwoLayoutTableChartComponent } from "./one-by-two-layout-table-chart.component";
+import { EngineWagonLayoutChartComponent } from "./engine-wagon-layout-chart.component";
 
 // Work around for dynamic component loading testing
 @NgModule({
@@ -18,15 +18,15 @@ import { OneByTwoLayoutTableChartComponent } from "./one-by-two-layout-table-cha
 })
 class TestModule {}
 
-describe("OneByTwoLayoutTableChartComponent", () => {
-  let component: OneByTwoLayoutTableChartComponent;
-  let fixture: ComponentFixture<OneByTwoLayoutTableChartComponent>;
+describe("EngineWagonLayoutChartComponent", () => {
+  let component: EngineWagonLayoutChartComponent;
+  let fixture: ComponentFixture<EngineWagonLayoutChartComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
         LayoutComponent,
-        OneByTwoLayoutTableChartComponent,
+        EngineWagonLayoutChartComponent,
         ChartDirective,
       ],
       imports: [TestModule, NgxChartsModule, BrowserAnimationsModule],
@@ -34,7 +34,7 @@ describe("OneByTwoLayoutTableChartComponent", () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(OneByTwoLayoutTableChartComponent);
+    fixture = TestBed.createComponent(EngineWagonLayoutChartComponent);
     component = fixture.componentInstance;
   });
 
