@@ -107,10 +107,21 @@ describe('DashboardViewComponent', () => {
       status: 401
     }));
     spyOn(activeRoute.snapshot.paramMap, 'get').and.returnValue('trial');
-    const routeSpy = spyOn(router, 'navigate').and.callThrough();
+    const routeSpy = spyOn(router, 'navigate').and.callFake(() => {});
     component.ngOnInit();
     expect(routeSpy).toHaveBeenCalledWith(['/user/login']);
   })
+
+  it('should load dashboard', () => {
+    spyOn(service, 'getDashboard').and.returnValue(of({}))
+    spyOn(service, 'loadDashboardAudits').and.callFake(() => true);
+    spyOn(service, 'subscribeDashboardRefresh').and.callFake(() => true);
+    const spy = spyOn(service.dashboardSubject, 'next').and.callFake(() => true);
+    component.ngOnInit();
+    expect(spy).toHaveBeenCalledWith({});
+  })
+
+
 });
 
 
