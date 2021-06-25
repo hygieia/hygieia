@@ -9,7 +9,7 @@ import {GeneralOrderByPipe} from '../../../../../shared/pipes/order-by.pipe';
 import {NgxPaginationModule} from 'ngx-pagination';
 import { of, throwError } from 'rxjs';
 
-fdescribe('ManageAdminsComponent', () => {
+describe('ManageAdminsComponent', () => {
   let component: ManageAdminsComponent;
   let fixture: ComponentFixture<ManageAdminsComponent>;
   let userService: UserDataService;
