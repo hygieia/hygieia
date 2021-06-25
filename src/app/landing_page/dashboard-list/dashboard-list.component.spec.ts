@@ -77,4 +77,19 @@ describe('DashboardListComponent', () => {
     component.setDashboardType('Team');
     expect(component.dashboardType).toBe('Team');
   });
+  it('should navigate to audits', () => {
+    const spy = spyOn(router, 'navigate').and.callFake(() => true);
+    component.goToAuditReport()
+    expect(spy).toHaveBeenCalledWith(['/audits/nfrr']);
+  });
+  it('should navigate to dashboard view', () => {
+    const spy = spyOn(router, 'navigate').and.callFake(() => true);
+    component.navigateToTeamDashboard('foo')
+    expect(spy).toHaveBeenCalledWith(['/dashboard/dashboardView']);
+  });
+  it('should navigate tobuild viewer', () => {
+    const spy = spyOn(router, 'navigate').and.callFake(() => true);
+    component.goToBuildViewer();
+    expect(spy).toHaveBeenCalledWith(['/build/viewer']);
+  });
 });
