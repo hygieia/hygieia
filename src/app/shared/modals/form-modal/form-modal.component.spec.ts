@@ -6,7 +6,7 @@ import { Directive } from '@angular/core';
 @Directive({selector: '[appFormModal]'})
 class FormModalStubsDirective { }
 
-fdescribe('FormModalComponent', () => {
+describe('FormModalComponent', () => {
   let component: FormModalComponent;
   let fixture: ComponentFixture<FormModalComponent>;
   let activeModal: NgbActiveModal;
