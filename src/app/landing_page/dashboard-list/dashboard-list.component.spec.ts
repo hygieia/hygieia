@@ -92,4 +92,9 @@ describe('DashboardListComponent', () => {
     component.goToBuildViewer();
     expect(spy).toHaveBeenCalledWith(['/build/viewer']);
   });
+  it('should navigate tobuild viewer', () => {
+    const spy = spyOn(router, 'navigate').and.callFake(() => true);
+    component.goToCollectorItemMetrics();
+    expect(spy).toHaveBeenCalledWith(['/collectorItem/viewer']);
+  });
 });
