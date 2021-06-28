@@ -3,8 +3,11 @@ import { TestBed } from '@angular/core/testing';
 import { SsoService } from './sso.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing' ;
+import { HttpClient } from '@angular/common/http';
+import { of } from 'rxjs';
 
 let service: SsoService;
+let http: HttpClient;
 
 describe('SsoService', () => {
   beforeEach(() => TestBed.configureTestingModule({
@@ -14,6 +17,7 @@ describe('SsoService', () => {
 
   beforeEach(() => {
     service = TestBed.get(SsoService);
+    http = TestBed.get(HttpClient);
   });
 
   it('should be created', () => {
@@ -34,5 +38,17 @@ describe('SsoService', () => {
   it('should check localhost auth code', () => {
     service.authCode = 'not undefined';
     expect(service.obtainAuthCodeLocalHost()).toBe('no code');
+  });
+
+  it('should say no code if code is not undefined', () => {
+    service.authCode = 'auth code';
+    const expected = service.obtainAuthCode();
+    expect(expected).toEqual('no code');
+  });
+
+  it('should call ssologin', () => {
+    const spy = spyOn(http, 'post').and.callThrough();
+    service.callSsoLogin();
+    expect(spy).toHaveBeenCalled();
   });
 });
