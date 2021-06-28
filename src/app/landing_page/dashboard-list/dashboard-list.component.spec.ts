@@ -97,4 +97,26 @@ describe('DashboardListComponent', () => {
     component.goToCollectorItemMetrics();
     expect(spy).toHaveBeenCalledWith(['/collectorItem/viewer']);
   });
+  it('should return dashboard name', () => {
+    const dbNAme = component.dashboardName({
+      id: '1',
+      type: 'db',
+      title: 'title',
+      configurationItemBusAppName: 'appName',
+      configurationItemBusServName: 'busServName'
+    });
+    expect(dbNAme).toEqual('title - appName - busServName');
+  });
+  it('should change tab', () => {
+    component.tabChange({
+      tabId: 'Team'
+    });
+    expect(component.dashboardType).toBe('Team');
+  });
+  it('should delete dashboard', () => {
+    component.deleteDashboard({}, new Event('foo'));
+  });
+  it('should edit dashboard', () => {
+    component.editDashboard({}, new Event('foo'));
+  });
 });
