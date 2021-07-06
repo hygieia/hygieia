@@ -79,12 +79,12 @@ describe('DashboardListComponent', () => {
   });
   it('should navigate to audits', () => {
     const spy = spyOn(router, 'navigate').and.callFake(() => true);
-    component.goToAuditReport()
+    component.goToAuditReport();
     expect(spy).toHaveBeenCalledWith(['/audits/nfrr']);
   });
   it('should navigate to dashboard view', () => {
     const spy = spyOn(router, 'navigate').and.callFake(() => true);
-    component.navigateToTeamDashboard('foo')
+    component.navigateToTeamDashboard('foo');
     expect(spy).toHaveBeenCalledWith(['/dashboard/dashboardView']);
   });
   it('should navigate tobuild viewer', () => {

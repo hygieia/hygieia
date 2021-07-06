@@ -1,4 +1,4 @@
-import { TestBed, inject, ComponentFixture } from '@angular/core/testing';
+import { TestBed, inject } from '@angular/core/testing';
 import { PaginationWrapperService } from './pagination-wrapper.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { HttpClientModule } from '@angular/common/http';
@@ -6,7 +6,6 @@ import { DashboardDataService } from './dashboard-data.service';
 import { AdminDashboardService } from './dashboard.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MockDashboardDataService } from './mock-dashboard-data.service';
-import { before } from 'lodash';
 import { of } from 'rxjs';
 
 describe('PaginationWrapperService', () => {
@@ -59,15 +58,15 @@ describe('PaginationWrapperService', () => {
 
     it('should set dashboards', () => {
       const mock = { id: 'foo'};
-      service.setDashboards(mock)
+      service.setDashboards(mock);
       expect(service.dashboards).toEqual(mock);
     });
   });
 
 
   it('should be created', () => {
-    const service: PaginationWrapperService = TestBed.get(PaginationWrapperService);
-    expect(service).toBeTruthy();
+    const pageService: PaginationWrapperService = TestBed.get(PaginationWrapperService);
+    expect(pageService).toBeTruthy();
   });
 
 
@@ -76,9 +75,9 @@ describe('PaginationWrapperService', () => {
       [HttpTestingController, PaginationWrapperService],
       (
         httpMock: HttpTestingController,
-        service: PaginationWrapperService
+        pageService: PaginationWrapperService
       ) => {
-        service.calculateTotalItems('').subscribe((data: any) => {
+        pageService.calculateTotalItems('').subscribe((data: any) => {
           expect(data).toBeTruthy();
         });
 
@@ -103,9 +102,9 @@ describe('PaginationWrapperService', () => {
     inject(
       [ PaginationWrapperService],
       (
-        service: PaginationWrapperService
+        pageService: PaginationWrapperService
       ) => {
-        service.pageChangeHandler(1, '').subscribe((data: any) => {
+        pageService.pageChangeHandler(1, '').subscribe((data: any) => {
           expect(data).toBeTruthy();
         });
       }
@@ -118,9 +117,9 @@ describe('PaginationWrapperService', () => {
       [HttpTestingController, PaginationWrapperService],
       (
         httpMock: HttpTestingController,
-        service: PaginationWrapperService
+        pageService: PaginationWrapperService
       ) => {
-        service.pageChangeHandlerForMyDash(1, '').subscribe((data: any) => {
+        pageService.pageChangeHandlerForMyDash(1, '').subscribe((data: any) => {
           expect(data).toBeTruthy();
         });
       }

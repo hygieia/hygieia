@@ -4,7 +4,6 @@ import { SsoService } from './sso.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing' ;
 import { HttpClient } from '@angular/common/http';
-import { of } from 'rxjs';
 
 let service: SsoService;
 let http: HttpClient;

@@ -14,7 +14,6 @@ import {of} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {DeleteConfirmModalComponent} from '../modals/delete-confirm-modal/delete-confirm-modal.component';
 import { DashboardService } from '../dashboard.service';
-import { forEach } from 'lodash';
 
 describe('WidgetHeaderComponent', () => {
   let component: WidgetHeaderComponent;
@@ -83,14 +82,14 @@ describe('WidgetHeaderComponent', () => {
   it('should find last updated time', () => {
     spyOn(service, 'dashboardConfig$').and.returnValue(of({}));
     component.findLastUpdatedTime('foobar');
-  })
+  });
 
   it('should return the right collector type', () => {
-    const title = ['Feature', 'Build', 'Deploy', 'Repo', 'Static Code Analysis','Security Analysis', 'Open Source', 'Test', 'default']
-    const expected = ['CodeQuality', 'Build', 'Deployment', 'SCM', 'CodeQuality', 'StaticSecurityScan', 'LibraryPolicy', 'Test', '']
+    const title = ['Feature', 'Build', 'Deploy', 'Repo', 'Static Code Analysis', 'Security Analysis', 'Open Source', 'Test', 'default'];
+    const expected = ['CodeQuality', 'Build', 'Deployment', 'SCM', 'CodeQuality', 'StaticSecurityScan', 'LibraryPolicy', 'Test', ''];
     let index = 0;
-    title.forEach((title) => {
-      expect(component.getCollectorType(title)).toEqual(expected[index]);
+    title.forEach((titleIterator) => {
+      expect(component.getCollectorType(titleIterator)).toEqual(expected[index]);
       index++;
     });
   });
@@ -100,7 +99,7 @@ describe('WidgetHeaderComponent', () => {
       componentInstance: {
         auditResults: undefined
       }
-    })
+    });
     component.openAudit();
   });
 });

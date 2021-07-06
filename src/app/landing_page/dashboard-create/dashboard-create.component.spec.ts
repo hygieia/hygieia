@@ -8,19 +8,15 @@ import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {RouterTestingModule} from '@angular/router/testing';
 import {NgbTypeaheadModule} from '@ng-bootstrap/ng-bootstrap';
 import { DashboardService } from 'src/app/shared/dashboard.service';
-import { Observable, of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 import { Router } from '@angular/router';
 
 class MockDialogRef {
-  close: () => {}
+  close: () => {};
 }
 
 class MockRouter {
   navigate() {}
-}
-
-class MockDashboardService {
-  createDashboard: () => {}
 }
 
 describe('DashboardCreateComponent', () => {
@@ -59,12 +55,12 @@ describe('DashboardCreateComponent', () => {
     component.createErrorMsg = 'message';
     component.clear();
     expect(component.createErrorMsg).toEqual('');
-  })
+  });
 
   it('should create dashboard', () => {
-    const spy = spyOn(service, 'createDashboard').and.returnValue(of({}))
+    const spy = spyOn(service, 'createDashboard').and.returnValue(of({}));
     spyOn(component, 'close').and.callFake(() => {});
     component.createDashboard();
     expect(spy).toHaveBeenCalled();
-  })
+  });
 });

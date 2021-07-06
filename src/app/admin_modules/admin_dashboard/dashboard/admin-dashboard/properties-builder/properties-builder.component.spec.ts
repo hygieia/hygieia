@@ -14,11 +14,13 @@ import {NgModule} from '@angular/core';
 import {NgbModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {NgxPaginationModule} from 'ngx-pagination';
 import { of } from 'rxjs';
-import { CreateOrUpdateApiAuditPropertiesComponent } from '../modal/create-or-update-api-audit-properties/create-or-update-api-audit-properties.component';
+import {
+  CreateOrUpdateApiAuditPropertiesComponent
+} from '../modal/create-or-update-api-audit-properties/create-or-update-api-audit-properties.component';
 
 @NgModule({
   declarations: [PropertiesBuilderComponent, DashEditComponent, DashTrashComponent, GeneralFilterPipe,
-    GeneralOrderByPipe, CreateOrUpdateApiPropertiesComponent, CreateOrUpdateApiAuditPropertiesComponent, 
+    GeneralOrderByPipe, CreateOrUpdateApiPropertiesComponent, CreateOrUpdateApiAuditPropertiesComponent,
     GeneralDeleteComponent],
   providers: [UserDataService, NgbModal],
   imports: [FormsModule, CommonModule, ReactiveFormsModule, NgbModule, HttpClientTestingModule, NgxPaginationModule],

@@ -1,8 +1,8 @@
-import { HttpClient } from "@angular/common/http";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
-import { async, TestBed } from "@angular/core/testing";
-import { of } from "rxjs";
-import { NfrrService } from "./nfrr.service"
+import { HttpClient } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { async, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
+import { NfrrService } from './nfrr.service';
 
 describe('NfrrService', () => {
     let service: NfrrService;
@@ -11,13 +11,13 @@ describe('NfrrService', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             imports: [ HttpClientTestingModule ]
-        })
-    }))
+        });
+    }));
 
     beforeEach(() => {
         service = TestBed.get(NfrrService);
         http = TestBed.get(HttpClient);
-    })
+    });
 
     it('should be created', () => {
         expect(service).toBeTruthy();
@@ -40,4 +40,4 @@ describe('NfrrService', () => {
         service.getTotalElementsCount('foo');
         expect(spy).toHaveBeenCalled();
     });
-})
+});

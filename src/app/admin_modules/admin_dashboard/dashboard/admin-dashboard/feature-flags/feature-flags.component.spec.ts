@@ -12,7 +12,6 @@ import {GeneralDeleteComponent} from '../../../../../shared/modals/general-delet
 import {GeneralFilterPipe} from '../../../../../shared/pipes/filter.pipe';
 import {GeneralOrderByPipe} from '../../../../../shared/pipes/order-by.pipe';
 import {NgxPaginationModule} from 'ngx-pagination';
-import { Subject } from 'rxjs';
 
 /*@NgModule({
   declarations: [FeatureFlagsComponent, DashEditComponent, DashTrashComponent, AdminDeleteComponent],
@@ -27,13 +26,13 @@ import { Subject } from 'rxjs';
 class TestModule { }*/
 
 class MockModalRef {
-  componentInstance = { 
+  componentInstance = {
     id: undefined,
     name: undefined,
     description: undefined,
     flags: undefined,
     title: undefined
-  }
+  };
   result: Promise<boolean> = new Promise((res, rej) => res(true));
 }
 
@@ -96,16 +95,16 @@ describe('FeatureFlagsComponent', () => {
       id: 'id',
       name: 'name',
       description: 'desc',
-      flags: flags
-    }
+      flags: 'flags'
+    };
     spyOn(modal, 'open').and.returnValue(new MockModalRef());
     component.editFeatureFlag(mockFlagObj);
     expect(modal.open).toHaveBeenCalled();
-  })
+  });
 
   it('should delete feature flag', () => {
     spyOn(modal, 'open').and.returnValue(new MockModalRef());
     component.deleteFeatureFlag({name: 'name', id: 'id'});
     expect(modal.open).toHaveBeenCalled();
-  })
+  });
 });

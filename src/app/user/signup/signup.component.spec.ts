@@ -67,7 +67,7 @@ describe('SignupComponent', () => {
   });
 
   it('should throw error on auth fail', () => {
-    const spy = spyOn(authService, 'register').and.returnValue(throwError('foo'));
+    spyOn(authService, 'register').and.returnValue(throwError('foo'));
     const obj = { value : {
       username : 'test',
       passwordGroup: { password: 'test' }

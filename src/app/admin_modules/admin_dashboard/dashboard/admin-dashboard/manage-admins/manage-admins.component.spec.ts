@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed, tick } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
 import { ManageAdminsComponent } from './manage-admins.component';
 import { UserDataService } from '../../../services/user-data.service';
@@ -35,30 +35,30 @@ describe('ManageAdminsComponent', () => {
   });
 
   it('should not load users if error on promote user to admin', () => {
-    spyOn(userService, 'promoteUserToAdmin').and.returnValue(throwError("error"))
+    spyOn(userService, 'promoteUserToAdmin').and.returnValue(throwError('error'));
     const func = spyOn(component, 'loadUser').and.callThrough();
-    component.promoteUserToAdmin({})
+    component.promoteUserToAdmin({});
     expect(func).toHaveBeenCalledTimes(0);
-  })
+  });
 
   it('should promote user to admin and load users', () => {
     spyOn(userService, 'promoteUserToAdmin').and.returnValue(of({}));
     const func = spyOn(component, 'loadUser');
-    component.promoteUserToAdmin({})
+    component.promoteUserToAdmin({});
     expect(func).toHaveBeenCalled();
-  })
+  });
 
   it('should demote user from admin', () => {
     spyOn(userService, 'demoteUserFromAdmin').and.returnValue(of({}));
     const func = spyOn(component, 'loadUser');
-    component.demoteUserFromAdmin({})
+    component.demoteUserFromAdmin({});
     expect(func).toHaveBeenCalled();
-  })
+  });
 
   it('should not load users if error on demote user from admin', () => {
-    spyOn(userService, 'demoteUserFromAdmin').and.returnValue(throwError("error"));
+    spyOn(userService, 'demoteUserFromAdmin').and.returnValue(throwError('error'));
     const func = spyOn(component, 'loadUser');
-    component.demoteUserFromAdmin({})
+    component.demoteUserFromAdmin({});
     expect(func).toHaveBeenCalledTimes(0);
-  })
+  });
 });

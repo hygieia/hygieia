@@ -67,6 +67,5 @@ describe('TestDeleteFormComponent', () => {
   it('should submit delete form', () => {
     component.functionalTests.controls = [];
     component.submitDeleteForm();
-  })
-
+  });
 });

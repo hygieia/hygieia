@@ -4,7 +4,7 @@ import { DashEditComponent } from '../../../../../shared/dash-edit/dash-edit.com
 import { DashTrashComponent } from '../../../../../shared/dash-trash/dash-trash.component';
 import { UserDataService } from '../../../services/user-data.service';
 import {NgbActiveModal, NgbModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import {ServiceAccountsComponent} from './service-accounts.component';
@@ -35,7 +35,9 @@ import { of } from 'rxjs';
 class TestModule { }*/
 
 class MockUserDataService {
-  getServiceAccounts() { return of() }
+  getServiceAccounts() {
+    return of();
+  }
 }
 
 class MockModalRef {
@@ -44,7 +46,7 @@ class MockModalRef {
     serviceAccountForm: undefined,
     fileNames: undefined,
     title: undefined
-  }
+  };
   result: Promise<any> = new Promise((resolve, reject) => resolve(true));
 }
 
@@ -63,7 +65,7 @@ describe('ServiceAccountsComponent', () => {
         GeneralFilterPipe,
         GeneralOrderByPipe,
         GeneralDeleteComponent],
-      providers: [ 
+      providers: [
         { provide: UserDataService, useClass: MockUserDataService },
         FormBuilder, NgbActiveModal
       ],
@@ -92,26 +94,26 @@ describe('ServiceAccountsComponent', () => {
     spyOn(modal, 'open').and.returnValue(new MockModalRef());
     component.createAccount();
     expect(modal.open).toHaveBeenCalled();
-  })
+  });
 
   it('should update account', () => {
     const mock = {
-      id: "id",
-      serviceAccountName: "name",
-      fileName: "fileName"
-    }
+      id: 'id',
+      serviceAccountName: 'name',
+      fileName: 'filename'
+    };
     spyOn(modal, 'open').and.returnValue(new MockModalRef());
     component.updateAccount(mock);
     expect(modal.open).toHaveBeenCalled();
-  })
+  });
 
   it('should delete account', () => {
     const mock = {
-      serviceAccountName: "name",
-      id: "id"
-    }
+      serviceAccountName: 'name',
+      id: 'id'
+    };
     spyOn(modal, 'open').and.returnValue(new MockModalRef());
     component.deleteServiceAccount(mock);
     expect(modal.open).toHaveBeenCalled();
-  })
+  });
 });

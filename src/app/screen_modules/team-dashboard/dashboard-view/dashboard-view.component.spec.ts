@@ -10,7 +10,6 @@ import { CaponeTemplateComponent } from '../capone-template/capone-template.comp
 import { DashboardViewComponent } from './dashboard-view.component';
 import { DasboardNavbarComponent } from 'src/app/core/dasboard-navbar/dasboard-navbar.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import { HttpErrorResponse } from '@angular/common/http';
 import { DashboardService } from 'src/app/shared/dashboard.service';
 import { of, throwError } from 'rxjs';
 
@@ -46,10 +45,6 @@ class TestDeleteFormComponent {}
   ]
 })
 class TestModule { }
-
-class MockRouter {
-  navigate: () => {};
-}
 
 describe('DashboardViewComponent', () => {
   let component: DashboardViewComponent;
@@ -97,10 +92,10 @@ describe('DashboardViewComponent', () => {
   });
 
   it('should navigate to collector view', () => {
-    const spy = spyOn(router, 'navigate')
+    const spy = spyOn(router, 'navigate');
     component.openCollectorViewer();
     expect(spy).toHaveBeenCalled();
-  })
+  });
 
   it('should redirect user to login on dashboard service error', () => {
     spyOn(service, 'getDashboard').and.returnValue(throwError({
@@ -110,16 +105,16 @@ describe('DashboardViewComponent', () => {
     const routeSpy = spyOn(router, 'navigate').and.callFake(() => {});
     component.ngOnInit();
     expect(routeSpy).toHaveBeenCalledWith(['/user/login']);
-  })
+  });
 
   it('should load dashboard', () => {
-    spyOn(service, 'getDashboard').and.returnValue(of({}))
+    spyOn(service, 'getDashboard').and.returnValue(of({}));
     spyOn(service, 'loadDashboardAudits').and.callFake(() => true);
     spyOn(service, 'subscribeDashboardRefresh').and.callFake(() => true);
     const spy = spyOn(service.dashboardSubject, 'next').and.callFake(() => true);
     component.ngOnInit();
     expect(spy).toHaveBeenCalledWith({});
-  })
+  });
 
 
 });

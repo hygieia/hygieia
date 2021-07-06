@@ -367,7 +367,7 @@ describe('DashboardDataService', () => {
 
     it('should do nothing on error', () => {
       const spy = spyOn(http, 'post').and.returnValue(throwError('error'));
-      const ret = service.create({});
+      service.create({});
       expect(spy).toHaveBeenCalled();
     });
 
@@ -394,6 +394,6 @@ describe('DashboardDataService', () => {
       service.generalConfigSave({});
       expect(spy).toHaveBeenCalled();
     });
-  })
+  });
 
 });

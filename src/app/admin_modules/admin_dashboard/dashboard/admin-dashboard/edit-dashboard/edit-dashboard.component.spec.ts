@@ -66,7 +66,7 @@ describe('EditDashboardComponent', () => {
   });
 
   it('should process dashboard error', () => {
-    const spy = spyOn(page, 'processDashboardError')
+    const spy = spyOn(page, 'processDashboardError');
     component.processDashboardError({});
     expect(spy).toHaveBeenCalled();
   });
