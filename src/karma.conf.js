@@ -21,9 +21,9 @@ module.exports = function (config) {
       fixWebpackSourcePaths: true,
       thresholds: {
         statements: 79.56, // NOTE: hard limit set to account for infra scan feature being merged in prior to unit test bump PR
-        lines: 70,
+        lines: 78.99,
         branches: 50,
-        functions: 78.99
+        functions: 73.04
       }
     },
     reporters: ['progress', 'kjhtml'],
