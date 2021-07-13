@@ -31,7 +31,6 @@ export class SecurityScanService {
   }
 
   refreshProject(refreshLink: string) {
-    // Build env specific refreshLink for eratocode collector refresh.... Checkmarx functionality to be built next sprint PI16 Sprint 4
     const prunedRefreshLink = refreshLink.split('.com')[1];
     const hostname = window.location.hostname;
     if (hostname.includes('localhost')) {
