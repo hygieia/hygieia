@@ -31,8 +31,15 @@ export class SecurityScanService {
   }
 
   refreshProject(refreshLink: string) {
-    const prunedRefreshLink = refreshLink.split('.com')[1];
-    const hostname = window.location.hostname;
+    let prunedRefreshLink = '';
+    let hostname = '';
+
+    // If refresh link is undefined the get request will fail and return "Something went wrong while refreshing data"
+    if (refreshLink) {
+      prunedRefreshLink = refreshLink.split('.com')[1];
+      hostname = window.location.hostname;
+    }
+
     if (hostname.includes('localhost')) {
       return this.http.get(`http://${hostname}:8081${prunedRefreshLink}`);
     } else {
