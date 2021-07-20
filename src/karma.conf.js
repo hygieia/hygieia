@@ -20,8 +20,8 @@ module.exports = function (config) {
       reports: ['html', 'lcovonly', 'text-summary'],
       fixWebpackSourcePaths: true,
       thresholds: {
-        statements: 79.56, // NOTE: hard limit set to account for infra scan feature being merged in prior to unit test bump PR
-        lines: 78.99,
+        statements: 79.46, // NOTE: hard limit set to account for infra scan feature being merged in prior to unit test bump PR
+        lines: 78.88,
         branches: 50,
         functions: 73.04
       }
