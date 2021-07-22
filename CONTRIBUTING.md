@@ -8,6 +8,7 @@ In order to ensure the highest standards of security and code quality, we have l
 
 * PR's should fix one issue or add/update one feature. If you would like to update multiple things, please separate into individual PRs so that they can be adequately reviewed.
 * PR titles should be succint and descriptive. The "description" field should specify which issue/feature the PR relates to, give an overview of changes made, and highlight any specific lines or files that may need extra review.
+* If applicable, please include screenshots or videos of new features to assist in review.
 
 ## Testing and Linting
 * Please run ```ng lint``` and address any errors before requesting review.
