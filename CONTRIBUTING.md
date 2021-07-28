@@ -13,13 +13,8 @@ In order to ensure the highest standards of security and code quality, we have l
 ## Testing and Linting
 * Please run ```ng lint``` and address any errors before requesting review.
 * We use [Karma](https://karma-runner.github.io/latest/index.html) for testing. Before opening your PR, please add unit tests for any new features and update any existing ones necessary for the test suite to pass.
-* Testing thresholds must be met as follows:
-  * Branch Coverage: 80%
-  * Line Coverage: 80%
-  * Statement Coverage: 80%
-  * Function Coverage: 80%
+* Minmum 80% coverage should be met for branch, line, statement, and function coverage
   *  ** As of now, the existing codebase does not meet these standards. We are working on getting to this level of coverage, and you can do you part by making sure any new code has at least 80% coverage **
-
 ## To raise an issue/ report a bug
 * Please use github issues and include a detailed description, including screenshots if applicable.
 
