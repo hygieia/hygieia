@@ -18,9 +18,5 @@ In order to ensure the highest standards of security and code quality, we have l
 ## To raise an issue/ report a bug
 * Please use github issues and include a detailed description, including screenshots if applicable.
 
-## Contact us
-* The Hygieia development team is happy to assist with any issues related to contributing to this project. Please contact us at ** INSERT EMAIL HERE **
-
-
 Thanks again for your help, and we look forward to seeing the great new features you contribute to the Hygieia ecosystem!
 
