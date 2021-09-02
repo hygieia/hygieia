@@ -98,13 +98,16 @@ export class InfraScanWidgetComponent extends WidgetComponent implements OnInit,
   }
 
   private loadCharts(result: InfraScan[]) {
-    // const vulnerabilities = result && result[0] && result[0].vulnerabilities;
     const vulnerabilities =  [];
-    result.forEach(scan => {
-        scan.vulnerabilities.forEach(vuln => {
-          vulnerabilities.push(vuln);
+
+    if ( result && result.length > 0 ) {
+      result.forEach(scan => {
+          scan.vulnerabilities.forEach(vuln => {
+            vulnerabilities.push(vuln);
+          });
         });
-      });
+    }
+
 
 
     if (!vulnerabilities || vulnerabilities.length === 0) {
