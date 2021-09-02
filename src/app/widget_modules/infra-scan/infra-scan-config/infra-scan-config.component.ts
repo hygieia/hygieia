@@ -1,10 +1,10 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
-import {Observable, of} from 'rxjs';
-import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {CollectorService} from '../../../shared/collector.service';
-import {DashboardService} from '../../../shared/dashboard.service';
-import {catchError, debounceTime, distinctUntilChanged, map, switchMap, take, tap} from 'rxjs/operators';
+import { Component, Input, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { Observable, of } from 'rxjs';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { CollectorService } from '../../../shared/collector.service';
+import { DashboardService } from '../../../shared/dashboard.service';
+import { catchError, debounceTime, distinctUntilChanged, map, switchMap, take, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-infra-scan-config',
@@ -24,8 +24,8 @@ export class InfraScanConfigComponent implements OnInit {
     if (!collectorItem) {
       return '';
     }
-    const description = (collectorItem.description as string);
-    return collectorItem.collector.name + ' : ' + description;
+    const businessComponent = (collectorItem.businessComponent as string);
+    return collectorItem.collector.name + ' : ' + businessComponent;
   }
 
   @Input()
@@ -111,10 +111,10 @@ export class InfraScanConfigComponent implements OnInit {
         }
         return of(null);
       })).subscribe(collectorData => {
-      if (collectorData) {
-        this.infraScanConfigForm.get('iJob').setValue(collectorData);
-      }
-    });
+        if (collectorData) {
+          this.infraScanConfigForm.get('iJob').setValue(collectorData);
+        }
+      });
   }
 
   private getDashboardComponent() {

@@ -9,7 +9,7 @@
                [ngbTypeahead]="typeAheadResults"
                [inputFormatter]="getInfraScanJobTitle"
                [resultFormatter]="getInfraScanJobTitle"
-               placeholder="Infrastructure Scan Job..." required/>
+               placeholder="Infrastructure Scan Job..." required disabled/>
         <span *ngIf="searching">searching...</span>
         <div class="invalid-feedback" *ngIf="!searchFailed || configForm.iJob.value === ''">Please provide a infrastructure scan job.</div>
         <div class="invalid-feedback" *ngIf="searchFailed && !searching && configForm.iJob.value !== ''">Sorry, suggestions could not be loaded.</div>
