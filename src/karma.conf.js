@@ -20,10 +20,10 @@ module.exports = function (config) {
       reports: ['html', 'lcovonly', 'text-summary'],
       fixWebpackSourcePaths: true,
       thresholds: {
-        statements: 79.46, // NOTE: hard limit set to account for infra scan feature being merged in prior to unit test bump PR
-        lines: 78.88,
+        statements: 79.00, // NOTE: hard limit set to account for infra scan feature being merged in prior to unit test bump PR
+        lines: 78.00,
         branches: 50,
-        functions: 73.04
+        functions: 73.00
       }
     },
     reporters: ['progress', 'kjhtml'],
