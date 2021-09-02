@@ -23,7 +23,7 @@ module.exports = function (config) {
         statements: 79.00, // NOTE: hard limit set to account for infra scan feature being merged in prior to unit test bump PR
         lines: 78.00,
         branches: 50,
-        functions: 73.00
+        functions: 72.00
       }
     },
     reporters: ['progress', 'kjhtml'],
