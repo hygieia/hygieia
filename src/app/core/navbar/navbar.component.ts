@@ -52,7 +52,7 @@ export class NavbarComponent implements OnInit {
   }
 
   openGithub() {
-    window.open('https://hygieia.github.io/Hygieia/getting_started.html', '_blank');
+    window.open('https://hygieia.github.io/hygieia/getting_started.html', '_blank');
   }
   get customPowerIcon(): NbIconConfig {
     return {
