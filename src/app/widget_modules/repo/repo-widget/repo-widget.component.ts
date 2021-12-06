@@ -116,7 +116,7 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
     }
     this.populateDropdown(result);
     const collectorItemId = result[index].id;
-    let commits = this.repoService.fetchCommits(this.params.componentId, this.params.numberOfDays).pipe(catchError(err => of(err)))
+    let commits = this.repoService.fetchCommits(this.params.componentId, collectorItemId, this.params.numberOfDays).pipe(catchError(err => of(err)))
 
     let pulls = this.repoService.fetchPullRequests(this.params.componentId, collectorItemId).pipe(catchError(err => of(err)))
 

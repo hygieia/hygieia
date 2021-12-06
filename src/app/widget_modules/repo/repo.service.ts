@@ -14,7 +14,7 @@ export class RepoService {
 
   repoIssueDetailRoute = '/api/ui-widget/gitrequests/type/issue';
   repoPullDetailRoute = '/api/ui-widget/gitrequests/type/pull';
-  repoCommitDetailRoute = '/api/commit/';
+  repoCommitDetailRoute = '/api/ui-widget/commit/';
   collectorItemsEndpoint = '/api/collector/item/component';
 
 
@@ -28,9 +28,9 @@ export class RepoService {
     return { params : new HttpParams().set('type', 'SCM')};
   }
 
-  private getCommitParams(componentId: string, numberOfDays: number) {
+  private getCommitParams(componentId: string, collectorItemId: string, numberOfDays: number) {
     return {
-      params: new HttpParams().set('componentId', componentId).set('numberOfDays', numberOfDays.toFixed(0))
+      params: new HttpParams().set('componentId', componentId).set('collectorItemId', collectorItemId).set('numberOfDays', numberOfDays.toFixed(0))
     };
   }
 
@@ -39,8 +39,8 @@ export class RepoService {
       map(response => response.result));
   }
 
-  fetchCommits(componentId: string, numberOfDays: number): Observable<IRepo[]> {
-    return this.http.get<IRepoResponse>(this.repoCommitDetailRoute, this.getCommitParams(componentId, numberOfDays)).pipe(
+  fetchCommits(componentId: string, collectorItemId: string, numberOfDays: number): Observable<IRepo[]> {
+    return this.http.get<IRepoResponse>(this.repoCommitDetailRoute, this.getCommitParams(componentId, collectorItemId, numberOfDays)).pipe(
       map(response => response.result));
   }
 
