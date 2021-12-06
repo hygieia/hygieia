@@ -66,7 +66,8 @@ export class CollectorItemService {
     } else if ( collector.match('LibraryPolicy') ) {
       return this.getLibraryPolicyResult(componentId);
     } else if ( collector.match('SCM') ) {
-      return this.getSCMResult(componentId);
+      return
+      // return this.getSCMResult(componentId);
     } else if ( collector.match('StaticSecurityScan') ) {
       return this.getStaticSecurityScanResult(componentId);
     } else if ( collector.match('Test') ) {
@@ -124,11 +125,11 @@ export class CollectorItemService {
     return of([]);
   }
 
-  private getSCMResult(componentId: string) {
-    if ( !componentId ) { return of([]); }
-    const commits = this.repoService.fetchCommits(componentId, this.NUM_OF_DAYS);
-    const pullRequests = this.repoService.fetchPullRequests(componentId, this.NUM_OF_DAYS);
-    const issues = this.repoService.fetchIssues(componentId, this.NUM_OF_DAYS);
-    return zip(commits, pullRequests, issues).pipe(map(res => [].concat(...res)));
-  }
+  // private getSCMResult(componentId: string) {
+  //   if ( !componentId ) { return of([]); }
+  //   const commits = this.repoService.fetchCommits(componentId, this.NUM_OF_DAYS);
+  //   const pullRequests = this.repoService.fetchPullRequests(componentId, this.NUM_OF_DAYS);
+  //   const issues = this.repoService.fetchIssues(componentId, this.NUM_OF_DAYS);
+  //   return zip(commits, pullRequests, issues).pipe(map(res => [].concat(...res)));
+  // }
 }

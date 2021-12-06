@@ -6,6 +6,7 @@ import {
   OnDestroy,
   OnInit,
   ViewChild,
+  ElementRef
 } from '@angular/core';
 import {forkJoin, of, Subscription} from 'rxjs';
 import {catchError, distinctUntilChanged, startWith, switchMap} from 'rxjs/operators';
@@ -22,6 +23,7 @@ import { groupBy } from 'lodash';
 // tslint:disable-next-line:max-line-length
 import {OneByTwoLayoutTableChartComponent} from '../../../shared/layouts/one-by-two-layout-table-chart/one-by-two-layout-table-chart.component';
 import {WidgetState} from '../../../shared/widget-header/widget-state';
+import { ICollItem } from 'src/app/viewer_modules/collector-item/interfaces';
 
 @Component({
   selector: 'app-repo-widget',
@@ -31,9 +33,14 @@ import {WidgetState} from '../../../shared/widget-header/widget-state';
 export class RepoWidgetComponent extends WidgetComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly REPO_PER_DAY_TIME_RANGE = 14;
   private readonly TOTAL_REPO_COUNTS_TIME_RANGES = [7, 14];
+  public hasData;
   // Reference to the subscription used to refresh the widget
   private intervalRefreshSubscription: Subscription;
   private params;
+  public allCollectorItems;
+  private selectedIndex: number;
+  public hasRefreshLink: boolean;
+
 
   @ViewChild(LayoutDirective, {static: false}) childLayoutTag: LayoutDirective;
 
@@ -79,26 +86,79 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
           componentId: widgetConfig.componentId,
           numberOfDays: 14
         };
-        return forkJoin(
-          this.repoService.fetchCommits(this.params.componentId, this.params.numberOfDays).pipe(catchError(err => of(err))),
-          this.repoService.fetchPullRequests(this.params.componentId, this.params.numberOfDays).pipe(catchError(err => of(err))),
-          this.repoService.fetchIssues(this.params.componentId, this.params.numberOfDays).pipe(catchError(err => of(err))));
-      })).subscribe(([commits, pulls, issues]) => {
-        if ((commits || pulls || issues) && (commits.length > 0 || pulls.length > 0 || issues.length > 0)) {
-          this.hasData = true;
-          this.loadCharts(commits, pulls, issues);
+        return this.repoService.fetchSCMCollectorItems(this.params.componentId).pipe(catchError(err => of(err)));
+      })).subscribe(result => {
+        this.hasData = (result && result.length > 0);
+        if (this.hasData) {
+          this.loadCharts(result, 0);
         } else {
-          this.hasData = false;
           this.setDefaultIfNoData();
         }
-    });
+        super.loadComponent(this.childLayoutTag);
+      })
+    //   .subscribe(([commits, pulls, issues]) => {
+    //     if ((commits || pulls || issues) && (commits.length > 0 || pulls.length > 0 || issues.length > 0)) {
+    //       this.hasData = true;
+    //       this.loadCharts(commits, pulls, issues);
+    //     } else {
+    //       this.hasData = false;
+    //       this.setDefaultIfNoData();
+    //     }
+    // });
   }
 
-  loadCharts(commits: IRepo[], pulls: IRepo[], issues: IRepo[]) {
-    this.generateRepoPerDay(commits, pulls, issues);
-    this.generateTotalRepoCounts(commits, pulls, issues);
-    super.loadComponent(this.childLayoutTag);
+  loadCharts(result: ICollItem[], index){
+    this.selectedIndex = index;
+    if ( result[this.selectedIndex].refreshLink ) {
+      this.hasRefreshLink = true;
+    } else {
+      this.hasRefreshLink = false;
+    }
+    this.populateDropdown(result);
+    const collectorItemId = result[index].id;
+    let commits = this.repoService.fetchCommits(this.params.componentId, this.params.numberOfDays).pipe(catchError(err => of(err)))
+
+    let pulls = this.repoService.fetchPullRequests(this.params.componentId, collectorItemId).pipe(catchError(err => of(err)))
+
+    let issues = this.repoService.fetchIssues(this.params.componentId, collectorItemId).pipe(catchError(err => of(err)));
+
+    forkJoin([commits, pulls, issues]).subscribe(results => {
+      console.log(results[0])
+      console.log(results[1]);
+      console.log(results[2])
+    });
+
+    // .subscribe(([commits, pulls, issues]) => {
+    //     if ((commits || pulls || issues) && (commits.length > 0 || pulls.length > 0 || issues.length > 0)) {
+    //       this.hasData = true;
+    //       this.loadCharts(commits, pulls, issues);
+    //     } else {
+    //       this.hasData = false;
+    //       this.setDefaultIfNoData();
+    //     }
+    // });
+    console.log(collectorItemId)
+
   }
+
+  populateDropdown(collectorItems) {
+    collectorItems.map(item => {
+      if (item.repoUrl) {
+        let repoUrlSplitArr = item.repoUrl.split('/')
+        item.repoUrl = repoUrlSplitArr[repoUrlSplitArr.length-1];
+      }else{
+        item.repoUrl = item.options.url
+      }
+    });
+    this.allCollectorItems = collectorItems;
+
+  }
+
+  // loadCharts(commits: IRepo[], pulls: IRepo[], issues: IRepo[]) {
+  //   this.generateRepoPerDay(commits, pulls, issues);
+  //   this.generateTotalRepoCounts(commits, pulls, issues);
+  //   super.loadComponent(this.childLayoutTag);
+  // }
 
   // Unsubscribe from the widget refresh observable, which stops widget updating.
   stopRefreshInterval() {
