@@ -96,15 +96,6 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
         }
         super.loadComponent(this.childLayoutTag);
       });
-    //   .subscribe(([commits, pulls, issues]) => {
-    //     if ((commits || pulls || issues) && (commits.length > 0 || pulls.length > 0 || issues.length > 0)) {
-    //       this.hasData = true;
-    //       this.loadCharts(commits, pulls, issues);
-    //     } else {
-    //       this.hasData = false;
-    //       this.setDefaultIfNoData();
-    //     }
-    // });
   }
 
   loadCharts(result: ICollItem[], index) {
