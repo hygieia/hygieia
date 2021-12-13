@@ -30,7 +30,8 @@ export class RepoService {
 
   private getCommitParams(componentId: string, collectorItemId: string, numberOfDays: number) {
     return {
-      params: new HttpParams().set('componentId', componentId).set('collectorItemId', collectorItemId).set('numberOfDays', numberOfDays.toFixed(0))
+      params: new HttpParams().set('componentId', componentId)
+      .set('collectorItemId', collectorItemId).set('numberOfDays', numberOfDays.toFixed(0))
     };
   }
 

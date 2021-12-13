@@ -34,6 +34,7 @@ export interface ICollItem {
   collectorId: string;
   lastUpdated: number;
   refreshLink?: string;
+  repoUrl?: string;
   options: {
     dashboardId: string;
     jobName: string;

@@ -6,7 +6,6 @@ import {
   OnDestroy,
   OnInit,
   ViewChild,
-  ElementRef
 } from '@angular/core';
 import {forkJoin, of, Subscription} from 'rxjs';
 import {catchError, distinctUntilChanged, startWith, switchMap} from 'rxjs/operators';
@@ -90,12 +89,13 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
       })).subscribe(result => {
         this.hasData = (result && result.length > 0);
         if (this.hasData) {
+          this.populateDropdown(result);
           this.loadCharts(result, 0);
         } else {
           this.setDefaultIfNoData();
         }
         super.loadComponent(this.childLayoutTag);
-      })
+      });
     //   .subscribe(([commits, pulls, issues]) => {
     //     if ((commits || pulls || issues) && (commits.length > 0 || pulls.length > 0 || issues.length > 0)) {
     //       this.hasData = true;
@@ -107,58 +107,47 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
     // });
   }
 
-  loadCharts(result: ICollItem[], index){
+  loadCharts(result: ICollItem[], index) {
     this.selectedIndex = index;
     if ( result[this.selectedIndex].refreshLink ) {
       this.hasRefreshLink = true;
     } else {
       this.hasRefreshLink = false;
     }
-    this.populateDropdown(result);
     const collectorItemId = result[index].id;
-    let commits = this.repoService.fetchCommits(this.params.componentId, collectorItemId, this.params.numberOfDays).pipe(catchError(err => of(err)))
+    const componentId = this.params.componentId;
+    const commits = this.repoService.fetchCommits(componentId, collectorItemId, this.params.numberOfDays).pipe(catchError(err => of(err)));
 
-    let pulls = this.repoService.fetchPullRequests(this.params.componentId, collectorItemId).pipe(catchError(err => of(err)))
+    const pulls = this.repoService.fetchPullRequests(componentId, collectorItemId).pipe(catchError(err => of(err)));
 
-    let issues = this.repoService.fetchIssues(this.params.componentId, collectorItemId).pipe(catchError(err => of(err)));
+    const issues = this.repoService.fetchIssues(componentId, collectorItemId).pipe(catchError(err => of(err)));
 
     forkJoin([commits, pulls, issues]).subscribe(results => {
-      console.log(results[0])
-      console.log(results[1]);
-      console.log(results[2])
+      const commitArray = results[0];
+      const pullArray = results[1];
+      const issueArray = results[2];
+
+      this.generateRepoPerDay(commitArray, pullArray, issueArray);
+      this.generateTotalRepoCounts(commitArray, pullArray, issueArray);
+      super.loadComponent(this.childLayoutTag);
     });
-
-    // .subscribe(([commits, pulls, issues]) => {
-    //     if ((commits || pulls || issues) && (commits.length > 0 || pulls.length > 0 || issues.length > 0)) {
-    //       this.hasData = true;
-    //       this.loadCharts(commits, pulls, issues);
-    //     } else {
-    //       this.hasData = false;
-    //       this.setDefaultIfNoData();
-    //     }
-    // });
-    console.log(collectorItemId)
-
   }
 
   populateDropdown(collectorItems) {
     collectorItems.map(item => {
       if (item.repoUrl) {
-        let repoUrlSplitArr = item.repoUrl.split('/')
-        item.repoUrl = repoUrlSplitArr[repoUrlSplitArr.length-1];
-      }else{
-        item.repoUrl = item.options.url
+        const repoUrlSplitArr = item.repoUrl.split('/');
+        item.repoUrl = repoUrlSplitArr[repoUrlSplitArr.length - 1];
+      } else if(item.options.url){
+        const repoUrlSplitArr = item.options.url.split('/');
+        item.repoUrl = repoUrlSplitArr[repoUrlSplitArr.length - 1];
+      }else {
+        item.repoUrl = 'URL Not found.'
       }
     });
     this.allCollectorItems = collectorItems;
 
   }
-
-  // loadCharts(commits: IRepo[], pulls: IRepo[], issues: IRepo[]) {
-  //   this.generateRepoPerDay(commits, pulls, issues);
-  //   this.generateTotalRepoCounts(commits, pulls, issues);
-  //   super.loadComponent(this.childLayoutTag);
-  // }
 
   // Unsubscribe from the widget refresh observable, which stops widget updating.
   stopRefreshInterval() {
@@ -178,6 +167,13 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
     const allCommits = commitResult.filter(repo => this.checkRepoAfterDate(repo.scmCommitTimestamp, startDate));
     const allPulls = pullResult.filter(repo => this.checkRepoAfterDate(repo.timestamp, startDate));
     const allIssues = issueResult.filter(repo => this.checkRepoAfterDate(repo.timestamp, startDate));
+
+    // console.log(`Filtered Commits:`)
+    // console.log(allCommits)
+    // console.log(`Filtered Pulls:`)
+    // console.log(allPulls)
+    // console.log(`Filtered Issues:`)
+    // console.log(allIssues)
 
     this.charts[0].data.dataPoints[0].series = this.collectDataArray(this.collectRepoCommits(allCommits));
     this.charts[0].data.dataPoints[1].series = this.collectDataArray(this.collectRepoPulls(allPulls));

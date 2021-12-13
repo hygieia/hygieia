@@ -7,11 +7,12 @@ import { RouterModule } from '@angular/router';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { DashboardService } from 'src/app/shared/dashboard.service';
 import { SharedModule } from 'src/app/shared/shared.module';
-import {RepoWidgetComponent} from './repo-widget.component';
-import {RepoService} from '../repo.service';
-import {Observable, of} from 'rxjs';
-import {IRepo} from '../interfaces';
-import {RepoModule} from '../repo.module';
+import { RepoWidgetComponent } from './repo-widget.component';
+import { RepoService } from '../repo.service';
+import { Observable, of } from 'rxjs';
+import { IRepo } from '../interfaces';
+import { RepoModule } from '../repo.module';
+import { ICollItem } from 'src/app/viewer_modules/collector-item/interfaces';
 
 class MockRepoService {
   mockRepoData = {
@@ -31,6 +32,37 @@ class MockRepoService {
       }
     ]
   };
+
+  mockCollItemArray : ICollItem[] = [{
+        collectorId: '12345',
+        description: 'identity-profile-preferences-master',
+        enabled: true,
+        errorCount: 0,
+        errors: [],
+        id: '5cba241bb0dd131c5f3eeb34',
+        lastUpdated: 1619112848762,
+        options: {
+          dashboardId: 'id',
+          jobName: 'jobName',
+          jobUrl: 'joburl.com',
+          instanceUrl: 'instanceurl.com',
+          branch: 'development',
+          url: 'url.com',
+          repoName: 'identitygithub.com',
+          path: '/test',
+          artifactName: 'artifactTest',
+          password: 'pswrd',
+          personalAccessToken: 'token'
+        },
+        pushed: false,
+        refreshLink: '/security/refresh?projectName=identity-profile-preferences-master',
+        niceName: 'nicename',
+        environment: 'env'
+  }]
+
+  fetchSCMCollectorItems(): Observable<ICollItem[]> {
+    return of(this.mockCollItemArray)
+  }
 
   fetchCommits(): Observable<IRepo[]> {
     return of(this.mockRepoData.result);
@@ -76,6 +108,61 @@ describe('RepoWidgetComponent', () => {
       }
     },
   };
+
+  const mockCollItem1 : ICollItem = {
+    collectorId: '12345',
+    description: 'identity-profile-preferences-master',
+    enabled: true,
+    errorCount: 0,
+    errors: [],
+    id: '5cba241bb0dd131c5f3eeb34',
+    lastUpdated: 1619112848762,
+    options: {
+      dashboardId: 'id',
+      jobName: 'jobName',
+      jobUrl: 'joburl.com',
+      instanceUrl: 'instanceurl.com',
+      branch: 'development',
+      url: 'url.com',
+      repoName: 'identitygithub.com',
+      path: '/test',
+      artifactName: 'artifactTest',
+      password: 'pswrd',
+      personalAccessToken: 'token'
+    },
+    pushed: false,
+    refreshLink: '/security/refresh?projectName=identity-profile-preferences-master',
+    niceName: 'nicename',
+    environment: 'env'
+}
+
+const mockCollItem2 : ICollItem = {
+  collectorId: '12345',
+  description: 'identity-profile-preferences-master',
+  enabled: true,
+  errorCount: 0,
+  errors: [],
+  id: '5cba241bb0dd131c5f3eeb34',
+  lastUpdated: 1619112848762,
+  repoUrl: 'url.com',
+  options: {
+    dashboardId: 'id',
+    jobName: 'jobName',
+    jobUrl: 'joburl.com',
+    instanceUrl: 'instanceurl.com',
+    branch: 'development',
+    url: 'url.com',
+    repoName: 'identitygithub.com',
+    path: '/test',
+    artifactName: 'artifactTest',
+    password: 'pswrd',
+    personalAccessToken: 'token'
+  },
+  pushed: false,
+  refreshLink: '/security/refresh?projectName=identity-profile-preferences-master',
+  niceName: 'nicename',
+  environment: 'env'
+}
 
   const IRepo1 = {
     id: 'testId',
@@ -190,6 +277,12 @@ describe('RepoWidgetComponent', () => {
       of(mockConfig),
       of(mockConfig),
       of(null));
+    spyOn(repoService, 'fetchSCMCollectorItems').and.returnValues(
+      of([mockCollItem1]),
+      of([mockCollItem2]),
+      of([]),
+      of([]),
+    );
     spyOn(repoService, 'fetchCommits').and.returnValues(
       of([IRepo1]),
       of([IRepo1]),
@@ -245,4 +338,8 @@ describe('RepoWidgetComponent', () => {
     expect(component.charts[17].data).toEqual('0');
     expect(component.charts[18].data).toEqual('0');
   });
+
+  it('should return empty from generateRepoPerDay if no results passed in', () => {
+    expect(component.generateRepoPerDay(undefined, undefined, undefined)).toBeUndefined
+  })
 });
