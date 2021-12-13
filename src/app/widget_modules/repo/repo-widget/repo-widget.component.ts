@@ -159,13 +159,6 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
     const allPulls = pullResult.filter(repo => this.checkRepoAfterDate(repo.timestamp, startDate));
     const allIssues = issueResult.filter(repo => this.checkRepoAfterDate(repo.timestamp, startDate));
 
-    // console.log(`Filtered Commits:`)
-    // console.log(allCommits)
-    // console.log(`Filtered Pulls:`)
-    // console.log(allPulls)
-    // console.log(`Filtered Issues:`)
-    // console.log(allIssues)
-
     this.charts[0].data.dataPoints[0].series = this.collectDataArray(this.collectRepoCommits(allCommits));
     this.charts[0].data.dataPoints[1].series = this.collectDataArray(this.collectRepoPulls(allPulls));
     this.charts[0].data.dataPoints[2].series = this.collectDataArray(this.collectRepoIssues(allIssues));
