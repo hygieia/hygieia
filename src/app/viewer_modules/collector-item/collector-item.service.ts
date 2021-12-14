@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {of, Observable, zip} from 'rxjs';
+import {of, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {IAuditResult, IDashboardCI, IDashboardCIResponse} from './interfaces';
 import {IBuildResponse} from '../../widget_modules/build/interfaces';
@@ -9,7 +9,7 @@ import {IDeployResponse} from '../../widget_modules/deploy/interfaces';
 import {IStaticAnalysisResponse} from '../../widget_modules/static-analysis/interfaces';
 import {ISecurityScanResponse} from '../../widget_modules/security-scan/security-scan-interfaces';
 import {ITest} from '../../widget_modules/test/interfaces';
-import {RepoService} from '../../widget_modules/repo/repo.service';
+// import {RepoService} from '../../widget_modules/repo/repo.service';
 
 @Injectable({
   providedIn: 'root'
@@ -27,9 +27,9 @@ export class CollectorItemService {
   private testDetailRoute = '/api/quality/test';
 
   private readonly MAX_RECORDS = 1000;
-  private readonly NUM_OF_DAYS = 60;
+  // private readonly NUM_OF_DAYS = 60;
 
-  constructor(private http: HttpClient, private repoService: RepoService) { }
+  constructor(private http: HttpClient) { }
 
   getDashboardByCI(ci: string): Observable<IDashboardCI[]> {
     if ( !ci ) { return of([]); }
@@ -125,7 +125,7 @@ export class CollectorItemService {
   }
 
   private getSCMResult(componentId: string) {
-    return of([])
+    return of([]);
   /* ***** This needs to be discussed and fixed in the future... not sure whether this page is actually used or not ***** */
   //   if ( !componentId ) { return of([]); }
   //   const commits = this.repoService.fetchCommits(componentId, this.NUM_OF_DAYS);

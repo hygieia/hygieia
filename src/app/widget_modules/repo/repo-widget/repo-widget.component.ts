@@ -129,11 +129,11 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
       if (item.repoUrl) {
         const repoUrlSplitArr = item.repoUrl.split('/');
         item.repoUrl = repoUrlSplitArr[repoUrlSplitArr.length - 1];
-      } else if(item.options.url){
+      } else if (item.options.url) {
         const repoUrlSplitArr = item.options.url.split('/');
         item.repoUrl = repoUrlSplitArr[repoUrlSplitArr.length - 1];
-      }else {
-        item.repoUrl = 'URL Not found.'
+      } else {
+        item.repoUrl = 'URL Not found.';
       }
     });
     this.allCollectorItems = collectorItems;

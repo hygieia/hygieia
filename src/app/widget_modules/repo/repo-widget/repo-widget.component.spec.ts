@@ -33,35 +33,35 @@ class MockRepoService {
     ]
   };
 
-  mockCollItemArray : ICollItem[] = [{
-        collectorId: '12345',
-        description: 'identity-profile-preferences-master',
-        enabled: true,
-        errorCount: 0,
-        errors: [],
-        id: '5cba241bb0dd131c5f3eeb34',
-        lastUpdated: 1619112848762,
-        options: {
-          dashboardId: 'id',
-          jobName: 'jobName',
-          jobUrl: 'joburl.com',
-          instanceUrl: 'instanceurl.com',
-          branch: 'development',
-          url: 'url.com',
-          repoName: 'identitygithub.com',
-          path: '/test',
-          artifactName: 'artifactTest',
-          password: 'pswrd',
-          personalAccessToken: 'token'
-        },
-        pushed: false,
-        refreshLink: '/security/refresh?projectName=identity-profile-preferences-master',
-        niceName: 'nicename',
-        environment: 'env'
-  }]
+  mockCollItemArray: ICollItem[] = [{
+    collectorId: '12345',
+    description: 'identity-profile-preferences-master',
+    enabled: true,
+    errorCount: 0,
+    errors: [],
+    id: '5cba241bb0dd131c5f3eeb34',
+    lastUpdated: 1619112848762,
+    options: {
+      dashboardId: 'id',
+      jobName: 'jobName',
+      jobUrl: 'joburl.com',
+      instanceUrl: 'instanceurl.com',
+      branch: 'development',
+      url: 'url.com',
+      repoName: 'identitygithub.com',
+      path: '/test',
+      artifactName: 'artifactTest',
+      password: 'pswrd',
+      personalAccessToken: 'token'
+    },
+    pushed: false,
+    refreshLink: '/security/refresh?projectName=identity-profile-preferences-master',
+    niceName: 'nicename',
+    environment: 'env'
+  }];
 
   fetchSCMCollectorItems(): Observable<ICollItem[]> {
-    return of(this.mockCollItemArray)
+    return of(this.mockCollItemArray);
   }
 
   fetchCommits(): Observable<IRepo[]> {
@@ -109,7 +109,7 @@ describe('RepoWidgetComponent', () => {
     },
   };
 
-  const mockCollItem1 : ICollItem = {
+  const mockCollItem1: ICollItem = {
     collectorId: '12345',
     description: 'identity-profile-preferences-master',
     enabled: true,
@@ -134,35 +134,35 @@ describe('RepoWidgetComponent', () => {
     refreshLink: '/security/refresh?projectName=identity-profile-preferences-master',
     niceName: 'nicename',
     environment: 'env'
-}
+  };
 
-const mockCollItem2 : ICollItem = {
-  collectorId: '12345',
-  description: 'identity-profile-preferences-master',
-  enabled: true,
-  errorCount: 0,
-  errors: [],
-  id: '5cba241bb0dd131c5f3eeb34',
-  lastUpdated: 1619112848762,
-  repoUrl: 'url.com',
-  options: {
-    dashboardId: 'id',
-    jobName: 'jobName',
-    jobUrl: 'joburl.com',
-    instanceUrl: 'instanceurl.com',
-    branch: 'development',
-    url: 'url.com',
-    repoName: 'identitygithub.com',
-    path: '/test',
-    artifactName: 'artifactTest',
-    password: 'pswrd',
-    personalAccessToken: 'token'
-  },
-  pushed: false,
-  refreshLink: '/security/refresh?projectName=identity-profile-preferences-master',
-  niceName: 'nicename',
-  environment: 'env'
-}
+  const mockCollItem2: ICollItem = {
+    collectorId: '12345',
+    description: 'identity-profile-preferences-master',
+    enabled: true,
+    errorCount: 0,
+    errors: [],
+    id: '5cba241bb0dd131c5f3eeb34',
+    lastUpdated: 1619112848762,
+    repoUrl: 'url.com',
+    options: {
+      dashboardId: 'id',
+      jobName: 'jobName',
+      jobUrl: 'joburl.com',
+      instanceUrl: 'instanceurl.com',
+      branch: 'development',
+      url: 'url.com',
+      repoName: 'identitygithub.com',
+      path: '/test',
+      artifactName: 'artifactTest',
+      password: 'pswrd',
+      personalAccessToken: 'token'
+    },
+    pushed: false,
+    refreshLink: '/security/refresh?projectName=identity-profile-preferences-master',
+    niceName: 'nicename',
+    environment: 'env'
+  };
 
   const IRepo1 = {
     id: 'testId',
@@ -340,6 +340,7 @@ const mockCollItem2 : ICollItem = {
   });
 
   it('should return empty from generateRepoPerDay if no results passed in', () => {
-    expect(component.generateRepoPerDay(undefined, undefined, undefined)).toBeUndefined
-  })
+    const returnValue = component.generateRepoPerDay(undefined, undefined, undefined);
+    expect(returnValue).toBeUndefined();
+  });
 });
