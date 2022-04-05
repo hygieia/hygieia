@@ -1,0 +1,87 @@
+@import "../../../../../node_modules/bootstrap/scss/mixins/";
+@import '../../../../styles/css/charts.scss';
+@import '../../../../styles/css/dashvariables.scss';
+@import '../../../../styles/css/dash-status.scss';
+@import '../../../../styles/css/mixins.scss';
+
+.list-item-subtitle {
+  @include text-standard-date;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.clickable-title {
+  border-bottom: 1px solid;
+  color: $dash-widget-heading-text;
+  letter-spacing: .1em;
+  padding-bottom: .5em;
+  margin-bottom: 1em;
+
+  @include border-top-radius($dash-widget-border-radius);
+  border-bottom-color: $dash-widget-sub-heading-border;
+  @include text-standard;
+  text-transform: uppercase;
+
+  cursor: pointer;
+  @include transition(color 300ms ease);
+
+  &:hover {
+    color: $dash-dashboard-text-hover;
+  }
+}
+
+
+.latest-builds {
+  font-size: 10px;
+  line-height: 10px;
+}
+
+tr.dash-row>td {
+  white-space: nowrap;
+  border-top: none !important;
+  padding: 0 !important;
+  // line-height: 3.25em;
+  vertical-align: middle !important;
+}
+
+.dash-row {
+  $dash-row-height: 3.25em;
+
+  @include clearfix;
+  line-height: $dash-row-height;
+  vertical-align: middle;
+
+  .fa {
+    margin-right: .5em;
+  }
+
+  &.clickable:hover {
+    background-color: $dash-widget-section-highlight;
+    color: $dash-dashboard-text;
+  }
+
+  // Added for bootstrap 4 compatibility
+  color: $dash-dashboard-text;
+}
+
+.list-item-chevron {
+  margin-right: 1em;
+}
+
+.header-arrow {
+  padding-left: 0.5em;
+}
+
+list-item-title {
+  display: inline-block;
+  margin-right: 1em;
+  min-width: 3em;
+  @include text-lg;
+}
+
+.build-summary-type {
+  @include text-standard;
+  text-align: center;
+}

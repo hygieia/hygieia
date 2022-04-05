@@ -1,0 +1,64 @@
+<div>
+  <div class="widget-modal">
+    <div class="widget-modal-heading">
+      Manage Admins
+    </div>
+    <div class="widget-modal-body">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="text-center" [hidden]="users">Loading Users...</div>
+          <div [hidden]="error">
+            {{error.data}}
+          </div>
+          <div class="row">
+            <div class="col-md-5">
+              <h3>Users</h3>
+              <input type="text" class="form-control" id="userSearch" placeholder="Filter Users"
+                [(ngModel)]="userSearch">
+              <div class="dash-modal-row delete-dashboard-row clearfix"
+                *ngFor="let user of users | generalFilter:{username:userSearch, authorities:'!ROLE_ADMIN'} | generalOrderBy:'username' | paginate: { itemsPerPage: 20, currentPage: p }">
+                <div class="btn-block">
+                  <span class="badge badge-primary" [hidden]="!(user.authType === authType && user.username === username)">You</span>
+                  {{user.username}}
+                  <span class="badge badge-secondary">{{user.authType}}</span>
+                  <div title="Promote User" class="clickable pull-right" (click)="promoteUserToAdmin(user)">
+                    <span class="clickable fa fa-stack">
+                      <span class="fa-circle-thin fa-stack-2x text-success"></span>
+                      <span class="fa-angle-right fa-stack-1x text-success"></span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer pb-0 pt-3">
+                <pagination-controls totalItems=users.length previousLabel=""
+                                     nextLabel="" maxSize="4" (pageChange)="p = $event"></pagination-controls>
+              </div>
+            </div>
+            <div class="col-push col-md-5">
+              <h3>Admins</h3>
+              <div class="dash-modal-row delete-dashboard-row clearfix"
+                *ngFor="let user of users | generalFilter:{authorities:'ROLE_ADMIN'} | generalOrderBy:'username' as filteredAdmins  ">
+                <div class="btn-block">
+                  <span class="badge badge-primary" [hidden]="!(user.authType === authType && user.username === username)">You</span>
+                  {{user.username}}
+                  <span class="badge badge-secondary" >{{user.authType}}</span>
+                  <div title="Demote User"  class="clickable pull-right"
+                    (click)="demoteUserFromAdmin(user)">
+                    <span class="clickable fa fa-stack">
+                      <span class="fa-circle-thin fa-stack-2x text-danger"></span>
+                      <span class="fa-angle-left fa-stack-1x text-danger"></span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-center" [hidden]="!(users && !users.length)">
+            No results
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,14 @@
+<div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h4 class="modal-title">{{title}}</h4>
+      <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <ng-template appConfirmationModal ></ng-template>
+    <div class="modal-footer">
+      <button type="button" (click)="activeModal.close('Close click')">Save</button>
+    </div>
+  </div>
+</div>

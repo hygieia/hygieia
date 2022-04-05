@@ -1,0 +1,42 @@
+.mat-container {
+  display: flex;
+  flex-direction: column;
+  min-width: 300px;
+}
+
+.mat-header {
+  min-height: 64px;
+  padding: 8px 24px 0;
+}
+
+.mat-form-field {
+  font-size: 14px;
+  width: 100%;
+}
+
+.mat-table {
+  overflow: auto;
+  max-height: 500px;
+}
+
+.mat-column-executionId {
+  flex: 0 0 30%;
+}
+.mat-column-type {
+  flex: 0 0 10%;
+}
+.mat-column-timestamp {
+  flex: 0 0 10%;
+}
+.mat-column-totalCount {
+  flex: 0 0 8%;
+}
+.mat-column-successCount {
+  flex: 0 0 8%;
+}
+
+.popupWin {
+  color: blue;
+  cursor: pointer;
+  text-decoration: underline;
+}

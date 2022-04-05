@@ -1,0 +1,18 @@
+<div>
+  <table class ="table-content" modalTypeTag>
+    <thead>
+      <tr>
+        <th>Component</th>
+        <th>Time</th>
+        <th>Version</th>
+        <th>Deployment Agent Name</th>
+      </tr>
+    </thead>
+    <tr>
+      <td>{{data?.name}}</td>
+      <td>{{data?.lastUpdated | date : 'medium'}}</td>
+      <td>{{data?.version}}</td>
+      <td><a href="{{data?.url}}">{{data?.regex}}</a></td>
+    </tr>
+  </table>
+</div>

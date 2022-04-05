@@ -1,0 +1,118 @@
+<div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h1 class="display-5">Application Audit Metrics Report</h1>
+    <p class="lead">Application release pipeline quality gates
+      <span>audit</span> status report
+      <small *ngIf="lastAudited">~ last audited: {{lastAudited.toDateString()}}</small></p>
+  </div>
+</div>
+<div class="select">
+  <p><span>Line of Business :</span></p>
+  <select (change)="onOptionsSelected($event)">
+    <option selected>All</option>
+    <option *ngFor="let lob of lobs">{{lob}}</option>
+  </select>
+</div>
+<div class="spinner">
+  <button class="btn btn-outline-primary" *ngIf="isLoading">
+    <span class="spinner-border spinner-border-sm"></span>
+    Charting audit metrics data
+  </button>
+  <p *ngIf="isEmpty">No data returned</p>
+</div>
+<div class="row" *ngIf="!isEmpty">
+  <div class="row-in">
+    <ngx-charts-bar-horizontal-normalized
+      [view]="[850, 600]"
+      [scheme]="{ domain: ['#181b90', '#C7B42C', '#AAAAAA', '#A10A28'] }"
+      [results]="ngxDataNormalized.data"
+      [gradient]="true"
+      [xAxis]="true"
+      [yAxis]="true"
+      [legend]="true"
+      [legendTitle]="'Audit Coverage'"
+      [showXAxisLabel]="true"
+      [showYAxisLabel]="true"
+      [showGridLines]="false"
+      [yAxisTickFormatting]="auditTypeToReadable"
+      [maxXAxisTickLength]="25"
+      [maxYAxisTickLength]="25"
+      [xAxisLabel]="'Audit Coverage'"
+      [yAxisLabel]="'Audit Quality Gates'"
+      (select)="onSelect($event)">
+    </ngx-charts-bar-horizontal-normalized>
+  </div>
+  <div class="row-in">
+    <ngx-charts-bar-horizontal-normalized
+      [view]="[850, 600]"
+      [scheme]="{ domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA'] }"
+      [results]="ngxData.data"
+      [gradient]="true"
+      [xAxis]="true"
+      [yAxis]="true"
+      [legend]="true"
+      [showGridLines]="false"
+      [legendTitle]="'Audit Status'"
+      [showXAxisLabel]="true"
+      [showYAxisLabel]="true"
+      [yAxisTickFormatting]="auditTypeToReadable"
+      [maxXAxisTickLength]="25"
+      [maxYAxisTickLength]="25"
+      [xAxisLabel]="'Audit Status'"
+      [yAxisLabel]="'Audit Quality Gates'"
+      (select)="onSelect($event)">
+    </ngx-charts-bar-horizontal-normalized>
+  </div>
+</div>
+<div class="row-gap">
+</div>
+<div class="row" *ngIf="!isEmpty">
+  <div class="row-in">
+    <ngx-charts-bar-horizontal-2d
+      [view]="[850, 800]"
+      [scheme]="{ domain: ['#181b90', '#C7B42C', '#AAAAAA', '#A10A28'] }"
+      [results]="ngxDataNormalized.data"
+      [gradient]="true"
+      [xAxis]="true"
+      [yAxis]="true"
+      [legend]="true"
+      [legendTitle]="'Audit Coverage'"
+      [showXAxisLabel]="true"
+      [showYAxisLabel]="true"
+      [showDataLabel]="true"
+      [dataLabelFormatting]="dataLabelFormatting"
+      [showGridLines]="false"
+      [yAxisTickFormatting]="auditTypeToReadable"
+      [maxXAxisTickLength]="25"
+      [maxYAxisTickLength]="25"
+      [xAxisLabel]="'Audit Coverage'"
+      [yAxisLabel]="'Audit Quality Gates'"
+      (select)="onSelect($event)">
+    </ngx-charts-bar-horizontal-2d>
+  </div>
+  <div class="row-in">
+    <ngx-charts-bar-horizontal-2d
+      [view]="[850, 800]"
+      [scheme]="{ domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA'] }"
+      [results]="ngxData.data"
+      [gradient]="true"
+      [xAxis]="true"
+      [yAxis]="true"
+      [legend]="true"
+      [legendTitle]="'Audit Status'"
+      [showXAxisLabel]="true"
+      [showYAxisLabel]="true"
+      [showDataLabel]="true"
+      [dataLabelFormatting]="dataLabelFormatting"
+      [showGridLines]="false"
+      [yAxisTickFormatting]="auditTypeToReadable"
+      [maxXAxisTickLength]="25"
+      [maxYAxisTickLength]="25"
+      [xAxisLabel]="'Audit Status'"
+      [yAxisLabel]="'Audit Quality Gates'"
+      (select)="onSelect($event)">
+    </ngx-charts-bar-horizontal-2d>
+  </div>
+</div>
+<div class="row-gap">
+</div>

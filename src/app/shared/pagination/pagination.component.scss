@@ -1,0 +1,19 @@
+ngb-pagination {
+  ::ng-deep {
+    .pagination {
+      justify-content: center;
+    }
+    .page-item {
+      .page-link {
+        color: lightgray;
+        background-color: black;
+        border: dimgrey 0.1em solid;
+      }
+    }
+    .page-item.active {
+      .page-link {
+        background-color: dimgray;
+      }
+    }
+  }
+}

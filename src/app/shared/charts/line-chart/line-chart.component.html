@@ -1,0 +1,51 @@
+<div class="widget dark-chart-theme">
+  <div class="chart-heading">
+    {{title}}
+  </div>
+  <ng-container *ngIf="data.areaChart else elseBlock">
+    <ngx-charts-area-chart
+      [view]="view"
+      [scheme]="colorScheme"
+      [results]="data.dataPoints"
+      [gradient]="gradient"
+      [xAxis]="showXAxis"
+      [yAxis]="showYAxis"
+      [legend]="showLegend"
+      [showXAxisLabel]="showXAxisLabel"
+      [showYAxisLabel]="showYAxisLabel"
+      [xAxisLabel]="xAxisLabel"
+      [yAxisLabel]="yAxisLabel"
+      [yAxisTickFormatting]="yAxisTickFormatting"
+      [xAxisTickFormatting]="xAxisTickFormatting"
+      [trimYAxisTicks]="trimYAxisTicks"
+      [timeline]="timeline"
+      [tooltipDisabled]="tooltipDisabled"
+      [animations]='false'
+      (select)="onSelect($event)">
+    </ngx-charts-area-chart>
+  </ng-container>
+  <ng-template #elseBlock>
+    <ngx-charts-line-chart
+      [view]="view"
+      [scheme]="colorScheme"
+      [results]="data.dataPoints"
+      [gradient]="gradient"
+      [xAxis]="showXAxis"
+      [yAxis]="showYAxis"
+      [legend]="showLegend"
+      [showXAxisLabel]="showXAxisLabel"
+      [showYAxisLabel]="showYAxisLabel"
+      [xAxisLabel]="xAxisLabel"
+      [yAxisLabel]="yAxisLabel"
+      [yAxisTickFormatting]="yAxisTickFormatting"
+      [xAxisTickFormatting]="xAxisTickFormatting"
+      [trimYAxisTicks]="trimYAxisTicks"
+      [timeline]="timeline"
+      [tooltipDisabled]="tooltipDisabled"
+      [animations]='false'
+      (select)="onSelect($event)">
+    </ngx-charts-line-chart>
+  </ng-template>
+
+
+</div>

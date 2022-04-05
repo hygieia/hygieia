@@ -1,0 +1,68 @@
+  <nb-card size="large">
+    <nb-card-header><h4>New Dashboard</h4></nb-card-header>
+    <nb-card-body>
+      <nb-stepper disableStepNavigation="true" orientation="vertical" [linear]="true">
+        <nb-step label="Dashboard">
+          <div>
+            <form (ngSubmit)="onSubmit()" #myForm="ngForm">
+              <div class="form-group">
+                <select class="custom-select" required name="dType" id="dType" [(ngModel)]="dType">
+                  <option disabled>Select type</option>
+                  <option value="Team">Team</option>
+                  <option value="Product" disabled>Product</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <select class="custom-select" id="dLayout" name="dLayout" required [(ngModel)]="dLayout">
+                  <option disabled>Select layout</option>
+                  <option value="Widgets">Widgets</option>
+                  <option value="Templates">Templates</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <input class="form-control" type="text" placeholder="Enter Dashboard Title (6+)" [(ngModel)]="title" name="title" required minlength="6"></div>
+              <div class="form-group">
+                <input class="form-control" type="text" status="basic" placeholder="Enter Application Name (6+)" [(ngModel)]="appName" name="appName" required minlength="6"></div>
+              <div class="form-group">
+                <input class="form-control" type="text" placeholder="Enter Business Service (Optional)"
+                       [(ngModel)]="busService" id="busService" name="busService" [ngbTypeahead]="typeAheadBAItems" [inputFormatter]="getBusServiceInput" [resultFormatter]="getBusService">
+                <small for="busService" *ngIf="searching" class="form-text">searching...</small>
+                <small for="busService" *ngIf="searchFailed" class="form-text">unable to find value...</small>
+              </div>
+              <div class="form-group">
+                <input class="form-control" type="text" placeholder="Enter Business Application (Optional)"
+                       [(ngModel)]="busApp" id="busApp" name="busApp" [ngbTypeahead]="typeAheadBCItems" [inputFormatter]="getBusAppInput" [resultFormatter]="getBusApp">
+              </div>
+              <button nbButton nbStepperNext type="submit" style="float: right" (click)="clear()" [disabled]="!myForm.form.valid">Next</button>
+            </form>
+          </div>
+        </nb-step>
+        <nb-step label="Widgets / Templates">
+          <nb-card>
+            <nb-card-header>Select {{dLayout}}</nb-card-header>
+            <nb-card-body>
+              <div *ngIf="dLayout === 'Widgets'" style="display: grid; grid-template-columns: 1fr 1fr 1fr; grid-gap: 1em">
+                <button name="widget" status="basic" nbButton size="medium" *ngFor="let widget of widgets"
+                        (click)="widget.status = !widget.status; onClick(widget);" [appearance]="widget.status ? 'filled' : ''">{{widget.name.toUpperCase()}}</button>
+              </div>
+              <div *ngIf="dLayout === 'Templates'" style="display: grid; grid-template-columns: 1fr 1fr 1fr; grid-gap: 1em">
+                <button name="template" status="basic" nbButton size="medium" *ngFor="let template of templates"
+                        (click)="template.status = !template.status; onClick(template)" [appearance]="template.status ? 'filled' : ''">{{template.name.toUpperCase()}}</button>
+              </div>
+            </nb-card-body>
+            <nb-card-footer>
+              <div style="display: flex; flex-direction: row; justify-content: space-between">
+                <button nbButton nbStepperPrevious>prev</button>
+                <button nbButton outline (click)="createDashboard()" [disabled]="!isAnySelected" status="success">Create Dashboard</button>
+              </div>
+              <small *ngIf="createErrorMsg" class="form-text text-danger">{{createErrorMsg}}</small>
+            </nb-card-footer>
+          </nb-card>
+        </nb-step>
+      </nb-stepper>
+    </nb-card-body>
+    <nb-card-footer style="text-align: end">
+      <button class="btn btn-outline-light" (click)="close()">Close</button>
+    </nb-card-footer>
+  </nb-card>
+

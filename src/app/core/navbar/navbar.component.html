@@ -1,0 +1,17 @@
+<div class="nav-container">
+  <div class="header-container-left">
+    <div class="logo-container">
+      <a class="logo" routerLink=""></a>
+    </div>
+  </div>
+  <div class="header-container-right">
+    <nb-actions size="small" class="size-small">
+      <nb-action icon="github" (click)="openGithub()"></nb-action>
+      <nb-action class="user-action" *ngIf="isAuthenticated">
+        <nb-user color="black" class="size-medium shape-round" name="{{userName}}"></nb-user>
+      </nb-action>
+      <nb-action *ngIf="isAdmin && isAuthenticated" (click)="admin()" icon="settings-outline"></nb-action>
+      <nb-action (click)="loginOrOut()" [icon]="customPowerIcon"></nb-action>
+    </nb-actions>
+  </div>
+</div>
