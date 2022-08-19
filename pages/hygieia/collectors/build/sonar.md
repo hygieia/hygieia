@@ -81,7 +81,8 @@ The sample `application.properties` file lists parameters with sample values to 
 		sonar.cron=0 0/5 * * * *
 
 		# Sonar server(s) (required) - Can provide multiple
-		sonar.servers[0]=http://sonar.company.com
+		sonar.servers[0]=http://sonar.company.com                  ---> If, login with username and password
+		sonar.servers[0]=http://api-token@sonar.company.com        ---> If, login with Sonar API Token
 		
 		# Sonar version, match array index to the server. If not set, will default to version prior to 6.3.
 		sonar.versions[0]=6.31
