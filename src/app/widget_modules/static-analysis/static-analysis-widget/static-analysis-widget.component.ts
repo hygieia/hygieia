@@ -8,24 +8,22 @@ import {
   ViewChild,
   ElementRef
 } from '@angular/core';
-import {of, Subscription} from 'rxjs';
-import {distinctUntilChanged, startWith, switchMap} from 'rxjs/operators';
+import { of, Subscription } from 'rxjs';
+import { distinctUntilChanged, startWith, switchMap } from 'rxjs/operators';
 import {
   IClickListData,
   IClickListItem,
   IClickListItemStaticAnalysis
 } from 'src/app/shared/charts/click-list/click-list-interfaces';
-import {DashboardService} from 'src/app/shared/dashboard.service';
-import {LayoutDirective} from 'src/app/shared/layouts/layout.directive';
-import {TwoByTwoLayoutComponent} from 'src/app/shared/layouts/two-by-two-layout/two-by-two-layout.component';
-import {WidgetComponent} from 'src/app/shared/widget/widget.component';
-import {StaticAnalysisService} from '../static-analysis.service';
-import {STATICANALYSIS_CHARTS} from './static-analysis-charts';
-import {IStaticAnalysis} from '../interfaces';
-import {StaticAnalysisDetailComponent} from '../static-analysis-detail/static-analysis-detail.component';
-// import {isUndefined} from 'util';
-import { isNullOrUndefined } from 'util';
-import {WidgetState} from '../../../shared/widget-header/widget-state';
+import { DashboardService } from 'src/app/shared/dashboard.service';
+import { LayoutDirective } from 'src/app/shared/layouts/layout.directive';
+import { TwoByTwoLayoutComponent } from 'src/app/shared/layouts/two-by-two-layout/two-by-two-layout.component';
+import { WidgetComponent } from 'src/app/shared/widget/widget.component';
+import { StaticAnalysisService } from '../static-analysis.service';
+import { STATICANALYSIS_CHARTS } from './static-analysis-charts';
+import { IStaticAnalysis } from '../interfaces';
+import { StaticAnalysisDetailComponent } from '../static-analysis-detail/static-analysis-detail.component';
+import { WidgetState } from '../../../shared/widget-header/widget-state';
 import { ICollItem } from 'src/app/viewer_modules/collector-item/interfaces';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { RefreshModalComponent } from '../../../shared/modals/refresh-modal/refresh-modal.component';
@@ -213,13 +211,13 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
         status: null,
         statusText: '',
         title: 'Quality Gate',
-        subtitles: [isNullOrUndefined(qualityGate) ? '' : qualityGate.value],
+        subtitles: [qualityGate === null || qualityGate === undefined ? '' : qualityGate.value],
       },
       {
         status: null,
         statusText: '',
         title: 'Technical Debt',
-        subtitles: [isNullOrUndefined(techDebt) ? '' : techDebt.formattedValue],
+        subtitles: [techDebt === null || techDebt === undefined ? '' : techDebt.formattedValue],
       },
     ] as IClickListItem[];
 
@@ -242,8 +240,8 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
     const coverage = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.codeCoverage);
     const loc = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.numCodeLines);
 
-    this.charts[1].data.results[0].value = isNullOrUndefined(coverage) ? 0 : parseFloat(coverage.value);
-    this.charts[1].data.customLabelValue = isNullOrUndefined(loc) ? 0 : parseFloat(loc.value);
+    this.charts[1].data.results[0].value = coverage === null || coverage === undefined ? 0 : parseFloat(coverage.value);
+    this.charts[1].data.customLabelValue = loc === null || loc === undefined ? 0 : parseFloat(loc.value);
   }
 
   // *********************** VIOLATIONS *****************************
@@ -255,10 +253,10 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
     const major = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.majorViolations);
     const total = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.totalIssues);
 
-    this.charts[2].data[0].value = isNullOrUndefined(blocker) ? 0 : parseFloat(blocker.value);
-    this.charts[2].data[1].value = isNullOrUndefined(critical) ? 0 : parseFloat(critical.value);
-    this.charts[2].data[2].value = isNullOrUndefined(major) ? 0 : parseFloat(major.value);
-    this.charts[2].data[3].value = isNullOrUndefined(total) ? 0 : parseFloat(total.value);
+    this.charts[2].data[0].value = blocker === null || blocker === undefined ? 0 : parseFloat(blocker.value);
+    this.charts[2].data[1].value = critical === null || critical === undefined ? 0 : parseFloat(critical.value);
+    this.charts[2].data[2].value = major === null || major === undefined ? 0 : parseFloat(major.value);
+    this.charts[2].data[3].value = total === null || total === undefined ? 0 : parseFloat(total.value);
 
   }
 
@@ -276,25 +274,25 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
         status: null,
         statusText: '',
         title: 'Success',
-        subtitles: [isNullOrUndefined(testSuccesses) ? '' : (parseFloat(testSuccesses.value) / 100) * parseInt(totalTests.value, 10)],
+        subtitles: [testSuccesses === null || testSuccesses === undefined ? '' : (parseFloat(testSuccesses.value) / 100) * parseInt(totalTests.value, 10)],
       },
       {
         status: null,
         statusText: '',
         title: 'Failures',
-        subtitles: [isNullOrUndefined(testFailures) ? '' : testFailures.value],
+        subtitles: [testFailures === null || testFailures === undefined ? '' : testFailures.value],
       },
       {
         status: null,
         statusText: '',
         title: 'Errors',
-        subtitles: [isNullOrUndefined(testErrors) ? '' : testErrors.value],
+        subtitles: [testErrors === null || testErrors === undefined ? '' : testErrors.value],
       },
       {
         status: null,
         statusText: '',
         title: 'Total Tests',
-        subtitles: [isNullOrUndefined(totalTests) ? '' : totalTests.value],
+        subtitles: [totalTests ===  null || totalTests === undefined ? '' : totalTests.value],
       },
     ] as IClickListItem[];
 
