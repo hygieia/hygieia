@@ -11,7 +11,7 @@
     "e2e": "ng e2e",
     "test:headless": "ng test --watch=false --browsers=ChromeHeadlessNoSandbox",
     "stats": "ng build --prod --stats-json && npx webpack-bundle-analyzer dist/hygieia-ui/stats.json",
-    "preinstall": "npm install --package-lock-only --ignore-scripts && npx npm-force-resolutions",
+    "preinstall": "npx npm-force-resolutions",
     "postinstall": "ngcc"
   },
   "private": true,
