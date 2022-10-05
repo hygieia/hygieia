@@ -42,8 +42,8 @@ describe('DashboardCreateComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DashboardCreateComponent);
     component = fixture.componentInstance;
-    service = TestBed.get(DashboardService);
-    router = TestBed.get(Router);
+    service = TestBed.inject(DashboardService);
+    router = TestBed.inject(Router);
     fixture.detectChanges();
   });
 

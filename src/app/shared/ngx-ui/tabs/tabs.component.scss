@@ -34,13 +34,13 @@ $tabs-active-text-color: $color-grey-100;
       }
 
       button {
+        font: inherit;
         border-width: 0 2px 0 0;
         border-right: solid 2px $tabs-border-fill;
         color: $tabs-text-color;
         background: transparent;
         outline: none;
         box-shadow: none;
-        font-size: 1.1rem;
         box-sizing: border-box;
         display: inline-block;
         margin: 0;
@@ -48,9 +48,7 @@ $tabs-active-text-color: $color-grey-100;
         position: relative;
         text-align: center;
         user-select: none;
-        font: inherit;
         font-size: 1em;
-        outline: none;
         bottom: -1px;
 
         &:not([disabled]) {
@@ -64,7 +62,6 @@ $tabs-active-text-color: $color-grey-100;
 
         &::after {
           content: '';
-          background: $tabs-active-border-fill;
           height: 2px;
           position: absolute;
           width: 100%;

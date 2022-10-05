@@ -19,7 +19,7 @@ describe('AuthService', () => {
     token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVC' +
     'J9.eyJzdWIiOiJqb2huRG9lIiwibmFtZSI6IkpvaG4g' +
       'RG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTYyMzkwMjJ9.Ab4-2LjNKuJciqFfeTy5shRajqlOg91BgJijckd5cck';
-    service = TestBed.get(AuthService);
+    service = TestBed.inject(AuthService);
     localStorage.setItem('access_token', token);
     localStorage.setItem('auth-code', 'test-code');
     userLogin = {

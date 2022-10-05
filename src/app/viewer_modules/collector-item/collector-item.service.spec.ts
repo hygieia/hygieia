@@ -134,7 +134,7 @@ describe('CollectorItemService', () => {
   );
 
   it('should be created', () => {
-    const service: CollectorItemService = TestBed.get(CollectorItemService);
+    const service: CollectorItemService = TestBed.inject(CollectorItemService);
     expect(service).toBeTruthy();
   });
 

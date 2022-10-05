@@ -12,7 +12,7 @@ describe('test result service', () => {
   }).compileComponents());
 
   it('should be created', () => {
-    const service: TestService = TestBed.get(TestService);
+    const service: TestService = TestBed.inject(TestService);
     expect(service).toBeTruthy();
   });
 

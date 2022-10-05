@@ -313,7 +313,7 @@ class MockDashboardService {
 @NgModule({
   declarations: [],
   imports: [BuildModule, HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([]), NgbModule],
-  entryComponents: []
+  // entryComponents: []
 })
 class TestModule { }
 
@@ -340,9 +340,9 @@ describe('BuildWidgetComponent', () => {
 
     fixture = TestBed.createComponent(BuildWidgetComponent);
     component = fixture.componentInstance;
-    buildService = TestBed.get(BuildService);
-    dashboardService = TestBed.get(DashboardService);
-    modalService = TestBed.get(NgbModal);
+    buildService = TestBed.inject(BuildService);
+    dashboardService = TestBed.inject(DashboardService);
+    modalService = TestBed.inject(NgbModal);
   }));
 
   it('should create', () => {

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { DeployWidgetComponent } from './deploy-widget.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterModule } from '@angular/router';
@@ -14,6 +14,7 @@ import {IDeploy, IServers, IUnits} from '../interfaces';
 import {DeployModule} from '../deploy.module';
 
 class MockDeployService {
+  // tslint:disable-next-line
   mockDeployData = {
     result: [
       {
@@ -50,7 +51,7 @@ class MockDeployService {
   declarations: [],
   imports: [DeployModule, HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule,
     RouterModule.forRoot([]), NgbModule],
-  entryComponents: []
+  // entryComponents: []
 })
 class TestModule { }
 
@@ -101,6 +102,7 @@ describe('DeployWidgetComponent', () => {
     ],
   } as IDeploy;
 
+  // tslint:disable-next-line
   const mockDeployData = {
     result: [
       {
@@ -127,7 +129,7 @@ describe('DeployWidgetComponent', () => {
   };
 
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       providers: [
         {provide: DeployService, useClass: MockDeployService}
@@ -143,9 +145,9 @@ describe('DeployWidgetComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DeployWidgetComponent);
     component = fixture.componentInstance;
-    deployService = TestBed.get(DeployService);
-    dashboardService = TestBed.get(DashboardService);
-    modalService = TestBed.get(NgbModal);
+    deployService = TestBed.inject(DeployService);
+    dashboardService = TestBed.inject(DashboardService);
+    modalService = TestBed.inject(NgbModal);
     fixture.detectChanges();
   });
 
@@ -170,7 +172,7 @@ describe('DeployWidgetComponent', () => {
     };
 
     spyOn(component, 'getCurrentWidgetConfig').and.returnValues(of(mockConfig), of(null));
-    spyOn(deployService, 'fetchDetails').and.returnValues(of(mockDeployData.result), of([]));
+    spyOn(deployService, 'fetchDetails').and.returnValues(of(mockDeployData.result as any), of([]));
     component.startRefreshInterval();
     component.startRefreshInterval();
   });

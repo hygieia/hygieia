@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -15,7 +15,7 @@ describe('LoginComponent', () => {
   let router: Router;
   let authService: AuthService;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         ReactiveFormsModule,
@@ -29,8 +29,8 @@ describe('LoginComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
-    authService = TestBed.get(AuthService);
-    router = TestBed.get(Router);
+    authService = TestBed.inject(AuthService);
+    router = TestBed.inject(Router);
     fixture.detectChanges();
   });
   it('should create', () => {
@@ -62,7 +62,7 @@ describe('LoginComponent', () => {
   });
   it('should login with STANDARD user', () => {
     component.activeTab = 'STANDARD';
-    const spy = spyOn(authService, 'login').and.returnValue({ subscribe: () => true });
+    const spy = spyOn(authService, 'login').and.returnValue({ subscribe: () => true } as any);
     const obj = { value : {
         username : 'test',
         password: 'test'
@@ -72,7 +72,7 @@ describe('LoginComponent', () => {
   });
   it('should login with LDAP user', () => {
     component.activeTab = 'LDAP';
-    const spy = spyOn(authService, 'loginLdap').and.returnValue({ subscribe: () => true });
+    const spy = spyOn(authService, 'loginLdap').and.returnValue({ subscribe: () => true } as any);
     const obj = { value : {
         username : 'test',
         password: 'test'
@@ -80,10 +80,9 @@ describe('LoginComponent', () => {
     component.submit(obj);
     expect(spy).toHaveBeenCalledWith({username: 'test', password: 'test'});
   });
-
   it('should login with SSO user', () => {
     component.activeTab = 'SSO';
-    const spy = spyOn(router, 'navigate').and.returnValue({ subscribe: () => true });
+    const spy = spyOn(router, 'navigate').and.returnValue({ subscribe: () => true } as any);
     const obj = { value : {
       username : 'test',
       password: 'test'
@@ -91,7 +90,6 @@ describe('LoginComponent', () => {
     component.submit(obj);
     expect(spy).toHaveBeenCalledWith(['/user/sso']);
   });
-
   it('should check sso variables', () =>  {
     component.setActiveTab('SSO');
     expect(component.isSsoLogin()).toBe(true);

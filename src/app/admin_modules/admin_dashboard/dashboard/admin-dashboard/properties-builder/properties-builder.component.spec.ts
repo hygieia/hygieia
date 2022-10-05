@@ -49,7 +49,7 @@ describe('PropertiesBuilderComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(PropertiesBuilderComponent);
     component = fixture.componentInstance;
-    userData = TestBed.get(UserDataService);
+    userData = TestBed.inject(UserDataService);
     fixture.detectChanges();
   });
 

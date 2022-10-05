@@ -10,12 +10,13 @@
       </div>
       <nb-card *ngFor="let dashboard of dashboards" class="gap">
         <nb-card-header>
-          <a routerLink="/dashboard/dashboard-view/{{dashboard.id}}"><h3>{{dashboard.title}} <i class="fa fa-external-link" aria-hidden="true"></i></h3></a>
+          <a routerLink="/dashboard/dashboard-view/{{dashboard.id}}"><h3>{{dashboard.title}} <em class="fa fa-external-link" aria-hidden="true"></em></h3></a>
         </nb-card-header>
         <nb-card-body>
           <div *ngIf="dashboard.application && dashboard.application.components" class="table-responsive">
-            <table *ngFor="let component of dashboard.application.components" class="table table-bordered table-secondary">
-              <thead class="thead-dark">
+            <!-- <table *ngFor="let component of dashboard.application.components" class="table table-bordered table-secondary table-dark"> -->
+            <table id="bootstrapOverrides" *ngFor="let component of dashboard.application.components" class="table table-light">
+              <thead>
               <tr>
                 <th>Collector</th>
                 <th>Id</th>
@@ -32,20 +33,20 @@
                     <a href="#" routerLink="{{collector}}/{{dashboard.title}}/{{component.id}}">{{collector}}</a>
                   </td>
                   <td class="popupWin" (click)="openDetails(collector,dashboard.title,component.name,ci)">
-                    <em> {{ ci.id }}</em>
+                    <em id="bootstrapOverrides"> {{ ci.id }}</em>
                   </td>
                   <td>
-                    <span *ngIf="ci.enabled"><i class="fa fa-check"></i></span>
-                    <span *ngIf="!ci.enabled"><i class="fa fa-times"></i></span>
+                    <span *ngIf="ci.enabled"><em class="fa fa-check"></em></span>
+                    <span *ngIf="!ci.enabled"><em class="fa fa-times"></em></span>
                   </td>
                   <td>
-                    <span *ngIf="ci.pushed"><i class="fa fa-check"></i></span>
-                    <span *ngIf="!ci.pushed"><i class="fa fa-times"></i></span>
+                    <span *ngIf="ci.pushed"><em class="fa fa-check"></em></span>
+                    <span *ngIf="!ci.pushed"><em class="fa fa-times"></em></span>
                   </td>
                   <td> {{ ci.lastUpdated | date:'MM/dd/yyyy' }} </td>
                   <td id="description"> {{ci.description}}</td>
                   <td class="popupWin" (click)="confirmRefresh(ci)">
-                    <i class="fa fa-play"></i>
+                    <em class="fa fa-play"></em>
                 </tr>
               </ng-container>
             </table>

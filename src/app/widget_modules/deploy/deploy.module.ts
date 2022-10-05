@@ -7,13 +7,14 @@ import { DeployDetailComponent } from './deploy-detail/deploy-detail.component';
 import { DeployWidgetComponent } from './deploy-widget/deploy-widget.component';
 import {DeployDeleteFormComponent} from './deploy-delete-form/deploy-delete-form.component';
 
+
 @NgModule({
-  declarations: [DeployWidgetComponent, DeployConfigFormComponent, DeployDetailComponent, DeployDeleteFormComponent],
+  declarations: [DeployWidgetComponent, DeployConfigFormComponent, DeployDetailComponent, DeployDeleteFormComponent ],
   entryComponents: [DeployWidgetComponent, DeployConfigFormComponent, DeployDetailComponent, DeployDeleteFormComponent],
   imports: [
     CommonModule,
     NgbModule,
-    SharedModule
+    SharedModule,
   ],
   exports: []
 })

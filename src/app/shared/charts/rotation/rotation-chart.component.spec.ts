@@ -1,6 +1,6 @@
 import {Component, NgModule} from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { NgbModal, NgbModalRef, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TimeAgoPipe } from 'time-ago-pipe';
 import { DashStatusComponent } from '../../dash-status/dash-status.component';
 import {CommonModule } from '@angular/common';
@@ -11,7 +11,7 @@ import {DashStatus, IClickListData, IClickListItem} from '../click-list/click-li
   declarations: [],
   imports: [CommonModule],
   providers: [],
-  entryComponents: [],
+  // entryComponents: [],
 })
 class TestModule { }
 
@@ -26,7 +26,7 @@ describe('RotationChartComponent', () => {
   let fixture: ComponentFixture<RotationChartComponent>;
   let modal: NgbModal;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [TestDetailViewComponent, RotationChartComponent, TimeAgoPipe, DashStatusComponent],
       imports: [TestModule, NgbModule ]
@@ -37,7 +37,7 @@ describe('RotationChartComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(RotationChartComponent);
     component = fixture.componentInstance;
-    modal = TestBed.get(NgbModal);
+    modal = TestBed.inject(NgbModal);
     fixture.detectChanges();
   });
 
@@ -62,12 +62,13 @@ describe('RotationChartComponent', () => {
       clickableContent: TestDetailViewComponent,
       clickableHeader: TestDetailViewComponent
     } as IClickListData;
+
     spyOn(modal, 'open').and.returnValue({
       componentInstance: {
         title: undefined,
         detailData: undefined
       }
-    });
+    } as NgbModalRef);
     component.openDetailView(null);
   });
 

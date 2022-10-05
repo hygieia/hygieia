@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { NgxUIModule } from '@swimlane/ngx-ui';
+// import { NgxUIModule } from '@swimlane/ngx-ui';
 
 import { PieGridChartComponent } from './pie-grid-chart.component';
 import {PieGridComponent} from '../../ngx-charts/pie-grid/pie-grid.component';
@@ -11,10 +11,12 @@ describe('PieGridChartComponent', () => {
   let component: PieGridChartComponent;
   let fixture: ComponentFixture<PieGridChartComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [PieGridChartComponent, PieGridComponent],
-      imports: [CommonModule, NgxChartsModule, BrowserAnimationsModule, NgxUIModule]
+      imports: [CommonModule, NgxChartsModule, BrowserAnimationsModule,
+        // NgxUIModule
+      ]
     })
       .compileComponents();
   }));

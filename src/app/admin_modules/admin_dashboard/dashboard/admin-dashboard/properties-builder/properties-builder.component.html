@@ -1,7 +1,7 @@
 <div>
   <div class="widget-modal">
     <div class="panel-heading pointerCursor">
-      <h3 class="panel-title" (click)="panelExpandedApi = !panelExpandedApi">Api Properties Builder <i class="fa fa-caret-down"></i></h3>
+      <h3 class="panel-title" (click)="panelExpandedApi = !panelExpandedApi">Api Properties Builder <em class="fa fa-caret-down"></em></h3>
     </div>
     <div class = "table-content" *ngIf="panelExpandedApi">
       <span class="col-xs-6"><button type="button" class="btn btn-dark btn-lg pull-right mb-2" (click)="addNewApiPropertiesBuilder()">New</button></span>
@@ -31,7 +31,7 @@
     </div>
 
     <div class="panel-heading pointerCursor">
-      <h3 class="panel-title" (click)="panelExpandedApiAudit = !panelExpandedApiAudit">Api Audit Properties Builder <i class="fa fa-caret-down"></i></h3>
+      <h3 class="panel-title" (click)="panelExpandedApiAudit = !panelExpandedApiAudit">Api Audit Properties Builder <em class="fa fa-caret-down"></em></h3>
     </div>
     <div class = "table-content" *ngIf="panelExpandedApiAudit">
       <span class="col-xs-6"><button type="button" class="btn btn-dark btn-lg pull-right mb-2" (click)="addNewApiAuditPropertiesBuilder()">New</button></span>

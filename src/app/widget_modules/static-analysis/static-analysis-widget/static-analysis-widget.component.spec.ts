@@ -79,7 +79,6 @@ class MockStaticAnalysisService {
   declarations: [],
   imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule,
     RouterModule.forRoot([]), NgbModule, StaticAnalysisModule],
-  entryComponents: []
 })
 class TestModule { }
 
@@ -216,9 +215,9 @@ describe('StaticAnalysisWidgetComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(StaticAnalysisWidgetComponent);
     component = fixture.componentInstance;
-    staticAnalysisService = TestBed.get(StaticAnalysisService);
-    dashboardService = TestBed.get(DashboardService);
-    modalService = TestBed.get(NgbModal);
+    staticAnalysisService = TestBed.inject(StaticAnalysisService);
+    dashboardService = TestBed.inject(DashboardService);
+    modalService = TestBed.inject(NgbModal);
     fixture.detectChanges();
   });
 
@@ -337,7 +336,7 @@ describe('StaticAnalysisWidgetComponent', () => {
     component.generateUnitTestMetrics(staticAnalysisTestDataMissingMetrics);
   });
 
-  it('should assign default if no data', () => {
+  it('should assign default if no data', async () => {
     component.hasData = false;
     component.setDefaultIfNoData();
     expect(component.charts[0].data.items[0].title).toEqual('No Data Found');

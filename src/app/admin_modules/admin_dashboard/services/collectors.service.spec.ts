@@ -33,8 +33,8 @@ describe('CollectorService', () => {
             providers: [CollectorsService]
         });
 
-        service = TestBed.get(CollectorsService);
-        httpClient = TestBed.get(HttpClient);
+        service = TestBed.inject(CollectorsService);
+        httpClient = TestBed.inject(HttpClient);
     });
 
     it('should be created', () => {

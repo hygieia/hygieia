@@ -17,10 +17,13 @@ import {
   NbUserModule, NbDialogModule
 } from '@nebular/theme';
 import { DashboardCreateComponent } from './dashboard-create/dashboard-create.component';
-import {FormsModule} from '@angular/forms';
-import {NgbTypeaheadModule} from '@ng-bootstrap/ng-bootstrap';
+import { FormsModule } from '@angular/forms';
+import { NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { DashboardCountComponent } from './dashboard-list/dashboard-count/dashboard-count.component';
-import {PieChartModule} from '@swimlane/ngx-charts';
+import { PieChartModule } from '@swimlane/ngx-charts';
+
+import { MatCommonModule } from '@angular/material/core';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -31,6 +34,7 @@ import {PieChartModule} from '@swimlane/ngx-charts';
 
   ],
     imports: [
+      MatCommonModule,
         SharedModule,
         LandingPageRoutingModule,
         NbTabsetModule,
@@ -53,8 +57,10 @@ import {PieChartModule} from '@swimlane/ngx-charts';
         FormsModule,
         NgbTypeaheadModule,
         PieChartModule,
+        CommonModule,
     ],
-  entryComponents: [DashboardCreateComponent],
-  providers: [ DashboardListService ]
+  entryComponents: [ DashboardCreateComponent ],
+  providers: [ DashboardListService ],
+  exports: [ FormsModule ]
 })
 export class LandingPageModule { }

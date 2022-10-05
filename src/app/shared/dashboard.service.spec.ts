@@ -10,37 +10,37 @@ describe('DashboardService', () => {
   }));
 
   it('should be created', () => {
-    const service: DashboardService = TestBed.get(DashboardService);
+    const service: DashboardService = TestBed.inject(DashboardService);
     expect(service).toBeTruthy();
   });
 
   it('should load dashboard audits', () => {
-    const service: DashboardService = TestBed.get(DashboardService);
+    const service: DashboardService = TestBed.inject(DashboardService);
     service.loadDashboardAudits();
   });
 
   it('should load dashboard audits', () => {
-    const service: DashboardService = TestBed.get(DashboardService);
+    const service: DashboardService = TestBed.inject(DashboardService);
     service.subscribeDashboardRefresh();
   });
 
   it('should clear dashboards', () => {
-    const service: DashboardService = TestBed.get(DashboardService);
+    const service: DashboardService = TestBed.inject(DashboardService);
     service.clearDashboard();
   });
 
   it('should check collector item type exists', () => {
-    const service: DashboardService = TestBed.get(DashboardService);
+    const service: DashboardService = TestBed.inject(DashboardService);
     service.checkCollectorItemTypeExist('collectors');
   });
 
   it('should create dashboard', () => {
-    const service: DashboardService = TestBed.get(DashboardService);
+    const service: DashboardService = TestBed.inject(DashboardService);
     service.createDashboard({});
   });
 
   it('should load counts', () => {
-    const service: DashboardService = TestBed.get(DashboardService);
+    const service: DashboardService = TestBed.inject(DashboardService);
     service.loadCounts();
   });
 

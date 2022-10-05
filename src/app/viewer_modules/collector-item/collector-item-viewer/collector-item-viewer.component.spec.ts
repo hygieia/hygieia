@@ -9,8 +9,9 @@ import {CollectorItemService} from '../collector-item.service';
 import {CollectorItemModule} from '../collector-item.module';
 import {ICollItem} from '../interfaces';
 import {RouterTestingModule} from '@angular/router/testing';
+import { NbFocusMonitor, NbStatusService } from '@nebular/theme';
 
-describe('CollectorItemComponent', () => {
+describe('CollectorItemViewerComponent', () => {
   let component: CollectorItemViewerComponent;
   let fixture: ComponentFixture<CollectorItemViewerComponent>;
   let ciTestData: ICollItem;
@@ -22,7 +23,7 @@ describe('CollectorItemComponent', () => {
         RouterTestingModule.withRoutes([]), CollectorItemModule
       ],
       declarations: [],
-      providers: [NgbActiveModal, CollectorItemService]
+      providers: [NgbActiveModal, CollectorItemService, NbFocusMonitor, NbStatusService]
     }).compileComponents();
     ciTestData = {
       id: 'testID',

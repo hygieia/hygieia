@@ -8,7 +8,7 @@ export const environment = {
     ALLOW_SSO: true,
     CLIENT_ID: 'dummy_client_id',
     AUTHORIZATION_URL: 'dummy_oauth_url',
-  }
+  },
 };
 
 /*

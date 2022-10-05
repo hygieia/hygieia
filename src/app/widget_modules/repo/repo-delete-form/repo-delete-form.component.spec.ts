@@ -51,7 +51,7 @@ class MockDashboardService {
   declarations: [],
   imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule,
     RouterModule.forRoot([]), NgbModule, RepoModule],
-  entryComponents: []
+  // entryComponents: []
 })
 class TestModule { }
 
@@ -90,9 +90,9 @@ describe('RepoDeleteFormComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(RepoDeleteFormComponent);
     component = fixture.componentInstance;
-    dashboardService = TestBed.get(DashboardService);
-    collectorService = TestBed.get(CollectorService);
-    modalService = TestBed.get(NgbModal);
+    dashboardService = TestBed.inject(DashboardService);
+    collectorService = TestBed.inject(CollectorService);
+    modalService = TestBed.inject(NgbModal);
     fixture.detectChanges();
   });
 

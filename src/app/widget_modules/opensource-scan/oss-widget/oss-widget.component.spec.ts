@@ -20,7 +20,7 @@ import { ICollItem } from 'src/app/viewer_modules/collector-item/interfaces';
   declarations: [],
   imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule,
     RouterModule.forRoot([]), NgbModule, OpensourceScanModule],
-  entryComponents: []
+  // entryComponents: []
 })
 
 class TestModule { }
@@ -189,9 +189,9 @@ describe('OSSWidgetComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(OSSWidgetComponent);
     component = fixture.componentInstance;
-    ossService = TestBed.get(OpensourceScanService);
-    dashboardService = TestBed.get(DashboardService);
-    modalService = TestBed.get(NgbModal);
+    ossService = TestBed.inject(OpensourceScanService);
+    dashboardService = TestBed.inject(DashboardService);
+    modalService = TestBed.inject(NgbModal);
     fixture.detectChanges();
   });
 

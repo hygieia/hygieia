@@ -12,8 +12,11 @@ import {
 import {
   BaseChartComponent,
   calculateViewDimensions,
+  Color,
   ColorHelper,
+  LegendPosition,
   LineSeriesComponent,
+  ScaleType,
   ViewDimensions,
 } from '@swimlane/ngx-charts';
 import { scaleBand, scaleLinear, scalePoint, scaleTime } from 'd3-scale';
@@ -131,7 +134,7 @@ export class LineAndBarChartComponent extends BaseChartComponent {
   @Input() curve: any = curveLinear;
   @Input() legend = false;
   @Input() legendTitle = 'Legend';
-  @Input() legendPosition = 'right';
+  @Input() legendPosition = LegendPosition.Right;
   @Input() xAxis = true;
   @Input() yAxis = true;
   @Input() showXAxisLabel = true;
@@ -144,12 +147,12 @@ export class LineAndBarChartComponent extends BaseChartComponent {
   @Input() gradient = false;
   @Input() showGridLines = true;
   @Input() activeEntries: any[] = [];
-  @Input() schemeType = 'ordinal';
+  @Input() schemeType = ScaleType.Ordinal;
   @Input() xAxisTickFormatting: any;
   @Input() yAxisTickFormatting: any;
   @Input() yRightAxisTickFormatting: any;
   @Input() roundDomains = false;
-  @Input() colorSchemeLine: any[];
+  @Input() colorSchemeLine: string | Color;
   @Input() autoScale = true;
   @Input() lineChart = [];
   @Input() yLeftAxisScaleFactor: any;

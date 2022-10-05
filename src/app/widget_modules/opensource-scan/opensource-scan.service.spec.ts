@@ -11,7 +11,7 @@ describe('OpensourceScanService', () => {
   }).compileComponents());
 
   it('should be created', () => {
-    const service: OpensourceScanService = TestBed.get(OpensourceScanService);
+    const service: OpensourceScanService = TestBed.inject(OpensourceScanService);
     expect(service).toBeTruthy();
   });
 

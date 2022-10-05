@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { NfrrViewComponent } from './nfrr-view.component';
 import {NgxChartsModule} from '@swimlane/ngx-charts';
@@ -28,7 +28,7 @@ describe('NfrrViewComponent', () => {
   let component: NfrrViewComponent;
   let fixture: ComponentFixture<NfrrViewComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [NgxChartsModule, HttpClientTestingModule, RouterModule.forRoot([]), BrowserAnimationsModule],
       declarations: [ NfrrViewComponent ],
@@ -44,15 +44,15 @@ describe('NfrrViewComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create', async () => {
     expect(component).toBeTruthy();
   });
 
-  it('should get valid audit type name', () => {
+  it('should get valid audit type name', async () => {
     expect(component.auditTypeToReadable('LIBRARY_POLICY') === 'Open Source');
   });
 
-  it('should transform to chart data', () => {
+  it('should transform to chart data', async () => {
     const audits: IAudit[] = [
       {lineOfBusiness: 'lob1', auditType: 'TEST_RESULT', auditTypeStatus: 'OK', auditStatus: 'FAIL', timestamp: 158439824},
       {lineOfBusiness: 'lob2', auditType: 'PERF_TEST', auditTypeStatus: 'OK', auditStatus: 'OK', timestamp: 1584396876}];
@@ -61,12 +61,12 @@ describe('NfrrViewComponent', () => {
     expect(component.ngxData.data[1].name).toEqual('PERF_TEST');
   });
 
-  it('should chart all audit data', () => {
+  it('should chart all audit data', async () => {
     component.getAuditMetricsAll();
     expect(component.ngxData.data.length).toEqual(2);
   });
 
-  it('should chart audit data by lob', () => {
+  it('should chart audit data by lob', async () => {
     component.getAuditMetricsByLob('lob1');
     expect(component.ngxData.data.length).toEqual(1);
   });

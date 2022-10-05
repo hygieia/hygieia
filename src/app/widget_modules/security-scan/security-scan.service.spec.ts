@@ -11,7 +11,7 @@ describe('SecurityScanService', () => {
   }).compileComponents());
 
   it('should be created', () => {
-    const service: SecurityScanService = TestBed.get(SecurityScanService);
+    const service: SecurityScanService = TestBed.inject(SecurityScanService);
     expect(service).toBeTruthy();
   });
 

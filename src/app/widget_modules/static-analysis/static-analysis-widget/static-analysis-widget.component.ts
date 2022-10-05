@@ -23,7 +23,8 @@ import {StaticAnalysisService} from '../static-analysis.service';
 import {STATICANALYSIS_CHARTS} from './static-analysis-charts';
 import {IStaticAnalysis} from '../interfaces';
 import {StaticAnalysisDetailComponent} from '../static-analysis-detail/static-analysis-detail.component';
-import {isUndefined} from 'util';
+// import {isUndefined} from 'util';
+import { isNullOrUndefined } from 'util';
 import {WidgetState} from '../../../shared/widget-header/widget-state';
 import { ICollItem } from 'src/app/viewer_modules/collector-item/interfaces';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -212,13 +213,13 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
         status: null,
         statusText: '',
         title: 'Quality Gate',
-        subtitles: [isUndefined(qualityGate) ? '' : qualityGate.value],
+        subtitles: [isNullOrUndefined(qualityGate) ? '' : qualityGate.value],
       },
       {
         status: null,
         statusText: '',
         title: 'Technical Debt',
-        subtitles: [isUndefined(techDebt) ? '' : techDebt.formattedValue],
+        subtitles: [isNullOrUndefined(techDebt) ? '' : techDebt.formattedValue],
       },
     ] as IClickListItem[];
 
@@ -241,8 +242,8 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
     const coverage = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.codeCoverage);
     const loc = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.numCodeLines);
 
-    this.charts[1].data.results[0].value = isUndefined(coverage) ? 0 : parseFloat(coverage.value);
-    this.charts[1].data.customLabelValue = isUndefined(loc) ? 0 : parseFloat(loc.value);
+    this.charts[1].data.results[0].value = isNullOrUndefined(coverage) ? 0 : parseFloat(coverage.value);
+    this.charts[1].data.customLabelValue = isNullOrUndefined(loc) ? 0 : parseFloat(loc.value);
   }
 
   // *********************** VIOLATIONS *****************************
@@ -254,10 +255,10 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
     const major = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.majorViolations);
     const total = result.metrics.find(metric => metric.name === this.staticAnalysisMetrics.totalIssues);
 
-    this.charts[2].data[0].value = isUndefined(blocker) ? 0 : parseFloat(blocker.value);
-    this.charts[2].data[1].value = isUndefined(critical) ? 0 : parseFloat(critical.value);
-    this.charts[2].data[2].value = isUndefined(major) ? 0 : parseFloat(major.value);
-    this.charts[2].data[3].value = isUndefined(total) ? 0 : parseFloat(total.value);
+    this.charts[2].data[0].value = isNullOrUndefined(blocker) ? 0 : parseFloat(blocker.value);
+    this.charts[2].data[1].value = isNullOrUndefined(critical) ? 0 : parseFloat(critical.value);
+    this.charts[2].data[2].value = isNullOrUndefined(major) ? 0 : parseFloat(major.value);
+    this.charts[2].data[3].value = isNullOrUndefined(total) ? 0 : parseFloat(total.value);
 
   }
 
@@ -275,25 +276,25 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
         status: null,
         statusText: '',
         title: 'Success',
-        subtitles: [isUndefined(testSuccesses) ? '' : (parseFloat(testSuccesses.value) / 100) * parseInt(totalTests.value, 10)],
+        subtitles: [isNullOrUndefined(testSuccesses) ? '' : (parseFloat(testSuccesses.value) / 100) * parseInt(totalTests.value, 10)],
       },
       {
         status: null,
         statusText: '',
         title: 'Failures',
-        subtitles: [isUndefined(testFailures) ? '' : testFailures.value],
+        subtitles: [isNullOrUndefined(testFailures) ? '' : testFailures.value],
       },
       {
         status: null,
         statusText: '',
         title: 'Errors',
-        subtitles: [isUndefined(testErrors) ? '' : testErrors.value],
+        subtitles: [isNullOrUndefined(testErrors) ? '' : testErrors.value],
       },
       {
         status: null,
         statusText: '',
         title: 'Total Tests',
-        subtitles: [isUndefined(totalTests) ? '' : totalTests.value],
+        subtitles: [isNullOrUndefined(totalTests) ? '' : totalTests.value],
       },
     ] as IClickListItem[];
 

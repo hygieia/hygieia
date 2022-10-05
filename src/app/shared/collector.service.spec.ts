@@ -10,7 +10,7 @@ describe('CollectorService', () => {
   }));
 
   it('should be created', () => {
-    const service: CollectorService = TestBed.get(CollectorService);
+    const service: CollectorService = TestBed.inject(CollectorService);
     expect(service).toBeTruthy();
   });
 

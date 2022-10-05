@@ -15,12 +15,12 @@ describe('SsoService', () => {
   }));
 
   beforeEach(() => {
-    service = TestBed.get(SsoService);
-    http = TestBed.get(HttpClient);
+    service = TestBed.inject(SsoService);
+    http = TestBed.inject(HttpClient);
   });
 
   it('should be created', () => {
-    service = TestBed.get(SsoService);
+    service = TestBed.inject(SsoService);
     expect(service).toBeTruthy();
   });
 

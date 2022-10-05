@@ -8,7 +8,6 @@ import { DashboardService } from 'src/app/shared/dashboard.service';
 @Component({
   selector: 'app-repo-delete-form',
   templateUrl: './repo-delete-form.component.html',
-  styleUrls: ['./repo-delete-form.component.scss']
 })
 export class RepoDeleteFormComponent implements OnInit {
 

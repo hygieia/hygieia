@@ -26,7 +26,7 @@ describe('ManageAdminsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ManageAdminsComponent);
     component = fixture.componentInstance;
-    userService = TestBed.get(UserDataService);
+    userService = TestBed.inject(UserDataService);
     fixture.detectChanges();
   });
 

@@ -64,9 +64,9 @@ describe('DashboardViewComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DashboardViewComponent);
     component = fixture.componentInstance;
-    router = TestBed.get(Router);
-    service = TestBed.get(DashboardService);
-    activeRoute = TestBed.get(ActivatedRoute);
+    router = TestBed.inject(Router);
+    service = TestBed.inject(DashboardService);
+    activeRoute = TestBed.inject(ActivatedRoute);
     fixture.detectChanges();
   });
 
@@ -102,7 +102,7 @@ describe('DashboardViewComponent', () => {
       status: 401
     }));
     spyOn(activeRoute.snapshot.paramMap, 'get').and.returnValue('trial');
-    const routeSpy = spyOn(router, 'navigate').and.callFake(() => {});
+    const routeSpy = spyOn(router, 'navigate').and.callFake(async () => true);
     component.ngOnInit();
     expect(routeSpy).toHaveBeenCalledWith(['/user/login']);
   });

@@ -11,7 +11,7 @@ describe('RepoService', () => {
   }).compileComponents());
 
   it('should be created', () => {
-    const service: RepoService = TestBed.get(RepoService);
+    const service: RepoService = TestBed.inject(RepoService);
     expect(service).toBeTruthy();
   });
 

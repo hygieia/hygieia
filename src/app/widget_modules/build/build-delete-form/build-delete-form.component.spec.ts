@@ -50,7 +50,7 @@ class MockDashboardService {
 @NgModule({
   declarations: [],
   imports: [BuildModule, HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule, RouterModule.forRoot([]), NgbModule],
-  entryComponents: []
+  // entryComponents: []
 })
 class TestModule { }
 
@@ -78,9 +78,9 @@ describe('BuildDeleteFormComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(BuildDeleteFormComponent);
     component = fixture.componentInstance;
-    dashboardService = TestBed.get(DashboardService);
-    collectorService = TestBed.get(CollectorService);
-    modalService = TestBed.get(NgbModal);
+    dashboardService = TestBed.inject(DashboardService);
+    collectorService = TestBed.inject(CollectorService);
+    modalService = TestBed.inject(NgbModal);
     fixture.detectChanges();
   });
 

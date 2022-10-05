@@ -52,8 +52,8 @@
                                 <ng-template #rt let-r="result" let-t="term">
                                     <span>{{r.configurationItem}}-({{r.commonName}})</span>
                                 </ng-template>
-                                <label class="modal-label">Business Service <i class="fa fa-info-circle"
-                                        ngbTooltip="{{getBusSerToolText()}}"></i></label>
+                                <label class="modal-label">Business Service <em class="fa fa-info-circle"
+                                        ngbTooltip="{{getBusSerToolText()}}"></em></label>
                               <div class="form-inline">
                                 <input type="text" name="configurationItemBusServ" style="width:95%"
                                        formControlName="configurationItemBusServ" class="form-control"
@@ -69,8 +69,8 @@
                                 <ng-template #rtB let-r="result" let-t="term">
                                     <span>{{r.configurationItem}}-({{r.commonName}})</span>
                                 </ng-template>
-                                <label class="modal-label">Business Application <i class="fa fa-info-circle"
-                                        ngbTooltip="{{getBusAppToolText()}}"></i></label>
+                                <label class="modal-label">Business Application <em class="fa fa-info-circle"
+                                        ngbTooltip="{{getBusAppToolText()}}"></em></label>
                               <div class="form-inline">
                                 <input type="text" name="configurationItemBusApp" style="width:95%"
                                        formControlName="configurationItemBusApp" class="form-control"
@@ -204,10 +204,10 @@
                                                     name="scoreDisplay" [(ngModel)]="scoreSettings.scoreDisplay"
                                                     value="{{scoreDisplayType.WIDGET}}"> Display in Widget
                                             </label></span>
-                                        <span class="col-md-4 pull-left"> <i
+                                        <span class="col-md-4 pull-left"> <em
                                                 class="fa fa-stack-1x fa-info-circle pull-left"
                                                 ngbTooltip="{{selectHeaderOrWidgetToolTip}}"
-                                                title="{{selectHeaderOrWidgetToolTip}}"></i></span>
+                                                title="{{selectHeaderOrWidgetToolTip}}"></em></span>
                                     </div>
                                 </div>
                             </form>

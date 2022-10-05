@@ -91,7 +91,7 @@ class MockSecurityScanService {
   declarations: [],
   imports: [SecurityScanModule, HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule,
     RouterModule.forRoot([]), NgbModule],
-  entryComponents: []
+  // entryComponents: []
 })
 class TestModule { }
 
@@ -147,9 +147,9 @@ describe('SecurityScanWidgetComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(SecurityScanWidgetComponent);
     component = fixture.componentInstance;
-    securityScanService = TestBed.get(SecurityScanService);
-    dashboardService = TestBed.get(DashboardService);
-    modalService = TestBed.get(NgbModal);
+    securityScanService = TestBed.inject(SecurityScanService);
+    dashboardService = TestBed.inject(DashboardService);
+    modalService = TestBed.inject(NgbModal);
     fixture.detectChanges();
   });
 

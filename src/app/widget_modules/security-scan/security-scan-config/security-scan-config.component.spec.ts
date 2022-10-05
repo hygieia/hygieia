@@ -51,7 +51,7 @@ class MockDashboardService {
   declarations: [],
   imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule,
     RouterModule.forRoot([]), NgbModule, SecurityScanModule],
-  entryComponents: []
+  // entryComponents: []
 })
 class TestModule { }
 
@@ -89,9 +89,9 @@ describe('SecurityScanConfigComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(SecurityScanConfigComponent);
     component = fixture.componentInstance;
-    dashboardService = TestBed.get(DashboardService);
-    collectorService = TestBed.get(CollectorService);
-    modalService = TestBed.get(NgbModal);
+    dashboardService = TestBed.inject(DashboardService);
+    collectorService = TestBed.inject(CollectorService);
+    modalService = TestBed.inject(NgbModal);
     fixture.detectChanges();
   });
 
