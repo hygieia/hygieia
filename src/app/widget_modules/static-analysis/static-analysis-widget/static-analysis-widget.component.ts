@@ -367,4 +367,3 @@ export class StaticAnalysisWidgetComponent extends WidgetComponent implements On
   }
 
 }
-//
