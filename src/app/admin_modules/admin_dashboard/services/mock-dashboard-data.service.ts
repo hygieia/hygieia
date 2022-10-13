@@ -95,5 +95,8 @@ export class MockDashboardDataService {
   }
   updateDashboardScoreSettings(id, scoreEnabled, scoreDisplay) {
     return of(this.data);
-}
+  }
+  getMyWidget(template) {
+    return of(this.data)
+  }
 }

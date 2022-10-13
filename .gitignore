@@ -41,6 +41,7 @@ yarn-error.log
 /target
 testem.log
 /typings
+/.angular
 
 # System Files
 .DS_Store

@@ -32,8 +32,8 @@ describe('SignupComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(SignupComponent);
     component = fixture.componentInstance;
-    router = TestBed.get(Router);
-    authService = TestBed.get(AuthService);
+    router = TestBed.inject(Router);
+    authService = TestBed.inject(AuthService);
     fixture.detectChanges();
   });
   it('should create', () => {

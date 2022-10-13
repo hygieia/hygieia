@@ -22,18 +22,18 @@ describe('WidgetManagerService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: WidgetManagerService = TestBed.get(WidgetManagerService);
+    const service: WidgetManagerService = TestBed.inject(WidgetManagerService);
     expect(service).toBeTruthy();
   });
 
   it('should be register created', () => {
-    const service: WidgetManagerService = TestBed.get(WidgetManagerService);
+    const service: WidgetManagerService = TestBed.inject(WidgetManagerService);
     service.register('testWidget',  option );
     expect(service.widgets).toBeTruthy();
   });
 
   it('should be created', () => {
-    const service: WidgetManagerService = TestBed.get(WidgetManagerService);
+    const service: WidgetManagerService = TestBed.inject(WidgetManagerService);
     service.register('testWidget1', option);
 
     const widgets = service.getWidgets();
@@ -42,7 +42,7 @@ describe('WidgetManagerService', () => {
   });
 
   it('should be created', () => {
-    const service: WidgetManagerService = TestBed.get(WidgetManagerService);
+    const service: WidgetManagerService = TestBed.inject(WidgetManagerService);
     service.register('testWidget2', option);
 
     const widgets = service.getWidget('testWidget2');

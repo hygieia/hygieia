@@ -67,7 +67,6 @@ export class EditDashboardComponent implements OnInit {
     }).catch((error) => {
       this.loadData();
     });
-
   }
 
   pageChangeHandler(pageNumber) {

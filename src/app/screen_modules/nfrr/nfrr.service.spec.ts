@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { async, TestBed } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { NfrrService } from './nfrr.service';
 
@@ -8,15 +8,15 @@ describe('NfrrService', () => {
     let service: NfrrService;
     let http: HttpClient;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             imports: [ HttpClientTestingModule ]
         });
     }));
 
     beforeEach(() => {
-        service = TestBed.get(NfrrService);
-        http = TestBed.get(HttpClient);
+        service = TestBed.inject(NfrrService);
+        http = TestBed.inject(HttpClient);
     });
 
     it('should be created', () => {
@@ -24,13 +24,13 @@ describe('NfrrService', () => {
     });
 
     it('should get all audit metrics', () => {
-        const spy = spyOn(service, 'getTotalElementsCount').and.returnValue(of({}));
+        const spy = spyOn(service, 'getTotalElementsCount').and.returnValue(of(0));
         service.getAuditMetricsAll();
         expect(spy).toHaveBeenCalled();
     });
 
     it('should get audit metrics by lob', () => {
-        const spy = spyOn(service, 'getTotalElementsCount').and.returnValue(of({}));
+        const spy = spyOn(service, 'getTotalElementsCount').and.returnValue(of(0));
         service.getAuditMetricsByLob('foo');
         expect(spy).toHaveBeenCalled();
     });

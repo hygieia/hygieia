@@ -11,7 +11,7 @@ describe('BuildService', () => {
   }).compileComponents());
 
   it('should be created', () => {
-    const service: BuildService = TestBed.get(BuildService);
+    const service: BuildService = TestBed.inject(BuildService);
     expect(service).toBeTruthy();
   });
 

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SsoComponent } from './sso.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -18,7 +18,7 @@ describe('SsoComponent', () => {
     localStorage.removeItem('auth-code');
   });
 
-  beforeEach(async(() => {
+  beforeEach( async () => {
     TestBed.configureTestingModule({
       imports: [
         ReactiveFormsModule,
@@ -29,7 +29,7 @@ describe('SsoComponent', () => {
       providers: [ SsoService ],
     })
     .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(SsoComponent);

@@ -6,13 +6,14 @@
   @include nb-theme-global();
 };
 
-@import '~@nebular/theme/styles/globals';
 @import "../node_modules/bootstrap/scss/mixins";
-@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+@import '../node_modules/@angular/material/prebuilt-themes/indigo-pink.css';
 
 // STYLES
 
 body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
   font-size: 100%;
   //padding-top: 44px;
   height: 100%;
@@ -119,4 +120,4 @@ html, body {
   height: 100%;
   overflow-x: hidden;
 }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+

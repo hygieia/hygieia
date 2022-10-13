@@ -18,7 +18,8 @@ import {
   calculateViewDimensions,
   trimLabel,
   gridLayout,
-  formatLabel
+  formatLabel,
+  ScaleType
 } from '@swimlane/ngx-charts';
 import { DataItem } from './data-item.interfaces';
 
@@ -218,7 +219,7 @@ export class PieGridComponent extends BaseChartComponent {
   }
 
   setColors(): void {
-    this.colorScale = new ColorHelper(this.scheme, 'ordinal', this.domain, this.customColors);
+    this.colorScale = new ColorHelper(this.scheme, ScaleType.Ordinal, this.domain, this.customColors);
   }
 
   onActivate(item, fromLegend = false) {

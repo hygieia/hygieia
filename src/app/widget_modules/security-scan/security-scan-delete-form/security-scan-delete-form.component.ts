@@ -8,8 +8,7 @@ import { DashboardService } from 'src/app/shared/dashboard.service';
 
 @Component({
   selector: 'app-security-scan-delete-form',
-  templateUrl: './security-scan-delete-form.component.html',
-  styleUrls: ['./security-scan-delete-form.component.scss']
+  templateUrl: './security-scan-delete-form.component.html'
 })
 export class SecurityScanDeleteFormComponent implements OnInit {
 

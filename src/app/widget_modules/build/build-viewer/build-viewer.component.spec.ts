@@ -26,7 +26,7 @@ describe('BuildViewerComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(BuildViewerComponent);
         component = fixture.componentInstance;
-        router = TestBed.get(Router);
+        router = TestBed.inject(Router);
         fixture.detectChanges();
     });
 

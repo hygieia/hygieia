@@ -21,8 +21,8 @@ describe('PaginationWrapperService', () => {
 
   describe('getters', () => {
     beforeEach(() => {
-      service = TestBed.get(PaginationWrapperService);
-      dashboard = TestBed.get(DashboardDataService);
+      service = TestBed.inject(PaginationWrapperService);
+      dashboard = TestBed.inject(DashboardDataService);
     });
 
     it('should calculate total items', () => {
@@ -65,7 +65,7 @@ describe('PaginationWrapperService', () => {
 
 
   it('should be created', () => {
-    const pageService: PaginationWrapperService = TestBed.get(PaginationWrapperService);
+    const pageService: PaginationWrapperService = TestBed.inject(PaginationWrapperService);
     expect(pageService).toBeTruthy();
   });
 
@@ -91,7 +91,7 @@ describe('PaginationWrapperService', () => {
       [PaginationWrapperService],
       (
       ) => {
-        const servicePage: PaginationWrapperService = TestBed.get(PaginationWrapperService);
+        const servicePage: PaginationWrapperService = TestBed.inject(PaginationWrapperService);
         servicePage.totalItems = 200;
         expect(servicePage.getTotalItems()).toEqual(200);
       }

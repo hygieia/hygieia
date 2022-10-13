@@ -21,7 +21,7 @@ describe('FormModalComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FormModalComponent);
     component = fixture.componentInstance;
-    activeModal = TestBed.get(NgbActiveModal);
+    activeModal = TestBed.inject(NgbActiveModal);
   });
 
   it('should create', () => {

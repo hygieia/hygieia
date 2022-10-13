@@ -8,8 +8,7 @@ import { DashboardService } from 'src/app/shared/dashboard.service';
 
 @Component({
   selector: 'app-feature-delete-form',
-  templateUrl: './feature-delete-form.component.html',
-  styleUrls: ['./feature-delete-form.component.scss']
+  templateUrl: './feature-delete-form.component.html'
 })
 export class FeatureDeleteFormComponent implements OnInit {
 

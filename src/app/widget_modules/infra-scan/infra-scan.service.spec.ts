@@ -9,7 +9,7 @@ describe('InfraScanService', () => {
   }));
 
   it('should be created', () => {
-    const service: InfraScanService = TestBed.get(InfraScanService);
+    const service: InfraScanService = TestBed.inject(InfraScanService);
     expect(service).toBeTruthy();
   });
 });

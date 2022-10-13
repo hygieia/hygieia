@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { NgxUIModule } from '@swimlane/ngx-ui';
+// import { NgxUIModule } from '@swimlane/ngx-ui';
 
 import { NumberCardChartComponent } from './number-card-chart.component';
 
@@ -10,10 +10,12 @@ describe('NumberCardChartComponent', () => {
   let component: NumberCardChartComponent;
   let fixture: ComponentFixture<NumberCardChartComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [NumberCardChartComponent],
-      imports: [CommonModule, NgxChartsModule, BrowserAnimationsModule, NgxUIModule]
+      imports: [CommonModule, NgxChartsModule, BrowserAnimationsModule,
+        // NgxUIModule
+      ]
     })
       .compileComponents();
   }));
@@ -24,7 +26,7 @@ describe('NumberCardChartComponent', () => {
     component.colorScheme = 'vivid';
     component.xAxisLabel = 'Test';
     component.yAxisLabel = 'Test';
-    component.data = {};
+    component.data = [];
     fixture.detectChanges();
   });
 

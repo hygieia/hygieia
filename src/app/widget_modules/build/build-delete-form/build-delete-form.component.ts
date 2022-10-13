@@ -9,7 +9,6 @@ import { DashboardService } from 'src/app/shared/dashboard.service';
 @Component({
   selector: 'app-build-delete-form',
   templateUrl: './build-delete-form.component.html',
-  styleUrls: ['./build-delete-form.component.scss']
 })
 export class BuildDeleteFormComponent implements OnInit {
 

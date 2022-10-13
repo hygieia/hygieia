@@ -13,7 +13,7 @@ describe('DashboardListService', () => {
       imports: [ HttpClientTestingModule]
     });
 
-    dashboardListService = TestBed.get(DashboardListService);
+    dashboardListService = TestBed.inject(DashboardListService);
   });
   it('should be created', () => {
     expect(dashboardListService).toBeTruthy();

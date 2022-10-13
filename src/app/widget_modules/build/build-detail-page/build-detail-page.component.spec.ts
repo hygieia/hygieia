@@ -71,7 +71,7 @@ describe('BuildDetailComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(BuildDetailPageComponent);
     component = fixture.componentInstance;
-    service = TestBed.get(BuildService);
+    service = TestBed.inject(BuildService);
     fixture.detectChanges();
   });
 

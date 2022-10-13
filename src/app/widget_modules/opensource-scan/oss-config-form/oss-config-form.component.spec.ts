@@ -66,9 +66,9 @@ describe('OSSConfigFormComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(OSSConfigFormComponent);
     component = fixture.componentInstance;
-    dashboardService = TestBed.get(DashboardService);
-    collectorService = TestBed.get(CollectorService);
-    modalService = TestBed.get(NgbModal);
+    dashboardService = TestBed.inject(DashboardService);
+    collectorService = TestBed.inject(CollectorService);
+    modalService = TestBed.inject(NgbModal);
     fixture.detectChanges();
   });
 

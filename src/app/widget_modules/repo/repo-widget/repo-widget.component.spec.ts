@@ -50,7 +50,7 @@ class MockRepoService {
   declarations: [],
   imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule,
     RouterModule.forRoot([]), NgbModule, RepoModule],
-  entryComponents: []
+  // entryComponents: []
 })
 class TestModule { }
 
@@ -137,9 +137,9 @@ describe('RepoWidgetComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(RepoWidgetComponent);
     component = fixture.componentInstance;
-    repoService = TestBed.get(RepoService);
-    dashboardService = TestBed.get(DashboardService);
-    modalService = TestBed.get(NgbModal);
+    repoService = TestBed.inject(RepoService);
+    dashboardService = TestBed.inject(DashboardService);
+    modalService = TestBed.inject(NgbModal);
     fixture.detectChanges();
   });
 

@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -18,7 +18,7 @@ describe('DashboardListComponent', () => {
   let fixture: ComponentFixture<DashboardListComponent>;
   let router: Router;
   let dashboardListService;
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, SharedModule, NbThemeModule.forRoot(), HttpClientTestingModule,
         RouterTestingModule.withRoutes([]), FormsModule],
@@ -32,8 +32,8 @@ describe('DashboardListComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DashboardListComponent);
     component = fixture.componentInstance;
-    router = TestBed.get(Router);
-    dashboardListService = TestBed.get(DashboardListService);
+    router = TestBed.inject(Router);
+    dashboardListService = TestBed.inject(DashboardListService);
     fixture.detectChanges();
   });
 
@@ -78,22 +78,22 @@ describe('DashboardListComponent', () => {
     expect(component.dashboardType).toBe('Team');
   });
   it('should navigate to audits', () => {
-    const spy = spyOn(router, 'navigate').and.callFake(() => true);
+    const spy = spyOn(router, 'navigate').and.callFake(async () => true);
     component.goToAuditReport();
     expect(spy).toHaveBeenCalledWith(['/audits/nfrr']);
   });
   it('should navigate to dashboard view', () => {
-    const spy = spyOn(router, 'navigate').and.callFake(() => true);
+    const spy = spyOn(router, 'navigate').and.callFake(async () => true);
     component.navigateToTeamDashboard('foo');
     expect(spy).toHaveBeenCalledWith(['/dashboard/dashboardView']);
   });
   it('should navigate tobuild viewer', () => {
-    const spy = spyOn(router, 'navigate').and.callFake(() => true);
+    const spy = spyOn(router, 'navigate').and.callFake(async () => true);
     component.goToBuildViewer();
     expect(spy).toHaveBeenCalledWith(['/build/viewer']);
   });
   it('should navigate tobuild viewer', () => {
-    const spy = spyOn(router, 'navigate').and.callFake(() => true);
+    const spy = spyOn(router, 'navigate').and.callFake(async () => true);
     component.goToCollectorItemMetrics();
     expect(spy).toHaveBeenCalledWith(['/collectorItem/viewer']);
   });

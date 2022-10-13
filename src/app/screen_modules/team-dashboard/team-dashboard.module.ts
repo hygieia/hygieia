@@ -13,6 +13,7 @@ import {RepoModule} from '../../widget_modules/repo/repo.module';
 import {DeployModule} from '../../widget_modules/deploy/deploy.module';
 import {FeatureModule} from '../../widget_modules/feature/feature.module';
 import {InfraScanModule} from '../../widget_modules/infra-scan/infra-scan.module';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -31,8 +32,10 @@ import {InfraScanModule} from '../../widget_modules/infra-scan/infra-scan.module
     DeployModule,
     FeatureModule,
     InfraScanModule,
+    CommonModule
   ],
-  entryComponents: [
-  ]
+  // entryComponents: [
+  // ]
+  exports: [CommonModule]
 })
 export class TeamDashboardModule { }

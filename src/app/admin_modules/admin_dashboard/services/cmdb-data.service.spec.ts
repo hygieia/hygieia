@@ -11,7 +11,7 @@ describe('CmdbDataService', () => {
   }));
 
   it('should be created', () => {
-    const service: CmdbDataService = TestBed.get(CmdbDataService);
+    const service: CmdbDataService = TestBed.inject(CmdbDataService);
     expect(service).toBeTruthy();
   });
 });

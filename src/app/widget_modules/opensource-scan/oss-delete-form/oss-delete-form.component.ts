@@ -8,10 +8,9 @@ import { DashboardService } from 'src/app/shared/dashboard.service';
 
 @Component({
   selector: 'app-oss-delete-form',
-  templateUrl: './oss-delete-form.component.html',
-  styleUrls: ['./oss-delete-form.component.scss']
+  templateUrl: './oss-delete-form.component.html'
 })
-export class OSSDeleteFormComponent implements OnInit {
+export class  OSSDeleteFormComponent implements OnInit {
 
   // buttons
   public confirm = 'Confirm';

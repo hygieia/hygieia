@@ -10,7 +10,7 @@ describe('FeatureService', () => {
   }).compileComponents());
 
   it('should be created', () => {
-    const service: FeatureService = TestBed.get(FeatureService);
+    const service: FeatureService = TestBed.inject(FeatureService);
     expect(service).toBeTruthy();
   });
 

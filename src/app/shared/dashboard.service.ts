@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { cloneDeep, extend } from 'lodash';
 import {interval, Observable, ReplaySubject, Subject, Subscription} from 'rxjs';
 import {filter, map, startWith, take} from 'rxjs/operators';
+// import { environment } from 'src/environments/environment';
 import {IAuditResult} from './interfaces';
 
 @Injectable({
@@ -10,13 +11,23 @@ import {IAuditResult} from './interfaces';
 })
 export class DashboardService {
 
-  private dashboardRoute = '/api/dashboard/';
+  // qaApiUrl = environment.apiUrl;
 
-  private dashboardV2Route = '/api/v2/dashboard/';
+  private dashboardRoute = `/api/dashboard/`;
+
+  private dashboardV2Route = `/api/v2/dashboard`;
 
   private dashboardAuditRoute = '/apiaudit/auditresult/dashboard/title/';
 
-  private dashboardCountRoute = '/api/dashboard/count/';
+  private dashboardCountRoute = `/api/dashboard/count/`;
+
+  // private dashboardRoute = `${this.qaApiUrl}/api/dashboard/`;
+
+  // private dashboardV2Route = `${this.qaApiUrl}/api/v2/dashboard`;
+
+  // private dashboardAuditRoute = '/apiaudit/auditresult/dashboard/title/';
+
+  // private dashboardCountRoute = `${this.qaApiUrl}/api/dashboard/count/`;
 
   dashboardSubject = new ReplaySubject<any>(1);
 

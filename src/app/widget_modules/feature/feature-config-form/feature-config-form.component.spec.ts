@@ -66,7 +66,7 @@ class MockDashboardService {
   declarations: [],
   imports: [FeatureModule, HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule,
     RouterModule.forRoot([]), NgbModule],
-  entryComponents: [],
+  // entryComponents: [],
 })
 class TestModule { }
 
@@ -103,9 +103,9 @@ describe('FeatureConfigFormComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FeatureConfigFormComponent);
     component = fixture.componentInstance;
-    dashboardService = TestBed.get(DashboardService);
-    collectorService = TestBed.get(CollectorService);
-    modalService = TestBed.get(NgbModal);
+    dashboardService = TestBed.inject(DashboardService);
+    collectorService = TestBed.inject(CollectorService);
+    modalService = TestBed.inject(NgbModal);
     fixture.detectChanges();
   });
 

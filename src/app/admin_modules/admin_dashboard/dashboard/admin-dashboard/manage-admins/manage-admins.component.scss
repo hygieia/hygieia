@@ -2,11 +2,6 @@
     left: 16%;
 }
 
-.col-push{
-    left: 16%;
-}
-
-
 .widget {
     padding: 2.5rem 3rem;
 
@@ -110,7 +105,7 @@
     .widget-modal-close {
         background: transparent;
         cursor: pointer;
-        color: #C8C8C8;;
+        color: #C8C8C8;
         font-weight: bold;
         position: absolute;
         top: 1rem;
@@ -269,16 +264,6 @@ tr.dash-row > td {
     font-size: 24px;
 }
 
-
-.btn-primary {
-    font-weight: 700;
-    &:hover {
-        color: #fff;
-        background: #152131;
-        border-color: #152131;
-    }
-}
-
 .btn-primary {
     background-image: linear-gradient(to bottom,#384250 0,#152131 100%);
     background-repeat: repeat-x;
@@ -289,8 +274,12 @@ tr.dash-row > td {
     font-size: 18px;
     line-height: 1.3333333;
     border-radius: 6px;
-    font-weight: 600;
     color: rgba(255,255,255,.9) !important;
     background-color: #152131;
     border-color: #152131;
+    &:hover {
+        color: #fff;
+        background: #152131;
+        border-color: #152131;
+    }
 }

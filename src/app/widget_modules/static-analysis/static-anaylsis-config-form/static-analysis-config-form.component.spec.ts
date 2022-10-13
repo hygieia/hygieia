@@ -65,9 +65,9 @@ describe('StaticAnalysisConfigFormComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(StaticAnalysisConfigFormComponent);
     component = fixture.componentInstance;
-    dashboardService = TestBed.get(DashboardService);
-    collectorService = TestBed.get(CollectorService);
-    modalService = TestBed.get(NgbModal);
+    dashboardService = TestBed.inject(DashboardService);
+    collectorService = TestBed.inject(CollectorService);
+    modalService = TestBed.inject(NgbModal);
     fixture.detectChanges();
   });
 

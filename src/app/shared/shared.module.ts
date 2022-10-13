@@ -1,12 +1,12 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { NgxUIModule } from '@swimlane/ngx-ui';
-import { TimeAgoPipe } from 'time-ago-pipe';
+// import { NgxUIModule } from '@swimlane/ngx-ui';
+// import { TimeAgoPipe } from 'time-ago-pipe';
 
 import { CaponeTemplateComponent } from '../screen_modules/team-dashboard/capone-template/capone-template.component';
 import { ChartDirective } from './charts/chart.directive';
@@ -76,14 +76,16 @@ import {NfrrModule} from '../screen_modules/nfrr/nfrr.module';
 import { XByOneLayoutComponent } from './layouts/x-by-one-layout/x-by-one-layout.component';
 import { RefreshModalComponent } from './modals/refresh-modal/refresh-modal.component';
 
+// import { BrowserModule } from '@angular/platform-browser';
+
 @NgModule({
   declarations: [
-    GeneralDeleteComponent,
+    GeneralDeleteComponent, // problematic
     BarHorizontalComponent,
     BaseTemplateComponent,
     CaponeTemplateComponent,
     ChartComponent,
-    ChartDirective,
+    ChartDirective, // problematic
     ClickListComponent,
     ComboChartComponent,
     ComboSeriesVerticalComponent,
@@ -110,7 +112,6 @@ import { RefreshModalComponent } from './modals/refresh-modal/refresh-modal.comp
     PlaceholderWidgetComponent,
     RotationChartComponent,
     TemplatesDirective,
-    TimeAgoPipe,
     TwoByTwoLayoutComponent,
     WidgetComponent,
     WidgetDirective,
@@ -132,46 +133,13 @@ import { RefreshModalComponent } from './modals/refresh-modal/refresh-modal.comp
     XByOneLayoutComponent,
     RefreshModalComponent
   ],
-  entryComponents: [
-    GeneralDeleteComponent,
-    DeleteConfirmModalComponent,
-    BarHorizontalComponent,
-    CaponeTemplateComponent,
-    ClickListComponent,
-    ComboChartComponent,
-    ConfirmationModalComponent,
-    DeleteConfirmModalComponent,
-    DetailModalComponent,
-    FormModalComponent,
-    GaugeChartComponent,
-    HorizontalBarChartComponent,
-    LineAndBarChartComponent,
-    LineChartComponent,
-    NumberCardChartComponent,
-    OneByTwoLayoutComponent,
-    OneByTwoLayoutTableChartComponent,
-    OneChartLayoutComponent,
-    PieGridComponent,
-    PieGridChartComponent,
-    PlaceholderWidgetComponent,
-    PlainTextChartComponent,
-    TwoByOneLayoutComponent,
-    XByOneLayoutComponent,
-    RotationChartComponent,
-    TwoByTwoLayoutComponent,
-    TwoByTwoLayoutComponent,
-    AuditModalComponent,
-    DashTrashComponent,
-    DashEditComponent,
-    EditDashboardModalComponent
-  ],
   imports: [
         CommonModule,
         DragDropModule,
         FlexLayoutModule,
         NgbModule,
         NgxChartsModule,
-        NgxUIModule,
+        // NgxUiModule,
         ReactiveFormsModule,
         TabsModule,
         RouterModule,
@@ -182,7 +150,8 @@ import { RefreshModalComponent } from './modals/refresh-modal/refresh-modal.comp
         NbTabsetModule,
         NbIconModule,
         TabsFixturesModule,
-    NgxPaginationModule
+        NgxPaginationModule,
+        FormsModule,
     ],
   exports: [
     BarHorizontalComponent,
@@ -221,10 +190,13 @@ import { RefreshModalComponent } from './modals/refresh-modal/refresh-modal.comp
     NgxPaginationModule,
     CollectorItemModule,
     NfrrModule,
+    NgbModule,
+    NgxChartsModule,
   ],
   providers: [
     UserDataService,
     RouterModule
-  ]
+  ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]
 })
 export class SharedModule { }

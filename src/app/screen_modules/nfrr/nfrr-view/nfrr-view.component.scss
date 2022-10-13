@@ -35,7 +35,7 @@
     justify-self: center;
     margin-top: 1rem;
     span {
-      font-family: 'Comic Sans MS';
+      font-family: 'Comic Sans MS', sans-serif;
       color: lightgray;
     }
   }
@@ -71,6 +71,9 @@
   .row-in {
     background-color: dimgrey;
     box-shadow: 2px 4px 8px rgba(0,0,0,0.3);
+    display: flex;
+    justify-content: space-around;
+    width: 850px;
   }
 }
 

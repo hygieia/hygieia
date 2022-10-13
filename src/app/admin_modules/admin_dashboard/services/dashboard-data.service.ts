@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, catchError } from 'rxjs/operators';
 import { clone } from 'lodash';
+// import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +11,7 @@ export class DashboardDataService {
 
   HygieiaConfig: any = { local: null };
 
+  // qaApiUrl = environment.apiUrl;
 
   testSearchRoute = 'test-data/dashboard_search.json';
   testDetailRoute = 'test-data/dashboard_detail.json';
@@ -232,7 +234,7 @@ export class DashboardDataService {
 
   // get List of all configurations
   getGeneralConfig(id) {
-    return this.getPromise(this.HygieiaConfig.local ? this.dashboardGenconfigRoute + '/fetch' : this.dashboardGenconfigRoute + '/fetch');
+    return this.getPromise(this.dashboardGenconfigRoute + '/fetch');
   }
   // To save the general config datas
   generalConfigSave(obj) {

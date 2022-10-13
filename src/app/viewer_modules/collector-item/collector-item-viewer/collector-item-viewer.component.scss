@@ -1,5 +1,5 @@
 @mixin font-style {
-  font-family: 'Lucida Grande';
+  font-family: 'Lucida Grande', sans-serif;
   font-weight: 600;
   line-height: 2;
   color: lightgray;
@@ -54,5 +54,17 @@ nb-card {
   background: black;
   nb-card-header a h3 {
     color: lightgray;
+  }
+}
+
+#bootstrapOverrides {
+  table, tr, td, a, em, span, i {
+    background-color: rgb(214, 216, 219);
+  }
+  th {
+    background-color: #343a40;
+  }
+  td {
+    padding: 0.5rem;
   }
 }

@@ -44,7 +44,6 @@ class MockTestService {
   declarations: [],
   imports: [HttpClientTestingModule, SharedModule, CommonModule, BrowserAnimationsModule,
     RouterModule.forRoot([]), NgbModule, TestModule],
-  entryComponents: []
 })
 class TestsModule { }
 
@@ -150,9 +149,9 @@ describe('TestWidgetComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TestWidgetComponent);
     component = fixture.componentInstance;
-    testService = TestBed.get(TestService);
-    dashboardService = TestBed.get(DashboardService);
-    modalService = TestBed.get(NgbModal);
+    testService = TestBed.inject(TestService);
+    dashboardService = TestBed.inject(DashboardService);
+    modalService = TestBed.inject(NgbModal);
     fixture.detectChanges();
   });
 

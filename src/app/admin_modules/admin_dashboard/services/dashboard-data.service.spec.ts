@@ -12,7 +12,7 @@ describe('DashboardDataService', () => {
   }));
 
   it('should be created', () => {
-    const service: DashboardDataService = TestBed.get(DashboardDataService);
+    const service: DashboardDataService = TestBed.inject(DashboardDataService);
     expect(service).toBeTruthy();
   });
 
@@ -355,8 +355,8 @@ describe('DashboardDataService', () => {
     let http: HttpClient;
 
     beforeEach(() => {
-      service = TestBed.get(DashboardDataService);
-      http = TestBed.get(HttpClient);
+      service = TestBed.inject(DashboardDataService);
+      http = TestBed.inject(HttpClient);
     });
 
     it('should create new dashboard', () => {

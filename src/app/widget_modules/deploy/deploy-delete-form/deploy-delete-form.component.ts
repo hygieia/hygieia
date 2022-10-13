@@ -8,8 +8,7 @@ import { DashboardService } from 'src/app/shared/dashboard.service';
 
 @Component({
   selector: 'app-deploy-delete-form',
-  templateUrl: './deploy-delete-form.component.html',
-  styleUrls: ['./deploy-delete-form.component.scss']
+  templateUrl: './deploy-delete-form.component.html'
 })
 export class DeployDeleteFormComponent implements OnInit {
 

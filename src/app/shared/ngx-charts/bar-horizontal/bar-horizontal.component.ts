@@ -13,6 +13,8 @@ import {
   BaseChartComponent,
   calculateViewDimensions,
   ColorHelper,
+  LegendPosition,
+  ScaleType,
   ViewDimensions,
 } from '@swimlane/ngx-charts';
 
@@ -92,7 +94,7 @@ import {
 export class BarHorizontalComponent extends BaseChartComponent {
   @Input() legend = false;
   @Input() legendTitle = 'Legend';
-  @Input() legendPosition = 'right';
+  @Input() legendPosition = LegendPosition.Right;
   @Input() xAxis = false;
   @Input() yAxis = false;
   @Input() showXAxisLabel = false;
@@ -103,7 +105,7 @@ export class BarHorizontalComponent extends BaseChartComponent {
   @Input() gradient: boolean;
   @Input() showGridLines = true;
   @Input() activeEntries: any[] = [];
-  @Input() schemeType: string;
+  @Input() schemeType: ScaleType;
   @Input() trimXAxisTicks = true;
   @Input() trimYAxisTicks = true;
   @Input() rotateXAxisTicks = true;

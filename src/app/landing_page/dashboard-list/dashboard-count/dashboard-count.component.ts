@@ -13,7 +13,8 @@ export interface IPieData {
   styleUrls: ['./dashboard-count.component.scss']
 })
 export class DashboardCountComponent implements OnInit {
-  dCount: IPieData[] = [];
+  // to get around error on line 39
+  dCount: IPieData[] | any = [];
   view: any[] = [450, 200];
 
   // options

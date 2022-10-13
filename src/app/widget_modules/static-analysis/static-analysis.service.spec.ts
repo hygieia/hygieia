@@ -11,7 +11,7 @@ describe('StaticAnalysisService', () => {
   }).compileComponents());
 
   it('should be created', () => {
-    const service: StaticAnalysisService = TestBed.get(StaticAnalysisService);
+    const service: StaticAnalysisService = TestBed.inject(StaticAnalysisService);
     expect(service).toBeTruthy();
   });
 

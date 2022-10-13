@@ -1,6 +1,11 @@
 import { Component, ViewEncapsulation } from '@angular/core';
+// import { LineAndBarChartComponent } from '../../ngx-charts/line-and-bar-chart/line-and-bar-chart.component';
 
 import { ChartComponent } from '../chart/chart.component';
+
+// @NgModule({
+//   imports: [LineAndBarChartComponent]
+// })
 
 @Component({
   selector: 'app-combo-chart',

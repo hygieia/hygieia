@@ -12,7 +12,7 @@ describe('AdminDashboardService', () => {
   }));
 
   it('should be created', () => {
-    const service: AdminDashboardService = TestBed.get(AdminDashboardService);
+    const service: AdminDashboardService = TestBed.inject(AdminDashboardService);
     expect(service).toBeTruthy();
   });
 

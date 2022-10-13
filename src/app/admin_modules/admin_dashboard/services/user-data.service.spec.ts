@@ -19,8 +19,8 @@ describe('UserDataService', () => {
     let http: HttpClient;
 
     beforeEach(() => {
-      service = TestBed.get(UserDataService);
-      http = TestBed.get(HttpClient);
+      service = TestBed.inject(UserDataService);
+      http = TestBed.inject(HttpClient);
     });
 
     it('get service account', () => {
