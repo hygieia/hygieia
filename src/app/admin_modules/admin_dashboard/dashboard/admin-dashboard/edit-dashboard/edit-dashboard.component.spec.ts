@@ -11,7 +11,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClientModule } from '@angular/common/http';
 import { DASHBOARDITEM } from '../../../services/user-data.service.mockdata';
-import { DashboardItem } from '../model/dashboard-item';
+// import { DashboardItem } from '../model/dashboard-item';
 import { UserDataService } from '../../../services/user-data.service';
 import { MockDashboardDataService } from '../../../services/mock-dashboard-data.service';
 import { MockPaginationWrapperService } from '../../../services/mock-pagination-wrapper.service';

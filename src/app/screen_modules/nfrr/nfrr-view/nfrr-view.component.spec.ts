@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { NfrrViewComponent } from './nfrr-view.component';
 import {NgxChartsModule} from '@swimlane/ngx-charts';

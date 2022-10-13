@@ -3,7 +3,6 @@ import { CanActivate, Router } from '@angular/router';
 
 @Injectable()
 export class SsoAuthGuard implements CanActivate {
-  private readonly ACCESS_TOKEN = 'access_token';
 
   constructor(private router: Router) {}
 
