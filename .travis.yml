@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-- "10"
+- "16.14.2"
 dist: trusty
 sudo: required
 branches:
@@ -17,7 +17,7 @@ before_script:
 - npm install -g @angular/cli
 script:
 - ng lint
-- npm run test-headless
+- npm run test:headless
 - if [ "$TRAVIS_PULL_REQUEST" != "false" ] || [ "$TRAVIS_BRANCH" = "master" ]; then mvn clean install -q -U; fi
 
 notifications:
