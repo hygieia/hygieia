@@ -23,7 +23,7 @@ describe('RepoService', () => {
     inject([HttpTestingController, RepoService],
       (httpMock: HttpTestingController, service: RepoService) => {
         // We call the service
-        service.fetchCommits('123', 14).subscribe(data => {
+        service.fetchCommits('123', '123', 14).subscribe(data => {
           expect(data).toBeTruthy();
         });
         // We set the expectations for the HttpClient mock
@@ -56,7 +56,7 @@ describe('RepoService', () => {
     inject([HttpTestingController, RepoService],
       (httpMock: HttpTestingController, service: RepoService) => {
         // We call the service
-        service.fetchPullRequests('123', 14).subscribe(data => {
+        service.fetchPullRequests('123', '123').subscribe(data => {
           expect(data).toBeTruthy();
         });
         // We set the expectations for the HttpClient mock
@@ -89,7 +89,7 @@ describe('RepoService', () => {
     inject([HttpTestingController, RepoService],
       (httpMock: HttpTestingController, service: RepoService) => {
         // We call the service
-        service.fetchIssues('123', 14).subscribe(data => {
+        service.fetchIssues('123', '123').subscribe(data => {
           expect(data).toBeTruthy();
         });
         // We set the expectations for the HttpClient mock

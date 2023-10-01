@@ -22,6 +22,7 @@ import { groupBy } from 'lodash';
 // tslint:disable-next-line:max-line-length
 import {OneByTwoLayoutTableChartComponent} from '../../../shared/layouts/one-by-two-layout-table-chart/one-by-two-layout-table-chart.component';
 import {WidgetState} from '../../../shared/widget-header/widget-state';
+import { ICollItem } from 'src/app/viewer_modules/collector-item/interfaces';
 
 @Component({
   selector: 'app-repo-widget',
@@ -31,9 +32,14 @@ import {WidgetState} from '../../../shared/widget-header/widget-state';
 export class RepoWidgetComponent extends WidgetComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly REPO_PER_DAY_TIME_RANGE = 14;
   private readonly TOTAL_REPO_COUNTS_TIME_RANGES = [7, 14];
+  public hasData;
   // Reference to the subscription used to refresh the widget
   private intervalRefreshSubscription: Subscription;
   private params;
+  public allCollectorItems;
+  private selectedIndex: number;
+  public hasRefreshLink: boolean;
+
 
   @ViewChild(LayoutDirective, {static: false}) childLayoutTag: LayoutDirective;
 
@@ -79,25 +85,59 @@ export class RepoWidgetComponent extends WidgetComponent implements OnInit, Afte
           componentId: widgetConfig.componentId,
           numberOfDays: 14
         };
-        return forkJoin(
-          this.repoService.fetchCommits(this.params.componentId, this.params.numberOfDays).pipe(catchError(err => of(err))),
-          this.repoService.fetchPullRequests(this.params.componentId, this.params.numberOfDays).pipe(catchError(err => of(err))),
-          this.repoService.fetchIssues(this.params.componentId, this.params.numberOfDays).pipe(catchError(err => of(err))));
-      })).subscribe(([commits, pulls, issues]) => {
-        if ((commits || pulls || issues) && (commits.length > 0 || pulls.length > 0 || issues.length > 0)) {
-          this.hasData = true;
-          this.loadCharts(commits, pulls, issues);
+        return this.repoService.fetchSCMCollectorItems(this.params.componentId).pipe(catchError(err => of(err)));
+      })).subscribe(result => {
+        this.hasData = (result && result.length > 0);
+        if (this.hasData) {
+          this.populateDropdown(result);
+          this.loadCharts(result, 0);
         } else {
-          this.hasData = false;
           this.setDefaultIfNoData();
         }
+        super.loadComponent(this.childLayoutTag);
+      });
+  }
+
+  loadCharts(result: ICollItem[], index) {
+    this.selectedIndex = index;
+    if ( result[this.selectedIndex].refreshLink ) {
+      this.hasRefreshLink = true;
+    } else {
+      this.hasRefreshLink = false;
+    }
+    const collectorItemId = result[index].id;
+    const componentId = this.params.componentId;
+    const commits = this.repoService.fetchCommits(componentId, collectorItemId, this.params.numberOfDays).pipe(catchError(err => of(err)));
+
+    const pulls = this.repoService.fetchPullRequests(componentId, collectorItemId).pipe(catchError(err => of(err)));
+
+    const issues = this.repoService.fetchIssues(componentId, collectorItemId).pipe(catchError(err => of(err)));
+
+    forkJoin([commits, pulls, issues]).subscribe(results => {
+      const commitArray = results[0];
+      const pullArray = results[1];
+      const issueArray = results[2];
+
+      this.generateRepoPerDay(commitArray, pullArray, issueArray);
+      this.generateTotalRepoCounts(commitArray, pullArray, issueArray);
+      super.loadComponent(this.childLayoutTag);
     });
   }
 
-  loadCharts(commits: IRepo[], pulls: IRepo[], issues: IRepo[]) {
-    this.generateRepoPerDay(commits, pulls, issues);
-    this.generateTotalRepoCounts(commits, pulls, issues);
-    super.loadComponent(this.childLayoutTag);
+  populateDropdown(collectorItems) {
+    collectorItems.map(item => {
+      if (item.repoUrl) {
+        const repoUrlSplitArr = item.repoUrl.split('/');
+        item.repoUrl = repoUrlSplitArr[repoUrlSplitArr.length - 1];
+      } else if (item.options.url) {
+        const repoUrlSplitArr = item.options.url.split('/');
+        item.repoUrl = repoUrlSplitArr[repoUrlSplitArr.length - 1];
+      } else {
+        item.repoUrl = 'URL Not found.';
+      }
+    });
+    this.allCollectorItems = collectorItems;
+
   }
 
   // Unsubscribe from the widget refresh observable, which stops widget updating.
